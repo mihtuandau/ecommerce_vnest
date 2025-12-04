@@ -1,9 +1,7 @@
 import { formatPrice, formatDateTime, formatDate } from './formatters';
 
-// Format số tiền
 export const formatCurrency = formatPrice;
 
-// Format ngày giờ
 export const formatDateTimeDisplay = formatDateTime;
 
 // Format ngày ngắn (chỉ ngày/tháng/năm) 
