@@ -39,18 +39,23 @@ const HeaderMain = ({ scrolled, searchOpen, setSearchOpen, mobileMenuOpen, setMo
           scrolled ? 'h-16' : 'h-20'
         }`}>
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-1">
+          <Link to="/" className="flex items-center gap-1 flex-shrink-0">
             <img 
               src="/logo.png" 
               alt="Logo" 
               className={`object-contain transition-all duration-300 ${
-                scrolled ? 'w-24 h-24' : 'w-30 h-30'
+                scrolled ? 'w-16 h-16 sm:w-24 sm:h-24' : 'w-20 h-20 sm:w-30 sm:h-30'
               }`}
             />
-            <span className={`font-bold transition-all duration-300 ${
+            <span className={`font-bold transition-all duration-300 hidden sm:inline ${
               scrolled ? 'text-xl text-gray-900' : 'text-2xl text-white'
             }`}>
               MINH TUAN STORE
+            </span>
+            <span className={`font-bold transition-all duration-300 sm:hidden ${
+              scrolled ? 'text-sm text-gray-900' : 'text-base text-white'
+            }`}>
+              MT STORE
             </span>
           </Link>
 
@@ -83,7 +88,7 @@ const HeaderMain = ({ scrolled, searchOpen, setSearchOpen, mobileMenuOpen, setMo
           </div>
 
           {/* Actions */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
             {/* Search Mobile */}
             <button 
               className={`lg:hidden transition-colors duration-300 ${
@@ -91,13 +96,13 @@ const HeaderMain = ({ scrolled, searchOpen, setSearchOpen, mobileMenuOpen, setMo
               }`}
               onClick={() => setSearchOpen(!searchOpen)}
             >
-              <FaSearch size={24} />
+              <FaSearch size={20} className="sm:w-6 sm:h-6" />
             </button>
 
             {/* Wishlist */}
             <Link 
               to="/wishlist" 
-              className={`hidden sm:flex relative transition-colors duration-300 ${
+              className={`hidden md:flex relative transition-colors duration-300 ${
                 scrolled ? 'text-gray-700 hover:text-gray-900' : 'text-white hover:text-gray-200'
               }`}
             >
@@ -116,7 +121,7 @@ const HeaderMain = ({ scrolled, searchOpen, setSearchOpen, mobileMenuOpen, setMo
                 scrolled ? 'text-gray-700 hover:text-gray-900' : 'text-white hover:text-gray-200'
               }`}
             >
-              <FaShoppingCart size={24} />
+              <FaShoppingCart size={20} className="sm:w-6 sm:h-6" />
               {cartCount > 0 && (
                 <span className={`absolute -top-2 -right-2 min-w-5 h-5 px-1.5 text-white text-xs rounded-full flex items-center justify-center transition-colors duration-300 ${
                   scrolled ? 'bg-red-600' : 'bg-red-500'
@@ -130,7 +135,7 @@ const HeaderMain = ({ scrolled, searchOpen, setSearchOpen, mobileMenuOpen, setMo
             {user ? (
               <div 
                 ref={dropdownRef}
-                className="relative"
+                className="relative hidden sm:block"
               >
                 <button 
                   onClick={toggleDropdown}
@@ -138,11 +143,11 @@ const HeaderMain = ({ scrolled, searchOpen, setSearchOpen, mobileMenuOpen, setMo
                     scrolled ? 'text-gray-700 hover:text-gray-900' : 'text-white hover:text-gray-200'
                   }`}
                 >
-                  <FaUser size={24} />
-                  <span className="hidden md:inline font-medium">{user.name}</span>
+                  <FaUser size={20} className="sm:w-6 sm:h-6" />
+                  <span className="hidden lg:inline font-medium">{user.name}</span>
                   <FaChevronDown 
                     size={16} 
-                    className={`transition-transform duration-200 ${
+                    className={`hidden lg:block transition-transform duration-200 ${
                       dropdownOpen ? 'rotate-180' : ''
                     }`}
                   />
@@ -194,17 +199,17 @@ const HeaderMain = ({ scrolled, searchOpen, setSearchOpen, mobileMenuOpen, setMo
                 )}
               </div>
             ) : (
-              <Link to="/login">
+              <Link to="/login" className="hidden sm:block">
                 <Button
                   variant={scrolled ? 'dark' : 'primary'}
                   icon={FaUser}
-                  className={`hidden sm:flex rounded-full ${
+                  className={`rounded-full text-sm sm:text-base px-3 sm:px-4 py-2 ${
                     scrolled 
                       ? 'bg-gray-900 text-white hover:bg-gray-800' 
                       : 'bg-white text-gray-900 hover:bg-gray-100'
                   }`}
                 >
-                  Đăng nhập
+                  <span className="hidden lg:inline">Đăng nhập</span>
                 </Button>
               </Link>
             )}

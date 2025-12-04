@@ -68,6 +68,35 @@ class UserService {
       body: JSON.stringify(data),
     });
   }
+
+  async getAddresses(userId) {
+    return this.request(`/users/${userId}/addresses`);
+  }
+
+  async deleteAddress(userId, addressId) {
+    return this.request(`/users/${userId}/address/${addressId}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async setDefaultAddress(userId, addressId) {
+    return this.request(`/users/${userId}/address/${addressId}/default`, {
+      method: 'PUT',
+    });
+  }
+
+  // Get current user profile
+  async getProfile() {
+    return this.request('/users/profile');
+  }
+
+  // Update current user profile
+  async updateProfile(data) {
+    return this.request('/users/profile', {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
 }
 
 export default new UserService();

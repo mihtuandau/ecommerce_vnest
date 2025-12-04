@@ -1,91 +1,40 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../hooks/useAuth';
 import authService from '../../../services/authService';
 import Layout from '../../../components/layouts/Layout';
-import Button from '../../../components/common/Button';
-import Input from '../../../components/common/Input';
-import { User, Mail, Phone, MapPin, Edit2, Save, X } from 'lucide-react';
+import Loading from '../../../components/common/Loading';
+import PersonalInfoForm from '../../../components/customer/PersonalInfoForm';
+import AddressManager from '../../../components/customer/AddressManager';
 import toast from 'react-hot-toast';
 
 const ProfilePage = () => {
   const { user: currentUser, loading: authLoading } = useAuth();
-  const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-  });
-  const [errors, setErrors] = useState({});
 
-  useEffect(() => {
-    if (currentUser) {
-      setFormData({
-        name: currentUser.name || '',
-        email: currentUser.email || '',
-      });
-    }
-  }, [currentUser]);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
-    }
-  };
-
-  const validateForm = () => {
-    const newErrors = {};
-    
-    if (!formData.name.trim()) {
-      newErrors.name = 'Tên là bắt buộc';
-    }
-    
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email là bắt buộc';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email không hợp lệ';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (!validateForm()) return;
-    
+  const handleUpdateProfile = async (formData) => {
     setLoading(true);
     try {
       await authService.updateProfile(formData);
-      toast.success('Cập nhật thông tin thành công!');
-      setIsEditing(false);
+      toast.success('Cập nhật thành công');
+      return true;
     } catch (error) {
-      console.error('Update profile error:', error);
-      toast.error(error.response?.data?.message || 'Có lỗi xảy ra');
+      toast.error('Có lỗi xảy ra');
+      return false;
     } finally {
       setLoading(false);
     }
   };
 
-  const handleCancel = () => {
-    // Reset form data
-    setFormData({
-      name: currentUser.name || '',
-      email: currentUser.email || '',
-    });
-    setErrors({});
-    setIsEditing(false);
-  };
-
   if (authLoading) {
+    return <Loading />;
+  }
+
+  if (!currentUser) {
     return (
       <Layout>
-        <div className="flex items-center justify-center min-h-screen">
+        <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Đang tải...</p>
+            <p className="text-gray-600">Vui lòng đăng nhập</p>
           </div>
         </div>
       </Layout>
@@ -94,139 +43,67 @@ const ProfilePage = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-50 py-8">
-        <div className="container mx-auto px-4 max-w-4xl">
+      <div className="min-h-screen bg-white py-8">
+        <div className="container mx-auto px-4 max-w-6xl">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Thông tin tài khoản
-            </h1>
-            <p className="text-gray-600">
-              Quản lý thông tin cá nhân của bạn
-            </p>
+            <h1 className="text-2xl font-bold text-black">Thông tin tài khoản</h1>
+            <p className="text-gray-600 mt-1">Quản lý thông tin cá nhân</p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Sidebar */}
-            <div className="lg:col-span-1">
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <div className="flex flex-col items-center">
-                  <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mb-4">
-                    {/* <User className="w-12 h-12 text-white" /> */}
-                    <img src="../" alt="" />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Left Column - Personal Info */}
+            <div className="lg:col-span-2 space-y-8">
+              {/* Personal Info Card */}
+              <div className="border border-gray-200 rounded-lg p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-bold text-black">Thông tin cá nhân</h2>
+                  <div className="text-sm text-gray-500">
+                    ID: #{currentUser.id}
                   </div>
-                  <h2 className="text-xl font-semibold text-gray-900 mb-1">
-                    {currentUser?.name}
-                  </h2>
-                  <p className="text-sm text-gray-500 mb-4">
-                    {currentUser?.email}
-                  </p>
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                    {currentUser?.role === 'ADMIN' ? 'Quản trị viên' : 'Khách hàng'}
-                  </span>
                 </div>
+                
+                <PersonalInfoForm
+                  currentUser={currentUser}
+                  onSubmit={handleUpdateProfile}
+                  loading={loading}
+                />
+              </div>
+
+              {/* Address Manager */}
+              <div className="border border-gray-200 rounded-lg p-6">
+                <h2 className="text-xl font-bold text-black mb-6">Địa chỉ giao hàng</h2>
+                <AddressManager userId={currentUser.id} />
               </div>
             </div>
 
-            {/* Main Content */}
-            <div className="lg:col-span-2">
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-xl font-semibold text-gray-900">
-                    Thông tin cá nhân
-                  </h3>
-                  {!isEditing ? (
-                    <Button
-                      onClick={() => setIsEditing(true)}
-                      variant="outline"
-                      icon={Edit2}
-                      className="flex items-center gap-2"
-                    >
-                      Chỉnh sửa
-                    </Button>
-                  ) : (
-                    <button
-                      onClick={handleCancel}
-                      className="text-gray-600 hover:text-gray-900 flex items-center gap-2"
-                    >
-                      <X size={20} />
-                      Hủy
-                    </button>
-                  )}
-                </div>
-
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <Input
-                    label="Họ và tên"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    error={errors.name}
-                    icon={User}
-                    disabled={!isEditing}
-                    required
-                  />
-
-                  <Input
-                    label="Email"
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    error={errors.email}
-                    icon={Mail}
-                    disabled={!isEditing}
-                    required
-                  />
-
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <p className="text-sm text-blue-800">
-                      <strong>Lưu ý:</strong> Để quản lý địa chỉ và số điện thoại, vui lòng sử dụng tính năng Quản lý địa chỉ.
-                    </p>
+            {/* Right Column - Account Info */}
+            <div className="space-y-6">
+              {/* Account Summary */}
+              <div className="border border-gray-200 rounded-lg p-6">
+                <h3 className="font-bold text-black mb-4">Tóm tắt tài khoản</h3>
+                <div className="space-y-3">
+                  <div>
+                    <p className="text-sm text-gray-500">Vai trò</p>
+                    <p className="font-medium">{currentUser.role === 'ADMIN' ? 'Quản trị viên' : 'Khách hàng'}</p>
                   </div>
-
-                  {isEditing && (
-                    <div className="flex gap-3 pt-4">
-                      <Button
-                        type="submit"
-                        variant="primary"
-                        loading={loading}
-                        icon={Save}
-                        className="flex-1"
-                      >
-                        Lưu thay đổi
-                      </Button>
-                      <Button
-                        type="button"
-                        onClick={handleCancel}
-                        variant="outline"
-                        className="flex-1"
-                      >
-                        Hủy
-                      </Button>
-                    </div>
-                  )}
-                </form>
+                  <div>
+                    <p className="text-sm text-gray-500">Email xác thực</p>
+                    <p className="font-medium">{currentUser.email ? 'Đã xác thực' : 'Chưa xác thực'}</p>
+                  </div>
+                </div>
               </div>
 
-              {/* Change Password Section */}
-              <div className="bg-white rounded-lg shadow-sm p-6 mt-6">
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                  Bảo mật
-                </h3>
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                  <div>
-                    <p className="font-medium text-gray-900">Mật khẩu</p>
-                    <p className="text-sm text-gray-500">
-                      Thay đổi mật khẩu của bạn
-                    </p>
-                  </div>
-                  <Button
-                    onClick={() => window.location.href = '/change-password'}
-                    variant="outline"
-                  >
+              {/* Quick Links */}
+              <div className="border border-gray-200 rounded-lg p-6">
+                <h3 className="font-bold text-black mb-4">Truy cập nhanh</h3>
+                <div className="space-y-2">
+                  <a href="/orders" className="block p-3 border border-gray-200 rounded hover:bg-gray-50">
+                    Đơn hàng của tôi
+                  </a>
+                  <a href="/change-password" className="block p-3 border border-gray-200 rounded hover:bg-gray-50">
                     Đổi mật khẩu
-                  </Button>
+                  </a>
                 </div>
               </div>
             </div>

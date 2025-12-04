@@ -16,28 +16,37 @@ const HomePage = () => {
 
   // Handle Google OAuth callback
   useEffect(() => {
-    const googleToken = searchParams.get('google_token');
-    const userData = searchParams.get('user_data');
-    
+    const googleToken = searchParams.get("google_token");
+    const userData = searchParams.get("user_data");
+
     if (googleToken) {
       // Store token
-      localStorage.setItem('token', googleToken);
-      
+      localStorage.setItem("token", googleToken);
+
       // Decode and store user data
       if (userData) {
         try {
           const decodedUser = JSON.parse(atob(userData));
-          localStorage.setItem('user', JSON.stringify(decodedUser));
+          localStorage.setItem("user", JSON.stringify(decodedUser));
         } catch (error) {
-          console.error('Failed to decode user data:', error);
+          console.error("Failed to decode user data:", error);
         }
       }
-      
-      toast.success('Đăng nhập Google thành công!');
-      
-      // Remove token from URL and reload
-      navigate('/', { replace: true });
-      window.location.reload();
+
+      toast.success("Đăng nhập Google thành công!");
+
+      const redirectUrl = localStorage.getItem("redirectAfterLogin");
+
+      if (redirectUrl) {
+        localStorage.removeItem("redirectAfterLogin");
+        // Use setTimeout to ensure redirect happens after all state updates
+        setTimeout(() => {
+          window.location.href = redirectUrl;
+        }, 100);
+      } else {
+        // No redirect URL, just clean up query params and stay on home
+        navigate("/", { replace: true });
+      }
     }
   }, [searchParams, navigate]);
 
@@ -61,7 +70,7 @@ const HomePage = () => {
           <div className="text-center">
             <div className="text-red-500 text-5xl mb-4">⚠️</div>
             <p className="text-gray-600 mb-4">{error}</p>
-            <button 
+            <button
               onClick={() => window.location.reload()}
               className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
             >
@@ -91,28 +100,6 @@ const HomePage = () => {
 
       {/* Promo Banner */}
       <PromoBanner />
-
-      {/* Newsletter Section */}
-      <section className="py-16 bg-gradient-to-r from-blue-600 to-purple-600">
-        <div className="container mx-auto px-4 lg:px-8 text-center">
-          <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">
-            Đăng Ký Nhận Tin Mới Nhất
-          </h2>
-          <p className="text-lg text-white/90 mb-8 max-w-2xl mx-auto">
-            Nhận ngay mã giảm giá 10% cho đơn hàng đầu tiên và cập nhật các ưu đãi mới nhất
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-            <input
-              type="email"
-              placeholder="Nhập email của bạn"
-              className="flex-1 px-6 py-3 rounded-full border-0 focus:ring-2 focus:ring-white/50 outline-none"
-            />
-            <button className="px-8 py-3 bg-white text-blue-600 font-semibold rounded-full hover:bg-gray-100 transition-colors shadow-lg">
-              Đăng Ký
-            </button>
-          </div>
-        </div>
-      </section>
     </Layout>
   );
 };
