@@ -3,6 +3,16 @@ import ProductCard from '../products/ProductCard';
 import Button from '../common/Button';
 
 const FeaturedProducts = ({ products = [] }) => {
+  const defaultProducts = [
+    {
+      id: 1,
+      name: 'Áo Thun Nam Cổ Tròn',
+      image: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f',
+      price: 199000,
+      rating: 4.5,
+    },
+  ];
+  
   
   const displayProducts = products.length > 0 ? products : defaultProducts;
 

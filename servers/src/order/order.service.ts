@@ -25,7 +25,6 @@ export class OrderService {
     // Get items from dto OR cart
     let itemsToOrder;
     if (dto.items && dto.items.length > 0) {
-      // Fetch prices from database for items from dto
       const variantIds = dto.items.map(item => item.variantId);
       const variants = await this.prisma.productVariant.findMany({
         where: { id: { in: variantIds } }

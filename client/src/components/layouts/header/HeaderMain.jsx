@@ -175,11 +175,11 @@ const HeaderMain = ({ scrolled, searchOpen, setSearchOpen, mobileMenuOpen, setMo
                       </Link>
                       {user.role === 'ADMIN' && (
                         <Link 
-                          to="/admin" 
+                          to="/admin-dashboard" 
                           className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 text-gray-700 transition-colors"
                         >
                           <FaUserShield size={18} />
-                          Quản trị
+                          Quản trị viên
                         </Link>
                       )}
                       <div className="border-t border-gray-100">

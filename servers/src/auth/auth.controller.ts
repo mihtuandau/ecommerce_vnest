@@ -22,9 +22,11 @@ import {
   ApiBody,
   ApiParam,
   ApiQuery,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { JwtService } from '@nestjs/jwt';
+import { JwtAuthGuard } from '../common/guards/auth.guard';
 import { RegisterDto } from './dto/register-dto';
 import { LoginDto } from './dto/login-dto';
 import { ForgotPasswordDto, ResetPasswordDto } from './dto/forgot-password.dto';
@@ -46,11 +48,11 @@ export class AuthController {
   async register(@Body() registerDto: RegisterDto, @Res() res: Response) {
     const result = await this.authService.register(registerDto);
     
-    // Set httpOnly cookie
+    // 🔒 Lưu token trong httpOnly cookie
     this.authService.setAuthCookie(res, result.access_token);
     
+    // Không trả token trong response body (đã có trong cookie)
     res.status(HttpStatus.CREATED).json({
-      access_token: result.access_token,
       user: result.user,
       message: 'User registered successfully'
     });
@@ -68,11 +70,11 @@ export class AuthController {
     );
     const result = await this.authService.login({ sub: user.id }, user);
     
-    // Set httpOnly cookie
+    // 🔒 Lưu token trong httpOnly cookie
     this.authService.setAuthCookie(res, result.access_token);
     
+    // Không trả token trong response body (đã có trong cookie)
     res.json({
-      access_token: result.access_token,
       user: result.user,
       message: 'Login successful'
     });
@@ -82,9 +84,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Logout user' })
   @ApiResponse({ status: 200, description: 'Logout successful' })
   async logout(@Res() res: Response) {
-    // 🔒 FIX: Clear httpOnly cookie
     this.authService.clearAuthCookie(res);
-    
     res.json({ message: 'Logout successful' });
   }
 
@@ -105,7 +105,7 @@ export class AuthController {
     @Query('email') email: string,
     @Res() res: Response,
   ) {
-    
+    // Implementation needed
   }
 
   @Post('reset-password')
@@ -134,26 +134,51 @@ export class AuthController {
   async googleAuthRedirect(@Req() req: any, @Res() res: Response) {
     const user = req.user;
     
-    // 🔒 FIX: Minimal token payload for Google auth
-    const payload = { sub: user.userId };
+    const payload = { 
+      sub: user.userId,
+      email: user.email,
+      role: user.role 
+    };
+    
+    // ✅ Token expires in 7 days
     const token = this.jwtService.sign(payload, { 
       secret: process.env.JWT_SECRET,
-      expiresIn: '15m'
+      expiresIn: '7d' // ✅ Changed from '15m' to '7d'
     });
     
-    // 🔒 FIX: Set httpOnly cookie for Google auth too
+    // Set httpOnly cookie (7 days)
     this.authService.setAuthCookie(res, token);
     
-    // Encode user data as base64 for URL
+    // Encode user data for URL
     const userDataString = JSON.stringify({
       id: user.userId,
       email: user.email,
-      role: user.role
+      role: user.role,
     });
     const encodedUser = Buffer.from(userDataString).toString('base64');
     
-    // Redirect to frontend homepage with token and user data in URL
+    // Redirect to frontend with user data only (token in cookie)
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
-    res.redirect(`${frontendUrl}/?google_token=${token}&user_data=${encodedUser}`);
+    res.redirect(`${frontendUrl}/?oauth_success=true&user_data=${encodedUser}`);
+  }
+
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('Authorization')
+  @ApiOperation({ summary: 'Get current user info from token' })
+  @ApiResponse({ status: 200, description: 'User info retrieved' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async getCurrentUser(@Req() req: any) {
+    try {
+      const user = req.user;
+      const fullUser = await this.authService.getUserInfo(user.userId);
+      if (!fullUser) {
+        throw new Error('User not found');
+      }
+      const { password: _, ...safeUser } = fullUser;
+      return safeUser;
+    } catch (error) {
+      throw error;
+    }
   }
 }

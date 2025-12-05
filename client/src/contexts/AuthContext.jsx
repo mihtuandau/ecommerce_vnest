@@ -10,15 +10,33 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const currentUser = authService.getCurrentUser();
-    setUser(currentUser);
-    setLoading(false);
+    const initAuth = () => {
+      const token = localStorage.getItem('token');
+      const currentUser = authService.getCurrentUser();
+      
+      console.log('🔍 Init Auth - Checking localStorage...');
+      console.log('- Token:', token ? 'Found' : 'Not found');
+      console.log('- User:', currentUser ? currentUser.email : 'Not found');
+      
+      // ✅ If both token and user exist, set user immediately (no verification)
+      if (token && currentUser) {
+        setUser(currentUser);
+        console.log('✅ User restored from localStorage');
+      } else {
+        console.log('ℹ️ No token or user in localStorage');
+      }
+      
+      setLoading(false);
+    };
+
+    initAuth();
   }, []);
 
   const register = async (userData) => {
     try {
       const data = await authService.register(userData);
       setUser(data.user);
+      
       toast.success('Đăng ký thành công!');
       return data;
     } catch (error) {
@@ -30,21 +48,28 @@ export const AuthProvider = ({ children }) => {
   const login = async (credentials) => {
     try {
       const data = await authService.login(credentials);
+      console.log('AuthContext login - received data:', data);
       setUser(data.user);
+      
       toast.success('Đăng nhập thành công!');
       return data;
     } catch (error) {
+      console.error('AuthContext login error:', error);
       toast.error(error.response?.data?.message || 'Đăng nhập thất bại');
       throw error;
     }
   };
 
-  const logout = () => {
-    authService.logout();
-    setUser(null);
-    toast.success('Đăng xuất thành công!');
+  const logout = async () => {
+    try {
+      await authService.logout();
+      setUser(null);
+      toast.success('Đăng xuất thành công!');
+    } catch (error) {
+      console.error('Logout error:', error);
+      setUser(null);
+    }
   };
-
 
   const handleLogout = () => {
     logout();
@@ -78,11 +103,12 @@ export const AuthProvider = ({ children }) => {
     <AuthContext.Provider
       value={{
         user,
+        setUser,
         loading,
         register,
         login,
         logout,
-        handleLogout, // ✅ THÊM vào value
+        handleLogout,
         updateProfile,
         changePassword,
         isAdmin,

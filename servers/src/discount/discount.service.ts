@@ -9,17 +9,13 @@ export class DiscountService {
   constructor(private prisma: PrismaService) {}
 
   async create(createDiscountDto: CreateDiscountDto) {
-    // Validate: phải có ít nhất percentage hoặc fixedAmount
     if (!createDiscountDto.percentage && !createDiscountDto.fixedAmount) {
       throw new BadRequestException('Phải có ít nhất percentage hoặc fixedAmount');
     }
 
-    // Validate: không được có cả hai cùng lúc
     if (createDiscountDto.percentage && createDiscountDto.fixedAmount) {
       throw new BadRequestException('Chỉ được chọn percentage hoặc fixedAmount, không được cả hai');
     }
-
-    // Check code đã tồn tại
     const existing = await this.prisma.discount.findUnique({
       where: { code: createDiscountDto.code.toUpperCase() },
     });
@@ -44,7 +40,6 @@ export class DiscountService {
 
     const where: any = {};
 
-    // Search filter
     if (search) {
       where.OR = [
         { code: { contains: search, mode: 'insensitive' } },

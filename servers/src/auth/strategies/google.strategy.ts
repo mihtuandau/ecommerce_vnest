@@ -27,11 +27,16 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     const { emails, displayName } = profile;
     const email = emails[0].value;
     let user = await this.userService.findByEmail(email);
+    
+    // List of admin emails - should be moved to environment config
+    const adminEmails = (this.configService.get('ADMIN_EMAILS') || '').split(',').map(e => e.trim()).filter(Boolean);
+    const isAdminEmail = adminEmails.includes(email);
+    
     if (!user) {
       user = await this.userService.create({
         email,
         name: displayName,
-        role: 'CUSTOMER',
+        role: isAdminEmail ? 'ADMIN' : 'CUSTOMER', // ✅ Check if email is in admin list
         password: 'google-oauth', // Placeholder
       });
     }
