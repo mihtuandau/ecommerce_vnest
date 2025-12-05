@@ -9,8 +9,15 @@ export const useAuth = () => {
   const handleLogin = async (credentials) => {
     const data = await context.login(credentials);
     const role = data?.user?.role;
-    if (role === 'ADMIN') navigate('/admin-dashboard');
-    else navigate('/home'); 
+    const redirectUrl = localStorage.getItem('redirectAfterLogin');
+    if (redirectUrl) {
+      localStorage.removeItem('redirectAfterLogin');
+      navigate(redirectUrl, { replace: true });
+    } else if (role === 'ADMIN') {
+      navigate('/admin-dashboard');
+    } else {
+      navigate('/home'); 
+    }
     return data;
   };
 

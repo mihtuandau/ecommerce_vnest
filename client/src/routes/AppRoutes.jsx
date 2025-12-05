@@ -15,17 +15,13 @@ import RegisterPage from "../pages/Auth/RegisterPage";
 import ForgotPasswordPage from "../pages/Auth/ForgotPasswordPage";
 import ResetPasswordPage from "../pages/Auth/ResetPasswordPage";
 
-// Lazy load pages for better performance
-const HomePage = lazy(() => import("../pages/Customer/Home/HomePage"));
-const ProductsPage = lazy(() =>
-  import("../pages/Customer/Product/ProductsPage")
-);
-const ProductDetailPage = lazy(() =>
-  import("../pages/Customer/Product/ProductDetailPage")
-);
-const CategoryPage = lazy(() =>
-  import("../pages/Customer/Product/CategoryPage")
-);
+// Eager load HomePage to avoid double loading after login
+import HomePage from "../pages/Customer/Home/HomePage";
+
+// Lazy load other pages for better performance
+const ProductsPage = lazy(() => import("../pages/Customer/Product/ProductsPage"));
+const ProductDetailPage = lazy(() => import("../pages/Customer/Product/ProductDetailPage"));
+const CategoryPage = lazy(() => import("../pages/Customer/Product/CategoryPage"));
 const CartPage = lazy(() => import("../pages/Customer/Cart/CartPage"));
 const CheckoutPage = lazy(() =>
   import("../pages/Customer/Checkout/CheckoutPage")

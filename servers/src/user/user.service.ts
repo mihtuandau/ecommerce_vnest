@@ -7,7 +7,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { QueryUserDto } from './dto/query-user.dto';
 import { CreateAddressDto } from './dto/create-address.dto';
 import { UpdateAddressDto } from './dto/update-address.dto';
-import {UpdateUserResetDto} from '../user/dto/user-reset.dto';
+import { UpdateUserResetDto } from '../user/dto/user-reset.dto';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -49,14 +49,29 @@ export class UserService {
       updateData.password = await bcrypt.hash(data.password, 10);
     }
     
-    // Note: phone and address are stored in Address model, not User model
-    // To update phone/address, use the address endpoints
-    
     return this.prisma.user.update({ where: { id }, data: updateData });
   }
 
   async remove(id: number): Promise<User> {
     return this.prisma.user.delete({ where: { id } });
+  }
+
+  // ✨ THÊM: Get all addresses của user
+  async getAddresses(userId: number): Promise<any[]> {
+    return this.prisma.address.findMany({
+      where: { userId },
+      orderBy: [
+        { isDefault: 'desc' },
+        { createdAt: 'desc' }
+      ]
+    });
+  }
+
+  // ✨ THÊM: Get một address cụ thể
+  async getAddress(id: number): Promise<any> {
+    return this.prisma.address.findUnique({
+      where: { id }
+    });
   }
 
   async addAddress(userId: number, data: CreateAddressDto): Promise<any> {
@@ -85,49 +100,76 @@ export class UserService {
     }
     return this.prisma.address.update({ where: { id }, data });
   }
-async updateResetToken(id: number, resetData: UpdateUserResetDto): Promise<User> {
-  console.log('🔐 updateResetToken called:', { id, resetData });
 
-  const updateData: Prisma.UserUpdateInput = {
-    resetPasswordToken: resetData.resetPasswordToken,
-    resetPasswordExpires: resetData.resetPasswordExpires ? new Date(resetData.resetPasswordExpires) : null,
-  };
+  // ✨ THÊM: Delete address
+  async deleteAddress(id: number): Promise<any> {
+    const address = await this.prisma.address.findUnique({ where: { id } });
+    if (!address) throw new Error('Address not found');
 
-  console.log('📤 Reset token update data:', updateData);
+    // Nếu xóa address default, set address khác làm default
+    if (address.isDefault) {
+      const nextAddress = await this.prisma.address.findFirst({
+        where: {
+          userId: address.userId,
+          id: { not: id }
+        },
+        orderBy: { createdAt: 'asc' }
+      });
 
-  const result = await this.prisma.user.update({
-    where: { id },
-    data: updateData
-  });
-
-  console.log('✅ Reset token update result:', {
-    id: result.id,
-    resetPasswordToken: result.resetPasswordToken,
-    resetPasswordExpires: result.resetPasswordExpires
-  });
-
-  return result;
-}
-
-async resetPassword(id: number, password: string): Promise<User> {
-  console.log('🔄 resetPassword called:', { id });
-
-  const hashedPassword = await bcrypt.hash(password, 10);
-  const result = await this.prisma.user.update({
-    where: { id },
-    data: {
-      password: hashedPassword,
-      resetPasswordToken: null,
-      resetPasswordExpires: null,
+      if (nextAddress) {
+        await this.prisma.address.update({
+          where: { id: nextAddress.id },
+          data: { isDefault: true }
+        });
+      }
     }
-  });
 
-  console.log('✅ Password reset result:', {
-    id: result.id,
-    passwordUpdated: true,
-    resetTokenCleared: result.resetPasswordToken === null
-  });
+    return this.prisma.address.delete({ where: { id } });
+  }
 
-  return result;
-}
+  async updateResetToken(id: number, resetData: UpdateUserResetDto): Promise<User> {
+    console.log('🔐 updateResetToken called:', { id, resetData });
+
+    const updateData: Prisma.UserUpdateInput = {
+      resetPasswordToken: resetData.resetPasswordToken,
+      resetPasswordExpires: resetData.resetPasswordExpires ? new Date(resetData.resetPasswordExpires) : null,
+    };
+
+    console.log('📤 Reset token update data:', updateData);
+
+    const result = await this.prisma.user.update({
+      where: { id },
+      data: updateData
+    });
+
+    console.log('✅ Reset token update result:', {
+      id: result.id,
+      resetPasswordToken: result.resetPasswordToken,
+      resetPasswordExpires: result.resetPasswordExpires
+    });
+
+    return result;
+  }
+
+  async resetPassword(id: number, password: string): Promise<User> {
+    console.log('🔄 resetPassword called:', { id });
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const result = await this.prisma.user.update({
+      where: { id },
+      data: {
+        password: hashedPassword,
+        resetPasswordToken: null,
+        resetPasswordExpires: null,
+      }
+    });
+
+    console.log('✅ Password reset result:', {
+      id: result.id,
+      passwordUpdated: true,
+      resetTokenCleared: result.resetPasswordToken === null
+    });
+
+    return result;
+  }
 }

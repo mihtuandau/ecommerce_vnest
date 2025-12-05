@@ -8,8 +8,8 @@ import { QueryUserDto } from './dto/query-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { DeleteUserDto } from './dto/delete-user.dto';
-import { CreateAddressDto } from './dto/create-address.dto';  // Thêm import
-import { UpdateAddressDto } from './dto/update-address.dto';  // Thêm import
+import { CreateAddressDto } from './dto/create-address.dto';
+import { UpdateAddressDto } from './dto/update-address.dto';
 
 @ApiTags('Users') 
 @ApiBearerAuth('Authorization')  
@@ -93,27 +93,73 @@ export class UserController {
     return this.userService.remove(+id);
   }
 
-  // Thêm: Create address
-  @Post(':userId/address')
+  // ============ ADDRESS ENDPOINTS ============
+
+  // ✨ THÊM: Get all addresses của user
+  @Get(':userId/addresses')
+  @ApiOperation({ summary: 'Get all addresses of user' })
+  @ApiParam({ name: 'userId', description: 'User ID' })
+  @ApiResponse({ status: 200, description: 'List of addresses' })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  async getAddresses(@Param('userId') userId: string) {
+    const addresses = await this.userService.getAddresses(+userId);
+    return { addresses };
+  }
+
+  // ✨ THÊM: Get một address cụ thể
+  @Get(':userId/addresses/:addressId')
+  @ApiOperation({ summary: 'Get address by ID' })
+  @ApiParam({ name: 'userId', description: 'User ID' })
+  @ApiParam({ name: 'addressId', description: 'Address ID' })
+  @ApiResponse({ status: 200, description: 'Address details' })
+  @ApiResponse({ status: 404, description: 'Address not found' })
+  async getAddress(@Param('userId') userId: string, @Param('addressId') addressId: string) {
+    const address = await this.userService.getAddress(+addressId);
+    if (!address) {
+      throw new Error('Address not found');
+    }
+    return { address };
+  }
+
+  // Create address
+  @Post(':userId/addresses')
   @ApiOperation({ summary: 'Create new address for user' })
-  @ApiParam({ name: 'userId', description: 'ID user' })
+  @ApiParam({ name: 'userId', description: 'User ID' })
   @ApiBody({ type: CreateAddressDto })
   @ApiResponse({ status: 201, description: 'Address created successfully' })
   @ApiResponse({ status: 400, description: 'Bad request' })
   @ApiResponse({ status: 404, description: 'User not found' })
-  createAddress(@Param('userId') userId: string, @Body() createAddressDto: CreateAddressDto) {
-    return this.userService.addAddress(+userId, createAddressDto);
+  async createAddress(@Param('userId') userId: string, @Body() createAddressDto: CreateAddressDto) {
+    const address = await this.userService.addAddress(+userId, createAddressDto);
+    return { message: 'Address created successfully', address };
   }
 
-  // Thêm: Update address
-  @Put(':userId/address/:addressId')
+  // Update address
+  @Put(':userId/addresses/:addressId')
   @ApiOperation({ summary: 'Update address for user' })
-  @ApiParam({ name: 'userId', description: 'ID user' })
-  @ApiParam({ name: 'addressId', description: 'ID address' })
+  @ApiParam({ name: 'userId', description: 'User ID' })
+  @ApiParam({ name: 'addressId', description: 'Address ID' })
   @ApiBody({ type: UpdateAddressDto })
   @ApiResponse({ status: 200, description: 'Address updated successfully' })
   @ApiResponse({ status: 404, description: 'Address not found' })
-  updateAddress(@Param('userId') userId: string, @Param('addressId') addressId: string, @Body() updateAddressDto: UpdateAddressDto) {
-    return this.userService.updateAddress(+addressId, updateAddressDto);
+  async updateAddress(
+    @Param('userId') userId: string, 
+    @Param('addressId') addressId: string, 
+    @Body() updateAddressDto: UpdateAddressDto
+  ) {
+    const address = await this.userService.updateAddress(+addressId, updateAddressDto);
+    return { message: 'Address updated successfully', address };
+  }
+
+  // ✨ THÊM: Delete address
+  @Delete(':userId/addresses/:addressId')
+  @ApiOperation({ summary: 'Delete address' })
+  @ApiParam({ name: 'userId', description: 'User ID' })
+  @ApiParam({ name: 'addressId', description: 'Address ID' })
+  @ApiResponse({ status: 200, description: 'Address deleted successfully' })
+  @ApiResponse({ status: 404, description: 'Address not found' })
+  async deleteAddress(@Param('userId') userId: string, @Param('addressId') addressId: string) {
+    await this.userService.deleteAddress(+addressId);
+    return { message: 'Address deleted successfully' };
   }
 }

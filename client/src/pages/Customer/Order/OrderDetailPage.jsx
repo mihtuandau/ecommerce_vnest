@@ -242,11 +242,13 @@ const OrderDetailPage = () => {
             </h2>
             
             <div className="space-y-4">
-              {order.items?.map((item, idx) => (
+              {order.items?.map((item, idx) => {
+                const imageUrl = item.variant?.images?.[0]?.url || item.variant?.product?.images?.[0]?.url || '/placeholder-product.jpg';
+                return (
                 <div key={idx} className="flex gap-4 pb-4 border-b last:border-0">
                   <div className="w-20 h-20 bg-gray-100 rounded-lg flex-shrink-0 overflow-hidden">
                     <img
-                      src={item.variant?.product?.images?.[0]?.url || '/placeholder-product.jpg'}
+                      src={imageUrl}
                       alt={item.variant?.product?.name}
                       className="w-full h-full object-cover"
                     />
@@ -268,7 +270,7 @@ const OrderDetailPage = () => {
                     </div>
                   </div>
                 </div>
-              ))}
+              );})}
             </div>
           </div>
 
