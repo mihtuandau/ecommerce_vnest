@@ -28,7 +28,7 @@ const AddressManager = ({ userId, onAddressSelect, compact = false }) => {
     state: '',
     zipCode: '',
     isDefault: false,
-    addressType: 'home' // home, office, other
+    addressType: 'home'
   });
 
   const addressTypes = [
