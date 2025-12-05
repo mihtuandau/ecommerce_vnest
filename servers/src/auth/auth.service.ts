@@ -59,7 +59,7 @@ export class AuthService {
 
     const accessToken = this.jwtService.sign(payload, {
       secret: process.env.JWT_SECRET,
-      expiresIn: '15m',
+      expiresIn: '7d', // 7 days
     });
 
     const { password: _, ...safeUser } = user;
@@ -137,7 +137,7 @@ export class AuthService {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 15 * 60 * 1000, // 15 minutes
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
   }
 
@@ -158,4 +158,8 @@ export class AuthService {
   //     maxAge: 0,
   //   });
   // }
+
+  async getUserInfo(userId: number) {
+    return this.userService.findOne(userId);
+  }
 }

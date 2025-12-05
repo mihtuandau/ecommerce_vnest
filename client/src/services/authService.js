@@ -4,8 +4,9 @@ import axiosInstance from "../config/api.config";
 const authService = {
   register: async (userData) => {
     const response = await axiosInstance.post("/auth/register", userData);
-    if (response.data?.access_token) {
-      localStorage.setItem("token", response.data.access_token);
+    // 🔒 Token được lưu trong httpOnly cookie bởi backend
+    // Chỉ lưu user info vào localStorage
+    if (response.data?.user) {
       localStorage.setItem("user", JSON.stringify(response.data.user));
     }
     return response.data;
@@ -13,17 +14,26 @@ const authService = {
 
   login: async (credentials) => {
     const response = await axiosInstance.post("/auth/login", credentials);
-    const { access_token, user } = response.data;
-    if (access_token) {
-      localStorage.setItem("token", access_token);
+    const { user } = response.data;
+    // 🔒 Token được lưu trong httpOnly cookie bởi backend
+    // Chỉ lưu user info vào localStorage
+    if (user) {
       localStorage.setItem("user", JSON.stringify(user));
     }
-    return { access_token, user }; // Trả data để hook dùng
+    return response.data;
   },
-  logout: () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    window.location.href = "/login";
+  
+  logout: async () => {
+    try {
+      // Gọi backend để clear httpOnly cookie
+      await axiosInstance.post("/auth/logout");
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      // Chỉ xóa user info (không có token trong localStorage)
+      localStorage.removeItem("user");
+      window.location.href = "/login";
+    }
   },
 
   getCurrentUser: () => {
@@ -31,9 +41,11 @@ const authService = {
     return userStr ? JSON.parse(userStr) : null;
   },
 
-  getToken: () => localStorage.getItem("token"),
+  // 🔒 Token trong httpOnly cookie, không thể lấy từ JS
+  getToken: () => null,
 
-  isAuthenticated: () => !!localStorage.getItem("token"),
+  // 🔒 Kiểm tra authentication bằng cách kiểm tra user info
+  isAuthenticated: () => !!localStorage.getItem("user"),
 
   updateProfile: async (userData) => {
     const response = await axiosInstance.put("/users/profile", userData);

@@ -1,3 +1,4 @@
+// src/pages/Customer/Home/HomePage.jsx
 import { useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import Layout from "../../../components/layouts/Layout";
@@ -7,52 +8,42 @@ import FeaturedProducts from "../../../components/home/FeaturedProducts";
 import PromoBanner from "../../../components/home/PromoBanner";
 import Features from "../../../components/home/Features";
 import { useHomeData } from "../../../hooks/useHomeData";
+import { useAuth } from "../../../contexts/AuthContext";
 import toast from "react-hot-toast";
 
 const HomePage = () => {
   const { data: homeData, loading, error } = useHomeData();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { setUser } = useAuth(); // ✅ Lấy setUser từ context
 
   // Handle Google OAuth callback
   useEffect(() => {
-    const googleToken = searchParams.get('google_token');
-    const userData = searchParams.get('user_data');
-    
-    if (googleToken) {
-      // Store token
-      localStorage.setItem('token', googleToken);
-      
-      // Decode and store user data
-      if (userData) {
-        try {
-          const decodedUser = JSON.parse(atob(userData));
-          localStorage.setItem('user', JSON.stringify(decodedUser));
-        } catch (error) {
-          console.error('Failed to decode user data:', error);
-        }
-      }
-      
-      toast.success('Đăng nhập Google thành công!');
-      
-      // Remove token from URL and reload
-      navigate('/', { replace: true });
-      window.location.reload();
-    }
-  }, [searchParams, navigate]);
+    const oauthSuccess = searchParams.get('oauth_success');
+    const encodedUser = searchParams.get('user_data');
 
-  if (loading) {
-    return (
-      <Layout>
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Đang tải...</p>
-          </div>
-        </div>
-      </Layout>
-    );
-  }
+    if (oauthSuccess === 'true' && encodedUser) {
+      try {
+        // Decode user data
+        const decodedUser = JSON.parse(atob(encodedUser));
+        
+        // 🔒 Token đã được lưu trong httpOnly cookie bởi backend
+        // Chỉ lưu user info vào localStorage
+        localStorage.setItem('user', JSON.stringify(decodedUser));
+        
+        // Update AuthContext state
+        setUser(decodedUser);
+        
+        toast.success('Đăng nhập Google thành công!');
+        
+        // Clean URL
+        navigate('/', { replace: true });
+      } catch (error) {
+        console.error('Failed to decode user data:', error);
+        toast.error('Lỗi khi xử lý dữ liệu người dùng');
+      }
+    }
+  }, [searchParams, navigate, setUser]);
 
   if (error) {
     return (

@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../../hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 import authService from '../../../services/authService';
 import Layout from '../../../components/layouts/Layout';
 import Button from '../../../components/common/Button';
 import Input from '../../../components/common/Input';
-import { User, Mail, Phone, MapPin, Edit2, Save, X } from 'lucide-react';
+import { User, Mail, Phone, MapPin, Edit2, Save, X, BarChart3 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const ProfilePage = () => {
   const { user: currentUser, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -124,6 +126,16 @@ const ProfilePage = () => {
                   <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                     {currentUser?.role === 'ADMIN' ? 'Quản trị viên' : 'Khách hàng'}
                   </span>
+                  {currentUser?.role === 'ADMIN' && (
+                    <Button
+                      onClick={() => navigate('/admin-dashboard')}
+                      variant="primary"
+                      icon={BarChart3}
+                      className="mt-4 w-full flex items-center justify-center gap-2"
+                    >
+                      Vào Dashboard
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>

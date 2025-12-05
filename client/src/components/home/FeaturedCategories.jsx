@@ -17,6 +17,16 @@ const FeaturedCategories = ({ categories = [] }) => {
   ];
 
   const tags = ['Hot', 'New', 'Sale', 'Trend'];
+  const defaultCategories = [
+    {
+      id: 1,
+      name: 'Thời Trang Nam',
+      image: 'https://images.unsplash.com/photo-1490114538077-4ec16fc8b6c9',
+      productCount: 120,
+      tag: 'Hot',
+      color: 'from-gray-700 to-gray-900'
+    },
+  ];
 
   // Map categories từ API với default styling
   const displayCategories = categories.length > 0 

@@ -8,6 +8,16 @@ const HeroBanner = ({ slides = [] }) => {
   const [videoMuted, setVideoMuted] = useState(true);
 
   // Default slides nếu không có data
+  const defaultSlides = [
+    {
+      type: 'image',  
+      url: 'https://example.com/default-banner1.jpg',
+      title: 'Chào Mừng Đến Với Cửa Hàng Của Chúng Tôi',
+      subtitle: 'Khám phá bộ sưu tập mới nhất ngay hôm nay',
+      cta: 'Mua Ngay',
+      ctaLink: '/products'
+    },
+  ];
  
 
   // Map banners từ API với format chuẩn
