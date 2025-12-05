@@ -8,7 +8,8 @@ import FeaturedProducts from "../../../components/home/FeaturedProducts";
 import PromoBanner from "../../../components/home/PromoBanner";
 import Features from "../../../components/home/Features";
 import { useHomeData } from "../../../hooks/useHomeData";
-import { useAuth } from "../../../contexts/AuthContext";
+import { useAuth } from "../../../contexts/authContext";
+import authService from "../../../services/authService";
 import toast from "react-hot-toast";
 
 const HomePage = () => {
@@ -20,28 +21,27 @@ const HomePage = () => {
   // Handle Google OAuth callback
   useEffect(() => {
     const oauthSuccess = searchParams.get('oauth_success');
-    const encodedUser = searchParams.get('user_data');
 
-    if (oauthSuccess === 'true' && encodedUser) {
-      try {
-        // Decode user data
-        const decodedUser = JSON.parse(atob(encodedUser));
-        
-        // 🔒 Token đã được lưu trong httpOnly cookie bởi backend
-        // Chỉ lưu user info vào localStorage
-        localStorage.setItem('user', JSON.stringify(decodedUser));
-        
-        // Update AuthContext state
-        setUser(decodedUser);
-        
-        toast.success('Đăng nhập Google thành công!');
-        
-        // Clean URL
-        navigate('/', { replace: true });
-      } catch (error) {
-        console.error('Failed to decode user data:', error);
-        toast.error('Lỗi khi xử lý dữ liệu người dùng');
-      }
+    if (oauthSuccess === 'true') {
+      // 🔒 Token đã được lưu trong httpOnly cookie bởi backend
+      // Fetch user info from backend to update AuthContext
+      const fetchUser = async () => {
+        try {
+          const user = await authService.verifyAuth();
+          if (user) {
+            setUser(user);
+            toast.success('Đăng nhập Google thành công!');
+          }
+        } catch (error) {
+          console.error('Failed to fetch user after OAuth:', error);
+          toast.error('Lỗi khi xác thực người dùng');
+        }
+      };
+      
+      fetchUser();
+      
+      // Clean URL
+      navigate('/', { replace: true });
     }
   }, [searchParams, navigate, setUser]);
 

@@ -4,7 +4,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "../contexts/authContext";
 import Loading from "../components/common/Loading";
 import AdminRoute from "./AdminRoute";
-// import ProtectedRoute from './ProtectedRoute';
+import ProtectedRoute from './ProtectedRoute';
 
 // Layouts
 import AdminLayout from "../components/layouts/AdminLayout";
@@ -81,10 +81,22 @@ const AppRoutes = () => {
           {/* Cart Route */}
           <Route path="/cart" element={<CartPage />} />
 
-          {/* Checkout & Orders Routes */}
-          <Route path="/checkout" element={<CheckoutPage />} />
-          <Route path="/orders" element={<OrdersPage />} />
-          <Route path="/orders/:id" element={<OrderDetailPage />} />
+          {/* Checkout & Orders Routes - Protected */}
+          <Route path="/checkout" element={
+            <ProtectedRoute>
+              <CheckoutPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/orders" element={
+            <ProtectedRoute>
+              <OrdersPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/orders/:id" element={
+            <ProtectedRoute>
+              <OrderDetailPage />
+            </ProtectedRoute>
+          } />
 
           {/* Admin Routes - WITH AdminLayout */}
           <Route

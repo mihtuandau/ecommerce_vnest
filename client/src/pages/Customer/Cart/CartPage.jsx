@@ -87,9 +87,8 @@ const CartPage = () => {
 
   const handleCheckout = () => {
     if (!isAuthenticated) {
-      localStorage.setItem('redirectAfterLogin', '/checkout');
       toast.error('Vui lòng đăng nhập để thanh toán');
-      navigate('/login');
+      navigate('/login', { state: { from: '/checkout' } });
       return;
     }
     

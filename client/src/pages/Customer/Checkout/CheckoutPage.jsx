@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { FaArrowLeft } from 'react-icons/fa';
 import toast from 'react-hot-toast';
+import { useAuth } from '../../../contexts/authContext';
 import Loading from '../../../components/common/Loading';
 import Modal from '../../../components/common/Modal';
 import AddressManager from '../../../components/customer/AddressManager';
@@ -17,6 +18,7 @@ import { useDiscountCode } from '../../../hooks/useDiscountCode';
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const cartItems = useSelector((state) => state.cart.items);
   
   const [submitting, setSubmitting] = useState(false);
@@ -53,11 +55,10 @@ const CheckoutPage = () => {
 
   // Authentication and cart validation
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      localStorage.setItem('redirectAfterLogin', '/checkout');
+    // ProtectedRoute đã check authentication rồi, nhưng double check cho chắc
+    if (!user) {
       toast.error('Vui lòng đăng nhập để thanh toán');
-      navigate('/login');
+      navigate('/login', { state: { from: '/checkout' } });
       return;
     }
 
@@ -68,7 +69,7 @@ const CheckoutPage = () => {
     }
 
     loadUserProfile();
-  }, [cartItems, navigate]);
+  }, [user, cartItems.length, navigate]);
 
   const loadUserProfile = async () => {
     try {
