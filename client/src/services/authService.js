@@ -2,24 +2,27 @@
 import axiosInstance from "../config/api.config";
 
 const authService = {
+  // 🔒 Verify user from httpOnly cookie (no localStorage)
+  verifyAuth: async () => {
+    try {
+      const response = await axiosInstance.get("/auth/me");
+      return response.data;
+    } catch (error) {
+      return null;
+    }
+  },
+
   register: async (userData) => {
     const response = await axiosInstance.post("/auth/register", userData);
     // 🔒 Token được lưu trong httpOnly cookie bởi backend
-    // Chỉ lưu user info vào localStorage
-    if (response.data?.user) {
-      localStorage.setItem("user", JSON.stringify(response.data.user));
-    }
+    // Không lưu gì vào localStorage
     return response.data;
   },
 
   login: async (credentials) => {
     const response = await axiosInstance.post("/auth/login", credentials);
-    const { user } = response.data;
     // 🔒 Token được lưu trong httpOnly cookie bởi backend
-    // Chỉ lưu user info vào localStorage
-    if (user) {
-      localStorage.setItem("user", JSON.stringify(user));
-    }
+    // Không lưu gì vào localStorage
     return response.data;
   },
   
@@ -30,28 +33,16 @@ const authService = {
     } catch (error) {
       console.error("Logout error:", error);
     } finally {
-      // Chỉ xóa user info (không có token trong localStorage)
-      localStorage.removeItem("user");
+      // Không xóa localStorage vì không lưu gì cả
       window.location.href = "/login";
     }
-  },
-
-  getCurrentUser: () => {
-    const userStr = localStorage.getItem("user");
-    return userStr ? JSON.parse(userStr) : null;
   },
 
   // 🔒 Token trong httpOnly cookie, không thể lấy từ JS
   getToken: () => null,
 
-  // 🔒 Kiểm tra authentication bằng cách kiểm tra user info
-  isAuthenticated: () => !!localStorage.getItem("user"),
-
   updateProfile: async (userData) => {
     const response = await axiosInstance.put("/users/profile", userData);
-    if (response.data?.user) {
-      localStorage.setItem("user", JSON.stringify(response.data.user));
-    }
     return response.data;
   },
 

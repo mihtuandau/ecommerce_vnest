@@ -10,23 +10,25 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const initAuth = () => {
-      const token = localStorage.getItem('token');
-      const currentUser = authService.getCurrentUser();
+    const initAuth = async () => {
+      console.log('🔍 Init Auth - Verifying httpOnly cookie...');
       
-      console.log('🔍 Init Auth - Checking localStorage...');
-      console.log('- Token:', token ? 'Found' : 'Not found');
-      console.log('- User:', currentUser ? currentUser.email : 'Not found');
-      
-      // ✅ If both token and user exist, set user immediately (no verification)
-      if (token && currentUser) {
-        setUser(currentUser);
-        console.log('✅ User restored from localStorage');
-      } else {
-        console.log('ℹ️ No token or user in localStorage');
+      try {
+        // 🔒 Fetch user from backend using httpOnly cookie
+        const currentUser = await authService.verifyAuth();
+        
+        if (currentUser) {
+          setUser(currentUser);
+          console.log('✅ User authenticated from cookie:', currentUser.email);
+        } else {
+          console.log('ℹ️ No valid session');
+        }
+      } catch (error) {
+        console.error('❌ Auth verification failed:', error);
+        setUser(null);
+      } finally {
+        setLoading(false);
       }
-      
-      setLoading(false);
     };
 
     initAuth();
