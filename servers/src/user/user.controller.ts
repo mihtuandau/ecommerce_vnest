@@ -162,4 +162,16 @@ export class UserController {
     await this.userService.deleteAddress(+addressId);
     return { message: 'Address deleted successfully' };
   }
+
+  // ✨ THÊM: Set default address
+  @Put(':userId/addresses/:addressId/default')
+  @ApiOperation({ summary: 'Set address as default' })
+  @ApiParam({ name: 'userId', description: 'User ID' })
+  @ApiParam({ name: 'addressId', description: 'Address ID' })
+  @ApiResponse({ status: 200, description: 'Address set as default successfully' })
+  @ApiResponse({ status: 404, description: 'Address not found' })
+  async setDefaultAddress(@Param('userId') userId: string, @Param('addressId') addressId: string) {
+    const address = await this.userService.setDefaultAddress(+addressId, +userId);
+    return { message: 'Address set as default successfully', address };
+  }
 }

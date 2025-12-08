@@ -8,9 +8,7 @@ const AdminLayout = memo(({ children }) => {
     return saved !== null ? JSON.parse(saved) : true;
   });
 
-  useEffect(() => {
-    localStorage.setItem('sidebarOpen', JSON.stringify(sidebarOpen));
-  }, [sidebarOpen]);
+  
 
   return (
     <div className="min-h-screen bg-gray-50">

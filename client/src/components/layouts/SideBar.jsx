@@ -13,11 +13,16 @@ import {
   FileText,
   Truck,
   CreditCard,
+  MessageSquare,
 } from 'lucide-react';
 import clsx from 'clsx';
+import { useAuth } from '../../hooks/useAuth';
+import { useChatNotifications } from '../../hooks/useChatNotifications';
 
 const AdminSidebar = ({ isOpen }) => {
   const location = useLocation();
+  const { user } = useAuth();
+  const unreadChatCount = useChatNotifications(user);
 
   const menuGroups = [
     {
@@ -97,6 +102,12 @@ const AdminSidebar = ({ isOpen }) => {
           icon: Users,
           label: 'Users',
           badge: null,
+        },
+        {
+          path: '/admin-chat',
+          icon: MessageSquare,
+          label: 'Chat Support',
+          badge: unreadChatCount > 0 ? unreadChatCount : null,
         },
         {
           path: '/admin-reports',

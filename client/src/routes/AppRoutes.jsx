@@ -4,7 +4,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "../contexts/authContext";
 import Loading from "../components/common/Loading";
 import AdminRoute from "./AdminRoute";
-import ProtectedRoute from './ProtectedRoute';
+// import ProtectedRoute from './ProtectedRoute';
 
 // Layouts
 import AdminLayout from "../components/layouts/AdminLayout";
@@ -23,6 +23,7 @@ const ProductsPage = lazy(() => import("../pages/Customer/Product/ProductsPage")
 const ProductDetailPage = lazy(() => import("../pages/Customer/Product/ProductDetailPage"));
 const CategoryPage = lazy(() => import("../pages/Customer/Product/CategoryPage"));
 const CartPage = lazy(() => import("../pages/Customer/Cart/CartPage"));
+const WishlistPage = lazy(() => import("../pages/Customer/WishlistPage"));
 const CheckoutPage = lazy(() =>
   import("../pages/Customer/Checkout/CheckoutPage")
 );
@@ -48,6 +49,9 @@ const AdminPaymentsPage = lazy(() =>
 );
 const AdminDiscountsPage = lazy(() =>
   import("../pages/Admin/Discount/DiscountManagement")
+);
+const AdminChatPage = lazy(() =>
+  import("../pages/Admin/Chat/AdminChatManagement")
 );
 const AdminProfilePage = lazy(() =>
   import("../pages/Admin/Profile/ProfilePage")
@@ -78,25 +82,14 @@ const AppRoutes = () => {
           <Route path="/products/category/:id" element={<CategoryPage />} />
           <Route path="/category/:id" element={<CategoryPage />} />
 
-          {/* Cart Route */}
+          {/* Cart & Wishlist Routes */}
           <Route path="/cart" element={<CartPage />} />
+          <Route path="/wishlist" element={<WishlistPage />} />
 
-          {/* Checkout & Orders Routes - Protected */}
-          <Route path="/checkout" element={
-            <ProtectedRoute>
-              <CheckoutPage />
-            </ProtectedRoute>
-          } />
-          <Route path="/orders" element={
-            <ProtectedRoute>
-              <OrdersPage />
-            </ProtectedRoute>
-          } />
-          <Route path="/orders/:id" element={
-            <ProtectedRoute>
-              <OrderDetailPage />
-            </ProtectedRoute>
-          } />
+          {/* Checkout & Orders Routes */}
+          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/orders" element={<OrdersPage />} />
+          <Route path="/orders/:id" element={<OrderDetailPage />} />
 
           {/* Admin Routes - WITH AdminLayout */}
           <Route
@@ -170,6 +163,17 @@ const AppRoutes = () => {
               <AdminRoute>
                 <AdminLayout>
                   <AdminDiscountsPage />
+                </AdminLayout>
+              </AdminRoute>
+            }
+          />
+
+          <Route
+            path="/admin-chat"
+            element={
+              <AdminRoute>
+                <AdminLayout>
+                  <AdminChatPage />
                 </AdminLayout>
               </AdminRoute>
             }

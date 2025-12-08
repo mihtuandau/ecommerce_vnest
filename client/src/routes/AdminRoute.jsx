@@ -4,11 +4,6 @@ import { useAuth } from '../contexts/authContext';
 const AdminRoute = ({ children }) => {
   const { user, loading } = useAuth();
 
-  console.log('AdminRoute - user:', user?.email);
-  console.log('AdminRoute - user.role:', user?.role);
-  console.log('AdminRoute - loading:', loading);
-
-  // Wait for auth to initialize
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -17,7 +12,6 @@ const AdminRoute = ({ children }) => {
     );
   }
 
-  // 🔒 User fetched from backend via httpOnly cookie
   if (!user) {
     console.log('AdminRoute - No user found, redirecting to /login');
     return <Navigate to="/login" replace />;

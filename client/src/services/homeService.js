@@ -20,11 +20,11 @@ const homeService = {
         axiosInstance.get('/categories')
           .then(res => res.data).catch(() => []),
         
-        // Get featured products
+        // Get featured products (best sellers)
         axiosInstance.get('/products', {
           params: { 
             limit: 8,
-            sortBy: 'newest'
+            sortBy: 'sold'
           }
         }).then(res => res.data?.data || res.data || []).catch(() => [])
       ]);

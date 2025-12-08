@@ -44,68 +44,62 @@ const ProfilePage = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-white py-8">
-        <div className="container mx-auto px-4 max-w-6xl">
-          {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-2xl font-bold text-black">Thông tin tài khoản</h1>
-            <p className="text-gray-600 mt-1">Quản lý thông tin cá nhân</p>
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="container mx-auto px-4 max-w-7xl">
+          {/* Breadcrumb */}
+          <nav className="flex items-center gap-2 text-sm text-gray-600 mb-6">
+            <a href="/" className="hover:text-gray-900 transition-colors">Trang chủ</a>
+            <span>›</span>
+            <span className="text-gray-900 font-medium">Thông tin tài khoản</span>
+          </nav>
+
+          {/* Header với Avatar */}
+          <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+                {currentUser.name?.charAt(0)?.toUpperCase() || currentUser.email?.charAt(0)?.toUpperCase()}
+              </div>
+              <div className="flex-1">
+                <h1 className="text-2xl font-bold text-gray-900">{currentUser.name || 'Người dùng'}</h1>
+                <p className="text-gray-600 text-sm mt-1">{currentUser.email}</p>
+              </div>
+              <div className="text-right">
+                <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                  currentUser.role === 'ADMIN' 
+                    ? 'bg-purple-100 text-purple-700' 
+                    : 'bg-blue-100 text-blue-700'
+                }`}>
+                  {currentUser.role === 'ADMIN' ? '👑 Admin' : '👤 Khách hàng'}
+                </span>
+                <p className="text-xs text-gray-500 mt-1">ID: #{currentUser.id}</p>
+              </div>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Left Column - Personal Info */}
-            <div className="lg:col-span-2 space-y-8">
-              {/* Personal Info Card */}
-              <div className="border border-gray-200 rounded-lg p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-bold text-black">Thông tin cá nhân</h2>
-                  <div className="text-sm text-gray-500">
-                    ID: #{currentUser.id}
-                  </div>
-                </div>
-                
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Personal Info Card */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+              <div className="border-b border-gray-200 px-6 py-4">
+                <h2 className="text-lg font-bold text-gray-900">Thông tin cá nhân</h2>
+                <p className="text-sm text-gray-600 mt-1">Cập nhật thông tin của bạn</p>
+              </div>
+              <div className="p-6">
                 <PersonalInfoForm
                   currentUser={currentUser}
                   onSubmit={handleUpdateProfile}
                   loading={loading}
                 />
               </div>
-
-              {/* Address Manager */}
-              <div className="border border-gray-200 rounded-lg p-6">
-                <h2 className="text-xl font-bold text-black mb-6">Địa chỉ giao hàng</h2>
-                <AddressManager userId={currentUser.id} />
-              </div>
             </div>
 
-            {/* Right Column - Account Info */}
-            <div className="space-y-6">
-              {/* Account Summary */}
-              <div className="border border-gray-200 rounded-lg p-6">
-                <h3 className="font-bold text-black mb-4">Tóm tắt tài khoản</h3>
-                <div className="space-y-3">
-                  <div>
-                    <p className="text-sm text-gray-500">Vai trò</p>
-                    <p className="font-medium">{currentUser.role === 'ADMIN' ? 'Quản trị viên' : 'Khách hàng'}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Email xác thực</p>
-                    <p className="font-medium">{currentUser.email ? 'Đã xác thực' : 'Chưa xác thực'}</p>
-                  </div>
-                </div>
+            {/* Address Manager Card */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+              <div className="border-b border-gray-200 px-6 py-4">
+                <h2 className="text-lg font-bold text-gray-900">Địa chỉ giao hàng</h2>
+                <p className="text-sm text-gray-600 mt-1">Quản lý địa chỉ nhận hàng</p>
               </div>
-
-              {/* Quick Links */}
-              <div className="border border-gray-200 rounded-lg p-6">
-                <h3 className="font-bold text-black mb-4">Truy cập nhanh</h3>
-                <div className="space-y-2">
-                  <a href="/orders" className="block p-3 border border-gray-200 rounded hover:bg-gray-50">
-                    Đơn hàng của tôi
-                  </a>
-                  <a href="/change-password" className="block p-3 border border-gray-200 rounded hover:bg-gray-50">
-                    Đổi mật khẩu
-                  </a>
-                </div>
+              <div className="p-6">
+                <AddressManager userId={currentUser.id} />
               </div>
             </div>
           </div>

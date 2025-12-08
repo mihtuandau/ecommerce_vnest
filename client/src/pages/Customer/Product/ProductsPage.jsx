@@ -142,13 +142,11 @@ const ProductsPage = () => {
       <div className="bg-gray-50 min-h-screen py-8">
         <div className="container mx-auto px-4 lg:px-8">
           {/* Breadcrumb */}
-          <div className="mb-6">
-            <nav className="flex items-center space-x-2 text-sm text-gray-600">
-              <a href="/" className="hover:text-gray-900">Trang chủ</a>
-              <span>/</span>
-              <span className="text-gray-900 font-medium">Sản phẩm</span>
-            </nav>
-          </div>
+          <nav className="flex items-center gap-2 text-sm text-gray-600 mb-6">
+            <a href="/" className="hover:text-gray-900 transition-colors">Trang chủ</a>
+            <span>›</span>
+            <span className="text-gray-900 font-medium">Sản phẩm</span>
+          </nav>
 
           {/* Page Header */}
           <div className="mb-8 flex items-center justify-between">

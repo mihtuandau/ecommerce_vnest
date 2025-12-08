@@ -75,12 +75,32 @@ export class UserService {
   }
 
   async addAddress(userId: number, data: CreateAddressDto): Promise<any> {
+    // Kiểm tra xem user đã có địa chỉ default chưa
     const hasDefault = await this.prisma.address.findFirst({
       where: { userId, isDefault: true },
     });
-    const isDefault = !hasDefault && !data.isDefault ? true : data.isDefault;
+
+    // Nếu chưa có địa chỉ nào, đặt làm default
+    // Nếu đã có địa chỉ và user muốn đặt làm default, bỏ default của địa chỉ cũ
+    const isDefault = !hasDefault ? true : (data.isDefault || false);
+
+    // Nếu địa chỉ mới là default, bỏ default của tất cả địa chỉ khác
+    if (isDefault && hasDefault) {
+      await this.prisma.address.updateMany({
+        where: {
+          userId,
+          isDefault: true,
+        },
+        data: { isDefault: false },
+      });
+    }
+
     return this.prisma.address.create({
-      data: { userId, ...data, isDefault },
+      data: { 
+        userId, 
+        ...data, 
+        isDefault 
+      },
     });
   }
 
@@ -125,6 +145,25 @@ export class UserService {
     }
 
     return this.prisma.address.delete({ where: { id } });
+  }
+
+  // ✨ THÊM: Set default address
+  async setDefaultAddress(id: number, userId: number): Promise<any> {
+    const address = await this.prisma.address.findUnique({ where: { id } });
+    if (!address) throw new Error('Address not found');
+    if (address.userId !== userId) throw new Error('Address does not belong to user');
+
+    // Remove default from all user's addresses
+    await this.prisma.address.updateMany({
+      where: { userId },
+      data: { isDefault: false }
+    });
+
+    // Set this address as default
+    return this.prisma.address.update({
+      where: { id },
+      data: { isDefault: true }
+    });
   }
 
   async updateResetToken(id: number, resetData: UpdateUserResetDto): Promise<User> {

@@ -12,10 +12,10 @@ export class CreateAddressDto {
 
   @ApiProperty({ 
     example: '0123456789', 
-    description: 'Số điện thoại (định dạng VN)', 
+    description: 'Số điện thoại', 
     required: true 
   })
-  @IsPhoneNumber('VN')
+  @IsString()
   phone: string;
 
   @ApiProperty({ 
@@ -36,7 +36,7 @@ export class CreateAddressDto {
 
   @ApiProperty({ 
     example: 'Quận 1', 
-    description: 'Tỉnh/Quận/Huyện (tùy chọn)', 
+    description: 'Quận/Huyện (tùy chọn)', 
     required: false 
   })
   @IsOptional()
@@ -44,12 +44,22 @@ export class CreateAddressDto {
   state?: string;
 
   @ApiProperty({ 
-    example: '70000', 
-    description: 'Mã bưu điện', 
-    required: true 
+    example: 'Phường Bến Nghé', 
+    description: 'Phường/Xã (tùy chọn)', 
+    required: false 
   })
+  @IsOptional()
   @IsString()
-  zipCode: string;
+  ward?: string;
+
+  @ApiProperty({ 
+    example: '70000', 
+    description: 'Mã bưu điện (tùy chọn)', 
+    required: false 
+  })
+  @IsOptional()
+  @IsString()
+  zipCode?: string;
 
   @ApiProperty({ 
     example: 'Vietnam', 
@@ -59,6 +69,15 @@ export class CreateAddressDto {
   @IsOptional()
   @IsString()
   country?: string;
+
+  @ApiProperty({ 
+    example: 'home', 
+    description: 'Loại địa chỉ: home, office, other (tùy chọn)', 
+    required: false 
+  })
+  @IsOptional()
+  @IsString()
+  addressType?: string;
 
   @ApiProperty({ 
     example: true, 

@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { FaSearch, FaShoppingCart, FaUser, FaHeart, FaBars, FaTimes, FaChevronDown, FaUserCircle, FaClipboardList, FaUserShield, FaSignOutAlt } from 'react-icons/fa';
 import { useAuth } from '../../../hooks/useAuth';
 import { useCartCount } from '../../../hooks/useCart';
+import wishlistService from '../../../services/wishlistService';
 import Button from '../../common/Button';
 import Input from '../../common/Input';
 import { useState, useRef, useEffect } from 'react';
@@ -9,8 +10,36 @@ import { useState, useRef, useEffect } from 'react';
 const HeaderMain = ({ scrolled, searchOpen, setSearchOpen, mobileMenuOpen, setMobileMenuOpen }) => {
   const { user, logout } = useAuth();
   const cartCount = useCartCount();
+  const [wishlistCount, setWishlistCount] = useState(0);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
+
+  // Load wishlist count
+  const loadWishlistCount = () => {
+    if (user) {
+      wishlistService.getWishlist().then(data => {
+        setWishlistCount(data?.length || 0);
+      }).catch(() => setWishlistCount(0));
+    } else {
+      setWishlistCount(0);
+    }
+  };
+
+  useEffect(() => {
+    loadWishlistCount();
+  }, [user]);
+
+  // Listen for wishlist updates
+  useEffect(() => {
+    const handleWishlistUpdate = () => {
+      loadWishlistCount();
+    };
+
+    window.addEventListener('wishlistUpdated', handleWishlistUpdate);
+    return () => {
+      window.removeEventListener('wishlistUpdated', handleWishlistUpdate);
+    };
+  }, [user]);
 
   // Toggle dropdown on click
   const toggleDropdown = () => {
@@ -102,16 +131,17 @@ const HeaderMain = ({ scrolled, searchOpen, setSearchOpen, mobileMenuOpen, setMo
             {/* Wishlist */}
             <Link 
               to="/wishlist" 
-              className={`hidden md:flex relative transition-colors duration-300 ${
+              className={`relative transition-colors duration-300 ${
                 scrolled ? 'text-gray-700 hover:text-gray-900' : 'text-white hover:text-gray-200'
               }`}
+              title="Sản phẩm yêu thích"
             >
-              <FaHeart size={24} />
-              <span className={`absolute -top-2 -right-2 w-5 h-5 text-white text-xs rounded-full flex items-center justify-center transition-colors duration-300 ${
-                scrolled ? 'bg-gray-900' : 'bg-white/30 backdrop-blur-sm'
-              }`}>
-                3
-              </span>
+              <FaHeart size={20} className="sm:w-6 sm:h-6" />
+              {wishlistCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                  {wishlistCount}
+                </span>
+              )}
             </Link>
 
             {/* Cart */}
@@ -120,6 +150,7 @@ const HeaderMain = ({ scrolled, searchOpen, setSearchOpen, mobileMenuOpen, setMo
               className={`relative transition-colors duration-300 ${
                 scrolled ? 'text-gray-700 hover:text-gray-900' : 'text-white hover:text-gray-200'
               }`}
+              title="Giỏ hàng"
             >
               <FaShoppingCart size={20} className="sm:w-6 sm:h-6" />
               {cartCount > 0 && (

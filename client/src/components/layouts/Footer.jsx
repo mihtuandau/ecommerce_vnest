@@ -83,16 +83,6 @@ const Footer = () => {
             <h3 className="text-white font-bold text-lg mb-4">Hỗ Trợ</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/shipping" className="hover:text-white transition-colors">
-                  Chính Sách Giao Hàng
-                </Link>
-              </li>
-              <li>
-                <Link to="/returns" className="hover:text-white transition-colors">
-                  Đổi Trả & Hoàn Tiền
-                </Link>
-              </li>
-              <li>
                 <Link to="/privacy" className="hover:text-white transition-colors">
                   Chính Sách Bảo Mật
                 </Link>
@@ -117,52 +107,28 @@ const Footer = () => {
               <li className="flex items-start gap-3">
                 <MapPin size={18} className="flex-shrink-0 mt-1" />
                 <span className="text-sm">
-                  123 Đường ABC, Quận 1, TP.HCM, Việt Nam
+                  109/47 Đương số 8, Linh Xuân, Thủ Đức, TP. Hồ Chí Minh
                 </span>
               </li>
               <li className="flex items-center gap-3">
                 <Phone size={18} className="flex-shrink-0" />
-                <span className="text-sm">Hotline: 1900-xxxx</span>
+                <span className="text-sm">SĐT: 0325586629</span>
               </li>
               <li className="flex items-center gap-3">
                 <Mail size={18} className="flex-shrink-0" />
-                <span className="text-sm">support@shop.com</span>
+                <span className="text-sm">dautuan032004@gmail.com</span>
               </li>
             </ul>
             <div className="mt-4">
               <h4 className="text-white font-semibold mb-2">Giờ làm việc:</h4>
-              <p className="text-sm">Thứ 2 - Thứ 7: 8:00 - 22:00</p>
+              <p className="text-sm">Thứ 2 - Thứ 7: 8:00 - 21:00</p>
               <p className="text-sm">Chủ Nhật: 9:00 - 21:00</p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Payment Methods */}
-      <div className="border-t border-gray-800">
-        <div className="container mx-auto px-4 lg:px-8 py-6">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="text-center md:text-left">
-              <p className="text-sm font-semibold mb-2">Phương thức thanh toán:</p>
-              <div className="flex gap-2 flex-wrap justify-center md:justify-start">
-                <div className="w-12 h-8 bg-white rounded flex items-center justify-center">
-                  <span className="text-blue-600 font-bold text-xs">VISA</span>
-                </div>
-                <div className="w-12 h-8 bg-white rounded flex items-center justify-center">
-                  <span className="text-orange-600 font-bold text-xs">MC</span>
-                </div>
-                <div className="w-12 h-8 bg-white rounded flex items-center justify-center">
-                  <span className="text-blue-700 font-bold text-xs">MOMO</span>
-                </div>
-                <div className="w-12 h-8 bg-white rounded flex items-center justify-center">
-                  <span className="text-red-600 font-bold text-xs">COD</span>
-                </div>
-              </div>
-            </div>
-            
-          </div>
-        </div>
-      </div>
+      
 
       {/* Bottom Bar */}
       <div className="border-t border-gray-800">
@@ -170,7 +136,7 @@ const Footer = () => {
           <div className="flex flex-col md:flex-row items-center justify-between gap-2 text-sm text-gray-400">
             <p>© {currentYear} SHOP. All rights reserved.</p>
             <p>
-              Designed with ❤️ by{' '}
+              Designed with by{' '}
               <a href="#" className="text-blue-400 hover:text-blue-300">
               Minh Tuấn
               </a>

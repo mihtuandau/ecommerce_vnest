@@ -33,42 +33,40 @@ class UserService {
 
   // Address APIs
   async createAddress(userId, data) {
-    const response = await axiosInstance.post(`/users/${userId}/address`, data);
+    const response = await axiosInstance.post(`/users/${userId}/addresses`, data);
     return response.data;
   }
 
   async updateAddress(userId, addressId, data) {
-    const response = await axiosInstance.put(`/users/${userId}/address/${addressId}`, data);
+    const response = await axiosInstance.put(`/users/${userId}/addresses/${addressId}`, data);
     return response.data;
   }
 
   async getAddresses(userId) {
-    return this.request(`/users/${userId}/addresses`);
+    const response = await axiosInstance.get(`/users/${userId}/addresses`);
+    return response.data;
   }
 
   async deleteAddress(userId, addressId) {
-    return this.request(`/users/${userId}/address/${addressId}`, {
-      method: 'DELETE',
-    });
+    const response = await axiosInstance.delete(`/users/${userId}/addresses/${addressId}`);
+    return response.data;
   }
 
   async setDefaultAddress(userId, addressId) {
-    return this.request(`/users/${userId}/address/${addressId}/default`, {
-      method: 'PUT',
-    });
+    const response = await axiosInstance.put(`/users/${userId}/addresses/${addressId}/default`);
+    return response.data;
   }
 
   // Get current user profile
   async getProfile() {
-    return this.request('/users/profile');
+    const response = await axiosInstance.get('/users/profile');
+    return response.data;
   }
 
   // Update current user profile
   async updateProfile(data) {
-    return this.request('/users/profile', {
-      method: 'PUT',
-      body: JSON.stringify(data),
-    });
+    const response = await axiosInstance.put('/users/profile', data);
+    return response.data;
   }
 }
 
