@@ -6,7 +6,8 @@ import HeroBanner from "../../../components/home/HeroBanner";
 import FeaturedCategories from "../../../components/home/FeaturedCategories";
 import FeaturedProducts from "../../../components/home/FeaturedProducts";
 import PromoBanner from "../../../components/home/PromoBanner";
-import Features from "../../../components/home/Features";
+import Loading from "../../../components/common/Loading";
+// import Features from "../../../components/home/Features";
 import { useHomeData } from "../../../hooks/useHomeData";
 import { useAuth } from "../../../contexts/authContext";
 import authService from "../../../services/authService";
@@ -16,15 +17,12 @@ const HomePage = () => {
   const { data: homeData, loading, error } = useHomeData();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { setUser } = useAuth(); // ✅ Lấy setUser từ context
+  const { setUser } = useAuth(); 
 
-  // Handle Google OAuth callback
   useEffect(() => {
     const oauthSuccess = searchParams.get('oauth_success');
 
     if (oauthSuccess === 'true') {
-      // 🔒 Token đã được lưu trong httpOnly cookie bởi backend
-      // Fetch user info from backend to update AuthContext
       const fetchUser = async () => {
         try {
           const user = await authService.verifyAuth();
@@ -33,14 +31,12 @@ const HomePage = () => {
             toast.success('Đăng nhập Google thành công!');
           }
         } catch (error) {
-          console.error('Failed to fetch user after OAuth:', error);
           toast.error('Lỗi khi xác thực người dùng');
         }
       };
       
       fetchUser();
-      
-      // Clean URL
+
       navigate('/', { replace: true });
     }
   }, [searchParams, navigate, setUser]);
@@ -48,12 +44,7 @@ const HomePage = () => {
   if (loading) {
     return (
       <Layout>
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Đang tải...</p>
-          </div>
-        </div>
+        <Loading fullScreen text="Đang tải dữ liệu..." />
       </Layout>
     );
   }
@@ -79,21 +70,12 @@ const HomePage = () => {
 
   return (
     <Layout>
-      {/* Hero Banner - Full width, no padding */}
       <div className="-mt-[104px]">
         <HeroBanner slides={homeData.banners} />
       </div>
-
-      {/* Features */}
-      <Features />
-
-      {/* Featured Categories */}
       <FeaturedCategories categories={homeData.categories} />
-
-      {/* Featured Products */}
       <FeaturedProducts products={homeData.featuredProducts} />
 
-      {/* Promo Banner */}
       <PromoBanner />
     </Layout>
   );

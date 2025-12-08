@@ -15,6 +15,8 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       clientSecret: configService.get('GOOGLE_CLIENT_SECRET'),
       callbackURL: 'http://localhost:5000/api/auth/google-login/callback',
       scope: ['email', 'profile'],
+      prompt: 'select_account consent', // Force account selection and consent screen
+      accessType: 'offline',
     });
   }
 

@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
-import { FaFilter, FaTimes } from 'react-icons/fa';
-import Button from '../common/Button';
-import Select from '../common/Select';
+import { FaSearch, FaTimes } from 'react-icons/fa';
 
 const ProductFilter = ({ 
   categories = [], 
@@ -10,7 +8,6 @@ const ProductFilter = ({
   onFilterChange,
   currentFilters = {}
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
   const [filters, setFilters] = useState({
     categoryId: currentFilters.categoryId || '',
     brandId: currentFilters.brandId || '',
@@ -20,7 +17,7 @@ const ProductFilter = ({
     inStock: currentFilters.inStock || false,
   });
 
-  // Update filters when currentFilters or priceRange change
+  // Update filters when currentFilters change
   useEffect(() => {
     setFilters({
       categoryId: currentFilters.categoryId || '',
@@ -32,21 +29,21 @@ const ProductFilter = ({
     });
   }, [currentFilters, priceRange]);
 
-  const handleFilterChange = (name, value) => {
+  const handleChange = (name, value) => {
     const newFilters = { ...filters, [name]: value };
     setFilters(newFilters);
+    // Auto-apply for sort and category/brand (immediate feedback)
+    if (name === 'sortBy' || name === 'categoryId' || name === 'brandId') {
+      onFilterChange(newFilters);
+    }
   };
 
-  // Auto-apply filters when sortBy, minPrice, or maxPrice change
-  const handleAutoApplyChange = (name, value) => {
-    const newFilters = { ...filters, [name]: value };
-    setFilters(newFilters);
-    onFilterChange(newFilters);
+  const handlePriceChange = (name, value) => {
+    setFilters(prev => ({ ...prev, [name]: value }));
   };
 
-  const applyFilters = () => {
+  const applyPriceFilter = () => {
     onFilterChange(filters);
-    setIsOpen(false);
   };
 
   const resetFilters = () => {
@@ -65,151 +62,126 @@ const ProductFilter = ({
   const sortOptions = [
     { value: 'newest', label: 'Mới nhất' },
     { value: 'oldest', label: 'Cũ nhất' },
-    { value: 'price-asc', label: 'Giá: Thấp đến Cao' },
-    { value: 'price-desc', label: 'Giá: Cao đến Thấp' },
+    { value: 'price-asc', label: 'Giá: Thấp → Cao' },
+    { value: 'price-desc', label: 'Giá: Cao → Thấp' },
     { value: 'name-asc', label: 'Tên: A-Z' },
     { value: 'name-desc', label: 'Tên: Z-A' },
+    { value: 'sold', label: 'Bán chạy' },
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
-      {/* Sort By */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Sắp xếp
-        </label>
-        <Select
-          value={filters.sortBy}
-          onChange={(e) => handleAutoApplyChange('sortBy', e.target.value)}
-          className="text-sm"
-        >
-          {sortOptions.map(option => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </Select>
-      </div>
+    <div className="space-y-4">
+      {/* Sort and Category Row */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Sort By */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Sắp xếp theo
+          </label>
+          <select
+            value={filters.sortBy}
+            onChange={(e) => handleChange('sortBy', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+          >
+            {sortOptions.map(option => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
 
-      {/* Category */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Danh mục
-        </label>
-        <Select
-          value={filters.categoryId}
-          onChange={(e) => handleAutoApplyChange('categoryId', e.target.value)}
-          className="text-sm"
-        >
-          <option value="">Tất cả danh mục</option>
-          {categories && categories.length > 0 && categories.map(cat => (
-            <option key={cat.id} value={cat.id}>
-              {cat.name}
-            </option>
-          ))}
-        </Select>
-      </div>
+        {/* Category */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Danh mục
+          </label>
+          <select
+            value={filters.categoryId}
+            onChange={(e) => handleChange('categoryId', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+          >
+            <option value="">Tất cả danh mục</option>
+            {categories?.map(cat => (
+              <option key={cat.id} value={cat.id}>
+                {cat.name}
+              </option>
+            ))}
+          </select>
+        </div>
 
-      {/* Brand */}
-      {brands.length > 0 && (
+        {/* Brand */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Thương hiệu
           </label>
-          <Select
+          <select
             value={filters.brandId}
-            onChange={(e) => handleAutoApplyChange('brandId', e.target.value)}
-            className="text-sm"
+            onChange={(e) => handleChange('brandId', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
           >
-            <option value="">Tất cả</option>
-            {brands.map(brand => (
+            <option value="">Tất cả thương hiệu</option>
+            {brands?.map(brand => (
               <option key={brand.id} value={brand.id}>
                 {brand.name}
               </option>
             ))}
-          </Select>
-        </div>
-      )}
-
-      {/* Price Range Slider */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Khoảng giá: {filters.minPrice.toLocaleString('vi-VN')}đ - {filters.maxPrice.toLocaleString('vi-VN')}đ
-        </label>
-        <div className="relative pt-1">
-          <div className="relative">
-            {/* Background track */}
-            <div className="absolute w-full h-2 bg-gray-200 rounded-lg top-1/2 -translate-y-1/2"></div>
-            {/* Active range track */}
-            <div 
-              className="absolute h-2 bg-gray-900 rounded-lg top-1/2 -translate-y-1/2"
-              style={{
-                left: `${((filters.minPrice - priceRange.minPrice) / (priceRange.maxPrice - priceRange.minPrice)) * 100}%`,
-                right: `${100 - ((filters.maxPrice - priceRange.minPrice) / (priceRange.maxPrice - priceRange.minPrice)) * 100}%`
-              }}
-            ></div>
-            {/* Min price slider */}
-            <input
-              type="range"
-              min={priceRange.minPrice}
-              max={priceRange.maxPrice}
-              step="100000"
-              value={filters.minPrice}
-              onChange={(e) => {
-                const value = parseInt(e.target.value);
-                if (value <= filters.maxPrice) {
-                  handleFilterChange('minPrice', value);
-                }
-              }}
-              onMouseUp={() => {
-                handleAutoApplyChange('minPrice', filters.minPrice);
-              }}
-              onTouchEnd={() => {
-                handleAutoApplyChange('minPrice', filters.minPrice);
-              }}
-              className="absolute w-full h-2 bg-transparent appearance-none cursor-pointer pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-gray-900 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:shadow [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-gray-900 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:shadow"
-            />
-            {/* Max price slider */}
-            <input
-              type="range"
-              min={priceRange.minPrice}
-              max={priceRange.maxPrice}
-              step="100000"
-              value={filters.maxPrice}
-              onChange={(e) => {
-                const value = parseInt(e.target.value);
-                if (value >= filters.minPrice) {
-                  handleFilterChange('maxPrice', value);
-                }
-              }}
-              onMouseUp={() => {
-                handleAutoApplyChange('maxPrice', filters.maxPrice);
-              }}
-              onTouchEnd={() => {
-                handleAutoApplyChange('maxPrice', filters.maxPrice);
-              }}
-              className="absolute w-full h-2 bg-transparent appearance-none cursor-pointer pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-gray-900 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:shadow [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-gray-900 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:shadow"
-            />
-          </div>
+          </select>
         </div>
       </div>
 
-      {/* Actions */}
-      <div className="flex gap-2">
-        <Button
-          variant="dark"
-          onClick={applyFilters}
-          className="flex-1 text-sm"
-        >
-          Áp dụng
-        </Button>
-        <Button
-          variant="outline"
-          onClick={resetFilters}
-          className="flex-1 text-sm"
-        >
-          Đặt lại
-        </Button>
+      {/* Price Range */}
+      <div className="border-t pt-4">
+        <div className="flex items-center justify-between mb-3">
+          <label className="block text-sm font-medium text-gray-700">
+            Khoảng giá
+          </label>
+          <span className="text-sm text-gray-600">
+            {filters.minPrice.toLocaleString('vi-VN')}đ - {filters.maxPrice.toLocaleString('vi-VN')}đ
+          </span>
+        </div>
+        
+        <div className="grid grid-cols-2 gap-3 mb-3">
+          <div>
+            <input
+              type="number"
+              placeholder="Từ"
+              value={filters.minPrice}
+              onChange={(e) => handlePriceChange('minPrice', parseInt(e.target.value) || priceRange.minPrice)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              min={priceRange.minPrice}
+              max={filters.maxPrice}
+            />
+          </div>
+          <div>
+            <input
+              type="number"
+              placeholder="Đến"
+              value={filters.maxPrice}
+              onChange={(e) => handlePriceChange('maxPrice', parseInt(e.target.value) || priceRange.maxPrice)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              min={filters.minPrice}
+              max={priceRange.maxPrice}
+            />
+          </div>
+        </div>
+
+        <div className="flex gap-2">
+          <button
+            onClick={applyPriceFilter}
+            className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors flex items-center justify-center gap-2"
+          >
+            <FaSearch size={14} />
+            Áp dụng
+          </button>
+          <button
+            onClick={resetFilters}
+            className="px-4 py-2 border border-gray-300 hover:bg-gray-50 text-gray-700 text-sm rounded-lg transition-colors flex items-center justify-center gap-2"
+          >
+            <FaTimes size={14} />
+            Xóa lọc
+          </button>
+        </div>
       </div>
     </div>
   );

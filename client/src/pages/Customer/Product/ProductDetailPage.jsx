@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import Layout from '../../../components/layouts/Layout';
+import Loading from '../../../components/common/Loading';
 import { ProductImageGallery, ProductDetails } from '../../../components/products/ProductDetail';
 import { productService } from '../../../services/productService';
 import { useCart } from '../../../hooks/useCart';
@@ -119,18 +120,7 @@ const ProductDetailPage = () => {
   if (loading) {
     return (
       <Layout>
-        <div className="container mx-auto px-4 py-16">
-          <div className="animate-pulse">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <div className="aspect-square bg-gray-200 rounded-lg"></div>
-              <div className="space-y-4">
-                <div className="h-8 bg-gray-200 rounded w-3/4"></div>
-                <div className="h-6 bg-gray-200 rounded w-1/2"></div>
-                <div className="h-20 bg-gray-200 rounded"></div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <Loading fullScreen text="Đang tải sản phẩm..." />
       </Layout>
     );
   }

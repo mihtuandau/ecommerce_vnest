@@ -6,8 +6,7 @@ import {
 } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 import Loading from '../../../components/common/Loading';
-import Badge from '../../../components/common/Badge';
-import Button from '../../../components/common/Button';
+import Layout from '../../../components/layouts/Layout';
 import orderService from '../../../services/orderService';
 import { formatPrice, formatDateTime } from '../../../utils/formatters';
 
@@ -91,254 +90,210 @@ const OrderDetailPage = () => {
   };
 
   if (loading) {
-    return <Loading fullScreen text="Đang tải đơn hàng..." />;
+    return (
+      <Layout>
+        <Loading fullScreen text="Đang tải đơn hàng..." />
+      </Layout>
+    );
   }
 
   if (!order) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <FaBox size={60} className="text-gray-400 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">
-            Không tìm thấy đơn hàng
-          </h3>
-          <Button onClick={() => navigate('/orders')}>
-            Quay lại danh sách đơn hàng
-          </Button>
+      <Layout>
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center py-8">
+          <div className="text-center">
+            <FaBox size={48} className="text-gray-400 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">
+              Không tìm thấy đơn hàng
+            </h3>
+            <button
+              onClick={() => navigate('/orders')}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+            >
+              Quay lại danh sách đơn hàng
+            </button>
+          </div>
         </div>
-      </div>
+      </Layout>
     );
   }
 
   const statusConfig = getStatusConfig(order.status);
   const StatusIcon = statusConfig.icon;
 
+  const getStatusBadge = (status) => {
+    const statusBadge = {
+      PENDING: { label: 'Chờ xác nhận', className: 'bg-yellow-100 text-yellow-800' },
+      PROCESSING: { label: 'Đang xử lý', className: 'bg-blue-100 text-blue-800' },
+      SHIPPED: { label: 'Đang giao', className: 'bg-purple-100 text-purple-800' },
+      DELIVERED: { label: 'Đã giao', className: 'bg-green-100 text-green-800' },
+      CANCELLED: { label: 'Đã hủy', className: 'bg-red-100 text-red-800' },
+    };
+    return statusBadge[status] || statusBadge.PENDING;
+  };
+
+  const statusBadge = getStatusBadge(order.status);
+
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container mx-auto px-4 max-w-5xl">
-        {/* Header */}
-        <div className="mb-6">
-          <button
-            onClick={() => navigate('/orders')}
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4"
-          >
-            <FaArrowLeft /> Quay lại danh sách đơn hàng
-          </button>
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 mb-1">
-                Đơn hàng #{order.id}
-              </h1>
-              <p className="text-gray-600">
-                Đặt lúc {formatDateTime(order.createdAt)}
-              </p>
-            </div>
-            <div className={`flex items-center gap-2 px-4 py-2 rounded-lg ${statusConfig.color}`}>
-              <StatusIcon size={18} />
-              <span className="font-semibold">{statusConfig.text}</span>
-            </div>
-          </div>
-        </div>
+    <Layout>
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="container mx-auto px-4 max-w-4xl">
+          {/* Breadcrumb */}
+          <nav className="flex items-center gap-2 text-sm text-gray-600 mb-4">
+            <a href="/" className="hover:text-gray-900 transition-colors">Trang chủ</a>
+            <span>›</span>
+            <a href="/orders" className="hover:text-gray-900 transition-colors">Đơn hàng của tôi</a>
+            <span>›</span>
+            <span className="text-gray-900 font-medium">Chi tiết đơn hàng</span>
+          </nav>
 
-        <div className="space-y-6">
-          {/* Status Timeline */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Trạng thái đơn hàng</h2>
-            <div className="flex items-center justify-between relative">
-              {/* Progress Line */}
-              <div className="absolute top-4 left-0 right-0 h-1 bg-gray-200 -z-10" />
-              
-              {['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED'].map((status, idx) => {
-                const config = getStatusConfig(status);
-                const Icon = config.icon;
-                const isActive = order.status === status;
-                const isPassed = ['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED'].indexOf(order.status) >= idx;
-                
-                return (
-                  <div key={status} className="flex flex-col items-center">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                      isPassed ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-400'
-                    }`}>
-                      <Icon size={16} />
-                    </div>
-                    <span className={`text-xs mt-2 ${isPassed ? 'text-gray-900 font-medium' : 'text-gray-500'}`}>
-                      {config.text}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-            <p className="text-sm text-gray-600 mt-4 text-center">
-              {statusConfig.description}
-            </p>
-          </div>
-
-          {/* Shipping Info */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                <FaMapMarkerAlt className="text-blue-600" />
-              </div>
-              <h2 className="text-lg font-semibold text-gray-900">Thông tin giao hàng</h2>
-            </div>
-            
-            <div className="space-y-3">
-              <div className="flex items-start gap-3">
-                <FaUser className="text-gray-400 mt-1" />
-                <div>
-                  <div className="text-sm text-gray-500">Người nhận</div>
-                  <div className="font-medium text-gray-900">
-                    {order.shippingInfo?.fullName || 'Chưa cập nhật'}
-                  </div>
-                </div>
-              </div>
-              
-              <div className="flex items-start gap-3">
-                <FaPhone className="text-gray-400 mt-1" />
-                <div>
-                  <div className="text-sm text-gray-500">Số điện thoại</div>
-                  <div className="font-medium text-gray-900">
-                    {order.shippingInfo?.phone || 'Chưa cập nhật'}
-                  </div>
-                </div>
-              </div>
-              
-              <div className="flex items-start gap-3">
-                <FaMapMarkerAlt className="text-gray-400 mt-1" />
-                <div>
-                  <div className="text-sm text-gray-500">Địa chỉ</div>
-                  <div className="font-medium text-gray-900">
-                    {order.shippingAddress || 'Chưa cập nhật'}
-                  </div>
-                </div>
-              </div>
-
-              {order.shippingInfo?.note && (
-                <div className="pt-3 border-t">
-                  <div className="text-sm text-gray-500 mb-1">Ghi chú</div>
-                  <div className="text-gray-900">{order.shippingInfo.note}</div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Payment Method */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                <FaCreditCard className="text-green-600" />
-              </div>
-              <h2 className="text-lg font-semibold text-gray-900">Phương thức thanh toán</h2>
-            </div>
-            <div className="font-medium text-gray-900">
-              {getPaymentMethodText(order.paymentMethod)}
-            </div>
-          </div>
-
-          {/* Order Items */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">
-              Sản phẩm ({order.items?.length || 0})
-            </h2>
-            
-            <div className="space-y-4">
-              {order.items?.map((item, idx) => {
-                const imageUrl = item.variant?.images?.[0]?.url || item.variant?.product?.images?.[0]?.url || '/placeholder-product.jpg';
-                return (
-                <div key={idx} className="flex gap-4 pb-4 border-b last:border-0">
-                  <div className="w-20 h-20 bg-gray-100 rounded-lg flex-shrink-0 overflow-hidden">
-                    <img
-                      src={imageUrl}
-                      alt={item.variant?.product?.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-medium text-gray-900 mb-1">
-                      {item.variant?.product?.name}
-                    </h3>
-                    <p className="text-sm text-gray-500 mb-2">
-                      {item.variant?.size && `Size: ${item.variant.size}`}
-                      {item.variant?.size && item.variant?.color && ' • '}
-                      {item.variant?.color && `Màu: ${item.variant.color}`}
-                    </p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600">x{item.quantity}</span>
-                      <span className="font-semibold text-gray-900">
-                        {formatPrice(item.price * item.quantity)}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              );})}
-            </div>
-          </div>
-
-          {/* Price Summary */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Tổng cộng</h2>
-            
-            <div className="space-y-3">
-              <div className="flex justify-between text-gray-600">
-                <span>Tạm tính</span>
-                <span className="font-medium">{formatPrice(order.total - (order.shippingFee || 0))}</span>
-              </div>
-              
-              <div className="flex justify-between text-gray-600">
-                <span>Phí vận chuyển</span>
-                <span className="font-medium">
-                  {order.shippingFee === 0 ? (
-                    <span className="text-green-600">Miễn phí</span>
-                  ) : (
-                    formatPrice(order.shippingFee || 0)
-                  )}
+          {/* Header */}
+          <div className="mb-6">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <div className="flex items-center justify-between mb-2">
+                <h1 className="text-xl font-bold text-gray-900">
+                  Đơn hàng #{order.id}
+                </h1>
+                <span className={`px-3 py-1 rounded-full text-xs font-medium ${statusBadge.className}`}>
+                  {statusBadge.label}
                 </span>
               </div>
-
-              {order.taxAmount > 0 && (
-                <div className="flex justify-between text-gray-600">
-                  <span>Thuế VAT</span>
-                  <span className="font-medium">{formatPrice(order.taxAmount)}</span>
-                </div>
-              )}
-
-              <div className="flex justify-between text-xl font-bold text-gray-900 pt-3 border-t">
-                <span>Tổng cộng</span>
-                <span className="text-red-600">{formatPrice(order.total)}</span>
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <FaClock size={14} />
+                <span>{formatDateTime(order.createdAt)}</span>
               </div>
             </div>
           </div>
 
-          {/* Action Buttons */}
-          {order.status === 'PENDING' && (
-            <div className="flex gap-3">
-              <Button
-                variant="outline"
+          <div className="space-y-4">
+
+            {/* Shipping & Payment Info */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">Thông tin giao hàng</h2>
+              
+              <div className="space-y-3 text-sm">
+                <div className="flex gap-2">
+                  <span className="text-gray-600 w-32">Người nhận:</span>
+                  <span className="font-medium text-gray-900">
+                    {order.shippingInfo?.fullName || 'Chưa cập nhật'}
+                  </span>
+                </div>
+                
+                <div className="flex gap-2">
+                  <span className="text-gray-600 w-32">Số điện thoại:</span>
+                  <span className="font-medium text-gray-900">
+                    {order.shippingInfo?.phone || 'Chưa cập nhật'}
+                  </span>
+                </div>
+                
+                <div className="flex gap-2">
+                  <span className="text-gray-600 w-32">Địa chỉ:</span>
+                  <span className="font-medium text-gray-900 flex-1">
+                    {order.shippingAddress || 'Chưa cập nhật'}
+                  </span>
+                </div>
+
+                {order.shippingInfo?.note && (
+                  <div className="flex gap-2 pt-2 border-t">
+                    <span className="text-gray-600 w-32">Ghi chú:</span>
+                    <span className="text-gray-900 flex-1">{order.shippingInfo.note}</span>
+                  </div>
+                )}
+
+                <div className="flex gap-2 pt-2 border-t">
+                  <span className="text-gray-600 w-32">Thanh toán:</span>
+                  <span className="font-medium text-gray-900">
+                    {getPaymentMethodText(order.paymentMethod)}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Order Items */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                Chi tiết sản phẩm
+              </h2>
+              
+              <div className="space-y-3">
+                {order.items?.map((item, idx) => {
+                  const imageUrl = item.variant?.images?.[0]?.url || item.variant?.product?.images?.[0]?.url || '/placeholder-product.jpg';
+                  return (
+                    <div key={idx} className="flex gap-3 pb-3 border-b last:border-0">
+                      <img
+                        src={imageUrl}
+                        alt={item.variant?.product?.name}
+                        className="w-16 h-16 object-cover rounded border border-gray-200"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-sm font-medium text-gray-900 mb-1">
+                          {item.variant?.product?.name}
+                        </h3>
+                        <div className="flex items-center gap-2 text-xs text-gray-600 mb-1">
+                          {item.variant?.size && <span>Size: {item.variant.size}</span>}
+                          {item.variant?.color && <span>• {item.variant.color}</span>}
+                          <span>• x{item.quantity}</span>
+                        </div>
+                        <p className="text-sm font-semibold text-gray-900">
+                          {formatPrice(item.price * item.quantity)}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Price Summary */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">Tổng thanh toán</h2>
+              
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between text-gray-600">
+                  <span>Tạm tính:</span>
+                  <span>{formatPrice(order.total - (order.shippingFee || 0))}</span>
+                </div>
+                
+                <div className="flex justify-between text-gray-600">
+                  <span>Phí vận chuyển:</span>
+                  <span>
+                    {order.shippingFee === 0 ? (
+                      <span className="text-green-600">Miễn phí</span>
+                    ) : (
+                      formatPrice(order.shippingFee || 0)
+                    )}
+                  </span>
+                </div>
+
+                <div className="flex justify-between text-lg font-bold text-gray-900 pt-2 border-t">
+                  <span>Tổng cộng:</span>
+                  <span className="text-blue-600">{formatPrice(order.total)}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Button */}
+            {order.status === 'PENDING' && (
+              <button
                 onClick={() => {
                   if (confirm('Bạn có chắc muốn hủy đơn hàng này?')) {
-                    // TODO: Call cancel order API
                     toast.success('Đã hủy đơn hàng');
                     navigate('/orders');
                   }
                 }}
-                className="flex-1 border-red-600 text-red-600 hover:bg-red-50"
+                className="w-full px-4 py-2 border border-red-600 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
               >
                 Hủy đơn hàng
-              </Button>
-            </div>
-          )}
-
-          {order.status === 'DELIVERED' && (
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
-              <FaCheckCircle className="text-green-600 text-3xl mx-auto mb-2" />
-              <p className="text-green-800 font-medium mb-1">Đơn hàng đã được giao thành công!</p>
-              <p className="text-sm text-green-600">Cảm ơn bạn đã mua hàng tại cửa hàng chúng tôi</p>
-            </div>
-          )}
+              </button>
+            )}
+          </div>
         </div>
       </div>
-    </div>
-  );
-};
+
+    </Layout>
+
+     );
+  };
+
 
 export default OrderDetailPage;

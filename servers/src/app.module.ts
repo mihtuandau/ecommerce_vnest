@@ -14,6 +14,8 @@ import { PaymentModule } from './payment/payment.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { DiscountModule } from './discount/discount.module';
 import { BannerModule } from './banner/banner.module';
+import { WishlistModule } from './wishlist/wishlist.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -29,7 +31,9 @@ import { BannerModule } from './banner/banner.module';
     PaymentModule,
     DashboardModule,
     DiscountModule,
-    BannerModule
+    BannerModule,
+    WishlistModule,
+    ChatModule
   ],
   providers: [PrismaService],
   exports: [PrismaService],

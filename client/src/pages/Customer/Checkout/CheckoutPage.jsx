@@ -7,7 +7,7 @@ import toast from 'react-hot-toast';
 import { useAuth } from '../../../contexts/authContext';
 import Loading from '../../../components/common/Loading';
 import Modal from '../../../components/common/Modal';
-import AddressManager from '../../../components/customer/AddressManager';
+import AddressSelector from '../../../components/customer/AddressSelector';
 import ShippingForm from '../../../components/checkout/ShippingForm';
 import PaymentMethodSelector from '../../../components/checkout/PaymentMethodSelector';
 import OrderSummary from '../../../components/checkout/OrderSummary';
@@ -85,8 +85,18 @@ const CheckoutPage = () => {
   };
 
   const handleSelectAddress = (addressData) => {
-    setShippingInfo(addressData);
+    // Map address fields to shipping info format
+    setShippingInfo({
+      fullName: addressData.fullName || '',
+      phone: addressData.phone || '',
+      address: addressData.street || '',
+      city: addressData.city || '',
+      district: addressData.state || '',
+      ward: addressData.ward || '',
+      note: shippingInfo.note || ''
+    });
     setShowAddressModal(false);
+    toast.success('Đã chọn địa chỉ');
   };
 
   // ✅ Fix: Guard destructuring với default empty strings (tránh undefined.trim())
@@ -122,7 +132,7 @@ const CheckoutPage = () => {
   };
 
   const handleSubmitOrder = async () => {
-    if (!validateForm()) return;  // ✅ Gọi validateForm OK, không undefined
+    if (!validateForm()) return;
 
     try {
       setSubmitting(true);
@@ -142,6 +152,35 @@ const CheckoutPage = () => {
       };
 
       const response = await orderService.createOrder(orderData);
+      
+      // Save address to user profile if not already saved
+      if (user?.id && shippingInfo.fullName && shippingInfo.phone && shippingInfo.address) {
+        try {
+          const addressData = {
+            fullName: shippingInfo.fullName,
+            phone: shippingInfo.phone,
+            street: shippingInfo.address,
+            city: shippingInfo.city,
+            state: shippingInfo.district || '',
+            zipCode: shippingInfo.ward || '',
+            isDefault: false,
+            addressType: 'home'
+          };
+          
+          // Check if address already exists
+          const existingAddresses = await userService.getAddresses(user.id);
+          const addressExists = existingAddresses?.addresses?.some(
+            addr => addr.street === addressData.street && addr.city === addressData.city
+          );
+          
+          if (!addressExists) {
+            await userService.createAddress(user.id, addressData);
+          }
+        } catch (addressError) {
+          console.error('Failed to save address:', addressError);
+          // Don't show error to user, address saving is optional
+        }
+      }
       
       toast.success('Đặt hàng thành công!');
       
@@ -218,11 +257,13 @@ const CheckoutPage = () => {
           isOpen={showAddressModal}
           onClose={() => setShowAddressModal(false)}
           title="Chọn địa chỉ giao hàng"
+          size="md"
         >
           {currentUser && (
-            <AddressManager
+            <AddressSelector
               userId={currentUser.id}
               onAddressSelect={handleSelectAddress}
+              selectedAddressId={null}
             />
           )}
         </Modal>
