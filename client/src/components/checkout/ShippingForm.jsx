@@ -1,7 +1,98 @@
+import { useState, useEffect } from 'react';
 import { FaMapMarkerAlt, FaAddressBook } from 'react-icons/fa';
 import Button from '../common/Button';
+import locationService from '../../services/locationService';
 
-const ShippingForm = ({ shippingInfo, onInputChange, onSelectAddressClick }) => {
+const ShippingForm = ({ shippingInfo, onInputChange, onSelectAddressClick, isGuest = false }) => {
+  const [provinces, setProvinces] = useState([]);
+  const [districts, setDistricts] = useState([]);
+  const [wards, setWards] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  // Load provinces on mount
+  useEffect(() => {
+    loadProvinces();
+  }, []);
+
+  // Load districts when province changes
+  useEffect(() => {
+    if (shippingInfo.cityCode) {
+      loadDistricts(shippingInfo.cityCode);
+    } else {
+      setDistricts([]);
+      setWards([]);
+    }
+  }, [shippingInfo.cityCode]);
+
+  // Load wards when district changes
+  useEffect(() => {
+    if (shippingInfo.districtCode) {
+      loadWards(shippingInfo.districtCode);
+    } else {
+      setWards([]);
+    }
+  }, [shippingInfo.districtCode]);
+
+  const loadProvinces = async () => {
+    try {
+      setLoading(true);
+      const data = await locationService.getAllProvinces();
+      setProvinces(data);
+    } catch (error) {
+      console.error('Failed to load provinces:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadDistricts = async (provinceCode) => {
+    try {
+      const data = await locationService.getProvinceWithDistricts(provinceCode);
+      setDistricts(data.districts || []);
+    } catch (error) {
+      console.error('Failed to load districts:', error);
+    }
+  };
+
+  const loadWards = async (districtCode) => {
+    try {
+      const data = await locationService.getDistrictWithWards(districtCode);
+      setWards(data.wards || []);
+    } catch (error) {
+      console.error('Failed to load wards:', error);
+    }
+  };
+
+  const handleProvinceChange = (e) => {
+    const selectedProvince = provinces.find(p => p.code === parseInt(e.target.value));
+    if (selectedProvince) {
+      onInputChange('cityCode', selectedProvince.code);
+      onInputChange('city', selectedProvince.name);
+      onInputChange('districtCode', '');
+      onInputChange('district', '');
+      onInputChange('wardCode', '');
+      onInputChange('ward', '');
+    }
+  };
+
+  const handleDistrictChange = (e) => {
+    const selectedDistrict = districts.find(d => d.code === parseInt(e.target.value));
+    if (selectedDistrict) {
+      onInputChange('districtCode', selectedDistrict.code);
+      onInputChange('district', selectedDistrict.name);
+      onInputChange('wardCode', '');
+      onInputChange('ward', '');
+    }
+  };
+
+  const handleWardChange = (e) => {
+    const selectedWard = wards.find(w => w.code === parseInt(e.target.value));
+    if (selectedWard) {
+      onInputChange('wardCode', selectedWard.code);
+      onInputChange('ward', selectedWard.name);
+    }
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-sm p-6">
       <div className="flex items-center justify-between mb-6">
@@ -11,14 +102,16 @@ const ShippingForm = ({ shippingInfo, onInputChange, onSelectAddressClick }) => 
           </div>
           <h2 className="text-xl font-semibold text-gray-900">Thông tin giao hàng</h2>
         </div>
-        <Button
-          onClick={onSelectAddressClick}
-          variant="outline"
-          className="flex items-center gap-2"
-        >
-          <FaAddressBook />
-          Chọn địa chỉ đã lưu
-        </Button>
+        {!isGuest && (
+          <Button
+            onClick={onSelectAddressClick}
+            variant="outline"
+            className="flex items-center gap-2"
+          >
+            <FaAddressBook />
+            Chọn địa chỉ đã lưu
+          </Button>
+        )}
       </div>
 
       <div className="space-y-4">
@@ -51,6 +144,22 @@ const ShippingForm = ({ shippingInfo, onInputChange, onSelectAddressClick }) => 
           </div>
         </div>
 
+        {isGuest && (
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Email <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="email"
+              value={shippingInfo.email || ''}
+              onChange={(e) => onInputChange('email', e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="example@email.com"
+            />
+            <p className="text-xs text-gray-500 mt-1">Email để nhận thông tin đơn hàng</p>
+          </div>
+        )}
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Địa chỉ <span className="text-red-500">*</span>
@@ -70,43 +179,56 @@ const ShippingForm = ({ shippingInfo, onInputChange, onSelectAddressClick }) => 
               Tỉnh/Thành phố <span className="text-red-500">*</span>
             </label>
             <select
-              value={shippingInfo.city}
-              onChange={(e) => onInputChange('city', e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              value={shippingInfo.cityCode || ''}
+              onChange={handleProvinceChange}
+              disabled={loading}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
             >
-              <option value="">Chọn</option>
-              <option value="Hà Nội">Hà Nội</option>
-              <option value="TP. Hồ Chí Minh">TP. Hồ Chí Minh</option>
-              <option value="Đà Nẵng">Đà Nẵng</option>
-              <option value="Cần Thơ">Cần Thơ</option>
-              <option value="Hải Phòng">Hải Phòng</option>
+              <option value="">Chọn tỉnh/thành phố</option>
+              {provinces.map(province => (
+                <option key={province.code} value={province.code}>
+                  {province.name}
+                </option>
+              ))}
             </select>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Quận/Huyện
+              Quận/Huyện <span className="text-red-500">*</span>
             </label>
-            <input
-              type="text"
-              value={shippingInfo.district}
-              onChange={(e) => onInputChange('district', e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Quận/Huyện"
-            />
+            <select
+              value={shippingInfo.districtCode || ''}
+              onChange={handleDistrictChange}
+              disabled={!shippingInfo.cityCode || districts.length === 0}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+            >
+              <option value="">Chọn quận/huyện</option>
+              {districts.map(district => (
+                <option key={district.code} value={district.code}>
+                  {district.name}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Phường/Xã
+              Phường/Xã <span className="text-red-500">*</span>
             </label>
-            <input
-              type="text"
-              value={shippingInfo.ward}
-              onChange={(e) => onInputChange('ward', e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Phường/Xã"
-            />
+            <select
+              value={shippingInfo.wardCode || ''}
+              onChange={handleWardChange}
+              disabled={!shippingInfo.districtCode || wards.length === 0}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+            >
+              <option value="">Chọn phường/xã</option>
+              {wards.map(ward => (
+                <option key={ward.code} value={ward.code}>
+                  {ward.name}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 

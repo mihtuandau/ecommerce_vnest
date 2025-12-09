@@ -7,18 +7,18 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
-import { MailerService } from '@nestjs-modules/mailer';
 import { UserService } from '../user/user.service';
 import { RegisterDto } from './dto/register-dto';
 import { ForgotPasswordDto, ResetPasswordDto } from './dto/forgot-password.dto';
 import { UpdateUserResetDto } from '../user/dto/user-reset.dto';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private userService: UserService,
     private jwtService: JwtService,
-    private mailerService: MailerService,
+    private mailService: MailService,
   ) {}
 
   async register(registerDto: RegisterDto) {
@@ -93,14 +93,8 @@ export class AuthService {
     const baseUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
     const resetUrl = `${baseUrl}/reset-password?token=${token}&email=${encodeURIComponent(email)}`;
 
-    await this.mailerService.sendMail({
-      to: email,
-      subject: 'Reset Password - E-commerce',
-      html: `
-        <p>You requested a password reset.</p>
-        <p>Click <a href="${resetUrl}">here</a> to reset your password (expires in 1 hour).</p>
-      `,
-    });
+    // Use MailService with beautiful template
+    await this.mailService.sendPasswordReset(email, resetUrl, user.name || 'User');
 
     return { message: 'If the email exists, a reset link has been sent' };
   }

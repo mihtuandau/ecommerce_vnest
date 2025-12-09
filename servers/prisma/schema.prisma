@@ -187,11 +187,14 @@ model ShippingMethod {
 
 model Order {
   id               Int             @id @default(autoincrement())
-  userId           Int
+  orderCode        String?         @unique // Mã đơn hàng dạng chuỗi
+  userId           Int?            // Nullable for guest checkout
   addressId        Int?
   shippingMethodId Int?
   shippingAddress  String?         // Địa chỉ giao hàng dạng text
   shippingInfo     Json?           // Thông tin người nhận {fullName, phone, note}
+  guestEmail       String?         // Email for guest orders
+  guestPhone       String?         // Phone for guest orders
   paymentMethod    PaymentMethod?  @default(CASH) // Phương thức thanh toán
   total            Float
   taxAmount        Float           @default(0)
@@ -202,12 +205,13 @@ model Order {
   payment          Payment?        @relation // Fix: Chỉ @relation() – không fields/references (referencing side)
   address          Address?        @relation(fields: [addressId], references: [id])
   shippingMethod   ShippingMethod? @relation(fields: [shippingMethodId], references: [id])
-  user             User            @relation(fields: [userId], references: [id])
+  user             User?           @relation(fields: [userId], references: [id])
   orderItems       OrderItem[]
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
 
   @@index([userId])
+  @@index([guestEmail])
   @@index([addressId])
   @@index([shippingMethodId])
 }

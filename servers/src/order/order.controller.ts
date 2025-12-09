@@ -34,14 +34,14 @@ import { ApplyDiscountDto } from './dto/apply-discount.dto';
 import { DeleteOrderDto } from './dto/delete-order.dto';
 
 @ApiTags('Orders')
-@ApiBearerAuth('Authorization')
 @Controller('orders')
-@UseGuards(JwtAuthGuard, RolesGuard)
 @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
 export class OrderController {
   constructor(private orderService: OrderService) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('Authorization')
   @ApiOperation({ summary: 'Create new order from cart' })
   @ApiBody({ type: CreateOrderDto })
   @ApiResponse({ status: 201, description: 'Order created successfully' })
@@ -51,7 +51,31 @@ export class OrderController {
     return this.orderService.create(req.user.userId, body);
   }
 
+  @Post('guest')
+  @ApiOperation({ summary: 'Create order as guest (no authentication required)' })
+  @ApiBody({ type: CreateOrderDto })
+  @ApiResponse({ status: 201, description: 'Guest order created successfully' })
+  @ApiResponse({ status: 400, description: 'Bad request - missing required fields' })
+  createGuestOrder(@Body() body: CreateOrderDto) {
+    // Guest checkout - no userId
+    return this.orderService.create(null, body);
+  }
+
+  @Get('guest/lookup/:orderCode')
+  @ApiOperation({ summary: 'Lookup guest order by order code and email/phone' })
+  @ApiParam({ name: 'orderCode', description: 'Order Code (e.g., ORD-ABC123)', type: String })
+  @ApiQuery({ name: 'contact', description: 'Guest email or phone number', required: true })
+  @ApiResponse({ status: 200, description: 'Order found' })
+  @ApiResponse({ status: 404, description: 'Order not found or contact mismatch' })
+  async lookupGuestOrder(
+    @Param('orderCode') orderCode: string,
+    @Query('contact') contact: string,
+  ) {
+    return this.orderService.lookupGuestOrder(orderCode, contact);
+  }
+
   @Get('my-orders')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get current user orders' })
   @ApiQuery({ name: 'status', required: false, enum: ['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED'] })
   @ApiResponse({ status: 200, description: 'List of user orders' })
@@ -67,6 +91,8 @@ export class OrderController {
   }
 
   @Get()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiBearerAuth('Authorization')
   @ApiOperation({ summary: 'Get user orders' })
   @ApiQuery({ name: 'page', required: false, type: Number })
   @ApiQuery({ name: 'limit', required: false, type: Number })
@@ -90,6 +116,8 @@ export class OrderController {
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('Authorization')
   @ApiOperation({ summary: 'Get order by ID' })
   @ApiParam({ name: 'id', description: 'ID order', type: Number })
   @ApiResponse({ status: 200, description: 'Order details' })
@@ -100,7 +128,9 @@ export class OrderController {
   }
 
   @Put(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
+  @ApiBearerAuth('Authorization')
   @ApiOperation({ summary: 'Update order status (Admin only)' })
   @ApiParam({ name: 'id', description: 'ID order', type: Number })
   @ApiBody({ type: UpdateOrderDto })
@@ -112,6 +142,8 @@ export class OrderController {
   }
 
   @Put(':id/cancel')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('Authorization')
   @ApiOperation({ summary: 'Cancel order (only PENDING status)' })
   @ApiParam({ name: 'id', description: 'ID order', type: Number })
   @ApiResponse({ status: 200, description: 'Order cancelled successfully' })
@@ -122,6 +154,8 @@ export class OrderController {
   }
 
   @Post(':id/discount')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('Authorization')
   @ApiOperation({ summary: 'Apply discount to order' })
   @ApiParam({ name: 'id', description: 'ID order', type: Number })
   @ApiBody({ type: ApplyDiscountDto })
@@ -133,7 +167,9 @@ export class OrderController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
+  @ApiBearerAuth('Authorization')
   @ApiOperation({ summary: 'Delete order (Admin only)' })
   @ApiParam({ name: 'id', description: 'ID order', type: Number })
   @ApiBody({ type: DeleteOrderDto })

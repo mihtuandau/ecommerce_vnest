@@ -77,14 +77,14 @@ const OrderTable = ({ orders, loading, sortBy, sortDir, onSort, onViewDetails })
                 className={idx % 2 === 0 ? 'bg-white hover:bg-gray-50 transition-colors' : 'bg-gray-50 hover:bg-gray-100 transition-colors'}
               >
                 <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                  #{order.id}
+                  {order.orderCode || `#${order.id}`}
                 </td>
                 <td className="px-6 py-4">
                   <div className="text-sm font-medium text-gray-900">
-                    {order.user?.name || 'N/A'}
+                    {order.user?.name || order.shippingInfo?.fullName || order.guestEmail || 'Khách vãng lai'}
                   </div>
                   <div className="text-xs text-gray-500">
-                    {order.user?.email || 'N/A'}
+                    {order.user?.email || order.guestEmail || order.guestPhone || 'N/A'}
                   </div>
                 </td>
                 <td className="px-6 py-4 text-sm font-medium text-gray-900">

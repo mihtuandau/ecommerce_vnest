@@ -44,6 +44,10 @@ export const addToCartServer = createAsyncThunk(
   'cart/addToCartServer',
   async ({ variantId, quantity, productData }, { rejectWithValue }) => {
     try {
+      // Check if user is logged in
+      if (!localStorage.getItem('token')) {
+        return rejectWithValue('User not logged in');
+      }
       await cartService.addItem(variantId, quantity);
       return { variantId, quantity, productData };
     } catch (error) {

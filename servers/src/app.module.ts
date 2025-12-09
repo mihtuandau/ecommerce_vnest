@@ -16,6 +16,7 @@ import { DiscountModule } from './discount/discount.module';
 import { BannerModule } from './banner/banner.module';
 import { WishlistModule } from './wishlist/wishlist.module';
 import { ChatModule } from './chat/chat.module';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
@@ -33,7 +34,8 @@ import { ChatModule } from './chat/chat.module';
     DiscountModule,
     BannerModule,
     WishlistModule,
-    ChatModule
+    ChatModule,
+    MailModule
   ],
   providers: [PrismaService],
   exports: [PrismaService],
