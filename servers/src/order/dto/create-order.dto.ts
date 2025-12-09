@@ -45,6 +45,16 @@ export class CreateOrderDto {
   @IsPositive()
   shippingMethodId?: number;
 
+  @ApiProperty({ example: 'guest@example.com', description: 'Email khách (cho guest checkout)', required: false })
+  @IsOptional()
+  @IsString()
+  guestEmail?: string;
+
+  @ApiProperty({ example: '0901234567', description: 'Số điện thoại khách (cho guest checkout)', required: false })
+  @IsOptional()
+  @IsString()
+  guestPhone?: string;
+
   @ApiProperty({ example: 'SAVE10', description: 'Mã giảm giá (tùy chọn)', required: false })
   @IsOptional()
   @IsString()

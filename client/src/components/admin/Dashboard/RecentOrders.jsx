@@ -59,12 +59,14 @@ const RecentOrders = ({ orders }) => {
             >
               <div className="flex-1">
                 <div className="flex items-center gap-3">
-                  <span className="font-semibold text-gray-900">#{order.id}</span>
+                  <span className="font-semibold text-gray-900">{order.orderCode || `#${order.id}`}</span>
                   <Badge variant={getOrderStatusVariant(order.status)}>
                     {getOrderStatusText(order.status)}
                   </Badge>
                 </div>
-                <p className="text-sm text-gray-600 mt-1">{order.user.name}</p>
+                <p className="text-sm text-gray-600 mt-1">
+                  {order.user ? order.user.name : (order.guestEmail || 'Khách vãng lai')}
+                </p>
                 <p className="text-xs text-gray-500 mt-1">{formatDate(order.createdAt)}</p>
               </div>
               <div className="text-right">

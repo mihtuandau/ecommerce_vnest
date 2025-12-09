@@ -86,14 +86,13 @@ const CartPage = () => {
   }, [cartItems, selectedItems.size]);
 
   const handleCheckout = () => {
-    if (!isAuthenticated) {
-      toast.error('Vui lòng đăng nhập để thanh toán');
-      navigate('/login', { state: { from: '/checkout' } });
+    if (selectedItems.size === 0 && cartItems.length > 0) {
+      toast.error('Vui lòng chọn ít nhất một sản phẩm để thanh toán');
       return;
     }
     
-    if (selectedItems.size === 0) {
-      toast.error('Vui lòng chọn ít nhất một sản phẩm để thanh toán');
+    if (cartItems.length === 0) {
+      toast.error('Giỏ hàng trống');
       return;
     }
     

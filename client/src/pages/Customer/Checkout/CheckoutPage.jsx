@@ -1,6 +1,6 @@
 // src/pages/Checkout/CheckoutPage.jsx (fix validateForm: default empty strings nếu shippingInfo undefined)
 import { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { FaArrowLeft } from 'react-icons/fa';
 import toast from 'react-hot-toast';
@@ -18,8 +18,12 @@ import { useDiscountCode } from '../../../hooks/useDiscountCode';
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
-  const cartItems = useSelector((state) => state.cart.items);
+  
+  // Get selected items from location state, fallback to all cart items
+  const allCartItems = useSelector((state) => state.cart.items);
+  const cartItems = location.state?.items || allCartItems;
   
   const [submitting, setSubmitting] = useState(false);
   const [showAddressModal, setShowAddressModal] = useState(false);
@@ -30,11 +34,15 @@ const CheckoutPage = () => {
   // Shipping info state
   const [shippingInfo, setShippingInfo] = useState({
     fullName: '',
+    email: '',
     phone: '',
     address: '',
     city: '',
+    cityCode: '',
     district: '',
+    districtCode: '',
     ward: '',
+    wardCode: '',
     note: ''
   });
 
@@ -53,22 +61,18 @@ const CheckoutPage = () => {
     appliedDiscount
   );
 
-  // Authentication and cart validation
+  // Cart validation
   useEffect(() => {
-    // ProtectedRoute đã check authentication rồi, nhưng double check cho chắc
-    if (!user) {
-      toast.error('Vui lòng đăng nhập để thanh toán');
-      navigate('/login', { state: { from: '/checkout' } });
-      return;
-    }
-
     if (cartItems.length === 0) {
       toast.error('Giỏ hàng trống!');
       navigate('/cart');
       return;
     }
 
-    loadUserProfile();
+    // Load user profile if logged in
+    if (user) {
+      loadUserProfile();
+    }
   }, [user, cartItems.length, navigate]);
 
   const loadUserProfile = async () => {
@@ -101,10 +105,21 @@ const CheckoutPage = () => {
 
   // ✅ Fix: Guard destructuring với default empty strings (tránh undefined.trim())
   const validateForm = () => {
-    const { fullName = '', phone = '', address = '', city = '' } = shippingInfo || {};  // Default nếu undefined
+    const { fullName = '', email = '', phone = '', address = '', city = '' } = shippingInfo || {};  // Default nếu undefined
     
     if (!fullName.trim()) {
       toast.error('Vui lòng nhập họ tên');
+      return false;
+    }
+
+    // Email required for guest checkout
+    if (!user && !email.trim()) {
+      toast.error('Vui lòng nhập email để nhận thông tin đơn hàng');
+      return false;
+    }
+
+    if (!user && email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      toast.error('Email không hợp lệ');
       return false;
     }
     
@@ -142,16 +157,31 @@ const CheckoutPage = () => {
           variantId: item.variantId,
           quantity: item.quantity
         })),
-        shippingAddress: `${shippingInfo.address}, ${shippingInfo.ward}, ${shippingInfo.district}, ${shippingInfo.city}`,
+        shippingAddress: `${shippingInfo.address}, ${shippingInfo.ward || ''}, ${shippingInfo.district || ''}, ${shippingInfo.city}`,
         shippingInfo: {
           fullName: shippingInfo.fullName,
           phone: shippingInfo.phone,
-          note: shippingInfo.note
+          note: shippingInfo.note || ''
         },
         paymentMethod
       };
 
-      const response = await orderService.createOrder(orderData);
+      // Add guest fields only if guest checkout
+      if (!user) {
+        orderData.guestEmail = shippingInfo.email;
+        orderData.guestPhone = shippingInfo.phone;
+      }
+
+      console.log('📦 Order Data:', JSON.stringify(orderData, null, 2));
+      console.log('👤 User:', user ? 'Logged in' : 'Guest');
+      console.log('📧 Guest Email:', shippingInfo.email);
+
+      // Use different endpoint for guest vs logged-in
+      const response = user 
+        ? await orderService.createOrder(orderData)
+        : await orderService.createGuestOrder(orderData);
+      
+      console.log('✅ Order created:', response);
       
       // Save address to user profile if not already saved
       if (user?.id && shippingInfo.fullName && shippingInfo.phone && shippingInfo.address) {
@@ -182,11 +212,42 @@ const CheckoutPage = () => {
         }
       }
       
-      toast.success('Đặt hàng thành công!');
-      
-      setTimeout(() => {
-        navigate(`/orders/${response.data.id}`);
-      }, 1000);
+      // Clear guest cart after successful order
+      if (!user) {
+        localStorage.removeItem('guest_cart');
+        
+        // Save guest order to localStorage for future reference
+        const guestOrders = JSON.parse(localStorage.getItem('guest_orders') || '[]');
+        guestOrders.push({
+          orderCode: response.data.orderCode,
+          contact: shippingInfo.email,
+          date: new Date().toISOString()
+        });
+        // Keep only last 10 orders
+        if (guestOrders.length > 10) {
+          guestOrders.shift();
+        }
+        localStorage.setItem('guest_orders', JSON.stringify(guestOrders));
+        
+        // Show success message with order code for guest
+        toast.success(
+          `Đặt hàng thành công! Mã đơn hàng: ${response.data.orderCode}`,
+          { duration: 5000 }
+        );
+        
+        // Redirect to order lookup page with order info immediately
+        navigate('/order-lookup', { 
+          state: { 
+            orderCode: response.data.orderCode,
+            contact: shippingInfo.email 
+          } 
+        });
+      } else {
+        toast.success('Đặt hàng thành công!');
+        setTimeout(() => {
+          navigate(`/orders/${response.data.id}`);
+        }, 1000);
+      }
 
     } catch (error) {
       console.error('Order creation error:', error);
@@ -221,6 +282,7 @@ const CheckoutPage = () => {
               shippingInfo={shippingInfo}
               onInputChange={handleInputChange}
               onSelectAddressClick={() => setShowAddressModal(true)}
+              isGuest={!user}
             />
 
             <PaymentMethodSelector

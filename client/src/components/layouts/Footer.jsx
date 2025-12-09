@@ -83,6 +83,11 @@ const Footer = () => {
             <h3 className="text-white font-bold text-lg mb-4">Hỗ Trợ</h3>
             <ul className="space-y-2">
               <li>
+                <Link to="/order-lookup" className="hover:text-white transition-colors flex items-center gap-2">
+                  🔍 Tra Cứu Đơn Hàng
+                </Link>
+              </li>
+              <li>
                 <Link to="/privacy" className="hover:text-white transition-colors">
                   Chính Sách Bảo Mật
                 </Link>

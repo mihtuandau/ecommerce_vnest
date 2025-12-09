@@ -73,17 +73,21 @@ const PaymentDetailModal = ({
         </div>
 
         {/* Customer Info */}
-        {payment.order?.user && (
+        {payment.order && (
           <div className="border-t pt-4">
             <h3 className="text-lg font-semibold text-gray-900 mb-3">Thông tin khách hàng</h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="text-sm font-medium text-gray-700">Tên khách hàng</label>
-                <p className="mt-1 text-sm text-gray-900">{payment.order.user.name}</p>
+                <p className="mt-1 text-sm text-gray-900">
+                  {payment.order.user ? payment.order.user.name : (payment.order.shippingInfo?.fullName || 'Khách vãng lai')}
+                </p>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700">Email</label>
-                <p className="mt-1 text-sm text-gray-900">{payment.order.user.email}</p>
+                <label className="text-sm font-medium text-gray-700">Email / Số điện thoại</label>
+                <p className="mt-1 text-sm text-gray-900">
+                  {payment.order.user ? payment.order.user.email : (payment.order.guestEmail || payment.order.guestPhone || 'N/A')}
+                </p>
               </div>
             </div>
           </div>

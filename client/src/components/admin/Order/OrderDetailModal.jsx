@@ -15,7 +15,7 @@ const OrderDetailModal = ({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={`Chi tiết đơn hàng #${order.id}`}
+      title={`Chi tiết đơn hàng ${order.orderCode || `#${order.id}`}`}
       size="lg"
     >
       <div className="space-y-6">
@@ -25,11 +25,11 @@ const OrderDetailModal = ({
           <div className="bg-gray-50 rounded-lg p-4 space-y-2">
             <div className="flex justify-between">
               <span className="text-sm text-gray-600">Tên:</span>
-              <span className="text-sm font-medium text-gray-900">{order.user?.name || 'N/A'}</span>
+              <span className="text-sm font-medium text-gray-900">{order.user?.name || order.shippingInfo?.fullName || order.guestEmail || 'Khách vãng lai'}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-sm text-gray-600">Email:</span>
-              <span className="text-sm font-medium text-gray-900">{order.user?.email || 'N/A'}</span>
+              <span className="text-sm font-medium text-gray-900">{order.user?.email || order.guestEmail || order.guestPhone || 'N/A'}</span>
             </div>
             {order.address && (
               <div className="flex justify-between">

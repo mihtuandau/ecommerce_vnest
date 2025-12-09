@@ -6,6 +6,18 @@ const orderService = {
     return await api.post('/orders', orderData);
   },
 
+  // Create guest order (no authentication required)
+  createGuestOrder: async (orderData) => {
+    return await api.post('/orders/guest', orderData);
+  },
+
+  // Lookup guest order by order code and contact
+  lookupGuestOrder: async (orderCode, contact) => {
+    return await api.get(`/orders/guest/lookup/${orderCode}`, {
+      params: { contact }
+    });
+  },
+
   // Get my orders (customer)
   getMyOrders: async () => {
     return await api.get('/orders/my-orders');

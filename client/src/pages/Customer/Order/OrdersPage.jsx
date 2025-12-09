@@ -106,7 +106,7 @@ const OrdersPage = () => {
                     <div className="px-6 py-4 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
                       <div className="flex items-center gap-4">
                         <span className="text-sm font-semibold text-gray-900">
-                          Đơn hàng #{order.id}
+                          Đơn hàng {order.orderCode || `#${order.id}`}
                         </span>
                         <span className={`px-3 py-1 rounded-full text-xs font-medium ${statusBadge.className}`}>
                           {statusBadge.label}

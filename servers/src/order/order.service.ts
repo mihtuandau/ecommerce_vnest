@@ -12,19 +12,46 @@ import { UpdateOrderDto } from './dto/update-order.dto';
 import { QueryOrderDto } from './dto/query-order.dto';
 import { ApplyDiscountDto } from './dto/apply-discount.dto';
 import { CartService } from '../cart/cart.service';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class OrderService {
   constructor(
     private prisma: PrismaService,
     private cartService: CartService,
+    private mailService: MailService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
-  async create(userId: number, dto: CreateOrderDto): Promise<any> {
+  // Generate unique order code
+  private async generateOrderCode(): Promise<string> {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let code = '';
+    
+    // Generate format: ORD-XXXXXX (ORD + 6 random chars)
+    code = 'ORD-';
+    for (let i = 0; i < 6; i++) {
+      code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    
+    // Check if code exists
+    const existing = await this.prisma.order.findUnique({
+      where: { orderCode: code }
+    });
+    
+    // Recursively generate new code if exists
+    if (existing) {
+      return this.generateOrderCode();
+    }
+    
+    return code;
+  }
+
+  async create(userId: number | null, dto: CreateOrderDto): Promise<any> {
     // Get items from dto OR cart
     let itemsToOrder;
     if (dto.items && dto.items.length > 0) {
+      // Guest checkout or direct order - items from request body
       const variantIds = dto.items.map(item => item.variantId);
       const variants = await this.prisma.productVariant.findMany({
         where: { id: { in: variantIds } }
@@ -38,6 +65,10 @@ export class OrderService {
         price: variantPriceMap.get(item.variantId) || 0
       }));
     } else {
+      // Logged-in user checkout from cart
+      if (!userId) {
+        throw new BadRequestException('Guest checkout requires items in request body');
+      }
       const cart = await this.cartService.getCart(userId);
       if (cart.cartItems.length === 0)
         throw new BadRequestException('Cart empty');
@@ -61,34 +92,46 @@ export class OrderService {
       (sum, item) => sum + item.quantity * item.price,
       0,
     );
-    const taxAmount = totalItems * 0.1;
-    const total = totalItems + taxAmount;
+    const taxAmount = 0; // Remove VAT tax
+    const total = totalItems; // No tax added
     let discountedTotal = total;
     if (discount) {
       if (discount.percentage) discountedTotal *= 1 - discount.percentage / 100;
       else if (discount.fixedAmount) discountedTotal -= discount.fixedAmount;
     }
 
-    const order = await this.prisma.order.create({
-      data: {
-        userId,
-        addressId: dto.addressId || null,
-        shippingMethodId: dto.shippingMethodId || null,
-        shippingAddress: dto.shippingAddress || null,
-        shippingInfo: dto.shippingInfo || null,
-        paymentMethod: (dto.paymentMethod as any) || 'CASH',
-        total: discountedTotal,
-        taxAmount,
-        discountId: discount ? discount.id : null,
-        status: 'PENDING',
-        orderItems: {
-          create: itemsToOrder.map((item) => ({
-            variantId: item.variantId,
-            quantity: item.quantity,
-            price: item.price,
-          })),
-        },
+    // Generate unique order code
+    const orderCode = await this.generateOrderCode();
+
+    const orderData: any = {
+      orderCode,
+      addressId: dto.addressId || null,
+      shippingMethodId: dto.shippingMethodId || null,
+      shippingAddress: dto.shippingAddress || null,
+      shippingInfo: dto.shippingInfo || null,
+      guestEmail: dto.guestEmail || null,
+      guestPhone: dto.guestPhone || null,
+      paymentMethod: (dto.paymentMethod as any) || 'CASH',
+      total: discountedTotal,
+      taxAmount,
+      discountId: discount ? discount.id : null,
+      status: 'PENDING',
+      orderItems: {
+        create: itemsToOrder.map((item) => ({
+          variantId: item.variantId,
+          quantity: item.quantity,
+          price: item.price,
+        })),
       },
+    };
+
+    // Only add userId if user is logged in
+    if (userId) {
+      orderData.userId = userId;
+    }
+
+    const order = await this.prisma.order.create({
+      data: orderData,
       include: { 
         orderItems: { 
           include: { 
@@ -102,13 +145,44 @@ export class OrderService {
       },
     });
 
-    // Only clear cart if items were from cart (not from dto)
-    if (!dto.items || dto.items.length === 0) {
+    // Only clear cart if items were from cart (not from dto) and user is logged in
+    if (userId && (!dto.items || dto.items.length === 0)) {
       await this.cartService.clearCart(userId);
     }
     
-    await this.cacheManager.del(`orders:${userId}:all`);
-    console.log(`Cache invalidated for orders of user ${userId} after create`);
+    if (userId) {
+      await this.cacheManager.del(`orders:${userId}:all`);
+      console.log(`Cache invalidated for orders of user ${userId} after create`);
+    }
+
+    // Send order confirmation email
+    const customerEmail = order.guestEmail || order.user?.email;
+    const customerName = order.shippingInfo?.['fullName'] || order.user?.name || 'Khách hàng';
+    
+    if (customerEmail) {
+      const orderDetails = {
+        customerName,
+        items: order.orderItems.map(item => ({
+          productName: item.variant?.product?.name || 'N/A',
+          size: item.variant?.size,
+          color: item.variant?.color,
+          quantity: item.quantity,
+          price: item.price,
+        })),
+        total: order.total,
+        shippingAddress: order.shippingAddress || 'N/A',
+      };
+
+      // Send email asynchronously (don't wait)
+      const orderWithCode = order as any;
+      if (orderWithCode.orderCode) {
+        this.mailService.sendOrderConfirmation(
+          customerEmail,
+          orderWithCode.orderCode,
+          orderDetails,
+        ).catch(err => console.error('Email sending failed:', err));
+      }
+    }
 
     return order;
   }
@@ -263,5 +337,44 @@ export class OrderService {
     console.log(`Cache invalidated for order ${orderId} after apply discount`);
 
     return { message: 'Discount applied', discount, updatedOrder };
+  }
+
+  async lookupGuestOrder(orderCode: string, contact: string): Promise<any> {
+    const order: any = await this.prisma.order.findUnique({
+      where: { orderCode: orderCode },
+      include: {
+        orderItems: {
+          include: {
+            variant: {
+              include: {
+                product: true,
+                images: true,
+              },
+            },
+          },
+        },
+        payment: true,
+        discount: true,
+      },
+    });
+
+    if (!order) {
+      throw new NotFoundException('Order not found');
+    }
+
+    // Check if it's a guest order (no userId)
+    if (order.userId) {
+      throw new BadRequestException('This order requires login to view');
+    }
+
+    // Verify contact information (email or phone)
+    const contactMatch =
+      order.guestEmail === contact || order.guestPhone === contact;
+
+    if (!contactMatch) {
+      throw new BadRequestException('Contact information does not match');
+    }
+
+    return order;
   }
 }

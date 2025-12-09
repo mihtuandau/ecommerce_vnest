@@ -1,5 +1,5 @@
 import { useSelector, useDispatch } from 'react-redux';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState, useEffect } from 'react';
 import {
   selectCartItems,
   selectCartCount,
@@ -24,7 +24,19 @@ export const useCart = () => {
   const count = useSelector(selectCartCount);
   const total = useSelector(selectCartTotal);
   const itemsCount = useSelector(selectCartItemsCount);
-  const isLoggedIn = useMemo(() => isUserLoggedIn(), []);
+  
+  // Track login state dynamically
+  const [isLoggedIn, setIsLoggedIn] = useState(isUserLoggedIn());
+
+  useEffect(() => {
+    // Check login state on mount and when storage changes
+    const checkLoginState = () => {
+      setIsLoggedIn(isUserLoggedIn());
+    };
+    
+    window.addEventListener('storage', checkLoginState);
+    return () => window.removeEventListener('storage', checkLoginState);
+  }, []);
 
   const loadCart = useCallback(() => {
     if (isLoggedIn) {
@@ -33,9 +45,13 @@ export const useCart = () => {
   }, [dispatch, isLoggedIn]);
 
   const addToCart = useCallback((variantId, quantity, productData) => {
-    const action = isLoggedIn ? addToCartServer : addToCartGuest;
+    // Check current login state in real-time
+    const currentlyLoggedIn = isUserLoggedIn();
+    console.log('🛒 Add to cart - Logged in:', currentlyLoggedIn, 'Token:', !!localStorage.getItem('token'));
+    const action = currentlyLoggedIn ? addToCartServer : addToCartGuest;
+    console.log('🛒 Using action:', action.type);
     dispatch(action({ variantId, quantity, productData }));
-  }, [dispatch, isLoggedIn]);
+  }, [dispatch]);
 
   const updateCartItem = useCallback((variantId, quantity) => {
     const action = isLoggedIn ? updateCartServer : updateCartItemGuest;

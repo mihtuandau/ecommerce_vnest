@@ -31,6 +31,9 @@ const OrdersPage = lazy(() => import("../pages/Customer/Order/OrdersPage"));
 const OrderDetailPage = lazy(() =>
   import("../pages/Customer/Order/OrderDetailPage")
 );
+const OrderLookupPage = lazy(() =>
+  import("../pages/Customer/Order/OrderLookupPage")
+);
 const AdminDashboardPage = lazy(() =>
   import("../pages/Admin/Dashboard/AdminDashboardPage")
 );
@@ -90,6 +93,7 @@ const AppRoutes = () => {
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/orders" element={<OrdersPage />} />
           <Route path="/orders/:id" element={<OrderDetailPage />} />
+          <Route path="/order-lookup" element={<OrderLookupPage />} />
 
           {/* Admin Routes - WITH AdminLayout */}
           <Route
