@@ -34,9 +34,7 @@ const homeService = {
         categories,
         featuredProducts
       };
-    } catch (error) {
-      console.error('Error loading homepage data:', error);
-      return {
+    } catch (error) {return {
         banners: [],
         categories: [],
         featuredProducts: []
@@ -56,9 +54,7 @@ const homeService = {
         }
       });
       return response.data?.data || response.data || [];
-    } catch (error) {
-      console.error('Error fetching new arrivals:', error);
-      return [];
+    } catch (error) {return [];
     }
   },
 
@@ -74,9 +70,7 @@ const homeService = {
         }
       });
       return response.data?.data || response.data || [];
-    } catch (error) {
-      console.error('Error fetching best sellers:', error);
-      return [];
+    } catch (error) {return [];
     }
   },
 
@@ -92,9 +86,7 @@ const homeService = {
         }
       });
       return response.data?.data || response.data || [];
-    } catch (error) {
-      console.error('Error fetching sale products:', error);
-      return [];
+    } catch (error) {return [];
     }
   }
 };

@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { FaHeart, FaEye, FaStar } from 'react-icons/fa';
+import { FaHeart, FaEye } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 import Button from '../common/Button';
+import StarRating from '../common/StarRating';
 import { formatPrice, calculateDiscountPercent } from '../../utils/formatters';
 import wishlistService from '../../services/wishlistService';
 import { useAuth } from '../../contexts/AuthContext';
@@ -135,21 +136,22 @@ const ProductCard = ({ product }) => {
           </h3>
         </Link>
 
-        {/* Rating */}
-        {rating > 0 && (
-          <div className="flex items-center gap-2 mb-2">
-            <div className="flex items-center text-yellow-400">
-              {[...Array(5)].map((_, i) => (
-                <FaStar
-                  key={i}
-                  size={12}
-                  className={i < Math.floor(rating) ? 'fill-current' : 'text-gray-300'}
-                />
-              ))}
-            </div>
-            <span className="text-xs text-gray-500">({reviews})</span>
-          </div>
-        )}
+        {/* Rating & Sold Count */}
+        <div className="flex items-center justify-between gap-2 mb-2 flex-wrap">
+          {(product.averageRating > 0 || product.reviewCount > 0) && (
+            <StarRating
+              rating={product.averageRating || 0}
+              size={12}
+              showNumber
+              reviewCount={product.reviewCount || 0}
+            />
+          )}
+          {product.soldCount > 0 && (
+            <span className="text-xs text-gray-500">
+              Đã bán {product.soldCount}
+            </span>
+          )}
+        </div>
 
         {/* Price */}
         <div className="flex items-baseline gap-2 mb-3 flex-wrap">

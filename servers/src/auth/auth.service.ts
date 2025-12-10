@@ -144,15 +144,6 @@ export class AuthService {
     });
   }
 
-  // clearRefreshCookie(res: any) {
-  //   res.cookie('refresh_token', '', {
-  //     httpOnly: true,
-  //     secure: process.env.NODE_ENV === 'production',
-  //     sameSite: 'lax',
-  //     maxAge: 0,
-  //   });
-  // }
-
   async getUserInfo(userId: number) {
     return this.userService.findOne(userId);
   }

@@ -73,9 +73,7 @@ const ResetPasswordPage = () => {
       setTimeout(() => {
         navigate('/login');
       }, 2000);
-    } catch (error) {
-      console.error('Reset password error:', error);
-      setErrors({ 
+    } catch (error) {setErrors({ 
         submit: error.response?.data?.message || 'Link không hợp lệ hoặc đã hết hạn' 
       });
     } finally {

@@ -42,9 +42,7 @@ const CategoryPage = () => {
         const categories = await categoryService.getAll();
         const found = categories.find(cat => cat.id === parseInt(id));
         setCategory(found);
-      } catch (error) {
-        console.error('Error loading category:', error);
-        toast.error('Không tìm thấy danh mục');
+      } catch (error) {toast.error('Không tìm thấy danh mục');
       }
     };
     loadCategory();
@@ -60,9 +58,7 @@ const CategoryPage = () => {
         ]);
         setBrands(brandsRes?.data || []);
         setPriceRange(priceRangeRes?.data || { minPrice: 0, maxPrice: 10000000 });
-      } catch (error) {
-        console.error('Error loading brands and price range:', error);
-      }
+      } catch (error) {}
     };
     loadBrandsAndPrice();
   }, []);
@@ -107,9 +103,7 @@ const CategoryPage = () => {
         total: pageInfo?.total || 0,
         totalPages: pageInfo?.totalPages || 1,
       });
-    } catch (error) {
-      console.error('Error loading products:', error);
-      toast.error('Lỗi tải sản phẩm');
+    } catch (error) {toast.error('Lỗi tải sản phẩm');
     } finally {
       setLoading(false);
     }

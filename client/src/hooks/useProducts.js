@@ -35,9 +35,7 @@ export const useProducts = () => {
       
       setProducts(productsData);
       setTotalPages(totalPagesFromAPI);
-    } catch (error) {
-      console.error('Error loading products:', error);
-      toast.error('Không thể tải danh sách sản phẩm');
+    } catch (error) {toast.error('Không thể tải danh sách sản phẩm');
       setProducts([]);
     } finally {
       setLoading(false);
@@ -50,9 +48,7 @@ export const useProducts = () => {
       const response = await productService.getCategories();
       const categoriesData = extractData(response);
       setCategories(categoriesData);
-    } catch (error) {
-      console.error('Error loading categories:', error);
-      toast.error('Không thể tải danh mục');
+    } catch (error) {toast.error('Không thể tải danh mục');
       setCategories([]);
     }
   }, []);
@@ -63,9 +59,7 @@ export const useProducts = () => {
       const response = await productService.getBrands();
       const brandsData = extractData(response);
       setBrands(brandsData);
-    } catch (error) {
-      console.error('Error loading brands:', error);
-      toast.error('Không thể tải thương hiệu');
+    } catch (error) {toast.error('Không thể tải thương hiệu');
       setBrands([]);
     }
   }, []);

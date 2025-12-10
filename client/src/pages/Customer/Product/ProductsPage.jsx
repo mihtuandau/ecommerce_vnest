@@ -48,9 +48,7 @@ const ProductsPage = () => {
         setCategories(categoriesRes || []);
         setBrands(brandsRes?.data || []);
         setPriceRange(priceRangeRes?.data || { minPrice: 0, maxPrice: 10000000 });
-      } catch (error) {
-        console.error('Error loading filters:', error);
-      }
+      } catch (error) {}
     };
     loadFilters();
   }, []);
@@ -92,9 +90,7 @@ const ProductsPage = () => {
         total: pageInfo?.total || 0,
         totalPages: pageInfo?.totalPages || 1,
       });
-    } catch (error) {
-      console.error('Error loading products:', error);
-      toast.error('Lỗi tải sản phẩm');
+    } catch (error) {toast.error('Lỗi tải sản phẩm');
     } finally {
       setLoading(false);
     }

@@ -99,7 +99,13 @@ const ProfilePage = () => {
                 <p className="text-sm text-gray-600 mt-1">Quản lý địa chỉ nhận hàng</p>
               </div>
               <div className="p-6">
-                <AddressManager userId={currentUser.id} />
+                {currentUser?.id ? (
+                  <AddressManager userId={currentUser.id} />
+                ) : (
+                  <div className="text-center py-8 text-gray-500">
+                    Không thể tải thông tin địa chỉ
+                  </div>
+                )}
               </div>
             </div>
           </div>

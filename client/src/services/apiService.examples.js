@@ -36,9 +36,7 @@ export const exampleUpload = async (file) => {
     '/upload',
     formData,
     { 'X-Upload-Type': 'product-image' },  // Custom headers
-    (progress) => {
-      console.log(`Upload progress: ${progress}%`);
-    }
+    (progress) => {}
   );
   return data;
 };
@@ -146,9 +144,7 @@ function MyComponent() {
         { 'X-Component': 'MyComponent' }
       );
       setData(result.products || []);
-    } catch (error) {
-      console.error('Error:', error);
-    } finally {
+    } catch (error) {} finally {
       setLoading(false);
     }
   };

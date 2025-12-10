@@ -152,7 +152,6 @@ export class OrderService {
     
     if (userId) {
       await this.cacheManager.del(`orders:${userId}:all`);
-      console.log(`Cache invalidated for orders of user ${userId} after create`);
     }
 
     // Send order confirmation email
@@ -180,7 +179,9 @@ export class OrderService {
           customerEmail,
           orderWithCode.orderCode,
           orderDetails,
-        ).catch(err => console.error('Email sending failed:', err));
+        ).catch(err => {
+          // Silent error - email sending is optional
+        });
       }
     }
 
@@ -239,11 +240,8 @@ export class OrderService {
     const cacheKey = `order:${id}`;
     let order = await this.cacheManager.get(cacheKey);
     if (order) {
-      console.log(`Single cache hit for order ${id}`);
       return order;
     }
-
-    console.log(`Single cache miss for order ${id} - querying DB`);
 
     order = await this.prisma.order.findUnique({
       where: { id },
@@ -267,17 +265,39 @@ export class OrderService {
 
     if (order) {
       await this.cacheManager.set(cacheKey, order, 1800);
-      console.log(`Single cache set for order ${id}`);
     }
 
     return order;
   }
 
   async update(id: number, dto: UpdateOrderDto): Promise<any> {
+    const oldOrder = await this.prisma.order.findUnique({
+      where: { id },
+      include: { orderItems: { include: { variant: true } } },
+    });
+
+    if (!oldOrder) {
+      throw new NotFoundException(`Order with ID ${id} not found`);
+    }
+
     const order = await this.prisma.order.update({ where: { id }, data: dto });
+
+    // Nếu status thay đổi sang DELIVERED, cập nhật soldCount
+    if (dto.status === 'DELIVERED' && oldOrder.status !== 'DELIVERED') {
+      for (const item of oldOrder.orderItems) {
+        await this.prisma.product.update({
+          where: { id: item.variant.productId },
+          data: {
+            soldCount: {
+              increment: item.quantity,
+            },
+          },
+        });
+      }
+    }
+
     await this.cacheManager.del(`order:${id}`);
     await this.cacheManager.del(`orders:${order.userId}:all`);
-    console.log(`Cache invalidated for order ${id} after update`);
 
     return order;
   }
@@ -288,7 +308,6 @@ export class OrderService {
     const removed = await this.prisma.order.delete({ where: { id } });
     await this.cacheManager.del(`order:${id}`);
     await this.cacheManager.del(`orders:${order.userId}:all`);
-    console.log(`Cache invalidated for order ${id} after remove`);
 
     return removed;
   }
@@ -311,7 +330,6 @@ export class OrderService {
 
     await this.cacheManager.del(`order:${orderId}`);
     await this.cacheManager.del(`orders:${userId}:all`);
-    console.log(`Cache invalidated for order ${orderId} after cancel`);
 
     return cancelled;
   }
@@ -334,7 +352,6 @@ export class OrderService {
     });
     await this.cacheManager.del(`order:${orderId}`);
     await this.cacheManager.del(`orders:${order.userId}:all`);
-    console.log(`Cache invalidated for order ${orderId} after apply discount`);
 
     return { message: 'Discount applied', discount, updatedOrder };
   }

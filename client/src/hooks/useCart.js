@@ -45,12 +45,8 @@ export const useCart = () => {
   }, [dispatch, isLoggedIn]);
 
   const addToCart = useCallback((variantId, quantity, productData) => {
-    // Check current login state in real-time
     const currentlyLoggedIn = isUserLoggedIn();
-    console.log('🛒 Add to cart - Logged in:', currentlyLoggedIn, 'Token:', !!localStorage.getItem('token'));
-    const action = currentlyLoggedIn ? addToCartServer : addToCartGuest;
-    console.log('🛒 Using action:', action.type);
-    dispatch(action({ variantId, quantity, productData }));
+    const action = currentlyLoggedIn ? addToCartServer : addToCartGuest;dispatch(action({ variantId, quantity, productData }));
   }, [dispatch]);
 
   const updateCartItem = useCallback((variantId, quantity) => {

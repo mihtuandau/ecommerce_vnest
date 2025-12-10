@@ -30,13 +30,8 @@ export class ProductService {
   async findAll(query: QueryProductDto): Promise<any> {
     const cacheKey = `products:${JSON.stringify(query)}`;
     let cached = await this.cacheManager.get<any>(cacheKey);
-    if (cached) {
-      console.log(`Cache hit for key: ${cacheKey}`);
-      return cached;
-    }
-
-    console.log(`Cache miss for key: ${cacheKey} - querying DB`);
-    const { 
+    if (cached) {return cached;
+    }const { 
       page = 1, 
       limit = 10, 
       search, 
@@ -125,7 +120,6 @@ export class ProductService {
     };
 
     await this.cacheManager.set(cacheKey, result, 3600);
-    console.log(`Cache set for key: ${cacheKey}`);
     return result;
   }
 
@@ -149,7 +143,6 @@ export class ProductService {
     const cacheKey = `product:${id}`;
     let product = await this.cacheManager.get(cacheKey);
     if (product) {
-      console.log(`Single cache hit for product ${id}`);
       return product;
     }
 
@@ -241,7 +234,6 @@ export class ProductService {
     }
 
     // 2. Upload lên Cloudinary
-    console.log(`Uploading ${files.length} images to Cloudinary...`);
     const urls = await this.uploadService.uploadImages(files);
 
     // 3. Nếu set thumbnail, bỏ thumbnail cũ
@@ -325,13 +317,22 @@ export class ProductService {
 
       // Lấy phần sau "upload/v123/"
       const pathParts = parts.slice(uploadIndex + 2); // Skip 'upload' and version
-      const publicId = pathParts.join('/').replace(/\.[^/.]+$/, ''); // Remove extension
-
-      console.log(`Deleting from Cloudinary: ${publicId}`);
-      await cloudinary.uploader.destroy(publicId);
-    } catch (error) {
-      console.error('Lỗi khi xóa ảnh trên Cloudinary:', error);
-      // Không throw error để không block việc xóa trong DB
+      const publicId = pathParts.join('/').replace(/\.[^/.]+$/, ''); // Remove extensionawait cloudinary.uploader.destroy(publicId);
+    } catch (error) {// Không throw error để không block việc xóa trong DB
     }
+  }
+
+  // Cập nhật soldCount khi order delivered (called from OrderService)
+  async incrementSoldCount(productId: number, quantity: number) {
+    await this.prisma.product.update({
+      where: { id: productId },
+      data: {
+        soldCount: {
+          increment: quantity,
+        },
+      },
+    });
+
+    await this.cacheManager.del(`product:${productId}`);
   }
 }

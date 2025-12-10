@@ -119,11 +119,7 @@ export class MailService {
           </body>
           </html>
         `,
-      });
-      console.log(`✅ Order confirmation email sent to ${email}`);
-    } catch (error) {
-      console.error('❌ Failed to send email:', error);
-      // Don't throw error to prevent order creation failure
+      });} catch (error) {// Don't throw error to prevent order creation failure
     }
   }
 
@@ -200,11 +196,7 @@ export class MailService {
           </body>
           </html>
         `,
-      });
-      console.log(`✅ Password reset email sent to ${email}`);
-    } catch (error) {
-      console.error('❌ Failed to send password reset email:', error);
-      throw error; // Throw error for password reset to ensure user knows
+      });} catch (error) {throw error; // Throw error for password reset to ensure user knows
     }
   }
 

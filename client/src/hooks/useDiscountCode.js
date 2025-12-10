@@ -16,11 +16,7 @@ export const useDiscountCode = () => {
 
     try {
       setCheckingDiscount(true);
-      const result = await discountService.validateDiscount(discountCode);
-      
-      console.log('Discount validation result:', result);
-      
-      if (result && result.isValid) {
+      const result = await discountService.validateDiscount(discountCode);if (result && result.isValid) {
         setAppliedDiscount(result.discount);
         toast.success(
           `Áp dụng mã giảm giá thành công! Giảm ${
@@ -32,9 +28,7 @@ export const useDiscountCode = () => {
       } else {
         toast.error(result?.message || 'Mã giảm giá không hợp lệ');
       }
-    } catch (error) {
-      console.error('Discount validation error:', error);
-      toast.error(error.response?.data?.message || 'Mã giảm giá không hợp lệ');
+    } catch (error) {toast.error(error.response?.data?.message || 'Mã giảm giá không hợp lệ');
     } finally {
       setCheckingDiscount(false);
     }

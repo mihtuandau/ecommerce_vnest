@@ -68,7 +68,7 @@ const ChatWidget = () => {
   };
 
   const quickReplies = [
-    'Thời tiết hôm nay thế nào?',
+    'Tâm trạng bạn hôm nay thế nào?',
     'Kể cho tôi một câu chuyện vui',
     'Tư vấn phong cách thời trang',
     'Lời khuyên mua sắm online',

@@ -18,12 +18,8 @@ const AdminChatManagement = () => {
   // Load rooms function
   const loadRooms = async () => {
     try {
-      const data = await chatService.getRooms();
-      console.log('📦 Chat rooms:', data);
-      setRooms(data || []);
-    } catch (error) {
-      console.error('❌ Load rooms error:', error);
-      toast.error('Không thể tải danh sách chat');
+      const data = await chatService.getRooms();setRooms(data || []);
+    } catch (error) {toast.error('Không thể tải danh sách chat');
     } finally {
       setLoading(false);
     }

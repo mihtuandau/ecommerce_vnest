@@ -1,20 +1,31 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaBox, FaClock, FaArrowLeft } from 'react-icons/fa';
+import { FaBox, FaClock, FaArrowLeft, FaStar } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 import Loading from '../../../components/common/Loading';
 import Layout from '../../../components/layouts/Layout';
 import orderService from '../../../services/orderService';
+import reviewService from '../../../services/reviewService';
 import { formatPrice, formatDateTime } from '../../../utils/formatters';
+import ReviewForm from '../../../components/products/ReviewForm';
 
 const OrdersPage = () => {
   const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [reviewedProducts, setReviewedProducts] = useState(new Set());
 
   useEffect(() => {
     loadOrders();
   }, []);
+
+  useEffect(() => {
+    if (orders.length > 0) {
+      checkReviewedProducts();
+    }
+  }, [orders]);
 
   const loadOrders = async () => {
     try {
@@ -30,12 +41,45 @@ const OrdersPage = () => {
       }));
       
       setOrders(transformedOrders);
-    } catch (error) {
-      console.error('Failed to load orders:', error);
-      toast.error('Không thể tải đơn hàng');
+    } catch (error) {toast.error('Không thể tải đơn hàng');
     } finally {
       setLoading(false);
     }
+  };
+
+  const checkReviewedProducts = async () => {
+    const reviewed = new Set();
+    for (const order of orders) {
+      if (order.status === 'DELIVERED' && order.items) {
+        for (const item of order.items) {
+          const productId = item.variant?.product?.id || item.variant?.productId;
+          if (productId) {
+            try {
+              const response = await reviewService.canUserReview(productId);
+              const canReview = response.data?.canReview || response.canReview;
+              if (!canReview) {
+                reviewed.add(productId);
+              }
+            } catch (error) {}
+          }
+        }
+      }
+    }
+    setReviewedProducts(reviewed);
+  };
+
+  const handleOpenReviewModal = (item) => {
+    const productId = item.variant?.product?.id || item.variant?.productId;
+    const productName = item.variant?.product?.name;
+    setSelectedProduct({ id: productId, name: productName });
+    setShowReviewModal(true);
+  };
+
+  const handleReviewSuccess = () => {
+    setShowReviewModal(false);
+    toast.success('Đánh giá thành công!');
+    setReviewedProducts(prev => new Set([...prev, selectedProduct.id]));
+    setSelectedProduct(null);
   };
 
   const safeOrders = Array.isArray(orders) ? orders : [];
@@ -123,8 +167,12 @@ const OrdersPage = () => {
                       <div className="space-y-3 mb-4">
                         {order.items?.slice(0, 2).map((item, idx) => {
                           const imageUrl = item.variant?.images?.[0]?.url || item.variant?.product?.images?.[0]?.url || '/placeholder-product.jpg';
+                          const productId = item.variant?.product?.id || item.variant?.productId;
+                          const isReviewed = reviewedProducts.has(productId);
+                          const canShowReviewButton = order.status === 'DELIVERED' && !isReviewed;
+                          
                           return (
-                            <div key={idx} className="flex gap-3">
+                            <div key={idx} className="flex gap-3 items-start">
                               <img
                                 src={imageUrl}
                                 alt={item.variant?.product?.name}
@@ -143,6 +191,20 @@ const OrdersPage = () => {
                                   {formatPrice(item.price * item.quantity)}
                                 </p>
                               </div>
+                              {canShowReviewButton && (
+                                <button
+                                  onClick={() => handleOpenReviewModal(item)}
+                                  className="px-3 py-1.5 text-xs bg-amber-500 hover:bg-amber-600 text-white rounded-lg transition-colors flex items-center gap-1 whitespace-nowrap"
+                                >
+                                  <FaStar size={12} />
+                                  Đánh giá
+                                </button>
+                              )}
+                              {isReviewed && (
+                                <span className="text-xs text-green-600 bg-green-50 px-2 py-1.5 rounded whitespace-nowrap">
+                                  Đã đánh giá
+                                </span>
+                              )}
                             </div>
                           );
                         })}
@@ -177,6 +239,40 @@ const OrdersPage = () => {
           )}
         </div>
       </div>
+
+      {/* Review Modal */}
+      {showReviewModal && selectedProduct && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-gray-900">
+                Đánh giá sản phẩm: {selectedProduct.name}
+              </h3>
+              <button
+                onClick={() => {
+                  setShowReviewModal(false);
+                  setSelectedProduct(null);
+                }}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="p-6">
+              <ReviewForm
+                productId={selectedProduct.id}
+                onSuccess={handleReviewSuccess}
+                onCancel={() => {
+                  setShowReviewModal(false);
+                  setSelectedProduct(null);
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </Layout>
   );
 };
