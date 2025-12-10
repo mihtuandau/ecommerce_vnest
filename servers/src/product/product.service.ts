@@ -1,7 +1,7 @@
 import { Injectable, Inject, NotFoundException, BadRequestException } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
-import { PrismaService } from '../prisma/prisma.service';
+import { ProductRepository } from './product.repository';
 import { Product } from '@prisma/client';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -13,16 +13,13 @@ import { v2 as cloudinary } from 'cloudinary';
 @Injectable()
 export class ProductService {
   constructor(
-    private prisma: PrismaService,
+    private repository: ProductRepository,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private uploadService: UploadService,
   ) {}
 
   async create(data: CreateProductDto): Promise<Product> {
-    const product = await this.prisma.product.create({ 
-      data, 
-      include: { variants: true, images: true, category: true, brand: true } 
-    });
+    const product = await this.repository.create(data as any);
     await this.cacheManager.del('products:all');
     return product;
   }
@@ -94,22 +91,11 @@ export class ProductService {
         break;
     }
 
-    // Get total count
-    const total = await this.prisma.product.count({ where });
-    
-    // Get products
-    const products = await this.prisma.product.findMany({
-      where,
-      skip,
-      take: limit,
-      orderBy,
-      include: { 
-        variants: true, 
-        images: true, 
-        category: true, 
-        brand: true 
-      },
-    });
+    // Get total count and products
+    const [total, products] = await Promise.all([
+      this.repository.count(where),
+      this.repository.findAll(where, skip, limit, orderBy),
+    ]);
 
     const result = {
       data: products,
@@ -124,19 +110,8 @@ export class ProductService {
   }
 
   async getPriceRange() {
-    const result = await this.prisma.product.aggregate({
-      _min: {
-        basePrice: true,
-      },
-      _max: {
-        basePrice: true,
-      },
-    });
-
-    return {
-      minPrice: result._min.basePrice || 0,
-      maxPrice: result._max.basePrice || 10000000,
-    };
+    const result = await this.repository.getPriceRange();
+    return result;
   }
 
   async findOne(id: number): Promise<any | null> {
@@ -146,10 +121,7 @@ export class ProductService {
       return product;
     }
 
-    product = await this.prisma.product.findUnique({
-      where: { id },
-      include: { variants: true, images: true, category: true, brand: true },
-    });
+    product = await this.repository.findById(id);
 
     if (product) {
       await this.cacheManager.set(cacheKey, product, 1800);
@@ -159,7 +131,7 @@ export class ProductService {
   }
 
   async update(id: number, data: UpdateProductDto): Promise<Product> {
-    const product = await this.prisma.product.update({ where: { id }, data });
+    const product = await this.repository.update(id, data);
     await this.cacheManager.del('products:all');
     await this.cacheManager.del(`product:${id}`);
     return product;
@@ -167,10 +139,7 @@ export class ProductService {
 
   async remove(id: number): Promise<Product> {
     // Xóa ảnh trên Cloudinary trước
-    const product = await this.prisma.product.findUnique({
-      where: { id },
-      include: { images: true }
-    });
+    const product = await this.repository.findById(id);
 
     if (product?.images) {
       for (const image of product.images) {
@@ -178,41 +147,41 @@ export class ProductService {
       }
     }
 
-    const deletedProduct = await this.prisma.product.delete({ where: { id } });
+    const deletedProduct = await this.repository.delete(id);
     await this.cacheManager.del('products:all');
     await this.cacheManager.del(`product:${id}`);
     return deletedProduct;
   }
 
   async createVariant(data: CreateVariantDto): Promise<any> {
-    const variant = await this.prisma.productVariant.create({ data });
+    const variant = await this.repository.createVariant(data as any);
     await this.cacheManager.del(`product:${data.productId}`);
     await this.cacheManager.del('products:all');
     return variant;
   }
 
   async updateVariant(variantId: number, data: any): Promise<any> {
-    const existing = await this.prisma.productVariant.findUnique({ where: { id: variantId } });
+    const existing = await this.repository.findVariantById(variantId);
     if (!existing) throw new NotFoundException(`Variant #${variantId} không tồn tại`);
 
-    const updated = await this.prisma.productVariant.update({ where: { id: variantId }, data });
+    const updated = await this.repository.updateVariant(variantId, data);
     await this.cacheManager.del(`product:${updated.productId}`);
     await this.cacheManager.del('products:all');
     return updated;
   }
 
   async deleteVariant(variantId: number): Promise<any> {
-    const existing = await this.prisma.productVariant.findUnique({ where: { id: variantId } });
+    const existing = await this.repository.findVariantById(variantId);
     if (!existing) throw new NotFoundException(`Variant #${variantId} không tồn tại`);
 
     // remove any images associated with this variant
-    const images = await this.prisma.productImage.findMany({ where: { variantId } });
+    const images = await this.repository.findImagesByVariant(variantId);
     for (const img of images) {
       await this.deleteImageFromCloudinary(img.url);
-      await this.prisma.productImage.delete({ where: { id: img.id } });
+      await this.repository.deleteImages([img.id]);
     }
 
-    const deleted = await this.prisma.productVariant.delete({ where: { id: variantId } });
+    const deleted = await this.repository.deleteVariant(variantId);
     await this.cacheManager.del(`product:${deleted.productId}`);
     await this.cacheManager.del('products:all');
     return deleted;
@@ -225,9 +194,7 @@ export class ProductService {
     metadata: { altText?: string; isThumbnail?: boolean; variantId?: number }
   ): Promise<any> {
     // 1. Kiểm tra product tồn tại
-    const product = await this.prisma.product.findUnique({
-      where: { id: productId }
-    });
+    const product = await this.repository.findById(productId);
 
     if (!product) {
       throw new NotFoundException(`Sản phẩm #${productId} không tồn tại`);
@@ -238,51 +205,33 @@ export class ProductService {
 
     // 3. Nếu set thumbnail, bỏ thumbnail cũ
     if (metadata.isThumbnail) {
-      if (metadata.variantId) {
-        // unset thumbnail only for this variant's images
-        await this.prisma.productImage.updateMany({
-          where: { productId, variantId: metadata.variantId },
-          data: { isThumbnail: false }
-        });
-      } else {
-        // unset thumbnail for product-level images
-        await this.prisma.productImage.updateMany({
-          where: { productId, variantId: null },
-          data: { isThumbnail: false }
-        });
-      }
+      await this.repository.updateThumbnailStatus(productId, metadata.variantId || null, false);
     }
 
-    // 4. Lưu vào DB (transaction để đảm bảo tất cả thành công)
-    const images = await this.prisma.$transaction(
-      urls.map((url, index) =>
-        this.prisma.productImage.create({
-          data: {
-            productId,
-            variantId: metadata.variantId || null,
-            url,
-            altText: metadata.altText || `${product.name} - Ảnh ${index + 1}`,
-            isThumbnail: metadata.isThumbnail && index === 0, // Chỉ ảnh đầu làm thumbnail
-          }
-        })
-      )
-    );
+    // 4. Lưu vào DB
+    const imageData = urls.map((url, index) => ({
+      productId,
+      variantId: metadata.variantId || null,
+      url,
+      altText: metadata.altText || `${product.name} - Ảnh ${index + 1}`,
+      isThumbnail: metadata.isThumbnail && index === 0,
+    }));
+    
+    await this.repository.createImages(imageData);
 
     // 5. Invalidate cache
     await this.cacheManager.del(`product:${productId}`);
     await this.cacheManager.del('products:all');
 
     return {
-      message: `Upload thành công ${images.length} ảnh`,
-      images,
+      message: `Upload thành công ${urls.length} ảnh`,
+      imageCount: urls.length,
     };
   }
 
   // ============ XÓA ẢNH ============
   async deleteProductImage(imageId: number): Promise<any> {
-    const image = await this.prisma.productImage.findUnique({
-      where: { id: imageId }
-    });
+    const image = await this.repository.findImageById(imageId);
 
     if (!image) {
       throw new NotFoundException(`Ảnh #${imageId} không tồn tại`);
@@ -292,9 +241,7 @@ export class ProductService {
     await this.deleteImageFromCloudinary(image.url);
 
     // Xóa trong DB
-    await this.prisma.productImage.delete({
-      where: { id: imageId }
-    });
+    await this.repository.deleteImages([imageId]);
 
     // Invalidate cache
     await this.cacheManager.del(`product:${image.productId}`);
@@ -324,15 +271,7 @@ export class ProductService {
 
   // Cập nhật soldCount khi order delivered (called from OrderService)
   async incrementSoldCount(productId: number, quantity: number) {
-    await this.prisma.product.update({
-      where: { id: productId },
-      data: {
-        soldCount: {
-          increment: quantity,
-        },
-      },
-    });
-
+    await this.repository.incrementSoldCount(productId, quantity);
     await this.cacheManager.del(`product:${productId}`);
   }
 }

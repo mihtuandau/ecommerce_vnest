@@ -1,8 +1,8 @@
-// src/payment/payment.service.ts (sửa lỗi TS: import BadRequestException, fix transactionId type)
-import { Injectable, Inject, BadRequestException } from '@nestjs/common'; // ✅ Thêm BadRequestException
+// src/payment/payment.service.ts
+import { Injectable, Inject, BadRequestException } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
-import { PrismaService } from '../prisma/prisma.service';
+import { PaymentRepository } from './payment.repository';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentStatusDto } from './dto/update-payment-status.dto';
 import { QueryPaymentDto } from './dto/query-payment.dto';
@@ -10,8 +10,8 @@ import { QueryPaymentDto } from './dto/query-payment.dto';
 @Injectable()
 export class PaymentService {
   constructor(
-    private prisma: PrismaService,
-    @Inject(CACHE_MANAGER) private cacheManager: Cache, // Optional cache
+    private repository: PaymentRepository,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   // Helper function to clear payment caches
@@ -23,28 +23,24 @@ export class PaymentService {
 
   async create(data: CreatePaymentDto) {
     // Validate order exists
-    const order = await this.prisma.order.findUnique({
-      where: { id: data.orderId },
-    });
+    const order = await this.repository.findOrderById(data.orderId);
     if (!order) {
-      throw new BadRequestException('Order not found'); // ✅ Import đã fix TS2304
+      throw new BadRequestException('Order not found');
     }
 
-    // Generate transactionId nếu method là VNPAY/MOMO (stub – expand với real gateway)
-    let transactionId: string | null = null; // ✅ Fix TS2322: Type string | null
+    // Generate transactionId nếu method là VNPAY/MOMO
+    let transactionId: string | null = null;
     if (data.method === 'VNPAY' || data.method === 'MOMO') {
-      transactionId = `TXN_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`; // Stub ID
-      // Thực tế: Gọi VNPAY/MOMO API để generate real transaction
+      transactionId = `TXN_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       // await this.processExternalPayment(data, transactionId);
     }
 
-    const payment = await this.prisma.payment.create({
-      data: {
-        ...data,
-        amount: order.total, // Total đã bao gồm thuế
-        transactionId,
-      },
-      include: { order: true }, // Include order details
+    const payment = await this.repository.create({
+      order: { connect: { id: data.orderId } },
+      method: data.method,
+      status: data.status || 'PENDING',
+      amount: order.total,
+      transactionId,
     });
 
     // Invalidate all payment caches
@@ -61,12 +57,7 @@ export class PaymentService {
       return payment;
     }
 
-    payment = await this.prisma.payment.findUnique({
-      where: { id },
-      include: {
-        order: { include: { orderItems: { include: { variant: true } } } },
-      },
-    });
+    payment = await this.repository.findById(id);
 
     if (payment) {
       await this.cacheManager.set(cacheKey, payment, 1800); // 30 phút
@@ -76,45 +67,21 @@ export class PaymentService {
   }
 
   async updateStatus(id: number, data: UpdatePaymentStatusDto) {
-    const payment = await this.prisma.payment.findUnique({
-      where: { id },
-      include: { order: { include: { orderItems: true } } },
-    });
+    const payment = await this.repository.findById(id);
     if (!payment) {
       throw new BadRequestException('Payment not found');
     }
 
-    const updatedPayment = await this.prisma.$transaction(async (prisma) => {
-      // Update payment status
-      const paymentUpdated = await prisma.payment.update({
-        where: { id },
-        data: { status: data.status },
-        include: { order: true },
-      });
+    const updatedPayment = await this.repository.updateStatusWithTransaction(
+      id,
+      data.status,
+      payment.orderId,
+      payment.order.orderItems,
+    );
 
-      if (data.status === 'SUCCESS') {
-        // Update order status & paymentId (fix null)
-        await prisma.order.update({
-          where: { id: payment.orderId },
-          data: {
-            status: 'PROCESSING',
-            paymentId: payment.id, // ✅ Fix null paymentId
-          },
-        });
-
-        // Trừ stock từ variants
-        for (const item of payment.order.orderItems) {
-          await prisma.productVariant.update({
-            where: { id: item.variantId },
-            data: { stock: { decrement: item.quantity } },
-          });
-        }
-
-        console.log(`Stock deducted for order ${payment.orderId}`);
-      }
-
-      return paymentUpdated;
-    });
+    if (data.status === 'SUCCESS') {
+      console.log(`Stock deducted for order ${payment.orderId}`);
+    }
 
     // Cache invalidate
     await this.cacheManager.del(`payment:${id}`);
@@ -140,27 +107,9 @@ export class PaymentService {
     if (status) where['status'] = status;
     if (method) where['method'] = method;
 
-    const [payments, total] = await this.prisma.$transaction([
-      this.prisma.payment.findMany({
-        where,
-        skip,
-        take: limit,
-        include: { 
-          order: {
-            include: {
-              user: {
-                select: {
-                  id: true,
-                  name: true,
-                  email: true,
-                }
-              }
-            }
-          } 
-        },
-        orderBy: { createdAt: 'desc' },
-      }),
-      this.prisma.payment.count({ where }),
+    const [payments, total] = await Promise.all([
+      this.repository.findAll(where, skip, limit),
+      this.repository.count(where),
     ]);
 
     const result = {

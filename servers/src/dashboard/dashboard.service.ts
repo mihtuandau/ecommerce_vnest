@@ -1,12 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { DashboardRepository } from './dashboard.repository';
 
+/**
+ * Service layer for dashboard business logic
+ * Orchestrates data from repository and applies business rules
+ */
 @Injectable()
 export class DashboardService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private repository: DashboardRepository) {}
 
   async getStats() {
-    // Get total counts
+    // Get all data from repository
     const [
       totalUsers,
       totalProducts,
@@ -15,28 +19,19 @@ export class DashboardService {
       pendingOrders,
       deliveredOrders,
       totalCustomers,
+      totalRevenue,
+      lowStockCount,
     ] = await Promise.all([
-      this.prisma.user.count(),
-      this.prisma.product.count(),
-      this.prisma.category.count(),
-      this.prisma.order.count(),
-      this.prisma.order.count({ where: { status: 'PENDING' } }),
-      this.prisma.order.count({ where: { status: 'DELIVERED' } }),
-      this.prisma.user.count({ where: { role: 'CUSTOMER' } }),
+      this.repository.getTotalUsers(),
+      this.repository.getTotalProducts(),
+      this.repository.getTotalCategories(),
+      this.repository.getTotalOrders(),
+      this.repository.getOrderCountByStatus('PENDING'),
+      this.repository.getOrderCountByStatus('DELIVERED'),
+      this.repository.getTotalCustomers(),
+      this.repository.getTotalRevenue(),
+      this.repository.getLowStockCount(10),
     ]);
-
-    // Calculate total revenue from delivered orders
-    const revenueData = await this.prisma.order.aggregate({
-      where: { status: 'DELIVERED' },
-      _sum: { total: true },
-    });
-
-    const totalRevenue = revenueData._sum.total || 0;
-
-    // Get low stock products (stock < 10)
-    const lowStockCount = await this.prisma.productVariant.count({
-      where: { stock: { lt: 10 } },
-    });
 
     return {
       users: {
@@ -68,18 +63,8 @@ export class DashboardService {
     const currentYear = now.getFullYear();
     const currentMonth = now.getMonth();
 
-    // Get revenue by month for current year
-    const monthlyRevenue = await this.prisma.order.groupBy({
-      by: ['createdAt'],
-      where: {
-        status: 'DELIVERED',
-        createdAt: {
-          gte: new Date(currentYear, 0, 1),
-          lte: new Date(currentYear, 11, 31, 23, 59, 59),
-        },
-      },
-      _sum: { total: true },
-    });
+    // Get revenue by month for current year from repository
+    const monthlyRevenue = await this.repository.getMonthlyRevenue(currentYear);
 
     // Process monthly data
     const monthlyData = Array.from({ length: 12 }, (_, i) => ({
@@ -94,18 +79,11 @@ export class DashboardService {
       monthlyData[month].orders += 1;
     });
 
-    // Get daily revenue for current month
-    const dailyRevenue = await this.prisma.order.groupBy({
-      by: ['createdAt'],
-      where: {
-        status: 'DELIVERED',
-        createdAt: {
-          gte: new Date(currentYear, currentMonth, 1),
-          lte: new Date(currentYear, currentMonth + 1, 0, 23, 59, 59),
-        },
-      },
-      _sum: { total: true },
-    });
+    // Get daily revenue for current month from repository
+    const dailyRevenue = await this.repository.getDailyRevenue(
+      currentYear,
+      currentMonth,
+    );
 
     const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
     const dailyData = Array.from({ length: daysInMonth }, (_, i) => ({
@@ -129,39 +107,12 @@ export class DashboardService {
   }
 
   async getRecentOrders(limit: number = 10) {
-    const orders = await this.prisma.order.findMany({
-      take: limit,
-      orderBy: { createdAt: 'desc' },
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
-        },
-      },
-    });
-
-    return orders;
+    return this.repository.getRecentOrders(limit);
   }
 
   async getTopProducts(limit: number = 10) {
-    // Get order items with variant information
-    const orderItems = await this.prisma.orderItem.findMany({
-      include: {
-        variant: {
-          include: {
-            product: {
-              include: {
-                category: { select: { name: true } },
-                brand: { select: { name: true } },
-              },
-            },
-          },
-        },
-      },
-    });
+    // Get order items with variant information from repository
+    const orderItems = await this.repository.getAllOrderItemsWithProducts();
 
     // Group by product and calculate totals
     const productMap = new Map<

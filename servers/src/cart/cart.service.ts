@@ -6,17 +6,17 @@ import {
 } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
-import { PrismaService } from '../prisma/prisma.service';
+import { CartRepository } from './cart.repository';
 import { AddCartItemDto } from './dto/add-cart-item.dto';
 import { UpdateCartItemDto } from './dto/update-cart-item.dto';
 import { RemoveCartItemDto } from './dto/remove-cart-item.dto';
 import { QueryCartDto } from './dto/query-cart.dto';
-import { Prisma, Cart, CartItem, ProductVariant } from '@prisma/client'; // Fix: Import ProductVariant để type variant.price
+import { Prisma, Cart, CartItem, ProductVariant } from '@prisma/client';
 
 @Injectable()
 export class CartService {
   constructor(
-    private prisma: PrismaService,
+    private repository: CartRepository,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
@@ -35,24 +35,7 @@ export class CartService {
       );
       return { ...cart, total };
     }
-    cart = await this.prisma.cart.findUnique({
-      where: { userId },
-      include: {
-        cartItems: {
-          include: {
-            variant: {
-              include: {
-                product: {
-                  include: {
-                    images: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    });
+    cart = await this.repository.findByUserId(userId);
 
     if (!cart) throw new NotFoundException('Cart not found');
 
@@ -67,34 +50,23 @@ export class CartService {
   }
 
   async addItem(userId: number, dto: AddCartItemDto): Promise<any> {
-    const variant = await this.prisma.productVariant.findUnique({
-      where: { id: dto.variantId },
-    });
+    const variant = await this.repository.findVariantById(dto.variantId);
     if (!variant || variant.stock < dto.quantity)
       throw new BadRequestException('Insufficient stock');
-    let cart = await this.prisma.cart.upsert({
-      where: { userId },
-      update: {},
-      create: { userId },
-    });
-    const existingItem = await this.prisma.cartItem.findUnique({
-      where: {
-        cartId_variantId: { cartId: cart.id, variantId: dto.variantId },
-      },
-    });
+    let cart = await this.repository.upsertCart(userId);
+    const existingItem = await this.repository.findCartItem(cart.id, dto.variantId);
+    
     let updatedItem;
     if (existingItem) {
-      updatedItem = await this.prisma.cartItem.update({
-        where: { id: existingItem.id },
-        data: { quantity: existingItem.quantity + dto.quantity },
-      });
+      updatedItem = await this.repository.updateCartItem(
+        existingItem.id,
+        existingItem.quantity + dto.quantity,
+      );
     } else {
-      updatedItem = await this.prisma.cartItem.create({
-        data: {
-          cartId: cart.id,
-          variantId: dto.variantId,
-          quantity: dto.quantity,
-        },
+      updatedItem = await this.repository.createCartItem({
+        cart: { connect: { id: cart.id } },
+        variant: { connect: { id: dto.variantId } },
+        quantity: dto.quantity,
       });
     }
 
@@ -107,40 +79,29 @@ export class CartService {
     variantId: number,
     dto: UpdateCartItemDto,
   ): Promise<any> {
-    const cart = await this.prisma.cart.findUnique({ where: { userId } });
+    const cart = await this.repository.findByUserId(userId);
     if (!cart) throw new NotFoundException('Cart not found');
-    const item = await this.prisma.cartItem.findUnique({
-      where: { cartId_variantId: { cartId: cart.id, variantId } },
-    });
+    const item = await this.repository.findCartItem(cart.id, variantId);
     if (!item) throw new NotFoundException('Item not found');
-    const updatedItem = await this.prisma.cartItem.update({
-      where: { id: item.id },
-      data: { quantity: dto.quantity },
-    });
+    const updatedItem = await this.repository.updateCartItem(item.id, dto.quantity);
 
     await this.cacheManager.del(`cart:${userId}`);
     return updatedItem;
   }
 
   async removeItem(userId: number, dto: RemoveCartItemDto): Promise<any> {
-    const cart = await this.prisma.cart.findUnique({ where: { userId } });
+    const cart = await this.repository.findByUserId(userId);
     if (!cart) throw new NotFoundException('Cart not found');
-    const removedItem = await this.prisma.cartItem.delete({
-      where: {
-        cartId_variantId: { cartId: cart.id, variantId: dto.variantId },
-      },
-    });
+    const removedItem = await this.repository.deleteCartItem(cart.id, dto.variantId);
 
     await this.cacheManager.del(`cart:${userId}`);
     return removedItem;
   }
 
   async clearCart(userId: number): Promise<any> {
-    const cart = await this.prisma.cart.findUnique({ where: { userId } });
+    const cart = await this.repository.findByUserId(userId);
     if (!cart) return;
-    const cleared = await this.prisma.cartItem.deleteMany({
-      where: { cartId: cart.id },
-    });
+    const cleared = await this.repository.deleteAllCartItems(cart.id);
 
     await this.cacheManager.del(`cart:${userId}`);
     return cleared;
