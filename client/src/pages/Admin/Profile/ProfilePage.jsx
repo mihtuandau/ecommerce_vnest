@@ -16,9 +16,7 @@ const ProfilePage = () => {
       // const data = await addressService.getAddresses();
       // setAddresses(data);
       setAddresses([]); // Placeholder
-    } catch (error) {
-      console.error('Error loading addresses:', error);
-    }
+    } catch (error) {}
   };
 
   useEffect(() => {

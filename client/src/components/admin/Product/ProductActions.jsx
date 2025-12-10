@@ -34,9 +34,7 @@ const ProductActions = ({
       await onDelete(product);
       toast.success('Đã xóa sản phẩm thành công');
       onClose();
-    } catch (error) {
-      console.error('Error deleting product:', error);
-      toast.error('Không thể xóa sản phẩm');
+    } catch (error) {toast.error('Không thể xóa sản phẩm');
     } finally {
       setLoading(false);
       setShowDeleteModal(false);
@@ -49,9 +47,7 @@ const ProductActions = ({
       await onDuplicate(product);
       toast.success('Đã sao chép sản phẩm thành công');
       onClose();
-    } catch (error) {
-      console.error('Error duplicating product:', error);
-      toast.error('Không thể sao chép sản phẩm');
+    } catch (error) {toast.error('Không thể sao chép sản phẩm');
     } finally {
       setLoading(false);
     }
@@ -117,18 +113,14 @@ const ProductActions = ({
     {
       label: product.active ? 'Ẩn sản phẩm' : 'Hiện sản phẩm',
       icon: product.active ? <EyeOff size={16} /> : <Eye size={16} />,
-      onClick: () => {
-        console.log('Toggle product status:', product.id);
-        onClose();
+      onClick: () => {onClose();
       },
       color: product.active ? 'text-orange-600' : 'text-green-600'
     },
     {
       label: 'Lưu trữ',
       icon: <Archive size={16} />,
-      onClick: () => {
-        console.log('Archive product:', product.id);
-        onClose();
+      onClick: () => {onClose();
       },
       color: 'text-gray-600'
     },

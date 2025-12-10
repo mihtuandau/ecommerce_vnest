@@ -220,9 +220,7 @@ const handleProductVariants = async (productId, variants = [], basePrice = 0) =>
     const variantPayload = prepareVariantData(variant, basePrice);
     try {
       await productService.addVariant(productId, variantPayload);
-    } catch (error) {
-      console.error('Error adding variant:', error);
-    }
+    } catch (error) {}
   }
 };
 
@@ -231,8 +229,6 @@ const handleProductImages = async (productId, images = []) => {
   if (files.length > 0) {
     try {
       await productService.uploadImages(productId, files);
-    } catch (error) {
-      console.error('Error uploading images:', error);
-    }
+    } catch (error) {}
   }
 };

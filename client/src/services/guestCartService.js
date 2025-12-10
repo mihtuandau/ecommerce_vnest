@@ -12,9 +12,7 @@ class GuestCartService {
     try {
       const cart = localStorage.getItem(GUEST_CART_KEY);
       return cart ? JSON.parse(cart) : { items: [] };
-    } catch (error) {
-      console.error('Error reading guest cart:', error);
-      return { items: [] };
+    } catch (error) {return { items: [] };
     }
   }
 
@@ -24,9 +22,7 @@ class GuestCartService {
   saveCart(cart) {
     try {
       localStorage.setItem(GUEST_CART_KEY, JSON.stringify(cart));
-    } catch (error) {
-      console.error('Error saving guest cart:', error);
-    }
+    } catch (error) {}
   }
 
   /**
@@ -113,11 +109,7 @@ class GuestCartService {
       }
 
       // Clear guest cart after migration
-      this.clearCart();
-      console.log('✅ Guest cart migrated to user cart');
-    } catch (error) {
-      console.error('❌ Error migrating guest cart:', error);
-      throw error;
+      this.clearCart();} catch (error) {throw error;
     }
   }
 }

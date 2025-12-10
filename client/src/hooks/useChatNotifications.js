@@ -13,9 +13,7 @@ export const useChatNotifications = (user) => {
         const rooms = await chatService.getRooms();
         const total = rooms.reduce((sum, room) => sum + (room.unreadCount || 0), 0);
         setUnreadCount(total);
-      } catch (error) {
-        console.error('Failed to load unread count:', error);
-      }
+      } catch (error) {}
     };
 
     loadUnreadCount();

@@ -34,9 +34,7 @@ const OrderDetailPage = () => {
       };
       
       setOrder(transformedOrder);
-    } catch (error) {
-      console.error('Failed to load order:', error);
-      toast.error('Không thể tải thông tin đơn hàng');
+    } catch (error) {toast.error('Không thể tải thông tin đơn hàng');
       navigate('/orders');
     } finally {
       setLoading(false);
@@ -289,11 +287,8 @@ const OrderDetailPage = () => {
           </div>
         </div>
       </div>
-
     </Layout>
-
-     );
-  };
-
+  );
+};
 
 export default OrderDetailPage;

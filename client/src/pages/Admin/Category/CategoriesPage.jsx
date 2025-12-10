@@ -29,9 +29,7 @@ const AdminCategoriesPage = () => {
       const data = await categoryService.getAll();
       setCategories(Array.isArray(data) ? data : data.data || []);
     } catch (error) {
-      toast.error('Không thể tải danh mục');
-      console.error(error);
-    } finally {
+      toast.error('Không thể tải danh mục');} finally {
       setLoading(false);
     }
   };
@@ -68,9 +66,7 @@ const AdminCategoriesPage = () => {
       loadCategories();
     } catch (error) {
       const message = error.response?.data?.message || 'Có lỗi xảy ra';
-      toast.error(message);
-      console.error(error);
-    }
+      toast.error(message);}
   };
 
   const handleEdit = (category) => {
@@ -119,9 +115,7 @@ const AdminCategoriesPage = () => {
         loadCategories();
       } catch (error) {
         const message = error.response?.data?.message || 'Không thể xóa danh mục';
-        toast.error(message);
-        console.error(error);
-      }
+        toast.error(message);}
     }
   };
 

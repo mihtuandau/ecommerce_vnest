@@ -12,18 +12,11 @@ const AdminRoute = ({ children }) => {
     );
   }
 
-  if (!user) {
-    console.log('AdminRoute - No user found, redirecting to /login');
-    return <Navigate to="/login" replace />;
+  if (!user) {return <Navigate to="/login" replace />;
   }
 
-  if (user.role !== 'ADMIN') {
-    console.log('AdminRoute - User role is not ADMIN, redirecting to /');
-    return <Navigate to="/" replace />;
-  }
-
-  console.log('AdminRoute - User is ADMIN, rendering admin component');
-  return children;
+  if (user.role !== 'ADMIN') {return <Navigate to="/" replace />;
+  }return children;
 };
 
 export default AdminRoute;

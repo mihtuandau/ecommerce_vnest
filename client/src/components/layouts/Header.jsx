@@ -33,9 +33,7 @@ const Header = () => {
     try {
       const data = await categoryService.getAll();
       setCategories(data || []);
-    } catch (error) {
-      console.error('Error loading categories:', error);
-    }
+    } catch (error) {}
   };
 
   return (

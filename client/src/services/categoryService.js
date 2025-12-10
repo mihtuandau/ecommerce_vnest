@@ -6,9 +6,7 @@ const categoryService = {
     try {
       const response = await axiosInstance.get('/categories', { params });
       return response.data;
-    } catch (error) {
-      console.error('Error fetching categories:', error);
-      return [];
+    } catch (error) {return [];
     }
   },
 

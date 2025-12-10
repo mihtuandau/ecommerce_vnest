@@ -19,9 +19,7 @@ const ImageManagerModal = ({ product, isOpen, onClose, onUpdated }) => {
       const p = res?.data || res;
       setImages(p?.images || []);
       if (onUpdated) onUpdated(p);
-    } catch (err) {
-      console.error('Error refreshing product images:', err);
-    }
+    } catch (err) {}
   };
 
   const handleImageUpload = async (e) => {
@@ -29,14 +27,9 @@ const ImageManagerModal = ({ product, isOpen, onClose, onUpdated }) => {
     if (!files.length) return;
     setUploading(true);
     try {
-      const resp = await productService.uploadImages(product.id, files);
-      console.log('Upload response:', resp);
-      toast.success('Upload ảnh thành công');
+      const resp = await productService.uploadImages(product.id, files);toast.success('Upload ảnh thành công');
       await refresh();
-    } catch (err) {
-      console.error('Upload error:', err);
-      console.error('Upload response data:', err?.response?.data);
-      toast.error(err?.response?.data?.message || 'Không thể upload ảnh');
+    } catch (err) {toast.error(err?.response?.data?.message || 'Không thể upload ảnh');
     } finally {
       setUploading(false);
     }
@@ -48,9 +41,7 @@ const ImageManagerModal = ({ product, isOpen, onClose, onUpdated }) => {
       await productService.deleteImage(img.id);
       toast.success('Đã xóa ảnh');
       await refresh();
-    } catch (err) {
-      console.error('Error deleting image:', err);
-      toast.error('Không thể xóa ảnh');
+    } catch (err) {toast.error('Không thể xóa ảnh');
     }
   };
 

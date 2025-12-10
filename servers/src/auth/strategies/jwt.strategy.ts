@@ -17,9 +17,7 @@
         jwtFromRequest: ExtractJwt.fromExtractors([
           // Try cookie first
           (request: Request) => {
-            const token = request?.cookies?.access_token;
-            console.log('🍪 Token from cookie:', token ? 'Found' : 'Not found');
-            return token;
+            const token = request?.cookies?.access_token;return token;
           },
           // Fallback to Authorization header
           ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -29,19 +27,10 @@
       });
     }
 
-    async validate(payload: any) {
-      console.log('🔐 JWT Payload:', payload);
+    async validate(payload: any) {const user = await this.userService.findOne(payload.sub);
       
-      const user = await this.userService.findOne(payload.sub);
-      
-      if (!user) {
-        console.error('❌ User not found for ID:', payload.sub);
-        throw new UnauthorizedException('User not found');
-      }
-
-      console.log('✅ User validated:', { id: user.id, email: user.email, role: user.role });
-      
-      return {
+      if (!user) {throw new UnauthorizedException('User not found');
+      }return {
         userId: user.id,
         email: user.email,
         role: user.role,

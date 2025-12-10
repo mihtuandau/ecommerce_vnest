@@ -37,9 +37,7 @@ const OrderLookupPage = () => {
       );
       setOrder(response.data);
       toast.success('Tìm thấy đơn hàng của bạn!');
-    } catch (error) {
-      console.error('Lookup error:', error);
-      toast.error(error.response?.data?.message || 'Không tìm thấy đơn hàng');
+    } catch (error) {toast.error(error.response?.data?.message || 'Không tìm thấy đơn hàng');
     } finally {
       setSearching(false);
     }
@@ -58,9 +56,7 @@ const OrderLookupPage = () => {
       const response = await orderService.lookupGuestOrder(orderCode, contact);
       setOrder(response.data);
       toast.success('Tìm thấy đơn hàng!');
-    } catch (error) {
-      console.error('Lookup error:', error);
-      toast.error(error.response?.data?.message || 'Không tìm thấy đơn hàng');
+    } catch (error) {toast.error(error.response?.data?.message || 'Không tìm thấy đơn hàng');
       setOrder(null);
     } finally {
       setSearching(false);

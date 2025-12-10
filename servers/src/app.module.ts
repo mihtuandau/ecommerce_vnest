@@ -18,6 +18,7 @@ import { WishlistModule } from './wishlist/wishlist.module';
 import { ChatModule } from './chat/chat.module';
 import { MailModule } from './mail/mail.module';
 import { ChatbotModule } from './chatbot/chatbot.module';
+import { ReviewModule } from './review/review.module';
 
 @Module({
   imports: [
@@ -37,7 +38,8 @@ import { ChatbotModule } from './chatbot/chatbot.module';
     WishlistModule,
     ChatModule,
     MailModule,
-    ChatbotModule
+    ChatbotModule,
+    ReviewModule
   ],
   providers: [PrismaService],
   exports: [PrismaService],

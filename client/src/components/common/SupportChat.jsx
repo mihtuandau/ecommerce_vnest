@@ -26,35 +26,20 @@ const SupportChat = ({ scrolled }) => {
   }, [user, isOpen]);
 
   const initializeChat = async () => {
-    try {
-      console.log('🔵 Initializing support chat for user:', user.id);
-      
-      // Connect socket
+    try {// Connect socket
       chatSocketService.connect();
 
       // Create room ID for user
       const userRoomId = `user-${user.id}`;
-      setRoomId(userRoomId);
-      console.log('🔵 Room ID:', userRoomId);
-
-      // Join room and get message history
-      const history = await chatSocketService.joinRoom(userRoomId, user.id);
-      console.log('🔵 Message history:', history);
-      setMessages(history || []);
+      setRoomId(userRoomId);// Join room and get message history
+      const history = await chatSocketService.joinRoom(userRoomId, user.id);setMessages(history || []);
 
       // Listen for new messages
-      chatSocketService.onNewMessage((message) => {
-        console.log('🔵 New message received:', message);
-        setMessages((prev) => [...prev, message]);
+      chatSocketService.onNewMessage((message) => {setMessages((prev) => [...prev, message]);
         if (!isOpen) {
           setUnreadCount((prev) => prev + 1);
         }
-      });
-      
-      console.log('✅ Support chat initialized successfully');
-    } catch (error) {
-      console.error('❌ Failed to initialize chat:', error);
-    }
+      });} catch (error) {}
   };
 
   useEffect(() => {
@@ -76,13 +61,7 @@ const SupportChat = ({ scrolled }) => {
     setInputMessage('');
     setIsLoading(true);
 
-    try {
-      console.log('📤 Sending message:', { roomId, userId: user.id, message: messageText });
-      const result = await chatSocketService.sendMessage(roomId, user.id, messageText);
-      console.log('✅ Message sent:', result);
-    } catch (error) {
-      console.error('❌ Failed to send message:', error);
-    } finally {
+    try {const result = await chatSocketService.sendMessage(roomId, user.id, messageText);} catch (error) {} finally {
       setIsLoading(false);
     }
   };

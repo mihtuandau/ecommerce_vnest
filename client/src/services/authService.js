@@ -30,9 +30,7 @@ const authService = {
     try {
       // Gọi backend để clear httpOnly cookie
       await axiosInstance.post("/auth/logout");
-    } catch (error) {
-      console.error("Logout error:", error);
-    } finally {
+    } catch (error) {} finally {
       // Không xóa localStorage vì không lưu gì cả
       window.location.href = "/login";
     }

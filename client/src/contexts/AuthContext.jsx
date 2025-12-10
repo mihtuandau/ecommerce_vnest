@@ -11,20 +11,18 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const initAuth = async () => {
-      console.log('🔍 Init Auth - Verifying httpOnly cookie...');
-      
       try {
         // 🔒 Fetch user from backend using httpOnly cookie
         const currentUser = await authService.verifyAuth();
         
         if (currentUser) {
+          console.log('Current user from backend:', currentUser);
           setUser(currentUser);
-          console.log('✅ User authenticated from cookie:', currentUser.email);
         } else {
-          console.log('ℹ️ No valid session');
+          console.log('No user returned from backend');
         }
       } catch (error) {
-        console.error('❌ Auth verification failed:', error);
+        console.error('Auth verification error:', error);
         setUser(null);
       } finally {
         setLoading(false);
@@ -49,15 +47,11 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (credentials) => {
     try {
-      const data = await authService.login(credentials);
-      console.log('AuthContext login - received data:', data);
-      setUser(data.user);
+      const data = await authService.login(credentials);setUser(data.user);
       
       toast.success('Đăng nhập thành công!');
       return data;
-    } catch (error) {
-      console.error('AuthContext login error:', error);
-      toast.error(error.response?.data?.message || 'Đăng nhập thất bại');
+    } catch (error) {toast.error(error.response?.data?.message || 'Đăng nhập thất bại');
       throw error;
     }
   };
@@ -67,9 +61,7 @@ export const AuthProvider = ({ children }) => {
       await authService.logout();
       setUser(null);
       toast.success('Đăng xuất thành công!');
-    } catch (error) {
-      console.error('Logout error:', error);
-      setUser(null);
+    } catch (error) {setUser(null);
     }
   };
 

@@ -54,16 +54,12 @@ export const saveCartToStorage = (items) => {
     try {
       const plainItems = Array.isArray(items) ? items.map(serializeCartItem) : [];
       localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(plainItems));
-    } catch (error) {
-      console.error('Cart save error:', error);
-    }
+    } catch (error) {}
   }, DEBOUNCE_DELAY);
 };
 
 export const clearCartStorage = () => {
   try {
     localStorage.removeItem(CART_STORAGE_KEY);
-  } catch (error) {
-    console.error('Cart clear error:', error);
-  }
+  } catch (error) {}
 };

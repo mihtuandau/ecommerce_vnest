@@ -10,9 +10,7 @@ const bannerService = {
         params: { active: true, ...params }
       });
       return response.data;
-    } catch (error) {
-      console.error('Error fetching banners:', error);
-      return [];
+    } catch (error) {return [];
     }
   },
 

@@ -16,12 +16,8 @@ const WishlistPage = () => {
   const loadWishlist = async () => {
     try {
       setLoading(true);
-      const data = await wishlistService.getWishlist();
-      console.log('📦 Wishlist data:', data);
-      setWishlistItems(data || []);
-    } catch (error) {
-      console.error('❌ Wishlist error:', error);
-      toast.error('Không thể tải danh sách yêu thích');
+      const data = await wishlistService.getWishlist();setWishlistItems(data || []);
+    } catch (error) {toast.error('Không thể tải danh sách yêu thích');
       setWishlistItems([]);
     } finally {
       setLoading(false);

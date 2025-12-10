@@ -5,9 +5,7 @@ const chatbotService = {
     try {
       const response = await apiService.post('/chatbot/chat', { message });
       return response;
-    } catch (error) {
-      console.error('Error sending message to chatbot:', error);
-      throw error;
+    } catch (error) {throw error;
     }
   },
 
@@ -15,9 +13,7 @@ const chatbotService = {
     try {
       const response = await apiService.get('/chatbot/status');
       return response;
-    } catch (error) {
-      console.error('Error getting chatbot status:', error);
-      throw error;
+    } catch (error) {throw error;
     }
   },
 };

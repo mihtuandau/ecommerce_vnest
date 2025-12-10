@@ -12,9 +12,7 @@ const locationService = {
     try {
       const response = await axios.get(`${BASE_URL}/p/`);
       return response.data;
-    } catch (error) {
-      console.error('Error fetching provinces:', error);
-      throw error;
+    } catch (error) {throw error;
     }
   },
 
@@ -27,9 +25,7 @@ const locationService = {
     try {
       const response = await axios.get(`${BASE_URL}/p/${provinceCode}?depth=2`);
       return response.data;
-    } catch (error) {
-      console.error('Error fetching province with districts:', error);
-      throw error;
+    } catch (error) {throw error;
     }
   },
 
@@ -42,9 +38,7 @@ const locationService = {
     try {
       const response = await axios.get(`${BASE_URL}/d/${districtCode}?depth=2`);
       return response.data;
-    } catch (error) {
-      console.error('Error fetching district with wards:', error);
-      throw error;
+    } catch (error) {throw error;
     }
   },
 
@@ -57,9 +51,7 @@ const locationService = {
     try {
       const provinceData = await locationService.getProvinceWithDistricts(provinceCode);
       return provinceData.districts || [];
-    } catch (error) {
-      console.error('Error fetching districts:', error);
-      throw error;
+    } catch (error) {throw error;
     }
   },
 
@@ -72,9 +64,7 @@ const locationService = {
     try {
       const districtData = await locationService.getDistrictWithWards(districtCode);
       return districtData.wards || [];
-    } catch (error) {
-      console.error('Error fetching wards:', error);
-      throw error;
+    } catch (error) {throw error;
     }
   },
 

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { FaMapMarkerAlt, FaStar } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 import userService from '../../services/userService';
+import locationService from '../../services/locationService';
 
 const AddressSelector = ({ userId, onAddressSelect, selectedAddressId }) => {
   const [addresses, setAddresses] = useState([]);
@@ -19,11 +20,57 @@ const AddressSelector = ({ userId, onAddressSelect, selectedAddressId }) => {
       const response = await userService.getAddresses(userId);
       setAddresses(response.addresses || response.data?.addresses || []);
     } catch (error) {
-      console.error('Failed to load addresses:', error);
       toast.error('Không thể tải danh sách địa chỉ');
       setAddresses([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSelectAddress = async (address) => {
+    try {
+      // Fetch location codes based on names
+      const provinces = await locationService.getAllProvinces();
+      const selectedProvince = provinces.find(p => p.name === address.city);
+      
+      if (!selectedProvince) {
+        onAddressSelect(address);
+        return;
+      }
+
+      let districtCode = '';
+      let wardCode = '';
+
+      // Get district code
+      if (address.state) {
+        const provinceWithDistricts = await locationService.getProvinceWithDistricts(selectedProvince.code);
+        const selectedDistrict = provinceWithDistricts.districts?.find(d => d.name === address.state);
+        if (selectedDistrict) {
+          districtCode = selectedDistrict.code;
+
+          // Get ward code
+          if (address.ward) {
+            const districtWithWards = await locationService.getDistrictWithWards(districtCode);
+            const selectedWard = districtWithWards.wards?.find(w => w.name === address.ward);
+            if (selectedWard) {
+              wardCode = selectedWard.code;
+            }
+          }
+        }
+      }
+
+      // Add codes to address object
+      const addressWithCodes = {
+        ...address,
+        cityCode: selectedProvince.code,
+        districtCode: districtCode,
+        wardCode: wardCode
+      };
+
+      onAddressSelect(addressWithCodes);
+    } catch (error) {
+      // Fallback to original address without codes
+      onAddressSelect(address);
     }
   };
 
@@ -62,7 +109,7 @@ const AddressSelector = ({ userId, onAddressSelect, selectedAddressId }) => {
               ? 'border-blue-300 hover:border-blue-400'
               : 'border-gray-200 hover:border-gray-300'
           }`}
-          onClick={() => onAddressSelect(address)}
+          onClick={() => handleSelectAddress(address)}
         >
           <div className="flex items-start gap-3">
             <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 mt-0.5 ${

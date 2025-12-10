@@ -166,34 +166,16 @@ export class UserService {
     });
   }
 
-  async updateResetToken(id: number, resetData: UpdateUserResetDto): Promise<User> {
-    console.log('🔐 updateResetToken called:', { id, resetData });
-
-    const updateData: Prisma.UserUpdateInput = {
+  async updateResetToken(id: number, resetData: UpdateUserResetDto): Promise<User> {const updateData: Prisma.UserUpdateInput = {
       resetPasswordToken: resetData.resetPasswordToken,
       resetPasswordExpires: resetData.resetPasswordExpires ? new Date(resetData.resetPasswordExpires) : null,
-    };
-
-    console.log('📤 Reset token update data:', updateData);
-
-    const result = await this.prisma.user.update({
+    };const result = await this.prisma.user.update({
       where: { id },
       data: updateData
-    });
-
-    console.log('✅ Reset token update result:', {
-      id: result.id,
-      resetPasswordToken: result.resetPasswordToken,
-      resetPasswordExpires: result.resetPasswordExpires
-    });
-
-    return result;
+    });return result;
   }
 
-  async resetPassword(id: number, password: string): Promise<User> {
-    console.log('🔄 resetPassword called:', { id });
-
-    const hashedPassword = await bcrypt.hash(password, 10);
+  async resetPassword(id: number, password: string): Promise<User> {const hashedPassword = await bcrypt.hash(password, 10);
     const result = await this.prisma.user.update({
       where: { id },
       data: {
@@ -201,14 +183,6 @@ export class UserService {
         resetPasswordToken: null,
         resetPasswordExpires: null,
       }
-    });
-
-    console.log('✅ Password reset result:', {
-      id: result.id,
-      passwordUpdated: true,
-      resetTokenCleared: result.resetPasswordToken === null
-    });
-
-    return result;
+    });return result;
   }
 }

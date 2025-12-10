@@ -5,12 +5,16 @@ import Loading from '../../../components/common/Loading';
 import { ProductImageGallery, ProductDetails } from '../../../components/products/ProductDetail';
 import { productService } from '../../../services/productService';
 import { useCart } from '../../../hooks/useCart';
+import { useAuth } from '../../../hooks/useAuth';
+import StarRating from '../../../components/common/StarRating';
+import ReviewList from '../../../components/products/ReviewList';
 import toast from 'react-hot-toast';
 
 const ProductDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useCart();
+  const { user } = useAuth();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState(0);
@@ -18,6 +22,7 @@ const ProductDetailPage = () => {
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
+  const [activeTab, setActiveTab] = useState('description'); // description | reviews
 
   useEffect(() => {
     loadProduct();
@@ -181,6 +186,79 @@ const ProductDetailPage = () => {
                 onQuantityChange={setQuantity}
                 onAddToCart={handleAddToCart}
               />
+            </div>
+
+            {/* Rating & Sold Count */}
+            <div className="mt-8 pt-6 border-t border-gray-200">
+              <div className="flex items-center gap-6 flex-wrap">
+                <div className="flex items-center gap-2">
+                  <StarRating
+                    rating={product.averageRating || 0}
+                    size={20}
+                    showNumber
+                    reviewCount={product.reviewCount || 0}
+                  />
+                </div>
+                {product.soldCount > 0 && (
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                    <span className="text-sm font-medium">{product.soldCount} đã bán</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Tabs */}
+            <div className="mt-8 border-t border-gray-200">
+              <div className="flex gap-8 border-b border-gray-200">
+                <button
+                  onClick={() => setActiveTab('description')}
+                  className={`py-4 px-2 font-medium transition-colors relative ${
+                    activeTab === 'description'
+                      ? 'text-blue-600 border-b-2 border-blue-600'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  Mô tả sản phẩm
+                </button>
+                <button
+                  onClick={() => setActiveTab('reviews')}
+                  className={`py-4 px-2 font-medium transition-colors relative ${
+                    activeTab === 'reviews'
+                      ? 'text-blue-600 border-b-2 border-blue-600'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  Đánh giá ({product.reviewCount || 0})
+                </button>
+              </div>
+
+              <div className="py-6">
+                {activeTab === 'description' && (
+                  <div className="prose max-w-none">
+                    <p className="text-gray-700 leading-relaxed">
+                      {product.description || 'Chưa có mô tả sản phẩm'}
+                    </p>
+                  </div>
+                )}
+
+                {activeTab === 'reviews' && (
+                  <div className="space-y-6">
+                    {/* Thông báo hướng dẫn đánh giá */}
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                      <p className="text-sm text-blue-800">
+                        <span className="font-medium">💡 Hướng dẫn:</span> Để đánh giá sản phẩm này, vui lòng đặt hàng và đợi đơn hàng được giao thành công. 
+                        Sau đó, bạn có thể đánh giá trong trang <Link to="/orders" className="font-medium underline">Đơn hàng của tôi</Link>.
+                      </p>
+                    </div>
+
+                    {/* Review List */}
+                    <ReviewList productId={product.id} />
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>

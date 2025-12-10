@@ -25,9 +25,7 @@ export const useHomeData = () => {
       
       const homeData = await homeService.getAllData();
       setData(homeData);
-    } catch (err) {
-      console.error('Error loading homepage data:', err);
-      setError(err.message || 'Không thể tải dữ liệu');
+    } catch (err) {setError(err.message || 'Không thể tải dữ liệu');
     } finally {
       setLoading(false);
     }

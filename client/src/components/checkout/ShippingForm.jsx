@@ -14,7 +14,7 @@ const ShippingForm = ({ shippingInfo, onInputChange, onSelectAddressClick, isGue
     loadProvinces();
   }, []);
 
-  // Load districts when province changes
+  // Load districts when province changes or when address is selected
   useEffect(() => {
     if (shippingInfo.cityCode) {
       loadDistricts(shippingInfo.cityCode);
@@ -24,7 +24,7 @@ const ShippingForm = ({ shippingInfo, onInputChange, onSelectAddressClick, isGue
     }
   }, [shippingInfo.cityCode]);
 
-  // Load wards when district changes
+  // Load wards when district changes or when address is selected
   useEffect(() => {
     if (shippingInfo.districtCode) {
       loadWards(shippingInfo.districtCode);
@@ -38,9 +38,7 @@ const ShippingForm = ({ shippingInfo, onInputChange, onSelectAddressClick, isGue
       setLoading(true);
       const data = await locationService.getAllProvinces();
       setProvinces(data);
-    } catch (error) {
-      console.error('Failed to load provinces:', error);
-    } finally {
+    } catch (error) {} finally {
       setLoading(false);
     }
   };
@@ -49,18 +47,14 @@ const ShippingForm = ({ shippingInfo, onInputChange, onSelectAddressClick, isGue
     try {
       const data = await locationService.getProvinceWithDistricts(provinceCode);
       setDistricts(data.districts || []);
-    } catch (error) {
-      console.error('Failed to load districts:', error);
-    }
+    } catch (error) {}
   };
 
   const loadWards = async (districtCode) => {
     try {
       const data = await locationService.getDistrictWithWards(districtCode);
       setWards(data.wards || []);
-    } catch (error) {
-      console.error('Failed to load wards:', error);
-    }
+    } catch (error) {}
   };
 
   const handleProvinceChange = (e) => {

@@ -25,8 +25,14 @@ export const useAddressManagement = (userId) => {
   };
 
   const createAddress = async (addressData) => {
+    if (!userId) {
+      toast.error('Không tìm thấy thông tin người dùng');
+      return false;
+    }
     try {
-      await userService.createAddress(userId, addressData);
+      // Remove fields that shouldn't be sent to backend
+      const { id, userId: _, createdAt, updatedAt, ...cleanData } = addressData;
+      await userService.createAddress(userId, cleanData);
       toast.success('Thêm địa chỉ mới thành công');
       await loadAddresses();
       return true;
@@ -37,8 +43,14 @@ export const useAddressManagement = (userId) => {
   };
 
   const updateAddress = async (addressId, addressData) => {
+    if (!userId) {
+      toast.error('Không tìm thấy thông tin người dùng');
+      return false;
+    }
     try {
-      await userService.updateAddress(userId, addressId, addressData);
+      // Remove fields that shouldn't be sent to backend
+      const { id, userId: _, createdAt, updatedAt, ...cleanData } = addressData;
+      await userService.updateAddress(userId, addressId, cleanData);
       toast.success('Cập nhật địa chỉ thành công');
       await loadAddresses();
       return true;
