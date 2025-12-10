@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './contexts/authContext';
 import CartSync from './components/common/CartSync';
-import ChatWidget from './components/customer/ChatWidget';
+import ChatWidget from './components/common/ChatWidget';
 import store from './store/store';
 import AppRoutes from './routes/AppRoutes';
 import './index.css'; 
