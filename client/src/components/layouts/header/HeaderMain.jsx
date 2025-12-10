@@ -5,6 +5,7 @@ import { useCartCount } from '../../../hooks/useCart';
 import wishlistService from '../../../services/wishlistService';
 import Button from '../../common/Button';
 import Input from '../../common/Input';
+import SupportChat from '../../common/SupportChat';
 import { useState, useRef, useEffect } from 'react';
 
 const HeaderMain = ({ scrolled, searchOpen, setSearchOpen, mobileMenuOpen, setMobileMenuOpen }) => {
@@ -127,6 +128,9 @@ const HeaderMain = ({ scrolled, searchOpen, setSearchOpen, mobileMenuOpen, setMo
             >
               <FaSearch size={20} className="sm:w-6 sm:h-6" />
             </button>
+
+            {/* Support Chat - Hiển thị cho user đã đăng nhập */}
+            <SupportChat scrolled={scrolled} />
 
             {/* Wishlist */}
             <Link 
