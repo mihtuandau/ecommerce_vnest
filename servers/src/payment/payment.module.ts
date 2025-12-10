@@ -2,16 +2,17 @@
 import { Module } from '@nestjs/common';
 import { PaymentController } from './payment.controller';
 import { PaymentService } from './payment.service';
-import { CacheModule } from '@nestjs/cache-manager';  // Nếu dùng cache
-import { PrismaModule } from '../prisma/prisma.module';  // Import PrismaModule
+import { PaymentRepository } from './payment.repository';
+import { CacheModule } from '@nestjs/cache-manager';
+import { PrismaModule } from '../prisma/prisma.module';
 
 @Module({
-  imports: [ // Import PrismaService
-    CacheModule.register(),  // Optional cache
-    PrismaModule,  // Import PrismaModule
+  imports: [
+    CacheModule.register(),
+    PrismaModule,
   ],
   controllers: [PaymentController],
-  providers: [PaymentService],
-  exports: [PaymentService],  // Export nếu dùng ở OrderModule
+  providers: [PaymentService, PaymentRepository],
+  exports: [PaymentService],
 })
 export class PaymentModule {}

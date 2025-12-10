@@ -1,12 +1,12 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { DiscountRepository } from './discount.repository';
 import { CreateDiscountDto } from './dto/create-discount.dto';
 import { UpdateDiscountDto } from './dto/update-discount.dto';
 import { QueryDiscountDto } from './dto/query-discount.dto';
 
 @Injectable()
 export class DiscountService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private repository: DiscountRepository) {}
 
   async create(createDiscountDto: CreateDiscountDto) {
     if (!createDiscountDto.percentage && !createDiscountDto.fixedAmount) {
@@ -16,21 +16,17 @@ export class DiscountService {
     if (createDiscountDto.percentage && createDiscountDto.fixedAmount) {
       throw new BadRequestException('Chỉ được chọn percentage hoặc fixedAmount, không được cả hai');
     }
-    const existing = await this.prisma.discount.findUnique({
-      where: { code: createDiscountDto.code.toUpperCase() },
-    });
+    const existing = await this.repository.findByCode(createDiscountDto.code);
 
     if (existing) {
       throw new BadRequestException('Mã giảm giá đã tồn tại');
     }
 
-    return this.prisma.discount.create({
-      data: {
-        ...createDiscountDto,
-        code: createDiscountDto.code.toUpperCase(),
-        startDate: new Date(createDiscountDto.startDate),
-        endDate: createDiscountDto.endDate ? new Date(createDiscountDto.endDate) : null,
-      },
+    return this.repository.create({
+      ...createDiscountDto,
+      code: createDiscountDto.code.toUpperCase(),
+      startDate: new Date(createDiscountDto.startDate),
+      endDate: createDiscountDto.endDate ? new Date(createDiscountDto.endDate) : null,
     });
   }
 
@@ -57,15 +53,7 @@ export class DiscountService {
       where.startDate = { gt: now };
     }
 
-    const discounts = await this.prisma.discount.findMany({
-      where,
-      include: {
-        _count: {
-          select: { orders: true },
-        },
-      },
-      orderBy: { createdAt: 'desc' },
-    });
+    const discounts = await this.repository.findAll(where);
 
     // Add status to each discount
     return discounts.map((discount) => ({
@@ -76,14 +64,7 @@ export class DiscountService {
   }
 
   async findOne(id: number) {
-    const discount = await this.prisma.discount.findUnique({
-      where: { id },
-      include: {
-        _count: {
-          select: { orders: true },
-        },
-      },
-    });
+    const discount = await this.repository.findById(id);
 
     if (!discount) {
       throw new NotFoundException('Không tìm thấy mã giảm giá');
@@ -97,9 +78,7 @@ export class DiscountService {
   }
 
   async findByCode(code: string) {
-    const discount = await this.prisma.discount.findUnique({
-      where: { code: code.toUpperCase() },
-    });
+    const discount = await this.repository.findByCode(code);
 
     if (!discount) {
       throw new NotFoundException('Không tìm thấy mã giảm giá');
@@ -112,9 +91,7 @@ export class DiscountService {
   }
 
   async validateDiscount(code: string) {
-    const discount = await this.prisma.discount.findUnique({
-      where: { code: code.toUpperCase() },
-    });
+    const discount = await this.repository.findByCode(code);
 
     if (!discount) {
       return {
@@ -182,19 +159,14 @@ export class DiscountService {
       data.endDate = new Date(updateDiscountDto.endDate);
     }
 
-    return this.prisma.discount.update({
-      where: { id },
-      data,
-    });
+    return this.repository.update(id, data);
   }
 
   async remove(id: number) {
     await this.findOne(id);
 
     // Check if discount is being used
-    const usageCount = await this.prisma.order.count({
-      where: { discountId: id },
-    });
+    const usageCount = await this.repository.countOrdersUsingDiscount(id);
 
     if (usageCount > 0) {
       throw new BadRequestException(
@@ -202,31 +174,23 @@ export class DiscountService {
       );
     }
 
-    return this.prisma.discount.delete({
-      where: { id },
-    });
+    return this.repository.delete(id);
   }
 
   async getStats() {
     const now = new Date();
 
     const [total, active, expired, upcoming] = await Promise.all([
-      this.prisma.discount.count(),
-      this.prisma.discount.count({
-        where: {
-          startDate: { lte: now },
-          OR: [{ endDate: null }, { endDate: { gte: now } }],
-        },
+      this.repository.count(),
+      this.repository.countWithFilter({
+        startDate: { lte: now },
+        OR: [{ endDate: null }, { endDate: { gte: now } }],
       }),
-      this.prisma.discount.count({
-        where: {
-          endDate: { lt: now },
-        },
+      this.repository.countWithFilter({
+        endDate: { lt: now },
       }),
-      this.prisma.discount.count({
-        where: {
-          startDate: { gt: now },
-        },
+      this.repository.countWithFilter({
+        startDate: { gt: now },
       }),
     ]);
 

@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
-import { PrismaService } from '../prisma/prisma.service';
+import { OrderRepository } from './order.repository';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { QueryOrderDto } from './dto/query-order.dto';
@@ -17,7 +17,7 @@ import { MailService } from '../mail/mail.service';
 @Injectable()
 export class OrderService {
   constructor(
-    private prisma: PrismaService,
+    private repository: OrderRepository,
     private cartService: CartService,
     private mailService: MailService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
@@ -35,9 +35,7 @@ export class OrderService {
     }
     
     // Check if code exists
-    const existing = await this.prisma.order.findUnique({
-      where: { orderCode: code }
-    });
+    const existing = await this.repository.findByCode(code);
     
     // Recursively generate new code if exists
     if (existing) {
@@ -53,9 +51,7 @@ export class OrderService {
     if (dto.items && dto.items.length > 0) {
       // Guest checkout or direct order - items from request body
       const variantIds = dto.items.map(item => item.variantId);
-      const variants = await this.prisma.productVariant.findMany({
-        where: { id: { in: variantIds } }
-      });
+      const variants = await this.repository.findVariantsByIds(variantIds);
       
       const variantPriceMap = new Map(variants.map(v => [v.id, v.price]));
       
@@ -81,9 +77,7 @@ export class OrderService {
 
     let discount: any = null;
     if (dto.discountCode) {
-      discount = await this.prisma.discount.findUnique({
-        where: { code: dto.discountCode },
-      });
+      discount = await this.repository.findDiscountByCode(dto.discountCode);
       if (!discount || discount.endDate < new Date())
         throw new BadRequestException('Invalid discount');
     }
@@ -130,24 +124,11 @@ export class OrderService {
       orderData.userId = userId;
     }
 
-    const order = await this.prisma.order.create({
-      data: orderData,
-      include: { 
-        orderItems: { 
-          include: { 
-            variant: { 
-              include: { product: true, images: true } 
-            } 
-          } 
-        }, 
-        payment: true,
-        user: true
-      },
-    });
+    const order = await this.repository.create(orderData);
 
     // Only clear cart if items were from cart (not from dto) and user is logged in
     if (userId && (!dto.items || dto.items.length === 0)) {
-      await this.cartService.clearCart(userId);
+      await this.repository.clearUserCart(userId);
     }
     
     if (userId) {
@@ -155,13 +136,13 @@ export class OrderService {
     }
 
     // Send order confirmation email
-    const customerEmail = order.guestEmail || order.user?.email;
-    const customerName = order.shippingInfo?.['fullName'] || order.user?.name || 'Khách hàng';
+    const customerEmail = order.guestEmail || (order as any).user?.email;
+    const customerName = order.shippingInfo?.['fullName'] || (order as any).user?.name || 'Khách hàng';
     
     if (customerEmail) {
       const orderDetails = {
         customerName,
-        items: order.orderItems.map(item => ({
+        items: (order as any).orderItems.map(item => ({
           productName: item.variant?.product?.name || 'N/A',
           size: item.variant?.size,
           color: item.variant?.color,
@@ -190,36 +171,16 @@ export class OrderService {
 
   // src/order/order.service.ts (sửa where clause với userId)
   async findAll(query: QueryOrderDto) {
-    const { page = 1, limit = 10, status, userId } = query; // ✅ Fix: userId từ query (không error TS2339)
+    const { page = 1, limit = 10, status, userId } = query;
     const skip = (page - 1) * limit;
 
     const where = {};
     if (status) where['status'] = status;
-    if (userId) where['userId'] = userId; // ✅ Optional filter
+    if (userId) where['userId'] = userId;
 
-    const [ordersData, total] = await this.prisma.$transaction([
-      this.prisma.order.findMany({
-        where,
-        skip,
-        take: limit,
-        include: {
-          orderItems: {
-            include: { 
-              variant: { 
-                include: { 
-                  product: true,
-                  images: true
-                } 
-              } 
-            },
-          },
-          payment: true,
-          address: true,
-          user: true,
-        },
-        orderBy: { createdAt: 'desc' },
-      }),
-      this.prisma.order.count({ where }),
+    const [ordersData, total] = await Promise.all([
+      this.repository.findAll(where, skip, limit),
+      this.repository.count(where),
     ]);
 
     const orders = {
@@ -243,25 +204,7 @@ export class OrderService {
       return order;
     }
 
-    order = await this.prisma.order.findUnique({
-      where: { id },
-      include: {
-        orderItems: { 
-          include: { 
-            variant: { 
-              include: { 
-                product: true,
-                images: true
-              } 
-            } 
-          } 
-        },
-        payment: true,
-        address: true,
-        discount: true,
-        user: true
-      },
-    });
+    order = await this.repository.findById(id);
 
     if (order) {
       await this.cacheManager.set(cacheKey, order, 1800);
@@ -271,28 +214,18 @@ export class OrderService {
   }
 
   async update(id: number, dto: UpdateOrderDto): Promise<any> {
-    const oldOrder = await this.prisma.order.findUnique({
-      where: { id },
-      include: { orderItems: { include: { variant: true } } },
-    });
+    const oldOrder = await this.repository.findById(id);
 
     if (!oldOrder) {
       throw new NotFoundException(`Order with ID ${id} not found`);
     }
 
-    const order = await this.prisma.order.update({ where: { id }, data: dto });
+    const order = await this.repository.update(id, dto);
 
     // Nếu status thay đổi sang DELIVERED, cập nhật soldCount
     if (dto.status === 'DELIVERED' && oldOrder.status !== 'DELIVERED') {
       for (const item of oldOrder.orderItems) {
-        await this.prisma.product.update({
-          where: { id: item.variant.productId },
-          data: {
-            soldCount: {
-              increment: item.quantity,
-            },
-          },
-        });
+        await this.repository.incrementProductSoldCount(item.variant.productId, item.quantity);
       }
     }
 
@@ -303,9 +236,9 @@ export class OrderService {
   }
 
   async remove(id: number): Promise<any> {
-    const order = await this.prisma.order.findUnique({ where: { id } });
+    const order = await this.repository.findById(id);
     if (!order) throw new NotFoundException('Order not found');
-    const removed = await this.prisma.order.delete({ where: { id } });
+    const removed = await this.repository.delete(id);
     await this.cacheManager.del(`order:${id}`);
     await this.cacheManager.del(`orders:${order.userId}:all`);
 
@@ -313,20 +246,13 @@ export class OrderService {
   }
 
   async cancelOrder(orderId: number, userId: number): Promise<any> {
-    const order = await this.prisma.order.findUnique({ where: { id: orderId } });
+    const order = await this.repository.findById(orderId);
     
     if (!order) throw new NotFoundException('Order not found');
     if (order.userId !== userId) throw new BadRequestException('Not your order');
     if (order.status !== 'PENDING') throw new BadRequestException('Can only cancel PENDING orders');
 
-    const cancelled = await this.prisma.order.update({
-      where: { id: orderId },
-      data: { status: 'CANCELLED' },
-      include: {
-        orderItems: { include: { variant: { include: { product: true } } } },
-        user: true
-      }
-    });
+    const cancelled = await this.repository.update(orderId, { status: 'CANCELLED' });
 
     await this.cacheManager.del(`order:${orderId}`);
     await this.cacheManager.del(`orders:${userId}:all`);
@@ -335,20 +261,16 @@ export class OrderService {
   }
 
   async applyDiscount(orderId: number, dto: ApplyDiscountDto): Promise<any> {
-    const order = await this.prisma.order.findUnique({
-      where: { id: orderId },
-    });
+    const order = await this.repository.findById(orderId);
     if (!order) throw new NotFoundException('Order not found');
-    const discount = await this.prisma.discount.findUnique({
-      where: { code: dto.code },
-    });
+    const discount = await this.repository.findDiscountByCode(dto.code);
     if (!discount) throw new BadRequestException('Invalid discount');
     const newTotal =
       order.total * (1 - (discount.percentage || 0) / 100) -
       (discount.fixedAmount || 0);
-    const updatedOrder = await this.prisma.order.update({
-      where: { id: orderId },
-      data: { total: newTotal, discountId: discount.id },
+    const updatedOrder = await this.repository.update(orderId, {
+      total: newTotal,
+      discount: { connect: { id: discount.id } },
     });
     await this.cacheManager.del(`order:${orderId}`);
     await this.cacheManager.del(`orders:${order.userId}:all`);
@@ -357,23 +279,7 @@ export class OrderService {
   }
 
   async lookupGuestOrder(orderCode: string, contact: string): Promise<any> {
-    const order: any = await this.prisma.order.findUnique({
-      where: { orderCode: orderCode },
-      include: {
-        orderItems: {
-          include: {
-            variant: {
-              include: {
-                product: true,
-                images: true,
-              },
-            },
-          },
-        },
-        payment: true,
-        discount: true,
-      },
-    });
+    const order: any = await this.repository.findByCode(orderCode);
 
     if (!order) {
       throw new NotFoundException('Order not found');
