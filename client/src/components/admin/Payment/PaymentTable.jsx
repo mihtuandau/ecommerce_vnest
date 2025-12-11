@@ -94,7 +94,7 @@ const PaymentTable = ({
             sortable
             sorted={sortField === 'id'}
             sortDir={sortOrder}
-            onSort={() => onSort('id')}
+            onClick={() => onSort('id')}
           >
             ID Giao dịch
           </Table.Header>
@@ -104,7 +104,7 @@ const PaymentTable = ({
             sortable
             sorted={sortField === 'amount'}
             sortDir={sortOrder}
-            onSort={() => onSort('amount')}
+            onClick={() => onSort('amount')}
           >
             Số tiền
           </Table.Header>
@@ -114,7 +114,7 @@ const PaymentTable = ({
             sortable
             sorted={sortField === 'createdAt'}
             sortDir={sortOrder}
-            onSort={() => onSort('createdAt')}
+            onClick={() => onSort('createdAt')}
           >
             Thời gian
           </Table.Header>

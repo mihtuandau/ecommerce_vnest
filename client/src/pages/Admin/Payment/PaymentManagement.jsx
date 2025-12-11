@@ -26,12 +26,24 @@ const PaymentManagement = () => {
 
   useEffect(() => {
     loadPayments();
+    
+    // Auto-refresh every 10 seconds
+    const interval = setInterval(() => {
+      loadPayments();
+    }, 10000);
+    
+    return () => clearInterval(interval);
   }, []);
 
-  const loadPayments = async () => {
+  const loadPayments = async (showLoading = true) => {
     try {
-      setLoading(true);
+      if (showLoading) {
+        setLoading(true);
+      }
       const data = await paymentService.getPayments();
+      
+      console.log('🔄 Payment data received:', data);
+      console.log('🕒 Load time:', new Date().toLocaleTimeString());
       
       // Handle different response structures
       let paymentsArray = [];
@@ -41,13 +53,24 @@ const PaymentManagement = () => {
         paymentsArray = data.data;
       } else if (data.payments && Array.isArray(data.payments)) {
         paymentsArray = data.payments;
+      } else {
+        console.warn('Unexpected payment data structure:', data);
+        paymentsArray = [];
       }
       
+      console.log(`✅ Found ${paymentsArray.length} payments`);
       setPayments(paymentsArray);
     } catch (error) {
-      toast.error('Không thể tải danh sách thanh toán');
+      console.error('❌ Error loading payments:', error);
+      console.error('Error response:', error.response);
+      if (showLoading) {
+        toast.error(error.response?.data?.message || 'Không thể tải danh sách thanh toán');
+      }
+      setPayments([]); // Set empty array on error
     } finally {
-      setLoading(false);
+      if (showLoading) {
+        setLoading(false);
+      }
     }
   };
 
@@ -107,7 +130,7 @@ const PaymentManagement = () => {
           <h1 className="text-3xl font-bold text-gray-900">Quản lý thanh toán</h1>
           <p className="text-gray-600 mt-1">Theo dõi và quản lý các giao dịch thanh toán</p>
         </div>
-        <Button onClick={loadPayments} icon={RefreshCw}>
+        <Button onClick={() => loadPayments(true)} icon={RefreshCw}>
           Làm mới
         </Button>
       </div>

@@ -162,7 +162,7 @@ const ProductCard = ({ product }) => {
         </div>
 
         {/* Price */}
-        <div className="flex items-baseline gap-2 mb-3 flex-wrap">
+        <div className="flex items-baseline gap-2 flex-wrap">
           <span className="text-lg font-bold text-gray-900">
             {formatPrice(productPrice)}
           </span>
@@ -171,20 +171,6 @@ const ProductCard = ({ product }) => {
               {formatPrice(productOriginalPrice)}
             </span>
           )}
-        </div>
-
-        {/* View Detail Button - Pushed to bottom */}
-        <div className="mt-auto">
-          <Link to={`/products/${id}`}>
-            <Button
-              variant="dark"
-              fullWidth
-              icon={FaEye}
-              className="hover:bg-gray-800 transition-colors duration-300 text-sm"
-            >
-              Xem chi tiết
-            </Button>
-          </Link>
         </div>
       </div>
     </div>

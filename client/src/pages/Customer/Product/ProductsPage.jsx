@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { FaFilter } from 'react-icons/fa';
+import { FaFilter, FaTh, FaThLarge, FaList } from 'react-icons/fa';
 import Layout from '../../../components/layouts/Layout';
 import ProductGrid from '../../../components/products/ProductGrid';
 import ProductFilter from '../../../components/products/ProductFilter';
@@ -16,6 +16,7 @@ const ProductsPage = () => {
   const [brands, setBrands] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showFilter, setShowFilter] = useState(false);
+  const [viewMode, setViewMode] = useState('grid-3'); // grid-3, grid-2, list
   const [priceRange, setPriceRange] = useState({ minPrice: 0, maxPrice: 10000000 });
   const [pagination, setPagination] = useState({
     page: 1,
@@ -155,48 +156,93 @@ const ProductsPage = () => {
               </p>
             </div>
             
-            {/* Filter Toggle Button */}
-            <button
-              onClick={() => setShowFilter(!showFilter)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all ${
-                showFilter 
-                  ? 'bg-gray-900 text-white border-gray-900' 
-                  : 'bg-white text-gray-700 border-gray-300 hover:border-gray-900'
-              }`}
-            >
-              <FaFilter size={16} />
-              <span className="font-medium">Bộ lọc</span>
-            </button>
+            {/* View Mode Switcher */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setViewMode('grid-3')}
+                className={`p-2.5 transition-colors ${
+                  viewMode === 'grid-3'
+                    ? 'bg-gray-900 text-white'
+                    : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-300'
+                }`}
+                title="3 cột"
+              >
+                <FaTh size={18} />
+              </button>
+              <button
+                onClick={() => setViewMode('grid-2')}
+                className={`p-2.5 transition-colors ${
+                  viewMode === 'grid-2'
+                    ? 'bg-gray-900 text-white'
+                    : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-300'
+                }`}
+                title="2 cột"
+              >
+                <FaThLarge size={18} />
+              </button>
+              <button
+                onClick={() => setViewMode('list')}
+                className={`p-2.5 transition-colors ${
+                  viewMode === 'list'
+                    ? 'bg-gray-900 text-white'
+                    : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-300'
+                }`}
+                title="Danh sách"
+              >
+                <FaList size={18} />
+              </button>
+            </div>
           </div>
 
-          {/* Filter Section - Collapsible */}
-          {showFilter && (
-            <div className="mb-6 animate-fadeIn">
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <ProductFilter
-                  categories={categories}
-                  brands={brands}
-                  priceRange={priceRange}
-                  currentFilters={getFiltersFromURL()}
-                  onFilterChange={handleFilterChange}
-                />
+          {/* Main Content with Sidebar */}
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            {/* Sidebar Filters - Left Side */}
+            <div className="lg:col-span-1">
+              <div className="sticky top-24">
+                {/* Mobile Toggle Button */}
+                <button
+                  onClick={() => setShowFilter(!showFilter)}
+                  className="lg:hidden w-full flex items-center justify-center gap-2 px-4 py-3 mb-4 bg-gray-900 text-white font-medium"
+                >
+                  <FaFilter size={16} />
+                  <span>Bộ lọc</span>
+                </button>
+
+                {/* Filter Panel */}
+                <div className={`bg-white shadow-sm p-6 ${
+                  showFilter ? 'block' : 'hidden lg:block'
+                }`}>
+                  <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <FaFilter size={16} />
+                    Bộ lọc sản phẩm
+                  </h2>
+                  <ProductFilter
+                    categories={categories}
+                    brands={brands}
+                    priceRange={priceRange}
+                    currentFilters={getFiltersFromURL()}
+                    onFilterChange={handleFilterChange}
+                  />
+                </div>
               </div>
             </div>
-          )}
 
-          {/* Products Grid */}
-          <ProductGrid products={products} loading={loading} />
+            {/* Products Content - Right Side */}
+            <div className="lg:col-span-3">
+              <ProductGrid products={products} loading={loading} viewMode={viewMode} />
 
-          {/* Pagination */}
-          {!loading && products.length > 0 && (
-            <div className="mt-8">
-              <Pagination
-                currentPage={pagination.page}
-                totalPages={pagination.totalPages}
-                onPageChange={handlePageChange}
-              />
+              {/* Pagination */}
+              {!loading && products.length > 0 && (
+                <div className="mt-8">
+                  <Pagination
+                    currentPage={pagination.page}
+                    totalPages={pagination.totalPages}
+                    onPageChange={handlePageChange}
+                  />
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
       </div>
     </Layout>
