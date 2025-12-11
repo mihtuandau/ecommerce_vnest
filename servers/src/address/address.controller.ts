@@ -21,13 +21,13 @@ export class AddressController {
 
   @Post()
   async create(@Body() createAddressDto: CreateAddressDto, @Req() req: any) {
-    const address = await this.addressService.createAddress(req.user.id, createAddressDto);
+    const address = await this.addressService.createAddress(req.user.userId, createAddressDto);
     return { message: 'Address created successfully', address };
   }
 
   @Get()
   async findAll(@Req() req: any) {
-    const addresses = await this.addressService.getAddressesByUser(req.user.id);
+    const addresses = await this.addressService.getAddressesByUser(req.user.userId);
     return { addresses };
   }
 
@@ -51,7 +51,7 @@ export class AddressController {
 
   @Patch(':id/set-default')
   async setDefault(@Param('id') id: string, @Req() req: any) {
-    const address = await this.addressService.setDefaultAddress(+id, req.user.id);
+    const address = await this.addressService.setDefaultAddress(+id, req.user.userId);
     return { message: 'Address set as default successfully', address };
   }
 }

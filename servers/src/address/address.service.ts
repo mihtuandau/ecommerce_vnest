@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { AddressRepository } from './address.repository';
 import { CreateAddressDto } from './dto/create-address.dto';
 import { UpdateAddressDto } from './dto/update-address.dto';
@@ -33,28 +34,28 @@ export class AddressService {
    * Create a new address
    */
   async createAddress(userId: number, data: CreateAddressDto) {
-    // Check if user has default address
-    const hasDefault = await this.repository.findDefaultByUserId(userId);
+    // Check if user has any addresses
+    const addressCount = await this.repository.countByUserId(userId);
+    
+    // First address is always default
+    const isDefault = addressCount === 0 ? true : (data.isDefault === true);
 
-    // If no default exists, make this one default
-    // If default exists and user wants this as default, remove old default
-    const isDefault = !hasDefault ? true : (data.isDefault || false);
-
-    // If new address is default, remove default from all other addresses
-    if (isDefault && hasDefault) {
+    // If new address should be default, remove default from all other addresses
+    if (isDefault) {
       await this.repository.removeDefaultFromAllAddresses(userId);
     }
 
     return this.repository.create({
       user: { connect: { id: userId } },
       fullName: data.fullName,
-      phone: data.phoneNumber,
-      street: data.specificAddress,
+      phone: data.phone,
+      street: data.street,
       ward: data.ward,
-      city: data.province,
-      state: data.district,
-      zipCode: data.wardCode,
-      addressType: data.addressType,
+      city: data.city,
+      state: data.state,
+      zipCode: data.zipCode,
+      country: data.country || 'Vietnam',
+      addressType: data.addressType || 'home',
       isDefault,
     });
   }
@@ -69,11 +70,25 @@ export class AddressService {
     }
 
     // If setting as default, remove default from all other addresses
-    if (data.isDefault) {
+    if (data.isDefault === true) {
       await this.repository.removeDefaultFromAllAddresses(address.userId);
     }
 
-    return this.repository.update(id, data);
+    // Build update data - only include fields that are provided
+    const updateData: Prisma.AddressUpdateInput = {};
+    
+    if (data.fullName !== undefined) updateData.fullName = data.fullName;
+    if (data.phone !== undefined) updateData.phone = data.phone;
+    if (data.street !== undefined) updateData.street = data.street;
+    if (data.ward !== undefined) updateData.ward = data.ward;
+    if (data.city !== undefined) updateData.city = data.city;
+    if (data.state !== undefined) updateData.state = data.state;
+    if (data.zipCode !== undefined) updateData.zipCode = data.zipCode;
+    if (data.country !== undefined) updateData.country = data.country;
+    if (data.addressType !== undefined) updateData.addressType = data.addressType;
+    if (data.isDefault !== undefined) updateData.isDefault = data.isDefault;
+
+    return this.repository.update(id, updateData);
   }
 
   /**
@@ -105,12 +120,16 @@ export class AddressService {
       throw new NotFoundException('Address not found');
     }
 
-    if (address.userId !== userId) {
+    // Ensure both are numbers for comparison
+    const addressUserId = Number(address.userId);
+    const requestUserId = Number(userId);
+
+    if (addressUserId !== requestUserId) {
       throw new BadRequestException('Address does not belong to user');
     }
 
     // Remove default from all user's addresses
-    await this.repository.removeDefaultFromAllAddresses(userId);
+    await this.repository.removeDefaultFromAllAddresses(requestUserId);
 
     // Set this address as default
     return this.repository.update(id, { isDefault: true });
