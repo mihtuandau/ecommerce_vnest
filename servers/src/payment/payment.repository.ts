@@ -83,7 +83,7 @@ export class PaymentRepository {
       // Update payment status
       const paymentUpdated = await prisma.payment.update({
         where: { id: paymentId },
-        data: { status },
+        data: { status: status as any },
         include: { order: true },
       });
 

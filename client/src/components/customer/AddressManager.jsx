@@ -5,7 +5,7 @@ import { useAddressManagement } from '../../hooks/useAddressManagement';
 import AddressCard from './AddressCard';
 import AddressFormModal from './AddressFormModal';
 
-const AddressManager = ({ userId }) => {
+const AddressManager = () => {
   const [showModal, setShowModal] = useState(false);
   const [editingAddress, setEditingAddress] = useState(null);
 
@@ -31,7 +31,7 @@ const AddressManager = ({ userId }) => {
     updateAddress,
     deleteAddress,
     setDefaultAddress
-  } = useAddressManagement(userId);
+  } = useAddressManagement();
 
   const handleOpenModal = (address = null) => {
     if (address) {

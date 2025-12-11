@@ -23,7 +23,7 @@ export class CartController {
 
   @Post('items')
   @ApiOperation({ summary: 'Add item to cart' })
-  @ApiConsumes('application/json')  // Explicit cho JSON body
+  @ApiConsumes('application/json')  
   @ApiBody({ type: AddCartItemDto })
   @ApiResponse({ status: 201, description: 'Item added' })
   @ApiResponse({ status: 400, description: 'Insufficient stock' })

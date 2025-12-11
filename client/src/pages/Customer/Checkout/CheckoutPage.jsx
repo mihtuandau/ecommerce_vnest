@@ -150,13 +150,10 @@ const CheckoutPage = () => {
           title="Chọn địa chỉ giao hàng"
           size="md"
         >
-          {currentUser && (
-            <AddressSelector
-              userId={currentUser.id}
-              onAddressSelect={onSelectAddress}
-              selectedAddressId={null}
-            />
-          )}
+          <AddressSelector
+            onAddressSelect={onSelectAddress}
+            selectedAddressId={null}
+          />
         </Modal>
       </div>
     </div>
