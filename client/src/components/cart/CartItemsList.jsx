@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import CartItem from './CartItem';
 
 const getProductImage = (item) => {
@@ -16,7 +16,10 @@ const createVariant = (item) => ({
   quantity: item.quantity
 });
 
+const ITEMS_PER_PAGE = 5;
+
 const CartItemsList = ({ items, count, selectedItems, onToggleItem, onToggleAll, onUpdateQuantity, onRemove, onClearAll, formatPrice }) => {
+  const [currentPage, setCurrentPage] = useState(1);
   const allSelected = items.length > 0 && selectedItems.size === items.length;
   
   const groupedProducts = useMemo(() => {
@@ -45,6 +48,21 @@ const CartItemsList = ({ items, count, selectedItems, onToggleItem, onToggleAll,
     
     return Object.values(groups);
   }, [items]);
+
+  // Pagination calculations
+  const totalPages = Math.ceil(groupedProducts.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const currentProducts = groupedProducts.slice(startIndex, endIndex);
+
+  // Reset to page 1 if current page exceeds total pages
+  if (currentPage > totalPages && totalPages > 0) {
+    setCurrentPage(1);
+  }
+
+  const goToPage = (page) => {
+    setCurrentPage(Math.max(1, Math.min(page, totalPages)));
+  };
 
   const handleRemoveAll = async (variantIds) => {
     if (window.confirm('Bạn có chắc muốn xóa tất cả biến thể của sản phẩm này?')) {
@@ -77,7 +95,7 @@ const CartItemsList = ({ items, count, selectedItems, onToggleItem, onToggleAll,
       </div>
 
       <div className="space-y-4">
-        {groupedProducts.map((groupedProduct) => (
+        {currentProducts.map((groupedProduct) => (
           <CartItem
             key={groupedProduct.productId}
             groupedProduct={groupedProduct}
@@ -90,6 +108,58 @@ const CartItemsList = ({ items, count, selectedItems, onToggleItem, onToggleAll,
           />
         ))}
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="bg-white rounded-lg shadow-sm p-4 mt-4">
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-gray-600">
+              Hiển thị {startIndex + 1}-{Math.min(endIndex, groupedProducts.length)} của {groupedProducts.length} sản phẩm
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => goToPage(currentPage - 1)}
+                disabled={currentPage === 1}
+                className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                  currentPage === 1
+                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                    : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                Trước
+              </button>
+              
+              <div className="flex items-center gap-1">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => goToPage(page)}
+                    className={`min-w-[36px] h-9 rounded-md text-sm font-medium transition-colors ${
+                      currentPage === page
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+              </div>
+
+              <button
+                onClick={() => goToPage(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                  currentPage === totalPages
+                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                    : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                Sau
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

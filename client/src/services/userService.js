@@ -31,32 +31,6 @@ class UserService {
     return response.data;
   }
 
-  // Address APIs
-  async createAddress(userId, data) {
-    const response = await axiosInstance.post(`/users/${userId}/addresses`, data);
-    return response.data;
-  }
-
-  async updateAddress(userId, addressId, data) {
-    const response = await axiosInstance.put(`/users/${userId}/addresses/${addressId}`, data);
-    return response.data;
-  }
-
-  async getAddresses(userId) {
-    const response = await axiosInstance.get(`/users/${userId}/addresses`);
-    return response.data;
-  }
-
-  async deleteAddress(userId, addressId) {
-    const response = await axiosInstance.delete(`/users/${userId}/addresses/${addressId}`);
-    return response.data;
-  }
-
-  async setDefaultAddress(userId, addressId) {
-    const response = await axiosInstance.put(`/users/${userId}/addresses/${addressId}/default`);
-    return response.data;
-  }
-
   // Get current user profile
   async getProfile() {
     const response = await axiosInstance.get('/users/profile');

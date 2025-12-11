@@ -83,7 +83,7 @@ export class CartService {
     if (!cart) throw new NotFoundException('Cart not found');
     const item = await this.repository.findCartItem(cart.id, variantId);
     if (!item) throw new NotFoundException('Item not found');
-    const updatedItem = await this.repository.updateCartItem(item.id, dto.quantity);
+    const updatedItem = await this.repository.updateCartItem(item.id, dto.quantity!);
 
     await this.cacheManager.del(`cart:${userId}`);
     return updatedItem;

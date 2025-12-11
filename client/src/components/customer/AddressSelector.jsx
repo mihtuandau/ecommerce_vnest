@@ -1,25 +1,25 @@
 import { useState, useEffect } from 'react';
 import { FaMapMarkerAlt, FaStar } from 'react-icons/fa';
 import toast from 'react-hot-toast';
-import userService from '../../services/userService';
+import addressService from '../../services/addressService';
 import locationService from '../../services/locationService';
 
-const AddressSelector = ({ userId, onAddressSelect, selectedAddressId }) => {
+const AddressSelector = ({ onAddressSelect, selectedAddressId }) => {
   const [addresses, setAddresses] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (userId) {
-      loadAddresses();
-    }
-  }, [userId]);
+    loadAddresses();
+  }, []);
 
   const loadAddresses = async () => {
     try {
       setLoading(true);
-      const response = await userService.getAddresses(userId);
-      setAddresses(response.addresses || response.data?.addresses || []);
+      const response = await addressService.getAddresses();
+      const addressList = response.addresses || response.data?.addresses || response || [];
+      setAddresses(Array.isArray(addressList) ? addressList : []);
     } catch (error) {
+      console.error('Load addresses error:', error);
       toast.error('Không thể tải danh sách địa chỉ');
       setAddresses([]);
     } finally {

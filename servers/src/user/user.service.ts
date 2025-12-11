@@ -5,8 +5,6 @@ import { Prisma, User } from '@prisma/client';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { QueryUserDto } from './dto/query-user.dto';
-import { CreateAddressDto } from './dto/create-address.dto';
-import { UpdateAddressDto } from './dto/update-address.dto';
 import { UpdateUserResetDto } from '../user/dto/user-reset.dto';
 import * as bcrypt from 'bcrypt';
 
@@ -49,75 +47,7 @@ export class UserService {
     return this.repository.delete(id);
   }
 
-  // ✨ THÊM: Get all addresses của user
-  async getAddresses(userId: number): Promise<any[]> {
-    return this.repository.findAddressesByUser(userId);
-  }
 
-  // ✨ THÊM: Get một address cụ thể
-  async getAddress(id: number): Promise<any> {
-    return this.repository.findAddressById(id);
-  }
-
-  async addAddress(userId: number, data: CreateAddressDto): Promise<any> {
-    // Kiểm tra xem user đã có địa chỉ default chưa
-    const hasDefault = await this.repository.findDefaultAddress(userId);
-
-    // Nếu chưa có địa chỉ nào, đặt làm default
-    // Nếu đã có địa chỉ và user muốn đặt làm default, bỏ default của địa chỉ cũ
-    const isDefault = !hasDefault ? true : (data.isDefault || false);
-
-    // Nếu địa chỉ mới là default, bỏ default của tất cả địa chỉ khác
-    if (isDefault && hasDefault) {
-      await this.repository.removeDefaultFromAllAddresses(userId);
-    }
-
-    return this.repository.createAddress({
-      user: { connect: { id: userId } },
-      ...data,
-      isDefault,
-    });
-  }
-
-  async updateAddress(id: number, data: UpdateAddressDto): Promise<any> {
-    const address = await this.repository.findAddressById(id);
-    if (!address) throw new Error('Address not found');
-
-    if (data.isDefault) {
-      await this.repository.removeDefaultFromAllAddresses(address.userId);
-    }
-    return this.repository.updateAddress(id, data);
-  }
-
-  // ✨ THÊM: Delete address
-  async deleteAddress(id: number): Promise<any> {
-    const address = await this.repository.findAddressById(id);
-    if (!address) throw new Error('Address not found');
-
-    // Nếu xóa address default, set address khác làm default
-    if (address.isDefault) {
-      const nextAddress = await this.repository.findNextAddress(address.userId, id);
-
-      if (nextAddress) {
-        await this.repository.updateAddress(nextAddress.id, { isDefault: true });
-      }
-    }
-
-    return this.repository.deleteAddress(id);
-  }
-
-  // ✨ THÊM: Set default address
-  async setDefaultAddress(id: number, userId: number): Promise<any> {
-    const address = await this.repository.findAddressById(id);
-    if (!address) throw new Error('Address not found');
-    if (address.userId !== userId) throw new Error('Address does not belong to user');
-
-    // Remove default from all user's addresses
-    await this.repository.removeDefaultFromAllAddresses(userId);
-
-    // Set this address as default
-    return this.repository.updateAddress(id, { isDefault: true });
-  }
 
   async updateResetToken(id: number, resetData: UpdateUserResetDto): Promise<User> {
     const resetPasswordExpires = resetData.resetPasswordExpires 
@@ -126,7 +56,7 @@ export class UserService {
     
     return this.repository.updateResetToken(
       id,
-      resetData.resetPasswordToken,
+      resetData.resetPasswordToken || null,
       resetPasswordExpires,
     );
   }

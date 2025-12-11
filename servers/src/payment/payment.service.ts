@@ -38,7 +38,7 @@ export class PaymentService {
     const payment = await this.repository.create({
       order: { connect: { id: data.orderId } },
       method: data.method,
-      status: data.status || 'PENDING',
+      status: 'PENDING',
       amount: order.total,
       transactionId,
     });

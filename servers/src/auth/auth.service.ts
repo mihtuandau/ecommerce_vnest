@@ -94,7 +94,11 @@ export class AuthService {
     const resetUrl = `${baseUrl}/reset-password?token=${token}&email=${encodeURIComponent(email)}`;
 
     // Use MailService with beautiful template
-    await this.mailService.sendPasswordReset(email, resetUrl, user.name || 'User');
+    await this.mailService.sendPasswordReset(
+      email,
+      resetUrl,
+      user.name || 'User',
+    );
 
     return { message: 'If the email exists, a reset link has been sent' };
   }

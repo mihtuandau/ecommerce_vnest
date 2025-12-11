@@ -19,6 +19,7 @@ import { ChatModule } from './chat/chat.module';
 import { MailModule } from './mail/mail.module';
 import { ChatbotModule } from './chatbot/chatbot.module';
 import { ReviewModule } from './review/review.module';
+import { AddressModule } from './address/address.module';
 
 @Module({
   imports: [
@@ -39,7 +40,8 @@ import { ReviewModule } from './review/review.module';
     ChatModule,
     MailModule,
     ChatbotModule,
-    ReviewModule
+    ReviewModule,
+    AddressModule
   ],
   providers: [PrismaService],
   exports: [PrismaService],
