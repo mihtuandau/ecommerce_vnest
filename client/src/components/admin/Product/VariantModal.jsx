@@ -101,84 +101,63 @@ const VariantModal = ({ product, onClose, onSave, onImagesUploaded, editingVaria
     <Modal
       isOpen={true}
       onClose={onClose}
-      title={
-        <div>
-          <div className="text-xl font-semibold text-gray-900">Quản Lý Biến Thể</div>
-          <p className="text-sm text-gray-600 mt-1">
-            {product?.name} - {product?.sku || 'No SKU'}
-          </p>
-        </div>
-      }
-      size="2xl"
+      title={editingVariant ? 'Sửa Variant' : 'Thêm Variant'}
+      size="lg"
     >
       <div className="space-y-4">
-        {/* Info Note */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-          <p className="text-sm text-blue-900">
-            💡 <strong>Lưu ý:</strong> {editingVariant ? 'Chỉnh sửa thông tin variant và upload ảnh riêng cho variant này.' : bulkMode ? 'Nhập nhiều size cách nhau bằng dấu phẩy (VD: S, M, L, XL) để tạo nhiều variants cùng lúc cho một màu.' : 'Sau khi thêm, variant sẽ hiển thị ở bảng sản phẩm bên dưới. Click mũi tên xuống ở hàng sản phẩm để xem tất cả variants.'}
-          </p>
-        </div>
-
         {/* Mode Toggle - Only show when adding new */}
         {!editingVariant && (
-          <div className="flex gap-2 border-b pb-3">
+          <div className="flex gap-2">
             <button
               onClick={() => setBulkMode(false)}
-              className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors ${
+              className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                 !bulkMode 
-                  ? 'bg-blue-600 text-white' 
+                  ? 'bg-gray-900 text-white hover:bg-gray-800' 
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
-              ➕ Thêm Đơn Lẻ
+              Đơn Lẻ
             </button>
             <button
               onClick={() => setBulkMode(true)}
-              className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors ${
+              className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                 bulkMode 
-                  ? 'bg-blue-600 text-white' 
+                  ? 'bg-gray-900 text-white hover:bg-gray-800' 
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
-              ⚡ Thêm Hàng Loạt
+              Hàng Loạt
             </button>
           </div>
         )}
 
         {/* Variant Form */}
-        <div className="bg-white border border-gray-200 rounded-lg p-4 space-y-3">
-          <h3 className="text-base font-semibold text-gray-900">
-            {editingVariant ? '✏️ Chỉnh Sửa Variant' : bulkMode ? '⚡ Thêm Nhiều Size Cùng Lúc' : '➕ Thêm Biến Thể Mới'}
-          </h3>
-          
-          {bulkMode && !editingVariant ? (
-            <BulkVariantForm 
+        {bulkMode && !editingVariant ? (
+          <BulkVariantForm 
+            product={product}
+            bulkData={bulkData}
+            setBulkData={setBulkData}
+          />
+        ) : (
+          <>
+            <SingleVariantForm
+              variant={currentVariant}
               product={product}
-              bulkData={bulkData}
-              setBulkData={setBulkData}
+              handleVariantChange={handleVariantChange}
+              selectedImages={selectedImages}
+              handleImageSelect={handleImageSelect}
+              editingVariant={editingVariant}
             />
-          ) : (
-            <>
-              <SingleVariantForm
-                variant={currentVariant}
-                product={product}
-                handleVariantChange={handleVariantChange}
-                selectedImages={selectedImages}
-                handleImageSelect={handleImageSelect}
-                editingVariant={editingVariant}
-              />
-              {!editingVariant && <VariantSummary product={product} />}
-            </>
-          )}
-        </div>
+            {!editingVariant && <VariantSummary product={product} />}
+          </>
+        )}
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 pt-4 border-t">
+        <div className="flex items-center justify-end gap-2 pt-4 border-t">
           <Button
             variant="secondary"
             onClick={onClose}
             disabled={loading}
-            className="px-5 py-2"
           >
             Hủy
           </Button>
@@ -186,9 +165,8 @@ const VariantModal = ({ product, onClose, onSave, onImagesUploaded, editingVaria
             variant="primary"
             onClick={handleSave}
             loading={loading}
-            className="px-5 py-2"
           >
-            {editingVariant ? '💾 Lưu Thay Đổi' : bulkMode ? '⚡ Thêm Hàng Loạt' : '➕ Thêm Variant'}
+            {editingVariant ? 'Lưu' : bulkMode ? 'Thêm Hàng Loạt' : 'Thêm Variant'}
           </Button>
         </div>
       </div>

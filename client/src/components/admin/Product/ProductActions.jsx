@@ -76,7 +76,7 @@ const ProductActions = ({
       label: 'Sao chép link',
       icon: <Link size={16} />,
       onClick: handleCopyLink,
-      color: 'text-blue-600'
+      color: 'text-gray-900'
     },
     {
       label: 'Chỉnh sửa',
@@ -85,13 +85,13 @@ const ProductActions = ({
         onEdit(product);
         onClose();
       },
-      color: 'text-blue-600'
+      color: 'text-gray-900'
     },
     {
       label: 'Sao chép sản phẩm',
       icon: <Copy size={16} />,
       onClick: handleDuplicate,
-      color: 'text-green-600'
+      color: 'text-gray-700'
     },
     {
       label: 'Quản lý biến thể',
@@ -100,7 +100,7 @@ const ProductActions = ({
         onManageVariants(product);
         onClose();
       },
-      color: 'text-purple-600'
+      color: 'text-gray-900'
     },
     {
       label: 'Quản lý ảnh',
@@ -108,14 +108,14 @@ const ProductActions = ({
       onClick: () => {
         setShowImageManager(true);
       },
-      color: 'text-indigo-600'
+      color: 'text-gray-700'
     },
     {
       label: product.active ? 'Ẩn sản phẩm' : 'Hiện sản phẩm',
       icon: product.active ? <EyeOff size={16} /> : <Eye size={16} />,
       onClick: () => {onClose();
       },
-      color: product.active ? 'text-orange-600' : 'text-green-600'
+      color: 'text-gray-700'
     },
     {
       label: 'Lưu trữ',

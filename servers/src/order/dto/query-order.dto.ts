@@ -1,4 +1,3 @@
-// src/order/dto/query-order.dto.ts (thêm userId)
 import { IsOptional, IsEnum, IsInt, Min } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
@@ -28,5 +27,5 @@ export class QueryOrderDto {
   @IsOptional()
   @Type(() => Number)
   @IsInt()
-  userId?: number;  // ✅ Fix: Thêm field userId optional
+  userId?: number;
 }

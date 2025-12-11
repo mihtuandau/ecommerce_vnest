@@ -8,9 +8,9 @@ const OrderStatsCards = ({ stats }) => {
       title: 'Tổng đơn',
       value: stats.total,
       icon: ShoppingBag,
-      bgColor: 'bg-blue-100',
-      iconColor: 'text-blue-600',
-      borderColor: 'border-blue-500',
+      bgColor: 'bg-gray-100',
+      iconColor: 'text-gray-900',
+      borderColor: 'border-gray-900',
     },
     {
       title: 'Chờ xử lý',
@@ -48,3 +48,4 @@ const OrderStatsCards = ({ stats }) => {
 };
 
 export default OrderStatsCards;
+

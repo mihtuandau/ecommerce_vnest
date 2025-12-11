@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiBody, ApiConsumes } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../common/guards/auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
@@ -18,16 +18,11 @@ export class CategoryController {
   ) {}
 
   @Get()
-  @ApiOperation({ summary: 'Get all categories (Public)' })
-  @ApiResponse({ status: 200, description: 'List of categories with products count' })
   findAll() {
     return this.categoryService.findAll();
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get category by ID (Public)' })
-  @ApiResponse({ status: 200, description: 'Category details' })
-  @ApiResponse({ status: 404, description: 'Category not found' })
   findOne(@Param('id') id: string) {
     return this.categoryService.findOne(+id);
   }
@@ -38,18 +33,6 @@ export class CategoryController {
   @ApiBearerAuth('Authorization')
   @UseInterceptors(FileInterceptor('image'))
   @ApiConsumes('multipart/form-data')
-  @ApiOperation({ summary: 'Create new category with image upload (Admin only)' })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        name: { type: 'string', example: 'Áo sơ mi', description: 'Tên danh mục (unique)' },
-        image: { type: 'string', format: 'binary', description: 'Upload ảnh từ máy (optional)' }
-      },
-      required: ['name']
-    }
-  })
-  @ApiResponse({ status: 201, description: 'Category created successfully' })
   async create(
     @UploadedFile() file: Express.Multer.File,
     @Body() body: any
@@ -73,18 +56,6 @@ export class CategoryController {
   @ApiBearerAuth('Authorization')
   @UseInterceptors(FileInterceptor('image'))
   @ApiConsumes('multipart/form-data')
-  @ApiOperation({ summary: 'Update category with optional image upload (Admin only)' })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        name: { type: 'string', example: 'Áo sơ mi', description: 'Tên danh mục' },
-        image: { type: 'string', format: 'binary', description: 'Upload ảnh mới (optional)' }
-      }
-    }
-  })
-  @ApiResponse({ status: 200, description: 'Category updated successfully' })
-  @ApiResponse({ status: 404, description: 'Category not found' })
   async update(
     @Param('id') id: string,
     @UploadedFile() file: Express.Multer.File,
@@ -109,19 +80,6 @@ export class CategoryController {
   @ApiBearerAuth('Authorization')
   @UseInterceptors(FileInterceptor('file'))
   @ApiConsumes('multipart/form-data')
-  @ApiOperation({ summary: 'Upload category image (Admin only)' })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        file: {
-          type: 'string',
-          format: 'binary',
-        },
-      },
-    },
-  })
-  @ApiResponse({ status: 200, description: 'Image uploaded successfully' })
   async uploadImage(@UploadedFile() file: Express.Multer.File) {
     const urls = await this.uploadService.uploadImages([file]);
     return { url: urls[0] };
@@ -131,10 +89,8 @@ export class CategoryController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   @ApiBearerAuth('Authorization')
-  @ApiOperation({ summary: 'Delete category (Admin only)' })
-  @ApiResponse({ status: 200, description: 'Category deleted successfully' })
-  @ApiResponse({ status: 404, description: 'Category not found' })
   remove(@Param('id') id: string) {
     return this.categoryService.remove(+id);
   }
 }
+

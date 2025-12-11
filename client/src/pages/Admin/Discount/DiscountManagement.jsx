@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Plus, RefreshCw } from 'lucide-react';
 import toast from 'react-hot-toast';
 import discountService from '../../../services/discountService';
 import Button from '../../../components/common/Button';
+import Pagination from '../../../components/common/Pagination';
 import DiscountStatsCards from '../../../components/admin/Discount/DiscountStatsCards';
 import DiscountFilters from '../../../components/admin/Discount/DiscountFilters';
 import DiscountTable from '../../../components/admin/Discount/DiscountTable';
@@ -17,6 +18,8 @@ const DiscountManagement = () => {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   // Modals
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -44,6 +47,14 @@ const DiscountManagement = () => {
   // Filter and sort discounts
   const filteredDiscounts = useDiscountFilters(discounts, search, statusFilter, sortConfig);
   const stats = useDiscountStats(discounts);
+
+  // Pagination
+  const paginatedDiscounts = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return filteredDiscounts.slice(startIndex, startIndex + itemsPerPage);
+  }, [filteredDiscounts, currentPage]);
+
+  const totalPages = Math.ceil(filteredDiscounts.length / itemsPerPage);
 
   // Sorting
   const handleSort = (key) => {
@@ -149,13 +160,26 @@ const DiscountManagement = () => {
       />
 
       {/* Table */}
-      <DiscountTable
-        discounts={filteredDiscounts}
-        onSort={handleSort}
-        onView={handleView}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-      />
+      <div>
+        <DiscountTable
+          discounts={paginatedDiscounts}
+          loading={loading}
+          onSort={handleSort}
+          onView={handleView}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
+        
+        {!loading && filteredDiscounts.length > 0 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+            itemsCount={paginatedDiscounts.length}
+            totalItems={filteredDiscounts.length}
+          />
+        )}
+      </div>
 
       {/* Modals */}
       <DiscountModal

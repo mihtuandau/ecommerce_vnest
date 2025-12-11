@@ -1,4 +1,3 @@
-// src/payment/dto/create-payment.dto.ts
 import { IsInt, IsEnum, IsPositive, IsOptional, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
@@ -17,7 +16,7 @@ export class CreatePaymentDto {
 
   @ApiProperty({ example: 500000, description: 'Amount (auto from order)' })
   @IsPositive()
-  amount?: number;  // Optional, tính từ order
+  amount?: number;
 
   @ApiProperty({ example: 'TXN_123456', description: 'Transaction ID (auto for external)', required: false })
   @IsOptional()

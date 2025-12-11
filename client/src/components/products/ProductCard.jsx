@@ -28,8 +28,16 @@ const ProductCard = ({ product }) => {
   // Lấy ảnh đầu tiên hoặc ảnh thumbnail
   const productImage = image || (images && images.length > 0 ? images[0].url : '/placeholder-product.jpg');
   
-  // Lấy giá từ basePrice hoặc price
-  const productPrice = basePrice || price || 0;
+  // Lấy giá thấp nhất từ variants hoặc từ basePrice/price
+  const getLowestPrice = () => {
+    if (product.variants && product.variants.length > 0) {
+      const prices = product.variants.map(v => v.price).filter(p => p > 0);
+      return prices.length > 0 ? Math.min(...prices) : (basePrice || price || 0);
+    }
+    return basePrice || price || 0;
+  };
+  
+  const productPrice = getLowestPrice();
   const productOriginalPrice = originalPrice;
   
   // Tính % giảm giá

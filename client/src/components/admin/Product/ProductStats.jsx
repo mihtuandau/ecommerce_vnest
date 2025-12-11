@@ -7,9 +7,9 @@ const ProductStats = ({ products, formatPrice, getTotalStock }) => {
       title: "Total Products",
       value: products.length,
       icon: Package,
-      bgColor: "bg-blue-100",
-      iconColor: "text-blue-600",
-      borderColor: "border-blue-500",
+      bgColor: "bg-gray-100",
+      iconColor: "text-gray-900",
+      borderColor: "border-gray-900",
     },
     {
       title: "Total Value",
@@ -17,9 +17,9 @@ const ProductStats = ({ products, formatPrice, getTotalStock }) => {
         products.reduce((sum, p) => sum + (p.basePrice || 0), 0)
       ),
       icon: DollarSign,
-      bgColor: "bg-green-100",
-      iconColor: "text-green-600",
-      borderColor: "border-green-500",
+      bgColor: "bg-gray-100",
+      iconColor: "text-gray-900",
+      borderColor: "border-gray-900",
     },
     {
       title: "Low Stock",
@@ -28,17 +28,17 @@ const ProductStats = ({ products, formatPrice, getTotalStock }) => {
         return stock > 0 && stock < 10;
       }).length,
       icon: AlertTriangle,
-      bgColor: "bg-orange-100",
-      iconColor: "text-orange-600",
-      borderColor: "border-orange-500",
+      bgColor: "bg-gray-100",
+      iconColor: "text-gray-700",
+      borderColor: "border-gray-700",
     },
     {
       title: "Out of Stock",
       value: products.filter((p) => getTotalStock(p.variants) === 0).length,
       icon: XCircle,
-      bgColor: "bg-red-100",
-      iconColor: "text-red-600",
-      borderColor: "border-red-500",
+      bgColor: "bg-gray-100",
+      iconColor: "text-gray-700",
+      borderColor: "border-gray-700",
     },
   ];
 

@@ -1,23 +1,14 @@
 import toast from 'react-hot-toast';
 
-/**
- * Validate email format with comprehensive regex
- */
 export const validateEmail = (email) => {
   const emailRegex = /^[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   return emailRegex.test(email);
 };
 
-/**
- * Validate phone number (10 digits)
- */
 export const validatePhone = (phone) => {
   return /^[0-9]{10}$/.test(phone);
 };
 
-/**
- * Validate checkout form
- */
 export const validateCheckoutForm = (shippingInfo, isGuest, agreedToTerms) => {
   const {
     fullName = "",
@@ -65,9 +56,6 @@ export const validateCheckoutForm = (shippingInfo, isGuest, agreedToTerms) => {
   return true;
 };
 
-/**
- * Format shipping address string
- */
 export const formatShippingAddress = (shippingInfo) => {
   const parts = [
     shippingInfo.address,
@@ -79,10 +67,7 @@ export const formatShippingAddress = (shippingInfo) => {
   return parts.join(", ");
 };
 
-/**
- * Build order data object
- */
-export const buildOrderData = (cartItems, shippingInfo, paymentMethod, isGuest) => {
+export const buildOrderData = (cartItems, shippingInfo, paymentMethod, isGuest, appliedDiscount = null) => {
   const orderData = {
     items: cartItems.map((item) => ({
       variantId: item.variantId,
@@ -97,17 +82,23 @@ export const buildOrderData = (cartItems, shippingInfo, paymentMethod, isGuest) 
     paymentMethod,
   };
 
+  // Add discount code if applied
+  if (appliedDiscount?.code) {
+    orderData.discountCode = appliedDiscount.code;
+    console.log('✅ Discount applied to order:', appliedDiscount.code);
+  } else {
+    console.log('❌ No discount applied:', appliedDiscount);
+  }
+
   if (isGuest) {
     orderData.guestEmail = shippingInfo.email;
     orderData.guestPhone = shippingInfo.phone;
   }
 
+  console.log('📦 Final order data:', orderData);
   return orderData;
 };
 
-/**
- * Manage guest orders in localStorage
- */
 export const saveGuestOrder = (orderCode, email) => {
   const guestOrders = JSON.parse(localStorage.getItem("guest_orders") || "[]");
   
@@ -124,10 +115,6 @@ export const saveGuestOrder = (orderCode, email) => {
 
   localStorage.setItem("guest_orders", JSON.stringify(guestOrders));
 };
-
-/**
- * Clear guest cart from localStorage
- */
 export const clearGuestCart = () => {
   localStorage.removeItem("guest_cart");
 };
