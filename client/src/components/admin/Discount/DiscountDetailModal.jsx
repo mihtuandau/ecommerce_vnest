@@ -36,12 +36,12 @@ const DiscountDetailModal = ({ isOpen, onClose, discount }) => {
 
         {/* Thông tin giảm giá */}
         <div className="grid grid-cols-2 gap-4">
-          <div className="bg-blue-50 rounded-lg p-4">
+          <div className="bg-gray-50 rounded-lg p-4">
             <div className="flex items-center gap-2 mb-2">
-              <Tag className="h-5 w-5 text-blue-600" />
+              <Tag className="h-5 w-5 text-gray-900" />
               <span className="text-sm font-medium text-gray-700">Giá trị giảm</span>
             </div>
-            <p className="text-2xl font-bold text-blue-600">
+            <p className="text-2xl font-bold text-gray-900">
               {getDiscountTypeText(discount)}
             </p>
             <p className="text-xs text-gray-600 mt-1">
@@ -100,3 +100,4 @@ const DiscountDetailModal = ({ isOpen, onClose, discount }) => {
 };
 
 export default DiscountDetailModal;
+

@@ -26,7 +26,7 @@ const VariantSection = ({
           type="button"
           onClick={onAddVariant}
           size="sm"
-          className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm px-3 py-1.5"
+          className="flex items-center gap-1.5 bg-gray-900 hover:bg-gray-800 text-white text-sm px-3 py-1.5"
         >
           <Plus size={16} />
           Thêm
@@ -53,7 +53,7 @@ const VariantSection = ({
         {variants.map((variant, index) => (
           <div
             key={index}
-            className="bg-gray-50 border border-gray-200 rounded-lg p-3 hover:border-blue-300 transition-all"
+            className="bg-gray-50 border border-gray-200 rounded-lg p-3 hover:border-gray-300 transition-all"
           >
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs font-semibold text-gray-700">
@@ -82,7 +82,7 @@ const VariantSection = ({
                   placeholder="M, L, XL..."
                   value={variant.size || ''}
                   onChange={(e) => onVariantChange(index, 'size', e.target.value)}
-                  className="w-full px-2.5 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:border-blue-500 focus:ring-blue-200"
+                  className="w-full px-2.5 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:border-gray-900 focus:ring-gray-200"
                 />
               </div>
 
@@ -96,7 +96,7 @@ const VariantSection = ({
                   placeholder="Đỏ, Xanh..."
                   value={variant.color || ''}
                   onChange={(e) => onVariantChange(index, 'color', e.target.value)}
-                  className="w-full px-2.5 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:border-blue-500 focus:ring-blue-200"
+                  className="w-full px-2.5 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:border-gray-900 focus:ring-gray-200"
                 />
               </div>
 
@@ -110,7 +110,7 @@ const VariantSection = ({
                   placeholder="SKU-001"
                   value={variant.sku || ''}
                   onChange={(e) => onVariantChange(index, 'sku', e.target.value)}
-                  className="w-full px-2.5 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:border-blue-500 focus:ring-blue-200"
+                  className="w-full px-2.5 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:border-gray-900 focus:ring-gray-200"
                 />
               </div>
 
@@ -126,7 +126,7 @@ const VariantSection = ({
                   placeholder={basePrice || '0'}
                   value={variant.price || ''}
                   onChange={(e) => onVariantChange(index, 'price', e.target.value)}
-                  className="w-full px-2.5 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:border-blue-500 focus:ring-blue-200"
+                  className="w-full px-2.5 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:border-gray-900 focus:ring-gray-200"
                 />
               </div>
 
@@ -141,7 +141,7 @@ const VariantSection = ({
                   placeholder="0"
                   value={variant.stock || ''}
                   onChange={(e) => onVariantChange(index, 'stock', e.target.value)}
-                  className="w-full px-2.5 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:border-blue-500 focus:ring-blue-200"
+                  className="w-full px-2.5 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:border-gray-900 focus:ring-gray-200"
                 />
               </div>
             </div>
@@ -182,7 +182,7 @@ const VariantSection = ({
 
             {/* Preview giá nếu không nhập */}
             {!variant.price && basePrice && (
-              <div className="mt-3 text-xs text-gray-600 bg-blue-50 border border-blue-200 rounded px-3 py-2">
+              <div className="mt-3 text-xs text-gray-600 bg-gray-50 border border-gray-200 rounded px-3 py-2">
                 💰 Giá áp dụng: <strong>{formatNumber(basePrice)} VND</strong> (giá cơ bản)
               </div>
             )}
@@ -211,3 +211,5 @@ const VariantSection = ({
 };
 
 export default VariantSection;
+
+

@@ -28,7 +28,7 @@ const AddressCard = ({ address, userId, onSetDefault, onDelete }) => {
     <div
       className={`p-4 border rounded-lg transition-all ${
         address.isDefault
-          ? 'border-blue-500 bg-blue-50'
+          ? 'border-gray-900 bg-gray-50'
           : 'border-gray-200 hover:border-gray-300'
       }`}
     >
@@ -52,10 +52,10 @@ const AddressCard = ({ address, userId, onSetDefault, onDelete }) => {
             <button
               onClick={handleSetDefault}
               disabled={loading}
-              className="p-2 hover:bg-blue-100 rounded-lg transition-colors disabled:opacity-50"
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
               title="Đặt làm mặc định"
             >
-              <Check className="w-4 h-4 text-blue-600" />
+              <Check className="w-4 h-4 text-gray-900" />
             </button>
           )}
           {onDelete && (

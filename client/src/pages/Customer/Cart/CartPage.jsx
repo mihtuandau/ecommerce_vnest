@@ -23,10 +23,8 @@ const CartPage = () => {
     clearCart 
   } = useCart();
   
-  // Selected items for checkout
   const [selectedItems, setSelectedItems] = useState(new Set());
   
-  // Calculate selected total
   const selectedTotal = useMemo(() => {
     return cartItems
       .filter(item => selectedItems.has(item.variantId))
@@ -40,10 +38,8 @@ const CartPage = () => {
 
   const handleUpdateQuantity = useCallback((variantId, currentQuantity, delta) => {
     if (delta === 0) {
-      // Direct input change
       updateCartItem(variantId, currentQuantity);
     } else {
-      // Plus/Minus button
       const newQuantity = currentQuantity + delta;
       if (newQuantity < 1) return;
       updateCartItem(variantId, newQuantity);
@@ -77,10 +73,8 @@ const CartPage = () => {
   
   const handleToggleAll = useCallback(() => {
     if (selectedItems.size === cartItems.length) {
-      // Deselect all
       setSelectedItems(new Set());
     } else {
-      // Select all
       setSelectedItems(new Set(cartItems.map(item => item.variantId)));
     }
   }, [cartItems, selectedItems.size]);
@@ -96,7 +90,6 @@ const CartPage = () => {
       return;
     }
     
-    // Store selected items in session or pass via state
     navigate('/checkout', { 
       state: { 
         selectedItems: Array.from(selectedItems),
@@ -121,7 +114,6 @@ const CartPage = () => {
     <Layout>
       <div className="bg-gray-50 min-h-screen py-8">
         <div className="container mx-auto px-4 lg:px-8">
-          {/* Breadcrumb */}
           <div className="mb-6">
             <nav className="flex items-center space-x-2 text-sm text-gray-600">
               <Link to="/" className="hover:text-gray-900">Trang chủ</Link>
@@ -130,7 +122,6 @@ const CartPage = () => {
             </nav>
           </div>
 
-          {/* Page Header */}
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
               Giỏ hàng của bạn
@@ -141,7 +132,6 @@ const CartPage = () => {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Cart Items */}
             <div className="lg:col-span-2">
               <CartItemsList
                 items={cartItems}
@@ -155,7 +145,6 @@ const CartPage = () => {
                 formatPrice={formatPrice}
               />
 
-              {/* Continue Shopping */}
               <div className="mt-6">
                 <Link to="/products">
                   <Button variant="outline" icon={FaArrowLeft}>
@@ -165,7 +154,6 @@ const CartPage = () => {
               </div>
             </div>
 
-            {/* Order Summary */}
             <div className="lg:col-span-1">
               <CartSummary
                 total={selectedTotal}

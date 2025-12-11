@@ -1,26 +1,15 @@
 import axiosInstance from '../config/api.config';
 
-/**
- * Homepage Service - Tối ưu API calls cho trang chủ
- */
 const homeService = {
-  /**
-   * Lấy tất cả dữ liệu cho homepage trong 1 lần gọi
-   * Sử dụng Promise.all để gọi song song, tối ưu performance
-   */
+  
   getAllData: async () => {
     try {
       const [banners, categories, featuredProducts] = await Promise.all([
-        // Get active banners
         axiosInstance.get('/banners', { 
           params: { active: true } 
         }).then(res => res.data).catch(() => []),
-        
-        // Get all categories
         axiosInstance.get('/categories')
           .then(res => res.data).catch(() => []),
-        
-        // Get featured products (best sellers)
         axiosInstance.get('/products', {
           params: { 
             limit: 8,
@@ -42,9 +31,6 @@ const homeService = {
     }
   },
 
-  /**
-   * Lấy sản phẩm mới nhất
-   */
   getNewArrivals: async (limit = 8) => {
     try {
       const response = await axiosInstance.get('/products', {
@@ -58,9 +44,6 @@ const homeService = {
     }
   },
 
-  /**
-   * Lấy sản phẩm bán chạy
-   */
   getBestSellers: async (limit = 8) => {
     try {
       const response = await axiosInstance.get('/products', {
@@ -74,9 +57,6 @@ const homeService = {
     }
   },
 
-  /**
-   * Lấy sản phẩm đang sale
-   */
   getSaleProducts: async (limit = 8) => {
     try {
       const response = await axiosInstance.get('/products', {

@@ -1,4 +1,3 @@
-// src/pages/Auth/LoginPage.jsx
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
@@ -39,24 +38,19 @@ const LoginPage = () => {
     try {
       await handleLogin(formData);
       toast.success('Đăng nhập thành công!');
-      // Redirect handled inside hook, nếu không thì dùng:
-      // navigate('/');
     } catch (err) {
       toast.error(err.message || 'Login failed');
     }
   };
 
   const handleGoogleLogin = () => {
-    // Add timestamp to prevent caching
     window.location.href = `http://localhost:5000/api/auth/google?_t=${Date.now()}`;
   };
 
   return (
     <div className="min-h-screen flex overflow-hidden bg-gray-100">
-      {/* Left Side - Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-12 bg-white relative animate-slideInLeft lg:shadow-[8px_0_24px_-8px_rgba(0,0,0,0.12)] z-10">
         <div className="w-full max-w-md">
-          {/* Logo */}
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold text-gray-900">
               Welcome Back
@@ -64,7 +58,6 @@ const LoginPage = () => {
             <p className="text-gray-600 mt-2">Đăng nhập để tiếp tục mua sắm</p>
           </div>
 
-          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
             <Input
               label="Email"
@@ -90,7 +83,6 @@ const LoginPage = () => {
               required
             />
 
-            {/* Remember & Forgot */}
             <div className="flex items-center justify-between">
               <label className="flex items-center space-x-2 cursor-pointer">
                 <input type="checkbox" className="w-4 h-4 text-gray-900 rounded focus:ring-2 focus:ring-gray-900" />

@@ -1,16 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { apiCache } from '../utils/performanceHelpers';
 
-/**
- * Custom hook for optimized data fetching with caching
- * @param {Function} fetchFn - Async function to fetch data
- * @param {Array} dependencies - Dependencies array for useEffect
- * @param {Object} options - Options object
- * @param {boolean} options.cache - Enable caching (default: true)
- * @param {number} options.cacheTTL - Cache time-to-live in ms (default: 5min)
- * @param {string} options.cacheKey - Custom cache key
- * @returns {Object} { data, loading, error, refetch }
- */
 export const useFetch = (fetchFn, dependencies = [], options = {}) => {
   const {
     cache = true,
@@ -32,7 +22,6 @@ export const useFetch = (fetchFn, dependencies = [], options = {}) => {
       setLoading(true);
       setError(null);
 
-      // Check cache first
       if (cache && !skipCache) {
         const key = getCacheKey();
         const cachedData = apiCache.get(key);
@@ -45,13 +34,10 @@ export const useFetch = (fetchFn, dependencies = [], options = {}) => {
         }
       }
 
-      // Fetch fresh data
       const result = await fetchFn();
 
       if (mountedRef.current) {
         setData(result);
-        
-        // Cache the result
         if (cache) {
           const key = getCacheKey();
           apiCache.set(key, result);
@@ -74,7 +60,6 @@ export const useFetch = (fetchFn, dependencies = [], options = {}) => {
   useEffect(() => {
     mountedRef.current = true;
     fetchData();
-
     return () => {
       mountedRef.current = false;
     };
@@ -87,12 +72,6 @@ export const useFetch = (fetchFn, dependencies = [], options = {}) => {
   return { data, loading, error, refetch };
 };
 
-/**
- * Custom hook for debounced search
- * @param {Function} searchFn - Search function to call
- * @param {number} delay - Debounce delay in ms (default: 500)
- * @returns {Function} Debounced search function
- */
 export const useDebouncedSearch = (searchFn, delay = 500) => {
   const timeoutRef = useRef(null);
 
@@ -110,10 +89,6 @@ export const useDebouncedSearch = (searchFn, delay = 500) => {
   );
 };
 
-/**
- * Custom hook to detect if component is mounted
- * @returns {React.MutableRefObject<boolean>} Mounted ref
- */
 export const useIsMounted = () => {
   const mountedRef = useRef(false);
 

@@ -1,10 +1,6 @@
 import { useState, useEffect } from 'react';
 import homeService from '../services/homeService';
 
-/**
- * Custom hook để quản lý data cho homepage
- * Tối ưu performance với error handling và loading state
- */
 export const useHomeData = () => {
   const [data, setData] = useState({
     banners: [],

@@ -4,10 +4,8 @@ export const formatCurrency = formatPrice;
 
 export const formatDateTimeDisplay = formatDateTime;
 
-// Format ngày ngắn (chỉ ngày/tháng/năm) 
 export const formatDateShort = formatDate;
 
-// Lấy màu badge theo trạng thái
 export const getStatusVariant = (status) => {
   const variants = {
     active: 'success',
@@ -17,7 +15,6 @@ export const getStatusVariant = (status) => {
   return variants[status] || 'secondary';
 };
 
-// Lấy text hiển thị theo trạng thái
 export const getStatusText = (status) => {
   const texts = {
     active: 'Đang hoạt động',
@@ -27,7 +24,6 @@ export const getStatusText = (status) => {
   return texts[status] || status;
 };
 
-// Lấy text loại giảm giá
 export const getDiscountTypeText = (discount) => {
   if (discount.percentage) {
     return `${discount.percentage}%`;
@@ -38,7 +34,6 @@ export const getDiscountTypeText = (discount) => {
   return '-';
 };
 
-// Tính số tiền giảm
 export const calculateDiscountAmount = (discount, orderTotal) => {
   if (discount.percentage) {
     return (orderTotal * discount.percentage) / 100;

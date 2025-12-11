@@ -131,8 +131,8 @@ const AdminDashboardPage = () => {
         {/* Orders Card */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center">
-              <Package className="w-6 h-6 text-blue-600" />
+            <div className="w-12 h-12 bg-gray-50 rounded-lg flex items-center justify-center">
+              <Package className="w-6 h-6 text-gray-900" />
             </div>
             {stats?.orders?.pending > 0 && (
               <span className="text-xs font-medium text-orange-600 bg-orange-50 px-2 py-1 rounded">
@@ -147,11 +147,11 @@ const AdminDashboardPage = () => {
         {/* Users Card */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 bg-purple-50 rounded-lg flex items-center justify-center">
-              <Users className="w-6 h-6 text-purple-600" />
+            <div className="w-12 h-12 bg-gray-50 rounded-lg flex items-center justify-center">
+              <Users className="w-6 h-6 text-gray-700" />
             </div>
             {stats?.users?.new > 0 && (
-              <span className="text-xs font-medium text-purple-600 bg-purple-50 px-2 py-1 rounded">
+              <span className="text-xs font-medium text-gray-700 bg-gray-50 px-2 py-1 rounded">
                 +{stats.users.new} mới
               </span>
             )}

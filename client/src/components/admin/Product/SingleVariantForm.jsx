@@ -82,7 +82,7 @@ const SingleVariantForm = ({ variant, product, handleVariantChange, selectedImag
             multiple
             accept="image/*"
             onChange={handleImageSelect}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-gray-50 file:text-gray-900 hover:file:bg-gray-100"
           />
           {selectedImages.length > 0 && (
             <p className="text-xs text-gray-500 mt-1">
@@ -96,3 +96,4 @@ const SingleVariantForm = ({ variant, product, handleVariantChange, selectedImag
 };
 
 export default SingleVariantForm;
+

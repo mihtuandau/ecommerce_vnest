@@ -131,7 +131,7 @@ const AdminChatManagement = () => {
     <div className="h-[calc(100vh-200px)] flex gap-4">
       {/* Rooms List */}
       <div className="w-1/3 bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        <div className="bg-blue-600 text-white px-4 py-3">
+        <div className="bg-gray-900 text-white px-4 py-3">
           <h2 className="text-lg font-semibold flex items-center gap-2">
             <FaComments />
             Cuộc trò chuyện
@@ -141,7 +141,7 @@ const AdminChatManagement = () => {
         <div className="overflow-y-auto h-full">
           {loading ? (
             <div className="p-8 text-center text-gray-500">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-3"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-3"></div>
               <p>Đang tải...</p>
             </div>
           ) : rooms.length === 0 ? (
@@ -162,13 +162,13 @@ const AdminChatManagement = () => {
                   key={room.roomId}
                   onClick={() => handleRoomSelect(room.roomId)}
                   className={`w-full p-4 border-b hover:bg-gray-50 transition-colors text-left ${
-                    selectedRoom === room.roomId ? 'bg-blue-50 border-l-4 border-l-blue-600' : ''
+                    selectedRoom === room.roomId ? 'bg-gray-50 border-l-4 border-l-gray-900' : ''
                   }`}
                 >
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-                        <FaUser className="text-blue-600" size={18} />
+                      <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+                        <FaUser className="text-gray-900" size={18} />
                       </div>
                       <div>
                         <p className="font-semibold text-gray-900">{userName}</p>
@@ -197,7 +197,7 @@ const AdminChatManagement = () => {
       <div className="flex-1 bg-white rounded-lg shadow-sm border border-gray-200 flex flex-col">
         {selectedRoom ? (
           <>
-            <div className="bg-blue-600 text-white px-4 py-3 rounded-t-lg">
+            <div className="bg-gray-900 text-white px-4 py-3 rounded-t-lg">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
                   <FaUser size={18} />
@@ -208,7 +208,7 @@ const AdminChatManagement = () => {
                       ? messages[0].sender.name 
                       : selectedRoom.replace('user-', 'User #')}
                   </h3>
-                  <p className="text-xs text-blue-100 flex items-center gap-1">
+                  <p className="text-xs text-gray-100 flex items-center gap-1">
                     <FaCircle size={8} className="text-green-400" />
                     Online
                   </p>
@@ -227,12 +227,12 @@ const AdminChatManagement = () => {
                     <div
                       className={`max-w-[75%] px-4 py-2 rounded-lg ${
                         isAdmin
-                          ? 'bg-blue-600 text-white'
+                          ? 'bg-gray-900 text-white'
                           : 'bg-white border border-gray-200'
                       }`}
                     >
                       <p className="text-sm whitespace-pre-wrap break-words">{msg.message}</p>
-                      <p className={`text-xs mt-1 ${isAdmin ? 'text-blue-100' : 'text-gray-400'}`}>
+                      <p className={`text-xs mt-1 ${isAdmin ? 'text-gray-100' : 'text-gray-400'}`}>
                         {new Date(msg.createdAt).toLocaleTimeString('vi-VN', {
                           hour: '2-digit',
                           minute: '2-digit',
@@ -276,7 +276,7 @@ const AdminChatManagement = () => {
                 <button
                   onClick={handleSend}
                   disabled={!newMessage.trim()}
-                  className="px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-4 bg-gray-900 text-white rounded-lg hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <FaPaperPlane size={18} />
                 </button>
@@ -297,3 +297,4 @@ const AdminChatManagement = () => {
 };
 
 export default AdminChatManagement;
+

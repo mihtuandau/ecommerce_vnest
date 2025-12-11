@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import orderService from '../../../services/orderService';
 import toast from 'react-hot-toast';
 import Loading from '../../../components/common/Loading';
+import Pagination from '../../../components/common/Pagination';
 import OrderStatsCards from '../../../components/admin/Order/OrderStatsCards';
 import OrderFilters from '../../../components/admin/Order/OrderFilters';
 import OrderTable from '../../../components/admin/Order/OrderTable';
@@ -18,6 +19,8 @@ const AdminOrdersPage = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     loadOrders();
@@ -84,6 +87,14 @@ const AdminOrdersPage = () => {
   const filteredOrders = useOrderFilters(orders, searchQuery, sortBy, sortDir);
   const stats = useOrderStats(orders);
 
+  // Pagination
+  const paginatedOrders = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return filteredOrders.slice(startIndex, startIndex + itemsPerPage);
+  }, [filteredOrders, currentPage]);
+
+  const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white p-8">
       <div className="max-w-7xl mx-auto">
@@ -109,14 +120,26 @@ const AdminOrdersPage = () => {
         />
 
         {/* Orders Table */}
-        <OrderTable
-          orders={filteredOrders}
-          loading={loading}
-          sortBy={sortBy}
-          sortDir={sortDir}
-          onSort={toggleSort}
-          onViewDetails={handleViewDetails}
-        />
+        <div>
+          <OrderTable
+            orders={paginatedOrders}
+            loading={loading}
+            sortBy={sortBy}
+            sortDir={sortDir}
+            onSort={toggleSort}
+            onViewDetails={handleViewDetails}
+          />
+          
+          {!loading && filteredOrders.length > 0 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+              itemsCount={paginatedOrders.length}
+              totalItems={filteredOrders.length}
+            />
+          )}
+        </div>
       </div>
 
       {/* Order Detail Modal */}

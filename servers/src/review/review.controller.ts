@@ -10,14 +10,7 @@ import {
   UseGuards,
   Req,
 } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiBearerAuth,
-  ApiQuery,
-  ApiParam,
-} from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../common/guards/auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
@@ -32,9 +25,6 @@ export class ReviewController {
   @Post()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Create a review (Authenticated users who purchased)' })
-  @ApiResponse({ status: 201, description: 'Review created' })
-  @ApiResponse({ status: 400, description: 'Bad request' })
   async createReview(@Body() dto: CreateReviewDto, @Req() req: any) {
     const userId = req.user.userId;
     return this.reviewService.createReview(userId, dto);
@@ -43,9 +33,6 @@ export class ReviewController {
   @Get('can-review/:productId')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Check if user can review this product' })
-  @ApiParam({ name: 'productId', description: 'Product ID', type: Number })
-  @ApiResponse({ status: 200, description: 'Returns boolean' })
   async canUserReview(@Param('productId') productId: string, @Req() req: any) {
     const userId = req.user.userId;
     const canReview = await this.reviewService.canUserReview(userId, +productId);
@@ -53,11 +40,6 @@ export class ReviewController {
   }
 
   @Get('product/:productId')
-  @ApiOperation({ summary: 'Get all reviews for a product (Public)' })
-  @ApiParam({ name: 'productId', description: 'Product ID', type: Number })
-  @ApiQuery({ name: 'page', required: false, type: Number })
-  @ApiQuery({ name: 'limit', required: false, type: Number })
-  @ApiResponse({ status: 200, description: 'Reviews retrieved' })
   async getProductReviews(
     @Param('productId') productId: string,
     @Query('page') page?: string,
@@ -73,9 +55,6 @@ export class ReviewController {
   @Put(':id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Update a review (Review owner only)' })
-  @ApiParam({ name: 'id', description: 'Review ID', type: Number })
-  @ApiResponse({ status: 200, description: 'Review updated' })
   async updateReview(
     @Param('id') id: string,
     @Body() dto: UpdateReviewDto,
@@ -88,9 +67,6 @@ export class ReviewController {
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Delete a review (Review owner only)' })
-  @ApiParam({ name: 'id', description: 'Review ID', type: Number })
-  @ApiResponse({ status: 200, description: 'Review deleted' })
   async deleteReview(@Param('id') id: string, @Req() req: any) {
     const userId = req.user.userId;
     return this.reviewService.deleteReview(+id, userId);
@@ -100,11 +76,6 @@ export class ReviewController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Get all reviews (Admin only)' })
-  @ApiQuery({ name: 'page', required: false, type: Number })
-  @ApiQuery({ name: 'limit', required: false, type: Number })
-  @ApiQuery({ name: 'productId', required: false, type: Number })
-  @ApiResponse({ status: 200, description: 'All reviews retrieved' })
   async getAllReviews(
     @Query('page') page?: string,
     @Query('limit') limit?: string,
@@ -117,3 +88,5 @@ export class ReviewController {
     );
   }
 }
+
+

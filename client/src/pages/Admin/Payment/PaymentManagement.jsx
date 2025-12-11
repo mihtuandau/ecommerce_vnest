@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { RefreshCw } from 'lucide-react';
 import paymentService from '../../../services/paymentService';
 import toast from 'react-hot-toast';
 import Button from '../../../components/common/Button';
+import Pagination from '../../../components/common/Pagination';
 import PaymentStatsCards from '../../../components/admin/Payment/PaymentStatsCards';
 import PaymentFilters from '../../../components/admin/Payment/PaymentFilters';
 import PaymentTable from '../../../components/admin/Payment/PaymentTable';
@@ -20,6 +21,8 @@ const PaymentManagement = () => {
   const [sortOrder, setSortOrder] = useState('desc');
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     loadPayments();
@@ -84,6 +87,14 @@ const PaymentManagement = () => {
 
   const stats = usePaymentStats(payments);
 
+  // Pagination
+  const paginatedPayments = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return filteredPayments.slice(startIndex, startIndex + itemsPerPage);
+  }, [filteredPayments, currentPage]);
+
+  const totalPages = Math.ceil(filteredPayments.length / itemsPerPage);
+
   if (loading) {
     return <Loading fullScreen text="Đang tải dữ liệu..." />;
   }
@@ -117,13 +128,26 @@ const PaymentManagement = () => {
       />
 
       {/* Payments Table */}
-      <PaymentTable
-        payments={filteredPayments}
-        sortField={sortField}
-        sortOrder={sortOrder}
-        onSort={toggleSort}
-        onViewDetail={handleViewDetail}
-      />
+      <div>
+        <PaymentTable
+          payments={paginatedPayments}
+          loading={loading}
+          sortField={sortField}
+          sortOrder={sortOrder}
+          onSort={toggleSort}
+          onViewDetail={handleViewDetail}
+        />
+        
+        {!loading && filteredPayments.length > 0 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+            itemsCount={paginatedPayments.length}
+            totalItems={filteredPayments.length}
+          />
+        )}
+      </div>
 
       {/* Detail Modal */}
       <PaymentDetailModal

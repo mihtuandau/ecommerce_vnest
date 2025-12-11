@@ -1,4 +1,3 @@
-// src/pages/Auth/ResetPasswordPage.jsx
 import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Lock, CheckCircle } from 'lucide-react';
@@ -69,11 +68,11 @@ const ResetPasswordPage = () => {
       setSuccess(true);
       toast.success('Đặt lại mật khẩu thành công!');
       
-      // Redirect sau 2 giây
       setTimeout(() => {
         navigate('/login');
       }, 2000);
-    } catch (error) {setErrors({ 
+    } catch (error) {
+      setErrors({ 
         submit: error.response?.data?.message || 'Link không hợp lệ hoặc đã hết hạn' 
       });
     } finally {
@@ -84,7 +83,6 @@ const ResetPasswordPage = () => {
   if (success) {
     return (
       <div className="min-h-screen flex overflow-hidden bg-gray-100">
-        {/* Left Side - Success Message */}
         <div className="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-12 bg-white relative animate-slideInLeft lg:shadow-[8px_0_24px_-8px_rgba(0,0,0,0.12)] z-10">
           <div className="w-full max-w-md">
             <div className="text-center space-y-6">
@@ -114,7 +112,6 @@ const ResetPasswordPage = () => {
           </div>
         </div>
 
-        {/* Right Side - Image */}
         <div className="hidden lg:block lg:w-1/2 relative overflow-hidden animate-slideInRight">
           <img 
             src="/bannerlogin.png" 
@@ -128,10 +125,8 @@ const ResetPasswordPage = () => {
 
   return (
     <div className="min-h-screen flex overflow-hidden bg-gray-100">
-      {/* Left Side - Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-12 bg-white relative animate-slideInLeft lg:shadow-[8px_0_24px_-8px_rgba(0,0,0,0.12)] z-10">
         <div className="w-full max-w-md">
-          {/* Logo */}
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold text-gray-900">
               Đặt lại mật khẩu
@@ -139,7 +134,6 @@ const ResetPasswordPage = () => {
             <p className="text-gray-600 mt-2">Nhập mật khẩu mới của bạn</p>
           </div>
 
-          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
             {errors.submit && (
               <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm">
@@ -153,7 +147,6 @@ const ResetPasswordPage = () => {
               </div>
             )}
 
-            {/* Password Input */}
             <Input
               label="Mật khẩu mới"
               type="password"
@@ -166,7 +159,6 @@ const ResetPasswordPage = () => {
               required
             />
 
-            {/* Confirm Password Input */}
             <Input
               label="Xác nhận mật khẩu mới"
               type="password"
@@ -179,7 +171,6 @@ const ResetPasswordPage = () => {
               required
             />
 
-            {/* Password Requirements */}
             <div className="bg-gray-50 border border-gray-200 px-4 py-3 rounded-lg text-sm text-gray-600">
               <p className="font-medium mb-2">Mật khẩu phải:</p>
               <ul className="space-y-1 ml-4 list-disc">
@@ -188,7 +179,6 @@ const ResetPasswordPage = () => {
               </ul>
             </div>
 
-            {/* Submit Button */}
             <Button
               type="submit"
               disabled={loading}
@@ -199,7 +189,6 @@ const ResetPasswordPage = () => {
               {loading ? 'Đang xử lý...' : 'Đặt lại mật khẩu'}
             </Button>
 
-            {/* Back to Login */}
             <div className="text-center text-sm text-gray-600">
               Nhớ mật khẩu?{' '}
               <Link to="/login" className="text-gray-900 hover:text-gray-700 font-semibold">
@@ -210,7 +199,6 @@ const ResetPasswordPage = () => {
         </div>
       </div>
 
-      {/* Right Side - Image */}
       <div className="hidden lg:block lg:w-1/2 relative overflow-hidden animate-slideInRight">
         <img 
           src="/bannerlogin.png" 

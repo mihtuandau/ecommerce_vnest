@@ -20,9 +20,12 @@ export const useCheckoutSubmit = (user) => {
     cartItems,
     shippingInfo,
     paymentMethod,
-    agreedToTerms
+    agreedToTerms,
+    appliedDiscount = null
   ) => {
     const isGuest = !user;
+
+    console.log('🚀 Submit order with discount:', appliedDiscount);
 
     // Validate form
     if (!validateCheckoutForm(shippingInfo, isGuest, agreedToTerms)) {
@@ -32,13 +35,16 @@ export const useCheckoutSubmit = (user) => {
     try {
       setSubmitting(true);
 
-      // Build order data
+      // Build order data with discount
       const orderData = buildOrderData(
         cartItems,
         shippingInfo,
         paymentMethod,
-        isGuest
+        isGuest,
+        appliedDiscount
       );
+
+      console.log('📨 Sending order to API:', orderData);
 
       // Submit order
       const response = isGuest

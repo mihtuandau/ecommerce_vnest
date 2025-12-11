@@ -44,8 +44,8 @@ const ProductRow = ({
 
         {/* Product Info */}
         <td className="px-6 py-4">
-          <div className="flex items-center gap-4">
-            <div className="relative w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-gray-100 to-gray-50 shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="relative w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 bg-gradient-to-br from-gray-100 to-gray-50 shadow-sm">
               {product.images?.[0] ? (
                 <img
                   src={product.images[0].url || product.images[0]}
@@ -58,11 +58,11 @@ const ProductRow = ({
                 </div>
               )}
             </div>
-            <div className="min-w-0 flex-1">
-              <div className="font-semibold text-gray-900 truncate mb-0.5">
+            <div className="min-w-0 flex-1 max-w-xs">
+              <div className="font-medium text-gray-900 truncate text-sm mb-0.5" title={product.name}>
                 {product.name}
               </div>
-              <div className="text-sm text-gray-500">
+              <div className="text-xs text-gray-500 truncate">
                 {product.sku || "Chưa có SKU"}
               </div>
             </div>
@@ -71,14 +71,14 @@ const ProductRow = ({
 
         {/* Category */}
         <td className="px-6 py-4">
-          <span className="inline-flex items-center px-3 py-1 rounded-lg text-sm font-medium bg-slate-100 text-slate-700 border border-slate-200">
+          <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium bg-gray-100 text-gray-700">
             {product.category?.name || "N/A"}
           </span>
         </td>
 
         {/* Price */}
         <td className="px-6 py-4">
-          <div className="font-semibold text-gray-900">
+          <div className="font-medium text-gray-900 text-sm">
             {formatPrice(product.basePrice || product.price || 0)}
           </div>
         </td>
@@ -86,9 +86,9 @@ const ProductRow = ({
         {/* Stock */}
         <td className="px-6 py-4">
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-gray-900">{totalStock}</span>
+            <span className="font-medium text-gray-900 text-sm">{totalStock}</span>
             <span
-              className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium border ${stockStatus.color}`}
+              className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium ${stockStatus.color}`}
             >
               {stockStatus.text}
             </span>

@@ -21,14 +21,12 @@ const CheckoutPage = () => {
   const location = useLocation();
   const { user } = useAuth();
 
-  // Get selected items from location state, fallback to all cart items
   const allCartItems = useSelector((state) => state.cart.items);
   const cartItems = location.state?.items || allCartItems;
 
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
 
-  // Custom hooks
   const {
     shippingInfo,
     paymentMethod,
@@ -53,7 +51,6 @@ const CheckoutPage = () => {
 
   const { submitting, handleSubmitOrder: submitOrder } = useCheckoutSubmit(user);
 
-  // Cart validation
   useEffect(() => {
     if (cartItems.length === 0) {
       toast.error("Giỏ hàng trống!");
@@ -61,7 +58,6 @@ const CheckoutPage = () => {
       return;
     }
 
-    // Load user profile if logged in and not already loaded
     if (user && !currentUser) {
       loadUserProfile();
     }
@@ -71,9 +67,7 @@ const CheckoutPage = () => {
     try {
       const response = await userService.getProfile();
       setCurrentUser(response.user);
-    } catch (error) {
-      // Silent error - profile loading is optional
-    }
+    } catch (error) {}
   };
 
   const onSelectAddress = (addressData) => {
@@ -83,7 +77,8 @@ const CheckoutPage = () => {
   };
 
   const onSubmitOrder = () => {
-    submitOrder(cartItems, shippingInfo, paymentMethod, agreedToTerms);
+    console.log('🛒 CheckoutPage - submitting with discount:', appliedDiscount);
+    submitOrder(cartItems, shippingInfo, paymentMethod, agreedToTerms, appliedDiscount);
   };
 
   if (cartItems.length === 0) {
@@ -93,7 +88,6 @@ const CheckoutPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4 max-w-6xl">
-        {/* Header */}
         <div className="mb-6">
           <button
             onClick={() => navigate("/cart")}
@@ -105,7 +99,6 @@ const CheckoutPage = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column - Forms */}
           <div className="lg:col-span-2 space-y-6">
             <ShippingForm
               shippingInfo={shippingInfo}
@@ -120,7 +113,6 @@ const CheckoutPage = () => {
             />
           </div>
 
-          {/* Right Column - Order Summary */}
           <div className="lg:col-span-1">
             <OrderSummary
               cartItems={cartItems}
@@ -143,7 +135,6 @@ const CheckoutPage = () => {
           </div>
         </div>
 
-        {/* Address Selection Modal */}
         <Modal
           isOpen={showAddressModal}
           onClose={() => setShowAddressModal(false)}
