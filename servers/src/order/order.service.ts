@@ -13,6 +13,7 @@ import { QueryOrderDto } from './dto/query-order.dto';
 import { ApplyDiscountDto } from './dto/apply-discount.dto';
 import { CartService } from '../cart/cart.service';
 import { MailService } from '../mail/mail.service';
+import { PaymentService } from '../payment/payment.service';
 
 @Injectable()
 export class OrderService {
@@ -20,6 +21,7 @@ export class OrderService {
     private repository: OrderRepository,
     private cartService: CartService,
     private mailService: MailService,
+    private paymentService: PaymentService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
@@ -126,6 +128,17 @@ export class OrderService {
 
     const order = await this.repository.create(orderData);
 
+    // Create payment record immediately after order creation
+    try {
+      await this.paymentService.create({
+        orderId: order.id,
+        method: (dto.paymentMethod as any) || 'CASH',
+      });
+    } catch (error) {
+      console.error('Failed to create payment record:', error);
+      // Continue even if payment creation fails
+    }
+
     // Only clear cart if items were from cart (not from dto) and user is logged in
     if (userId && (!dto.items || dto.items.length === 0)) {
       await this.repository.clearUserCart(userId);
@@ -221,6 +234,19 @@ export class OrderService {
     }
 
     const order = await this.repository.update(id, dto);
+
+    // Tạo payment record nếu chưa có và status được cập nhật
+    if (dto.status && !oldOrder.payment) {
+      try {
+        await this.paymentService.create({
+          orderId: order.id,
+          method: order.paymentMethod as any,
+        });
+        console.log(`✅ Created payment for order ${order.id}`);
+      } catch (error) {
+        console.error('Failed to create payment record:', error);
+      }
+    }
 
     // Nếu status thay đổi sang DELIVERED, cập nhật soldCount
     if (dto.status === 'DELIVERED' && oldOrder.status !== 'DELIVERED') {

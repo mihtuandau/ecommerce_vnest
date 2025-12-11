@@ -180,6 +180,7 @@ const ProductDetailPage = () => {
                 originalPrice={originalPrice}
                 selectedSize={selectedSize}
                 selectedColor={selectedColor}
+                selectedVariant={selectedVariant}
                 quantity={quantity}
                 onSizeSelect={setSelectedSize}
                 onColorSelect={setSelectedColor}

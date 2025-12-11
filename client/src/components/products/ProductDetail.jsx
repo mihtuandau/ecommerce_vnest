@@ -71,6 +71,7 @@ export const ProductDetails = ({
   originalPrice,
   selectedSize,
   selectedColor,
+  selectedVariant,
   quantity,
   onSizeSelect,
   onColorSelect,
@@ -98,14 +99,29 @@ export const ProductDetails = ({
     <div>
       <h1 className="text-3xl font-bold text-gray-900 mb-4">{product.name}</h1>
       
-      <div className="flex items-center gap-4 mb-4">
-        <div className="flex items-center gap-1">
-          <FaStar className="text-yellow-400" />
-          <span className="font-semibold">4.5</span>
-          <span className="text-gray-600">(128 đánh giá)</span>
-        </div>
-        <div className="h-4 w-px bg-gray-300"></div>
-        <span className="text-gray-600">Đã bán: 1.2k</span>
+      {/* Rating and Sold Count below title */}
+      <div className="flex items-center gap-4 mb-6 pb-6 border-b">
+        {(product.averageRating > 0 || product.reviewCount > 0) && (
+          <>
+            <div className="flex items-center gap-1">
+              <FaStar className="text-yellow-400" />
+              <span className="font-semibold">{product.averageRating?.toFixed(1) || '0.0'}</span>
+              <span className="text-gray-600">({product.reviewCount || 0} đánh giá)</span>
+            </div>
+            <div className="h-4 w-px bg-gray-300"></div>
+          </>
+        )}
+        {product.soldCount > 0 && (
+          <>
+            <span className="text-gray-600">Đã bán: {product.soldCount.toLocaleString('vi-VN')}</span>
+            <div className="h-4 w-px bg-gray-300"></div>
+          </>
+        )}
+        {selectedVariant?.stock !== undefined && (
+          <span className={`font-medium ${selectedVariant.stock > 0 ? 'text-green-600' : 'text-red-600'}`}>
+            {selectedVariant.stock > 0 ? `Còn ${selectedVariant.stock} sản phẩm` : 'Hết hàng'}
+          </span>
+        )}
       </div>
 
       <div className="bg-gray-50 rounded-lg p-4 mb-4">
