@@ -8,7 +8,7 @@ import { formatPrice, calculateDiscountPercent } from '../../utils/formatters';
 import wishlistService from '../../services/wishlistService';
 import { useAuth } from '../../contexts/AuthContext';
 
-const ProductCard = ({ product }) => {
+const ProductCard = ({ product, viewMode = 'grid-3' }) => {
   const { user } = useAuth();
   const [isInWishlist, setIsInWishlist] = useState(false);
   const {
@@ -24,6 +24,15 @@ const ProductCard = ({ product }) => {
     badge,
     discount,
   } = product;
+
+  // Determine text sizes based on viewMode
+  const isGrid2 = viewMode === 'grid-2';
+  const titleClass = isGrid2 ? 'text-xl font-medium' : 'font-medium text-sm';
+  const priceClass = isGrid2 ? 'text-lg font-bold' : 'text-lg font-bold';
+  const originalPriceClass = isGrid2 ? 'text-sm' : 'text-sm';
+  const ratingSize = isGrid2 ? 11 : 12;
+  const soldTextClass = isGrid2 ? 'text-sm' : 'text-sm';
+  const minTitleHeight = isGrid2 ? 'min-h-[1.5rem]' : 'min-h-[1rem]';
 
   // Lấy ảnh đầu tiên hoặc ảnh thumbnail
   const productImage = image || (images && images.length > 0 ? images[0].url : '/placeholder-product.jpg');
@@ -125,8 +134,8 @@ const ProductCard = ({ product }) => {
         </Link>
       </div>
 
-      {/* Product Image - Fixed aspect ratio */}
-      <Link to={`/products/${id}`} className="block relative overflow-hidden aspect-square bg-gray-100">
+      {/* Product Image - Fixed aspect ratio, tighter for grid-2 */}
+      <Link to={`/products/${id}`} className={`block relative overflow-hidden ${isGrid2 ? 'aspect-square' : 'aspect-square'} bg-gray-100`}>
         <img
           src={productImage}
           alt={name}
@@ -136,26 +145,26 @@ const ProductCard = ({ product }) => {
       </Link>
 
       {/* Product Info - Flex grow to push button to bottom */}
-      <div className="p-4 flex flex-col flex-grow">
+      <div className={`flex flex-col flex-grow ${isGrid2 ? 'p-3' : 'p-4'}`}>
         {/* Product Name - Fixed height with ellipsis */}
         <Link to={`/products/${id}`} className="block mb-2">
-          <h3 className="font-medium text-gray-900 hover:text-blue-600 transition-colors line-clamp-2 min-h-[2.5rem]" title={name}>
+          <h3 className={`${titleClass} text-gray-900 hover:text-blue-600 transition-colors line-clamp-2 ${minTitleHeight}`} title={name}>
             {name}
           </h3>
         </Link>
 
         {/* Rating & Sold Count */}
-        <div className="flex items-center justify-between gap-2 mb-2 flex-wrap">
+        <div className={`flex items-center justify-between gap-2 mb-2 flex-wrap ${isGrid2 ? 'text-xs' : 'text-sm'}`}>
           {(product.averageRating > 0 || product.reviewCount > 0) && (
             <StarRating
               rating={product.averageRating || 0}
-              size={12}
+              size={ratingSize}
               showNumber
               reviewCount={product.reviewCount || 0}
             />
           )}
           {product.soldCount > 0 && (
-            <span className="text-xs text-gray-500">
+            <span className={`${soldTextClass} text-gray-500`}>
               Đã bán {product.soldCount}
             </span>
           )}
@@ -163,11 +172,11 @@ const ProductCard = ({ product }) => {
 
         {/* Price */}
         <div className="flex items-baseline gap-2 flex-wrap">
-          <span className="text-lg font-bold text-gray-900">
+          <span className={`${priceClass} text-gray-900`}>
             {formatPrice(productPrice)}
           </span>
           {productOriginalPrice && productOriginalPrice > productPrice && (
-            <span className="text-sm text-gray-400 line-through">
+            <span className={`${originalPriceClass} text-gray-400 line-through`}>
               {formatPrice(productOriginalPrice)}
             </span>
           )}

@@ -22,8 +22,10 @@ export const validateBulkVariant = (bulkData) => {
 };
 
 export const validateSingleVariant = (variant) => {
-  if (!variant.size?.trim() && !variant.color?.trim()) {
-    toast.error('Vui lòng nhập kích thước hoặc màu sắc');
+  // Size và color đều optional - không bắt buộc
+  // Chỉ cần có giá là đủ
+  if (!variant.price || variant.price <= 0) {
+    toast.error('Vui lòng nhập giá sản phẩm');
     return false;
   }
   return true;

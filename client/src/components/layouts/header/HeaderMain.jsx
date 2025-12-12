@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { FaSearch, FaShoppingCart, FaUser, FaHeart, FaBars, FaTimes, FaChevronDown, FaUserCircle, FaClipboardList, FaUserShield, FaSignOutAlt } from 'react-icons/fa';
+import { FaSearch, FaShoppingCart, FaUser, FaHeart, FaBars, FaTimes, FaChevronDown, FaUserCircle, FaClipboardList, FaUserShield, FaSignOutAlt, FaShoppingBag } from 'react-icons/fa';
 import { useAuth } from '../../../hooks/useAuth';
 import { useCartCount } from '../../../hooks/useCart';
 import wishlistService from '../../../services/wishlistService';
@@ -156,7 +156,7 @@ const HeaderMain = ({ scrolled, searchOpen, setSearchOpen, mobileMenuOpen, setMo
               }`}
               title="Giỏ hàng"
             >
-              <FaShoppingCart size={20} className="sm:w-6 sm:h-6" />
+              <FaShoppingBag size={20} className="sm:w-6 sm:h-6" />
               {cartCount > 0 && (
                 <span className={`absolute -top-2 -right-2 min-w-5 h-5 px-1.5 text-white text-xs rounded-full flex items-center justify-center transition-colors duration-300 ${
                   scrolled ? 'bg-red-600' : 'bg-red-500'
@@ -178,7 +178,7 @@ const HeaderMain = ({ scrolled, searchOpen, setSearchOpen, mobileMenuOpen, setMo
                     scrolled ? 'text-gray-700 hover:text-gray-900' : 'text-white hover:text-gray-200'
                   }`}
                 >
-                  <FaUser size={20} className="sm:w-6 sm:h-6" />
+                  <FaUserCircle   size={20} className="sm:w-6 sm:h-6" />
                   <span className="hidden lg:inline font-medium">{user.name}</span>
                   <FaChevronDown 
                     size={16} 

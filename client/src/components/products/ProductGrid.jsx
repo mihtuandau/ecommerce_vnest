@@ -149,7 +149,7 @@ const ProductGrid = ({ products = [], loading = false, viewMode = 'grid-3' }) =>
   return (
     <div className={getGridClass()}>
       {products.map((product) => (
-        <ProductCard key={product.id} product={product} />
+        <ProductCard key={product.id} product={product} viewMode={viewMode} />
       ))}
     </div>
   );
