@@ -44,7 +44,7 @@ export const useAddressForm = (initialData = null) => {
       const data = await locationService.getAllProvinces();
       setProvinces(data);
     } catch (error) {
-      toast.error('Không thể tải danh sách tỉnh/thành phố');
+      notify.error('Không thể tải danh sách tỉnh/thành phố');
     } finally {
       setLoadingLocations(false);
     }
@@ -57,7 +57,7 @@ export const useAddressForm = (initialData = null) => {
       setDistricts(data);
       setWards([]);
     } catch (error) {
-      toast.error('Không thể tải danh sách quận/huyện');
+      notify.error('Không thể tải danh sách quận/huyện');
     } finally {
       setLoadingLocations(false);
     }
@@ -69,7 +69,7 @@ export const useAddressForm = (initialData = null) => {
       const data = await locationService.getWardsByDistrict(districtCode);
       setWards(data);
     } catch (error) {
-      toast.error('Không thể tải danh sách phường/xã');
+      notify.error('Không thể tải danh sách phường/xã');
     } finally {
       setLoadingLocations(false);
     }
@@ -115,12 +115,12 @@ export const useAddressForm = (initialData = null) => {
   const validateForm = () => {
     if (!formData.fullName.trim() || !formData.phone.trim() || !formData.street.trim() || 
         !formData.city.trim() || !formData.state.trim() || !formData.ward.trim()) {
-      toast.error('Vui lòng điền đầy đủ thông tin');
+      notify.error('Vui lòng điền đầy đủ thông tin');
       return false;
     }
 
     if (!/^(0|\+84)[3|5|7|8|9][0-9]{8}$/.test(formData.phone.replace(/\s/g, ''))) {
-      toast.error('Số điện thoại không hợp lệ');
+      notify.error('Số điện thoại không hợp lệ');
       return false;
     }
 

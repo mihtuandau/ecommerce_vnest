@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import categoryService from '../../../services/categoryService';
-import toast from 'react-hot-toast';
+import { notify } from '../../../utils/notification';
 import Button from '../../../components/common/Button';
 import Pagination from '../../../components/common/Pagination';
 import CategoryStatsCards from '../../../components/admin/Category/CategoryStatsCards';
@@ -30,7 +30,7 @@ const AdminCategoriesPage = () => {
       const data = await categoryService.getAll();
       setCategories(Array.isArray(data) ? data : data.data || []);
     } catch (error) {
-      toast.error('Không thể tải danh mục');
+      notify.error('Không thể tải danh mục');
     } finally {
       setLoading(false);
     }
@@ -40,10 +40,10 @@ const AdminCategoriesPage = () => {
     try {
       if (editingCategory) {
         await categoryService.update(editingCategory.id, formData);
-        toast.success('Cập nhật danh mục thành công');
+        notify.success('Cập nhật danh mục thành công');
       } else {
         await categoryService.create(formData);
-        toast.success('Tạo danh mục thành công');
+        notify.success('Tạo danh mục thành công');
       }
       
       setEditingCategory(null);
@@ -51,7 +51,7 @@ const AdminCategoriesPage = () => {
       loadCategories();
     } catch (error) {
       const message = error.response?.data?.message || 'Có lỗi xảy ra';
-      toast.error(message);
+      notify.error(message);
       throw error;
     }
   };
@@ -65,11 +65,11 @@ const AdminCategoriesPage = () => {
     if (window.confirm('Bạn chắc chắn muốn xóa danh mục này?')) {
       try {
         await categoryService.delete(id);
-        toast.success('Xóa danh mục thành công');
+        notify.success('Xóa danh mục thành công');
         loadCategories();
       } catch (error) {
         const message = error.response?.data?.message || 'Không thể xóa danh mục';
-        toast.error(message);
+        notify.error(message);
       }
     }
   };

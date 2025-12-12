@@ -28,10 +28,10 @@ const HomePage = () => {
           const user = await authService.verifyAuth();
           if (user) {
             setUser(user);
-            toast.success('Đăng nhập Google thành công!');
+            notify.success('Đăng nhập Google thành công!');
           }
         } catch (error) {
-          toast.error('Lỗi khi xác thực người dùng');
+          notify.error('Lỗi khi xác thực người dùng');
         }
       };
       

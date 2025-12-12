@@ -1,14 +1,14 @@
-import { Link } from 'react-router-dom';
-import { 
-  Facebook, 
-  Instagram, 
-  Twitter, 
+import { Link } from "react-router-dom";
+import {
+  Facebook,
+  Instagram,
+  Twitter,
   Youtube,
   Mail,
   Phone,
   MapPin,
-  ShoppingCart
-} from 'lucide-react';
+  ShoppingCart,
+} from "lucide-react";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -27,20 +27,33 @@ const Footer = () => {
               <span className="text-2xl font-bold text-white">SHOP</span>
             </div>
             <p className="text-sm mb-4">
-              Cửa hàng thời trang trực tuyến hàng đầu Việt Nam. 
-              Chất lượng - Uy tín - Giá tốt.
+              Cửa hàng thời trang trực tuyến hàng đầu Việt Nam. Chất lượng - Uy
+              tín - Giá tốt.
             </p>
             <div className="flex gap-3">
-              <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-white hover:text-gray-900 rounded-full flex items-center justify-center transition-colors">
+              <a
+                href="https://www.facebook.com/TUANDEPTRAI7777777"
+                className="w-10 h-10 bg-gray-800 hover:bg-white hover:text-gray-900 rounded-full flex items-center justify-center transition-colors"
+              >
+                
                 <Facebook size={18} />
               </a>
-              <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-white hover:text-gray-900 rounded-full flex items-center justify-center transition-colors">
+              <a
+                href="https://www.instagram.com/mih_tuandau/"
+                className="w-10 h-10 bg-gray-800 hover:bg-white hover:text-gray-900 rounded-full flex items-center justify-center transition-colors"
+              >
                 <Instagram size={18} />
               </a>
-              <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-white hover:text-gray-900 rounded-full flex items-center justify-center transition-colors">
+              <a
+                href="https://x.com/dauminhtuan2k4"
+                className="w-10 h-10 bg-gray-800 hover:bg-white hover:text-gray-900 rounded-full flex items-center justify-center transition-colors"
+              >
                 <Twitter size={18} />
               </a>
-              <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-white hover:text-gray-900 rounded-full flex items-center justify-center transition-colors">
+              <a
+                href="#"
+                className="w-10 h-10 bg-gray-800 hover:bg-white hover:text-gray-900 rounded-full flex items-center justify-center transition-colors"
+              >
                 <Youtube size={18} />
               </a>
             </div>
@@ -51,12 +64,10 @@ const Footer = () => {
             <h3 className="text-white font-bold text-lg mb-4">Liên Kết</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/about" className="hover:text-white transition-colors">
-                  Về Chúng Tôi
-                </Link>
-              </li>
-              <li>
-                <Link to="/products" className="hover:text-white transition-colors">
+                <Link
+                  to="/products"
+                  className="hover:text-white transition-colors"
+                >
                   Sản Phẩm
                 </Link>
               </li>
@@ -66,13 +77,19 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="hover:text-white transition-colors">
-                  Liên Hệ
+                <Link
+                  to="/careers"
+                  className="hover:text-white transition-colors"
+                >
+                  Về Chúng Tôi
                 </Link>
               </li>
               <li>
-                <Link to="/careers" className="hover:text-white transition-colors">
-                  Tuyển Dụng
+                <Link
+                  to="/contact"
+                  className="hover:text-white transition-colors"
+                >
+                  Liên Hệ
                 </Link>
               </li>
             </ul>
@@ -83,17 +100,26 @@ const Footer = () => {
             <h3 className="text-white font-bold text-lg mb-4">Hỗ Trợ</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/order-lookup" className="hover:text-white transition-colors flex items-center gap-2">
-                  🔍 Tra Cứu Đơn Hàng
+                <Link
+                  to="/order-lookup"
+                  className="hover:text-white transition-colors flex items-center gap-2"
+                >
+                  Tra Cứu Đơn Hàng
                 </Link>
               </li>
               <li>
-                <Link to="/privacy" className="hover:text-white transition-colors">
+                <Link
+                  to="/privacy"
+                  className="hover:text-white transition-colors"
+                >
                   Chính Sách Bảo Mật
                 </Link>
               </li>
               <li>
-                <Link to="/terms" className="hover:text-white transition-colors">
+                <Link
+                  to="/terms"
+                  className="hover:text-white transition-colors"
+                >
                   Điều Khoản Sử Dụng
                 </Link>
               </li>
@@ -133,17 +159,15 @@ const Footer = () => {
         </div>
       </div>
 
-      
-
       {/* Bottom Bar */}
       <div className="border-t border-gray-800">
         <div className="container mx-auto px-4 lg:px-8 py-4">
           <div className="flex flex-col md:flex-row items-center justify-between gap-2 text-sm text-gray-400">
             <p>© {currentYear} SHOP. All rights reserved.</p>
             <p>
-              Designed with by{' '}
+              Designed with by{" "}
               <a href="#" className="text-blue-400 hover:text-blue-300">
-              Minh Tuấn
+                Minh Tuấn
               </a>
             </p>
           </div>

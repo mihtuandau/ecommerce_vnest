@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import toast from 'react-hot-toast';
+import { notify } from '../utils/notification';
 import discountService from '../services/discountService';
 import { formatPrice } from '../utils/formatters';
 
@@ -10,7 +10,7 @@ export const useDiscountCode = () => {
 
   const handleApplyDiscount = async () => {
     if (!discountCode.trim()) {
-      toast.error('Vui lòng nhập mã giảm giá');
+      notify.error('Vui lòng nhập mã giảm giá');
       return;
     }
 
@@ -18,7 +18,7 @@ export const useDiscountCode = () => {
       setCheckingDiscount(true);
       const result = await discountService.validateDiscount(discountCode);if (result && result.isValid) {
         setAppliedDiscount(result.discount);
-        toast.success(
+        notify.success(
           `Áp dụng mã giảm giá thành công! Giảm ${
             result.discount.discountType === 'PERCENTAGE' 
               ? result.discount.discountValue + '%' 
@@ -26,9 +26,9 @@ export const useDiscountCode = () => {
           }`
         );
       } else {
-        toast.error(result?.message || 'Mã giảm giá không hợp lệ');
+        notify.error(result?.message || 'Mã giảm giá không hợp lệ');
       }
-    } catch (error) {toast.error(error.response?.data?.message || 'Mã giảm giá không hợp lệ');
+    } catch (error) {notify.error(error.response?.data?.message || 'Mã giảm giá không hợp lệ');
     } finally {
       setCheckingDiscount(false);
     }
@@ -37,7 +37,7 @@ export const useDiscountCode = () => {
   const handleRemoveDiscount = () => {
     setAppliedDiscount(null);
     setDiscountCode('');
-    toast.success('Đã xóa mã giảm giá');
+    notify.success('Đã xóa mã giảm giá');
   };
 
   return {

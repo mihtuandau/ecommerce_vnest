@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import Button from '../../common/Button';
 import DeleteConfirmModal from '../../common/DeleteConfirm';
-import toast from 'react-hot-toast';
+import { notify } from '../../../utils/notification';
 import ImageManagerModal from './ImageManagerModal';
 // import ProductDetailModal from './ProductDetailModal';
 
@@ -32,9 +32,9 @@ const ProductActions = ({
     setLoading(true);
     try {
       await onDelete(product);
-      toast.success('Đã xóa sản phẩm thành công');
+      notify.success('Đã xóa sản phẩm thành công');
       onClose();
-    } catch (error) {toast.error('Không thể xóa sản phẩm');
+    } catch (error) {notify.error('Không thể xóa sản phẩm');
     } finally {
       setLoading(false);
       setShowDeleteModal(false);
@@ -45,9 +45,9 @@ const ProductActions = ({
     setLoading(true);
     try {
       await onDuplicate(product);
-      toast.success('Đã sao chép sản phẩm thành công');
+      notify.success('Đã sao chép sản phẩm thành công');
       onClose();
-    } catch (error) {toast.error('Không thể sao chép sản phẩm');
+    } catch (error) {notify.error('Không thể sao chép sản phẩm');
     } finally {
       setLoading(false);
     }
@@ -61,7 +61,7 @@ const ProductActions = ({
   const handleCopyLink = () => {
     const productUrl = `${window.location.origin}/products/${product.id}`;
     navigator.clipboard.writeText(productUrl);
-    toast.success('Đã sao chép link sản phẩm');
+    notify.success('Đã sao chép link sản phẩm');
     onClose();
   };
 

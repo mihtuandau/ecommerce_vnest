@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import toast from 'react-hot-toast';
+import { notify } from '../../../utils/notification';
 import { X, Upload } from 'lucide-react';
 import Button from '../../common/Button';
 import Modal from '../../common/Modal';
@@ -16,13 +16,13 @@ const CategoryFormModal = ({ isOpen, onClose, onSubmit, category = null }) => {
     if (file) {
       // Validate file type
       if (!file.type.startsWith('image/')) {
-        toast.error('Vui lòng chọn file ảnh');
+        notify.error('Vui lòng chọn file ảnh');
         return;
       }
       
       // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
-        toast.error('Kích thước ảnh không được vượt quá 5MB');
+        notify.error('Kích thước ảnh không được vượt quá 5MB');
         return;
       }
       

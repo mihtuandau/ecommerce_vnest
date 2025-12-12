@@ -4,7 +4,7 @@ import {
   FaArrowLeft, FaClock, FaBox, FaTruck, FaCheckCircle, FaTimesCircle,
   FaMapMarkerAlt, FaCreditCard, FaPhone, FaUser
 } from 'react-icons/fa';
-import toast from 'react-hot-toast';
+import { notify } from '../../../utils/notification';
 import Loading from '../../../components/common/Loading';
 import Layout from '../../../components/layouts/Layout';
 import orderService from '../../../services/orderService';
@@ -34,7 +34,7 @@ const OrderDetailPage = () => {
       };
       
       setOrder(transformedOrder);
-    } catch (error) {toast.error('Không thể tải thông tin đơn hàng');
+    } catch (error) {notify.error('Không thể tải thông tin đơn hàng');
       navigate('/orders');
     } finally {
       setLoading(false);
@@ -275,7 +275,7 @@ const OrderDetailPage = () => {
               <button
                 onClick={() => {
                   if (confirm('Bạn có chắc muốn hủy đơn hàng này?')) {
-                    toast.success('Đã hủy đơn hàng');
+                    notify.success('Đã hủy đơn hàng');
                     navigate('/orders');
                   }
                 }}

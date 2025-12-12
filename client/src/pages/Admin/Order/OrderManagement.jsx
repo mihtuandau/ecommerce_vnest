@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import orderService from '../../../services/orderService';
-import toast from 'react-hot-toast';
+import { notify } from '../../../utils/notification';
 import Loading from '../../../components/common/Loading';
 import Pagination from '../../../components/common/Pagination';
 import OrderStatsCards from '../../../components/admin/Order/OrderStatsCards';
@@ -48,7 +48,7 @@ const AdminOrdersPage = () => {
       
       setOrders(ordersList);
     } catch (error) {
-      toast.error('Không thể tải đơn hàng: ' + (error.response?.data?.message || error.message));
+      notify.error('Không thể tải đơn hàng: ' + (error.response?.data?.message || error.message));
     } finally {
       setLoading(false);
     }
@@ -63,13 +63,13 @@ const AdminOrdersPage = () => {
     try {
       setUpdatingStatus(true);
       await orderService.updateOrderStatus(orderId, newStatus);
-      toast.success('Cập nhật trạng thái thành công');
+      notify.success('Cập nhật trạng thái thành công');
       loadOrders();
       if (selectedOrder?.id === orderId) {
         setSelectedOrder({ ...selectedOrder, status: newStatus });
       }
     } catch (error) {
-      toast.error('Không thể cập nhật trạng thái');
+      notify.error('Không thể cập nhật trạng thái');
     } finally {
       setUpdatingStatus(false);
     }

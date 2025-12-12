@@ -4,7 +4,7 @@ import ProductActions from "./ProductActions";
 import ProductDetails from "./ProductDetail";
 import Button from "../../common/Button";
 import { Edit, MoreVertical, Layers, ChevronDown, ChevronUp, Package } from 'lucide-react';
-import toast from 'react-hot-toast';
+import { notify } from '../../../utils/notification';
 import { formatPrice, getTotalStock, getStockStatus } from '../../../utils/formatters';
 
 const ProductRow = ({
@@ -183,13 +183,13 @@ const ProductRow = ({
               try {
                 const productService = (await import('../../../services/productService')).default;
                 await productService.deleteVariant(variant.id);
-                toast.success('Đã xóa variant!');
+                notify.success('Đã xóa variant!');
                 // Refresh product list without reload
                 if (onRefresh) {
                   onRefresh();
                 }
               } catch (error) {
-                toast.error('Không thể xóa variant: ' + (error.response?.data?.message || error.message));
+                notify.error('Không thể xóa variant: ' + (error.response?.data?.message || error.message));
               }
             }
           }}

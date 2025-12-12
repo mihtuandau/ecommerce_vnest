@@ -1,7 +1,7 @@
 // src/contexts/AuthContext.jsx
 import { createContext, useState, useEffect, useContext } from 'react';
 import authService from '../services/authService';
-import toast from 'react-hot-toast';
+import { notify } from '../utils/notification';
 
 const AuthContext = createContext(null);
 
@@ -37,10 +37,10 @@ export const AuthProvider = ({ children }) => {
       const data = await authService.register(userData);
       setUser(data.user);
       
-      toast.success('Đăng ký thành công!');
+      notify.success('Đăng ký thành công!');
       return data;
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Đăng ký thất bại');
+      notify.error(error.response?.data?.message || 'Đăng ký thất bại');
       throw error;
     }
   };
@@ -49,9 +49,9 @@ export const AuthProvider = ({ children }) => {
     try {
       const data = await authService.login(credentials);setUser(data.user);
       
-      toast.success('Đăng nhập thành công!');
+      notify.success('Đăng nhập thành công!');
       return data;
-    } catch (error) {toast.error(error.response?.data?.message || 'Đăng nhập thất bại');
+    } catch (error) {notify.error(error.response?.data?.message || 'Đăng nhập thất bại');
       throw error;
     }
   };
@@ -60,7 +60,7 @@ export const AuthProvider = ({ children }) => {
     try {
       await authService.logout();
       setUser(null);
-      toast.success('Đăng xuất thành công!');
+      notify.success('Đăng xuất thành công!');
     } catch (error) {setUser(null);
     }
   };
@@ -73,10 +73,10 @@ export const AuthProvider = ({ children }) => {
     try {
       const data = await authService.updateProfile(userData);
       setUser(data.user);
-      toast.success('Cập nhật thông tin thành công!');
+      notify.success('Cập nhật thông tin thành công!');
       return data;
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Cập nhật thất bại');
+      notify.error(error.response?.data?.message || 'Cập nhật thất bại');
       throw error;
     }
   };
@@ -84,9 +84,9 @@ export const AuthProvider = ({ children }) => {
   const changePassword = async (passwordData) => {
     try {
       await authService.changePassword(passwordData);
-      toast.success('Đổi mật khẩu thành công!');
+      notify.success('Đổi mật khẩu thành công!');
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Đổi mật khẩu thất bại');
+      notify.error(error.response?.data?.message || 'Đổi mật khẩu thất bại');
       throw error;
     }
   };

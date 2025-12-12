@@ -8,7 +8,7 @@ import { useCart } from '../../../hooks/useCart';
 import { useAuth } from '../../../hooks/useAuth';
 import StarRating from '../../../components/common/StarRating';
 import ReviewList from '../../../components/products/ReviewList';
-import toast from 'react-hot-toast';
+import { notify } from '../../../utils/notification';
 
 const ProductDetailPage = () => {
   const { id } = useParams();
@@ -68,7 +68,7 @@ const ProductDetailPage = () => {
         setSelectedVariant(productData.variants[0]);
       }
     } catch (error) {
-      toast.error('Không tìm thấy sản phẩm');
+      notify.error('Không tìm thấy sản phẩm');
     } finally {
       setLoading(false);
     }
@@ -83,12 +83,12 @@ const ProductDetailPage = () => {
 
   const handleAddToCart = (buyNow = false) => {
     if (!selectedVariant) {
-      toast.error('Vui lòng chọn size và màu sắc');
+      notify.error('Vui lòng chọn size và màu sắc');
       return;
     }
 
     if (quantity > selectedVariant.stock) {
-      toast.error(`Chỉ còn ${selectedVariant.stock} sản phẩm trong kho`);
+      notify.error(`Chỉ còn ${selectedVariant.stock} sản phẩm trong kho`);
       return;
     }
 
@@ -110,7 +110,7 @@ const ProductDetailPage = () => {
     if (buyNow) {
       setTimeout(() => navigate('/cart'), 500);
     } else {
-      toast.success('Thêm vào giỏ hàng thành công!', { duration: 2000 });
+      notify.success('Thêm vào giỏ hàng thành công!', 2000);
     }
   };
 

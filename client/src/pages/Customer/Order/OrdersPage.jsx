@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaBox, FaClock, FaArrowLeft, FaStar } from 'react-icons/fa';
-import toast from 'react-hot-toast';
+import { notify } from '../../../utils/notification';
 import Loading from '../../../components/common/Loading';
 import Layout from '../../../components/layouts/Layout';
 import orderService from '../../../services/orderService';
@@ -41,7 +41,7 @@ const OrdersPage = () => {
       }));
       
       setOrders(transformedOrders);
-    } catch (error) {toast.error('Không thể tải đơn hàng');
+    } catch (error) {notify.error('Không thể tải đơn hàng');
     } finally {
       setLoading(false);
     }
@@ -77,7 +77,7 @@ const OrdersPage = () => {
 
   const handleReviewSuccess = () => {
     setShowReviewModal(false);
-    toast.success('Đánh giá thành công!');
+    notify.success('Đánh giá thành công!');
     setReviewedProducts(prev => new Set([...prev, selectedProduct.id]));
     setSelectedProduct(null);
   };

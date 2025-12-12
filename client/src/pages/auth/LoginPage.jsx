@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { Mail, Lock, ArrowRight, Chrome } from 'lucide-react';
-import toast from 'react-hot-toast';
+import { notify } from '../../utils/notification';
 import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
 
@@ -37,9 +37,9 @@ const LoginPage = () => {
 
     try {
       await handleLogin(formData);
-      toast.success('Đăng nhập thành công!');
+      notify.success('Đăng nhập thành công!');
     } catch (err) {
-      toast.error(err.message || 'Login failed');
+      notify.error(err.message || 'Đăng nhập thất bại');
     }
   };
 

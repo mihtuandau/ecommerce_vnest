@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Layout from '../../../components/layouts/Layout';
 import { FaPhone, FaEnvelope, FaMapMarkerAlt, FaClock, FaFacebookF, FaInstagram, FaTwitter, FaPaperPlane } from 'react-icons/fa';
-import toast from 'react-hot-toast';
+import { notify } from '../../../utils/notification';
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({
@@ -26,7 +26,7 @@ const ContactPage = () => {
     
     // Simulate API call
     setTimeout(() => {
-      toast.success('Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi sớm nhất có thể.');
+      notify.success('Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi sớm nhất có thể.');
       setFormData({
         name: '',
         email: '',

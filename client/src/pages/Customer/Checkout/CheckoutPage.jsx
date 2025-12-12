@@ -53,7 +53,7 @@ const CheckoutPage = () => {
 
   useEffect(() => {
     if (cartItems.length === 0) {
-      toast.error("Giỏ hàng trống!");
+      notify.error("Giỏ hàng trống!");
       navigate("/cart");
       return;
     }
@@ -73,7 +73,7 @@ const CheckoutPage = () => {
   const onSelectAddress = (addressData) => {
     handleSelectAddress(addressData, shippingInfo.email);
     setShowAddressModal(false);
-    toast.success("Đã chọn địa chỉ");
+    notify.success("Đã chọn địa chỉ");
   };
 
   const onSubmitOrder = () => {

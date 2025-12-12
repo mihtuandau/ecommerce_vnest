@@ -1,20 +1,20 @@
-import toast from 'react-hot-toast';
+import { notify } from './notification';
 
 export const validateBulkVariant = (bulkData) => {
   if (!bulkData.color?.trim()) {
-    toast.error('Vui lòng nhập màu sắc');
+    notify.error('Vui lòng nhập màu sắc');
     return false;
   }
   
   if (!bulkData.sizes?.trim()) {
-    toast.error('Vui lòng nhập các size (VD: S, M, L, XL)');
+    notify.error('Vui lòng nhập các size (VD: S, M, L, XL)');
     return false;
   }
   
   const sizeList = bulkData.sizes.split(',').map(s => s.trim()).filter(s => s);
   
   if (sizeList.length === 0) {
-    toast.error('Không tìm thấy size hợp lệ');
+    notify.error('Không tìm thấy size hợp lệ');
     return false;
   }
   
@@ -25,7 +25,7 @@ export const validateSingleVariant = (variant) => {
   // Size và color đều optional - không bắt buộc
   // Chỉ cần có giá là đủ
   if (!variant.price || variant.price <= 0) {
-    toast.error('Vui lòng nhập giá sản phẩm');
+    notify.error('Vui lòng nhập giá sản phẩm');
     return false;
   }
   return true;

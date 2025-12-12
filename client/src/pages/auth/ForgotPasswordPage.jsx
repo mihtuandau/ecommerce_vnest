@@ -32,7 +32,7 @@ const ForgotPasswordPage = () => {
     try {
       await authService.forgotPassword(email);
       setSent(true);
-      toast.success("Email khôi phục đã được gửi!");
+      notify.success("Email khôi phục đã được gửi!");
     } catch (err) {setError(
         err.response?.data?.message || "Có lỗi xảy ra, vui lòng thử lại"
       );

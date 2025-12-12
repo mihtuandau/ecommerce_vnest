@@ -7,7 +7,7 @@ import ProductFilter from '../../../components/products/ProductFilter';
 import Pagination from '../../../components/common/Pagination';
 import { productService } from '../../../services/productService';
 import categoryService from '../../../services/categoryService';
-import toast from 'react-hot-toast';
+import { notify } from '../../../utils/notification';
 
 const CategoryPage = () => {
   const { id } = useParams();
@@ -43,7 +43,7 @@ const CategoryPage = () => {
         const categories = await categoryService.getAll();
         const found = categories.find(cat => cat.id === parseInt(id));
         setCategory(found);
-      } catch (error) {toast.error('Không tìm thấy danh mục');
+      } catch (error) {notify.error('Không tìm thấy danh mục');
       }
     };
     loadCategory();
@@ -104,7 +104,7 @@ const CategoryPage = () => {
         total: pageInfo?.total || 0,
         totalPages: pageInfo?.totalPages || 1,
       });
-    } catch (error) {toast.error('Lỗi tải sản phẩm');
+    } catch (error) {notify.error('Lỗi tải sản phẩm');
     } finally {
       setLoading(false);
     }

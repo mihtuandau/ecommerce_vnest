@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Plus, RefreshCw } from 'lucide-react';
-import toast from 'react-hot-toast';
+import { notify } from '../../../utils/notification';
 import discountService from '../../../services/discountService';
 import Button from '../../../components/common/Button';
 import Pagination from '../../../components/common/Pagination';
@@ -38,7 +38,7 @@ const DiscountManagement = () => {
       const data = await discountService.getDiscounts();
       setDiscounts(data);
     } catch (error) {
-      toast.error('Không thể tải danh sách mã giảm giá');
+      notify.error('Không thể tải danh sách mã giảm giá');
     } finally {
       setLoading(false);
     }
@@ -68,10 +68,10 @@ const DiscountManagement = () => {
   const handleCreate = async (data) => {
     try {
       await discountService.createDiscount(data);
-      toast.success('Tạo mã giảm giá thành công');
+      notify.success('Tạo mã giảm giá thành công');
       loadDiscounts();
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Không thể tạo mã giảm giá');
+      notify.error(error.response?.data?.message || 'Không thể tạo mã giảm giá');
       throw error;
     }
   };
@@ -79,17 +79,17 @@ const DiscountManagement = () => {
   const handleUpdate = async (data) => {
     try {
       await discountService.updateDiscount(selectedDiscount.id, data);
-      toast.success('Cập nhật mã giảm giá thành công');
+      notify.success('Cập nhật mã giảm giá thành công');
       loadDiscounts();
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Không thể cập nhật mã giảm giá');
+      notify.error(error.response?.data?.message || 'Không thể cập nhật mã giảm giá');
       throw error;
     }
   };
 
   const handleDelete = async (discount) => {
     if (discount.usageCount > 0) {
-      toast.error('Không thể xóa mã đã được sử dụng');
+      notify.error('Không thể xóa mã đã được sử dụng');
       return;
     }
 
@@ -99,10 +99,10 @@ const DiscountManagement = () => {
 
     try {
       await discountService.deleteDiscount(discount.id);
-      toast.success('Xóa mã giảm giá thành công');
+      notify.success('Xóa mã giảm giá thành công');
       loadDiscounts();
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Không thể xóa mã giảm giá');
+      notify.error(error.response?.data?.message || 'Không thể xóa mã giảm giá');
     }
   };
 

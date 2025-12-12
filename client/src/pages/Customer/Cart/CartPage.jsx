@@ -8,7 +8,7 @@ import CartItemsList from '../../../components/cart/CartItemsList';
 import CartSummary from '../../../components/cart/CartSummary';
 import { useAuth } from '../../../hooks/useAuth';
 import { useCart } from '../../../hooks/useCart';
-import toast from 'react-hot-toast';
+import { notify } from '../../../utils/notification';
 import { formatPrice } from '../../../utils/formatters';
 
 const CartPage = () => {
@@ -81,12 +81,12 @@ const CartPage = () => {
 
   const handleCheckout = () => {
     if (selectedItems.size === 0 && cartItems.length > 0) {
-      toast.error('Vui lòng chọn ít nhất một sản phẩm để thanh toán');
+      notify.error('Vui lòng chọn ít nhất một sản phẩm để thanh toán');
       return;
     }
     
     if (cartItems.length === 0) {
-      toast.error('Giỏ hàng trống');
+      notify.error('Giỏ hàng trống');
       return;
     }
     

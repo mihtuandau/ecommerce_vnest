@@ -4,7 +4,7 @@ import Button from '../../common/Button';
 import BulkVariantForm from './BulkVariantForm';
 import SingleVariantForm from './SingleVariantForm';
 import VariantSummary from './VariantSummary';
-import toast from 'react-hot-toast';
+import { notify } from '../../../utils/notification';
 import {
   validateBulkVariant,
   validateSingleVariant,
@@ -68,7 +68,7 @@ const VariantModal = ({ product, onClose, onSave, onImagesUploaded, editingVaria
         }
         
         allVariants = createBulkVariants(bulkData, product, existingVariants);
-        toast.success(`Đã thêm ${sizeList.length} variants!`);
+        notify.success(`Đã thêm ${sizeList.length} variants!`);
       } else {
         const variant = variants[0];
         
@@ -78,7 +78,7 @@ const VariantModal = ({ product, onClose, onSave, onImagesUploaded, editingVaria
         }
         
         allVariants = updateSingleVariant(variant, product, existingVariants, editingVariant);
-        toast.success(editingVariant ? 'Đã cập nhật variant!' : 'Đã thêm variant mới!');
+        notify.success(editingVariant ? 'Đã cập nhật variant!' : 'Đã thêm variant mới!');
       }
       
       await onSave(product.id, allVariants);
@@ -89,7 +89,7 @@ const VariantModal = ({ product, onClose, onSave, onImagesUploaded, editingVaria
       
       onClose();
     } catch (error) {
-      toast.error(error?.message || 'Không thể lưu variant');
+      notify.error(error?.message || 'Không thể lưu variant');
     } finally {
       setLoading(false);
     }

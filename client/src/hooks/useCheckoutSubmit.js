@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import toast from 'react-hot-toast';
+import { notify } from '../utils/notification';
 import orderService from '../services/orderService';
 import {
   validateCheckoutForm,
@@ -56,7 +56,7 @@ export const useCheckoutSubmit = (user) => {
         clearGuestCart();
         saveGuestOrder(response.data.orderCode, shippingInfo.email);
 
-        toast.success(
+        notify.success(
           `Đặt hàng thành công! Mã đơn hàng: ${response.data.orderCode}`,
           { duration: 5000 }
         );
@@ -69,7 +69,7 @@ export const useCheckoutSubmit = (user) => {
         });
       } else {
         // Handle logged-in user checkout
-        toast.success("Đặt hàng thành công!");
+        notify.success("Đặt hàng thành công!");
         setTimeout(() => {
           navigate(`/orders/${response.data.id}`);
         }, 1000);
@@ -77,7 +77,7 @@ export const useCheckoutSubmit = (user) => {
 
       return true;
     } catch (error) {
-      toast.error(error.response?.data?.message || "Đặt hàng thất bại");
+      notify.error(error.response?.data?.message || "Đặt hàng thất bại");
       return false;
     } finally {
       setSubmitting(false);

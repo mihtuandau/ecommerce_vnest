@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { FaMapMarkerAlt, FaStar } from 'react-icons/fa';
-import toast from 'react-hot-toast';
+import { notify } from '../../utils/notification';
 import addressService from '../../services/addressService';
 import locationService from '../../services/locationService';
 
@@ -20,7 +20,7 @@ const AddressSelector = ({ onAddressSelect, selectedAddressId }) => {
       setAddresses(Array.isArray(addressList) ? addressList : []);
     } catch (error) {
       console.error('Load addresses error:', error);
-      toast.error('Không thể tải danh sách địa chỉ');
+      notify.error('Không thể tải danh sách địa chỉ');
       setAddresses([]);
     } finally {
       setLoading(false);

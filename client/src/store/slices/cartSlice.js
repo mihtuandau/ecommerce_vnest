@@ -1,5 +1,5 @@
 import { createSlice, current } from '@reduxjs/toolkit';
-import toast from 'react-hot-toast';
+import { notify } from '../../utils/notification';
 import { loadCartFromStorage, saveCartToStorage, clearCartStorage } from './cartHelpers';
 import {
   fetchCart,
@@ -55,7 +55,7 @@ const cartSlice = createSlice({
       const variantId = action.payload;
       state.items = state.items.filter(item => item.variantId !== variantId);
       saveCartToStorage(current(state.items));
-      toast.success('Đã xóa khỏi giỏ hàng', { duration: 2000 });
+      notify.success('Đã xóa khỏi giỏ hàng', 2000);
     },
 
     clearCartGuest: (state) => {
@@ -74,7 +74,7 @@ const cartSlice = createSlice({
     setError: (state, action) => {
       state.error = action.payload;
       if (action.payload) {
-        toast.error(action.payload);
+        notify.error(action.payload);
       }
     },
   },
@@ -123,12 +123,12 @@ const cartSlice = createSlice({
           });
         }
         saveCartToStorage(current(state.items));
-        toast.success('Đã lưu vào giỏ hàng!', { duration: 2000 });
+        notify.success('Đã lưu vào giỏ hàng!', 2000);
       })
       .addCase(addToCartServer.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-        toast.error(action.payload);
+        notify.error(action.payload);
       })
       // Update Cart Server
       .addCase(updateCartServer.fulfilled, (state, action) => {
@@ -147,7 +147,7 @@ const cartSlice = createSlice({
       })
       .addCase(updateCartServer.rejected, (state, action) => {
         state.error = action.payload;
-        toast.error(action.payload);
+        notify.error(action.payload);
       })
       // Remove from Cart Server
       .addCase(removeFromCartServer.fulfilled, (state, action) => {
@@ -155,21 +155,21 @@ const cartSlice = createSlice({
         state.items = state.items.filter(item => item.variantId !== variantId);
         // Save to localStorage - use current() to get plain state
         saveCartToStorage(current(state.items));
-        toast.success('Đã xóa khỏi giỏ hàng!');
+        notify.success('Đã xóa khỏi giỏ hàng!');
       })
       .addCase(removeFromCartServer.rejected, (state, action) => {
         state.error = action.payload;
-        toast.error(action.payload);
+        notify.error(action.payload);
       })
       // Clear Cart Server
       .addCase(clearCartServer.fulfilled, (state) => {
         state.items = [];
         clearCartStorage();
-        toast.success('Đã xóa giỏ hàng', { duration: 2000 });
+        notify.success('Đã xóa giỏ hàng', 2000);
       })
       .addCase(clearCartServer.rejected, (state, action) => {
         state.error = action.payload;
-        toast.error(action.payload);
+        notify.error(action.payload);
       });
   },
 });
