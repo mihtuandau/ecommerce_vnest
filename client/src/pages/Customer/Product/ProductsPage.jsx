@@ -7,7 +7,7 @@ import ProductFilter from '../../../components/products/ProductFilter';
 import Pagination from '../../../components/common/Pagination';
 import { productService } from '../../../services/productService';
 import categoryService from '../../../services/categoryService';
-import toast from 'react-hot-toast';
+import { notify } from '../../../utils/notification';
 
 const ProductsPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -91,7 +91,7 @@ const ProductsPage = () => {
         total: pageInfo?.total || 0,
         totalPages: pageInfo?.totalPages || 1,
       });
-    } catch (error) {toast.error('Lỗi tải sản phẩm');
+    } catch (error) {notify.error('Lỗi tải sản phẩm');
     } finally {
       setLoading(false);
     }

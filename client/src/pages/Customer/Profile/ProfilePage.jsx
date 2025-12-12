@@ -6,7 +6,7 @@ import Layout from '../../../components/layouts/Layout';
 import Loading from '../../../components/common/Loading';
 import PersonalInfoForm from '../../../components/customer/PersonalInfoForm';
 import AddressManager from '../../../components/customer/AddressManager';
-import toast from 'react-hot-toast';
+import { notify } from '../../../utils/notification';
 
 const ProfilePage = () => {
   const { user: currentUser, loading: authLoading } = useAuth();
@@ -16,10 +16,10 @@ const ProfilePage = () => {
     setLoading(true);
     try {
       await authService.updateProfile(formData);
-      toast.success('Cập nhật thành công');
+      notify.success('Cập nhật thành công');
       return true;
     } catch (error) {
-      toast.error('Có lỗi xảy ra');
+      notify.error('Có lỗi xảy ra');
       return false;
     } finally {
       setLoading(false);

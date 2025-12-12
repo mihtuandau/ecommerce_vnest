@@ -36,6 +36,7 @@ export class ProductService {
       brandId,
       minPrice,
       maxPrice,
+      minRating,
       sortBy = 'newest',
       inStock
     } = query;
@@ -63,6 +64,10 @@ export class ProductService {
       if (maxPrice) where.basePrice.lte = maxPrice;
     }
     
+    if (minRating) {
+      where.averageRating = { gte: minRating };
+    }
+    
     if (inStock) {
       where.stock = { gt: 0 };
     }
@@ -81,6 +86,12 @@ export class ProductService {
         break;
       case 'name-desc':
         orderBy = { name: 'desc' };
+        break;
+      case 'sold':
+        orderBy = { soldCount: 'desc' };
+        break;
+      case 'rating':
+        orderBy = { averageRating: 'desc' };
         break;
       case 'oldest':
         orderBy = { createdAt: 'asc' };

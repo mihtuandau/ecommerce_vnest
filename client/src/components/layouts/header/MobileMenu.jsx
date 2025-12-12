@@ -51,8 +51,8 @@ const MobileMenu = ({ searchOpen, mobileMenuOpen, categories }) => {
             <Link to="/products?filter=sale" className="block py-2 text-red-500 hover:text-red-600 font-bold">
               🔥 Sale
             </Link>
-            <Link to="/blog" className="block py-2 text-gray-700 hover:text-blue-600 font-medium">
-              Blog
+            <Link to="/about" className="block py-2 text-gray-700 hover:text-blue-600 font-medium">
+              Về Chúng Tôi
             </Link>
             <Link to="/contact" className="block py-2 text-gray-700 hover:text-blue-600 font-medium">
               Liên Hệ

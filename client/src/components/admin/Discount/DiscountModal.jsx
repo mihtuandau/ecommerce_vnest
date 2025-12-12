@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import Modal from '../../common/Modal';
 import Button from '../../common/Button';
-import toast from 'react-hot-toast';
+import { notify } from '../../../utils/notification';
 
 const DiscountModal = ({ isOpen, onClose, discount, onSubmit }) => {
   const [formData, setFormData] = useState({
@@ -53,25 +53,25 @@ const DiscountModal = ({ isOpen, onClose, discount, onSubmit }) => {
 
     // Validation
     if (!formData.code.trim()) {
-      toast.error('Vui lòng nhập mã giảm giá');
+      notify.error('Vui lòng nhập mã giảm giá');
       return;
     }
 
     if (!formData.startDate) {
-      toast.error('Vui lòng chọn ngày bắt đầu');
+      notify.error('Vui lòng chọn ngày bắt đầu');
       return;
     }
 
     if (formData.discountType === 'percentage') {
       const percentage = parseFloat(formData.percentage);
       if (!percentage || percentage <= 0 || percentage > 100) {
-        toast.error('Phần trăm giảm giá phải từ 1-100');
+        notify.error('Phần trăm giảm giá phải từ 1-100');
         return;
       }
     } else {
       const fixedAmount = parseFloat(formData.fixedAmount);
       if (!fixedAmount || fixedAmount <= 0) {
-        toast.error('Số tiền giảm phải lớn hơn 0');
+        notify.error('Số tiền giảm phải lớn hơn 0');
         return;
       }
     }
@@ -91,7 +91,7 @@ const DiscountModal = ({ isOpen, onClose, discount, onSubmit }) => {
       await onSubmit(submitData);
       onClose();
     } catch (error) {
-      toast.error('Có lỗi xảy ra khi lưu mã giảm giá');
+      notify.error('Có lỗi xảy ra khi lưu mã giảm giá');
     } finally {
       setLoading(false);
     }

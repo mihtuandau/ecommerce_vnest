@@ -51,10 +51,10 @@ const DesktopNav = ({ scrolled, categories, categoryDropdown, setCategoryDropdow
           }`}>
             🔥 Sale
           </Link>
-          <Link to="/about-us" className={`transition-colors duration-300 font-medium ${
+          <Link to="/about" className={`transition-colors duration-300 font-medium ${
             scrolled ? 'text-gray-700 hover:text-gray-900' : 'text-white hover:text-gray-200'
           }`}>
-            Về chúng tôi
+            Về Chúng Tôi
           </Link>
           <Link to="/contact" className={`transition-colors duration-300 font-medium ${
             scrolled ? 'text-gray-700 hover:text-gray-900' : 'text-white hover:text-gray-200'

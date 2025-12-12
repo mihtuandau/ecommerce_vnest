@@ -62,6 +62,12 @@ const AdminProfilePage = lazy(() =>
 const CustomerProfilePage = lazy(() =>
   import("../pages/Customer/Profile/ProfilePage")
 );
+const AboutPage = lazy(() =>
+  import("../pages/Customer/About/AboutPage")
+);
+const ContactPage = lazy(() =>
+  import("../pages/Customer/Contact/ContactPage")
+);
 
 const AppRoutes = () => {
   return (
@@ -78,6 +84,10 @@ const AppRoutes = () => {
           <Route path="/profile" element={<CustomerProfilePage />} />
           <Route path="/account" element={<CustomerProfilePage />} />
           <Route path="/" element={<HomePage />} />
+
+          {/* About & Contact Routes */}
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/contact" element={<ContactPage />} />
 
           {/* Product Routes */}
           <Route path="/products" element={<ProductsPage />} />

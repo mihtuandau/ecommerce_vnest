@@ -1,12 +1,12 @@
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { FaHeart, FaEye } from 'react-icons/fa';
-import toast from 'react-hot-toast';
+import { notify } from '../../utils/notification';
 import Button from '../common/Button';
 import StarRating from '../common/StarRating';
 import { formatPrice, calculateDiscountPercent } from '../../utils/formatters';
 import wishlistService from '../../services/wishlistService';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../../hooks/useAuth';
 
 const ProductCard = ({ product, viewMode = 'grid-3' }) => {
   const { user } = useAuth();
@@ -68,12 +68,12 @@ const ProductCard = ({ product, viewMode = 'grid-3' }) => {
     e.stopPropagation();
     
     if (!user) {
-      toast.error('Vui lòng đăng nhập để thêm vào yêu thích');
+      notify.error('Vui lòng đăng nhập để thêm vào yêu thích');
       return;
     }
 
     if (!variantId) {
-      toast.error('Không tìm thấy sản phẩm');
+      notify.error('Không tìm thấy sản phẩm');
       return;
     }
 
@@ -81,18 +81,18 @@ const ProductCard = ({ product, viewMode = 'grid-3' }) => {
       if (isInWishlist) {
         await wishlistService.removeFromWishlist(variantId);
         setIsInWishlist(false);
-        toast.success('Đã xóa khỏi danh sách yêu thích');
+        notify.success('Đã xóa khỏi danh sách yêu thích');
         // Trigger event to update header
         window.dispatchEvent(new CustomEvent('wishlistUpdated'));
       } else {
         await wishlistService.addToWishlist(variantId);
         setIsInWishlist(true);
-        toast.success('Đã thêm vào danh sách yêu thích');
+        notify.success('Đã thêm vào danh sách yêu thích');
         // Trigger event to update header
         window.dispatchEvent(new CustomEvent('wishlistUpdated'));
       }
     } catch (error) {
-      toast.error('Có lỗi xảy ra');
+      notify.error('Có lỗi xảy ra');
     }
   };
 
@@ -163,9 +163,9 @@ const ProductCard = ({ product, viewMode = 'grid-3' }) => {
               reviewCount={product.reviewCount || 0}
             />
           )}
-          {product.soldCount > 0 && (
-            <span className={`${soldTextClass} text-gray-500`}>
-              Đã bán {product.soldCount}
+          {(product.soldCount > 0 || product.sold > 0) && (
+            <span className={`${soldTextClass} text-gray-600 font-medium`}>
+              🔥 Đã bán {product.soldCount || product.sold || 0}
             </span>
           )}
         </div>

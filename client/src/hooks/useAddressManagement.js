@@ -19,7 +19,7 @@ export const useAddressManagement = () => {
       setAddresses(Array.isArray(addressList) ? addressList : []);
     } catch (error) {
       console.error('Load addresses error:', error);
-      toast.error('Không thể tải danh sách địa chỉ');
+      notify.error('Không thể tải danh sách địa chỉ');
       setAddresses([]);
     } finally {
       setLoading(false);
@@ -31,12 +31,12 @@ export const useAddressManagement = () => {
       // Remove fields that shouldn't be sent to backend
       const { id, userId, createdAt, updatedAt, ...cleanData } = addressData;
       await addressService.createAddress(cleanData);
-      toast.success('Thêm địa chỉ mới thành công');
+      notify.success('Thêm địa chỉ mới thành công');
       await loadAddresses();
       return true;
     } catch (error) {
       console.error('Create address error:', error);
-      toast.error(error.response?.data?.message || 'Có lỗi xảy ra');
+      notify.error(error.response?.data?.message || 'Có lỗi xảy ra');
       return false;
     }
   };
@@ -46,12 +46,12 @@ export const useAddressManagement = () => {
       // Remove fields that shouldn't be sent to backend
       const { id, userId, createdAt, updatedAt, ...cleanData } = addressData;
       await addressService.updateAddress(addressId, cleanData);
-      toast.success('Cập nhật địa chỉ thành công');
+      notify.success('Cập nhật địa chỉ thành công');
       await loadAddresses();
       return true;
     } catch (error) {
       console.error('Update address error:', error);
-      toast.error(error.response?.data?.message || 'Có lỗi xảy ra');
+      notify.error(error.response?.data?.message || 'Có lỗi xảy ra');
       return false;
     }
   };
@@ -60,12 +60,12 @@ export const useAddressManagement = () => {
     if (!window.confirm('Bạn có chắc muốn xóa địa chỉ này?')) return false;
     try {
       await addressService.deleteAddress(addressId);
-      toast.success('Đã xóa địa chỉ');
+      notify.success('Đã xóa địa chỉ');
       await loadAddresses();
       return true;
     } catch (error) {
       console.error('Delete address error:', error);
-      toast.error('Không thể xóa địa chỉ');
+      notify.error('Không thể xóa địa chỉ');
       return false;
     }
   };
@@ -73,12 +73,12 @@ export const useAddressManagement = () => {
   const setDefaultAddress = async (addressId) => {
     try {
       await addressService.setDefaultAddress(addressId);
-      toast.success('Đã đặt làm địa chỉ mặc định');
+      notify.success('Đã đặt làm địa chỉ mặc định');
       await loadAddresses();
       return true;
     } catch (error) {
       console.error('Set default address error:', error);
-      toast.error('Có lỗi xảy ra');
+      notify.error('Có lỗi xảy ra');
       return false;
     }
   };

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { RefreshCw } from 'lucide-react';
 import paymentService from '../../../services/paymentService';
-import toast from 'react-hot-toast';
+import { notify } from '../../../utils/notification';
 import Button from '../../../components/common/Button';
 import Pagination from '../../../components/common/Pagination';
 import PaymentStatsCards from '../../../components/admin/Payment/PaymentStatsCards';
@@ -64,7 +64,7 @@ const PaymentManagement = () => {
       console.error('❌ Error loading payments:', error);
       console.error('Error response:', error.response);
       if (showLoading) {
-        toast.error(error.response?.data?.message || 'Không thể tải danh sách thanh toán');
+        notify.error(error.response?.data?.message || 'Không thể tải danh sách thanh toán');
       }
       setPayments([]); // Set empty array on error
     } finally {
@@ -77,11 +77,11 @@ const PaymentManagement = () => {
   const handleUpdateStatus = async (paymentId, newStatus) => {
     try {
       await paymentService.updatePaymentStatus(paymentId, newStatus);
-      toast.success('Cập nhật trạng thái thành công');
+      notify.success('Cập nhật trạng thái thành công');
       loadPayments();
       setShowDetailModal(false);
     } catch (error) {
-      toast.error('Không thể cập nhật trạng thái');
+      notify.error('Không thể cập nhật trạng thái');
     }
   };
 

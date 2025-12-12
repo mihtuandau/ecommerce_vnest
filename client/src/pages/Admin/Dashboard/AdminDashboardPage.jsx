@@ -9,7 +9,7 @@ import {
   ShoppingCart
 } from 'lucide-react';
 import dashboardService from '../../../services/dashboardService';
-import toast from 'react-hot-toast';
+import { notify } from '../../../utils/notification';
 import Loading from '../../../components/common/Loading';
 import RecentOrders from '../../../components/admin/Dashboard/RecentOrders';
 import TopProducts from '../../../components/admin/Dashboard/TopProducts';
@@ -64,7 +64,7 @@ const AdminDashboardPage = () => {
       setRecentOrders(ordersData);
       setTopProducts(productsData);
     } catch (error) {
-      toast.error('Không thể tải dữ liệu dashboard');
+      notify.error('Không thể tải dữ liệu dashboard');
     } finally {
       setLoading(false);
     }

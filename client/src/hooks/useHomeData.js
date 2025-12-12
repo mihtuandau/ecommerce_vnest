@@ -5,7 +5,8 @@ export const useHomeData = () => {
   const [data, setData] = useState({
     banners: [],
     categories: [],
-    featuredProducts: []
+    featuredProducts: [],
+    bestSellers: []
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

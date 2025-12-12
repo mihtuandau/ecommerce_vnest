@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FaHeart, FaTrash } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-import toast from 'react-hot-toast';
+import { notify } from '../../utils/notification';
 import wishlistService from '../../services/wishlistService';
 import Breadcrumb from '../../components/common/Breadcrumb';
 
@@ -17,7 +17,7 @@ const WishlistPage = () => {
     try {
       setLoading(true);
       const data = await wishlistService.getWishlist();setWishlistItems(data || []);
-    } catch (error) {toast.error('Không thể tải danh sách yêu thích');
+    } catch (error) {notify.error('Không thể tải danh sách yêu thích');
       setWishlistItems([]);
     } finally {
       setLoading(false);
@@ -28,11 +28,11 @@ const WishlistPage = () => {
     try {
       await wishlistService.removeFromWishlist(variantId);
       setWishlistItems(wishlistItems.filter(item => item.variantId !== variantId));
-      toast.success('Đã xóa khỏi danh sách yêu thích');
+      notify.success('Đã xóa khỏi danh sách yêu thích');
       // Trigger event to update header
       window.dispatchEvent(new CustomEvent('wishlistUpdated'));
     } catch (error) {
-      toast.error('Không thể xóa sản phẩm');
+      notify.error('Không thể xóa sản phẩm');
     }
   };
 
@@ -42,11 +42,11 @@ const WishlistPage = () => {
     try {
       await wishlistService.clearWishlist();
       setWishlistItems([]);
-      toast.success('Đã xóa tất cả sản phẩm yêu thích');
+      notify.success('Đã xóa tất cả sản phẩm yêu thích');
       // Trigger event to update header
       window.dispatchEvent(new CustomEvent('wishlistUpdated'));
     } catch (error) {
-      toast.error('Không thể xóa danh sách');
+      notify.error('Không thể xóa danh sách');
     }
   };
 

@@ -3,7 +3,7 @@ import { FaComments, FaPaperPlane, FaUser, FaCircle } from 'react-icons/fa';
 import chatSocketService from '../../../services/chatSocketService';
 import chatService from '../../../services/chatService';
 import { useAuth } from '../../../hooks/useAuth';
-import toast from 'react-hot-toast';
+import { notify } from '../../../utils/notification';
 
 const AdminChatManagement = () => {
   const { user } = useAuth();
@@ -19,7 +19,7 @@ const AdminChatManagement = () => {
   const loadRooms = async () => {
     try {
       const data = await chatService.getRooms();setRooms(data || []);
-    } catch (error) {toast.error('Không thể tải danh sách chat');
+    } catch (error) {notify.error('Không thể tải danh sách chat');
     } finally {
       setLoading(false);
     }
@@ -55,7 +55,7 @@ const AdminChatManagement = () => {
         // Show toast for messages in other rooms from customer
         if (message.sender?.role === 'CUSTOMER') {
           const userName = message.sender.name || 'Khách hàng';
-          toast.success(`💬 ${userName} đã gửi tin nhắn mới`, {
+          notify.success(`💬 ${userName} đã gửi tin nhắn mới`, {
             duration: 4000,
             position: 'top-right',
           });
@@ -122,7 +122,7 @@ const AdminChatManagement = () => {
     try {
       await chatSocketService.sendMessage(selectedRoom, user.id, messageText);
     } catch (error) {
-      toast.error('Không thể gửi tin nhắn');
+      notify.error('Không thể gửi tin nhắn');
       setMessages((prev) => prev.filter(m => m.id !== tempMessage.id));
     }
   };

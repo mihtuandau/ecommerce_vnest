@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import toast from 'react-hot-toast';
+import { notify } from '../../../utils/notification';
 
 const BulkVariantForm = ({ product, bulkData, setBulkData }) => {
   return (

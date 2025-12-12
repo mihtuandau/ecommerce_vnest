@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { FaSearch, FaBox, FaCheckCircle } from 'react-icons/fa';
-import toast from 'react-hot-toast';
+import { notify } from '../../../utils/notification';
 import Layout from '../../../components/layouts/Layout';
 import Button from '../../../components/common/Button';
 import Loading from '../../../components/common/Loading';
@@ -36,8 +36,8 @@ const OrderLookupPage = () => {
         location.state.contact
       );
       setOrder(response.data);
-      toast.success('Tìm thấy đơn hàng của bạn!');
-    } catch (error) {toast.error(error.response?.data?.message || 'Không tìm thấy đơn hàng');
+      notify.success('Tìm thấy đơn hàng của bạn!');
+    } catch (error) {notify.error(error.response?.data?.message || 'Không tìm thấy đơn hàng');
     } finally {
       setSearching(false);
     }
@@ -47,7 +47,7 @@ const OrderLookupPage = () => {
     e.preventDefault();
 
     if (!orderCode.trim() || !contact.trim()) {
-      toast.error('Vui lòng nhập đầy đủ mã đơn hàng và email/số điện thoại');
+      notify.error('Vui lòng nhập đầy đủ mã đơn hàng và email/số điện thoại');
       return;
     }
 
@@ -55,8 +55,8 @@ const OrderLookupPage = () => {
       setSearching(true);
       const response = await orderService.lookupGuestOrder(orderCode, contact);
       setOrder(response.data);
-      toast.success('Tìm thấy đơn hàng!');
-    } catch (error) {toast.error(error.response?.data?.message || 'Không tìm thấy đơn hàng');
+      notify.success('Tìm thấy đơn hàng!');
+    } catch (error) {notify.error(error.response?.data?.message || 'Không tìm thấy đơn hàng');
       setOrder(null);
     } finally {
       setSearching(false);

@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
-import authService from '../../services/authService';
 import { Mail, Lock, User, ArrowRight, Chrome } from 'lucide-react';
-import toast from 'react-hot-toast';
 import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
 
@@ -11,7 +9,7 @@ const RegisterPage = () => {
   const [formData, setFormData] = useState({ email: '', password: '', name: '' });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuth();
+  const { handleRegister } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -38,16 +36,10 @@ const RegisterPage = () => {
 
     setIsLoading(true);
     try {
-      const response = await authService.register(formData);
-      if (response.access_token) {
-        login(response.access_token, response.user);
-        toast.success('Đăng ký thành công!');
-        navigate('/');
-      } else {
-        toast.error('Registration failed. Please try again.');
-      }
+      await handleRegister(formData);
+      navigate('/login');
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Registration failed');
+      // AuthContext đã hiển thị thông báo lỗi
     } finally {
       setIsLoading(false);
     }

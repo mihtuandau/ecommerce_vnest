@@ -1,4 +1,4 @@
-import toast from 'react-hot-toast';
+import { notify } from './notification';
 
 export const validateEmail = (email) => {
   const emailRegex = /^[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -19,37 +19,37 @@ export const validateCheckoutForm = (shippingInfo, isGuest, agreedToTerms) => {
   } = shippingInfo || {};
 
   if (!fullName.trim()) {
-    toast.error("Vui lòng nhập họ tên");
+    notify.error("Vui lòng nhập họ tên");
     return false;
   }
 
   if (isGuest && !email.trim()) {
-    toast.error("Vui lòng nhập email để nhận thông tin đơn hàng");
+    notify.error("Vui lòng nhập email để nhận thông tin đơn hàng");
     return false;
   }
 
   if (isGuest && email.trim() && !validateEmail(email)) {
-    toast.error("Email không hợp lệ");
+    notify.error("Email không hợp lệ");
     return false;
   }
 
   if (!phone.trim() || !validatePhone(phone)) {
-    toast.error("Số điện thoại không hợp lệ (10 chữ số)");
+    notify.error("Số điện thoại không hợp lệ (10 chữ số)");
     return false;
   }
 
   if (!address.trim()) {
-    toast.error("Vui lòng nhập địa chỉ");
+    notify.error("Vui lòng nhập địa chỉ");
     return false;
   }
 
   if (!city.trim()) {
-    toast.error("Vui lòng chọn tỉnh/thành phố");
+    notify.error("Vui lòng chọn tỉnh/thành phố");
     return false;
   }
 
   if (!agreedToTerms) {
-    toast.error("Vui lòng đồng ý điều khoản dịch vụ");
+    notify.error("Vui lòng đồng ý điều khoản dịch vụ");
     return false;
   }
 

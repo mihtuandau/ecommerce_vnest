@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import productService from '../services/productService';
-import toast from 'react-hot-toast';
+import { notify } from '../utils/notification';
 
 export const useProducts = () => {
   const [products, setProducts] = useState([]);
@@ -35,7 +35,7 @@ export const useProducts = () => {
       
       setProducts(productsData);
       setTotalPages(totalPagesFromAPI);
-    } catch (error) {toast.error('Không thể tải danh sách sản phẩm');
+    } catch (error) {notify.error('Không thể tải danh sách sản phẩm');
       setProducts([]);
     } finally {
       setLoading(false);
@@ -48,7 +48,7 @@ export const useProducts = () => {
       const response = await productService.getCategories();
       const categoriesData = extractData(response);
       setCategories(categoriesData);
-    } catch (error) {toast.error('Không thể tải danh mục');
+    } catch (error) {notify.error('Không thể tải danh mục');
       setCategories([]);
     }
   }, []);
@@ -59,7 +59,7 @@ export const useProducts = () => {
       const response = await productService.getBrands();
       const brandsData = extractData(response);
       setBrands(brandsData);
-    } catch (error) {toast.error('Không thể tải thương hiệu');
+    } catch (error) {notify.error('Không thể tải thương hiệu');
       setBrands([]);
     }
   }, []);

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import toast from 'react-hot-toast';
+import { notify } from '../utils/notification';
 import productService from '../services/productService';
 
 export const useProductActions = ({ products, loadProducts, selectedProducts = [] }) => {
@@ -41,10 +41,10 @@ export const useProductActions = ({ products, loadProducts, selectedProducts = [
         categoryId: product.categoryId,
         brandId: product.brandId,
       });
-      toast.success('Đã nhân bản sản phẩm');
+      notify.success('Đã nhân bản sản phẩm');
       loadProducts();
     } catch (error) {
-      toast.error('Không thể nhân bản sản phẩm');
+      notify.error('Không thể nhân bản sản phẩm');
     }
   };
 
@@ -54,10 +54,10 @@ export const useProductActions = ({ products, loadProducts, selectedProducts = [
 
     try {
       await productService.bulkDelete(selectedProducts);
-      toast.success(`Đã xóa ${selectedProducts.length} sản phẩm`);
+      notify.success(`Đã xóa ${selectedProducts.length} sản phẩm`);
       loadProducts();
     } catch (error) {
-      toast.error('Không thể xóa sản phẩm');
+      notify.error('Không thể xóa sản phẩm');
     }
   };
 
@@ -66,12 +66,12 @@ export const useProductActions = ({ products, loadProducts, selectedProducts = [
 
     try {
       await productService.delete(productToDelete.id);
-      toast.success(`Đã xóa "${productToDelete.name}"`);
+      notify.success(`Đã xóa "${productToDelete.name}"`);
       setDeleteModalOpen(false);
       setProductToDelete(null);
       loadProducts();
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Không thể xóa sản phẩm');
+      notify.error(error.response?.data?.message || 'Không thể xóa sản phẩm');
     }
   };
 
@@ -80,10 +80,10 @@ export const useProductActions = ({ products, loadProducts, selectedProducts = [
       // Use the hook's editingProduct state to determine update vs create
       if (editingProduct) {
         await updateProduct(editingProduct, productData, images);
-        toast.success('Cập nhật sản phẩm thành công!');
+        notify.success('Cập nhật sản phẩm thành công!');
       } else {
         await createProduct(productData, images);
-        toast.success('Tạo sản phẩm mới thành công!');
+        notify.success('Tạo sản phẩm mới thành công!');
       }
 
       setShowForm(false);
@@ -91,7 +91,7 @@ export const useProductActions = ({ products, loadProducts, selectedProducts = [
       loadProducts();
       return true;
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Lưu sản phẩm thất bại');
+      notify.error(error.response?.data?.message || 'Lưu sản phẩm thất bại');
       return false;
     }
   };
@@ -109,12 +109,12 @@ export const useProductActions = ({ products, loadProducts, selectedProducts = [
         ...toUpdate.map(v => updateVariant(v, currentProduct))
       ]);
       
-      toast.success('Đã cập nhật biến thể thành công');
+      notify.success('Đã cập nhật biến thể thành công');
       setShowVariantManager(false);
       setManagingVariantsProduct(null);
       loadProducts();
     } catch (error) {
-      toast.error('Không thể lưu biến thể');
+      notify.error('Không thể lưu biến thể');
     }
   };
 

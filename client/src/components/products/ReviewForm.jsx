@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { FaStar } from 'react-icons/fa';
 import { X } from 'lucide-react';
-import toast from 'react-hot-toast';
+import { notify } from '../../utils/notification';
 import reviewService from '../../services/reviewService';
 
 const ReviewForm = ({ productId, onSuccess, onCancel }) => {
@@ -14,7 +14,7 @@ const ReviewForm = ({ productId, onSuccess, onCancel }) => {
     e.preventDefault();
     
     if (rating === 0) {
-      toast.error('Vui lòng chọn số sao đánh giá');
+      notify.error('Vui lòng chọn số sao đánh giá');
       return;
     }
 
@@ -22,10 +22,10 @@ const ReviewForm = ({ productId, onSuccess, onCancel }) => {
     try {
       // userId will be extracted from JWT token in backend
       await reviewService.createReview(productId, null, rating, comment);
-      toast.success('Đánh giá thành công!');
+      notify.success('Đánh giá thành công!');
       onSuccess?.();
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Có lỗi xảy ra');
+      notify.error(error.response?.data?.message || 'Có lỗi xảy ra');
     } finally {
       setIsSubmitting(false);
     }

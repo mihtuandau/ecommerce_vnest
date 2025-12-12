@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import Modal from '../../common/Modal';
 import ImageUploadSection from './ImageUploadSection';
 import productService from '../../../services/productService';
-import toast from 'react-hot-toast';
+import { notify } from '../../../utils/notification';
 import Button from '../../common/Button';
 
 const ImageManagerModal = ({ product, isOpen, onClose, onUpdated }) => {
@@ -27,9 +27,9 @@ const ImageManagerModal = ({ product, isOpen, onClose, onUpdated }) => {
     if (!files.length) return;
     setUploading(true);
     try {
-      const resp = await productService.uploadImages(product.id, files);toast.success('Upload ảnh thành công');
+      const resp = await productService.uploadImages(product.id, files);notify.success('Upload ảnh thành công');
       await refresh();
-    } catch (err) {toast.error(err?.response?.data?.message || 'Không thể upload ảnh');
+    } catch (err) {notify.error(err?.response?.data?.message || 'Không thể upload ảnh');
     } finally {
       setUploading(false);
     }
@@ -39,10 +39,10 @@ const ImageManagerModal = ({ product, isOpen, onClose, onUpdated }) => {
     if (!window.confirm('Bạn có chắc muốn xóa ảnh này?')) return;
     try {
       await productService.deleteImage(img.id);
-      toast.success('Đã xóa ảnh');
+      notify.success('Đã xóa ảnh');
       await refresh();
     } catch (err) {
-      toast.error('Không thể xóa ảnh');
+      notify.error('Không thể xóa ảnh');
     }
   };
 

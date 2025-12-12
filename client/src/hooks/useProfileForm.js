@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import toast from 'react-hot-toast';
+import { notify } from '../utils/notification';
 
 export const useProfileForm = (initialUser, updateProfile) => {
   const [profileForm, setProfileForm] = useState({
@@ -13,9 +13,9 @@ export const useProfileForm = (initialUser, updateProfile) => {
     try {
       setLoading(true);
       await updateProfile(profileForm);
-      toast.success('Cập nhật thông tin thành công');
+      notify.success('Cập nhật thông tin thành công');
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Không thể cập nhật thông tin');
+      notify.error(error.response?.data?.message || 'Không thể cập nhật thông tin');
     } finally {
       setLoading(false);
     }
@@ -77,15 +77,15 @@ export const useAddressForm = (loadAddresses) => {
       setLoading(true);
       if (editingAddress) {
         // TODO: Update address API
-        toast.success('Cập nhật địa chỉ thành công');
+        notify.success('Cập nhật địa chỉ thành công');
       } else {
         // TODO: Create address API
-        toast.success('Thêm địa chỉ thành công');
+        notify.success('Thêm địa chỉ thành công');
       }
       closeAddressModal();
       loadAddresses();
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Không thể lưu địa chỉ');
+      notify.error(error.response?.data?.message || 'Không thể lưu địa chỉ');
     } finally {
       setLoading(false);
     }
@@ -96,10 +96,10 @@ export const useAddressForm = (loadAddresses) => {
     
     try {
       // TODO: Delete address API
-      toast.success('Xóa địa chỉ thành công');
+      notify.success('Xóa địa chỉ thành công');
       loadAddresses();
     } catch (error) {
-      toast.error('Không thể xóa địa chỉ');
+      notify.error('Không thể xóa địa chỉ');
     }
   };
 

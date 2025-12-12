@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Lock, CheckCircle } from 'lucide-react';
 import authService from '../../services/authService';
-import toast from 'react-hot-toast';
+import { notify } from '../../utils/notification';
 import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
 
@@ -66,7 +66,7 @@ const ResetPasswordPage = () => {
     try {
       await authService.resetPassword(token, email, formData.password);
       setSuccess(true);
-      toast.success('Đặt lại mật khẩu thành công!');
+      notify.success('Đặt lại mật khẩu thành công!');
       
       setTimeout(() => {
         navigate('/login');
