@@ -70,7 +70,11 @@ const ImageUploadSection = ({
                 
                 <button
                   type="button"
-                  onClick={() => onRemoveImage(img, index)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onRemoveImage(img, index);
+                  }}
                   className="absolute top-1 right-1 p-1 bg-red-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-700"
                 >
                   <X size={14} />

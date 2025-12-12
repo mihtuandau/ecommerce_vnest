@@ -12,6 +12,7 @@ const ProductTable = ({
   onDelete,
   onDuplicate,
   onManageVariants,
+  onRefresh,
   selectedProducts,
   onSelectAll,
   onSelectProduct,
@@ -85,6 +86,7 @@ const ProductTable = ({
                 onDelete={onDelete}
                 onDuplicate={onDuplicate}
                 onManageVariants={onManageVariants}
+                onRefresh={onRefresh}
               />
             ))
           )}

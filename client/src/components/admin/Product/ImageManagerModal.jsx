@@ -35,13 +35,14 @@ const ImageManagerModal = ({ product, isOpen, onClose, onUpdated }) => {
     }
   };
 
-  const handleRemoveImage = async (img) => {
-    if (!confirm('Bạn có chắc muốn xóa ảnh này?')) return;
+  const handleRemoveImage = async (img, index) => {
+    if (!window.confirm('Bạn có chắc muốn xóa ảnh này?')) return;
     try {
       await productService.deleteImage(img.id);
       toast.success('Đã xóa ảnh');
       await refresh();
-    } catch (err) {toast.error('Không thể xóa ảnh');
+    } catch (err) {
+      toast.error('Không thể xóa ảnh');
     }
   };
 

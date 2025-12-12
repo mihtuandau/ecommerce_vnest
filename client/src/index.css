@@ -2,7 +2,8 @@
 
 /* Font family - Sans-serif (clean, modern) */
 body {
-  font-family: 'Montserrat', 'Open Sans', 'Roboto', 'Lato', Arial, Helvetica, sans-serif;
+  font-family: 'Atacama VAR', 'ABCDiorIcons', arial, sans-serif;
+  font-variant-numeric: lining-nums;
 }
 
 /* Alternative font options you can use:

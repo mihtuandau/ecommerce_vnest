@@ -108,6 +108,7 @@ const ProductsPage = () => {
           setEditingVariant(variant || null);
           setShowVariantManager(true);
         }}
+        onRefresh={loadProducts}
         selectedProducts={selectedProducts}
         onSelectAll={handleSelectAll}
         onSelectProduct={handleSelectProduct}

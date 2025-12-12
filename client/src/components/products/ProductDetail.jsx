@@ -1,10 +1,13 @@
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { FaStar } from 'react-icons/fa';
 import { FaShoppingCart, FaHeart } from 'react-icons/fa';
+import { useState } from 'react';
 import Button from '../common/Button';
 import { formatPrice, calculateDiscountPercent } from '../../utils/formatters';
 
 export const ProductImageGallery = ({ images, selectedImage, onImageSelect, onPrevImage, onNextImage, productName }) => {
+  const [isZoomed, setIsZoomed] = useState(false);
+
   if (!images || images.length === 0) {
     return (
       <div className="aspect-square rounded-lg overflow-hidden bg-gray-100">
@@ -15,7 +18,10 @@ export const ProductImageGallery = ({ images, selectedImage, onImageSelect, onPr
 
   return (
     <div>
-      <div className="relative aspect-square rounded-lg overflow-hidden mb-4 bg-gray-100 group">
+      <div 
+        className="relative aspect-square rounded-lg overflow-hidden mb-4 bg-gray-100 group cursor-zoom-in"
+        onClick={() => setIsZoomed(true)}
+      >
         <img
           src={images[selectedImage]?.url || '/placeholder-product.jpg'}
           alt={productName}
@@ -25,13 +31,19 @@ export const ProductImageGallery = ({ images, selectedImage, onImageSelect, onPr
         {images.length > 1 && (
           <>
             <button
-              onClick={onPrevImage}
+              onClick={(e) => {
+                e.stopPropagation();
+                onPrevImage();
+              }}
               className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 p-3 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
             >
               <FaChevronLeft size={20} />
             </button>
             <button
-              onClick={onNextImage}
+              onClick={(e) => {
+                e.stopPropagation();
+                onNextImage();
+              }}
               className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 p-3 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
             >
               <FaChevronRight size={20} />
@@ -59,6 +71,59 @@ export const ProductImageGallery = ({ images, selectedImage, onImageSelect, onPr
               <img src={img.url} alt={`${productName} ${idx + 1}`} className="w-full h-full object-cover" />
             </button>
           ))}
+        </div>
+      )}
+
+      {/* Zoom Modal */}
+      {isZoomed && (
+        <div 
+          className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
+          onClick={() => setIsZoomed(false)}
+        >
+          <button
+            className="absolute top-4 right-4 text-white hover:text-gray-300 text-4xl font-bold"
+            onClick={() => setIsZoomed(false)}
+          >
+            ×
+          </button>
+          
+          {images.length > 1 && (
+            <>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onPrevImage();
+                }}
+                className="absolute left-8 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-4 rounded-full"
+              >
+                <FaChevronLeft size={24} />
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onNextImage();
+                }}
+                className="absolute right-8 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-4 rounded-full"
+              >
+                <FaChevronRight size={24} />
+              </button>
+            </>
+          )}
+          
+          <div className="max-w-7xl max-h-full flex items-center justify-center">
+            <img
+              src={images[selectedImage]?.url || '/placeholder-product.jpg'}
+              alt={productName}
+              className="max-w-full max-h-screen object-contain"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
+          
+          {images.length > 1 && (
+            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-black/60 text-white px-4 py-2 rounded-full text-sm font-medium">
+              {selectedImage + 1} / {images.length}
+            </div>
+          )}
         </div>
       )}
     </div>

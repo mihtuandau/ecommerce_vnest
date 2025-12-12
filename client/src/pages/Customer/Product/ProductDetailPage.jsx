@@ -37,8 +37,10 @@ const ProductDetailPage = () => {
         )
       );
       if (matchingVariant) {
+        // Set variant immediately without delay
         setSelectedVariant(matchingVariant);
         
+        // Update image immediately
         const variantImage = product.images?.find(img => img.variantId === matchingVariant.id);
         if (variantImage) {
           const imageIndex = product.images.findIndex(img => img.id === variantImage.id);

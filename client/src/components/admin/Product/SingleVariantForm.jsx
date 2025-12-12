@@ -4,7 +4,7 @@ const SingleVariantForm = ({ variant, product, handleVariantChange, selectedImag
       {/* Size */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
-          Kích Thước
+          Kích Thước <span className="text-gray-400 text-xs">(Tùy chọn)</span>
         </label>
         <input
           type="text"
@@ -18,7 +18,7 @@ const SingleVariantForm = ({ variant, product, handleVariantChange, selectedImag
       {/* Color */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
-          Màu Sắc
+          Màu Sắc <span className="text-gray-400 text-xs">(Tùy chọn)</span>
         </label>
         <input
           type="text"
@@ -32,7 +32,7 @@ const SingleVariantForm = ({ variant, product, handleVariantChange, selectedImag
       {/* Price */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
-          Giá (₫)
+          Giá (₫) <span className="text-red-500">*</span>
         </label>
         <input
           type="number"

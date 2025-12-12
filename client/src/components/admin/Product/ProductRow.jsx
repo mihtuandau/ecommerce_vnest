@@ -15,6 +15,7 @@ const ProductRow = ({
   onDelete,
   onDuplicate,
   onManageVariants,
+  onRefresh,
 }) => {
   const [showActions, setShowActions] = useState(false);
   const [expanded, setExpanded] = useState(false);
@@ -183,8 +184,10 @@ const ProductRow = ({
                 const productService = (await import('../../../services/productService')).default;
                 await productService.deleteVariant(variant.id);
                 toast.success('Đã xóa variant!');
-                // Reload product list
-                window.location.reload();
+                // Refresh product list without reload
+                if (onRefresh) {
+                  onRefresh();
+                }
               } catch (error) {
                 toast.error('Không thể xóa variant: ' + (error.response?.data?.message || error.message));
               }
