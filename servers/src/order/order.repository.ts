@@ -49,7 +49,22 @@ export class OrderRepository {
         orderItems: {
           include: {
             variant: {
-              include: { product: true, images: true },
+              include: { 
+                product: { 
+                  include: { 
+                    images: { 
+                      select: { 
+                        url: true 
+                      } 
+                    } 
+                  } 
+                }, 
+                images: { 
+                  select: { 
+                    url: true 
+                  } 
+                }
+              },
             },
           },
         },
@@ -74,7 +89,20 @@ export class OrderRepository {
         orderItems: {
           include: {
             variant: {
-              include: { product: { select: { name: true } } },
+              include: { 
+                product: { 
+                  select: { 
+                    id: true,
+                    name: true,
+                    images: { 
+                      select: { 
+                        url: true 
+                      },
+                      take: 1 
+                    } 
+                  } 
+                } 
+              },
             },
           },
         },
