@@ -10,20 +10,41 @@ const Loading = memo(({
   const sizeClasses = {
     sm: 'w-4 h-4',
     md: 'w-8 h-8',
-    lg: 'w-12 h-12',
-    xl: 'w-16 h-16',
+    lg: 'w-10 h-10',
+    xl: 'w-14 h-14',
   };
 
   const iconSize = sizeClasses[size] || sizeClasses.md;
 
   if (fullScreen) {
     return (
-      <div className="fixed inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50">
-        <div className="text-center">
-          <Loader2 className={`${iconSize} animate-spin text-blue-600 mx-auto mb-4`} />
-          {text && <p className="text-gray-600 font-medium">{text}</p>}
+      <>
+        {/* Loading Spinner Overlay */}
+        <div className="fixed inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-[9999]">
+          <div className="relative w-16 h-16">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3 h-3 bg-gray-900 rounded-full animate-spin-dot" style={{ animationDelay: '0s' }}></div>
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-gray-900 rounded-full animate-spin-dot" style={{ animationDelay: '0.2s' }}></div>
+            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-3 h-3 bg-gray-900 rounded-full animate-spin-dot" style={{ animationDelay: '0.4s' }}></div>
+            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-gray-900 rounded-full animate-spin-dot" style={{ animationDelay: '0.6s' }}></div>
+          </div>
         </div>
-      </div>
+        
+        <style jsx>{`
+          @keyframes spin-dot {
+            0%, 100% {
+              transform: scale(0.8);
+              opacity: 0.5;
+            }
+            50% {
+              transform: scale(1.2);
+              opacity: 1;
+            }
+          }
+          .animate-spin-dot {
+            animation: spin-dot 0.8s ease-in-out infinite;
+          }
+        `}</style>
+      </>
     );
   }
 

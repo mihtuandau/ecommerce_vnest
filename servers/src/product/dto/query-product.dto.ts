@@ -75,8 +75,17 @@ export class QueryProductDto {
   maxPrice?: number;
 
   @ApiProperty({ 
+    example: 4, 
+    description: 'Rating tối thiểu (1-5, tùy chọn)', 
+    required: false 
+  })
+  @IsOptional()
+  @Type(() => Number)
+  minRating?: number;
+
+  @ApiProperty({ 
     example: 'newest', 
-    description: 'Sắp xếp: newest, oldest, price-asc, price-desc, name-asc, name-desc', 
+    description: 'Sắp xếp: newest, oldest, price-asc, price-desc, name-asc, name-desc, sold, rating', 
     required: false 
   })
   @IsOptional()

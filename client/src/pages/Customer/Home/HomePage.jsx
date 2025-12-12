@@ -1,10 +1,10 @@
-// src/pages/Customer/Home/HomePage.jsx
 import { useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import Layout from "../../../components/layouts/Layout";
 import HeroBanner from "../../../components/home/HeroBanner";
 import FeaturedCategories from "../../../components/home/FeaturedCategories";
 import FeaturedProducts from "../../../components/home/FeaturedProducts";
+import BestSellingProducts from "../../../components/home/BestSellingProducts";
 import PromoBanner from "../../../components/home/PromoBanner";
 import Loading from "../../../components/common/Loading";
 // import Features from "../../../components/home/Features";
@@ -74,8 +74,8 @@ const HomePage = () => {
         <HeroBanner slides={homeData.banners} />
       </div>
       <FeaturedCategories categories={homeData.categories} />
+      <BestSellingProducts products={homeData.bestSellers} />
       <FeaturedProducts products={homeData.featuredProducts} />
-
       <PromoBanner />
     </Layout>
   );

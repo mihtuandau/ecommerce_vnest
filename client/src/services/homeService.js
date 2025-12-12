@@ -4,7 +4,7 @@ const homeService = {
   
   getAllData: async () => {
     try {
-      const [banners, categories, featuredProducts] = await Promise.all([
+      const [banners, categories, featuredProducts, bestSellers] = await Promise.all([
         axiosInstance.get('/banners', { 
           params: { active: true } 
         }).then(res => res.data).catch(() => []),
@@ -12,7 +12,13 @@ const homeService = {
           .then(res => res.data).catch(() => []),
         axiosInstance.get('/products', {
           params: { 
-            limit: 8,
+            minRating: 4,
+            limit: 20
+          }
+        }).then(res => res.data?.data || res.data || []).catch(() => []),
+        axiosInstance.get('/products', {
+          params: { 
+            limit: 5,
             sortBy: 'sold'
           }
         }).then(res => res.data?.data || res.data || []).catch(() => [])
@@ -21,12 +27,14 @@ const homeService = {
       return {
         banners,
         categories,
-        featuredProducts
+        featuredProducts,
+        bestSellers
       };
     } catch (error) {return {
         banners: [],
         categories: [],
-        featuredProducts: []
+        featuredProducts: [],
+        bestSellers: []
       };
     }
   },

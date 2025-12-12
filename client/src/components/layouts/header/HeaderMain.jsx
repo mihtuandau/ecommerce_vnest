@@ -55,10 +55,9 @@ const HeaderMain = ({ scrolled, searchOpen, setSearchOpen, mobileMenuOpen, setMo
       }
     };
 
-    // Sử dụng 'click' thay vì 'mousedown' để Link có thời gian navigate
-    document.addEventListener('click', handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
     return () => {
-      document.removeEventListener('click', handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
 
@@ -191,30 +190,33 @@ const HeaderMain = ({ scrolled, searchOpen, setSearchOpen, mobileMenuOpen, setMo
                 {/* Dropdown */}
                 {dropdownOpen && (
                   <div 
-                    className="absolute right-0 mt-5 w-48 z-50"
+                    className="absolute right-0 mt-2 w-48 z-[9999]"
                   >
                     <div className="bg-white rounded-lg shadow-xl border border-gray-100 overflow-hidden">
                       <Link 
                         to="/profile" 
-                        className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 text-gray-700 transition-colors"
+                        onClick={() => setDropdownOpen(false)}
+                        className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 text-gray-700 transition-colors block"
                       >
-                        <FaUserCircle size={18} />
-                        Hồ sơ
+                        <FaUserCircle size={18} className="pointer-events-none" />
+                        <span className="pointer-events-none">Hồ sơ</span>
                       </Link>
                       <Link 
                         to="/orders" 
-                        className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 text-gray-700 transition-colors"
+                        onClick={() => setDropdownOpen(false)}
+                        className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 text-gray-700 transition-colors block"
                       >
-                        <FaClipboardList size={18} />
-                        Đơn hàng
+                        <FaClipboardList size={18} className="pointer-events-none" />
+                        <span className="pointer-events-none">Đơn hàng</span>
                       </Link>
                       {user.role === 'ADMIN' && (
                         <Link 
                           to="/admin-dashboard" 
-                          className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 text-gray-700 transition-colors"
+                          onClick={() => setDropdownOpen(false)}
+                          className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 text-gray-700 transition-colors block"
                         >
-                          <FaUserShield size={18} />
-                          Quản trị viên
+                          <FaUserShield size={18} className="pointer-events-none" />
+                          <span className="pointer-events-none">Quản trị viên</span>
                         </Link>
                       )}
                       <div className="border-t border-gray-100">
@@ -225,8 +227,8 @@ const HeaderMain = ({ scrolled, searchOpen, setSearchOpen, mobileMenuOpen, setMo
                           }}
                           className="w-full flex items-center gap-3 px-4 py-3 hover:bg-red-50 text-red-600 transition-colors"
                         >
-                          <FaSignOutAlt size={18} />
-                          Đăng xuất
+                          <FaSignOutAlt size={18} className="pointer-events-none" />
+                          <span className="pointer-events-none">Đăng xuất</span>
                         </button>
                       </div>
                     </div>

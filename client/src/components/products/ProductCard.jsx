@@ -163,9 +163,9 @@ const ProductCard = ({ product, viewMode = 'grid-3' }) => {
               reviewCount={product.reviewCount || 0}
             />
           )}
-          {product.soldCount > 0 && (
-            <span className={`${soldTextClass} text-gray-500`}>
-              Đã bán {product.soldCount}
+          {(product.soldCount > 0 || product.sold > 0) && (
+            <span className={`${soldTextClass} text-gray-600 font-medium`}>
+              🔥 Đã bán {product.soldCount || product.sold || 0}
             </span>
           )}
         </div>
