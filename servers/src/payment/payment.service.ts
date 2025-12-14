@@ -284,19 +284,27 @@ export class PaymentService {
    */
   async handlePayOSWebhook(webhookData: any) {
     try {
+      console.log('🔔 PayOS Webhook received:', JSON.stringify(webhookData, null, 2));
+      
       // Verify webhook signature và lấy data đã verify
       const verifiedData =
         await this.payosService.verifyPaymentWebhookData(webhookData);
 
+      console.log('✅ Webhook verified:', JSON.stringify(verifiedData, null, 2));
+
       const orderCode = verifiedData.orderCode;
+      console.log('🔍 Looking for payment with PayOS orderCode:', orderCode);
 
       // Tìm payment theo payosOrderCode
       const payment = await this.repository.findByPayosOrderCode(orderCode);
       if (!payment) {
+        console.error('❌ Payment not found for orderCode:', orderCode);
         throw new NotFoundException(
           `Payment not found for order code: ${orderCode}`,
         );
       }
+
+      console.log('💳 Found payment:', { paymentId: payment.id, orderId: payment.orderId, currentStatus: payment.status });
 
       // Xác định trạng thái mới dựa trên response từ PayOS
       let newStatus: 'SUCCESS' | 'FAILED' | 'CANCELLED' = 'SUCCESS';
@@ -309,7 +317,10 @@ export class PaymentService {
         newStatus = 'CANCELLED';
       }
 
+      console.log('📊 Webhook code:', verifiedData.code, '-> New status:', newStatus);
+
       // Update payment status với transaction
+      console.log('⏳ Updating payment status...');
       const updatedPayment = await this.repository.updateStatusWithTransaction(
         payment.id,
         newStatus,
@@ -317,14 +328,19 @@ export class PaymentService {
         payment.order.orderItems,
       );
 
+      console.log('✅ Payment updated successfully:', { id: updatedPayment.id, status: updatedPayment.status, orderId: updatedPayment.orderId });
+
       // Clear cache
       await this.cacheManager.del(`payment:${payment.id}`);
       await this.clearPaymentCaches();
       await this.cacheManager.del(`order:${payment.orderId}`);
       await this.cacheManager.del('products:all');
 
+      console.log('🗑️ Caches cleared');
+
       return this.serializePayment(updatedPayment);
     } catch (error) {
+      console.error('❌ Error handling PayOS webhook:', error);
       this.logger.error(
         `Error handling PayOS webhook: ${error.message}`,
         error.stack,

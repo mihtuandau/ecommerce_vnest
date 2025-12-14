@@ -24,7 +24,12 @@ const OrderDetailPage = () => {
     try {
       setLoading(true);
       const response = await orderService.getOrderById(id);
-      const orderData = response.data;
+      console.log('📦 Order detail response:', response);
+      
+      // apiService.get() returns response.data directly
+      const orderData = response || {};
+      
+      console.log('📦 Order data:', orderData);
       
       // Transform backend response to match frontend structure
       const transformedOrder = {
@@ -33,8 +38,11 @@ const OrderDetailPage = () => {
         paymentMethod: orderData.paymentMethod || 'CASH'
       };
       
+      console.log('✅ Transformed order:', transformedOrder);
       setOrder(transformedOrder);
-    } catch (error) {notify.error('Không thể tải thông tin đơn hàng');
+    } catch (error) {
+      console.error('❌ Error loading order detail:', error);
+      notify.error('Không thể tải thông tin đơn hàng');
       navigate('/orders');
     } finally {
       setLoading(false);

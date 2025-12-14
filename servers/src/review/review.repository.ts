@@ -52,19 +52,45 @@ export class ReviewRepository {
    * Check if user has purchased product
    */
   async hasUserPurchasedProduct(userId: number, productId: number): Promise<boolean> {
+    // Check if user has purchased this product and payment is successful
+    // Allow review if: order status is DELIVERED OR payment status is SUCCESS
     const orderItem = await this.prisma.orderItem.findFirst({
       where: {
         order: {
           userId,
-          status: 'DELIVERED',
+          OR: [
+            // Order is delivered
+            { status: 'DELIVERED' },
+            // Or payment is successful (even if order not delivered yet)
+            { payment: { status: 'SUCCESS' } },
+          ],
         },
         variant: {
           productId,
         },
       },
+      include: {
+        order: {
+          select: {
+            id: true,
+            status: true,
+            payment: {
+              select: {
+                status: true,
+              },
+            },
+          },
+        },
+      },
     });
 
-    return !!orderItem;
+    if (orderItem) {
+      console.log('✅ User can review - Order status:', orderItem.order.status, 'Payment status:', orderItem.order.payment?.status);
+      return true;
+    }
+
+    console.log('❌ User cannot review - no matching order');
+    return false;
   }
 
   /**

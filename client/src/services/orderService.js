@@ -4,12 +4,28 @@ import { ORDER_ENDPOINTS } from '../config/apiConstants';
 const orderService = {
   // Create new order (customer)
   createOrder: async (orderData) => {
-    return await apiService.post(ORDER_ENDPOINTS.BASE, orderData);
+    try {
+      console.log('📤 Sending createOrder request to:', ORDER_ENDPOINTS.BASE, orderData);
+      const response = await apiService.post(ORDER_ENDPOINTS.BASE, orderData);
+      console.log('✅ createOrder response:', response);
+      return response;
+    } catch (error) {
+      console.error('❌ createOrder error:', error);
+      throw error;
+    }
   },
 
   // Create guest order (no authentication required)
   createGuestOrder: async (orderData) => {
-    return await apiService.post(ORDER_ENDPOINTS.GUEST_ORDER, orderData);
+    try {
+      console.log('📤 Sending createGuestOrder request to:', ORDER_ENDPOINTS.GUEST_ORDER, orderData);
+      const response = await apiService.post(ORDER_ENDPOINTS.GUEST_ORDER, orderData);
+      console.log('✅ createGuestOrder response:', response);
+      return response;
+    } catch (error) {
+      console.error('❌ createGuestOrder error:', error);
+      throw error;
+    }
   },
 
   // Lookup guest order by order code and contact

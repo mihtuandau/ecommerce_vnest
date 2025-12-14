@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { FaCheckCircle, FaTimesCircle, FaSpinner, FaClock } from 'react-icons/fa';
+import paymentService from '../../../services/paymentService';
 
 const PaymentReturn = () => {
   const [searchParams] = useSearchParams();
@@ -23,34 +24,71 @@ const PaymentReturn = () => {
 
       const payosOrderCode = orderCode || id;
 
+      console.log('🔍 PaymentReturn params:', { code, id, cancel, statusParam, orderCode, payosOrderCode });
+
       if (!payosOrderCode) {
+        console.error('❌ No PayOS order code found');
         setStatus('error');
         return;
       }
 
       if (cancel === 'true' || statusParam === 'CANCELLED') {
+        console.log('❌ Payment cancelled');
         setStatus('cancelled');
         return;
       }
 
-      // Mock data for demo
-      setPaymentInfo({
-        orderCode: payosOrderCode,
-        amount: 1299000,
-        status: 'PAID'
-      });
-      
-      setOrderInfo({
-        order: {
-          id: '12345',
-          orderCode: 'ORD20250101001',
-          status: 'PENDING'
-        }
-      });
+      // Call API to verify payment and get order details (public endpoint, no auth needed)
+      console.log('📡 Calling public API to verify payment with orderCode:', payosOrderCode);
+      try {
+        const response = await paymentService.verifyPaymentReturn(payosOrderCode);
+        console.log('✅ Payment verification response:', response);
 
-      setStatus('success');
+        if (response.data) {
+          const { payment, order } = response.data;
+          
+          setPaymentInfo({
+            id: payment?.id,
+            orderCode: payment?.payosOrderCode,
+            amount: payment?.amount || order?.total,
+            status: payment?.status || 'PENDING',
+            method: payment?.method,
+            createdAt: payment?.createdAt,
+          });
+          
+          setOrderInfo({
+            order: {
+              id: order?.id,
+              orderCode: order?.orderCode,
+              status: order?.status,
+              total: order?.total,
+              shippingInfo: order?.shippingInfo,
+            }
+          });
+
+          // Check if payment is successful
+          if (payment?.status === 'PAID' || statusParam === 'PAID') {
+            setStatus('success');
+          } else if (payment?.status === 'PENDING' || !statusParam) {
+            setStatus('pending');
+          } else {
+            setStatus('failed');
+          }
+        } else {
+          console.error('❌ No data in response');
+          setStatus('error');
+        }
+      } catch (apiError) {
+        console.error('❌ API Error checking payment:', apiError);
+        // If API fails, check URL status parameter
+        if (statusParam === 'PAID') {
+          setStatus('success');
+        } else {
+          setStatus('error');
+        }
+      }
     } catch (error) {
-      console.error('Error checking payment:', error);
+      console.error('❌ Error in checkPaymentStatus:', error);
       setStatus('error');
     }
   };
@@ -231,32 +269,99 @@ const PaymentReturn = () => {
     );
   }
 
-  // Error or pending
+  // Pending status
+  if (status === 'pending') {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center px-4 py-8">
+        <div className="w-full max-w-lg">
+          <div className="flex justify-center mb-8">
+            <div className="relative">
+              <div className="absolute inset-0 bg-gray-100 rounded-full blur-xl opacity-50"></div>
+              <FaClock className="text-6xl text-gray-600 relative animate-pulse" />
+            </div>
+          </div>
+
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-light text-gray-900 mb-3">Đang xử lý thanh toán</h1>
+            <p className="text-gray-600 text-base leading-relaxed">
+              Giao dịch đang được xử lý. Vui lòng kiểm tra lại sau vài phút.
+            </p>
+          </div>
+
+          {orderInfo?.order && (
+            <div className="bg-gray-50 rounded-lg p-6 mb-8 border border-gray-200">
+              <div className="space-y-4">
+                <div className="flex justify-between items-start border-b border-gray-300 pb-4">
+                  <span className="text-sm font-medium text-gray-600">Mã đơn hàng</span>
+                  <span className="text-right">
+                    <p className="font-semibold text-gray-900">#{orderInfo?.order?.orderCode}</p>
+                    <p className="text-xs text-gray-500 mt-1">{orderInfo?.order?.id}</p>
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-start border-b border-gray-300 pb-4">
+                  <span className="text-sm font-medium text-gray-600">Số tiền</span>
+                  <span className="font-semibold text-gray-900 text-lg">
+                    {paymentInfo?.amount?.toLocaleString('vi-VN')}đ
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium text-gray-600">Trạng thái</span>
+                  <div className="inline-flex items-center gap-2 bg-yellow-50 text-yellow-700 px-4 py-2 rounded-lg border border-yellow-200">
+                    <FaClock className="text-sm" />
+                    <span className="text-sm font-medium">Đang chờ</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="space-y-3">
+            <button
+              onClick={checkPaymentStatus}
+              className="w-full bg-gray-900 text-white py-3 rounded-lg font-medium transition-all hover:bg-black active:scale-95"
+            >
+              Kiểm tra lại
+            </button>
+            <button
+              onClick={() => navigate('/')}
+              className="w-full bg-gray-200 text-gray-900 py-3 rounded-lg font-medium transition-all hover:bg-gray-300 active:scale-95"
+            >
+              Về trang chủ
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Failed or error status
   return (
     <div className="min-h-screen bg-white flex items-center justify-center px-4 py-8">
       <div className="w-full max-w-lg text-center">
         <div className="flex justify-center mb-8">
           <div className="relative">
             <div className="absolute inset-0 bg-gray-100 rounded-full blur-xl opacity-50"></div>
-            <FaTimesCircle className="text-6xl text-gray-500 relative" />
+            <FaTimesCircle className="text-6xl text-red-500 relative" />
           </div>
         </div>
 
         <h1 className="text-4xl font-light text-gray-900 mb-3">
-          {status === 'pending' ? 'Đang xử lý thanh toán' : 'Có lỗi xảy ra'}
+          {status === 'failed' ? 'Thanh toán thất bại' : 'Có lỗi xảy ra'}
         </h1>
         <p className="text-gray-600 mb-8 leading-relaxed">
-          {status === 'pending' 
-            ? 'Giao dịch đang được xử lý. Vui lòng kiểm tra lại sau.'
-            : 'Không thể xác nhận trạng thái. Vui lòng liên hệ hỗ trợ.'}
+          {status === 'failed' 
+            ? 'Giao dịch không thành công. Vui lòng thử lại hoặc liên hệ hỗ trợ.'
+            : 'Không thể xác nhận trạng thái thanh toán. Vui lòng liên hệ hỗ trợ.'}
         </p>
 
         <div className="space-y-3">
           <button
-            onClick={checkPaymentStatus}
+            onClick={() => navigate('/checkout')}
             className="w-full bg-gray-900 text-white py-3 rounded-lg font-medium transition-all hover:bg-black active:scale-95"
           >
-            Kiểm tra lại
+            Thử lại thanh toán
           </button>
           <button
             onClick={() => navigate('/')}

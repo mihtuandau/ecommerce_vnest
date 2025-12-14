@@ -81,6 +81,18 @@ const paymentService = {
       throw error;
     }
   },
+
+  // Verify payment return (PUBLIC - no authentication needed)
+  verifyPaymentReturn: async (orderCode) => {
+    try {
+      // Use public webhook endpoint which doesn't require authentication
+      const response = await apiService.get(`/webhooks/payments/payos/verify/${orderCode}`);
+      return response;
+    } catch (error) {
+      console.error('Error verifying payment return:', error);
+      throw error;
+    }
+  },
 };
 
 export default paymentService;

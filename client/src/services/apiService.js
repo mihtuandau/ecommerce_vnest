@@ -20,6 +20,13 @@ const apiService = {
       });
       return response.data;
     } catch (error) {
+      console.error(`❌ GET ${url} error:`, {
+        status: error.response?.status,
+        message: error.response?.data?.message,
+        error: error.response?.data?.error,
+        data: error.response?.data,
+        fullError: error.message
+      });
       throw error.response?.data || error;
     }
   },
@@ -39,6 +46,13 @@ const apiService = {
       });
       return response.data;
     } catch (error) {
+      console.error(`❌ POST ${url} error:`, {
+        status: error.response?.status,
+        message: error.response?.data?.message,
+        error: error.response?.data?.error,
+        data: error.response?.data,
+        fullError: error.message
+      });
       throw error.response?.data || error;
     }
   },

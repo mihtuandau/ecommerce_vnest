@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { FaSync } from 'react-icons/fa';
 import orderService from '../../../services/orderService';
 import { notify } from '../../../utils/notification';
 import Loading from '../../../components/common/Loading';
@@ -20,10 +21,20 @@ const AdminOrdersPage = () => {
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [refreshing, setRefreshing] = useState(false);
   const itemsPerPage = 10;
 
   useEffect(() => {
     loadOrders();
+  }, [statusFilter]);
+
+  // Auto-refresh orders every 10 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      loadOrders();
+    }, 10000); // 10 seconds
+
+    return () => clearInterval(interval);
   }, [statusFilter]);
 
   const loadOrders = async () => {
@@ -32,7 +43,10 @@ const AdminOrdersPage = () => {
       const params = { limit: 1000 };
       if (statusFilter) params.status = statusFilter;
       
+      console.log('📦 Loading orders with params:', params);
       const data = await orderService.getOrders(params);
+      
+      console.log('📦 Orders data received:', data);
       
       // Handle different response structures
       let ordersList = [];
@@ -46,12 +60,20 @@ const AdminOrdersPage = () => {
         ordersList = data.orders.data;
       }
       
+      console.log('✅ Orders loaded:', ordersList.length, 'orders');
       setOrders(ordersList);
     } catch (error) {
+      console.error('❌ Error loading orders:', error);
       notify.error('Không thể tải đơn hàng: ' + (error.response?.data?.message || error.message));
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
+  };
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await loadOrders();
   };
 
   const handleViewDetails = (order) => {
@@ -100,12 +122,24 @@ const AdminOrdersPage = () => {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold tracking-tight text-gray-900 mb-2">
-            Quản lý Đơn hàng
-          </h1>
-          <p className="text-gray-600">
-            Theo dõi và quản lý tất cả đơn hàng trong hệ thống
-          </p>
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight text-gray-900 mb-2">
+                Quản lý Đơn hàng
+              </h1>
+              <p className="text-gray-600">
+                Theo dõi và quản lý tất cả đơn hàng trong hệ thống
+              </p>
+            </div>
+            <button
+              onClick={handleRefresh}
+              disabled={refreshing}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <FaSync className={refreshing ? 'animate-spin' : ''} />
+              {refreshing ? 'Đang cập nhật...' : 'Làm mới'}
+            </button>
+          </div>
 
           {/* Stats */}
           <OrderStatsCards stats={stats} />

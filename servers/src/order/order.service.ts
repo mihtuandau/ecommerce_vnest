@@ -68,59 +68,107 @@ export class OrderService {
   }
 
   async create(userId: number | null, dto: CreateOrderDto): Promise<any> {
+    console.log('🛒 Order.create called:', { userId, dtoItemsCount: dto.items?.length, discountCode: dto.discountCode });
+    
     // Get items from dto OR cart
     let itemsToOrder;
     if (dto.items && dto.items.length > 0) {
       // Guest checkout or direct order - items from request body
+      console.log('📦 Using items from request body:', dto.items);
       const variantIds = dto.items.map(item => item.variantId);
       const variants = await this.repository.findVariantsByIds(variantIds);
       
+      if (!variants || variants.length === 0) {
+        throw new BadRequestException('Không tìm thấy sản phẩm');
+      }
+      
+      console.log('✅ Found variants:', variants.map(v => ({ id: v.id, price: v.price })));
+      
       const variantPriceMap = new Map(variants.map(v => [v.id, v.price]));
       
-      itemsToOrder = dto.items.map(item => ({
-        variantId: item.variantId,
-        quantity: item.quantity,
-        price: variantPriceMap.get(item.variantId) || 0
-      }));
+      itemsToOrder = dto.items.map(item => {
+        const price = variantPriceMap.get(item.variantId);
+        if (!price && price !== 0) {
+          throw new BadRequestException(`Sản phẩm ID ${item.variantId} không tồn tại`);
+        }
+        return {
+          variantId: item.variantId,
+          quantity: item.quantity,
+          price
+        };
+      });
     } else {
       // Logged-in user checkout from cart
+      console.log('🛍️ Using items from user cart');
       if (!userId) {
         throw new BadRequestException('Guest checkout requires items in request body');
       }
       const cart = await this.cartService.getCart(userId);
-      if (cart.cartItems.length === 0)
-        throw new BadRequestException('Cart empty');
+      console.log('📦 User cart items:', cart.cartItems?.length);
+      
+      if (!cart.cartItems || cart.cartItems.length === 0) {
+        throw new BadRequestException('Giỏ hàng trống');
+      }
+      
       itemsToOrder = cart.cartItems.map(item => ({
         variantId: item.variantId,
         quantity: item.quantity,
-        price: item.variant.price
+        price: item.variant?.price || 0
       }));
     }
+    
+    console.log('✅ Items to order:', itemsToOrder);
+    
 
     let discount: any = null;
     if (dto.discountCode) {
+      console.log('🏷️ Validating discount code:', dto.discountCode);
       discount = await this.repository.findDiscountByCode(dto.discountCode);
-      if (!discount || discount.endDate < new Date())
-        throw new BadRequestException('Invalid discount');
+      console.log('💰 Discount found:', discount);
+      
+      if (!discount) {
+        throw new BadRequestException('Mã giảm giá không tồn tại');
+      }
+      
+      if (discount.endDate && discount.endDate < new Date()) {
+        throw new BadRequestException('Mã giảm giá đã hết hạn');
+      }
+      
+      console.log('✅ Discount valid:', { percentage: discount.percentage, fixedAmount: discount.fixedAmount });
+    } else {
+      console.log('⚠️ No discount code provided');
     }
 
     const totalItems = itemsToOrder.reduce(
       (sum, item) => sum + item.quantity * item.price,
       0,
     );
+    console.log('💰 Calculation:', { totalItems, shippingFee: dto.shippingFee });
+    
     const taxAmount = 0; // Remove VAT tax
     const shippingFee = dto.shippingFee || 0; // Phí vận chuyển
     const total = totalItems + shippingFee; // Items + shipping
     
+    console.log('📊 Before discount:', { totalItems, shippingFee, total });
+    
     // Apply discount to total (items + shipping)
     let discountedTotal = total;
     if (discount) {
-      if (discount.percentage) discountedTotal *= 1 - discount.percentage / 100;
-      else if (discount.fixedAmount) discountedTotal -= discount.fixedAmount;
+      if (discount.percentage) {
+        discountedTotal *= 1 - discount.percentage / 100;
+        console.log(`💸 Applied ${discount.percentage}% discount:`, { before: total, after: discountedTotal });
+      }
+      else if (discount.fixedAmount) {
+        discountedTotal -= discount.fixedAmount;
+        console.log(`💸 Applied ${discount.fixedAmount}đ fixed discount:`, { before: total, after: discountedTotal });
+      }
     }
+    
+    console.log('✅ Final total:', discountedTotal);
 
     // Generate unique order code
     const orderCode = await this.generateOrderCode();
+    console.log('📝 Generated order code:', orderCode);
 
     const orderData: any = {
       orderCode,

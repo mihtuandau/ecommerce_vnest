@@ -35,9 +35,13 @@ const OrderLookupPage = () => {
         location.state.orderCode,
         location.state.contact
       );
-      setOrder(response.data);
+      console.log('🔍 Guest order lookup response:', response);
+      // apiService.get() returns response.data directly
+      setOrder(response);
       notify.success('Tìm thấy đơn hàng của bạn!');
-    } catch (error) {notify.error(error.response?.data?.message || 'Không tìm thấy đơn hàng');
+    } catch (error) {
+      console.error('❌ Error looking up guest order:', error);
+      notify.error(error.response?.data?.message || 'Không tìm thấy đơn hàng');
     } finally {
       setSearching(false);
     }
@@ -54,9 +58,13 @@ const OrderLookupPage = () => {
     try {
       setSearching(true);
       const response = await orderService.lookupGuestOrder(orderCode, contact);
-      setOrder(response.data);
+      console.log('🔍 Guest order lookup response:', response);
+      // apiService.get() returns response.data directly
+      setOrder(response);
       notify.success('Tìm thấy đơn hàng!');
-    } catch (error) {notify.error(error.response?.data?.message || 'Không tìm thấy đơn hàng');
+    } catch (error) {
+      console.error('❌ Error looking up guest order:', error);
+      notify.error(error.response?.data?.message || 'Không tìm thấy đơn hàng');
       setOrder(null);
     } finally {
       setSearching(false);
