@@ -1,11 +1,12 @@
-import api from '../config/api.config';
+import apiService from './apiService';
+import { DASHBOARD_ENDPOINTS } from '../config/apiConstants';
 
 const dashboardService = {
   // Get dashboard statistics
   getStats: async () => {
     try {
-      const response = await api.get('/dashboard/stats');
-      return response.data;
+      const response = await apiService.get(DASHBOARD_ENDPOINTS.STATS);
+      return response;
     } catch (error) {
       throw error;
     }
@@ -14,8 +15,8 @@ const dashboardService = {
   // Get revenue analytics
   getRevenue: async () => {
     try {
-      const response = await api.get('/dashboard/revenue');
-      return response.data;
+      const response = await apiService.get(DASHBOARD_ENDPOINTS.REVENUE);
+      return response;
     } catch (error) {
       throw error;
     }
@@ -24,8 +25,8 @@ const dashboardService = {
   // Get recent orders
   getRecentOrders: async () => {
     try {
-      const response = await api.get('/dashboard/recent-orders');
-      return response.data;
+      const response = await apiService.get(DASHBOARD_ENDPOINTS.RECENT_ORDERS);
+      return response;
     } catch (error) {
       throw error;
     }
@@ -34,8 +35,8 @@ const dashboardService = {
   // Get top products
   getTopProducts: async () => {
     try {
-      const response = await api.get('/dashboard/top-products');
-      return response.data;
+      const response = await apiService.get(DASHBOARD_ENDPOINTS.TOP_PRODUCTS);
+      return response;
     } catch (error) {
       throw error;
     }

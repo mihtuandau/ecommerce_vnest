@@ -1,27 +1,24 @@
-import axiosInstance from '../config/api.config';
+import apiService from './apiService';
 
 const homeService = {
   
   getAllData: async () => {
     try {
       const [banners, categories, featuredProducts, bestSellers] = await Promise.all([
-        axiosInstance.get('/banners', { 
-          params: { active: true } 
-        }).then(res => res.data).catch(() => []),
-        axiosInstance.get('/categories')
-          .then(res => res.data).catch(() => []),
-        axiosInstance.get('/products', {
-          params: { 
+        apiService.get('/banners', { active: true })
+          .catch(() => []),
+        apiService.get('/categories')
+          .catch(() => []),
+        apiService.get('/products', { 
             minRating: 4,
             limit: 20
-          }
-        }).then(res => res.data?.data || res.data || []).catch(() => []),
-        axiosInstance.get('/products', {
-          params: { 
+          })
+          .then(res => res?.data || res || []).catch(() => []),
+        apiService.get('/products', { 
             limit: 5,
             sortBy: 'sold'
-          }
-        }).then(res => res.data?.data || res.data || []).catch(() => [])
+          })
+          .then(res => res?.data || res || []).catch(() => [])
       ]);
 
       return {
@@ -41,39 +38,33 @@ const homeService = {
 
   getNewArrivals: async (limit = 8) => {
     try {
-      const response = await axiosInstance.get('/products', {
-        params: {
+      const response = await apiService.get('/products', {
           sortBy: 'newest',
           limit
-        }
-      });
-      return response.data?.data || response.data || [];
+        });
+      return response?.data || response || [];
     } catch (error) {return [];
     }
   },
 
   getBestSellers: async (limit = 8) => {
     try {
-      const response = await axiosInstance.get('/products', {
-        params: {
+      const response = await apiService.get('/products', {
           sortBy: 'newest',
           limit
-        }
-      });
-      return response.data?.data || response.data || [];
+        });
+      return response?.data || response || [];
     } catch (error) {return [];
     }
   },
 
   getSaleProducts: async (limit = 8) => {
     try {
-      const response = await axiosInstance.get('/products', {
-        params: {
+      const response = await apiService.get('/products', {
           sortBy: 'price-desc',
           limit
-        }
-      });
-      return response.data?.data || response.data || [];
+        });
+      return response?.data || response || [];
     } catch (error) {return [];
     }
   }

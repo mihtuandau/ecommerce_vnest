@@ -1,14 +1,15 @@
-import apiClient from '../config/api.config';
+import apiService from './apiService';
+import { CART_ENDPOINTS } from '../config/apiConstants';
 
 const cartService = {
   // Get current cart
   getCart: async () => {
-    return await apiClient.get('/cart');
+    return await apiService.get(CART_ENDPOINTS.BASE);
   },
 
   // Add item to cart
   addItem: async (variantId, quantity = 1) => {
-    return await apiClient.post('/cart/items', {
+    return await apiService.post(CART_ENDPOINTS.ITEMS, {
       variantId,
       quantity,
     });
@@ -16,19 +17,19 @@ const cartService = {
 
   // Update item quantity
   updateItem: async (variantId, quantity) => {
-    return await apiClient.put(`/cart/items/${variantId}`, {
+    return await apiService.put(CART_ENDPOINTS.ITEM_BY_VARIANT(variantId), {
       quantity,
     });
   },
 
   // Remove item from cart
   removeItem: async (variantId) => {
-    return await apiClient.delete(`/cart/items/${variantId}`);
+    return await apiService.delete(CART_ENDPOINTS.ITEM_BY_VARIANT(variantId));
   },
 
   // Clear cart
   clearCart: async () => {
-    return await apiClient.delete('/cart');
+    return await apiService.delete(CART_ENDPOINTS.BASE);
   },
 };
 

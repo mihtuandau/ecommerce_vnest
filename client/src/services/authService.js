@@ -1,35 +1,35 @@
-// src/services/authService.js
-import axiosInstance from "../config/api.config";
+import apiService from "./apiService";
+import { AUTH_ENDPOINTS, USER_ENDPOINTS } from "../config/apiConstants";
 
 const authService = {
   // 🔒 Verify user from httpOnly cookie (no localStorage)
   verifyAuth: async () => {
     try {
-      const response = await axiosInstance.get("/auth/me");
-      return response.data;
+      const response = await apiService.get(AUTH_ENDPOINTS.ME);
+      return response;
     } catch (error) {
       return null;
     }
   },
 
   register: async (userData) => {
-    const response = await axiosInstance.post("/auth/register", userData);
+    const response = await apiService.post(AUTH_ENDPOINTS.REGISTER, userData);
     // 🔒 Token được lưu trong httpOnly cookie bởi backend
     // Không lưu gì vào localStorage
-    return response.data;
+    return response;
   },
 
   login: async (credentials) => {
-    const response = await axiosInstance.post("/auth/login", credentials);
+    const response = await apiService.post(AUTH_ENDPOINTS.LOGIN, credentials);
     // 🔒 Token được lưu trong httpOnly cookie bởi backend
     // Không lưu gì vào localStorage
-    return response.data;
+    return response;
   },
   
   logout: async () => {
     try {
       // Gọi backend để clear httpOnly cookie
-      await axiosInstance.post("/auth/logout");
+      await apiService.post(AUTH_ENDPOINTS.LOGOUT);
     } catch (error) {} finally {
       // Không xóa localStorage vì không lưu gì cả
       window.location.href = "/login";
@@ -40,37 +40,37 @@ const authService = {
   getToken: () => null,
 
   updateProfile: async (userData) => {
-    const response = await axiosInstance.put("/users/profile", userData);
-    return response.data;
+    const response = await apiService.put(USER_ENDPOINTS.PROFILE, userData);
+    return response;
   },
 
   changePassword: async (passwordData) => {
     const token = authService.getToken();
-    const response = await axiosInstance.put(
-      "/user/change-password",
+    const response = await apiService.put(
+      USER_ENDPOINTS.CHANGE_PASSWORD,
       passwordData,
-      { headers: { Authorization: `Bearer ${token}` } }
+      { Authorization: `Bearer ${token}` }
     );
-    return response.data;
+    return response;
   },
 
   forgotPassword: async (email) => {
-    const response = await axiosInstance.post("/auth/forgot-password", { email });
-    return response.data;
+    const response = await apiService.post(AUTH_ENDPOINTS.FORGOT_PASSWORD, { email });
+    return response;
   },
 
   resetPassword: async (token, email, password) => {
-    const response = await axiosInstance.post("/auth/reset-password", {
+    const response = await apiService.post(AUTH_ENDPOINTS.RESET_PASSWORD, {
       token,
       email,
       password,
     });
-    return response.data;
+    return response;
   },
 
   googleLogin: () => {
     // Redirect to backend Google OAuth endpoint - API URL already correct
-    window.location.href = `http://localhost:5000/api/auth/google`;
+    window.location.href = `http://localhost:5000/api${AUTH_ENDPOINTS.GOOGLE_LOGIN}`;
   },
 };
 

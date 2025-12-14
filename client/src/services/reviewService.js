@@ -1,16 +1,17 @@
 import apiService from './apiService';
+import { REVIEW_ENDPOINTS } from '../config/apiConstants';
 
 const reviewService = {
   // Kiểm tra có thể review không
   async canUserReview(productId) {
-    const response = await apiService.get(`/reviews/can-review/${productId}`);
+    const response = await apiService.get(`${REVIEW_ENDPOINTS.BASE}/can-review/${productId}`);
     return response;
   },
 
   // Tạo review mới (userId sẽ được lấy từ JWT token ở backend)
   async createReview(productId, userId, rating, comment, images = []) {
     const response = await apiService.post(
-      `/reviews`,
+      REVIEW_ENDPOINTS.BASE,
       { productId, rating, comment, images }
     );
     return response;
@@ -19,7 +20,7 @@ const reviewService = {
   // Lấy danh sách reviews của sản phẩm
   async getProductReviews(productId, page = 1, limit = 10) {
     const response = await apiService.get(
-      `/reviews/product/${productId}?page=${page}&limit=${limit}`
+      `${REVIEW_ENDPOINTS.BY_PRODUCT(productId)}?page=${page}&limit=${limit}`
     );
     return response;
   },
@@ -27,7 +28,7 @@ const reviewService = {
   // Cập nhật review
   async updateReview(reviewId, userId, rating, comment, images) {
     const response = await apiService.put(
-      `/reviews/${reviewId}?userId=${userId}`,
+      `${REVIEW_ENDPOINTS.BY_ID(reviewId)}?userId=${userId}`,
       { rating, comment, images }
     );
     return response;
@@ -36,7 +37,7 @@ const reviewService = {
   // Xóa review
   async deleteReview(reviewId, userId) {
     const response = await apiService.delete(
-      `/reviews/${reviewId}?userId=${userId}`
+      `${REVIEW_ENDPOINTS.BY_ID(reviewId)}?userId=${userId}`
     );
     return response;
   },

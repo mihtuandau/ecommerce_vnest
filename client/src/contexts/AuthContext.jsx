@@ -81,6 +81,19 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const refreshUser = async () => {
+    try {
+      const currentUser = await authService.verifyAuth();
+      if (currentUser) {
+        setUser(currentUser);
+      }
+      return currentUser;
+    } catch (error) {
+      console.error('Refresh user error:', error);
+      return null;
+    }
+  };
+
   const changePassword = async (passwordData) => {
     try {
       await authService.changePassword(passwordData);
@@ -104,6 +117,7 @@ export const AuthProvider = ({ children }) => {
         logout,
         handleLogout,
         updateProfile,
+        refreshUser,
         changePassword,
         isAdmin,
         isAuthenticated: !!user
