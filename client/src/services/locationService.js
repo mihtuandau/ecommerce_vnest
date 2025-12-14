@@ -1,7 +1,29 @@
 import axios from 'axios';
+import { LOCATION_API, LOCATION_ENDPOINTS } from '../config/apiConstants';
 
-// API miễn phí tỉnh/thành phố Việt Nam
-const BASE_URL = 'https://provinces.open-api.vn/api';
+/**
+ * Location API Service - Wrapper cho external location API
+ * Tương tự apiService nhưng dành cho external API
+ */
+const createLocationApiService = () => {
+  const instance = axios.create({
+    baseURL: LOCATION_API.BASE_URL,
+    timeout: 10000,
+  });
+
+  return {
+    get: async (url) => {
+      try {
+        const response = await instance.get(url);
+        return response.data;
+      } catch (error) {
+        throw error.response?.data || error;
+      }
+    }
+  };
+};
+
+const locationApi = createLocationApiService();
 
 const locationService = {
   /**
@@ -9,11 +31,7 @@ const locationService = {
    * @returns {Promise} Danh sách tỉnh/thành phố
    */
   getAllProvinces: async () => {
-    try {
-      const response = await axios.get(`${BASE_URL}/p/`);
-      return response.data;
-    } catch (error) {throw error;
-    }
+    return await locationApi.get(LOCATION_ENDPOINTS.ALL_PROVINCES);
   },
 
   /**
@@ -22,11 +40,7 @@ const locationService = {
    * @returns {Promise} Thông tin tỉnh và danh sách quận/huyện
    */
   getProvinceWithDistricts: async (provinceCode) => {
-    try {
-      const response = await axios.get(`${BASE_URL}/p/${provinceCode}?depth=2`);
-      return response.data;
-    } catch (error) {throw error;
-    }
+    return await locationApi.get(LOCATION_ENDPOINTS.PROVINCE_WITH_DISTRICTS(provinceCode));
   },
 
   /**
@@ -35,11 +49,7 @@ const locationService = {
    * @returns {Promise} Thông tin quận/huyện và danh sách phường/xã
    */
   getDistrictWithWards: async (districtCode) => {
-    try {
-      const response = await axios.get(`${BASE_URL}/d/${districtCode}?depth=2`);
-      return response.data;
-    } catch (error) {throw error;
-    }
+    return await locationApi.get(LOCATION_ENDPOINTS.DISTRICT_WITH_WARDS(districtCode));
   },
 
   /**
@@ -48,11 +58,8 @@ const locationService = {
    * @returns {Promise} Danh sách quận/huyện
    */
   getDistrictsByProvince: async (provinceCode) => {
-    try {
-      const provinceData = await locationService.getProvinceWithDistricts(provinceCode);
-      return provinceData.districts || [];
-    } catch (error) {throw error;
-    }
+    const provinceData = await locationService.getProvinceWithDistricts(provinceCode);
+    return provinceData.districts || [];
   },
 
   /**
@@ -61,11 +68,8 @@ const locationService = {
    * @returns {Promise} Danh sách phường/xã
    */
   getWardsByDistrict: async (districtCode) => {
-    try {
-      const districtData = await locationService.getDistrictWithWards(districtCode);
-      return districtData.wards || [];
-    } catch (error) {throw error;
-    }
+    const districtData = await locationService.getDistrictWithWards(districtCode);
+    return districtData.wards || [];
   },
 
   /**

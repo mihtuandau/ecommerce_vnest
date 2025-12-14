@@ -1,60 +1,59 @@
-import api from '../config/api.config';
+import apiService from './apiService';
+import { ORDER_ENDPOINTS } from '../config/apiConstants';
 
 const orderService = {
   // Create new order (customer)
   createOrder: async (orderData) => {
-    return await api.post('/orders', orderData);
+    return await apiService.post(ORDER_ENDPOINTS.BASE, orderData);
   },
 
   // Create guest order (no authentication required)
   createGuestOrder: async (orderData) => {
-    return await api.post('/orders/guest', orderData);
+    return await apiService.post(ORDER_ENDPOINTS.GUEST_ORDER, orderData);
   },
 
   // Lookup guest order by order code and contact
   lookupGuestOrder: async (orderCode, contact) => {
-    return await api.get(`/orders/guest/lookup/${orderCode}`, {
-      params: { contact }
-    });
+    return await apiService.get(ORDER_ENDPOINTS.GUEST_LOOKUP(orderCode), { contact });
   },
 
   // Get my orders (customer)
   getMyOrders: async () => {
-    return await api.get('/orders/my-orders');
+    return await apiService.get(ORDER_ENDPOINTS.MY_ORDERS);
   },
 
   // Get order by ID (customer & admin)
   getOrderById: async (id) => {
-    return await api.get(`/orders/${id}`);
+    return await apiService.get(ORDER_ENDPOINTS.BY_ID(id));
   },
 
   // Get all orders (admin can see all, users see their own)
   getOrders: async (params = {}) => {
-    const response = await api.get('/orders', { params });
-    return response.data;
+    const response = await apiService.get(ORDER_ENDPOINTS.BASE, params);
+    return response;
   },
 
   // Get single order
   getOrder: async (id) => {
-    const response = await api.get(`/orders/${id}`);
-    return response.data;
+    const response = await apiService.get(ORDER_ENDPOINTS.BY_ID(id));
+    return response;
   },
 
   // Update order status (admin only)
   updateOrderStatus: async (id, status) => {
-    const response = await api.put(`/orders/${id}`, { status });
-    return response.data;
+    const response = await apiService.put(ORDER_ENDPOINTS.BY_ID(id), { status });
+    return response;
   },
 
   // Cancel order (customer - only when PENDING)
   cancelOrder: async (id) => {
-    return await api.put(`/orders/${id}/cancel`);
+    return await apiService.put(ORDER_ENDPOINTS.CANCEL(id));
   },
 
   // Get order statistics
   getStats: async () => {
-    const response = await api.get('/orders', { params: { limit: 1000 } });
-    return response.data;
+    const response = await apiService.get(ORDER_ENDPOINTS.BASE, { limit: 1000 });
+    return response;
   },
 };
 

@@ -1,50 +1,47 @@
-import axiosInstance from "../config/api.config";
+import apiService from "./apiService";
+import { PRODUCT_ENDPOINTS } from "../config/apiConstants";
 
 // Sử dụng named exports thay vì default export
 export const productService = {
   // Get price range
   getPriceRange: async () => {
-    return await axiosInstance.get("/products/price-range");
+    return await apiService.get(PRODUCT_ENDPOINTS.PRICE_RANGE);
   },
 
   // Get all products với pagination và filters
   getAll: async (params = {}) => {
     const { page = 1, limit = 10, search = "", categoryId = "" } = params;
-    return await axiosInstance.get("/products", {
-      params: {
+    return await apiService.get(PRODUCT_ENDPOINTS.BASE, {
         page,
         limit,
         search,
         categoryId: categoryId || undefined,
-      },
-    });
+      });
   },
 
   // Get single product by ID
   getOne: async (id) => {
-    return await axiosInstance.get(`/products/${id}`);
+    return await apiService.get(PRODUCT_ENDPOINTS.BY_ID(id));
   },
 
   // Create new product
   create: async (productData) => {
-    return await axiosInstance.post("/products", productData);
+    return await apiService.post(PRODUCT_ENDPOINTS.BASE, productData);
   },
 
   // Update product
   update: async (id, productData) => {
-    return await axiosInstance.put(`/products/${id}`, productData);
+    return await apiService.put(PRODUCT_ENDPOINTS.BY_ID(id), productData);
   },
 
   // Delete product
   delete: async (id) => {
-    return await axiosInstance.delete(`/products/${id}`, {
-      data: { confirm: true },
-    });
+    return await apiService.delete(PRODUCT_ENDPOINTS.BY_ID(id), { confirm: true });
   },
 
   // Bulk delete products
   bulkDelete: async (productIds) => {
-    const response = await axiosInstance.post('/products/bulk-delete', {
+    const response = await apiService.post(PRODUCT_ENDPOINTS.BULK_DELETE, {
       productIds,
       confirm: true,
     });

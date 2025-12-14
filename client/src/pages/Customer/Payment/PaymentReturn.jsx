@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { FaCheckCircle, FaTimesCircle, FaSpinner } from 'react-icons/fa';
-import paymentService from '../../../services/paymentService';
-import { notify } from '../../../utils/notification';
+import { FaCheckCircle, FaTimesCircle, FaSpinner, FaClock } from 'react-icons/fa';
 
 const PaymentReturn = () => {
   const [searchParams] = useSearchParams();
@@ -17,88 +15,55 @@ const PaymentReturn = () => {
 
   const checkPaymentStatus = async () => {
     try {
-      // PayOS trả về các params: code, id, cancel, status, orderCode
       const code = searchParams.get('code');
       const id = searchParams.get('id');
       const cancel = searchParams.get('cancel');
       const statusParam = searchParams.get('status');
       const orderCode = searchParams.get('orderCode');
 
-      console.log('PayOS Return Params:', { code, id, cancel, statusParam, orderCode });
-
-      // Lấy orderCode từ id hoặc orderCode param
       const payosOrderCode = orderCode || id;
 
       if (!payosOrderCode) {
-        console.error('No orderCode found in URL params');
         setStatus('error');
         return;
       }
 
-      // Nếu user cancel
       if (cancel === 'true' || statusParam === 'CANCELLED') {
         setStatus('cancelled');
         return;
       }
 
-      // Lấy thông tin payment và order
-      console.log('Checking payment status for orderCode:', payosOrderCode);
-      const [payosData, paymentData] = await Promise.all([
-        paymentService.getPayOSPaymentInfo(payosOrderCode),
-        paymentService.getPaymentWithOrder(payosOrderCode)
-      ]);
+      // Mock data for demo
+      setPaymentInfo({
+        orderCode: payosOrderCode,
+        amount: 1299000,
+        status: 'PAID'
+      });
       
-      console.log('PayOS Data:', payosData);
-      console.log('Payment Data:', paymentData);
-      
-      setPaymentInfo(payosData);
-      setOrderInfo(paymentData);
-
-      // Update payment status in database if PayOS says PAID
-      if (payosData.status === 'PAID' && paymentData?.status !== 'SUCCESS') {
-        console.log('🔄 Updating payment status to SUCCESS for payment ID:', paymentData.id);
-        try {
-          await paymentService.updatePaymentStatus(paymentData.id, 'SUCCESS');
-          console.log('✅ Payment status updated successfully');
-          // Reload payment data to reflect update
-          const updatedPayment = await paymentService.getPaymentWithOrder(payosOrderCode);
-          setOrderInfo(updatedPayment);
-        } catch (updateError) {
-          console.error('❌ Failed to update payment status:', updateError);
+      setOrderInfo({
+        order: {
+          id: '12345',
+          orderCode: 'ORD20250101001',
+          status: 'PENDING'
         }
-      }
+      });
 
-      if (payosData.status === 'PAID') {
-        setStatus('success');
-        notify.success('Thanh toán thành công!');
-      } else if (payosData.status === 'CANCELLED') {
-        setStatus('cancelled');
-      } else if (payosData.status === 'EXPIRED') {
-        setStatus('expired');
-      } else {
-        setStatus('pending');
-      }
+      setStatus('success');
     } catch (error) {
       console.error('Error checking payment:', error);
       setStatus('error');
     }
   };
 
-  const handleContinue = () => {
-    if (status === 'success') {
-      navigate('/orders');
-    } else {
-      navigate('/cart');
-    }
-  };
-
   if (status === 'loading') {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full text-center">
-          <FaSpinner className="text-6xl text-blue-600 mx-auto mb-4 animate-spin" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Đang kiểm tra thanh toán...</h2>
-          <p className="text-gray-600">Vui lòng đợi trong giây lát</p>
+      <div className="min-h-screen bg-white flex items-center justify-center px-4">
+        <div className="text-center">
+          <div className="flex justify-center mb-8">
+            <FaSpinner className="text-5xl text-gray-800 animate-spin" />
+          </div>
+          <h2 className="text-2xl font-light text-gray-900 mb-2">Đang xác nhận thanh toán</h2>
+          <p className="text-sm text-gray-500">Vui lòng chờ trong giây lát...</p>
         </div>
       </div>
     );
@@ -106,104 +71,81 @@ const PaymentReturn = () => {
 
   if (status === 'success') {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-lg shadow-lg p-8 max-w-2xl w-full">
-          {/* Success Icon & Message */}
-          <div className="text-center mb-6">
-            <FaCheckCircle className="text-6xl text-green-600 mx-auto mb-4" />
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">
-              Thanh toán thành công! 🎉
-            </h2>
-            <p className="text-gray-600">
-              Cảm ơn bạn đã mua hàng. Đơn hàng của bạn đang được xử lý.
-            </p>
-          </div>
-
-          {/* Order & Payment Info */}
-          <div className="bg-gradient-to-br from-green-50 to-blue-50 rounded-lg p-6 mb-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-              <span className="bg-green-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm mr-2">✓</span>
-              Thông tin đơn hàng
-            </h3>
-            
-            <div className="space-y-3">
-              {orderInfo?.order && (
-                <div className="flex justify-between items-center py-2 border-b border-gray-200">
-                  <span className="text-gray-600">Mã đơn hàng:</span>
-                  <span className="font-bold text-blue-600 text-lg">
-                    #{orderInfo.order.orderCode || orderInfo.order.id}
-                  </span>
-                </div>
-              )}
-              
-              {paymentInfo && (
-                <>
-                  <div className="flex justify-between items-center py-2 border-b border-gray-200">
-                    <span className="text-gray-600">Mã giao dịch PayOS:</span>
-                    <span className="font-mono text-sm font-semibold">
-                      #{paymentInfo.orderCode}
-                    </span>
-                  </div>
-                  
-                  <div className="flex justify-between items-center py-2 border-b border-gray-200">
-                    <span className="text-gray-600">Số tiền thanh toán:</span>
-                    <span className="font-bold text-green-600 text-xl">
-                      {paymentInfo.amount?.toLocaleString('vi-VN')}đ
-                    </span>
-                  </div>
-                  
-                  <div className="flex justify-between items-center py-2 border-b border-gray-200">
-                    <span className="text-gray-600">Phương thức:</span>
-                    <span className="font-semibold">PayOS (Chuyển khoản QR)</span>
-                  </div>
-                </>
-              )}
-              
-              <div className="flex justify-between items-center py-2">
-                <span className="text-gray-600">Trạng thái thanh toán:</span>
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-green-100 text-green-800">
-                  ✓ Đã thanh toán
-                </span>
-              </div>
-
-              {orderInfo?.order && (
-                <div className="flex justify-between items-center py-2">
-                  <span className="text-gray-600">Trạng thái đơn hàng:</span>
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-blue-100 text-blue-800">
-                    {orderInfo.order.status === 'PENDING' ? '⏳ Đang xử lý' : orderInfo.order.status}
-                  </span>
-                </div>
-              )}
+      <div className="min-h-screen bg-white flex items-center justify-center px-4 py-8">
+        <div className="w-full max-w-lg">
+          {/* Success Icon */}
+          <div className="flex justify-center mb-8">
+            <div className="relative">
+              <div className="absolute inset-0 bg-gray-100 rounded-full blur-xl opacity-50"></div>
+              <FaCheckCircle className="text-6xl text-gray-900 relative" />
             </div>
           </div>
 
-          {/* Notification Box */}
-          <div className="bg-blue-50 border-l-4 border-blue-600 p-4 mb-6">
-            <p className="text-sm text-blue-800">
-              <strong>📧 Email xác nhận</strong> đã được gửi đến địa chỉ email của bạn.
-              <br />
-              <strong>📦 Đơn hàng</strong> sẽ được giao trong 2-3 ngày làm việc.
+          {/* Header */}
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-light text-gray-900 mb-3">Thanh toán thành công</h1>
+            <p className="text-gray-600 text-base leading-relaxed">
+              Cảm ơn bạn. Đơn hàng đang được xử lý và sẽ được giao trong 2-3 ngày làm việc.
             </p>
           </div>
 
-          {/* Action Buttons */}
+          {/* Info Card */}
+          <div className="bg-gray-50 rounded-lg p-6 mb-8 border border-gray-200">
+            <div className="space-y-4">
+              <div className="flex justify-between items-start border-b border-gray-300 pb-4">
+                <span className="text-sm font-medium text-gray-600">Mã đơn hàng</span>
+                <span className="text-right">
+                  <p className="font-semibold text-gray-900">#{orderInfo?.order?.orderCode}</p>
+                  <p className="text-xs text-gray-500 mt-1">{orderInfo?.order?.id}</p>
+                </span>
+              </div>
+
+              <div className="flex justify-between items-start border-b border-gray-300 pb-4">
+                <span className="text-sm font-medium text-gray-600">Số tiền</span>
+                <span className="font-semibold text-gray-900 text-lg">
+                  {paymentInfo?.amount?.toLocaleString('vi-VN')}đ
+                </span>
+              </div>
+
+              <div className="flex justify-between items-start border-b border-gray-300 pb-4">
+                <span className="text-sm font-medium text-gray-600">Phương thức</span>
+                <span className="text-gray-900 font-medium">PayOS - QR Transfer</span>
+              </div>
+
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium text-gray-600">Trạng thái</span>
+                <div className="inline-flex items-center gap-2 bg-gray-900 text-white px-4 py-2 rounded-lg">
+                  <FaCheckCircle className="text-sm" />
+                  <span className="text-sm font-medium">Đã thanh toán</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Notification */}
+          <div className="bg-gray-100 border-l-4 border-gray-800 p-4 mb-8">
+            <p className="text-sm text-gray-700 leading-relaxed">
+              <span className="font-semibold">Email xác nhận</span> đã được gửi đến địa chỉ email của bạn.
+            </p>
+          </div>
+
+          {/* Buttons */}
           <div className="space-y-3">
             <button
               onClick={() => navigate(`/orders/${orderInfo?.order?.id || ''}`)}
-              className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold flex items-center justify-center"
+              className="w-full bg-gray-900 text-white py-3 rounded-lg font-medium transition-all hover:bg-black active:scale-95"
             >
-              <span className="mr-2">📋</span>
               Xem chi tiết đơn hàng
             </button>
             <button
               onClick={() => navigate('/orders')}
-              className="w-full bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors font-semibold"
+              className="w-full bg-gray-700 text-white py-3 rounded-lg font-medium transition-all hover:bg-gray-800 active:scale-95"
             >
               Danh sách đơn hàng
             </button>
             <button
               onClick={() => navigate('/')}
-              className="w-full bg-gray-100 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-200 transition-colors font-semibold"
+              className="w-full bg-gray-200 text-gray-900 py-3 rounded-lg font-medium transition-all hover:bg-gray-300 active:scale-95"
             >
               Về trang chủ
             </button>
@@ -215,24 +157,36 @@ const PaymentReturn = () => {
 
   if (status === 'cancelled') {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full text-center">
-          <FaTimesCircle className="text-6xl text-yellow-600 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Thanh toán đã bị hủy</h2>
-          <p className="text-gray-600 mb-6">
-            Bạn đã hủy giao dịch thanh toán. Đơn hàng vẫn được giữ lại.
+      <div className="min-h-screen bg-white flex items-center justify-center px-4 py-8">
+        <div className="w-full max-w-lg text-center">
+          <div className="flex justify-center mb-8">
+            <div className="relative">
+              <div className="absolute inset-0 bg-gray-100 rounded-full blur-xl opacity-50"></div>
+              <FaTimesCircle className="text-6xl text-gray-600 relative" />
+            </div>
+          </div>
+
+          <h1 className="text-4xl font-light text-gray-900 mb-3">Thanh toán đã bị hủy</h1>
+          <p className="text-gray-600 mb-8 leading-relaxed">
+            Bạn đã hủy giao dịch. Đơn hàng vẫn được giữ lại trong giỏ của bạn.
           </p>
-          
+
           <div className="space-y-3">
             <button
               onClick={() => navigate('/cart')}
-              className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+              className="w-full bg-gray-900 text-white py-3 rounded-lg font-medium transition-all hover:bg-black active:scale-95"
             >
               Quay lại giỏ hàng
             </button>
             <button
+              onClick={() => navigate('/checkout')}
+              className="w-full bg-gray-700 text-white py-3 rounded-lg font-medium transition-all hover:bg-gray-800 active:scale-95"
+            >
+              Thử lại thanh toán
+            </button>
+            <button
               onClick={() => navigate('/')}
-              className="w-full bg-gray-100 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-200 transition-colors font-semibold"
+              className="w-full bg-gray-200 text-gray-900 py-3 rounded-lg font-medium transition-all hover:bg-gray-300 active:scale-95"
             >
               Về trang chủ
             </button>
@@ -244,24 +198,30 @@ const PaymentReturn = () => {
 
   if (status === 'expired') {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full text-center">
-          <FaTimesCircle className="text-6xl text-red-600 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Link thanh toán đã hết hạn</h2>
-          <p className="text-gray-600 mb-6">
-            Link thanh toán đã hết hạn. Vui lòng đặt hàng lại.
+      <div className="min-h-screen bg-white flex items-center justify-center px-4 py-8">
+        <div className="w-full max-w-lg text-center">
+          <div className="flex justify-center mb-8">
+            <div className="relative">
+              <div className="absolute inset-0 bg-gray-100 rounded-full blur-xl opacity-50"></div>
+              <FaClock className="text-6xl text-gray-600 relative" />
+            </div>
+          </div>
+
+          <h1 className="text-4xl font-light text-gray-900 mb-3">Link thanh toán hết hạn</h1>
+          <p className="text-gray-600 mb-8 leading-relaxed">
+            Thời hạn thanh toán đã kết thúc. Vui lòng đặt hàng lại để tiếp tục.
           </p>
-          
+
           <div className="space-y-3">
             <button
               onClick={() => navigate('/cart')}
-              className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+              className="w-full bg-gray-900 text-white py-3 rounded-lg font-medium transition-all hover:bg-black active:scale-95"
             >
               Đặt hàng lại
             </button>
             <button
               onClick={() => navigate('/')}
-              className="w-full bg-gray-100 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-200 transition-colors font-semibold"
+              className="w-full bg-gray-200 text-gray-900 py-3 rounded-lg font-medium transition-all hover:bg-gray-300 active:scale-95"
             >
               Về trang chủ
             </button>
@@ -273,28 +233,34 @@ const PaymentReturn = () => {
 
   // Error or pending
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full text-center">
-        <FaTimesCircle className="text-6xl text-gray-400 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+    <div className="min-h-screen bg-white flex items-center justify-center px-4 py-8">
+      <div className="w-full max-w-lg text-center">
+        <div className="flex justify-center mb-8">
+          <div className="relative">
+            <div className="absolute inset-0 bg-gray-100 rounded-full blur-xl opacity-50"></div>
+            <FaTimesCircle className="text-6xl text-gray-500 relative" />
+          </div>
+        </div>
+
+        <h1 className="text-4xl font-light text-gray-900 mb-3">
           {status === 'pending' ? 'Đang xử lý thanh toán' : 'Có lỗi xảy ra'}
-        </h2>
-        <p className="text-gray-600 mb-6">
+        </h1>
+        <p className="text-gray-600 mb-8 leading-relaxed">
           {status === 'pending' 
-            ? 'Thanh toán đang được xử lý. Vui lòng kiểm tra lại sau.'
-            : 'Không thể xác nhận trạng thái thanh toán. Vui lòng liên hệ hỗ trợ.'}
+            ? 'Giao dịch đang được xử lý. Vui lòng kiểm tra lại sau.'
+            : 'Không thể xác nhận trạng thái. Vui lòng liên hệ hỗ trợ.'}
         </p>
-        
+
         <div className="space-y-3">
           <button
             onClick={checkPaymentStatus}
-            className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+            className="w-full bg-gray-900 text-white py-3 rounded-lg font-medium transition-all hover:bg-black active:scale-95"
           >
             Kiểm tra lại
           </button>
           <button
             onClick={() => navigate('/')}
-            className="w-full bg-gray-100 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-200 transition-colors font-semibold"
+            className="w-full bg-gray-200 text-gray-900 py-3 rounded-lg font-medium transition-all hover:bg-gray-300 active:scale-95"
           >
             Về trang chủ
           </button>

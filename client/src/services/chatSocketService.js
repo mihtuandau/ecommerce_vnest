@@ -1,5 +1,5 @@
 import { io } from 'socket.io-client';
-import { API_CONFIG } from '../config/api.config';
+import { API_CONFIG } from '../config/apiClient';
 
 const SOCKET_URL = API_CONFIG.SOCKET_URL;
 

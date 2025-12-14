@@ -1,4 +1,4 @@
-import axiosInstance from "../config/api.config";
+import axiosClient from "../config/apiClient";
 
 /**
  * Generic API Service với khả năng custom headers
@@ -12,11 +12,11 @@ const apiService = {
    */
   get: async (url, params = {}, headers = {}) => {
     try {
-      const response = await axiosInstance.get(url, {
+      const response = await axiosClient.get(url, {
         params,
         headers: {
-          ...headers
-        }
+          ...headers,
+        },
       });
       return response.data;
     } catch (error) {
@@ -32,10 +32,10 @@ const apiService = {
    */
   post: async (url, data = {}, headers = {}) => {
     try {
-      const response = await axiosInstance.post(url, data, {
+      const response = await axiosClient.post(url, data, {
         headers: {
-          ...headers
-        }
+          ...headers,
+        },
       });
       return response.data;
     } catch (error) {
@@ -51,10 +51,10 @@ const apiService = {
    */
   put: async (url, data = {}, headers = {}) => {
     try {
-      const response = await axiosInstance.put(url, data, {
+      const response = await axiosClient.put(url, data, {
         headers: {
-          ...headers
-        }
+          ...headers,
+        },
       });
       return response.data;
     } catch (error) {
@@ -70,10 +70,10 @@ const apiService = {
    */
   patch: async (url, data = {}, headers = {}) => {
     try {
-      const response = await axiosInstance.patch(url, data, {
+      const response = await axiosClient.patch(url, data, {
         headers: {
-          ...headers
-        }
+          ...headers,
+        },
       });
       return response.data;
     } catch (error) {
@@ -89,11 +89,11 @@ const apiService = {
    */
   delete: async (url, data = {}, headers = {}) => {
     try {
-      const response = await axiosInstance.delete(url, {
+      const response = await axiosClient.delete(url, {
         data,
         headers: {
-          ...headers
-        }
+          ...headers,
+        },
       });
       return response.data;
     } catch (error) {
@@ -102,25 +102,26 @@ const apiService = {
   },
 
   /**
-   * Upload file(s) with FormData
-   * @param {string} url - API endpoint
-   * @param {FormData} formData - Form data with files
-   * @param {object} headers - Custom headers
-   * @param {function} onUploadProgress - Progress callback
+    @param {string} url 
+    @param {FormData} formData 
+    @param {object} headers 
+    @param {function} onUploadProgress 
    */
   upload: async (url, formData, headers = {}, onUploadProgress = null) => {
     try {
-      const response = await axiosInstance.post(url, formData, {
+      const response = await axiosClient.post(url, formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
-          ...headers
+          "Content-Type": "multipart/form-data",
+          ...headers,
         },
-        onUploadProgress: onUploadProgress ? (progressEvent) => {
-          const percentCompleted = Math.round(
-            (progressEvent.loaded * 100) / progressEvent.total
-          );
-          onUploadProgress(percentCompleted);
-        } : undefined
+        onUploadProgress: onUploadProgress
+          ? (progressEvent) => {
+              const percentCompleted = Math.round(
+                (progressEvent.loaded * 100) / progressEvent.total
+              );
+              onUploadProgress(percentCompleted);
+            }
+          : undefined,
       });
       return response.data;
     } catch (error) {
@@ -130,24 +131,24 @@ const apiService = {
 
   /**
    * Download file
-   * @param {string} url - API endpoint
-   * @param {object} params - Query parameters
-   * @param {object} headers - Custom headers
+   * @param {string} url
+   * @param {object} params
+   * @param {object} headers
    */
   download: async (url, params = {}, headers = {}) => {
     try {
-      const response = await axiosInstance.get(url, {
+      const response = await axiosClient.get(url, {
         params,
         headers: {
-          ...headers
+          ...headers,
         },
-        responseType: 'blob'
+        responseType: "blob",
       });
       return response;
     } catch (error) {
       throw error.response?.data || error;
     }
-  }
+  },
 };
 
 export default apiService;

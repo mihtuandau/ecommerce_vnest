@@ -1,4 +1,5 @@
-import axiosInstance from '../config/api.config';
+import apiService from './apiService';
+import { BANNER_ENDPOINTS } from '../config/apiConstants';
 
 const bannerService = {
   /**
@@ -6,10 +7,8 @@ const bannerService = {
    */
   getAll: async (params = {}) => {
     try {
-      const response = await axiosInstance.get('/banners', { 
-        params: { active: true, ...params }
-      });
-      return response.data;
+      const response = await apiService.get(BANNER_ENDPOINTS.BASE, { active: true, ...params });
+      return response;
     } catch (error) {return [];
     }
   },
@@ -18,8 +17,8 @@ const bannerService = {
    * Get banner by ID
    */
   getOne: async (id) => {
-    const response = await axiosInstance.get(`/banners/${id}`);
-    return response.data;
+    const response = await apiService.get(BANNER_ENDPOINTS.BY_ID(id));
+    return response;
   },
 
   /**
@@ -27,36 +26,36 @@ const bannerService = {
    * @param {FormData} formData - FormData with title, subtitle, image file, etc.
    */
   create: async (formData) => {
-    const response = await axiosInstance.post('/banners', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
+    const response = await apiService.upload(BANNER_ENDPOINTS.BASE, formData, {
+      'Content-Type': 'multipart/form-data'
     });
-    return response.data;
+    return response;
   },
 
   /**
    * Update banner with optional new image (Admin only)
    */
   update: async (id, formData) => {
-    const response = await axiosInstance.put(`/banners/${id}`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
+    const response = await apiService.upload(BANNER_ENDPOINTS.BY_ID(id), formData, {
+      'Content-Type': 'multipart/form-data'
     });
-    return response.data;
+    return response;
   },
 
   /**
    * Delete banner (Admin only)
    */
   delete: async (id) => {
-    const response = await axiosInstance.delete(`/banners/${id}`);
-    return response.data;
+    const response = await apiService.delete(BANNER_ENDPOINTS.BY_ID(id));
+    return response;
   },
 
   /**
    * Reorder banner (Admin only)
    */
   reorder: async (id, order) => {
-    const response = await axiosInstance.put(`/banners/${id}/reorder`, { order });
-    return response.data;
+    const response = await apiService.put(BANNER_ENDPOINTS.REORDER(id), { order });
+    return response;
   },
 
   /**
@@ -65,10 +64,10 @@ const bannerService = {
   uploadImage: async (file) => {
     const formData = new FormData();
     formData.append('file', file);
-    const response = await axiosInstance.post('/banners/upload-image', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
+    const response = await apiService.upload(BANNER_ENDPOINTS.UPLOAD_IMAGE, formData, {
+      'Content-Type': 'multipart/form-data'
     });
-    return response.data;
+    return response;
   }
 };
 

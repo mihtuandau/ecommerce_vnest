@@ -44,6 +44,10 @@ const PersonalInfoForm = ({ currentUser, onSubmit, loading }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Prevent submit if not in editing mode
+    if (!isEditing) return;
+    
     if (!validateForm()) return;
     
     const success = await onSubmit(formData);

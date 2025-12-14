@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { toast } from 'react-hot-toast';
+import { notify } from '../utils/notification';
 import addressService from '../services/addressService';
 
 export const useAddressManagement = () => {

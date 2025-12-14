@@ -2,24 +2,28 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import authService from '../../../services/authService';
+import userService from '../../../services/userService';
 import Layout from '../../../components/layouts/Layout';
 import Loading from '../../../components/common/Loading';
 import PersonalInfoForm from '../../../components/customer/PersonalInfoForm';
 import AddressManager from '../../../components/customer/AddressManager';
+import ChangePasswordForm from '../../../components/customer/ChangePasswordForm';
 import { notify } from '../../../utils/notification';
 
 const ProfilePage = () => {
-  const { user: currentUser, loading: authLoading } = useAuth();
+  const { user: currentUser, loading: authLoading, refreshUser } = useAuth();
   const [loading, setLoading] = useState(false);
 
   const handleUpdateProfile = async (formData) => {
     setLoading(true);
     try {
-      await authService.updateProfile(formData);
+      const response = await userService.updateProfile(formData);
+      // Reload user data
+      await refreshUser();
       notify.success('Cập nhật thành công');
       return true;
     } catch (error) {
-      notify.error('Có lỗi xảy ra');
+      notify.error(error.response?.data?.message || 'Có lỗi xảy ra');
       return false;
     } finally {
       setLoading(false);
@@ -76,7 +80,7 @@ const ProfilePage = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Personal Info Card */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200">
               <div className="border-b border-gray-200 px-6 py-4">
@@ -89,6 +93,17 @@ const ProfilePage = () => {
                   onSubmit={handleUpdateProfile}
                   loading={loading}
                 />
+              </div>
+            </div>
+
+            {/* Change Password Card */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+              <div className="border-b border-gray-200 px-6 py-4">
+                <h2 className="text-lg font-bold text-gray-900">Đổi mật khẩu</h2>
+                <p className="text-sm text-gray-600 mt-1">Cập nhật mật khẩu của bạn</p>
+              </div>
+              <div className="p-6">
+                <ChangePasswordForm />
               </div>
             </div>
 

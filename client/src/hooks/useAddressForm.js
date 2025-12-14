@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { toast } from 'react-hot-toast';
+import { notify } from '../utils/notification';
 import locationService from '../services/locationService';
 
 export const useAddressForm = (initialData = null) => {
@@ -19,24 +19,36 @@ export const useAddressForm = (initialData = null) => {
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
   const [loadingLocations, setLoadingLocations] = useState(false);
+  const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
     loadProvinces();
   }, []);
 
   useEffect(() => {
-    if (initialData) {
+    if (initialData && provinces.length > 0 && !initialized) {
       setFormData(initialData);
+      
+      // Load districts if city is present
       if (initialData.city) {
         const province = provinces.find(p => p.name === initialData.city);
-        if (province) loadDistricts(province.code);
+        if (province) {
+          loadDistricts(province.code).then(() => {
+            // After districts are loaded, load wards if state is present
+            if (initialData.state) {
+              // Wait a bit for districts to be set
+              setTimeout(() => {
+                const district = districts.find(d => d.name === initialData.state);
+                if (district) loadWards(district.code);
+              }, 100);
+            }
+          });
+        }
       }
-      if (initialData.state) {
-        const district = districts.find(d => d.name === initialData.state);
-        if (district) loadWards(district.code);
-      }
+      
+      setInitialized(true);
     }
-  }, [initialData, provinces, districts]);
+  }, [initialData, provinces.length]);
 
   const loadProvinces = async () => {
     try {

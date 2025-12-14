@@ -1,51 +1,52 @@
-import axiosInstance from '../config/api.config';
+import apiService from './apiService';
+import { CATEGORY_ENDPOINTS } from '../config/apiConstants';
 
 const categoryService = {
   // Get all categories
   getAll: async (params = {}) => {
     try {
-      const response = await axiosInstance.get('/categories', { params });
-      return response.data;
+      const response = await apiService.get(CATEGORY_ENDPOINTS.BASE, params);
+      return response;
     } catch (error) {return [];
     }
   },
 
   // Get single category
   getOne: async (id) => {
-    const response = await axiosInstance.get(`/categories/${id}`);
-    return response.data;
+    const response = await apiService.get(CATEGORY_ENDPOINTS.BY_ID(id));
+    return response;
   },
 
   // Create category with image
   create: async (formData) => {
-    const response = await axiosInstance.post('/categories', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
+    const response = await apiService.upload(CATEGORY_ENDPOINTS.BASE, formData, {
+      'Content-Type': 'multipart/form-data'
     });
-    return response.data;
+    return response;
   },
 
   // Update category with optional image
   update: async (id, formData) => {
-    const response = await axiosInstance.put(`/categories/${id}`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
+    const response = await apiService.upload(CATEGORY_ENDPOINTS.BY_ID(id), formData, {
+      'Content-Type': 'multipart/form-data'
     });
-    return response.data;
+    return response;
   },
 
   // Delete category
   delete: async (id) => {
-    const response = await axiosInstance.delete(`/categories/${id}`);
-    return response.data;
+    const response = await apiService.delete(CATEGORY_ENDPOINTS.BY_ID(id));
+    return response;
   },
 
   // Upload category image only
   uploadImage: async (file) => {
     const formData = new FormData();
     formData.append('file', file);
-    const response = await axiosInstance.post('/categories/upload-image', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
+    const response = await apiService.upload(CATEGORY_ENDPOINTS.UPLOAD_IMAGE, formData, {
+      'Content-Type': 'multipart/form-data'
     });
-    return response.data;
+    return response;
   }
 };
 
