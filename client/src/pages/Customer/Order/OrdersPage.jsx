@@ -31,8 +31,13 @@ const OrdersPage = () => {
     try {
       setLoading(true);
       const response = await orderService.getMyOrders();
-      // Backend returns {orders: [...], total, page, ...}
-      const ordersList = response.data?.orders || response.data || [];
+      console.log('📦 Response from getMyOrders:', response);
+      
+      // apiService.get() returns response.data directly
+      // Backend returns {orders: [...], total, page, limit, totalPages}
+      const ordersList = response?.orders || response?.data?.orders || [];
+      
+      console.log('📦 Orders list:', ordersList);
       
       // Transform orderItems to items for consistency
       const transformedOrders = (Array.isArray(ordersList) ? ordersList : []).map(order => ({
@@ -40,8 +45,11 @@ const OrdersPage = () => {
         items: order.orderItems || []
       }));
       
+      console.log('✅ Transformed orders:', transformedOrders);
       setOrders(transformedOrders);
-    } catch (error) {notify.error('Không thể tải đơn hàng');
+    } catch (error) {
+      console.error('❌ Error loading orders:', error);
+      notify.error('Không thể tải đơn hàng');
     } finally {
       setLoading(false);
     }
@@ -50,21 +58,30 @@ const OrdersPage = () => {
   const checkReviewedProducts = async () => {
     const reviewed = new Set();
     for (const order of orders) {
-      if (order.status === 'DELIVERED' && order.items) {
+      // Allow review if order is DELIVERED or payment is successful
+      const canReviewOrder = order.status === 'DELIVERED' || order.payment?.status === 'SUCCESS';
+      
+      if (canReviewOrder && order.items) {
+        console.log('🔍 Checking review status for order:', { orderId: order.id, status: order.status, paymentStatus: order.payment?.status });
+        
         for (const item of order.items) {
           const productId = item.variant?.product?.id || item.variant?.productId;
           if (productId) {
             try {
               const response = await reviewService.canUserReview(productId);
               const canReview = response.data?.canReview || response.canReview;
+              console.log('🔍 Can review product:', productId, '?', canReview);
               if (!canReview) {
                 reviewed.add(productId);
               }
-            } catch (error) {}
+            } catch (error) {
+              console.error('Error checking review:', error);
+            }
           }
         }
       }
     }
+    console.log('📝 Reviewed products:', Array.from(reviewed));
     setReviewedProducts(reviewed);
   };
 
@@ -169,7 +186,8 @@ const OrdersPage = () => {
                           const imageUrl = item.variant?.images?.[0]?.url || item.variant?.product?.images?.[0]?.url || '/placeholder-product.jpg';
                           const productId = item.variant?.product?.id || item.variant?.productId;
                           const isReviewed = reviewedProducts.has(productId);
-                          const canShowReviewButton = order.status === 'DELIVERED' && !isReviewed;
+                          // Show review button if: order is DELIVERED or payment is successful, and not reviewed
+                          const canShowReviewButton = (order.status === 'DELIVERED' || order.payment?.status === 'SUCCESS') && !isReviewed;
                           
                           return (
                             <div key={idx} className="flex gap-3 items-start">

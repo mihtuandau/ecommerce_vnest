@@ -47,15 +47,19 @@ export class ReviewService {
   }
 
   async canUserReview(userId: number, productId: number): Promise<boolean> {
+    console.log('🔍 Checking if user can review:', { userId, productId });
+    
     // Kiểm tra đã review chưa
     const existingReview = await this.repository.findByUserAndProduct(userId, productId);
-
     if (existingReview) {
+      console.log('❌ User already reviewed this product');
       return false; // Đã review rồi
     }
 
     // Kiểm tra đã mua và nhận hàng chưa
-    return this.repository.hasUserPurchasedProduct(userId, productId);
+    const hasPurchased = await this.repository.hasUserPurchasedProduct(userId, productId);
+    console.log('✅ User has purchased product?', hasPurchased);
+    return hasPurchased;
   }
 
   async getProductReviews(productId: number, page: number = 1, limit: number = 10) {

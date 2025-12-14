@@ -68,11 +68,32 @@ export const formatShippingAddress = (shippingInfo) => {
 };
 
 export const buildOrderData = (cartItems, shippingInfo, paymentMethod, isGuest, appliedDiscount = null, shippingFee = 0) => {
+  console.log('🔨 buildOrderData called with:', {
+    cartItemsCount: cartItems?.length,
+    paymentMethod,
+    isGuest,
+    shippingFee,
+    appliedDiscount
+  });
+
+  if (!cartItems || cartItems.length === 0) {
+    console.error('❌ No cart items!', cartItems);
+    throw new Error('Giỏ hàng trống');
+  }
+
+  if (!shippingInfo) {
+    console.error('❌ No shipping info!');
+    throw new Error('Thiếu thông tin giao hàng');
+  }
+
   const orderData = {
-    items: cartItems.map((item) => ({
-      variantId: item.variantId,
-      quantity: item.quantity,
-    })),
+    items: cartItems.map((item) => {
+      console.log('📦 Processing item:', { variantId: item.variantId, quantity: item.quantity });
+      return {
+        variantId: item.variantId,
+        quantity: item.quantity,
+      };
+    }),
     shippingAddress: formatShippingAddress(shippingInfo),
     shippingInfo: {
       fullName: shippingInfo.fullName,
@@ -88,15 +109,18 @@ export const buildOrderData = (cartItems, shippingInfo, paymentMethod, isGuest, 
     orderData.discountCode = appliedDiscount.code;
     console.log('✅ Discount applied to order:', appliedDiscount.code);
   } else {
-    console.log('❌ No discount applied:', appliedDiscount);
+    console.log('⚠️ No discount applied:', appliedDiscount);
   }
 
   if (isGuest) {
     orderData.guestEmail = shippingInfo.email;
     orderData.guestPhone = shippingInfo.phone;
+    console.log('👤 Guest order:', { email: orderData.guestEmail, phone: orderData.guestPhone });
+  } else {
+    console.log('👥 Authenticated user order');
   }
 
-  console.log('📦 Final order data:', orderData);
+  console.log('📦 Final order data:', JSON.stringify(orderData, null, 2));
   return orderData;
 };
 

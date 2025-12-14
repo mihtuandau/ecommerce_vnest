@@ -60,8 +60,19 @@ export const useCheckoutSubmit = (user) => {
         ? await orderService.createGuestOrder(orderData)
         : await orderService.createOrder(orderData);
 
-      const orderId = response.data.id;
-      const orderCode = response.data.orderCode;
+      console.log('📦 Order response:', response);
+      
+      // apiService.post() returns response.data directly, so response is the order object
+      const orderId = response?.id;
+      const orderCode = response?.orderCode;
+      
+      if (!orderId || !orderCode) {
+        console.error('❌ Missing orderId or orderCode in response:', response);
+        notify.error('Lỗi: Không nhận được mã đơn hàng từ server');
+        return false;
+      }
+      
+      console.log('✅ Order created:', { orderId, orderCode });
 
       // Xử lý thanh toán PayOS
       if (paymentMethod === 'PAYOS') {
