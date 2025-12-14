@@ -75,8 +75,8 @@ const OrderSummary = ({
       {/* Submit Button */}
       <Button
         onClick={onSubmitOrder}
-        disabled={submitting}
-        className="w-full mt-6 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-3 rounded-lg font-semibold flex items-center justify-center gap-2"
+        disabled={submitting || !agreedToTerms}
+        className="w-full mt-6 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-3 rounded-lg font-semibold flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {submitting ? (
           <>

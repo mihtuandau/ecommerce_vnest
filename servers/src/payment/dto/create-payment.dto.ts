@@ -14,10 +14,6 @@ export class CreatePaymentDto {
   @IsEnum(PaymentMethod)
   method: PaymentMethod;
 
-  @ApiProperty({ example: 500000, description: 'Amount (auto from order)' })
-  @IsPositive()
-  amount?: number;
-
   @ApiProperty({ example: 'TXN_123456', description: 'Transaction ID (auto for external)', required: false })
   @IsOptional()
   @IsString()

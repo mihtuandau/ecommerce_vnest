@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { notify } from '../utils/notification';
 import orderService from '../services/orderService';
+import paymentService from '../services/paymentService';
 import {
   validateCheckoutForm,
   buildOrderData,
@@ -21,9 +22,16 @@ export const useCheckoutSubmit = (user) => {
     shippingInfo,
     paymentMethod,
     agreedToTerms,
-    appliedDiscount = null
+    appliedDiscount = null,
+    shipping = 0
   ) => {
     const isGuest = !user;
+
+    // Ngăn chặn submit nếu đang xử lý
+    if (submitting) {
+      console.log('⚠️ Already submitting, ignoring duplicate request');
+      return false;
+    }
 
     console.log('🚀 Submit order with discount:', appliedDiscount);
 
@@ -35,13 +43,14 @@ export const useCheckoutSubmit = (user) => {
     try {
       setSubmitting(true);
 
-      // Build order data with discount
+      // Build order data with discount and shipping
       const orderData = buildOrderData(
         cartItems,
         shippingInfo,
         paymentMethod,
         isGuest,
-        appliedDiscount
+        appliedDiscount,
+        shipping
       );
 
       console.log('📨 Sending order to API:', orderData);
@@ -51,27 +60,66 @@ export const useCheckoutSubmit = (user) => {
         ? await orderService.createGuestOrder(orderData)
         : await orderService.createOrder(orderData);
 
-      // Handle guest checkout
+      const orderId = response.data.id;
+      const orderCode = response.data.orderCode;
+
+      // Xử lý thanh toán PayOS
+      if (paymentMethod === 'PAYOS') {
+        try {
+          console.log('💳 Creating PayOS payment for order:', orderId);
+          const paymentResponse = await paymentService.createPayment(orderId, 'PAYOS');
+          console.log('💳 PayOS Response:', paymentResponse);
+          
+          if (paymentResponse.paymentLink) {
+            // Lưu thông tin đơn hàng trước khi redirect
+            if (isGuest) {
+              saveGuestOrder(orderCode, shippingInfo.email);
+              clearGuestCart();
+            }
+            
+            notify.success('Đang chuyển đến trang thanh toán...', { duration: 2000 });
+            
+            console.log('🔗 Redirecting to:', paymentResponse.paymentLink);
+            
+            // Redirect đến PayOS payment link
+            setTimeout(() => {
+              window.location.href = paymentResponse.paymentLink;
+            }, 1000);
+            
+            return true;
+          } else {
+            console.error('❌ No payment link in response:', paymentResponse);
+            notify.error('Không nhận được link thanh toán từ PayOS');
+            return false;
+          }
+        } catch (error) {
+          console.error('❌ PayOS Error:', error);
+          notify.error(error.response?.data?.message || 'Không thể tạo link thanh toán. Vui lòng thử lại.');
+          return false;
+        }
+      }
+
+      // Handle guest checkout (COD)
       if (isGuest) {
         clearGuestCart();
-        saveGuestOrder(response.data.orderCode, shippingInfo.email);
+        saveGuestOrder(orderCode, shippingInfo.email);
 
         notify.success(
-          `Đặt hàng thành công! Mã đơn hàng: ${response.data.orderCode}`,
+          `Đặt hàng thành công! Mã đơn hàng: ${orderCode}`,
           { duration: 5000 }
         );
 
         navigate("/order-lookup", {
           state: {
-            orderCode: response.data.orderCode,
+            orderCode: orderCode,
             contact: shippingInfo.email,
           },
         });
       } else {
-        // Handle logged-in user checkout
+        // Handle logged-in user checkout (COD)
         notify.success("Đặt hàng thành công!");
         setTimeout(() => {
-          navigate(`/orders/${response.data.id}`);
+          navigate(`/orders/${orderId}`);
         }, 1000);
       }
 

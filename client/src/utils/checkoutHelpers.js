@@ -67,7 +67,7 @@ export const formatShippingAddress = (shippingInfo) => {
   return parts.join(", ");
 };
 
-export const buildOrderData = (cartItems, shippingInfo, paymentMethod, isGuest, appliedDiscount = null) => {
+export const buildOrderData = (cartItems, shippingInfo, paymentMethod, isGuest, appliedDiscount = null, shippingFee = 0) => {
   const orderData = {
     items: cartItems.map((item) => ({
       variantId: item.variantId,
@@ -80,6 +80,7 @@ export const buildOrderData = (cartItems, shippingInfo, paymentMethod, isGuest, 
       note: shippingInfo.note || "",
     },
     paymentMethod,
+    shippingFee,
   };
 
   // Add discount code if applied

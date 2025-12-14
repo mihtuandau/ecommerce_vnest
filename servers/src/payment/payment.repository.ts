@@ -39,6 +39,18 @@ export class PaymentRepository {
   }
 
   /**
+   * Find payment by order ID
+   */
+  async findByOrderId(orderId: number) {
+    return this.prisma.payment.findUnique({
+      where: { orderId },
+      include: {
+        order: true,
+      },
+    });
+  }
+
+  /**
    * Find all payments with filters
    */
   async findAll(where: Prisma.PaymentWhereInput, skip: number, take: number) {
@@ -111,11 +123,53 @@ export class PaymentRepository {
   }
 
   /**
-   * Find order by ID
+   * Find order by ID with details for payment
    */
   async findOrderById(orderId: number) {
     return this.prisma.order.findUnique({
       where: { id: orderId },
+      include: {
+        user: true,
+        address: true,
+        orderItems: {
+          include: {
+            variant: {
+              include: {
+                product: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  /**
+   * Find payment by PayOS order code
+   */
+  async findByPayosOrderCode(orderCode: number) {
+    return this.prisma.payment.findFirst({
+      where: { payosOrderCode: orderCode },
+      include: {
+        order: {
+          include: {
+            orderItems: {
+              include: { variant: true },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  /**
+   * Update payment
+   */
+  async update(id: number, data: Prisma.PaymentUpdateInput) {
+    return this.prisma.payment.update({
+      where: { id },
+      data,
+      include: { order: true },
     });
   }
 }

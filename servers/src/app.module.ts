@@ -20,7 +20,7 @@ import { MailModule } from './mail/mail.module';
 import { ChatbotModule } from './chatbot/chatbot.module';
 import { ReviewModule } from './review/review.module';
 import { AddressModule } from './address/address.module';
-import { ShippingModule } from './shipping/shipping.module';
+// import { ShippingModule } from './shipping/shipping.module';
 
 @Module({
   imports: [
@@ -43,7 +43,7 @@ import { ShippingModule } from './shipping/shipping.module';
     ChatbotModule,
     ReviewModule,
     AddressModule,
-    ShippingModule
+    // ShippingModule
   ],
   providers: [PrismaService],
   exports: [PrismaService],

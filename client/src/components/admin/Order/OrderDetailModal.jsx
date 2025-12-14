@@ -91,6 +91,102 @@ const OrderDetailModal = ({
           </div>
         </div>
 
+        {/* Payment Information */}
+        {order.payment && (
+          <div>
+            <h3 className="text-sm font-semibold text-gray-900 mb-3">Thông tin thanh toán</h3>
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-2">
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-600">Phương thức:</span>
+                <span className="text-sm font-semibold text-gray-900">
+                  {order.payment.method === 'CASH' && '💵 Tiền mặt (COD)'}
+                  {order.payment.method === 'PAYOS' && '💳 PayOS (Chuyển khoản QR)'}
+                  {order.payment.method === 'VNPAY' && '💳 VNPay'}
+                  {order.payment.method === 'MOMO' && '💳 MoMo'}
+                </span>
+              </div>
+              
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-600">Trạng thái thanh toán:</span>
+                <span className={`text-sm font-semibold inline-flex items-center px-2 py-1 rounded-full ${
+                  order.payment.status === 'SUCCESS' || order.payment.status === 'PAID' 
+                    ? 'bg-green-100 text-green-800' 
+                    : order.payment.status === 'PENDING' 
+                    ? 'bg-yellow-100 text-yellow-800'
+                    : order.payment.status === 'CANCELLED'
+                    ? 'bg-gray-100 text-gray-800'
+                    : 'bg-red-100 text-red-800'
+                }`}>
+                  {order.payment.status === 'SUCCESS' && '✓ Đã thanh toán'}
+                  {order.payment.status === 'PAID' && '✓ Đã thanh toán'}
+                  {order.payment.status === 'PENDING' && '⏳ Chờ thanh toán'}
+                  {order.payment.status === 'FAILED' && '✗ Thất bại'}
+                  {order.payment.status === 'CANCELLED' && '✗ Đã hủy'}
+                </span>
+              </div>
+
+              {order.payment.method === 'PAYOS' && order.payment.payosOrderCode && (
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Mã giao dịch PayOS:</span>
+                  <span className="text-xs font-mono font-semibold text-blue-600">
+                    #{order.payment.payosOrderCode}
+                  </span>
+                </div>
+              )}
+
+              {order.payment.transactionId && (
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Transaction ID:</span>
+                  <span className="text-xs font-mono font-semibold text-gray-700">
+                    {order.payment.transactionId}
+                  </span>
+                </div>
+              )}
+
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-600">Số tiền:</span>
+                <span className="text-sm font-bold text-green-600">
+                  {formatCurrency(order.payment.amount)}
+                </span>
+              </div>
+
+              {order.payment.paidAt && (
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Thời gian thanh toán:</span>
+                  <span className="text-xs text-gray-700">
+                    {new Date(order.payment.paidAt).toLocaleString('vi-VN')}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* Payment Actions */}
+            {order.payment.status === 'SUCCESS' && (
+              <div className="mt-3 bg-green-50 border border-green-200 rounded-lg p-3">
+                <p className="text-sm text-green-800 font-medium">
+                  ✓ Đơn hàng đã được thanh toán. Có thể xử lý và giao hàng.
+                </p>
+              </div>
+            )}
+            
+            {order.payment.status === 'PENDING' && order.payment.method === 'PAYOS' && (
+              <div className="mt-3 bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                <p className="text-sm text-yellow-800 font-medium">
+                  ⏳ Chờ khách hàng thanh toán qua PayOS. Link thanh toán đã được gửi.
+                </p>
+              </div>
+            )}
+
+            {order.payment.status === 'PENDING' && order.payment.method === 'CASH' && (
+              <div className="mt-3 bg-blue-50 border border-blue-200 rounded-lg p-3">
+                <p className="text-sm text-blue-800 font-medium">
+                  💵 Thu tiền mặt khi giao hàng (COD).
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Status Update */}
         <div>
           <h3 className="text-sm font-semibold text-gray-900 mb-3">Cập nhật trạng thái</h3>

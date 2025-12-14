@@ -12,13 +12,14 @@ const OrderTable = ({ orders, loading, sortBy, sortDir, onSort, onViewDetails })
             <Table.Header>Mã đơn</Table.Header>
             <Table.Header>Khách hàng</Table.Header>
             <Table.Header>Tổng tiền</Table.Header>
+            <Table.Header>Thanh toán</Table.Header>
             <Table.Header>Trạng thái</Table.Header>
             <Table.Header>Ngày đặt</Table.Header>
             <Table.Header align="right">Thao tác</Table.Header>
           </Table.Row>
         </Table.Head>
         <Table.Body>
-          <Table.Skeleton rows={5} cols={6} />
+          <Table.Skeleton rows={5} cols={7} />
         </Table.Body>
       </Table>
     );
@@ -32,6 +33,7 @@ const OrderTable = ({ orders, loading, sortBy, sortDir, onSort, onViewDetails })
             <Table.Header>Mã đơn</Table.Header>
             <Table.Header>Khách hàng</Table.Header>
             <Table.Header>Tổng tiền</Table.Header>
+            <Table.Header>Thanh toán</Table.Header>
             <Table.Header>Trạng thái</Table.Header>
             <Table.Header>Ngày đặt</Table.Header>
             <Table.Header align="right">Thao tác</Table.Header>
@@ -61,6 +63,7 @@ const OrderTable = ({ orders, loading, sortBy, sortDir, onSort, onViewDetails })
           >
             Tổng tiền
           </Table.Header>
+          <Table.Header>Thanh toán</Table.Header>
           <Table.Header>Trạng thái</Table.Header>
           <Table.Header
             sortable
@@ -93,6 +96,32 @@ const OrderTable = ({ orders, loading, sortBy, sortDir, onSort, onViewDetails })
               <span className="text-sm font-medium text-gray-900">
                 {formatCurrency(order.total)}
               </span>
+            </Table.Cell>
+            <Table.Cell>
+              {order.payment ? (
+                <div className="space-y-1">
+                  <div className="text-xs font-medium">
+                    {order.payment.method === 'CASH' && '💵 COD'}
+                    {order.payment.method === 'PAYOS' && '💳 PayOS'}
+                    {order.payment.method === 'VNPAY' && '💳 VNPay'}
+                    {order.payment.method === 'MOMO' && '💳 MoMo'}
+                  </div>
+                  <Badge variant={
+                    order.payment.status === 'SUCCESS' || order.payment.status === 'PAID' ? 'success' 
+                    : order.payment.status === 'PENDING' ? 'warning'
+                    : order.payment.status === 'CANCELLED' ? 'default'
+                    : 'danger'
+                  } size="sm">
+                    {order.payment.status === 'SUCCESS' && '✓ Đã TT'}
+                    {order.payment.status === 'PAID' && '✓ Đã TT'}
+                    {order.payment.status === 'PENDING' && '⏳ Chờ'}
+                    {order.payment.status === 'FAILED' && '✗ Lỗi'}
+                    {order.payment.status === 'CANCELLED' && '✗ Hủy'}
+                  </Badge>
+                </div>
+              ) : (
+                <span className="text-xs text-gray-400">Chưa có</span>
+              )}
             </Table.Cell>
             <Table.Cell>
               <Badge variant={statusVariants[order.status]}>
