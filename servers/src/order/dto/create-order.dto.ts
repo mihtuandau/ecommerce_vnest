@@ -45,6 +45,12 @@ export class CreateOrderDto {
   @IsPositive()
   shippingMethodId?: number;
 
+  @ApiProperty({ example: 30000, description: 'Phí vận chuyển', required: false })
+  @Type(() => Number)
+  @IsOptional()
+  @IsInt()
+  shippingFee?: number;
+
   @ApiProperty({ example: 'guest@example.com', description: 'Email khách (cho guest checkout)', required: false })
   @IsOptional()
   @IsString()

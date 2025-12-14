@@ -230,17 +230,20 @@ enum OrderStatus {
 }
 
 model Payment {
-  id            Int           @id @default(autoincrement())
-  orderId       Int           @unique
-  amount        Float
-  method        PaymentMethod @default(CASH)
-  status        PaymentStatus @default(PENDING)
-  transactionId String?
-  order         Order         @relation(fields: [orderId], references: [id], onDelete: Cascade) // Defining side: full fields + references
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  id              Int           @id @default(autoincrement())
+  orderId         Int           @unique
+  amount          Float
+  method          PaymentMethod @default(CASH)
+  status          PaymentStatus @default(PENDING)
+  transactionId   String?
+  paymentLink     String?       // URL payment link từ PayOS
+  payosOrderCode  BigInt?       @unique // Order code từ PayOS
+  order           Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 
   @@index([orderId])
+  @@index([payosOrderCode])
 }
 
 enum PaymentMethod {
@@ -248,6 +251,7 @@ enum PaymentMethod {
   CARD
   VNPAY
   MOMO
+  PAYOS
 }
 
 enum PaymentStatus {
@@ -255,6 +259,7 @@ enum PaymentStatus {
   SUCCESS
   FAILED
   REFUNDED
+  CANCELLED
 }
 
 model OrderItem {

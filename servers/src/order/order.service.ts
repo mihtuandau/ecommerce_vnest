@@ -25,6 +25,26 @@ export class OrderService {
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
+  // Helper to serialize order (convert BigInt in payment to Number)
+  private serializeOrder(order: any) {
+    if (!order) return null;
+    
+    // If order has payment relation, serialize payment BigInt fields
+    if (order.payment) {
+      return {
+        ...order,
+        payment: {
+          ...order.payment,
+          payosOrderCode: order.payment.payosOrderCode 
+            ? Number(order.payment.payosOrderCode) 
+            : null,
+        },
+      };
+    }
+    
+    return order;
+  }
+
   // Generate unique order code
   private async generateOrderCode(): Promise<string> {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -89,7 +109,10 @@ export class OrderService {
       0,
     );
     const taxAmount = 0; // Remove VAT tax
-    const total = totalItems; // No tax added
+    const shippingFee = dto.shippingFee || 0; // Phí vận chuyển
+    const total = totalItems + shippingFee; // Items + shipping
+    
+    // Apply discount to total (items + shipping)
     let discountedTotal = total;
     if (discount) {
       if (discount.percentage) discountedTotal *= 1 - discount.percentage / 100;
@@ -196,8 +219,11 @@ export class OrderService {
       this.repository.count(where),
     ]);
 
+    // Serialize all orders with payment data
+    const serializedOrders = ordersData.map(order => this.serializeOrder(order));
+
     const orders = {
-      orders: ordersData,
+      orders: serializedOrders,
       total,
       page,
       limit,
@@ -214,7 +240,7 @@ export class OrderService {
     const cacheKey = `order:${id}`;
     let order = await this.cacheManager.get(cacheKey);
     if (order) {
-      return order;
+      return this.serializeOrder(order);
     }
 
     order = await this.repository.findById(id);
@@ -223,7 +249,7 @@ export class OrderService {
       await this.cacheManager.set(cacheKey, order, 1800);
     }
 
-    return order;
+    return this.serializeOrder(order);
   }
 
   async update(id: number, dto: UpdateOrderDto): Promise<any> {

@@ -1,6 +1,18 @@
 // src/payment/payment.controller.ts
-import { Controller, Get, Post, Put, Body, Param, Query, UseGuards, BadRequestException } from '@nestjs/common';
-import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { 
+  Controller, 
+  Get, 
+  Post, 
+  Put, 
+  Body, 
+  Param, 
+  Query, 
+  UseGuards, 
+  BadRequestException,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
+import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../common/guards/auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
@@ -17,24 +29,52 @@ export class PaymentController {
   constructor(private paymentService: PaymentService) {}
 
   @Post()
+  @ApiOperation({ summary: 'Tạo payment mới và lấy payment link (nếu là PayOS)' })
   create(@Body() createPaymentDto: CreatePaymentDto) {
     return this.paymentService.create(createPaymentDto);
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Lấy thông tin payment theo ID' })
   findOne(@Param('id') id: string) {
     return this.paymentService.findOne(+id);
   }
 
   @Put(':id/status')
-  @Roles('ADMIN')  // Chỉ admin update status
+  @Roles('ADMIN')
+  @ApiOperation({ summary: 'Cập nhật trạng thái payment (Admin only)' })
   updateStatus(@Param('id') id: string, @Body() updateStatusDto: UpdatePaymentStatusDto) {
     return this.paymentService.updateStatus(+id, updateStatusDto);
   }
 
   @Get()
+  @ApiOperation({ summary: 'Lấy danh sách payments' })
   findAll(@Query() query: QueryPaymentDto) {
     return this.paymentService.findAll(query);
+  }
+
+  @Get('payos/info/:orderCode')
+  @ApiOperation({ summary: 'Lấy thông tin payment từ PayOS theo order code' })
+  async getPayOSPaymentInfo(@Param('orderCode') orderCode: string) {
+    return this.paymentService.getPayOSPaymentInfo(+orderCode);
+  }
+
+  /**
+   * Get payment with order details by PayOS order code
+   */
+  @Get('payos/order/:orderCode')
+  @ApiOperation({ summary: 'Lấy payment và thông tin đơn hàng theo PayOS order code' })
+  async getPaymentByOrderCode(@Param('orderCode') orderCode: string) {
+    return this.paymentService.findByPayosOrderCode(+orderCode);
+  }
+
+  @Post(':id/cancel')
+  @ApiOperation({ summary: 'Hủy payment link PayOS' })
+  async cancelPayOSPayment(
+    @Param('id') id: string,
+    @Body('reason') reason?: string,
+  ) {
+    return this.paymentService.cancelPayOSPayment(+id, reason);
   }
 }
 

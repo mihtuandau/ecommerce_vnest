@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { FaArrowLeft } from "react-icons/fa";
 import toast from "react-hot-toast";
+import { notify } from "../../../utils/notification";
 import { useAuth } from "../../../contexts/authContext";
 import Loading from "../../../components/common/Loading";
 import Modal from "../../../components/common/Modal";
@@ -78,7 +79,8 @@ const CheckoutPage = () => {
 
   const onSubmitOrder = () => {
     console.log('🛒 CheckoutPage - submitting with discount:', appliedDiscount);
-    submitOrder(cartItems, shippingInfo, paymentMethod, agreedToTerms, appliedDiscount);
+    console.log('🚚 Shipping fee:', shipping);
+    submitOrder(cartItems, shippingInfo, paymentMethod, agreedToTerms, appliedDiscount, shipping);
   };
 
   if (cartItems.length === 0) {

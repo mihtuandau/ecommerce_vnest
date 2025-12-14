@@ -86,6 +86,7 @@ export class OrderRepository {
       orderBy: { createdAt: 'desc' },
       include: {
         user: { select: { id: true, name: true, email: true } },
+        payment: true, // Include payment info for admin
         orderItems: {
           include: {
             variant: {

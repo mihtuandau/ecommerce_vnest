@@ -1,4 +1,4 @@
-import { FaCreditCard } from 'react-icons/fa';
+import { FaCreditCard, FaMoneyBillWave, FaMobileAlt, FaQrcode } from 'react-icons/fa';
 
 const PaymentMethodSelector = ({ paymentMethod, onPaymentMethodChange }) => {
   return (
@@ -20,9 +20,26 @@ const PaymentMethodSelector = ({ paymentMethod, onPaymentMethodChange }) => {
             onChange={(e) => onPaymentMethodChange(e.target.value)}
             className="w-5 h-5 text-blue-600"
           />
+          <FaMoneyBillWave className="text-2xl text-green-600" />
           <div>
             <div className="font-medium text-gray-900">Thanh toán khi nhận hàng (COD)</div>
             <div className="text-sm text-gray-500">Thanh toán bằng tiền mặt khi nhận hàng</div>
+          </div>
+        </label>
+
+        <label className="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-500 transition-colors">
+          <input
+            type="radio"
+            name="paymentMethod"
+            value="PAYOS"
+            checked={paymentMethod === 'PAYOS'}
+            onChange={(e) => onPaymentMethodChange(e.target.value)}
+            className="w-5 h-5 text-blue-600"
+          />
+          <FaQrcode className="text-2xl text-blue-600" />
+          <div>
+            <div className="font-medium text-gray-900">Chuyển khoản ngân hàng</div>
+            <div className="text-sm text-gray-500">Thanh toán qua QR Code hoặc chuyển khoản</div>
           </div>
         </label>
 
@@ -34,6 +51,7 @@ const PaymentMethodSelector = ({ paymentMethod, onPaymentMethodChange }) => {
             disabled
             className="w-5 h-5 text-blue-600"
           />
+          <FaCreditCard className="text-2xl text-gray-400" />
           <div>
             <div className="font-medium text-gray-900">VNPay</div>
             <div className="text-sm text-gray-500">Đang phát triển...</div>
@@ -48,6 +66,7 @@ const PaymentMethodSelector = ({ paymentMethod, onPaymentMethodChange }) => {
             disabled
             className="w-5 h-5 text-blue-600"
           />
+          <FaMobileAlt className="text-2xl text-gray-400" />
           <div>
             <div className="font-medium text-gray-900">MoMo</div>
             <div className="text-sm text-gray-500">Đang phát triển...</div>
