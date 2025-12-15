@@ -24,7 +24,7 @@ import { QueryPaymentDto } from './dto/query-payment.dto';
 @ApiTags('Payments')
 @ApiBearerAuth('Authorization')
 @Controller('payments')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class PaymentController {
   constructor(private paymentService: PaymentService) {}
 
@@ -32,6 +32,29 @@ export class PaymentController {
   @ApiOperation({ summary: 'Tạo payment mới và lấy payment link (nếu là PayOS)' })
   create(@Body() createPaymentDto: CreatePaymentDto) {
     return this.paymentService.create(createPaymentDto);
+  }
+
+  @Post(':id/sync')
+  @Roles('ADMIN')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Đồng bộ trạng thái thanh toán với PayOS (Admin only)' })
+  async syncPaymentStatus(@Param('id') id: string) {
+    return this.paymentService.syncPaymentWithPayOS(+id);
+  }
+
+  @Post(':id/cancel')
+  @ApiOperation({ summary: 'Hủy payment link PayOS' })
+  async cancelPayOSPayment(
+    @Param('id') id: string,
+    @Body('reason') reason?: string,
+  ) {
+    return this.paymentService.cancelPayOSPayment(+id, reason);
+  }
+
+  @Get('payos/order/:orderCode')
+  @ApiOperation({ summary: 'Lấy payment và thông tin đơn hàng theo PayOS order code' })
+  async getPaymentByOrderCode(@Param('orderCode') orderCode: string) {
+    return this.paymentService.findByPayosOrderCode(+orderCode);
   }
 
   @Get(':id')
@@ -51,30 +74,6 @@ export class PaymentController {
   @ApiOperation({ summary: 'Lấy danh sách payments' })
   findAll(@Query() query: QueryPaymentDto) {
     return this.paymentService.findAll(query);
-  }
-
-  @Get('payos/info/:orderCode')
-  @ApiOperation({ summary: 'Lấy thông tin payment từ PayOS theo order code' })
-  async getPayOSPaymentInfo(@Param('orderCode') orderCode: string) {
-    return this.paymentService.getPayOSPaymentInfo(+orderCode);
-  }
-
-  /**
-   * Get payment with order details by PayOS order code
-   */
-  @Get('payos/order/:orderCode')
-  @ApiOperation({ summary: 'Lấy payment và thông tin đơn hàng theo PayOS order code' })
-  async getPaymentByOrderCode(@Param('orderCode') orderCode: string) {
-    return this.paymentService.findByPayosOrderCode(+orderCode);
-  }
-
-  @Post(':id/cancel')
-  @ApiOperation({ summary: 'Hủy payment link PayOS' })
-  async cancelPayOSPayment(
-    @Param('id') id: string,
-    @Body('reason') reason?: string,
-  ) {
-    return this.paymentService.cancelPayOSPayment(+id, reason);
   }
 }
 

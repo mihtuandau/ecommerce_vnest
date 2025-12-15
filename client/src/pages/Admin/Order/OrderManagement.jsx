@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { FaSync } from 'react-icons/fa';
 import orderService from '../../../services/orderService';
+import paymentService from '../../../services/paymentService';
 import { notify } from '../../../utils/notification';
 import Loading from '../../../components/common/Loading';
 import Pagination from '../../../components/common/Pagination';
@@ -97,6 +98,16 @@ const AdminOrdersPage = () => {
     }
   };
 
+  const handleSyncPayment = async (paymentId) => {
+    try {
+      const result = await paymentService.syncPaymentStatus(paymentId);
+      notify.success(result.message || 'Đồng bộ trạng thái thành công!');
+      await loadOrders();
+    } catch (error) {
+      notify.error(error.response?.data?.message || 'Không thể đồng bộ trạng thái thanh toán');
+    }
+  };
+
   const toggleSort = (key) => {
     if (sortBy === key) {
       setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
@@ -162,6 +173,7 @@ const AdminOrdersPage = () => {
             sortDir={sortDir}
             onSort={toggleSort}
             onViewDetails={handleViewDetails}
+            onSyncPayment={handleSyncPayment}
           />
           
           {!loading && filteredOrders.length > 0 && (

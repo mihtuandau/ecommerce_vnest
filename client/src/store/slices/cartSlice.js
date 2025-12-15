@@ -54,7 +54,7 @@ const cartSlice = createSlice({
     removeFromCartGuest: (state, action) => {
       const variantId = action.payload;
       state.items = state.items.filter(item => item.variantId !== variantId);
-      saveCartToStorage(current(state.items));
+      saveCartToStorage([...state.items]);
       notify.success('Đã xóa khỏi giỏ hàng', 2000);
     },
 
@@ -98,7 +98,7 @@ const cartSlice = createSlice({
           return acc;
         }, []);
         state.items = deduped;
-        saveCartToStorage(state.items);
+        // Don't save to localStorage when fetching from server - data is in DB
       })
       .addCase(fetchCart.rejected, (state, action) => {
         state.loading = false;
@@ -122,7 +122,7 @@ const cartSlice = createSlice({
             addedAt: new Date().toISOString()
           });
         }
-        saveCartToStorage(current(state.items));
+        // Don't save to localStorage - data is in DB for logged-in users
         notify.success('Đã lưu vào giỏ hàng!', 2000);
       })
       .addCase(addToCartServer.rejected, (state, action) => {
@@ -142,8 +142,7 @@ const cartSlice = createSlice({
             state.items[itemIndex].quantity = quantity;
           }
         }
-        // Save to localStorage
-        saveCartToStorage(current(state.items));
+        // Don't save to localStorage - data is in DB for logged-in users
       })
       .addCase(updateCartServer.rejected, (state, action) => {
         state.error = action.payload;
@@ -153,8 +152,7 @@ const cartSlice = createSlice({
       .addCase(removeFromCartServer.fulfilled, (state, action) => {
         const variantId = action.payload;
         state.items = state.items.filter(item => item.variantId !== variantId);
-        // Save to localStorage - use current() to get plain state
-        saveCartToStorage(current(state.items));
+        // Don't save to localStorage - data is in DB for logged-in users
         notify.success('Đã xóa khỏi giỏ hàng!');
       })
       .addCase(removeFromCartServer.rejected, (state, action) => {
@@ -164,7 +162,7 @@ const cartSlice = createSlice({
       // Clear Cart Server
       .addCase(clearCartServer.fulfilled, (state) => {
         state.items = [];
-        clearCartStorage();
+        // Don't clear localStorage - only clear Redux state
         notify.success('Đã xóa giỏ hàng', 2000);
       })
       .addCase(clearCartServer.rejected, (state, action) => {
