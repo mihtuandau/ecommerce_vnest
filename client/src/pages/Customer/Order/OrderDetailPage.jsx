@@ -49,6 +49,22 @@ const OrderDetailPage = () => {
     }
   };
 
+  const handleCancelOrder = async () => {
+    if (!confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')) {
+      return;
+    }
+    
+    try {
+      await orderService.cancelOrder(id);
+      notify.success('Đã hủy đơn hàng thành công!');
+      // Reload order to update status
+      loadOrderDetail();
+    } catch (error) {
+      console.error('Cancel order error:', error);
+      notify.error(error.response?.data?.message || 'Không thể hủy đơn hàng');
+    }
+  };
+
   const getStatusConfig = (status) => {
     const configs = {
       PENDING: {
@@ -279,15 +295,10 @@ const OrderDetailPage = () => {
             </div>
 
             {/* Action Button */}
-            {order.status === 'PENDING' && (
+            {(order.status === 'PENDING' || order.status === 'AWAITING_PAYMENT') && (
               <button
-                onClick={() => {
-                  if (confirm('Bạn có chắc muốn hủy đơn hàng này?')) {
-                    notify.success('Đã hủy đơn hàng');
-                    navigate('/orders');
-                  }
-                }}
-                className="w-full px-4 py-2 border border-red-600 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                onClick={handleCancelOrder}
+                className="w-full px-4 py-3 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors"
               >
                 Hủy đơn hàng
               </button>

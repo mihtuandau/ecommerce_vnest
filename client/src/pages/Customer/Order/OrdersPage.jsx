@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+  import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { FaBox, FaClock, FaArrowLeft, FaStar } from 'react-icons/fa';
 import { notify } from '../../../utils/notification';
 import Loading from '../../../components/common/Loading';
@@ -11,15 +11,43 @@ import ReviewForm from '../../../components/products/ReviewForm';
 
 const OrdersPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [reviewedProducts, setReviewedProducts] = useState(new Set());
+  const [isAutoRefreshing, setIsAutoRefreshing] = useState(false);
+  const [statusFilter, setStatusFilter] = useState('ALL');
 
   useEffect(() => {
     loadOrders();
-  }, []);
+    
+    // Auto-refresh nếu có payment success parameter
+    const urlParams = new URLSearchParams(location.search);
+    const paymentSuccess = urlParams.get('paymentSuccess');
+    const refreshOrders = urlParams.get('refresh');
+    
+    // Check localStorage for payment success flag
+    const paymentCompleted = localStorage.getItem('paymentCompleted');
+    
+    if (paymentSuccess === 'true' || refreshOrders === 'true' || paymentCompleted === 'true') {
+      console.log('🔄 Auto-refreshing orders after payment success');
+      setIsAutoRefreshing(true);
+      
+      // Refresh sau 3 giây để đảm bảo webhook đã processed (không hiển thị notification)
+      setTimeout(() => {
+        loadOrders();
+        setIsAutoRefreshing(false);
+      }, 3000);
+      
+      // Clean flags
+      localStorage.removeItem('paymentCompleted');
+      if (urlParams.has('paymentSuccess') || urlParams.has('refresh')) {
+        navigate('/orders', { replace: true });
+      }
+    }
+  }, [location.search]);
 
   useEffect(() => {
     if (orders.length > 0) {
@@ -58,8 +86,8 @@ const OrdersPage = () => {
   const checkReviewedProducts = async () => {
     const reviewed = new Set();
     for (const order of orders) {
-      // Allow review if order is DELIVERED or payment is successful
-      const canReviewOrder = order.status === 'DELIVERED' || order.payment?.status === 'SUCCESS';
+      // Only allow review if order is DELIVERED AND payment is successful
+      const canReviewOrder = order.status === 'DELIVERED' && order.payment?.status === 'SUCCESS';
       
       if (canReviewOrder && order.items) {
         console.log('🔍 Checking review status for order:', { orderId: order.id, status: order.status, paymentStatus: order.payment?.status });
@@ -71,6 +99,7 @@ const OrdersPage = () => {
               const response = await reviewService.canUserReview(productId);
               const canReview = response.data?.canReview || response.canReview;
               console.log('🔍 Can review product:', productId, '?', canReview);
+              // If canReview is false, it means user has already reviewed this product
               if (!canReview) {
                 reviewed.add(productId);
               }
@@ -99,7 +128,38 @@ const OrdersPage = () => {
     setSelectedProduct(null);
   };
 
+  const handleCancelOrder = async (orderId) => {
+    if (!window.confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')) {
+      return;
+    }
+    
+    try {
+      await orderService.cancelOrder(orderId);
+      notify.success('Hủy đơn hàng thành công!');
+      // Refresh orders list
+      loadOrders();
+    } catch (error) {
+      console.error('Cancel order error:', error);
+      notify.error(error.response?.data?.message || 'Không thể hủy đơn hàng');
+    }
+  };
+
   const safeOrders = Array.isArray(orders) ? orders : [];
+  
+  // Filter orders based on status
+  const filteredOrders = statusFilter === 'ALL' 
+    ? safeOrders 
+    : safeOrders.filter(order => order.status === statusFilter);
+  
+  // Count orders by status
+  const statusCounts = {
+    ALL: safeOrders.length,
+    PENDING: safeOrders.filter(o => o.status === 'PENDING').length,
+    PROCESSING: safeOrders.filter(o => o.status === 'PROCESSING').length,
+    SHIPPED: safeOrders.filter(o => o.status === 'SHIPPED').length,
+    DELIVERED: safeOrders.filter(o => o.status === 'DELIVERED').length,
+    CANCELLED: safeOrders.filter(o => o.status === 'CANCELLED').length,
+  };
 
   if (loading) {
     return (
@@ -123,6 +183,41 @@ const OrdersPage = () => {
           {/* Header */}
           <div className="mb-6">
             <h1 className="text-2xl font-bold text-gray-900">Đơn hàng của tôi</h1>
+            <p className="text-gray-600 mt-1">Quản lý và theo dõi đơn hàng của bạn</p>
+          </div>
+
+          {/* Status Filter */}
+          <div className="mb-6">
+            <div className="flex flex-wrap gap-2">
+              {[
+                { value: 'ALL', label: 'Tất cả' },
+                { value: 'PENDING', label: 'Chờ xác nhận' },
+                { value: 'PROCESSING', label: 'Đang xử lý' },
+                { value: 'SHIPPED', label: 'Đang giao' },
+                { value: 'DELIVERED', label: 'Đã giao' },
+                { value: 'CANCELLED', label: 'Đã hủy' },
+              ].map((filter) => {
+                const isActive = statusFilter === filter.value;
+                const count = statusCounts[filter.value];
+
+                return (
+                  <button
+                    key={filter.value}
+                    onClick={() => setStatusFilter(filter.value)}
+                    className={`
+                      px-3 py-1.5 rounded-md text-sm font-medium
+                      transition-colors duration-200
+                      ${isActive 
+                        ? 'bg-gray-900 text-white' 
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }
+                    `}
+                  >
+                    {filter.label} ({count})
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           {/* Orders List */}
@@ -142,9 +237,25 @@ const OrdersPage = () => {
                 Mua sắm ngay
               </button>
             </div>
+          ) : filteredOrders.length === 0 ? (
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
+              <FaClock size={48} className="text-gray-400 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                Không tìm thấy đơn hàng
+              </h3>
+              <p className="text-gray-600 mb-6">
+                Không có đơn hàng nào ở trạng thái này.
+              </p>
+              <button
+                onClick={() => setStatusFilter('ALL')}
+                className="bg-gray-900 hover:bg-gray-800 text-white px-6 py-2 rounded-lg transition-colors"
+              >
+                Xem tất cả đơn hàng
+              </button>
+            </div>
           ) : (
             <div className="space-y-4">
-              {safeOrders.map((order) => {
+              {filteredOrders.map((order) => {
                 const getStatusBadge = (status) => {
                   const statusConfig = {
                     PENDING: { label: 'Chờ xác nhận', className: 'bg-yellow-100 text-yellow-800' },
@@ -186,8 +297,10 @@ const OrdersPage = () => {
                           const imageUrl = item.variant?.images?.[0]?.url || item.variant?.product?.images?.[0]?.url || '/placeholder-product.jpg';
                           const productId = item.variant?.product?.id || item.variant?.productId;
                           const isReviewed = reviewedProducts.has(productId);
-                          // Show review button if: order is DELIVERED or payment is successful, and not reviewed
-                          const canShowReviewButton = (order.status === 'DELIVERED' || order.payment?.status === 'SUCCESS') && !isReviewed;
+                          
+                          // Determine review status based on order state
+                          const isOrderCompletedForReview = order.status === 'DELIVERED' && order.payment?.status === 'SUCCESS';
+                          const canShowReviewButton = isOrderCompletedForReview && !isReviewed;
                           
                           return (
                             <div key={idx} className="flex gap-3 items-start">
@@ -209,6 +322,7 @@ const OrdersPage = () => {
                                   {formatPrice(item.price * item.quantity)}
                                 </p>
                               </div>
+                              {/* Review status and button */}
                               {canShowReviewButton && (
                                 <button
                                   onClick={() => handleOpenReviewModal(item)}
@@ -218,11 +332,12 @@ const OrdersPage = () => {
                                   Đánh giá
                                 </button>
                               )}
-                              {isReviewed && (
+                              {isReviewed && isOrderCompletedForReview && (
                                 <span className="text-xs text-green-600 bg-green-50 px-2 py-1.5 rounded whitespace-nowrap">
                                   Đã đánh giá
                                 </span>
                               )}
+                              {/* Don't show anything for pending orders - no confusion */}
                             </div>
                           );
                         })}
@@ -242,12 +357,14 @@ const OrdersPage = () => {
                             {formatPrice(order.total)}
                           </span>
                         </div>
-                        <button
-                          onClick={() => navigate(`/orders/${order.id}`)}
-                          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors"
-                        >
-                          Xem chi tiết
-                        </button>
+                        <div className="flex items-center gap-3">
+                          <button
+                            onClick={() => navigate(`/orders/${order.id}`)}
+                            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors"
+                          >
+                            Xem chi tiết
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>

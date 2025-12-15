@@ -74,6 +74,9 @@ const AboutPage = lazy(() =>
 const ContactPage = lazy(() =>
   import("../pages/Customer/Contact/ContactPage")
 );
+const SupportChatPage = lazy(() =>
+  import("../pages/Customer/Support/SupportChatPage")
+);
 
 const AppRoutes = () => {
   return (
@@ -94,6 +97,7 @@ const AppRoutes = () => {
           {/* About & Contact Routes */}
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/support" element={<SupportChatPage />} />
 
           {/* Product Routes */}
           <Route path="/products" element={<ProductsPage />} />

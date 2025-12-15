@@ -8,11 +8,11 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { PaymentService } from './payment.service';
 
 /**
- * Public webhook & payment info controller - không cần authentication
+ * Public webhook & payment verification controller - không cần authentication
  * Dành cho các payment gateway gọi callback và public payment verification
  */
 @ApiTags('Payment Webhooks')
@@ -43,6 +43,8 @@ export class PaymentWebhookController {
   @Get('payos/verify/:orderCode')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Xác minh thanh toán PayOS và lấy thông tin đơn hàng (Public endpoint - không cần token)' })
+  @ApiResponse({ status: 200, description: 'Xác minh thành công' })
+  @ApiResponse({ status: 404, description: 'Không tìm thấy payment' })
   async verifyPaymentReturn(@Param('orderCode') orderCode: string) {
     console.log('🔍 Verifying payment for orderCode:', orderCode);
     try {

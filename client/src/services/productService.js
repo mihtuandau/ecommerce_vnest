@@ -1,5 +1,7 @@
 import apiService from "./apiService";
 import { PRODUCT_ENDPOINTS } from "../config/apiConstants";
+import categoryService from "./categoryService";
+
 
 // Sử dụng named exports thay vì default export
 export const productService = {
@@ -50,7 +52,7 @@ export const productService = {
 
   // Add variant to product
   addVariant: async (productId, variantData) => {
-    return await axiosInstance.post(
+    return await apiService.post(
       `/products/${productId}/variant`,
       variantData
     );
@@ -58,12 +60,12 @@ export const productService = {
 
   // Update an existing variant
   updateVariant: async (variantId, variantData) => {
-    return await axiosInstance.put(`/products/variant/${variantId}`, variantData);
+    return await apiService.put(`/products/variant/${variantId}`, variantData);
   },
 
   // Delete a variant by its ID
   deleteVariant: async (variantId) => {
-    return await axiosInstance.delete(`/products/variant/${variantId}`);
+    return await apiService.delete(`/products/variant/${variantId}`);
   },
 
   // ============ UPLOAD ẢNH TỪ MÁY TÍNH ============
@@ -84,71 +86,26 @@ export const productService = {
       formData.append('variantId', String(metadata.variantId));
     }
 
-    const response = await axiosInstance.post(
+    return await apiService.upload(
       `/products/${productId}/images`,
       formData,
-      {
-        headers: { "Content-Type": "multipart/form-data" },
-      }
+      { "Content-Type": "multipart/form-data" }
     );
-    return response.data;
   },
 
   // Xóa ảnh sản phẩm
   deleteImage: async (imageId) => {
-    const response = await axiosInstance.delete(`/products/images/${imageId}`);
-    return response.data;
+    return await apiService.delete(`/products/images/${imageId}`);
   },
 
   // Get categories
   getCategories: async () => {
-    try {
-      const response = await axiosInstance.get("/categories");
-      
-      // NestJS trả về trực tiếp array, không có data property
-      if (Array.isArray(response)) {
-        return { data: response };
-      } else if (Array.isArray(response.data)) {
-        return { data: response.data };
-      } else {
-        return { data: [] };
-      }
-    } catch (error) {
-      // Fallback data
-      return {
-        data: [
-          { id: 1, name: 'Thời Trang Nam' },
-          { id: 2, name: 'Thời Trang Nữ' },
-          { id: 3, name: 'Điện Thoại' },
-          { id: 4, name: 'Máy Tính' },
-        ]
-      };
-    }
+    return await categoryService.getAll();
   },
 
   // Get brands
   getBrands: async () => {
-    try {
-      const response = await axiosInstance.get("/brands");
-      
-      if (Array.isArray(response)) {
-        return { data: response };
-      } else if (Array.isArray(response.data)) {
-        return { data: response.data };
-      } else {
-        return { data: [] };
-      }
-    } catch (error) {
-      // Fallback data
-      return {
-        data: [
-          { id: 1, name: 'Nike' },
-          { id: 2, name: 'Adidas' },
-          { id: 3, name: 'Apple' },
-          { id: 4, name: 'Samsung' },
-        ]
-      };
-    }
+    return await brandService.getAll();
   },
 };
 

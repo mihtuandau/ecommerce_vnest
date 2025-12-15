@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { notify } from '../../../utils/notification';
 import { X, Upload } from 'lucide-react';
 import Button from '../../common/Button';
@@ -10,6 +10,17 @@ const CategoryFormModal = ({ isOpen, onClose, onSubmit, category = null }) => {
     image: null,
   });
   const [imagePreview, setImagePreview] = useState(category?.image || null);
+
+  // Reset form when category changes or modal opens/closes
+  useEffect(() => {
+    if (isOpen) {
+      setFormData({
+        name: category?.name || '',
+        image: null,
+      });
+      setImagePreview(category?.image || null);
+    }
+  }, [category, isOpen]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -62,13 +73,14 @@ const CategoryFormModal = ({ isOpen, onClose, onSubmit, category = null }) => {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} size="md">
-      <Modal.Header onClose={handleClose}>
-        {category ? 'Chỉnh sửa danh mục' : 'Thêm danh mục mới'}
-      </Modal.Header>
-
-      <form onSubmit={handleSubmit}>
-        <Modal.Body>
+    <Modal 
+      isOpen={isOpen} 
+      onClose={handleClose} 
+      size="md"
+      title={category ? 'Chỉnh sửa danh mục' : 'Thêm danh mục mới'}
+    >
+      <form onSubmit={handleSubmit} className="flex flex-col h-full -m-6">
+        <div className="p-6 overflow-y-auto flex-1">
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -126,16 +138,16 @@ const CategoryFormModal = ({ isOpen, onClose, onSubmit, category = null }) => {
               )}
             </div>
           </div>
-        </Modal.Body>
+        </div>
 
-        <Modal.Footer>
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-200 flex-shrink-0">
           <Button type="button" onClick={handleClose} variant="secondary">
             Hủy
           </Button>
           <Button type="submit" variant="primary">
             {category ? 'Cập nhật' : 'Tạo mới'}
           </Button>
-        </Modal.Footer>
+        </div>
       </form>
     </Modal>
   );

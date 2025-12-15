@@ -182,11 +182,17 @@ export const ProductDetails = ({
             <div className="h-4 w-px bg-gray-300"></div>
           </>
         )}
-        {selectedVariant?.stock !== undefined && (
-          <span className={`font-medium ${selectedVariant.stock > 0 ? 'text-green-600' : 'text-red-600'}`}>
-            {selectedVariant.stock > 0 ? `Còn ${selectedVariant.stock} sản phẩm` : 'Hết hàng'}
-          </span>
+        {product?.variants && (
+          (() => {
+            const totalStock = product.variants.reduce((sum, variant) => sum + (variant.stock || 0), 0);
+            return (
+              <span className={`font-medium ${totalStock > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                {totalStock > 0 ? `Còn ${totalStock} sản phẩm` : 'Hết hàng'}
+              </span>
+            );
+          })()
         )}
+
       </div>
 
       <div className="bg-gray-50 rounded-lg p-4 mb-4">

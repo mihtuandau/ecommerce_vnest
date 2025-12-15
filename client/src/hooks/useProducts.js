@@ -55,14 +55,15 @@ export const useProducts = () => {
 
   // Load brands
   const loadBrands = useCallback(async () => {
-    try {
-      const response = await productService.getBrands();
-      const brandsData = extractData(response);
-      setBrands(brandsData);
-    } catch (error) {notify.error('Không thể tải thương hiệu');
-      setBrands([]);
-    }
-  }, []);
+  try {
+    const response = await productService.getBrands();
+    const brandsData = extractData(response);
+    setBrands(brandsData);
+  } catch (error) {
+    // im lặng khi lỗi
+    setBrands([]);
+  }
+}, []);
 
   // Load all data
   const loadAllData = useCallback(async () => {

@@ -86,6 +86,7 @@ const cartSlice = createSlice({
       })
       .addCase(fetchCart.fulfilled, (state, action) => {
         state.loading = false;
+        console.log('🎯 fetchCart.fulfilled - payload:', action.payload);
         // Deduplicate items by variantId
         const items = action.payload;
         const deduped = items.reduce((acc, item) => {
@@ -97,6 +98,7 @@ const cartSlice = createSlice({
           }
           return acc;
         }, []);
+        console.log('📝 Setting state.items to:', deduped);
         state.items = deduped;
         // Don't save to localStorage when fetching from server - data is in DB
       })
@@ -109,20 +111,8 @@ const cartSlice = createSlice({
       })
       .addCase(addToCartServer.fulfilled, (state, action) => {
         state.loading = false;
-        const { variantId, quantity, productData } = action.payload;
-        const existingItem = state.items.find(item => item.variantId === variantId);
-
-        if (existingItem) {
-          existingItem.quantity += quantity;
-        } else {
-          state.items.push({
-            variantId,
-            quantity,
-            product: productData,
-            addedAt: new Date().toISOString()
-          });
-        }
-        // Don't save to localStorage - data is in DB for logged-in users
+        // Don't update local state since fetchCart() already synced from server
+        // This avoids duplicate items that cause wrong cart count
         notify.success('Đã lưu vào giỏ hàng!', 2000);
       })
       .addCase(addToCartServer.rejected, (state, action) => {
@@ -132,17 +122,7 @@ const cartSlice = createSlice({
       })
       // Update Cart Server
       .addCase(updateCartServer.fulfilled, (state, action) => {
-        const { variantId, quantity } = action.payload;
-        const itemIndex = state.items.findIndex(item => item.variantId === variantId);
-
-        if (itemIndex !== -1) {
-          if (quantity < 1) {
-            state.items.splice(itemIndex, 1);
-          } else {
-            state.items[itemIndex].quantity = quantity;
-          }
-        }
-        // Don't save to localStorage - data is in DB for logged-in users
+        // Don't update local state since fetchCart() already synced from server
       })
       .addCase(updateCartServer.rejected, (state, action) => {
         state.error = action.payload;
@@ -150,9 +130,7 @@ const cartSlice = createSlice({
       })
       // Remove from Cart Server
       .addCase(removeFromCartServer.fulfilled, (state, action) => {
-        const variantId = action.payload;
-        state.items = state.items.filter(item => item.variantId !== variantId);
-        // Don't save to localStorage - data is in DB for logged-in users
+        // Don't update local state since fetchCart() already synced from server
         notify.success('Đã xóa khỏi giỏ hàng!');
       })
       .addCase(removeFromCartServer.rejected, (state, action) => {
@@ -161,8 +139,7 @@ const cartSlice = createSlice({
       })
       // Clear Cart Server
       .addCase(clearCartServer.fulfilled, (state) => {
-        state.items = [];
-        // Don't clear localStorage - only clear Redux state
+        // Don't update local state since fetchCart() already synced from server
         notify.success('Đã xóa giỏ hàng', 2000);
       })
       .addCase(clearCartServer.rejected, (state, action) => {

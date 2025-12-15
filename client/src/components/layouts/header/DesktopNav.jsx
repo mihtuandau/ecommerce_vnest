@@ -3,7 +3,7 @@ import { FaChevronDown } from 'react-icons/fa';
 
 const DesktopNav = ({ scrolled, categories, categoryDropdown, setCategoryDropdown }) => {
   return (
-    <div className="hidden lg:block transition-all duration-300">
+    <div className="hidden lg:block transition-all duration-300 relative z-40">
       <div className="container mx-auto px-4 lg:px-8">
         <nav className={`flex items-center justify-center gap-8 transition-all duration-300 ${
           scrolled ? 'py-2' : 'py-3.5'
@@ -14,53 +14,69 @@ const DesktopNav = ({ scrolled, categories, categoryDropdown, setCategoryDropdow
             Trang Chủ
           </Link>
           
-          {/* Categories Dropdown */}
-          <div 
-            className="relative"
-            onMouseEnter={() => setCategoryDropdown(true)}
-            onMouseLeave={() => setCategoryDropdown(false)}
-          >
-            <button className={`flex items-center gap-1 transition-colors duration-300 font-medium ${
-              scrolled ? 'text-gray-700 hover:text-gray-900' : 'text-white hover:text-gray-200'
-            }`}>
+          {/* Shop with Categories Dropdown */}
+          <div className="relative group">
+            <Link 
+              to="/products" 
+              className={`transition-colors duration-300 font-medium flex items-center gap-1 ${
+                scrolled ? 'text-gray-700 hover:text-gray-900' : 'text-white hover:text-gray-200'
+              }`}
+            >
               Shop
-              <FaChevronDown size={16} />
-            </button>
-            {categoryDropdown && categories && categories.length > 0 && (
-              <div className="absolute top-full left-0 pt-2 w-56 z-[100]">
-                <div className="bg-white rounded-lg shadow-xl py-2">
-                {categories.map(cat => (
+              <FaChevronDown className="text-xs transition-transform duration-200 group-hover:rotate-180" />
+            </Link>
+            
+            {/* Categories Dropdown */}
+            {categories && categories.length > 0 && (
+              <div className="absolute top-full left-0 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                <div className="bg-white rounded-lg shadow-lg py-2 min-w-[200px] border border-gray-100">
                   <Link
-                    key={cat.id}
-                    to={`/category/${cat.id}`}
-                    className={`block px-4 py-2 hover:bg-gray-50 transition-colors ${
-                      cat.highlight ? 'text-red-500 font-bold' : 'text-gray-700'
-                    }`}
-                    onClick={() => setCategoryDropdown(false)}
+                    to="/products"
+                    className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
                   >
-                    {cat.name}
+                    Tất cả sản phẩm
                   </Link>
-                ))}
+                  <div className="border-t border-gray-100 my-1"></div>
+                  {categories.map((category) => (
+                    <Link
+                      key={category.id}
+                      to={`/products?category=${category.id}`}
+                      className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+                    >
+                      {category.name}
+                    </Link>
+                  ))}
                 </div>
               </div>
             )}
           </div>
 
-          <Link to="/products?filter=sale" className={`transition-colors duration-300 font-bold ${
-            scrolled ? 'text-gray-900 hover:text-gray-700' : 'text-white hover:text-gray-200'
-          }`}>
-            🔥 Sale
-          </Link>
-          <Link to="/about" className={`transition-colors duration-300 font-medium ${
-            scrolled ? 'text-gray-700 hover:text-gray-900' : 'text-white hover:text-gray-200'
-          }`}>
-            Về Chúng Tôi
-          </Link>
-          <Link to="/contact" className={`transition-colors duration-300 font-medium ${
-            scrolled ? 'text-gray-700 hover:text-gray-900' : 'text-white hover:text-gray-200'
-          }`}>
-            Liên Hệ
-          </Link>
+          {/* More Dropdown - Chứa các link khác */}
+          <div className="relative group">
+            <button className={`transition-colors duration-300 font-medium flex items-center gap-1 ${
+              scrolled ? 'text-gray-700 hover:text-gray-900' : 'text-white hover:text-gray-200'
+            }`}>
+              Thêm
+              <FaChevronDown className="text-xs transition-transform duration-200 group-hover:rotate-180" />
+            </button>
+            
+            <div className="absolute top-full left-0 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+              <div className="bg-white rounded-lg shadow-lg py-2 min-w-[160px] border border-gray-100">
+                <Link
+                  to="/about"
+                  className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+                >
+                  Về Chúng Tôi
+                </Link>
+                <Link
+                  to="/contact"
+                  className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+                >
+                  Liên Hệ
+                </Link>
+              </div>
+            </div>
+          </div>
         </nav>
       </div>
     </div>
