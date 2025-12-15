@@ -2,17 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Order, OrderStatus, Prisma } from '@prisma/client';
 
-/**
- * Repository pattern for Order data access
- * Handles all database queries related to orders
- */
 @Injectable()
 export class OrderRepository {
   constructor(private prisma: PrismaService) {}
 
-  /**
-   * Create a new order
-   */
   async create(data: Prisma.OrderCreateInput): Promise<Order> {
     return this.prisma.order.create({
       data,
@@ -193,6 +186,13 @@ export class OrderRepository {
         payment: true,
       },
     });
+  }
+
+  /**
+   * Alias for findGuestOrder - used by cancel functionality
+   */
+  async findGuestOrderByCodeAndContact(orderCode: string, contact: string) {
+    return this.findGuestOrder(orderCode, contact);
   }
 
   /**

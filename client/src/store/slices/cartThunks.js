@@ -28,10 +28,16 @@ export const fetchCart = createAsyncThunk(
   'cart/fetchCart',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await cartService.getCart();
-      const cartItems = response.data.cartItems || [];
-      return cartItems.map(transformCartItem);
+      console.log('🔄 Fetching cart...');
+      const data = await cartService.getCart();
+      console.log('📦 Cart API Response:', data);
+      const cartItems = data.cartItems || [];
+      console.log('📋 Cart items count:', cartItems.length);
+      const transformedItems = cartItems.map(transformCartItem);
+      console.log('✨ Transformed items:', transformedItems);
+      return transformedItems;
     } catch (error) {
+      console.error('❌ fetchCart error:', error);
       return rejectWithValue(error.response?.data?.message || 'Không thể tải giỏ hàng');
     }
   }
@@ -42,11 +48,15 @@ export const fetchCart = createAsyncThunk(
  */
 export const addToCartServer = createAsyncThunk(
   'cart/addToCartServer',
-  async ({ variantId, quantity, productData }, { rejectWithValue }) => {
+  async ({ variantId, quantity, productData }, { rejectWithValue, dispatch }) => {
     try {
       console.log('➕ Adding to cart (server):', { variantId, quantity });
       await cartService.addItem(variantId, quantity);
       console.log('✅ Added to cart (server) successfully');
+      
+      // Fetch fresh cart data from server to ensure consistency
+      await dispatch(fetchCart());
+      
       return { variantId, quantity, productData };
     } catch (error) {
       console.error('❌ addToCartServer error:', error);
@@ -60,11 +70,15 @@ export const addToCartServer = createAsyncThunk(
  */
 export const updateCartServer = createAsyncThunk(
   'cart/updateCartServer',
-  async ({ variantId, quantity }, { rejectWithValue }) => {
+  async ({ variantId, quantity }, { rejectWithValue, dispatch }) => {
     try {
       console.log('🔄 Updating cart item (server):', { variantId, quantity });
       await cartService.updateItem(variantId, quantity);
       console.log('✅ Updated cart item (server) successfully');
+      
+      // Fetch fresh cart data from server
+      await dispatch(fetchCart());
+      
       return { variantId, quantity };
     } catch (error) {
       console.error('❌ updateCartServer error:', error);
@@ -78,11 +92,15 @@ export const updateCartServer = createAsyncThunk(
  */
 export const removeFromCartServer = createAsyncThunk(
   'cart/removeFromCartServer',
-  async (variantId, { rejectWithValue }) => {
+  async (variantId, { rejectWithValue, dispatch }) => {
     try {
       console.log('🗑️ Removing from cart (server):', { variantId });
       await cartService.removeItem(variantId);
       console.log('✅ Removed from cart (server) successfully');
+      
+      // Fetch fresh cart data from server
+      await dispatch(fetchCart());
+      
       return variantId;
     } catch (error) {
       console.error('❌ removeFromCartServer error:', error);
@@ -93,11 +111,15 @@ export const removeFromCartServer = createAsyncThunk(
 
 export const clearCartServer = createAsyncThunk(
   'cart/clearCartServer',
-  async (_, { rejectWithValue }) => {
+  async (_, { rejectWithValue, dispatch }) => {
     try {
       console.log('🧹 Clearing cart (server)...');
       await cartService.clearCart();
       console.log('✅ Cleared cart (server) successfully');
+      
+      // Fetch fresh cart data from server (should be empty)
+      await dispatch(fetchCart());
+      
       return true;
     } catch (error) {
       console.error('❌ clearCartServer error:', error);

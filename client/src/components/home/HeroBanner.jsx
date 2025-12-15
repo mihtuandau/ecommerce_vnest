@@ -62,7 +62,7 @@ const HeroBanner = ({ slides = [] }) => {
   const currentBanner = bannerSlides[currentSlide];
 
   return (
-    <div className="relative w-full h-[800px] overflow-hidden bg-gray-900">
+    <div className="relative w-full h-[400px] sm:h-[500px] md:h-[600px] lg:h-[700px] xl:h-[800px] overflow-hidden bg-gray-900">
       {/* Slides */}
       {bannerSlides.map((slide, index) => (
         <div
@@ -95,27 +95,27 @@ const HeroBanner = ({ slides = [] }) => {
 
       {/* Content */}
       <div className="relative z-20 h-full flex items-center">
-        <div className="container mx-auto px-4 lg:px-8">
-          <div className="max-w-2xl animate-fadeIn">
-            <h1 className="text-5xl lg:text-7xl font-bold text-white mb-4 drop-shadow-2xl animate-slideUp">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-xl lg:max-w-2xl animate-fadeIn">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-7xl font-bold text-white mb-2 sm:mb-3 md:mb-4 drop-shadow-2xl animate-slideUp leading-tight">
               {currentBanner.title}
             </h1>
-            <p className="text-xl lg:text-2xl text-gray-200 mb-8 drop-shadow-lg animate-slideUp animation-delay-200">
+            <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-gray-200 mb-4 sm:mb-6 md:mb-8 drop-shadow-lg animate-slideUp animation-delay-200">
               {currentBanner.subtitle}
             </p>
-            <div className="flex gap-4 animate-slideUp animation-delay-400">
+            <div className="flex gap-2 sm:gap-3 md:gap-4 animate-slideUp animation-delay-400">
               <Button
                 onClick={() => window.location.href = currentBanner.ctaLink}
-                className="px-8 py-4 text-lg font-semibold  rounded-full shadow-2xl hover:scale-105 transition-transform"
+                className="px-4 py-2 sm:px-6 sm:py-3 md:px-8 md:py-4 text-sm sm:text-base md:text-lg font-semibold rounded-full shadow-2xl hover:scale-105 transition-transform"
               >
                 {currentBanner.cta}
               </Button>
               {currentBanner.type === 'video' && (
                 <button
                   onClick={() => setVideoMuted(!videoMuted)}
-                  className="w-14 h-14 flex items-center justify-center rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-colors"
+                  className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 flex items-center justify-center rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-colors"
                 >
-                  {videoMuted ? <Play size={20} /> : <Pause size={20} />}
+                  {videoMuted ? <Play size={16} className="sm:w-5 sm:h-5" /> : <Pause size={16} className="sm:w-5 sm:h-5" />}
                 </button>
               )}
             </div>
@@ -126,27 +126,27 @@ const HeroBanner = ({ slides = [] }) => {
       {/* Navigation Arrows */}
       <button
         onClick={prevSlide}
-        className="absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 z-30 w-12 h-12 flex items-center justify-center rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-colors"
+        className="absolute left-2 sm:left-4 lg:left-8 top-1/2 -translate-y-1/2 z-30 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-colors"
       >
-        <ChevronLeft size={24} />
+        <ChevronLeft size={16} className="sm:w-5 sm:h-5 md:w-6 md:h-6" />
       </button>
       <button
         onClick={nextSlide}
-        className="absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 z-30 w-12 h-12 flex items-center justify-center rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-colors"
+        className="absolute right-2 sm:right-4 lg:right-8 top-1/2 -translate-y-1/2 z-30 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-colors"
       >
-        <ChevronRight size={24} />
+        <ChevronRight size={16} className="sm:w-5 sm:h-5 md:w-6 md:h-6" />
       </button>
 
       {/* Dots Indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex gap-3">
+      <div className="absolute bottom-4 sm:bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 z-30 flex gap-1.5 sm:gap-2 md:gap-3">
         {bannerSlides.map((_, index) => (
           <button
             key={index}
             onClick={() => goToSlide(index)}
-            className={`h-2 rounded-full transition-all ${
+            className={`h-1.5 sm:h-2 rounded-full transition-all ${
               index === currentSlide
-                ? 'w-8 bg-white'
-                : 'w-2 bg-white/50 hover:bg-white/70'
+                ? 'w-6 sm:w-8 bg-white'
+                : 'w-1.5 sm:w-2 bg-white/50 hover:bg-white/70'
             }`}
           />
         ))}
@@ -155,9 +155,9 @@ const HeroBanner = ({ slides = [] }) => {
       {/* Play/Pause Button */}
       <button
         onClick={() => setIsPlaying(!isPlaying)}
-        className="absolute bottom-8 right-8 z-30 w-10 h-10 flex items-center justify-center rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-colors"
+        className="absolute bottom-4 sm:bottom-6 md:bottom-8 right-4 sm:right-6 md:right-8 z-30 w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-colors"
       >
-        {isPlaying ? <Pause size={16} /> : <Play size={16} />}
+        {isPlaying ? <Pause size={14} className="sm:w-4 sm:h-4" /> : <Play size={14} className="sm:w-4 sm:h-4" />}
       </button>
     </div>
   );

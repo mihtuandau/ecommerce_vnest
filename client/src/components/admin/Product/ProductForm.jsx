@@ -20,8 +20,8 @@ const ProductForm = ({ product, categories, brands, onClose, onSave }) => {
         basePrice: product.basePrice || '',
         stock: product.stock || '',
         description: product.description || '',
-        categoryId: product.categoryId || '',
-        brandId: product.brandId || '',
+        categoryId: product.categoryId ? String(product.categoryId) : '',
+        brandId: product.brandId ? String(product.brandId) : '',
       });
     }
   }, [product]);
@@ -31,7 +31,15 @@ const ProductForm = ({ product, categories, brands, onClose, onSave }) => {
     setLoading(true);
     
     try {
-      await onSave(formData);
+      // Convert string IDs to numbers before submitting
+      const submitData = {
+        ...formData,
+        categoryId: formData.categoryId ? Number(formData.categoryId) : null,
+        brandId: formData.brandId ? Number(formData.brandId) : null,
+        basePrice: Number(formData.basePrice),
+        stock: Number(formData.stock) || 0,
+      };
+      await onSave(submitData);
     } catch (error) {
       // Error handled by parent component
     } finally {
@@ -110,7 +118,7 @@ const ProductForm = ({ product, categories, brands, onClose, onSave }) => {
                   onChange={(e) => handleChange('categoryId', e.target.value)}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="">Chọn danh mục</option>
+                  <option value="" disabled hidden>Chọn danh mục</option>
                   {categories.map(category => (
                     <option key={category.id} value={category.id}>
                       {category.name}

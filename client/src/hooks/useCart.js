@@ -1,6 +1,6 @@
 import { useSelector, useDispatch } from 'react-redux';
 import { useCallback, useMemo, useState, useEffect } from 'react';
-import { useAuth } from './useAuth';
+import { useAuth, useAuthLoading } from './useAuth';
 import {
   selectCartItems,
   selectCartCount,
@@ -20,6 +20,7 @@ import {
 export const useCart = () => {
   const dispatch = useDispatch();
   const { user, isAuthenticated } = useAuth();
+  const authLoading = useAuthLoading();
   const items = useSelector(selectCartItems);
   const count = useSelector(selectCartCount);
   const total = useSelector(selectCartTotal);
@@ -46,11 +47,14 @@ export const useCart = () => {
 
   // Load cart when user becomes logged in
   useEffect(() => {
+    // Don't load cart if auth is still loading
+    if (authLoading) return;
+    
     if (isLoggedIn) {
       console.log('✅ User is logged in, loading cart...');
       dispatch(fetchCart());
     }
-  }, [isLoggedIn, dispatch]);
+  }, [isLoggedIn, dispatch, authLoading]);
 
   const loadCart = useCallback(() => {
     if (isLoggedIn) {

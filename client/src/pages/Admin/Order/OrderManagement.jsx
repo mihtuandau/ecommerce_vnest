@@ -29,15 +29,6 @@ const AdminOrdersPage = () => {
     loadOrders();
   }, [statusFilter]);
 
-  // Auto-refresh orders every 10 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      loadOrders();
-    }, 10000); // 10 seconds
-
-    return () => clearInterval(interval);
-  }, [statusFilter]);
-
   const loadOrders = async () => {
     try {
       setLoading(true);

@@ -8,7 +8,11 @@ export const selectCartError = (state) => state.cart.error;
 // Memoized Selectors
 export const selectCartCount = createSelector(
   [selectCartItems],
-  (items) => items.reduce((sum, item) => sum + item.quantity, 0)
+  (items) => {
+    const count = items.reduce((sum, item) => sum + item.quantity, 0);
+    console.log('🔢 Cart count calculation:', { items, count });
+    return count;
+  }
 );
 
 export const selectCartTotal = createSelector(

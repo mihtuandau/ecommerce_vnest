@@ -1,23 +1,30 @@
 // src/payment/payment.module.ts
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { PaymentController } from './payment.controller';
 import { PaymentWebhookController } from './payment-webhook.controller';
 import { PaymentService } from './payment.service';
 import { PaymentRepository } from './payment.repository';
-import { PayOSService } from './payos.service';
 import { CacheModule } from '@nestjs/cache-manager';
 import { PrismaModule } from '../prisma/prisma.module';
-import payosConfig from './config/payos.config';
+import { PayOSModule } from '../payos/payos.module';
+import { PaymentCache } from './payment.cache';
+import { PaymentWebhook } from './payment.webhook';
+import { PaymentSync } from './payment.sync';
 
 @Module({
   imports: [
-    ConfigModule.forFeature(payosConfig),
     CacheModule.register(),
     PrismaModule,
+    PayOSModule,
   ],
   controllers: [PaymentController, PaymentWebhookController],
-  providers: [PaymentService, PaymentRepository, PayOSService],
+  providers: [
+    PaymentService,
+    PaymentRepository,
+    PaymentCache,
+    PaymentWebhook,
+    PaymentSync,
+  ],
   exports: [PaymentService],
 })
 export class PaymentModule {}

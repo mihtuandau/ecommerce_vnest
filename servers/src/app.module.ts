@@ -11,6 +11,7 @@ import { UploadModule } from './upload/upload.module';
 import { CacheModule } from './cache/cache.module';  
 import { CategoryModule } from './category/category.module';
 import { PaymentModule } from './payment/payment.module';
+import { PayOSModule } from './payos/payos.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { DiscountModule } from './discount/discount.module';
 import { BannerModule } from './banner/banner.module';
@@ -34,6 +35,7 @@ import { AddressModule } from './address/address.module';
     CacheModule,
     CategoryModule,
     PaymentModule,
+    PayOSModule,
     DashboardModule,
     DiscountModule,
     BannerModule,

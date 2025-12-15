@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useCart } from '../../hooks/useCart';
-import { useAuth } from '../../hooks/useAuth';
+import { useAuth, useAuthLoading } from '../../hooks/useAuth';
 
 /**
  * Component to sync cart when user logs in/out
@@ -10,18 +10,23 @@ import { useAuth } from '../../hooks/useAuth';
  */
 export const CartSync = () => {
   const { user } = useAuth();
+  const authLoading = useAuthLoading();
   const { loadCart, isLoggedIn } = useCart();
   const previousLoginState = useRef(isLoggedIn);
 
   useEffect(() => {
+    // Wait for auth to finish loading
+    if (authLoading) return;
+    
     // Load cart from server if user is logged in (on mount or after login)
     if (user && isLoggedIn) {
+      console.log('🔄 CartSync: Loading cart for authenticated user');
       loadCart();
     }
     
     // Update previous state
     previousLoginState.current = isLoggedIn;
-  }, [user, isLoggedIn, loadCart]);
+  }, [user, isLoggedIn, loadCart, authLoading]);
 
   return null; // This component doesn't render anything
 };

@@ -1,4 +1,4 @@
-// src/payment/dto/payos-webhook.dto.ts
+// src/payos/dto/payos-webhook.dto.ts
 import { IsString, IsObject, IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -10,6 +10,9 @@ export class PayOSWebhookDto {
   @ApiProperty({ example: 'Thành công', description: 'Mô tả trạng thái' })
   @IsString()
   desc: string;
+
+  @ApiProperty({ description: 'Trạng thái thành công', example: true })
+  success: boolean;
 
   @ApiProperty({ description: 'Dữ liệu thanh toán' })
   @IsObject()

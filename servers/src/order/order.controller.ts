@@ -97,6 +97,14 @@ export class OrderController {
     return this.orderService.cancelOrder(+id, req.user.userId);
   }
 
+  @Put('guest/:orderCode/cancel')
+  async cancelGuestOrder(
+    @Param('orderCode') orderCode: string,
+    @Query('contact') contact: string,
+  ) {
+    return this.orderService.cancelGuestOrder(orderCode, contact);
+  }
+
   @Post(':id/discount')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('Authorization')

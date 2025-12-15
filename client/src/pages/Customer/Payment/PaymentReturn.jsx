@@ -83,6 +83,8 @@ const PaymentReturn = () => {
           // Check if payment is successful
           if (payment?.status === 'SUCCESS' || statusParam === 'PAID') {
             setStatus('success');
+            // Set flag để auto-refresh orders page
+            localStorage.setItem('paymentCompleted', 'true');
           } else if (payment?.status === 'PENDING' || !statusParam) {
             setStatus('pending');
           } else {
@@ -184,13 +186,13 @@ const PaymentReturn = () => {
           {/* Buttons */}
           <div className="space-y-3">
             <button
-              onClick={() => navigate(`/orders/${orderInfo?.order?.id || ''}`)}
+              onClick={() => navigate(`/orders/${orderInfo?.order?.id || ''}?paymentSuccess=true`)}
               className="w-full bg-gray-900 text-white py-3 rounded-lg font-medium transition-all hover:bg-black active:scale-95"
             >
               Xem chi tiết đơn hàng
             </button>
             <button
-              onClick={() => navigate('/orders')}
+              onClick={() => navigate('/orders?paymentSuccess=true')}
               className="w-full bg-gray-700 text-white py-3 rounded-lg font-medium transition-all hover:bg-gray-800 active:scale-95"
             >
               Danh sách đơn hàng

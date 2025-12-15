@@ -1,4 +1,4 @@
-// src/payment/payos.service.ts
+// src/payos/payos.service.ts
 import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PayOS } from '@payos/node';

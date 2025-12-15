@@ -1,7 +1,6 @@
+import { useState } from 'react';
 import Modal from '../../common/Modal';
 import Select from '../../common/Select';
-import { formatCurrency, statusOptions } from '../../../utils/orderHelpers';
-import { useState } from 'react';
 import paymentService from '../../../services/paymentService';
 import { notify } from '../../../utils/notification';
 
@@ -22,213 +21,216 @@ const OrderDetailModal = ({
     try {
       setSyncingPayment(true);
       const result = await paymentService.syncPaymentStatus(order.payment.id);
-      notify.success(result.message || 'Đồng bộ trạng thái thành công!');
-      
-      // Reload the order to get updated payment status
+      notify.success(result.message || 'Đồng bộ thành công!');
       window.location.reload();
     } catch (error) {
-      notify.error(error.response?.data?.message || 'Không thể đồng bộ trạng thái thanh toán');
+      notify.error(error.response?.data?.message || 'Không thể đồng bộ');
     } finally {
       setSyncingPayment(false);
     }
   };
 
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND',
+      minimumFractionDigits: 0,
+    }).format(amount);
+  };
+
+  const getPaymentStatusBadge = (status) => {
+    const styles = {
+      SUCCESS: 'bg-gray-100 text-gray-800 border border-gray-300',
+      PENDING: 'bg-gray-200 text-gray-800 border border-gray-400',
+      FAILED: 'bg-gray-300 text-gray-900 border border-gray-500',
+      CANCELLED: 'bg-gray-100 text-gray-700 border border-gray-300'
+    };
+    const labels = {
+      SUCCESS: 'Đã thanh toán',
+      PENDING: 'Chờ thanh toán',
+      FAILED: 'Thất bại',
+      CANCELLED: 'Đã hủy'
+    };
+    return { styles: styles[status] || 'bg-gray-100 text-gray-800', label: labels[status] || status };
+  };
+
+  const getPaymentMethodText = (method) => {
+    const methods = {
+      CASH: 'Tiền mặt (COD)',
+      PAYOS: 'PayOS',
+      VNPAY: 'VNPay',
+      MOMO: 'MoMo'
+    };
+    return methods[method] || method;
+  };
+
+  const statusOptions = [
+    { value: 'PENDING', label: 'Chờ xác nhận' },
+    { value: 'PROCESSING', label: 'Đang xử lý' },
+    { value: 'SHIPPED', label: 'Đang giao' },
+    { value: 'DELIVERED', label: 'Đã giao' }
+  ];
+
+  const paymentStatusBadge = getPaymentStatusBadge(order.payment?.status);
+  const subtotal = order.total - (order.taxAmount || 0) - (order.shippingFee || 0);
+
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={`Chi tiết đơn hàng ${order.orderCode || `#${order.id}`}`}
+      title={`Đơn hàng ${order.orderCode || `#${order.id}`}`}
       size="lg"
     >
-      <div className="space-y-6">
-        {/* Customer Info */}
-        <div>
-          <h3 className="text-sm font-semibold text-gray-900 mb-3">Thông tin khách hàng</h3>
-          <div className="bg-gray-50 rounded-lg p-4 space-y-2">
-            <div className="flex justify-between">
-              <span className="text-sm text-gray-600">Tên:</span>
-              <span className="text-sm font-medium text-gray-900">{order.user?.name || order.shippingInfo?.fullName || order.guestEmail || 'Khách vãng lai'}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-sm text-gray-600">Email:</span>
-              <span className="text-sm font-medium text-gray-900">{order.user?.email || order.guestEmail || order.guestPhone || 'N/A'}</span>
-            </div>
-            {order.address && (
-              <div className="flex justify-between">
-                <span className="text-sm text-gray-600">Địa chỉ:</span>
-                <span className="text-sm font-medium text-gray-900 text-right">
-                  {order.address.street}, {order.address.city}
-                </span>
-              </div>
-            )}
-          </div>
-        </div>
+      <div className="grid grid-cols-2 gap-8">
+        
+        {/* LEFT COLUMN */}
+        <div className="space-y-6">
 
-        {/* Order Items */}
-        <div>
-          <h3 className="text-sm font-semibold text-gray-900 mb-3">Sản phẩm</h3>
-          <div className="border rounded-lg divide-y">
-            {order.orderItems?.map((item) => (
-              <div key={item.id} className="p-4 flex justify-between items-center">
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-900">
-                    {item.variant?.product?.name || 'N/A'}
-                  </p>
-                  <p className="text-xs text-gray-500">
-                    Số lượng: {item.quantity}
-                  </p>
-                </div>
-                <p className="text-sm font-medium text-gray-900">
-                  {formatCurrency(item.price * item.quantity)}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Order Summary */}
-        <div>
-          <h3 className="text-sm font-semibold text-gray-900 mb-3">Tổng quan</h3>
-          <div className="bg-gray-50 rounded-lg p-4 space-y-2">
-            <div className="flex justify-between">
-              <span className="text-sm text-gray-600">Tạm tính:</span>
-              <span className="text-sm font-medium text-gray-900">
-                {formatCurrency(order.total - (order.taxAmount || 0))}
-              </span>
-            </div>
-            {order.taxAmount > 0 && (
-              <div className="flex justify-between">
-                <span className="text-sm text-gray-600">Thuế (10%):</span>
-                <span className="text-sm font-medium text-gray-900">
-                  {formatCurrency(order.taxAmount)}
-                </span>
-              </div>
-            )}
-            <div className="flex justify-between pt-2 border-t">
-              <span className="text-sm font-semibold text-gray-900">Tổng cộng:</span>
-              <span className="text-sm font-semibold text-indigo-600">
-                {formatCurrency(order.total)}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Payment Information */}
-        {order.payment && (
+          {/* Customer */}
           <div>
-            <h3 className="text-sm font-semibold text-gray-900 mb-3">Thông tin thanh toán</h3>
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-2">
-              <div className="flex justify-between">
-                <span className="text-sm text-gray-600">Phương thức:</span>
-                <span className="text-sm font-semibold text-gray-900">
-                  {order.payment.method === 'CASH' && '💵 Tiền mặt (COD)'}
-                  {order.payment.method === 'PAYOS' && '💳 PayOS (Chuyển khoản QR)'}
-                  {order.payment.method === 'VNPAY' && '💳 VNPay'}
-                  {order.payment.method === 'MOMO' && '💳 MoMo'}
-                </span>
+            <h4 className="text-xs font-bold text-gray-900 uppercase tracking-wider mb-4">Khách hàng</h4>
+            <div className="bg-gray-50 p-4 border border-gray-200">
+              <div className="space-y-3">
+                <div>
+                  <p className="text-xs text-gray-600 font-medium mb-1">Tên</p>
+                  <p className="text-sm font-semibold text-gray-900">
+                    {order.user?.name || order.shippingInfo?.fullName || 'Khách vãng lai'}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-600 font-medium mb-1">Email / SĐT</p>
+                  <p className="text-sm font-semibold text-gray-900">
+                    {order.user?.email || order.guestEmail || order.guestPhone || 'N/A'}
+                  </p>
+                </div>
+                {order.address && (
+                  <div>
+                    <p className="text-xs text-gray-600 font-medium mb-1">Địa chỉ</p>
+                    <p className="text-sm font-semibold text-gray-900">
+                      {order.address.street}, {order.address.city}
+                    </p>
+                  </div>
+                )}
               </div>
-              
-              <div className="flex justify-between">
-                <span className="text-sm text-gray-600">Trạng thái thanh toán:</span>
-                <span className={`text-sm font-semibold inline-flex items-center px-2 py-1 rounded-full ${
-                  order.payment.status === 'SUCCESS' 
-                    ? 'bg-green-100 text-green-800' 
-                    : order.payment.status === 'PENDING' 
-                    ? 'bg-yellow-100 text-yellow-800'
-                    : order.payment.status === 'CANCELLED'
-                    ? 'bg-gray-100 text-gray-800'
-                    : 'bg-red-100 text-red-800'
-                }`}>
-                  {order.payment.status === 'SUCCESS' && '✓ Đã thanh toán'}
-                  {order.payment.status === 'PENDING' && '⏳ Chờ thanh toán'}
-                  {order.payment.status === 'FAILED' && '✗ Thất bại'}
-                  {order.payment.status === 'CANCELLED' && '✗ Đã hủy'}
-                </span>
-              </div>
+            </div>
+          </div>
 
-              {order.payment.method === 'PAYOS' && order.payment.payosOrderCode && (
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Mã giao dịch PayOS:</span>
-                  <span className="text-xs font-mono font-semibold text-blue-600">
-                    #{order.payment.payosOrderCode}
-                  </span>
+          {/* Items */}
+          <div>
+            <h4 className="text-xs font-bold text-gray-900 uppercase tracking-wider mb-4">
+              Sản phẩm ({order.orderItems?.length || 0})
+            </h4>
+            <div className="bg-white border border-gray-200">
+              <div className="max-h-48 overflow-y-auto">
+                {order.orderItems?.map((item, idx) => (
+                  <div 
+                    key={item.id} 
+                    className="p-4 border-b border-gray-200 last:border-0"
+                  >
+                    <div className="flex justify-between mb-2">
+                      <p className="text-sm font-semibold text-gray-900">
+                        {item.variant?.product?.name || 'N/A'}
+                      </p>
+                      <p className="text-sm font-bold text-gray-900">
+                        {formatCurrency(item.price * item.quantity)}
+                      </p>
+                    </div>
+                    <p className="text-xs text-gray-600">Số lượng: {item.quantity}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        {/* RIGHT COLUMN */}
+        <div className="space-y-6">
+
+          {/* Total */}
+          <div className="bg-gray-900 text-white p-6 border border-black">
+            <p className="text-xs font-medium text-gray-400 mb-2">TỔNG ĐƠN HÀNG</p>
+            <p className="text-3xl font-bold mb-6">{formatCurrency(order.total)}</p>
+            
+            <div className="space-y-3 pt-4 border-t border-gray-700">
+              <div className="flex justify-between text-xs text-gray-300">
+                <span>Tạm tính</span>
+                <span className="font-semibold">{formatCurrency(subtotal)}</span>
+              </div>
+              {order.shippingFee > 0 && (
+                <div className="flex justify-between text-xs text-gray-300">
+                  <span>Vận chuyển</span>
+                  <span className="font-semibold">{formatCurrency(order.shippingFee)}</span>
                 </div>
               )}
-
-              {order.payment.transactionId && (
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Transaction ID:</span>
-                  <span className="text-xs font-mono font-semibold text-gray-700">
-                    {order.payment.transactionId}
-                  </span>
-                </div>
-              )}
-
-              <div className="flex justify-between">
-                <span className="text-sm text-gray-600">Số tiền:</span>
-                <span className="text-sm font-bold text-green-600">
-                  {formatCurrency(order.payment.amount)}
-                </span>
-              </div>
-
-              {order.payment.paidAt && (
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Thời gian thanh toán:</span>
-                  <span className="text-xs text-gray-700">
-                    {new Date(order.payment.paidAt).toLocaleString('vi-VN')}
-                  </span>
+              {order.taxAmount > 0 && (
+                <div className="flex justify-between text-xs text-gray-300">
+                  <span>Thuế</span>
+                  <span className="font-semibold">{formatCurrency(order.taxAmount)}</span>
                 </div>
               )}
             </div>
+          </div>
 
-            {/* Payment Actions */}
-            {order.payment.status === 'SUCCESS' && (
-              <div className="mt-3 bg-green-50 border border-green-200 rounded-lg p-3">
-                <p className="text-sm text-green-800 font-medium">
-                  ✓ Đơn hàng đã được thanh toán. Có thể xử lý và giao hàng.
-                </p>
-              </div>
-            )}
-            
-            {order.payment.status === 'PENDING' && order.payment.method === 'PAYOS' && (
-              <div className="mt-3 space-y-2">
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-                  <p className="text-sm text-yellow-800 font-medium">
-                    ⏳ Chờ khách hàng thanh toán qua PayOS. Link thanh toán đã được gửi.
+          {/* Payment */}
+          {order.payment && (
+            <div className="bg-gray-50 border border-gray-200 p-4">
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  <p className="text-xs font-bold text-gray-600 uppercase tracking-wider mb-1">Thanh toán</p>
+                  <p className="text-sm font-semibold text-gray-900">
+                    {getPaymentMethodText(order.payment.method)}
                   </p>
                 </div>
-                <button
-                  onClick={handleSyncPayment}
-                  disabled={syncingPayment}
-                  className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors disabled:cursor-not-allowed"
-                >
-                  {syncingPayment ? '🔄 Đang kiểm tra...' : '🔄 Kiểm tra trạng thái thanh toán'}
-                </button>
+                <span className={`text-xs font-semibold px-3 py-1.5 ${paymentStatusBadge.styles}`}>
+                  {paymentStatusBadge.label}
+                </span>
               </div>
-            )}
 
-            {order.payment.status === 'PENDING' && order.payment.method === 'CASH' && (
-              <div className="mt-3 bg-blue-50 border border-blue-200 rounded-lg p-3">
-                <p className="text-sm text-blue-800 font-medium">
-                  💵 Thu tiền mặt khi giao hàng (COD).
-                </p>
+              <div className="space-y-3 pt-4 border-t border-gray-200">
+                <div className="flex justify-between">
+                  <span className="text-xs text-gray-600 font-medium">Số tiền</span>
+                  <span className="text-sm font-bold text-gray-900">{formatCurrency(order.payment.amount)}</span>
+                </div>
+
+                {order.payment.paidAt && (
+                  <div className="flex justify-between">
+                    <span className="text-xs text-gray-600 font-medium">Thời gian</span>
+                    <span className="text-xs text-gray-700">
+                      {new Date(order.payment.paidAt).toLocaleString('vi-VN')}
+                    </span>
+                  </div>
+                )}
+
+                {order.payment.status === 'PENDING' && order.payment.method === 'PAYOS' && (
+                  <button
+                    onClick={handleSyncPayment}
+                    disabled={syncingPayment}
+                    className="w-full mt-3 bg-gray-900 hover:bg-black disabled:bg-gray-600 text-white py-2.5 px-4 text-sm font-semibold transition-all disabled:cursor-not-allowed border border-black"
+                  >
+                    {syncingPayment ? 'Đang kiểm tra...' : 'Kiểm tra thanh toán'}
+                  </button>
+                )}
               </div>
-            )}
-          </div>
-        )}
+            </div>
+          )}
 
-        {/* Status Update */}
-        <div>
-          <h3 className="text-sm font-semibold text-gray-900 mb-3">Cập nhật trạng thái</h3>
-          <div className="flex gap-3">
-            <Select
-              value={order.status}
-              onChange={(e) => onUpdateStatus(order.id, e.target.value)}
-              options={statusOptions.filter(opt => opt.value !== '')}
-              className="flex-1"
-              disabled={updatingStatus}
-            />
-          </div>
+          {/* Status */}
+          {order.status !== 'CANCELLED' && (
+            <div className="bg-gray-50 border border-gray-200 p-4">
+              <p className="text-xs font-bold text-gray-600 uppercase tracking-wider mb-3">
+                Cập nhật trạng thái
+              </p>
+              <Select
+                value={order.status}
+                onChange={(e) => onUpdateStatus(order.id, e.target.value)}
+                options={statusOptions}
+                disabled={updatingStatus}
+                className="w-full text-sm font-medium"
+              />
+            </div>
+          )}
+
         </div>
       </div>
     </Modal>

@@ -26,13 +26,6 @@ const PaymentManagement = () => {
 
   useEffect(() => {
     loadPayments();
-    
-    // Auto-refresh every 10 seconds
-    const interval = setInterval(() => {
-      loadPayments();
-    }, 10000);
-    
-    return () => clearInterval(interval);
   }, []);
 
   const loadPayments = async (showLoading = true) => {
