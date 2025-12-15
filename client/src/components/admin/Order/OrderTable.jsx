@@ -1,9 +1,18 @@
-import { Eye, Package } from 'lucide-react';
+import { Eye, Package, RefreshCw } from 'lucide-react';
 import Badge from '../../common/Badge';
 import Table from '../../common/Table';
 import { formatCurrency, formatDate, statusVariants, statusLabels } from '../../../utils/orderHelpers';
+import { useState } from 'react';
 
-const OrderTable = ({ orders, loading, sortBy, sortDir, onSort, onViewDetails }) => {
+const OrderTable = ({ orders, loading, sortBy, sortDir, onSort, onViewDetails, onSyncPayment }) => {
+  const [syncingPaymentId, setSyncingPaymentId] = useState(null);
+
+  const handleSyncPayment = async (e, paymentId) => {
+    e.stopPropagation();
+    setSyncingPaymentId(paymentId);
+    await onSyncPayment(paymentId);
+    setSyncingPaymentId(null);
+  };
   if (loading) {
     return (
       <Table>
@@ -100,20 +109,31 @@ const OrderTable = ({ orders, loading, sortBy, sortDir, onSort, onViewDetails })
             <Table.Cell>
               {order.payment ? (
                 <div className="space-y-1">
-                  <div className="text-xs font-medium">
-                    {order.payment.method === 'CASH' && '💵 COD'}
-                    {order.payment.method === 'PAYOS' && '💳 PayOS'}
-                    {order.payment.method === 'VNPAY' && '💳 VNPay'}
-                    {order.payment.method === 'MOMO' && '💳 MoMo'}
+                  <div className="flex items-center gap-1">
+                    <div className="text-xs font-medium">
+                      {order.payment.method === 'CASH' && '💵 COD'}
+                      {order.payment.method === 'PAYOS' && '💳 PayOS'}
+                      {order.payment.method === 'VNPAY' && '💳 VNPay'}
+                      {order.payment.method === 'MOMO' && '💳 MoMo'}
+                    </div>
+                    {order.payment.status === 'PENDING' && order.payment.method === 'PAYOS' && (
+                      <button
+                        onClick={(e) => handleSyncPayment(e, order.payment.id)}
+                        disabled={syncingPaymentId === order.payment.id}
+                        className="p-1 hover:bg-blue-100 rounded transition-colors disabled:opacity-50"
+                        title="Kiểm tra trạng thái thanh toán"
+                      >
+                        <RefreshCw className={`w-3 h-3 text-blue-600 ${syncingPaymentId === order.payment.id ? 'animate-spin' : ''}`} />
+                      </button>
+                    )}
                   </div>
                   <Badge variant={
-                    order.payment.status === 'SUCCESS' || order.payment.status === 'PAID' ? 'success' 
+                    order.payment.status === 'SUCCESS' ? 'success' 
                     : order.payment.status === 'PENDING' ? 'warning'
                     : order.payment.status === 'CANCELLED' ? 'default'
                     : 'danger'
                   } size="sm">
                     {order.payment.status === 'SUCCESS' && '✓ Đã TT'}
-                    {order.payment.status === 'PAID' && '✓ Đã TT'}
                     {order.payment.status === 'PENDING' && '⏳ Chờ'}
                     {order.payment.status === 'FAILED' && '✗ Lỗi'}
                     {order.payment.status === 'CANCELLED' && '✗ Hủy'}

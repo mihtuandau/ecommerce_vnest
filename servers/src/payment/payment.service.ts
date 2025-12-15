@@ -25,10 +25,9 @@ export class PaymentService {
   ) {}
 
   // Helper function to clear payment caches
-  // Note: cache-manager doesn't support wildcard deletion
   private async clearPaymentCaches() {
-    // Just log for now - cache will expire naturally
-    console.log('Payment caches will be invalidated');
+    // Cache will expire naturally or be invalidated individually
+    this.logger.verbose('Payment caches invalidated');
   }
 
   // Helper to serialize payment (convert BigInt to Number)
@@ -43,35 +42,29 @@ export class PaymentService {
   }
 
   async create(data: CreatePaymentDto) {
-    // Validate order exists
     const order = await this.repository.findOrderById(data.orderId);
     if (!order) {
       throw new BadRequestException('Order not found');
     }
 
-    // Kiểm tra xem order đã có payment chưa
     const existingPayment = await this.repository.findByOrderId(data.orderId);
     if (existingPayment) {
       this.logger.log(
         `Order ${data.orderId} already has payment ${existingPayment.id}`,
       );
-      // Nếu đã có payment, trả về payment đó thay vì tạo mới
       return this.serializePayment({
         ...existingPayment,
         paymentLink: existingPayment.paymentLink,
       });
     }
 
-    // Generate transactionId và payment link cho các phương thức online
     let transactionId: string | null = null;
     let paymentLink: string | null = null;
     let payosOrderCode: number | null = null;
 
     if (data.method === 'PAYOS') {
-      // Tạo unique order code cho PayOS (sử dụng timestamp)
       payosOrderCode = Date.now();
 
-      // Lấy thông tin customer từ order
       const shippingInfo = order.shippingInfo as any;
       const buyerName =
         order.user?.name ||
@@ -83,7 +76,6 @@ export class PaymentService {
         shippingInfo?.phone || order.guestPhone || order.address?.phone || '';
 
       try {
-        // Tạo payment link từ PayOS
         const payosResponse = await this.payosService.createPaymentLink({
           orderCode: payosOrderCode,
           amount: order.total,
@@ -119,11 +111,9 @@ export class PaymentService {
       payosOrderCode,
     });
 
-    // Invalidate all payment caches
     await this.clearPaymentCaches();
     await this.cacheManager.del(`payment:${payment.id}`);
 
-    // Convert BigInt to Number for JSON serialization
     return this.serializePayment({
       ...payment,
       paymentLink,
@@ -160,10 +150,9 @@ export class PaymentService {
     );
 
     if (data.status === 'SUCCESS') {
-      console.log(`Stock deducted for order ${payment.orderId}`);
+      this.logger.log(`Stock deducted for order ${payment.orderId}`);
     }
 
-    // Cache invalidate
     await this.cacheManager.del(`payment:${id}`);
     await this.clearPaymentCaches();
     await this.cacheManager.del(`order:${payment.orderId}`);
@@ -171,15 +160,15 @@ export class PaymentService {
 
     return this.serializePayment(updatedPayment);
   }
+
   async findAll(query: QueryPaymentDto) {
     const { page = 1, limit = 10, status, method } = query;
     const skip = (page - 1) * limit;
 
-    // Check cache first
     const cacheKey = `payments:${JSON.stringify(query)}`;
     const cached = await this.cacheManager.get(cacheKey);
     if (cached) {
-      console.log(`Cache hit for payments: ${cacheKey}`);
+      this.logger.verbose(`Cache hit for payments: ${cacheKey}`);
       return cached;
     }
 
@@ -192,7 +181,6 @@ export class PaymentService {
       this.repository.count(where),
     ]);
 
-    // Serialize all payments
     const serializedPayments = payments.map((p) => this.serializePayment(p));
 
     const result = {
@@ -203,24 +191,18 @@ export class PaymentService {
       totalPages: Math.ceil(total / limit),
     };
 
-    // Set cache after query
     await this.cacheManager.set(cacheKey, result, 3600);
-    console.log(`Cache set for payments: ${cacheKey}`);
+    this.logger.verbose(`Cache set for payments: ${cacheKey}`);
 
     return result;
   }
 
-  /**
-   * Lấy thông tin payment từ PayOS
-   */
   async getPayOSPaymentInfo(orderCode: number) {
     try {
       const paymentInfo = await this.payosService.getPaymentInfo(orderCode);
 
-      // Serialize BigInt fields before returning
       return {
         ...paymentInfo,
-        // Convert any BigInt fields to Number
         orderCode: paymentInfo.orderCode
           ? Number(paymentInfo.orderCode)
           : paymentInfo.orderCode,
@@ -241,9 +223,6 @@ export class PaymentService {
     }
   }
 
-  /**
-   * Hủy payment link PayOS
-   */
   async cancelPayOSPayment(paymentId: number, reason?: string) {
     const payment = await this.repository.findById(paymentId);
     if (!payment) {
@@ -262,12 +241,10 @@ export class PaymentService {
         reason,
       );
 
-      // Update payment status
       const updatedPayment = await this.repository.update(paymentId, {
         status: 'CANCELLED',
       });
 
-      // Clear cache
       await this.cacheManager.del(`payment:${paymentId}`);
       await this.clearPaymentCaches();
 
@@ -279,34 +256,29 @@ export class PaymentService {
     }
   }
 
-  /**
-   * Xử lý webhook từ PayOS
-   */
   async handlePayOSWebhook(webhookData: any) {
     try {
-      console.log('🔔 PayOS Webhook received:', JSON.stringify(webhookData, null, 2));
-      
-      // Verify webhook signature và lấy data đã verify
+      this.logger.log('PayOS Webhook received');
+
       const verifiedData =
         await this.payosService.verifyPaymentWebhookData(webhookData);
 
-      console.log('✅ Webhook verified:', JSON.stringify(verifiedData, null, 2));
+      this.logger.log('Webhook verified successfully');
 
       const orderCode = verifiedData.orderCode;
-      console.log('🔍 Looking for payment with PayOS orderCode:', orderCode);
 
-      // Tìm payment theo payosOrderCode
       const payment = await this.repository.findByPayosOrderCode(orderCode);
       if (!payment) {
-        console.error('❌ Payment not found for orderCode:', orderCode);
+        this.logger.error(`Payment not found for orderCode: ${orderCode}`);
         throw new NotFoundException(
           `Payment not found for order code: ${orderCode}`,
         );
       }
 
-      console.log('💳 Found payment:', { paymentId: payment.id, orderId: payment.orderId, currentStatus: payment.status });
+      this.logger.log(
+        `Found payment ${payment.id} for order ${payment.orderId} (current status: ${payment.status})`,
+      );
 
-      // Xác định trạng thái mới dựa trên response từ PayOS
       let newStatus: 'SUCCESS' | 'FAILED' | 'CANCELLED' = 'SUCCESS';
 
       if (verifiedData.code === '00') {
@@ -317,10 +289,8 @@ export class PaymentService {
         newStatus = 'CANCELLED';
       }
 
-      console.log('📊 Webhook code:', verifiedData.code, '-> New status:', newStatus);
+      this.logger.log(`Webhook code ${verifiedData.code} → Updating status to ${newStatus}`);
 
-      // Update payment status với transaction
-      console.log('⏳ Updating payment status...');
       const updatedPayment = await this.repository.updateStatusWithTransaction(
         payment.id,
         newStatus,
@@ -328,19 +298,17 @@ export class PaymentService {
         payment.order.orderItems,
       );
 
-      console.log('✅ Payment updated successfully:', { id: updatedPayment.id, status: updatedPayment.status, orderId: updatedPayment.orderId });
+      this.logger.log(`Payment ${updatedPayment.id} updated to ${updatedPayment.status}`);
 
-      // Clear cache
       await this.cacheManager.del(`payment:${payment.id}`);
       await this.clearPaymentCaches();
       await this.cacheManager.del(`order:${payment.orderId}`);
       await this.cacheManager.del('products:all');
 
-      console.log('🗑️ Caches cleared');
+      this.logger.verbose('Caches cleared after webhook');
 
       return this.serializePayment(updatedPayment);
     } catch (error) {
-      console.error('❌ Error handling PayOS webhook:', error);
       this.logger.error(
         `Error handling PayOS webhook: ${error.message}`,
         error.stack,
@@ -353,13 +321,111 @@ export class PaymentService {
 
   async findByPayosOrderCode(orderCode: number) {
     const payment = await this.repository.findByPayosOrderCode(orderCode);
+
+    if (payment && payment.status === 'PENDING') {
+      try {
+        this.logger.verbose(`Payment ${payment.id} is PENDING, syncing with PayOS...`);
+
+        const payosInfo = await this.payosService.getPaymentInfo(orderCode);
+
+        if (payosInfo.status === 'PAID') {
+          this.logger.log(`PayOS confirmed payment PAID → Updating to SUCCESS`);
+
+          const updatedPayment = await this.repository.updateStatusWithTransaction(
+            payment.id,
+            'SUCCESS',
+            payment.orderId,
+            payment.order.orderItems,
+          );
+
+          await this.cacheManager.del(`payment:${payment.id}`);
+          await this.clearPaymentCaches();
+          await this.cacheManager.del(`order:${payment.orderId}`);
+          await this.cacheManager.del('products:all');
+
+          this.logger.log('Payment status synced to SUCCESS');
+
+          return this.serializePayment(updatedPayment);
+        }
+      } catch (error) {
+        this.logger.warn(`Failed to sync payment ${payment.id} with PayOS: ${error.message}`);
+      }
+    }
+
     return this.serializePayment(payment);
+  }
+
+  async syncPaymentWithPayOS(paymentId: number) {
+    const payment = await this.repository.findById(paymentId);
+
+    if (!payment) {
+      throw new NotFoundException('Payment not found');
+    }
+
+    if (!payment.payosOrderCode) {
+      throw new BadRequestException('This payment does not have a PayOS order code');
+    }
+
+    if (payment.status !== 'PENDING') {
+      this.logger.log(`Payment ${paymentId} is already ${payment.status}, skipping sync`);
+      return {
+        message: `Payment is already ${payment.status}`,
+        payment: this.serializePayment(payment),
+      };
+    }
+
+    try {
+      this.logger.log(`Manually syncing payment ${paymentId} with PayOS...`);
+
+      const payosInfo = await this.payosService.getPaymentInfo(Number(payment.payosOrderCode));
+
+      if (payosInfo.status === 'PAID') {
+        this.logger.log('PayOS confirmed PAID → Updating to SUCCESS');
+
+        const updatedPayment = await this.repository.updateStatusWithTransaction(
+          payment.id,
+          'SUCCESS',
+          payment.orderId,
+          payment.order.orderItems,
+        );
+
+        await this.cacheManager.del(`payment:${payment.id}`);
+        await this.clearPaymentCaches();
+        await this.cacheManager.del(`order:${payment.orderId}`);
+        await this.cacheManager.del('products:all');
+
+        return {
+          message: 'Payment synced successfully - Status updated to SUCCESS',
+          payment: this.serializePayment(updatedPayment),
+        };
+      } else if (payosInfo.status === 'CANCELLED') {
+        const updatedPayment = await this.repository.update(payment.id, {
+          status: 'CANCELLED',
+        });
+
+        await this.cacheManager.del(`payment:${payment.id}`);
+        await this.clearPaymentCaches();
+
+        return {
+          message: 'Payment synced - Status updated to CANCELLED',
+          payment: this.serializePayment(updatedPayment),
+        };
+      } else {
+        return {
+          message: `Payment is still PENDING on PayOS (status: ${payosInfo.status})`,
+          payment: this.serializePayment(payment),
+        };
+      }
+    } catch (error) {
+      this.logger.error(`Failed to sync payment ${paymentId} with PayOS: ${error.message}`);
+      throw new BadRequestException(`Failed to sync with PayOS: ${error.message}`);
+    }
   }
 
   private async processExternalPayment(
     data: CreatePaymentDto,
     transactionId: string,
   ) {
-    console.log('Processing external payment for', transactionId);
+    this.logger.verbose(`Processing external payment for ${transactionId}`);
   }
 }

@@ -1,6 +1,9 @@
 import Modal from '../../common/Modal';
 import Select from '../../common/Select';
 import { formatCurrency, statusOptions } from '../../../utils/orderHelpers';
+import { useState } from 'react';
+import paymentService from '../../../services/paymentService';
+import { notify } from '../../../utils/notification';
 
 const OrderDetailModal = ({ 
   isOpen, 
@@ -9,7 +12,26 @@ const OrderDetailModal = ({
   onUpdateStatus, 
   updatingStatus 
 }) => {
+  const [syncingPayment, setSyncingPayment] = useState(false);
+
   if (!order) return null;
+
+  const handleSyncPayment = async () => {
+    if (!order.payment?.id) return;
+    
+    try {
+      setSyncingPayment(true);
+      const result = await paymentService.syncPaymentStatus(order.payment.id);
+      notify.success(result.message || 'Đồng bộ trạng thái thành công!');
+      
+      // Reload the order to get updated payment status
+      window.location.reload();
+    } catch (error) {
+      notify.error(error.response?.data?.message || 'Không thể đồng bộ trạng thái thanh toán');
+    } finally {
+      setSyncingPayment(false);
+    }
+  };
 
   return (
     <Modal
@@ -109,7 +131,7 @@ const OrderDetailModal = ({
               <div className="flex justify-between">
                 <span className="text-sm text-gray-600">Trạng thái thanh toán:</span>
                 <span className={`text-sm font-semibold inline-flex items-center px-2 py-1 rounded-full ${
-                  order.payment.status === 'SUCCESS' || order.payment.status === 'PAID' 
+                  order.payment.status === 'SUCCESS' 
                     ? 'bg-green-100 text-green-800' 
                     : order.payment.status === 'PENDING' 
                     ? 'bg-yellow-100 text-yellow-800'
@@ -118,7 +140,6 @@ const OrderDetailModal = ({
                     : 'bg-red-100 text-red-800'
                 }`}>
                   {order.payment.status === 'SUCCESS' && '✓ Đã thanh toán'}
-                  {order.payment.status === 'PAID' && '✓ Đã thanh toán'}
                   {order.payment.status === 'PENDING' && '⏳ Chờ thanh toán'}
                   {order.payment.status === 'FAILED' && '✗ Thất bại'}
                   {order.payment.status === 'CANCELLED' && '✗ Đã hủy'}
@@ -170,10 +191,19 @@ const OrderDetailModal = ({
             )}
             
             {order.payment.status === 'PENDING' && order.payment.method === 'PAYOS' && (
-              <div className="mt-3 bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-                <p className="text-sm text-yellow-800 font-medium">
-                  ⏳ Chờ khách hàng thanh toán qua PayOS. Link thanh toán đã được gửi.
-                </p>
+              <div className="mt-3 space-y-2">
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                  <p className="text-sm text-yellow-800 font-medium">
+                    ⏳ Chờ khách hàng thanh toán qua PayOS. Link thanh toán đã được gửi.
+                  </p>
+                </div>
+                <button
+                  onClick={handleSyncPayment}
+                  disabled={syncingPayment}
+                  className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors disabled:cursor-not-allowed"
+                >
+                  {syncingPayment ? '🔄 Đang kiểm tra...' : '🔄 Kiểm tra trạng thái thanh toán'}
+                </button>
               </div>
             )}
 

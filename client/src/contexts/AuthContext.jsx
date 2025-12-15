@@ -47,11 +47,16 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (credentials) => {
     try {
-      const data = await authService.login(credentials);setUser(data.user);
+      const data = await authService.login(credentials);
+      setUser(data.user);
+      
+      // Trigger cart sync event
+      window.dispatchEvent(new Event('userLoggedIn'));
       
       notify.success('Đăng nhập thành công!');
       return data;
-    } catch (error) {notify.error(error.response?.data?.message || 'Đăng nhập thất bại');
+    } catch (error) {
+      notify.error(error.response?.data?.message || 'Đăng nhập thất bại');
       throw error;
     }
   };

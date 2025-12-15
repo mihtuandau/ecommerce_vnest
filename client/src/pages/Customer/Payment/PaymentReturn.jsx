@@ -9,10 +9,24 @@ const PaymentReturn = () => {
   const [status, setStatus] = useState('loading');
   const [paymentInfo, setPaymentInfo] = useState(null);
   const [orderInfo, setOrderInfo] = useState(null);
+  const [pollAttempts, setPollAttempts] = useState(0);
 
   useEffect(() => {
     checkPaymentStatus();
   }, []);
+
+  // Poll payment status every 3 seconds if still PENDING (max 10 attempts = 30s)
+  useEffect(() => {
+    if (status === 'pending' && pollAttempts < 10) {
+      const timer = setTimeout(() => {
+        console.log(`🔄 Polling payment status (attempt ${pollAttempts + 1}/10)...`);
+        checkPaymentStatus();
+        setPollAttempts(prev => prev + 1);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [status, pollAttempts]);
 
   const checkPaymentStatus = async () => {
     try {
@@ -67,7 +81,7 @@ const PaymentReturn = () => {
           });
 
           // Check if payment is successful
-          if (payment?.status === 'PAID' || statusParam === 'PAID') {
+          if (payment?.status === 'SUCCESS' || statusParam === 'PAID') {
             setStatus('success');
           } else if (payment?.status === 'PENDING' || !statusParam) {
             setStatus('pending');
@@ -81,7 +95,7 @@ const PaymentReturn = () => {
       } catch (apiError) {
         console.error('❌ API Error checking payment:', apiError);
         // If API fails, check URL status parameter
-        if (statusParam === 'PAID') {
+        if (statusParam === 'PAID' || statusParam === 'SUCCESS') {
           setStatus('success');
         } else {
           setStatus('error');
@@ -286,6 +300,11 @@ const PaymentReturn = () => {
             <p className="text-gray-600 text-base leading-relaxed">
               Giao dịch đang được xử lý. Vui lòng kiểm tra lại sau vài phút.
             </p>
+            {pollAttempts > 0 && (
+              <p className="text-sm text-gray-500 mt-2">
+                Đang tự động kiểm tra... ({pollAttempts}/10)
+              </p>
+            )}
           </div>
 
           {orderInfo?.order && (

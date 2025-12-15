@@ -44,13 +44,12 @@ export const addToCartServer = createAsyncThunk(
   'cart/addToCartServer',
   async ({ variantId, quantity, productData }, { rejectWithValue }) => {
     try {
-      // Check if user is logged in
-      if (!localStorage.getItem('token')) {
-        return rejectWithValue('User not logged in');
-      }
+      console.log('➕ Adding to cart (server):', { variantId, quantity });
       await cartService.addItem(variantId, quantity);
+      console.log('✅ Added to cart (server) successfully');
       return { variantId, quantity, productData };
     } catch (error) {
+      console.error('❌ addToCartServer error:', error);
       return rejectWithValue(error.response?.data?.message || 'Không thể thêm vào giỏ hàng');
     }
   }
@@ -63,9 +62,12 @@ export const updateCartServer = createAsyncThunk(
   'cart/updateCartServer',
   async ({ variantId, quantity }, { rejectWithValue }) => {
     try {
+      console.log('🔄 Updating cart item (server):', { variantId, quantity });
       await cartService.updateItem(variantId, quantity);
+      console.log('✅ Updated cart item (server) successfully');
       return { variantId, quantity };
     } catch (error) {
+      console.error('❌ updateCartServer error:', error);
       return rejectWithValue(error.response?.data?.message || 'Không thể cập nhật giỏ hàng');
     }
   }
@@ -78,9 +80,12 @@ export const removeFromCartServer = createAsyncThunk(
   'cart/removeFromCartServer',
   async (variantId, { rejectWithValue }) => {
     try {
+      console.log('🗑️ Removing from cart (server):', { variantId });
       await cartService.removeItem(variantId);
+      console.log('✅ Removed from cart (server) successfully');
       return variantId;
     } catch (error) {
+      console.error('❌ removeFromCartServer error:', error);
       return rejectWithValue(error.response?.data?.message || 'Không thể xóa sản phẩm');
     }
   }
@@ -90,9 +95,12 @@ export const clearCartServer = createAsyncThunk(
   'cart/clearCartServer',
   async (_, { rejectWithValue }) => {
     try {
+      console.log('🧹 Clearing cart (server)...');
       await cartService.clearCart();
+      console.log('✅ Cleared cart (server) successfully');
       return true;
     } catch (error) {
+      console.error('❌ clearCartServer error:', error);
       return rejectWithValue(error.response?.data?.message || 'Không thể xóa giỏ hàng');
     }
   }

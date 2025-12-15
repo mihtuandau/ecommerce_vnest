@@ -72,6 +72,16 @@ const paymentService = {
     }
   },
 
+  // Sync payment status with PayOS (Admin only)
+  syncPaymentStatus: async (id) => {
+    try {
+      const response = await apiService.post(`${PAYMENT_ENDPOINTS.BASE}/${id}/sync`);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  },
+
   // Get payment statistics
   getStats: async () => {
     try {

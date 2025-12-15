@@ -1,4 +1,4 @@
-import { useCallback, useState, useMemo } from 'react';
+import { useCallback, useState, useMemo, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaArrowLeft } from 'react-icons/fa';
 import Layout from '../../../components/layouts/Layout';
@@ -18,12 +18,21 @@ const CartPage = () => {
     items: cartItems, 
     count: cartCount, 
     total: cartTotal,
+    isLoggedIn,
+    loadCart,
     updateCartItem,
     removeFromCart,
     clearCart 
   } = useCart();
   
   const [selectedItems, setSelectedItems] = useState(new Set());
+  
+  // Load cart when component mounts if user is logged in
+  useEffect(() => {
+    if (isLoggedIn) {
+      loadCart();
+    }
+  }, [isLoggedIn, loadCart]);
   
   const selectedTotal = useMemo(() => {
     return cartItems

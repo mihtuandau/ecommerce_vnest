@@ -1,5 +1,6 @@
 import { useSelector, useDispatch } from 'react-redux';
 import { useCallback, useMemo, useState, useEffect } from 'react';
+import { useAuth } from './useAuth';
 import {
   selectCartItems,
   selectCartCount,
@@ -16,27 +17,40 @@ import {
   fetchCart,
 } from '../store/slices/cartSlice';
 
-const isUserLoggedIn = () => !!localStorage.getItem('token');
-
 export const useCart = () => {
   const dispatch = useDispatch();
+  const { user, isAuthenticated } = useAuth();
   const items = useSelector(selectCartItems);
   const count = useSelector(selectCartCount);
   const total = useSelector(selectCartTotal);
   const itemsCount = useSelector(selectCartItemsCount);
   
-  // Track login state dynamically
-  const [isLoggedIn, setIsLoggedIn] = useState(isUserLoggedIn());
+  // Use auth state instead of localStorage
+  const isLoggedIn = isAuthenticated && !!user;
 
   useEffect(() => {
-    // Check login state on mount and when storage changes
-    const checkLoginState = () => {
-      setIsLoggedIn(isUserLoggedIn());
+    // Listen for login events
+    const handleLoginEvent = () => {
+      console.log('🔔 Login event detected, fetching cart...');
+      if (isLoggedIn) {
+        dispatch(fetchCart());
+      }
     };
     
-    window.addEventListener('storage', checkLoginState);
-    return () => window.removeEventListener('storage', checkLoginState);
-  }, []);
+    window.addEventListener('userLoggedIn', handleLoginEvent);
+    
+    return () => {
+      window.removeEventListener('userLoggedIn', handleLoginEvent);
+    };
+  }, [dispatch, isLoggedIn]);
+
+  // Load cart when user becomes logged in
+  useEffect(() => {
+    if (isLoggedIn) {
+      console.log('✅ User is logged in, loading cart...');
+      dispatch(fetchCart());
+    }
+  }, [isLoggedIn, dispatch]);
 
   const loadCart = useCallback(() => {
     if (isLoggedIn) {
@@ -45,22 +59,43 @@ export const useCart = () => {
   }, [dispatch, isLoggedIn]);
 
   const addToCart = useCallback((variantId, quantity, productData) => {
-    const currentlyLoggedIn = isUserLoggedIn();
-    const action = currentlyLoggedIn ? addToCartServer : addToCartGuest;dispatch(action({ variantId, quantity, productData }));
-  }, [dispatch]);
+    const action = isLoggedIn ? addToCartServer : addToCartGuest;
+    console.log('🛒 useCart.addToCart:', { 
+      variantId, 
+      quantity, 
+      isLoggedIn, 
+      actionType: isLoggedIn ? 'SERVER' : 'GUEST' 
+    });
+    dispatch(action({ variantId, quantity, productData }));
+  }, [dispatch, isLoggedIn]);
 
   const updateCartItem = useCallback((variantId, quantity) => {
     const action = isLoggedIn ? updateCartServer : updateCartItemGuest;
+    console.log('🔄 useCart.updateCartItem:', { 
+      variantId, 
+      quantity, 
+      isLoggedIn, 
+      actionType: isLoggedIn ? 'SERVER' : 'GUEST' 
+    });
     dispatch(action({ variantId, quantity }));
   }, [dispatch, isLoggedIn]);
 
   const removeFromCart = useCallback((variantId) => {
     const action = isLoggedIn ? removeFromCartServer : removeFromCartGuest;
+    console.log('🗑️ useCart.removeFromCart:', { 
+      variantId, 
+      isLoggedIn, 
+      actionType: isLoggedIn ? 'SERVER' : 'GUEST' 
+    });
     dispatch(action(variantId));
   }, [dispatch, isLoggedIn]);
 
   const clearCart = useCallback(() => {
     const action = isLoggedIn ? clearCartServer : clearCartGuest;
+    console.log('🧹 useCart.clearCart:', { 
+      isLoggedIn, 
+      actionType: isLoggedIn ? 'SERVER' : 'GUEST' 
+    });
     dispatch(action());
   }, [dispatch, isLoggedIn]);
 
