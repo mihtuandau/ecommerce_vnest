@@ -10,7 +10,7 @@ const ProductGrid = ({ products = [], loading = false, viewMode = 'grid-3' }) =>
   const getGridClass = () => {
     switch(viewMode) {
       case 'grid-2':
-        return 'grid grid-cols-1 md:grid-cols-2 gap-6';
+        return 'grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto';
       case 'list':
         return 'flex flex-col gap-4';
       case 'grid-3':
@@ -80,11 +80,11 @@ const ProductGrid = ({ products = [], loading = false, viewMode = 'grid-3' }) =>
           const productImage = product.image || (product.images && product.images.length > 0 ? product.images[0].url : '/placeholder-product.jpg');
           
           return (
-            <div key={product.id} className="bg-white shadow-sm hover:shadow-lg transition-shadow duration-300 group">
-              <div className="flex gap-6 p-6">
+            <div key={product.id} className="bg-white transition-all duration-300 group rounded-lg overflow-hidden">
+              <div className="flex gap-6">
                 {/* Image */}
                 <Link to={`/products/${product.id}`} className="flex-shrink-0">
-                  <div className="w-48 h-48 bg-white">
+                  <div className="w-48 h-48 bg-gray-50">
                     <img
                       src={productImage}
                       alt={product.name}
@@ -95,7 +95,7 @@ const ProductGrid = ({ products = [], loading = false, viewMode = 'grid-3' }) =>
                 </Link>
                 
                 {/* Info */}
-                <div className="flex-1 flex flex-col justify-center">
+                <div className="flex-1 flex flex-col justify-center p-6">
                   <Link to={`/products/${product.id}`}>
                     <h3 className="text-xl font-medium text-gray-900 hover:text-blue-600 mb-3 line-clamp-2">
                       {product.name}
@@ -110,19 +110,15 @@ const ProductGrid = ({ products = [], loading = false, viewMode = 'grid-3' }) =>
                   
                   {/* Rating & Sold */}
                   <div className="flex items-center gap-4 mb-4">
-                    {(product.averageRating > 0 || product.reviewCount > 0) && (
-                      <StarRating
-                        rating={product.averageRating || 0}
-                        size={16}
-                        showNumber
-                        reviewCount={product.reviewCount || 0}
-                      />
-                    )}
-                    {product.soldCount > 0 && (
-                      <span className="text-sm text-gray-500">
-                        | Đã bán {product.soldCount}
-                      </span>
-                    )}
+                    <StarRating
+                      rating={product.averageRating || 0}
+                      size={16}
+                      showNumber
+                      reviewCount={product.reviewCount || 0}
+                    />
+                    <span className="text-sm text-gray-500">
+                      | 🔥 Đã bán {product.soldCount || 0}
+                    </span>
                   </div>
                   
                   {/* Price */}

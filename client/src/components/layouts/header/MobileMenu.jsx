@@ -150,7 +150,7 @@ const MobileMenu = ({ searchOpen, mobileMenuOpen, categories }) => {
               {categories.map(cat => (
                 <Link
                   key={cat.id}
-                  to={`/category/${cat.slug}`}
+                  to={`/category/${cat.id}`}
                   className={`block py-2 pl-4 ${
                     cat.highlight ? 'text-red-500 font-bold' : 'text-gray-700 hover:text-blue-600'
                   }`}

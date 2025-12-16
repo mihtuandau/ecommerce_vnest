@@ -8,7 +8,7 @@ const BestSellingProducts = ({ products = [] }) => {
   if (!products || products.length === 0) return null;
 
   const nextSlide = () => {
-    if (currentIndex < products.length - 3) {
+    if (currentIndex < products.length - 4) {
       setCurrentIndex(currentIndex + 1);
     }
   };
@@ -27,15 +27,15 @@ const BestSellingProducts = ({ products = [] }) => {
           <h2 className="text-3xl font-bold text-gray-900">SẢN PHẨM BÁN CHẠY</h2>
         </div>
 
-        {/* Desktop View - 3 Cards Slider */}
+        {/* Desktop View - 4 Cards Slider */}
         <div className="hidden md:block relative">
           <div className="overflow-hidden">
             <div 
               className="flex gap-6 transition-transform duration-500 ease-in-out"
-              style={{ transform: `translateX(-${currentIndex * (100 / 3 + 2)}%)` }}
+              style={{ transform: `translateX(-${currentIndex * (100 / 4 + 1.5)}%)` }}
             >
-              {products.slice(0, 5).map((product) => (
-                <div key={product.id} className="flex-shrink-0" style={{ width: 'calc(33.333% - 16px)' }}>
+              {products.slice(0, 8).map((product) => (
+                <div key={product.id} className="flex-shrink-0" style={{ width: 'calc(25% - 18px)' }}>
                   <ProductCard product={product} />
                 </div>
               ))}
@@ -52,7 +52,7 @@ const BestSellingProducts = ({ products = [] }) => {
             </button>
           )}
 
-          {currentIndex < products.length - 3 && (
+          {currentIndex < products.length - 4 && (
             <button
               onClick={nextSlide}
               className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 bg-gray-900 hover:bg-black text-white p-3 rounded-full shadow-lg transition-colors"

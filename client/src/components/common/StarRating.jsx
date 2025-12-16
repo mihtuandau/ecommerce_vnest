@@ -1,8 +1,9 @@
 import { FaStar, FaStarHalfAlt, FaRegStar } from 'react-icons/fa';
 
-const StarRating = ({ rating, size = 16, showNumber = false, reviewCount = 0 }) => {
-  const fullStars = Math.floor(rating);
-  const hasHalfStar = rating % 1 >= 0.5;
+const StarRating = ({ rating = 0, size = 16, showNumber = false, reviewCount = 0 }) => {
+  const validRating = Number(rating) || 0;
+  const fullStars = Math.floor(validRating);
+  const hasHalfStar = validRating % 1 >= 0.5;
   const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
 
   return (
@@ -18,7 +19,7 @@ const StarRating = ({ rating, size = 16, showNumber = false, reviewCount = 0 }) 
       </div>
       {showNumber && (
         <span className="text-sm text-gray-600 ml-1">
-          {rating.toFixed(1)} {reviewCount > 0 && `(${reviewCount})`}
+          {validRating.toFixed(1)} {reviewCount > 0 && `(${reviewCount})`}
         </span>
       )}
     </div>

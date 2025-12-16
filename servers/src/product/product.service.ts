@@ -38,7 +38,8 @@ export class ProductService {
       maxPrice,
       minRating,
       sortBy = 'newest',
-      inStock
+      inStock,
+      outOfStock
     } = query;
     
     const skip = (page - 1) * limit;
@@ -69,7 +70,19 @@ export class ProductService {
     }
     
     if (inStock) {
-      where.stock = { gt: 0 };
+      where.variants = {
+        some: {
+          stock: { gt: 0 }
+        }
+      };
+    }
+    
+    if (outOfStock) {
+      where.variants = {
+        every: {
+          stock: { lte: 0 }
+        }
+      };
     }
     
     // Build order by
