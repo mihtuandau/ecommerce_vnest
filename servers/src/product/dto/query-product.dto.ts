@@ -101,4 +101,14 @@ export class QueryProductDto {
   @Transform(({ value }) => value === 'true' || value === true)
   @IsBoolean()
   inStock?: boolean;
+
+  @ApiProperty({ 
+    example: true, 
+    description: 'Chỉ hiển thị sản phẩm hết hàng (tùy chọn)', 
+    required: false 
+  })
+  @IsOptional()
+  @Transform(({ value }) => value === 'true' || value === true)
+  @IsBoolean()
+  outOfStock?: boolean;
 }

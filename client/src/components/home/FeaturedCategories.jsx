@@ -53,13 +53,13 @@ const FeaturedCategories = ({ categories = [] }) => {
           </p>
         </div>
 
-        {/* Categories Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {displayCategories.map((category) => (
+        {/* Categories Grid - 3 cột với card cao hơn */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {displayCategories.slice(0, 6).map((category) => (
             <div
               key={category.id}
               onClick={() => navigate(`/category/${category.id}`)}
-              className="group relative overflow-hidden rounded-2xl cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-300 h-[400px]"
+              className="group relative overflow-hidden rounded-xl cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-300 h-[400px]"
             >
               {/* Background Image */}
               <img

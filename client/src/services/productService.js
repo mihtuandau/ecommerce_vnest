@@ -1,6 +1,7 @@
 import apiService from "./apiService";
 import { PRODUCT_ENDPOINTS } from "../config/apiConstants";
 import categoryService from "./categoryService";
+import brandService from "./brandService";
 
 
 // Sử dụng named exports thay vì default export
@@ -12,13 +13,14 @@ export const productService = {
 
   // Get all products với pagination và filters
   getAll: async (params = {}) => {
-    const { page = 1, limit = 10, search = "", categoryId = "" } = params;
-    return await apiService.get(PRODUCT_ENDPOINTS.BASE, {
-        page,
-        limit,
-        search,
-        categoryId: categoryId || undefined,
-      });
+    // Truyền toàn bộ params, loại bỏ các giá trị undefined/null/empty
+    const cleanParams = {};
+    Object.keys(params).forEach(key => {
+      if (params[key] !== undefined && params[key] !== null && params[key] !== '') {
+        cleanParams[key] = params[key];
+      }
+    });
+    return await apiService.get(PRODUCT_ENDPOINTS.BASE, cleanParams);
   },
 
   // Get single product by ID

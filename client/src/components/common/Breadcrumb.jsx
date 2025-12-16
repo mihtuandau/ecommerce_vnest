@@ -4,12 +4,11 @@ import { FaHome, FaChevronRight } from 'react-icons/fa';
 
 const Breadcrumb = ({ items = [] }) => {
   return (
-    <nav className="mb-6 flex items-center space-x-2 text-sm bg-white/80 backdrop-blur-sm rounded-lg px-4 py-3 shadow-sm">
+    <nav className="mb-6 flex items-center space-x-2 text-sm bg-gray-100 backdrop-blur-sm  px-4 py-3">
       <Link
         to="/"
         className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors font-medium"
       >
-        <FaHome className="w-4 h-4" />
         <span>Trang chủ</span>
       </Link>
 

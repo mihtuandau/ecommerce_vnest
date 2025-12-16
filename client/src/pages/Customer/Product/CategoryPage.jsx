@@ -33,7 +33,8 @@ const CategoryPage = () => {
     minPrice: searchParams.get('minPrice') || '',
     maxPrice: searchParams.get('maxPrice') || '',
     sortBy: searchParams.get('sort') || 'newest',
-    inStock: searchParams.get('inStock') === 'true',
+    minRating: searchParams.get('rating') || '',
+    stockStatus: searchParams.get('stock') || '',
     page: parseInt(searchParams.get('page')) || 1,
   });
 
@@ -90,7 +91,9 @@ const CategoryPage = () => {
       if (filters.minPrice) apiParams.minPrice = parseFloat(filters.minPrice);
       if (filters.maxPrice) apiParams.maxPrice = parseFloat(filters.maxPrice);
       if (filters.sortBy) apiParams.sortBy = filters.sortBy;
-      if (filters.inStock) apiParams.inStock = filters.inStock;
+      if (filters.minRating) apiParams.minRating = parseFloat(filters.minRating);
+      if (filters.stockStatus === 'inStock') apiParams.inStock = true;
+      if (filters.stockStatus === 'outOfStock') apiParams.outOfStock = true;
       
       const response = await productService.getAll(apiParams);
 
@@ -128,7 +131,8 @@ const CategoryPage = () => {
       if (!isNaN(maxPrice)) params.set('maxPrice', maxPrice);
     }
     if (filters.sortBy) params.set('sort', filters.sortBy);
-    if (filters.inStock) params.set('inStock', 'true');
+    if (filters.minRating) params.set('rating', filters.minRating);
+    if (filters.stockStatus) params.set('stock', filters.stockStatus);
     
     setSearchParams(params);
   };
@@ -158,7 +162,7 @@ const CategoryPage = () => {
   return (
     <Layout>
       <div className="bg-gray-50 min-h-screen pt-21 pb-8">
-        <div className="container mx-auto px-4 lg:px-10">
+        <div className="container mx-auto px-4 lg:px-30">
           {/* Breadcrumb */}
           <Breadcrumb items={[
             { label: 'Sản phẩm', path: '/products' },
@@ -246,6 +250,7 @@ const CategoryPage = () => {
                     priceRange={priceRange}
                     currentFilters={getFiltersFromURL()}
                     onFilterChange={handleFilterChange}
+                    hideCategories={true}
                   />
                 </div>
               </div>
@@ -253,7 +258,9 @@ const CategoryPage = () => {
 
             {/* Products Content - Right Side */}
             <div className="lg:col-span-3">
-              <ProductGrid products={products} loading={loading} viewMode={viewMode} />
+              <div className="min-h-[1200px]">
+                <ProductGrid products={products} loading={loading} viewMode={viewMode} />
+              </div>
 
               {/* Pagination */}
               {!loading && products.length > 0 && (

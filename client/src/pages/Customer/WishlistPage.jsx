@@ -59,7 +59,7 @@ const WishlistPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       <div className="container mx-auto px-4 lg:px-30 pt-21 pb-8">
         <Breadcrumb items={[{ label: 'Sản phẩm yêu thích' }]} />
 

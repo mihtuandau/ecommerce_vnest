@@ -34,7 +34,8 @@ const ProductsPage = () => {
     minPrice: searchParams.get('minPrice') || '',
     maxPrice: searchParams.get('maxPrice') || '',
     sortBy: searchParams.get('sort') || 'newest',
-    inStock: searchParams.get('inStock') === 'true',
+    minRating: searchParams.get('rating') || '',
+    stockStatus: searchParams.get('stock') || '',
     search: searchParams.get('search') || '',
     page: parseInt(searchParams.get('page')) || 1,
   });
@@ -43,15 +44,24 @@ const ProductsPage = () => {
   useEffect(() => {
     const loadFilters = async () => {
       try {
-        const [categoriesRes, brandsRes, priceRangeRes] = await Promise.all([
-          categoryService.getAll(),
-          productService.getBrands(),
-          productService.getPriceRange(),
-        ]);
+        console.log('Loading filters...');
+        const categoriesRes = await categoryService.getAll();
+        console.log('Categories API response:', categoriesRes);
+        console.log('Categories type:', typeof categoriesRes);
+        console.log('Categories is array?', Array.isArray(categoriesRes));
+        
+        const priceRangeRes = await productService.getPriceRange();
+        console.log('Price range API response:', priceRangeRes);
+        
+        const priceRangeData = priceRangeRes || { minPrice: 0, maxPrice: 10000000 };
+        console.log('Price range data:', priceRangeData);
+        
         setCategories(categoriesRes || []);
-        setBrands(brandsRes?.data || []);
-        setPriceRange(priceRangeRes?.data || { minPrice: 0, maxPrice: 10000000 });
-      } catch (error) {}
+        setPriceRange(priceRangeData);
+        console.log('Categories set to state:', categoriesRes);
+      } catch (error) {
+        console.error('Error loading filters:', error);
+      }
     };
     loadFilters();
   }, []);
@@ -60,6 +70,11 @@ const ProductsPage = () => {
   useEffect(() => {
     loadProducts();
   }, [searchParams]);
+
+  // Debug priceRange state
+  useEffect(() => {
+    console.log('PriceRange state updated:', priceRange);
+  }, [priceRange]);
 
   const loadProducts = async () => {
     try {
@@ -74,24 +89,29 @@ const ProductsPage = () => {
       
       if (filters.search) apiParams.search = filters.search;
       if (filters.categoryId) apiParams.categoryId = parseInt(filters.categoryId);
-      if (filters.brandId) apiParams.brandId = parseInt(filters.brandId);
       if (filters.minPrice) apiParams.minPrice = parseFloat(filters.minPrice);
       if (filters.maxPrice) apiParams.maxPrice = parseFloat(filters.maxPrice);
       if (filters.sortBy) apiParams.sortBy = filters.sortBy;
-      if (filters.inStock) apiParams.inStock = filters.inStock;
+      if (filters.minRating) apiParams.minRating = parseFloat(filters.minRating);
+      if (filters.stockStatus === 'inStock') apiParams.inStock = true;
+      if (filters.stockStatus === 'outOfStock') apiParams.outOfStock = true;
       
+      console.log('Loading products with params:', apiParams);
       const response = await productService.getAll(apiParams);
+      console.log('Products API response:', response);
 
-      // Fix: axios response có cấu trúc { data: { data: [], page, total, totalPages } }
-      const productsData = response.data?.data || response.data || [];
-      const pageInfo = response.data;
+      // Response is already unwrapped: {data: [...], page, limit, total, totalPages}
+      const productsData = response.data || [];
+
+      console.log('Products array:', productsData);
+      console.log('Products count:', productsData.length);
 
       setProducts(productsData);
       setPagination({
         ...pagination,
-        page: pageInfo?.page || 1,
-        total: pageInfo?.total || 0,
-        totalPages: pageInfo?.totalPages || 1,
+        page: response.page || 1,
+        total: response.total || 0,
+        totalPages: response.totalPages || 1,
       });
     } catch (error) {notify.error('Lỗi tải sản phẩm');
     } finally {
@@ -100,16 +120,13 @@ const ProductsPage = () => {
   };
 
   const handleFilterChange = (filters) => {
+    console.log('ProductsPage handleFilterChange:', filters);
     const params = new URLSearchParams();
     
     // Convert string IDs to numbers and validate
     if (filters.categoryId) {
       const categoryId = parseInt(filters.categoryId);
       if (!isNaN(categoryId)) params.set('category', categoryId);
-    }
-    if (filters.brandId) {
-      const brandId = parseInt(filters.brandId);
-      if (!isNaN(brandId)) params.set('brand', brandId);
     }
     // Always add price params to trigger filtering
     if (filters.minPrice !== undefined && filters.minPrice !== '') {
@@ -123,7 +140,8 @@ const ProductsPage = () => {
     if (filters.sortBy) {
       params.set('sort', filters.sortBy);
     }
-    if (filters.inStock) params.set('inStock', 'true');
+    if (filters.minRating) params.set('rating', filters.minRating);
+    if (filters.stockStatus) params.set('stock', filters.stockStatus);
     if (filters.search) params.set('search', filters.search);
     
     setSearchParams(params);
@@ -138,7 +156,7 @@ const ProductsPage = () => {
 
   return (
     <Layout>
-      <div className="bg-gray-50 min-h-screen pt-21 pb-8">
+      <div className="bg-white min-h-screen pt-21 pb-8">
         <div className="container mx-auto px-4 lg:px-30">
           {/* Breadcrumb */}
           <Breadcrumb items={[
@@ -229,7 +247,9 @@ const ProductsPage = () => {
 
             {/* Products Content - Right Side */}
             <div className="lg:col-span-3">
-              <ProductGrid products={products} loading={loading} viewMode={viewMode} />
+              <div className="min-h-[1400px]">
+                <ProductGrid products={products} loading={loading} viewMode={viewMode} />
+              </div>
 
               {/* Pagination */}
               {!loading && products.length > 0 && (

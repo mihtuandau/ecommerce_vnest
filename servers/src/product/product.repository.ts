@@ -276,21 +276,21 @@ export class ProductRepository {
   }
 
   /**
-   * Get price range of all products
+   * Get price range (min and max) from all product variants
    */
   async getPriceRange() {
-    const result = await this.prisma.product.aggregate({
+    const result = await this.prisma.productVariant.aggregate({
       _min: {
-        basePrice: true,
+        price: true,
       },
       _max: {
-        basePrice: true,
+        price: true,
       },
     });
 
     return {
-      minPrice: result._min.basePrice || 0,
-      maxPrice: result._max.basePrice || 10000000,
+      minPrice: result._min.price || 0,
+      maxPrice: result._max.price || 100000000,
     };
   }
 }

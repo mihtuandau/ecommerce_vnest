@@ -27,7 +27,7 @@ const ProductCard = ({ product, viewMode = 'grid-3' }) => {
 
   // Determine text sizes based on viewMode
   const isGrid2 = viewMode === 'grid-2';
-  const titleClass = isGrid2 ? 'text-xl font-medium' : 'font-medium text-sm';
+  const titleClass = isGrid2 ? 'text-xl font-medium' : 'font-medium text-base';
   const priceClass = isGrid2 ? 'text-lg font-bold' : 'text-lg font-bold';
   const originalPriceClass = isGrid2 ? 'text-sm' : 'text-sm';
   const ratingSize = isGrid2 ? 11 : 12;
@@ -97,7 +97,7 @@ const ProductCard = ({ product, viewMode = 'grid-3' }) => {
   };
 
   return (
-    <div className="group relative bg-white rounded-lg shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col h-full">
+    <div className="group relative bg-white rounded-lg transition-all duration-300 overflow-hidden flex flex-col h-full">
       {/* Badge */}
       {(badge || discountPercent > 0) && (
         <div className="absolute top-3 left-3 z-10">
@@ -135,7 +135,7 @@ const ProductCard = ({ product, viewMode = 'grid-3' }) => {
       </div>
 
       {/* Product Image - Fixed aspect ratio, tighter for grid-2 */}
-      <Link to={`/products/${id}`} className={`block relative overflow-hidden ${isGrid2 ? 'aspect-square' : 'aspect-square'} bg-gray-100`}>
+      <Link to={`/products/${id}`} className={`block relative overflow-hidden ${isGrid2 ? 'aspect-square' : 'aspect-square'} bg-gray-50`}>
         <img
           src={productImage}
           alt={name}

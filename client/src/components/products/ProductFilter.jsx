@@ -4,36 +4,53 @@ import { FaSearch, FaTimes } from 'react-icons/fa';
 const ProductFilter = ({ 
   categories = [], 
   brands = [],
-  priceRange = { minPrice: 0, maxPrice: 10000000 },
+  priceRange = { minPrice: 0, maxPrice: 100000000 },
   onFilterChange,
-  currentFilters = {}
+  currentFilters = {},
+  hideCategories = false
 }) => {
+  // Debug: Log categories
+  useEffect(() => {
+    console.log('ProductFilter received categories:', categories);
+    console.log('Categories length:', categories?.length);
+    console.log('Categories is array?', Array.isArray(categories));
+  }, [categories]);
+
+  // Debug: Log priceRange
+  useEffect(() => {
+    console.log('ProductFilter received priceRange:', priceRange);
+  }, [priceRange]);
+
   const [filters, setFilters] = useState({
     categoryId: currentFilters.categoryId || '',
-    brandId: currentFilters.brandId || '',
     minPrice: parseInt(currentFilters.minPrice) || priceRange.minPrice,
     maxPrice: parseInt(currentFilters.maxPrice) || priceRange.maxPrice,
     sortBy: currentFilters.sortBy || 'newest',
-    inStock: currentFilters.inStock || false,
+    minRating: currentFilters.minRating || '',
+    stockStatus: currentFilters.stockStatus || '',
   });
 
   // Update filters when currentFilters change
   useEffect(() => {
     setFilters({
       categoryId: currentFilters.categoryId || '',
-      brandId: currentFilters.brandId || '',
       minPrice: parseInt(currentFilters.minPrice) || priceRange.minPrice,
       maxPrice: parseInt(currentFilters.maxPrice) || priceRange.maxPrice,
       sortBy: currentFilters.sortBy || 'newest',
-      inStock: currentFilters.inStock || false,
+      minRating: currentFilters.minRating || '',
+      stockStatus: currentFilters.stockStatus || '',
     });
   }, [currentFilters, priceRange]);
 
   const handleChange = (name, value) => {
+    console.log('Filter handleChange:', name, '=', value);
     const newFilters = { ...filters, [name]: value };
+    console.log('New filters:', newFilters);
     setFilters(newFilters);
-    // Auto-apply for sort and category/brand (immediate feedback)
-    if (name === 'sortBy' || name === 'categoryId' || name === 'brandId') {
+    // Auto-apply for sort, category, rating, and stock (immediate feedback)
+    if (name === 'sortBy' || name === 'categoryId' || name === 'minRating' || name === 'stockStatus') {
+      console.log('Auto-applying filter:', name, '=', value);
+      console.log('Filters to apply:', newFilters);
       onFilterChange(newFilters);
     }
   };
@@ -43,20 +60,37 @@ const ProductFilter = ({
   };
 
   const applyPriceFilter = () => {
-    onFilterChange(filters);
+    // Chỉ truyền params khi khác với giá trị mặc định
+    const filtersToApply = { ...filters };
+    
+    // Nếu maxPrice bằng priceRange.maxPrice thì không truyền (lấy tất cả)
+    if (filters.maxPrice >= priceRange.maxPrice) {
+      filtersToApply.maxPrice = '';
+    }
+    // Nếu minPrice bằng 0 thì không truyền
+    if (filters.minPrice <= priceRange.minPrice) {
+      filtersToApply.minPrice = '';
+    }
+    
+    onFilterChange(filtersToApply);
   };
 
   const resetFilters = () => {
     const defaultFilters = {
       categoryId: '',
-      brandId: '',
       minPrice: priceRange.minPrice,
       maxPrice: priceRange.maxPrice,
       sortBy: 'newest',
-      inStock: false,
+      minRating: '',
+      stockStatus: '',
     };
     setFilters(defaultFilters);
-    onFilterChange(defaultFilters);
+    // Không truyền minPrice/maxPrice khi reset (lấy tất cả)
+    onFilterChange({
+      ...defaultFilters,
+      minPrice: '',
+      maxPrice: '',
+    });
   };
 
   const sortOptions = [
@@ -89,24 +123,44 @@ const ProductFilter = ({
         </select>
       </div>
 
-      {/* Category */}
+      {/* Category - Radio buttons */}
+      {!hideCategories && (
       <div className="border-t pt-6">
         <label className="block text-sm font-semibold text-gray-900 mb-3">
-          Danh mục
+          Danh mục {categories && `(${categories.length})`}
         </label>
-        <select
-          value={filters.categoryId}
-          onChange={(e) => handleChange('categoryId', e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 focus:ring-2 focus:ring-gray-900 focus:border-gray-900 text-sm"
-        >
-          <option value="">Tất cả danh mục</option>
-          {categories?.map(cat => (
-            <option key={cat.id} value={cat.id}>
-              {cat.name}
-            </option>
-          ))}
-        </select>
+        <div className="space-y-2">
+          <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded transition-colors">
+            <input
+              type="radio"
+              name="category"
+              value=""
+              checked={filters.categoryId === ''}
+              onChange={(e) => handleChange('categoryId', e.target.value)}
+              className="w-4 h-4 text-gray-900 focus:ring-gray-900 cursor-pointer"
+            />
+            <span className="text-sm text-gray-700">Tất cả danh mục</span>
+          </label>
+          {categories && categories.length > 0 ? (
+            categories.map(cat => (
+              <label key={cat.id} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded transition-colors">
+                <input
+                  type="radio"
+                  name="category"
+                  value={cat.id}
+                  checked={filters.categoryId == cat.id}
+                  onChange={(e) => handleChange('categoryId', e.target.value)}
+                  className="w-4 h-4 text-gray-900 focus:ring-gray-900 cursor-pointer"
+                />
+                <span className="text-sm text-gray-700">{cat.name}</span>
+              </label>
+            ))
+          ) : (
+            <p className="text-sm text-gray-500 italic p-2">Đang tải danh mục...</p>
+          )}
+        </div>
       </div>
+      )}
 
       {/* Brand */}
       <div className="border-t pt-6">
@@ -127,43 +181,193 @@ const ProductFilter = ({
         </select>
       </div>
 
-      {/* Price Range */}
+      {/* Rating Filter */}
+      <div className="border-t pt-6">
+        <label className="block text-sm font-semibold text-gray-900 mb-3">
+          Đánh giá
+        </label>
+        <div className="space-y-2">
+          <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded transition-colors">
+            <input
+              type="radio"
+              name="rating"
+              value=""
+              checked={filters.minRating === ''}
+              onChange={(e) => handleChange('minRating', e.target.value)}
+              className="w-4 h-4 text-gray-900 focus:ring-gray-900 cursor-pointer"
+            />
+            <span className="text-sm text-gray-700">Tất cả</span>
+          </label>
+          <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded transition-colors">
+            <input
+              type="radio"
+              name="rating"
+              value="5"
+              checked={filters.minRating === '5'}
+              onChange={(e) => handleChange('minRating', e.target.value)}
+              className="w-4 h-4 text-gray-900 focus:ring-gray-900 cursor-pointer"
+            />
+            <span className="text-sm text-gray-700 flex items-center gap-1">
+              <span className="text-yellow-500">★★★★★</span>
+              <span>(5 sao)</span>
+            </span>
+          </label>
+          <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded transition-colors">
+            <input
+              type="radio"
+              name="rating"
+              value="4"
+              checked={filters.minRating === '4'}
+              onChange={(e) => handleChange('minRating', e.target.value)}
+              className="w-4 h-4 text-gray-900 focus:ring-gray-900 cursor-pointer"
+            />
+            <span className="text-sm text-gray-700 flex items-center gap-1">
+              <span className="text-yellow-500">★★★★</span>
+              <span>trở lên</span>
+            </span>
+          </label>
+          <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded transition-colors">
+            <input
+              type="radio"
+              name="rating"
+              value="3"
+              checked={filters.minRating === '3'}
+              onChange={(e) => handleChange('minRating', e.target.value)}
+              className="w-4 h-4 text-gray-900 focus:ring-gray-900 cursor-pointer"
+            />
+            <span className="text-sm text-gray-700 flex items-center gap-1">
+              <span className="text-yellow-500">★★★</span>
+              <span>trở lên</span>
+            </span>
+          </label>
+          <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded transition-colors">
+            <input
+              type="radio"
+              name="rating"
+              value="2"
+              checked={filters.minRating === '2'}
+              onChange={(e) => handleChange('minRating', e.target.value)}
+              className="w-4 h-4 text-gray-900 focus:ring-gray-900 cursor-pointer"
+            />
+            <span className="text-sm text-gray-700 flex items-center gap-1">
+              <span className="text-yellow-500">★★</span>
+              <span>trở lên</span>
+            </span>
+          </label>
+          <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded transition-colors">
+            <input
+              type="radio"
+              name="rating"
+              value="1"
+              checked={filters.minRating === '1'}
+              onChange={(e) => handleChange('minRating', e.target.value)}
+              className="w-4 h-4 text-gray-900 focus:ring-gray-900 cursor-pointer"
+            />
+            <span className="text-sm text-gray-700 flex items-center gap-1">
+              <span className="text-yellow-500">★</span>
+              <span>trở lên</span>
+            </span>
+          </label>
+        </div>
+      </div>
+
+      {/* Stock Status Filter */}
+      <div className="border-t pt-6">
+        <label className="block text-sm font-semibold text-gray-900 mb-3">
+          Tình trạng kho
+        </label>
+        <div className="space-y-2">
+          <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded transition-colors">
+            <input
+              type="radio"
+              name="stock"
+              value=""
+              checked={filters.stockStatus === ''}
+              onChange={(e) => handleChange('stockStatus', e.target.value)}
+              className="w-4 h-4 text-gray-900 focus:ring-gray-900 cursor-pointer"
+            />
+            <span className="text-sm text-gray-700">Tất cả</span>
+          </label>
+          <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded transition-colors">
+            <input
+              type="radio"
+              name="stock"
+              value="inStock"
+              checked={filters.stockStatus === 'inStock'}
+              onChange={(e) => handleChange('stockStatus', e.target.value)}
+              className="w-4 h-4 text-gray-900 focus:ring-gray-900 cursor-pointer"
+            />
+            <span className="text-sm text-gray-700 flex items-center gap-1">
+              <span>Còn hàng</span>
+            </span>
+          </label>
+          <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded transition-colors">
+            <input
+              type="radio"
+              name="stock"
+              value="outOfStock"
+              checked={filters.stockStatus === 'outOfStock'}
+              onChange={(e) => handleChange('stockStatus', e.target.value)}
+              className="w-4 h-4 text-gray-900 focus:ring-gray-900 cursor-pointer"
+            />
+            <span className="text-sm text-gray-700 flex items-center gap-1">
+              <span>Hết hàng</span>
+            </span>
+          </label>
+        </div>
+      </div>
+
+      {/* Price Range - Slider */}
       <div className="border-t pt-6">
         <label className="block text-sm font-semibold text-gray-900 mb-3">
           Khoảng giá
         </label>
-        <div className="text-xs text-gray-600 mb-3">
-          {filters.minPrice.toLocaleString('vi-VN')}đ - {filters.maxPrice.toLocaleString('vi-VN')}đ
+        <div className="text-sm text-gray-900 font-medium mb-4 flex justify-between">
+          <span>{filters.minPrice.toLocaleString('vi-VN')}đ</span>
+          <span>{filters.maxPrice.toLocaleString('vi-VN')}đ</span>
         </div>
         
-        <div className="space-y-3 mb-4">
+        {/* Min Price Slider */}
+        <div className="mb-4">
+          <label className="text-xs text-gray-600 mb-2 block">Giá tối thiểu</label>
           <input
-            type="number"
-            placeholder="Giá tối thiểu"
-            value={filters.minPrice}
-            onChange={(e) => handlePriceChange('minPrice', parseInt(e.target.value) || priceRange.minPrice)}
-            className="w-full px-3 py-2 border border-gray-300 text-sm focus:ring-2 focus:ring-gray-900 focus:border-gray-900"
+            type="range"
             min={priceRange.minPrice}
-            max={filters.maxPrice}
-          />
-          <input
-            type="number"
-            placeholder="Giá tối đa"
-            value={filters.maxPrice}
-            onChange={(e) => handlePriceChange('maxPrice', parseInt(e.target.value) || priceRange.maxPrice)}
-            className="w-full px-3 py-2 border border-gray-300 text-sm focus:ring-2 focus:ring-gray-900 focus:border-gray-900"
-            min={filters.minPrice}
             max={priceRange.maxPrice}
+            step="10000"
+            value={filters.minPrice}
+            onChange={(e) => {
+              const value = parseInt(e.target.value);
+              if (value <= filters.maxPrice) {
+                handlePriceChange('minPrice', value);
+              }
+            }}
+            onMouseUp={applyPriceFilter}
+            onTouchEnd={applyPriceFilter}
+            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-gray-900"
           />
         </div>
 
-        <button
-          onClick={applyPriceFilter}
-          className="w-full px-4 py-2.5 bg-gray-900 hover:bg-gray-800 text-white text-sm font-medium transition-colors flex items-center justify-center gap-2 mb-3"
-        >
-          <FaSearch size={14} />
-          Áp dụng giá
-        </button>
+        {/* Max Price Slider */}
+        <div className="mb-4">
+          <label className="text-xs text-gray-600 mb-2 block">Giá tối đa</label>
+          <input
+            type="range"
+            min={priceRange.minPrice}
+            max={priceRange.maxPrice}
+            step="10000"
+            value={filters.maxPrice}
+            onChange={(e) => {
+              const value = parseInt(e.target.value);
+              if (value >= filters.minPrice) {
+                handlePriceChange('maxPrice', value);
+              }
+            }}
+            onMouseUp={applyPriceFilter}
+            onTouchEnd={applyPriceFilter}
+            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-gray-900"
+          />
+        </div>
         
         <button
           onClick={resetFilters}
