@@ -107,6 +107,25 @@ export const productService = {
   getBrands: async () => {
     return await brandService.getAll();
   },
+
+  // Get recommended products
+  getRecommendations: async (productId, categoryId) => {
+    try {
+      const params = {
+        page: 1,
+        limit: 10,
+        categoryId: categoryId || undefined,
+      };
+      const response = await apiService.get(PRODUCT_ENDPOINTS.BASE, params);
+      const products = response.data || response || [];
+      
+      // Lọc bỏ sản phẩm hiện tại và chỉ lấy 5 sản phẩm
+      return products.filter(p => p.id !== productId).slice(0, 5);
+    } catch (error) {
+      console.error('Error fetching recommendations:', error);
+      return [];
+    }
+  },
 };
 
 // Hoặc nếu bạn muốn dùng default export, sửa import statement

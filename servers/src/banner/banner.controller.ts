@@ -12,7 +12,7 @@ import {
   UploadedFile
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiTags, ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../common/guards/auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
@@ -46,6 +46,47 @@ export class BannerController {
   @ApiBearerAuth('Authorization')
   @UseInterceptors(FileInterceptor('image'))
   @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        image: {
+          type: 'string',
+          format: 'binary',
+          description: 'Banner image file'
+        },
+        title: {
+          type: 'string',
+          example: 'Summer Sale 2024'
+        },
+        subtitle: {
+          type: 'string',
+          example: 'Giảm giá lên đến 50%'
+        },
+        video: {
+          type: 'string',
+          example: 'https://example.com/video.mp4'
+        },
+        link: {
+          type: 'string',
+          example: '/products/sale'
+        },
+        buttonText: {
+          type: 'string',
+          example: 'Mua ngay'
+        },
+        isActive: {
+          type: 'boolean',
+          example: true
+        },
+        order: {
+          type: 'number',
+          example: 1
+        }
+      },
+      required: ['image', 'title']
+    }
+  })
   async create(
     @UploadedFile() file: Express.Multer.File,
     @Body() body: any
@@ -74,6 +115,19 @@ export class BannerController {
   @ApiBearerAuth('Authorization')
   @UseInterceptors(FileInterceptor('file'))
   @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: 'Image file to upload'
+        }
+      },
+      required: ['file']
+    }
+  })
   async uploadImage(@UploadedFile() file: Express.Multer.File) {
     const urls = await this.uploadService.uploadImages([file]);
     return { url: urls[0] };
@@ -85,6 +139,46 @@ export class BannerController {
   @ApiBearerAuth('Authorization')
   @UseInterceptors(FileInterceptor('image'))
   @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        image: {
+          type: 'string',
+          format: 'binary',
+          description: 'Banner image file (optional)'
+        },
+        title: {
+          type: 'string',
+          example: 'Summer Sale 2024'
+        },
+        subtitle: {
+          type: 'string',
+          example: 'Giảm giá lên đến 50%'
+        },
+        video: {
+          type: 'string',
+          example: 'https://example.com/video.mp4'
+        },
+        link: {
+          type: 'string',
+          example: '/products/sale'
+        },
+        buttonText: {
+          type: 'string',
+          example: 'Mua ngay'
+        },
+        isActive: {
+          type: 'boolean',
+          example: true
+        },
+        order: {
+          type: 'number',
+          example: 1
+        }
+      }
+    }
+  })
   async update(
     @Param('id') id: string,
     @UploadedFile() file: Express.Multer.File,

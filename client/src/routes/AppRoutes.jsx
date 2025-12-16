@@ -59,6 +59,9 @@ const AdminPaymentsPage = lazy(() =>
 const AdminDiscountsPage = lazy(() =>
   import("../pages/Admin/Discount/DiscountManagement")
 );
+const AdminBannersPage = lazy(() =>
+  import("../pages/Admin/Banner/BannerManagement")
+);
 const AdminChatPage = lazy(() =>
   import("../pages/Admin/Chat/AdminChatManagement")
 );
@@ -191,6 +194,17 @@ const AppRoutes = () => {
               <AdminRoute>
                 <AdminLayout>
                   <AdminDiscountsPage />
+                </AdminLayout>
+              </AdminRoute>
+            }
+          />
+
+          <Route
+            path="/admin-banners"
+            element={
+              <AdminRoute>
+                <AdminLayout>
+                  <AdminBannersPage />
                 </AdminLayout>
               </AdminRoute>
             }

@@ -2,6 +2,7 @@ import { useCallback, useState, useMemo, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaArrowLeft } from 'react-icons/fa';
 import Layout from '../../../components/layouts/Layout';
+import Breadcrumb from '../../../components/common/Breadcrumb';
 import Button from '../../../components/common/Button';
 import CartEmpty from '../../../components/cart/CartEmpty';
 import CartItemsList from '../../../components/cart/CartItemsList';
@@ -110,8 +111,9 @@ const CartPage = () => {
   if (!cartItems || cartItems.length === 0) {
     return (
       <Layout>
-        <div className="bg-gray-50 min-h-screen py-16">
-          <div className="container mx-auto px-4">
+        <div className="bg-gray-50 min-h-screen pt-21 pb-8">
+          <div className="container mx-auto px-4 lg:px-30">
+            <Breadcrumb items={[{ label: 'Giỏ hàng' }]} />
             <CartEmpty />
           </div>
         </div>
@@ -121,15 +123,10 @@ const CartPage = () => {
 
   return (
     <Layout>
-      <div className="bg-gray-50 min-h-screen py-8">
+      <div className="bg-gray-50 min-h-screen pt-32 pb-8">
         <div className="container mx-auto px-4 lg:px-8">
-          <div className="mb-6">
-            <nav className="flex items-center space-x-2 text-sm text-gray-600">
-              <Link to="/" className="hover:text-gray-900">Trang chủ</Link>
-              <span>/</span>
-              <span className="text-gray-900 font-medium">Giỏ hàng</span>
-            </nav>
-          </div>
+          {/* Breadcrumb */}
+          <Breadcrumb items={[{ label: 'Giỏ hàng' }]} />
 
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">

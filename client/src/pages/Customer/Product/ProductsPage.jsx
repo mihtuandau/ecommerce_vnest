@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { FaFilter, FaTh, FaThLarge, FaList } from 'react-icons/fa';
 import Layout from '../../../components/layouts/Layout';
+import Breadcrumb from '../../../components/common/Breadcrumb';
 import ProductGrid from '../../../components/products/ProductGrid';
 import ProductFilter from '../../../components/products/ProductFilter';
 import Pagination from '../../../components/common/Pagination';
 import { productService } from '../../../services/productService';
 import categoryService from '../../../services/categoryService';
 import { notify } from '../../../utils/notification';
+
 
 const ProductsPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -136,14 +138,12 @@ const ProductsPage = () => {
 
   return (
     <Layout>
-      <div className="bg-gray-50 min-h-screen py-8">
-        <div className="container mx-auto px-4 lg:px-8">
+      <div className="bg-gray-50 min-h-screen pt-21 pb-8">
+        <div className="container mx-auto px-4 lg:px-30">
           {/* Breadcrumb */}
-          <nav className="flex items-center gap-2 text-sm text-gray-600 mb-6">
-            <a href="/" className="hover:text-gray-900 transition-colors">Trang chủ</a>
-            <span>›</span>
-            <span className="text-gray-900 font-medium">Sản phẩm</span>
-          </nav>
+          <Breadcrumb items={[
+            { label: 'Sản phẩm' }
+          ]} />
 
           {/* Page Header */}
           <div className="mb-8 flex items-center justify-between">

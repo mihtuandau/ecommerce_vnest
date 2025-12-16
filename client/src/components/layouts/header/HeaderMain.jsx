@@ -20,6 +20,7 @@ const HeaderMain = ({ scrolled, searchOpen, setSearchOpen, mobileMenuOpen, setMo
   const [searchResults, setSearchResults] = useState([]);
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
+  const [desktopSearchOpen, setDesktopSearchOpen] = useState(false);
   const searchRef = useRef(null);
 
   // Load wishlist count
@@ -67,6 +68,7 @@ const HeaderMain = ({ scrolled, searchOpen, setSearchOpen, mobileMenuOpen, setMo
     const handleClickOutside = (event) => {
       if (searchRef.current && !searchRef.current.contains(event.target)) {
         setShowSearchResults(false);
+        setDesktopSearchOpen(false);
       }
     };
 
@@ -116,64 +118,51 @@ const HeaderMain = ({ scrolled, searchOpen, setSearchOpen, mobileMenuOpen, setMo
           scrolled ? 'h-16' : 'h-20'
         }`}>
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-1 flex-shrink-0">
-            <img 
-              src="/logo.png" 
-              alt="Logo" 
-              className={`object-contain transition-all duration-300 ${
-                scrolled ? 'w-16 h-16 sm:w-24 sm:h-24' : 'w-20 h-20 sm:w-30 sm:h-30'
-              }`}
-            />
-            <span className={`font-bold transition-all duration-300 hidden sm:inline ${
-              scrolled ? 'text-xl text-gray-900' : 'text-2xl text-white'
-            }`}>
-              MINH TUAN STORE
-            </span>
-            <span className={`font-bold transition-all duration-300 sm:hidden ${
-              scrolled ? 'text-sm text-gray-900' : 'text-base text-white'
-            }`}>
-              MT STORE
+          <Link to="/" className="flex items-center gap-2 flex-shrink-0">
+            <span className="text-2xl font-bold text-gray-900 tracking-wider" style={{ fontFamily: 'serif' }}>
+              GLACIA
             </span>
           </Link>
 
           {/* Search Bar - Desktop */}
-          <div className="hidden lg:flex flex-1 max-w-md mx-4" ref={searchRef}>
-            <div className="relative w-full">
-              <Input
-                type="text"
-                placeholder="Tìm kiếm sản phẩm..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onFocus={() => searchQuery.trim().length >= 2 && setShowSearchResults(true)}
-                className={`w-full pl-12 pr-4 py-3 border-2 rounded-full focus:outline-none transition-all duration-300 ${
-                  scrolled 
-                    ? 'border-gray-300 bg-white focus:border-gray-900' 
-                    : 'border-white/30 bg-white/20 text-white placeholder:text-white/70 focus:border-white'
-                }`}
-              />
-              <FaSearch className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors duration-300 ${
-                scrolled ? 'text-gray-400' : 'text-white/70'
-              }`} size={20} />
-              <Button
-                variant={scrolled ? 'dark' : 'primary'}
-                onClick={() => {
-                  if (searchQuery.trim()) {
-                    navigate(`/products?search=${encodeURIComponent(searchQuery)}`);
-                    setShowSearchResults(false);
-                  }
-                }}
-                className={`absolute right-2 top-1/2 -translate-y-1/2 rounded-full ${
-                  scrolled 
-                    ? 'bg-gray-900 text-white hover:bg-gray-800' 
-                    : 'bg-white text-gray-900 hover:bg-gray-100'
-                }`}
+          <div className="flex-1 flex justify-end lg:justify-center">
+            {!desktopSearchOpen ? (
+              <button
+                onClick={() => setDesktopSearchOpen(true)}
+                className="hidden lg:block text-gray-700 hover:text-gray-900 transition-colors duration-300"
               >
-                Tìm
-              </Button>
+                <FaSearch size={20} />
+              </button>
+            ) : (
+              <div className="hidden lg:flex max-w-md w-full mx-4" ref={searchRef}>
+                <div className="relative w-full">
+                  <Input
+                    type="text"
+                    placeholder="Tìm kiếm sản phẩm..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onFocus={() => searchQuery.trim().length >= 2 && setShowSearchResults(true)}
+                    autoFocus
+                    className="w-full pl-12 pr-4 py-3 border-2 border-gray-300 bg-white focus:border-gray-900 rounded-full focus:outline-none transition-all duration-300"
+                  />
+                  <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 transition-colors duration-300" size={20} />
+                  <Button
+                    variant="dark"
+                    onClick={() => {
+                      if (searchQuery.trim()) {
+                        navigate(`/products?search=${encodeURIComponent(searchQuery)}`);
+                        setShowSearchResults(false);
+                        setDesktopSearchOpen(false);
+                      }
+                    }}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-gray-900 text-white hover:bg-gray-800"
+                  >
+                    Tìm
+                  </Button>
 
-              {/* Search Results Dropdown */}
-              {showSearchResults && (
-                <div className="absolute top-full mt-2 w-[400px] bg-white rounded-lg shadow-2xl border border-gray-200 max-h-96 overflow-y-auto z-[9999]">
+                  {/* Search Results Dropdown */}
+                  {showSearchResults && (
+                    <div className="absolute top-full mt-2 w-[400px] bg-white rounded-lg shadow-2xl border border-gray-200 max-h-96 overflow-y-auto z-[9999]">
                   {isSearching ? (
                     <div className="p-4 text-center text-gray-500">
                       <div className="animate-spin w-6 h-6 border-2 border-gray-900 border-t-transparent rounded-full mx-auto"></div>
@@ -232,59 +221,39 @@ const HeaderMain = ({ scrolled, searchOpen, setSearchOpen, mobileMenuOpen, setMo
                       <FaSearch className="w-8 h-8 mx-auto mb-2 text-gray-300" />
                       <p className="text-sm">Không tìm thấy sản phẩm</p>
                     </div>
-                  )}
-                </div>
-              )}
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
+          )}
+        </div>
 
           {/* Actions */}
-          <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
+          <div className="flex items-center gap-4 sm:gap-9 flex-shrink-0">
             {/* Search Mobile */}
             <button 
-              className={`lg:hidden transition-colors duration-300 ${
-                scrolled ? 'text-gray-700 hover:text-gray-900' : 'text-white hover:text-gray-200'
-              }`}
+              className="lg:hidden text-gray-700 hover:text-gray-900 transition-colors duration-300"
               onClick={() => setSearchOpen(!searchOpen)}
             >
-              <FaSearch size={20} className="sm:w-6 sm:h-6" />
+              <FaSearch size={20} />
             </button>
 
             {/* Wishlist */}
             <Link 
               to="/wishlist" 
-              className={`relative transition-colors duration-300 ${
-                scrolled ? 'text-gray-700 hover:text-gray-900' : 'text-white hover:text-gray-200'
-              }`}
+              className="relative text-gray-700 hover:text-gray-900 transition-colors duration-300"
               title="Sản phẩm yêu thích"
             >
-              <FaHeart size={20} className="sm:w-6 sm:h-6" />
+              <FaHeart size={20} />
               {wishlistCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                <span className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-medium">
                   {wishlistCount}
                 </span>
               )}
             </Link>
 
-            {/* Cart */}
-            <Link 
-              to="/cart" 
-              className={`relative transition-colors duration-300 ${
-                scrolled ? 'text-gray-700 hover:text-gray-900' : 'text-white hover:text-gray-200'
-              }`}
-              title="Giỏ hàng"
-            >
-              <FaShoppingBag size={20} className="sm:w-6 sm:h-6" />
-              {cartCount > 0 && (
-                <span className={`absolute -top-2 -right-2 min-w-5 h-5 px-1.5 text-white text-xs rounded-full flex items-center justify-center transition-colors duration-300 ${
-                  scrolled ? 'bg-red-600' : 'bg-red-500'
-                }`}>
-                  {cartCount > 99 ? '99+' : cartCount}
-                </span>
-              )}
-            </Link>
-
-            {/* User */}
+            {/* User Icon */}
             {user ? (
               <div 
                 ref={dropdownRef}
@@ -292,14 +261,11 @@ const HeaderMain = ({ scrolled, searchOpen, setSearchOpen, mobileMenuOpen, setMo
               >
                 <button 
                   onClick={toggleDropdown}
-                  className={`flex items-center gap-2 transition-colors duration-300 ${
-                    scrolled ? 'text-gray-700 hover:text-gray-900' : 'text-white hover:text-gray-200'
-                  }`}
+                  className="flex items-center gap-2 text-gray-700 hover:text-gray-900 transition-colors duration-300"
                 >
-                  <FaUserCircle   size={20} className="sm:w-6 sm:h-6" />
-                  <span className="hidden lg:inline font-medium">{user.name}</span>
+                  <FaUser size={20} />
                   <FaChevronDown 
-                    size={16} 
+                    size={12} 
                     className={`hidden lg:block transition-transform duration-200 ${
                       dropdownOpen ? 'rotate-180' : ''
                     }`}
@@ -363,26 +329,28 @@ const HeaderMain = ({ scrolled, searchOpen, setSearchOpen, mobileMenuOpen, setMo
                 )}
               </div>
             ) : (
-              <Link to="/login" className="hidden sm:block">
-                <Button
-                  variant={scrolled ? 'dark' : 'primary'}
-                  icon={FaUser}
-                  className={`rounded-full text-sm sm:text-base px-3 sm:px-4 py-2 ${
-                    scrolled 
-                      ? 'bg-gray-900 text-white hover:bg-gray-800' 
-                      : 'bg-white text-gray-900 hover:bg-gray-100'
-                  }`}
-                >
-                  <span className="hidden lg:inline">Đăng nhập</span>
-                </Button>
+              <Link to="/login" className="hidden sm:flex items-center text-gray-700 hover:text-gray-900">
+                <FaUser size={20} />
               </Link>
             )}
 
+            {/* Cart */}
+            <Link 
+              to="/cart" 
+              className="relative text-gray-700 hover:text-gray-900 transition-colors duration-300"
+              title="Giỏ hàng"
+            >
+              <FaShoppingCart size={20} />
+              {cartCount > 0 && (
+                <span className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-medium">
+                  {cartCount > 99 ? '99+' : cartCount}
+                </span>
+              )}
+            </Link>
+
             {/* Mobile Menu */}
             <button 
-              className={`lg:hidden transition-colors duration-300 ${
-                scrolled ? 'text-gray-700' : 'text-white'
-              }`}
+              className="lg:hidden text-gray-700"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
               {mobileMenuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}

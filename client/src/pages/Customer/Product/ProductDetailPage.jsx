@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import Layout from '../../../components/layouts/Layout';
 import Loading from '../../../components/common/Loading';
+import Breadcrumb from '../../../components/common/Breadcrumb';
 import { ProductImageGallery, ProductDetails } from '../../../components/products/ProductDetail';
 import { productService } from '../../../services/productService';
 import { useCart } from '../../../hooks/useCart';
 import { useAuth } from '../../../hooks/useAuth';
 import StarRating from '../../../components/common/StarRating';
 import ReviewList from '../../../components/products/ReviewList';
+import ProductRecommendations from '../../../components/products/ProductRecommendations';
 import { notify } from '../../../utils/notification';
 
 const ProductDetailPage = () => {
@@ -191,22 +193,17 @@ const ProductDetailPage = () => {
 
   return (
     <Layout>
-      <div className="bg-gray-50 min-h-screen py-8">
-        <div className="container mx-auto px-4 lg:px-8">
+      <div className="bg-gray-50 min-h-screen pt-21 pb-8">
+        <div className="container mx-auto px-4 lg:px-30">
           {/* Breadcrumb */}
-          <div className="mb-6">
-            <nav className="flex items-center space-x-2 text-sm text-gray-600">
-              <Link to="/" className="hover:text-gray-900">Trang chủ</Link>
-              <span>/</span>
-              <Link to="/products" className="hover:text-gray-900">Sản phẩm</Link>
-              <span>/</span>
-              <span className="text-gray-900 font-medium">{product.name}</span>
-            </nav>
-          </div>
+          <Breadcrumb items={[
+            { label: 'Sản phẩm', path: '/products' },
+            { label: product.name }
+          ]} />
 
-          {/* Product Detail */}
-          <div className="bg-white rounded-lg shadow-sm p-6 lg:p-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+          {/* Product Detail Card */}
+          <div className="bg-white rounded-2xl shadow-sm overflow-hidden mb-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 lg:p-10">
               <ProductImageGallery
                 images={images}
                 selectedImage={selectedImage}
@@ -231,57 +228,41 @@ const ProductDetailPage = () => {
               />
             </div>
 
-            {/* Rating & Sold Count */}
-            <div className="mt-8 pt-6 border-t border-gray-200">
-              <div className="flex items-center gap-6 flex-wrap">
-                <div className="flex items-center gap-2">
-                  <StarRating
-                    rating={product.averageRating || 0}
-                    size={20}
-                    showNumber
-                    reviewCount={product.reviewCount || 0}
-                  />
-                </div>
-                {product.soldCount > 0 && (
-                  <div className="flex items-center gap-2 text-gray-600">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                    </svg>
-                    <span className="text-sm font-medium">{product.soldCount} đã bán</span>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Tabs */}
-            <div className="mt-8 border-t border-gray-200">
-              <div className="flex gap-8 border-b border-gray-200">
+            {/* Tabs Section */}
+            <div className="border-t border-gray-200">
+              <div className="flex gap-8 px-6 lg:px-10 border-b border-gray-200">
                 <button
                   onClick={() => setActiveTab('description')}
-                  className={`py-4 px-2 font-medium transition-colors relative ${
+                  className={`py-4 px-2 font-semibold transition-all relative ${
                     activeTab === 'description'
-                      ? 'text-blue-600 border-b-2 border-blue-600'
-                      : 'text-gray-600 hover:text-gray-900'
+                      ? 'text-gray-900 border-b-3 border-gray-900'
+                      : 'text-gray-500 hover:text-gray-700'
                   }`}
                 >
                   Mô tả sản phẩm
+                  {activeTab === 'description' && (
+                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900"></div>
+                  )}
                 </button>
                 <button
                   onClick={() => setActiveTab('reviews')}
-                  className={`py-4 px-2 font-medium transition-colors relative ${
+                  className={`py-4 px-2 font-semibold transition-all relative ${
                     activeTab === 'reviews'
-                      ? 'text-blue-600 border-b-2 border-blue-600'
-                      : 'text-gray-600 hover:text-gray-900'
+                      ? 'text-gray-900 border-b-3 border-gray-900'
+                      : 'text-gray-500 hover:text-gray-700'
                   }`}
                 >
                   Đánh giá ({product.reviewCount || 0})
+                  {activeTab === 'reviews' && (
+                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900"></div>
+                  )}
                 </button>
               </div>
 
-              <div className="py-6">
+              <div className="p-6 lg:p-10">
                 {activeTab === 'description' && (
                   <div className="prose max-w-none">
-                    <p className="text-gray-700 leading-relaxed">
+                    <p className="text-gray-700 text-base leading-relaxed whitespace-pre-line">
                       {product.description || 'Chưa có mô tả sản phẩm'}
                     </p>
                   </div>
@@ -289,21 +270,24 @@ const ProductDetailPage = () => {
 
                 {activeTab === 'reviews' && (
                   <div className="space-y-6">
-                    {/* Thông báo hướng dẫn đánh giá */}
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
                       <p className="text-sm text-blue-800">
-                        <span className="font-medium">💡 Hướng dẫn:</span> Để đánh giá sản phẩm này, vui lòng đặt hàng và đợi đơn hàng được giao thành công. 
-                        Sau đó, bạn có thể đánh giá trong trang <Link to="/orders" className="font-medium underline">Đơn hàng của tôi</Link>.
+                        <span className="font-semibold">💡 Hướng dẫn:</span> Để đánh giá sản phẩm này, vui lòng đặt hàng và đợi đơn hàng được giao thành công. 
+                        Sau đó, bạn có thể đánh giá trong trang <Link to="/orders" className="font-semibold underline hover:text-blue-900">Đơn hàng của tôi</Link>.
                       </p>
                     </div>
-
-                    {/* Review List */}
                     <ReviewList productId={product.id} />
                   </div>
                 )}
               </div>
             </div>
           </div>
+
+          {/* Product Recommendations */}
+          <ProductRecommendations 
+            productId={product.id} 
+            categoryId={product.categoryId} 
+          />
         </div>
       </div>
     </Layout>

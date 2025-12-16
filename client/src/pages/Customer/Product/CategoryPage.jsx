@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { FaFilter, FaTh, FaThLarge, FaList } from 'react-icons/fa';
 import Layout from '../../../components/layouts/Layout';
+import Breadcrumb from '../../../components/common/Breadcrumb';
 import ProductGrid from '../../../components/products/ProductGrid';
 import ProductFilter from '../../../components/products/ProductFilter';
 import Pagination from '../../../components/common/Pagination';
@@ -156,18 +157,13 @@ const CategoryPage = () => {
 
   return (
     <Layout>
-      <div className="bg-gray-50 min-h-screen py-8">
-        <div className="container mx-auto px-4 lg:px-8">
+      <div className="bg-gray-50 min-h-screen pt-21 pb-8">
+        <div className="container mx-auto px-4 lg:px-10">
           {/* Breadcrumb */}
-          <div className="mb-6">
-            <nav className="flex items-center space-x-2 text-sm text-gray-600">
-              <a href="/" className="hover:text-gray-900">Trang chủ</a>
-              <span>/</span>
-              <a href="/products" className="hover:text-gray-900">Sản phẩm</a>
-              <span>/</span>
-              <span className="text-gray-900 font-medium">{category?.name}</span>
-            </nav>
-          </div>
+          <Breadcrumb items={[
+            { label: 'Sản phẩm', path: '/products' },
+            { label: category?.name || 'Danh mục' }
+          ]} />
 
           {/* Category Header */}
           {category && (

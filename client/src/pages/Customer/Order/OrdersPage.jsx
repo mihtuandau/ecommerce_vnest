@@ -4,6 +4,7 @@ import { FaBox, FaClock, FaArrowLeft, FaStar } from 'react-icons/fa';
 import { notify } from '../../../utils/notification';
 import Loading from '../../../components/common/Loading';
 import Layout from '../../../components/layouts/Layout';
+import Breadcrumb from '../../../components/common/Breadcrumb';
 import orderService from '../../../services/orderService';
 import reviewService from '../../../services/reviewService';
 import { formatPrice, formatDateTime } from '../../../utils/formatters';
@@ -171,14 +172,12 @@ const OrdersPage = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-50 py-8">
-        <div className="container mx-auto px-4 max-w-5xl">
+      <div className="min-h-screen bg-gray-50 pt-21 pb-8">
+        <div className="container mx-auto px-4 lg:px-30">
           {/* Breadcrumb */}
-          <nav className="flex items-center gap-2 text-sm text-gray-600 mb-4">
-            <a href="/" className="hover:text-gray-900 transition-colors">Trang chủ</a>
-            <span>›</span>
-            <span className="text-gray-900 font-medium">Đơn hàng của tôi</span>
-          </nav>
+          <Breadcrumb items={[
+            { label: 'Đơn hàng của tôi' }
+          ]} />
 
           {/* Header */}
           <div className="mb-6">

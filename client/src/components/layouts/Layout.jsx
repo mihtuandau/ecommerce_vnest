@@ -27,7 +27,7 @@ const Layout = ({ children, showSidebar = false }) => {
   return (
     <div className="min-h-screen flex flex-col bg-white">
       <Header />
-      <main className="flex-1 pt-[104px]">
+      <main className="flex-1 pt-[60px]">
         {children || <Outlet />}
       </main>
       <Footer />
