@@ -14,6 +14,7 @@ import {
   Truck,
   CreditCard,
   MessageSquare,
+  Image,
 } from 'lucide-react';
 import clsx from 'clsx';
 import { useAuth } from '../../hooks/useAuth';
@@ -61,6 +62,12 @@ const AdminSidebar = ({ isOpen }) => {
           path: '/admin-brands',
           icon: Tag,
           label: 'Brands',
+          badge: null,
+        },
+        {
+          path: '/admin-banners',
+          icon: Image,
+          label: 'Banners',
           badge: null,
         },
       ],

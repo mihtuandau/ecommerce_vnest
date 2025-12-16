@@ -60,7 +60,7 @@ const WishlistPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="container mx-auto px-4 lg:px-30 pt-21 pb-8">
         <Breadcrumb items={[{ label: 'Sản phẩm yêu thích' }]} />
 
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">

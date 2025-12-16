@@ -1,51 +1,48 @@
 import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Play, Pause } from 'lucide-react';
-import Button from '../common/Button';
+import { Link } from 'react-router-dom';
 
 const HeroBanner = ({ slides = [] }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
-  const [videoMuted, setVideoMuted] = useState(true);
+  const [videoMuted, setVideoMuted] = useState(false);
 
   // Default slides nếu không có data
   const defaultSlides = [
     {
       type: 'image',  
-      url: 'https://example.com/default-banner1.jpg',
-      title: 'Chào Mừng Đến Với Cửa Hàng Của Chúng Tôi',
-      subtitle: 'Khám phá bộ sưu tập mới nhất ngay hôm nay',
-      cta: 'Mua Ngay',
+      url: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1920',
+      title: 'Winter Fashion Sensations.',
+      subtitle: 'Having plain clothing makes you look ordinary. We can assist you in choosing the right dresses with Foesta.',
+      cta: 'Shop Now',
       ctaLink: '/products'
     },
   ];
- 
 
   // Map banners từ API với format chuẩn
   const bannerSlides = slides.length > 0 
-    ? slides.map(banner => {
-        // Determine if it's a video based on video field being a real video URL
-        const isVideo = banner.video && banner.video !== 'https://example.com/video.mp4' && banner.video.includes('.mp4');
-        
-        return {
-          type: isVideo ? 'video' : 'image',
-          url: isVideo ? banner.video : banner.image,
-          title: banner.title || 'Banner',
-          subtitle: banner.subtitle || '',
-          cta: banner.buttonText || 'Xem Ngay',
-          ctaLink: banner.link || '/products'
-        };
-      })
+    ? slides.map(banner => ({
+        type: 'image',
+        url: banner.image,
+        title: banner.title || 'Winter Fashion Sensations.',
+        subtitle: banner.subtitle || 'Having plain clothing makes you look ordinary.',
+        cta: banner.buttonText || 'Shop Now',
+        ctaLink: banner.link || '/products'
+      }))
     : defaultSlides;
 
   useEffect(() => {
-    if (!isPlaying) return;
+    let interval;
+    if (isPlaying) {
+      interval = setInterval(() => {
+        setCurrentSlide((prev) => (prev + 1) % bannerSlides.length);
+      }, 5000);
+    }
 
-    const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % bannerSlides.length);
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, [isPlaying, bannerSlides.length]);
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [bannerSlides.length, isPlaying]);
 
   const goToSlide = (index) => {
     setCurrentSlide(index);
@@ -62,7 +59,7 @@ const HeroBanner = ({ slides = [] }) => {
   const currentBanner = bannerSlides[currentSlide];
 
   return (
-    <div className="relative w-full h-[400px] sm:h-[500px] md:h-[600px] lg:h-[700px] xl:h-[800px] overflow-hidden bg-gray-900">
+    <div className="relative w-full h-[600px] lg:h-[800px] overflow-hidden bg-gray-100 -mt-[60px]">
       {/* Slides */}
       {bannerSlides.map((slide, index) => (
         <div
@@ -74,10 +71,9 @@ const HeroBanner = ({ slides = [] }) => {
           {slide.type === 'video' ? (
             <video
               src={slide.url}
+              muted={videoMuted}
               autoPlay
               loop
-              muted={videoMuted}
-              playsInline
               className="w-full h-full object-cover"
             />
           ) : (
@@ -87,29 +83,26 @@ const HeroBanner = ({ slides = [] }) => {
               className="w-full h-full object-cover"
             />
           )}
-          
-          {/* Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent" />
         </div>
       ))}
 
-      {/* Content */}
+      {/* Content - Left Side */}
       <div className="relative z-20 h-full flex items-center">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-xl lg:max-w-2xl animate-fadeIn">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-7xl font-bold text-white mb-2 sm:mb-3 md:mb-4 drop-shadow-2xl animate-slideUp leading-tight">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-16">
+          <div className="max-w-xl lg:max-w-2xl">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-6 leading-tight drop-shadow-lg animate-slideUp">
               {currentBanner.title}
             </h1>
             <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-gray-200 mb-4 sm:mb-6 md:mb-8 drop-shadow-lg animate-slideUp animation-delay-200">
               {currentBanner.subtitle}
             </p>
             <div className="flex gap-2 sm:gap-3 md:gap-4 animate-slideUp animation-delay-400">
-              <Button
-                onClick={() => window.location.href = currentBanner.ctaLink}
-                className="px-4 py-2 sm:px-6 sm:py-3 md:px-8 md:py-4 text-sm sm:text-base md:text-lg font-semibold rounded-full shadow-2xl hover:scale-105 transition-transform"
+              <Link
+                to={currentBanner.ctaLink}
+                className="px-4 py-2 sm:px-6 sm:py-3 md:px-8 md:py-4 text-sm sm:text-base md:text-lg font-semibold bg-teal-600 hover:bg-teal-700 text-white rounded-full shadow-2xl hover:scale-105 transition-transform"
               >
                 {currentBanner.cta}
-              </Button>
+              </Link>
               {currentBanner.type === 'video' && (
                 <button
                   onClick={() => setVideoMuted(!videoMuted)}

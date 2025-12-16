@@ -148,37 +148,35 @@ const ProductCard = ({ product, viewMode = 'grid-3' }) => {
       <div className={`flex flex-col flex-grow ${isGrid2 ? 'p-3' : 'p-4'}`}>
         {/* Product Name - Fixed height with ellipsis */}
         <Link to={`/products/${id}`} className="block mb-2">
-          <h3 className={`${titleClass} text-gray-900 hover:text-blue-600 transition-colors line-clamp-2 ${minTitleHeight}`} title={name}>
+          <h3 className={`${titleClass} text-gray-900 hover:text-blue-600 transition-colors line-clamp-2 ${isGrid2 ? 'min-h-[3rem]' : 'min-h-[2.5rem]'}`} title={name}>
             {name}
           </h3>
         </Link>
 
-        {/* Rating & Sold Count */}
-        <div className={`flex items-center justify-between gap-2 mb-2 flex-wrap ${isGrid2 ? 'text-xs' : 'text-sm'}`}>
-          {(product.averageRating > 0 || product.reviewCount > 0) && (
-            <StarRating
-              rating={product.averageRating || 0}
-              size={ratingSize}
-              showNumber
-              reviewCount={product.reviewCount || 0}
-            />
-          )}
-          {(product.soldCount > 0 || product.sold > 0) && (
-            <span className={`${soldTextClass} text-gray-600 font-medium`}>
-              🔥 Đã bán {product.soldCount || product.sold || 0}
-            </span>
-          )}
+        {/* Rating & Sold Count - Fixed height to maintain consistency */}
+        <div className={`flex items-center justify-between gap-2 mb-2 flex-wrap ${isGrid2 ? 'text-xs min-h-[24px]' : 'text-sm min-h-[20px]'}`}>
+          <StarRating
+            rating={product.averageRating || 0}
+            size={ratingSize}
+            showNumber
+            reviewCount={product.reviewCount || 0}
+          />
+          <span className={`${soldTextClass} text-gray-600 font-medium`}>
+            🔥 Đã bán {product.soldCount || product.sold || 0}
+          </span>
         </div>
 
-        {/* Price */}
-        <div className="flex items-baseline gap-2 flex-wrap">
+        {/* Price - Fixed height */}
+        <div className={`flex items-baseline gap-2 flex-wrap ${isGrid2 ? 'min-h-[28px]' : 'min-h-[24px]'}`}>
           <span className={`${priceClass} text-gray-900`}>
             {formatPrice(productPrice)}
           </span>
-          {productOriginalPrice && productOriginalPrice > productPrice && (
+          {productOriginalPrice && productOriginalPrice > productPrice ? (
             <span className={`${originalPriceClass} text-gray-400 line-through`}>
               {formatPrice(productOriginalPrice)}
             </span>
+          ) : (
+            <span className="invisible text-sm">000.000 ₫</span>
           )}
         </div>
       </div>

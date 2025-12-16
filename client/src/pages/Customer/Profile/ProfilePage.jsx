@@ -5,6 +5,7 @@ import authService from '../../../services/authService';
 import userService from '../../../services/userService';
 import Layout from '../../../components/layouts/Layout';
 import Loading from '../../../components/common/Loading';
+import Breadcrumb from '../../../components/common/Breadcrumb';
 import PersonalInfoForm from '../../../components/customer/PersonalInfoForm';
 import AddressManager from '../../../components/customer/AddressManager';
 import ChangePasswordForm from '../../../components/customer/ChangePasswordForm';
@@ -48,14 +49,12 @@ const ProfilePage = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-50 py-8">
-        <div className="container mx-auto px-4 max-w-7xl">
+      <div className="min-h-screen bg-gray-50 pt-21 pb-8">
+        <div className="container mx-auto px-4 lg:px-30">
           {/* Breadcrumb */}
-          <nav className="flex items-center gap-2 text-sm text-gray-600 mb-6">
-            <a href="/" className="hover:text-gray-900 transition-colors">Trang chủ</a>
-            <span>›</span>
-            <span className="text-gray-900 font-medium">Thông tin tài khoản</span>
-          </nav>
+          <Breadcrumb items={[
+            { label: 'Thông tin tài khoản' }
+          ]} />
 
           {/* Header với Avatar */}
           <div className="bg-white rounded-xl shadow-sm p-6 mb-6">

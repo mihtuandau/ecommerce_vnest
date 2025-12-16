@@ -70,13 +70,12 @@ const HomePage = () => {
 
   return (
     <Layout>
-      <div className="-mt-[104px]">
-        <HeroBanner slides={homeData.banners} />
-      </div>
+      <HeroBanner slides={homeData.banners}  />
       <FeaturedCategories categories={homeData.categories} />
       <BestSellingProducts products={homeData.bestSellers} />
       <FeaturedProducts products={homeData.featuredProducts} />
       <PromoBanner />
+  
     </Layout>
   );
 };

@@ -36,7 +36,7 @@ const bannerService = {
    * Update banner with optional new image (Admin only)
    */
   update: async (id, formData) => {
-    const response = await apiService.upload(BANNER_ENDPOINTS.BY_ID(id), formData, {
+    const response = await apiService.uploadPut(BANNER_ENDPOINTS.BY_ID(id), formData, {
       'Content-Type': 'multipart/form-data'
     });
     return response;

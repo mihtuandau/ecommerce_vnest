@@ -144,6 +144,35 @@ const apiService = {
   },
 
   /**
+   * Upload file with PUT method
+   * @param {string} url 
+   * @param {FormData} formData 
+   * @param {object} headers 
+   * @param {function} onUploadProgress 
+   */
+  uploadPut: async (url, formData, headers = {}, onUploadProgress = null) => {
+    try {
+      const response = await axiosClient.put(url, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          ...headers,
+        },
+        onUploadProgress: onUploadProgress
+          ? (progressEvent) => {
+              const percentCompleted = Math.round(
+                (progressEvent.loaded * 100) / progressEvent.total
+              );
+              onUploadProgress(percentCompleted);
+            }
+          : undefined,
+      });
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error;
+    }
+  },
+
+  /**
    * Download file
    * @param {string} url
    * @param {object} params
