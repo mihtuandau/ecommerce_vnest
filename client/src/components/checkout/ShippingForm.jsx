@@ -45,22 +45,22 @@ const ShippingForm = ({ shippingInfo, onInputChange, onSelectAddressClick, isGue
 
   const loadDistricts = async (provinceCode) => {
     try {
-      const data = await locationService.getProvinceWithDistricts(provinceCode);
-      setDistricts(data.districts || []);
+      const data = await locationService.getDistrictsByProvince(provinceCode);
+      setDistricts(data || []);
     } catch (error) {}
   };
 
   const loadWards = async (districtCode) => {
     try {
-      const data = await locationService.getDistrictWithWards(districtCode);
-      setWards(data.wards || []);
+      const data = await locationService.getWardsByDistrict(districtCode);
+      setWards(data || []);
     } catch (error) {}
   };
 
   const handleProvinceChange = (e) => {
-    const selectedProvince = provinces.find(p => p.code === parseInt(e.target.value));
+    const selectedProvince = provinces.find(p => p.id === e.target.value);
     if (selectedProvince) {
-      onInputChange('cityCode', selectedProvince.code);
+      onInputChange('cityCode', selectedProvince.id);
       onInputChange('city', selectedProvince.name);
       onInputChange('districtCode', '');
       onInputChange('district', '');
@@ -70,9 +70,9 @@ const ShippingForm = ({ shippingInfo, onInputChange, onSelectAddressClick, isGue
   };
 
   const handleDistrictChange = (e) => {
-    const selectedDistrict = districts.find(d => d.code === parseInt(e.target.value));
+    const selectedDistrict = districts.find(d => d.id === e.target.value);
     if (selectedDistrict) {
-      onInputChange('districtCode', selectedDistrict.code);
+      onInputChange('districtCode', selectedDistrict.id);
       onInputChange('district', selectedDistrict.name);
       onInputChange('wardCode', '');
       onInputChange('ward', '');
@@ -80,9 +80,9 @@ const ShippingForm = ({ shippingInfo, onInputChange, onSelectAddressClick, isGue
   };
 
   const handleWardChange = (e) => {
-    const selectedWard = wards.find(w => w.code === parseInt(e.target.value));
+    const selectedWard = wards.find(w => w.id === e.target.value);
     if (selectedWard) {
-      onInputChange('wardCode', selectedWard.code);
+      onInputChange('wardCode', selectedWard.id);
       onInputChange('ward', selectedWard.name);
     }
   };
@@ -180,7 +180,7 @@ const ShippingForm = ({ shippingInfo, onInputChange, onSelectAddressClick, isGue
             >
               <option value="">Chọn tỉnh/thành phố</option>
               {provinces.map(province => (
-                <option key={province.code} value={province.code}>
+                <option key={province.id} value={province.id}>
                   {province.name}
                 </option>
               ))}
@@ -199,7 +199,7 @@ const ShippingForm = ({ shippingInfo, onInputChange, onSelectAddressClick, isGue
             >
               <option value="">Chọn quận/huyện</option>
               {districts.map(district => (
-                <option key={district.code} value={district.code}>
+                <option key={district.id} value={district.id}>
                   {district.name}
                 </option>
               ))}
@@ -218,7 +218,7 @@ const ShippingForm = ({ shippingInfo, onInputChange, onSelectAddressClick, isGue
             >
               <option value="">Chọn phường/xã</option>
               {wards.map(ward => (
-                <option key={ward.code} value={ward.code}>
+                <option key={ward.id} value={ward.id}>
                   {ward.name}
                 </option>
               ))}

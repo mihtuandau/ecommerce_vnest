@@ -91,7 +91,7 @@ const AddressFormModal = ({
                 >
                   <option value="">Chọn tỉnh/thành</option>
                   {provinces.map((province) => (
-                    <option key={province.code} value={province.name}>
+                    <option key={province.id} value={province.name}>
                       {province.name}
                     </option>
                   ))}
@@ -111,7 +111,7 @@ const AddressFormModal = ({
                 >
                   <option value="">Chọn quận/huyện</option>
                   {districts.map((district) => (
-                    <option key={district.code} value={district.name}>
+                    <option key={district.id} value={district.name}>
                       {district.name}
                     </option>
                   ))}
@@ -131,7 +131,7 @@ const AddressFormModal = ({
                 >
                   <option value="">Chọn phường/xã</option>
                   {wards.map((ward) => (
-                    <option key={ward.code} value={ward.name}>
+                    <option key={ward.id} value={ward.name}>
                       {ward.name}
                     </option>
                   ))}

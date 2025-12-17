@@ -43,17 +43,17 @@ const AddressSelector = ({ onAddressSelect, selectedAddressId }) => {
 
       // Get district code
       if (address.state) {
-        const provinceWithDistricts = await locationService.getProvinceWithDistricts(selectedProvince.code);
-        const selectedDistrict = provinceWithDistricts.districts?.find(d => d.name === address.state);
+        const districts = await locationService.getDistrictsByProvince(selectedProvince.id);
+        const selectedDistrict = districts?.find(d => d.name === address.state);
         if (selectedDistrict) {
-          districtCode = selectedDistrict.code;
+          districtCode = selectedDistrict.id;
 
           // Get ward code
           if (address.ward) {
-            const districtWithWards = await locationService.getDistrictWithWards(districtCode);
-            const selectedWard = districtWithWards.wards?.find(w => w.name === address.ward);
+            const wards = await locationService.getWardsByDistrict(districtCode);
+            const selectedWard = wards?.find(w => w.name === address.ward);
             if (selectedWard) {
-              wardCode = selectedWard.code;
+              wardCode = selectedWard.id;
             }
           }
         }
@@ -62,7 +62,7 @@ const AddressSelector = ({ onAddressSelect, selectedAddressId }) => {
       // Add codes to address object
       const addressWithCodes = {
         ...address,
-        cityCode: selectedProvince.code,
+        cityCode: selectedProvince.id,
         districtCode: districtCode,
         wardCode: wardCode
       };

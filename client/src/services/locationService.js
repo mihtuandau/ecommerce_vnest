@@ -31,45 +31,31 @@ const locationService = {
    * @returns {Promise} Danh sách tỉnh/thành phố
    */
   getAllProvinces: async () => {
-    return await locationApi.get(LOCATION_ENDPOINTS.ALL_PROVINCES);
-  },
-
-  /**
-   * Lấy thông tin chi tiết tỉnh/thành phố (bao gồm quận/huyện)
-   * @param {number} provinceCode - Mã tỉnh/thành phố
-   * @returns {Promise} Thông tin tỉnh và danh sách quận/huyện
-   */
-  getProvinceWithDistricts: async (provinceCode) => {
-    return await locationApi.get(LOCATION_ENDPOINTS.PROVINCE_WITH_DISTRICTS(provinceCode));
-  },
-
-  /**
-   * Lấy thông tin chi tiết quận/huyện (bao gồm phường/xã)
-   * @param {number} districtCode - Mã quận/huyện
-   * @returns {Promise} Thông tin quận/huyện và danh sách phường/xã
-   */
-  getDistrictWithWards: async (districtCode) => {
-    return await locationApi.get(LOCATION_ENDPOINTS.DISTRICT_WITH_WARDS(districtCode));
+    const response = await locationApi.get(LOCATION_ENDPOINTS.ALL_PROVINCES);
+    // esgoo API trả về {error, error_text, data_name, data: [...]}
+    return response.data || [];
   },
 
   /**
    * Lấy danh sách quận/huyện theo tỉnh/thành phố
-   * @param {number} provinceCode - Mã tỉnh/thành phố
+   * @param {string} provinceId - Mã tỉnh/thành phố
    * @returns {Promise} Danh sách quận/huyện
    */
-  getDistrictsByProvince: async (provinceCode) => {
-    const provinceData = await locationService.getProvinceWithDistricts(provinceCode);
-    return provinceData.districts || [];
+  getDistrictsByProvince: async (provinceId) => {
+    const response = await locationApi.get(LOCATION_ENDPOINTS.DISTRICTS_BY_PROVINCE(provinceId));
+    // esgoo API trả về {error, error_text, data_name, data: [...]}
+    return response.data || [];
   },
 
   /**
    * Lấy danh sách phường/xã theo quận/huyện
-   * @param {number} districtCode - Mã quận/huyện
+   * @param {string} districtId - Mã quận/huyện
    * @returns {Promise} Danh sách phường/xã
    */
-  getWardsByDistrict: async (districtCode) => {
-    const districtData = await locationService.getDistrictWithWards(districtCode);
-    return districtData.wards || [];
+  getWardsByDistrict: async (districtId) => {
+    const response = await locationApi.get(LOCATION_ENDPOINTS.WARDS_BY_DISTRICT(districtId));
+    // esgoo API trả về {error, error_text, data_name, data: [...]}
+    return response.data || [];
   },
 
   /**

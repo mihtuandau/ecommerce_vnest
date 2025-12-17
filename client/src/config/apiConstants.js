@@ -177,13 +177,13 @@ export const UPLOAD_ENDPOINTS = {
 // LOCATION ENDPOINTS (External API)
 // ============================================
 export const LOCATION_API = {
-  BASE_URL: 'https://provinces.open-api.vn/api',
+  BASE_URL: 'https://esgoo.net/api-tinhthanh',
 };
 
 export const LOCATION_ENDPOINTS = {
-  ALL_PROVINCES: '/p/',
-  PROVINCE_WITH_DISTRICTS: (provinceCode) => `/p/${provinceCode}?depth=2`,
-  DISTRICT_WITH_WARDS: (districtCode) => `/d/${districtCode}?depth=2`,
+  ALL_PROVINCES: '/1/0.htm',
+  DISTRICTS_BY_PROVINCE: (provinceId) => `/2/${provinceId}.htm`,
+  WARDS_BY_DISTRICT: (districtId) => `/3/${districtId}.htm`,
 };
 
 // ============================================
