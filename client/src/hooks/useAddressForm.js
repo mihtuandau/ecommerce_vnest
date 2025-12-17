@@ -33,13 +33,13 @@ export const useAddressForm = (initialData = null) => {
       if (initialData.city) {
         const province = provinces.find(p => p.name === initialData.city);
         if (province) {
-          loadDistricts(province.code).then(() => {
+          loadDistricts(province.id).then(() => {
             // After districts are loaded, load wards if state is present
             if (initialData.state) {
               // Wait a bit for districts to be set
               setTimeout(() => {
                 const district = districts.find(d => d.name === initialData.state);
-                if (district) loadWards(district.code);
+                if (district) loadWards(district.id);
               }, 100);
             }
           });
@@ -96,7 +96,7 @@ export const useAddressForm = (initialData = null) => {
     setWards([]);
     
     if (selectedProvince) {
-      loadDistricts(selectedProvince.code);
+      loadDistricts(selectedProvince.id);
     }
   };
 
@@ -108,7 +108,7 @@ export const useAddressForm = (initialData = null) => {
     setWards([]);
     
     if (selectedDistrict) {
-      loadWards(selectedDistrict.code);
+      loadWards(selectedDistrict.id);
     }
   };
 
