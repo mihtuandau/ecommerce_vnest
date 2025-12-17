@@ -126,9 +126,18 @@ export class DashboardRepository {
 
   /**
    * Get all order items with product information
+   * Only includes items from DELIVERED orders with SUCCESS payment
    */
   async getAllOrderItemsWithProducts() {
     return this.prisma.orderItem.findMany({
+      where: {
+        order: {
+          status: 'DELIVERED',
+          payment: {
+            status: 'SUCCESS',
+          },
+        },
+      },
       include: {
         variant: {
           include: {

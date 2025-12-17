@@ -18,6 +18,7 @@ const OrderTable = ({ orders, loading, sortBy, sortDir, onSort, onViewDetails, o
       <Table>
         <Table.Head>
           <Table.Row>
+            <Table.Header>ID</Table.Header>
             <Table.Header>Mã đơn</Table.Header>
             <Table.Header>Khách hàng</Table.Header>
             <Table.Header>Tổng tiền</Table.Header>
@@ -28,7 +29,7 @@ const OrderTable = ({ orders, loading, sortBy, sortDir, onSort, onViewDetails, o
           </Table.Row>
         </Table.Head>
         <Table.Body>
-          <Table.Skeleton rows={5} cols={7} />
+          <Table.Skeleton rows={5} cols={8} />
         </Table.Body>
       </Table>
     );
@@ -39,6 +40,7 @@ const OrderTable = ({ orders, loading, sortBy, sortDir, onSort, onViewDetails, o
       <Table>
         <Table.Head>
           <Table.Row>
+            <Table.Header>ID</Table.Header>
             <Table.Header>Mã đơn</Table.Header>
             <Table.Header>Khách hàng</Table.Header>
             <Table.Header>Tổng tiền</Table.Header>
@@ -62,6 +64,7 @@ const OrderTable = ({ orders, loading, sortBy, sortDir, onSort, onViewDetails, o
     <Table>
       <Table.Head>
         <Table.Row>
+          <Table.Header>ID</Table.Header>
           <Table.Header>Mã đơn</Table.Header>
           <Table.Header>Khách hàng</Table.Header>
           <Table.Header 
@@ -88,6 +91,11 @@ const OrderTable = ({ orders, loading, sortBy, sortDir, onSort, onViewDetails, o
       <Table.Body>
         {orders.map((order) => (
           <Table.Row key={order.id}>
+            <Table.Cell>
+              <span className="text-xs font-mono text-gray-500">
+                #{order.id}
+              </span>
+            </Table.Cell>
             <Table.Cell>
               <span className="text-sm font-medium text-gray-900">
                 {order.orderCode || `#${order.id}`}
