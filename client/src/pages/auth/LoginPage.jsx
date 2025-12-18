@@ -98,8 +98,8 @@ const LoginPage = () => {
               type="submit"
               disabled={isLoading}
               variant="dark"
-              fullWidth
               size="lg"
+              fullWidth
               icon={!isLoading && ArrowRight}
             >
               {isLoading ? 'Signing in...' : 'Sign in'}

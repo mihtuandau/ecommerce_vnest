@@ -13,7 +13,7 @@ const Input = ({
   className = '', 
   ...props 
 }) => {
-  const baseClasses = 'appearance-none rounded-lg block w-full px-4 py-2.5 border placeholder-gray-400 focus:outline-none focus:ring-2 transition-all duration-200 sm:text-sm';
+  const baseClasses = 'appearance-none block w-full px-4 py-2.5 border placeholder-gray-400 focus:outline-none focus:ring-2 transition-all duration-200 sm:text-sm';
 
   const errorClasses = error 
     ? 'border-red-300 focus:border-red-500 focus:ring-red-200' 

@@ -23,7 +23,7 @@ const ProductDetailPage = () => {
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
-  const [activeTab, setActiveTab] = useState('description'); // description | reviews
+  const [activeTab, setActiveTab] = useState('description'); 
 
   useEffect(() => {
     loadProduct();
@@ -31,7 +31,6 @@ const ProductDetailPage = () => {
 
   useEffect(() => {
     if (product?.variants && product.variants.length > 0) {
-      // Tìm variants match size/color
       let matchingVariants = product.variants.filter(
         v => (
           (!selectedSize || v.size === selectedSize) &&
@@ -39,12 +38,10 @@ const ProductDetailPage = () => {
         )
       );
       
-      // Nếu không có match, lấy tất cả variants
       if (matchingVariants.length === 0) {
         matchingVariants = product.variants;
       }
       
-      // Ưu tiên variant có stock > 0
       const variantToSelect = matchingVariants.find(v => v.stock > 0) || matchingVariants[0];
       
       if (variantToSelect && (!selectedVariant || selectedVariant.id !== variantToSelect.id)) {
@@ -57,7 +54,6 @@ const ProductDetailPage = () => {
         
         setSelectedVariant(variantToSelect);
         
-        // Update image immediately
         const variantImage = product.images?.find(img => img.variantId === variantToSelect.id);
         if (variantImage) {
           const imageIndex = product.images.findIndex(img => img.id === variantImage.id);
@@ -80,15 +76,13 @@ const ProductDetailPage = () => {
         const sizes = [...new Set(productData.variants.map(v => v.size).filter(Boolean))];
         const colors = [...new Set(productData.variants.map(v => v.color).filter(Boolean))];
         
-        // Set size and color first
         if (sizes.length > 0) setSelectedSize(sizes[0]);
         if (colors.length > 0) setSelectedColor(colors[0]);
         
-        // Find variant with stock > 0, or fallback to first variant
         const variantsWithStock = productData.variants.filter(v => v.stock > 0);
         const variantWithStock = variantsWithStock.length > 0 
-          ? variantsWithStock.sort((a, b) => b.stock - a.stock)[0]  // Variant có stock nhiều nhất
-          : productData.variants[0]; // Fallback nếu tất cả đều hết stock
+          ? variantsWithStock.sort((a, b) => b.stock - a.stock)[0]  
+          : productData.variants[0]; 
           
         console.log('📦 Loading product with variants:', {
           totalVariants: productData.variants.length,
@@ -194,13 +188,11 @@ const ProductDetailPage = () => {
     <Layout>
       <div className="bg-white min-h-screen pt-21 pb-8">
         <div className="container mx-auto px-4 lg:px-30">
-          {/* Breadcrumb */}
           <Breadcrumb items={[
             { label: 'Sản phẩm', path: '/products' },
             { label: product.name }
           ]} />
 
-          {/* Product Detail Card */}
           <div className="mb-12">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
               <ProductImageGallery
@@ -227,7 +219,6 @@ const ProductDetailPage = () => {
               />
             </div>
 
-            {/* Tabs Section */}
             <ProductTabs 
               product={product}
               activeTab={activeTab}
@@ -235,7 +226,6 @@ const ProductDetailPage = () => {
             />
           </div>
 
-          {/* Product Recommendations */}
           <ProductRecommendations 
             productId={product.id} 
             categoryId={product.categoryId} 

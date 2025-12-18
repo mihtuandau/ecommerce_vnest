@@ -7,7 +7,7 @@ import { notify } from "../../../utils/notification";
 import { useAuth } from "../../../contexts/authContext";
 import Loading from "../../../components/common/Loading";
 import Modal from "../../../components/common/Modal";
-import AddressSelector from "../../../components/customer/AddressSelector";
+import AddressSelector from "../../../components/profile/AddressSelector";
 import ShippingForm from "../../../components/checkout/ShippingForm";
 import PaymentMethodSelector from "../../../components/checkout/PaymentMethodSelector";
 import OrderSummary from "../../../components/checkout/OrderSummary";

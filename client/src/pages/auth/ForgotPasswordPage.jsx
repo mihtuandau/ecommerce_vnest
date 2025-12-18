@@ -48,7 +48,7 @@ const ForgotPasswordPage = () => {
         <div className="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-12 bg-white relative animate-slideInLeft lg:shadow-[8px_0_24px_-8px_rgba(0,0,0,0.12)] z-10">
           <div className="w-full max-w-md">
             <div className="text-center space-y-6">
-              <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto">
+              <div className="w-20 h-20 bg-gray-100 flex items-center justify-center mx-auto">
                 <Mail className="text-gray-900" size={40} />
               </div>
 
@@ -115,12 +115,12 @@ const ForgotPasswordPage = () => {
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm">
+              <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 text-sm">
                 {error}
               </div>
             )}
 
-            <div className="bg-gray-50 border border-gray-200 text-gray-700 px-4 py-3 rounded-lg text-sm">
+            <div className="bg-gray-50 border border-blue-500 text-blue-500 px-4 py-3 text-sm rounded-xl" >
               <p>
                 Nhập email đã đăng ký. Chúng tôi sẽ gửi link để đặt lại mật khẩu.
               </p>

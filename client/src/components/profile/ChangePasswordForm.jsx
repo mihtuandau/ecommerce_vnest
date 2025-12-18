@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { notify } from '../../utils/notification';
 import authService from '../../services/authService';
+import { FiEye, FiEyeOff } from 'react-icons/fi'; // Icon mắt đẹp và chuyên nghiệp
 
 const ChangePasswordForm = () => {
   const [formData, setFormData] = useState({
@@ -18,25 +19,25 @@ const ChangePasswordForm = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
+      setErrors((prev) => ({ ...prev, [name]: '' }));
     }
   };
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!formData.currentPassword) {
       newErrors.currentPassword = 'Vui lòng nhập mật khẩu hiện tại';
     }
-    
+
     if (!formData.newPassword) {
       newErrors.newPassword = 'Vui lòng nhập mật khẩu mới';
     } else if (formData.newPassword.length < 6) {
       newErrors.newPassword = 'Mật khẩu phải có ít nhất 6 ký tự';
     }
-    
+
     if (!formData.confirmPassword) {
       newErrors.confirmPassword = 'Vui lòng xác nhận mật khẩu mới';
     } else if (formData.newPassword !== formData.confirmPassword) {
@@ -50,20 +51,21 @@ const ChangePasswordForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
-    
+
     try {
       setLoading(true);
       await authService.changePassword({
         oldPassword: formData.currentPassword,
         newPassword: formData.newPassword,
       });
-      
+
       notify.success('Đổi mật khẩu thành công');
       setFormData({
         currentPassword: '',
         newPassword: '',
         confirmPassword: '',
       });
+      setShowPasswords({ current: false, new: false, confirm: false });
     } catch (error) {
       notify.error(error.response?.data?.message || 'Đổi mật khẩu thất bại');
     } finally {
@@ -72,88 +74,105 @@ const ChangePasswordForm = () => {
   };
 
   const toggleShowPassword = (field) => {
-    setShowPasswords(prev => ({ ...prev, [field]: !prev[field] }));
+    setShowPasswords((prev) => ({ ...prev, [field]: !prev[field] }));
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="space-y-5">
+    <form onSubmit={handleSubmit} className="space-y-6 max-w-lg mx-auto">
+      <div className="space-y-6">
+        {/* Mật khẩu hiện tại */}
         <div className="relative">
-          <label className="block text-sm font-normal text-gray-900 mb-2">
-            Mật khẩu hiện tại <span className="text-gray-400">*</span>
+          <label className="block text-sm font-medium text-gray-900 mb-2">
+            Mật khẩu hiện tại <span className="text-red-500">*</span>
           </label>
           <input
             type={showPasswords.current ? 'text' : 'password'}
             name="currentPassword"
             value={formData.currentPassword}
             onChange={handleChange}
-            className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:border-gray-900 transition-colors pr-12"
+            className="w-full px-4 py-3.5 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
+            placeholder="Nhập mật khẩu hiện tại"
           />
           <button
             type="button"
             onClick={() => toggleShowPassword('current')}
-            className="absolute right-3 top-11 text-gray-500 hover:text-gray-900 transition-colors"
+            className="absolute right-3 top-12 text-gray-500 hover:text-gray-900 transition-colors"
+            aria-label={showPasswords.current ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
           >
-            {showPasswords.current ? '👁️' : '👁️‍🗨️'}
+            {showPasswords.current ? <FiEyeOff size={15} /> : <FiEye size={15} />}
           </button>
-          {errors.currentPassword && <p className="text-xs text-red-600 mt-1">{errors.currentPassword}</p>}
+          {errors.currentPassword && (
+            <p className="text-xs text-red-600 mt-2">{errors.currentPassword}</p>
+          )}
         </div>
 
+        {/* Mật khẩu mới */}
         <div className="relative">
-          <label className="block text-sm font-normal text-gray-900 mb-2">
-            Mật khẩu mới <span className="text-gray-400">*</span>
+          <label className="block text-sm font-medium text-gray-900 mb-2">
+            Mật khẩu mới <span className="text-red-500">*</span>
           </label>
           <input
             type={showPasswords.new ? 'text' : 'password'}
             name="newPassword"
             value={formData.newPassword}
             onChange={handleChange}
-            className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:border-gray-900 transition-colors pr-12"
+            className="w-full px-4 py-3.5 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
+            placeholder="Nhập mật khẩu mới"
           />
           <button
             type="button"
             onClick={() => toggleShowPassword('new')}
-            className="absolute right-3 top-11 text-gray-500 hover:text-gray-900 transition-colors"
+            className="absolute right-3 top-12 text-gray-500 hover:text-gray-900 transition-colors"
+            aria-label={showPasswords.new ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
           >
-            {showPasswords.new ? '👁️' : '👁️‍🗨️'}
+            {showPasswords.new ? <FiEyeOff size={15} /> : <FiEye size={15} />}
           </button>
-          {errors.newPassword && <p className="text-xs text-red-600 mt-1">{errors.newPassword}</p>}
+          {errors.newPassword && (
+            <p className="text-xs text-red-600 mt-2">{errors.newPassword}</p>
+          )}
         </div>
 
+        {/* Xác nhận mật khẩu */}
         <div className="relative">
-          <label className="block text-sm font-normal text-gray-900 mb-2">
-            Xác nhận mật khẩu mới <span className="text-gray-400">*</span>
+          <label className="block text-sm font-medium text-gray-900 mb-2">
+            Xác nhận mật khẩu mới <span className="text-red-500">*</span>
           </label>
           <input
             type={showPasswords.confirm ? 'text' : 'password'}
             name="confirmPassword"
             value={formData.confirmPassword}
             onChange={handleChange}
-            className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:border-gray-900 transition-colors pr-12"
+            className="w-full px-4 py-3.5 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
+            placeholder="Nhập lại mật khẩu mới"
           />
           <button
             type="button"
             onClick={() => toggleShowPassword('confirm')}
-            className="absolute right-3 top-11 text-gray-500 hover:text-gray-900 transition-colors"
+            className="absolute right-3 top-12 text-gray-500 hover:text-gray-900 transition-colors"
+            aria-label={showPasswords.confirm ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
           >
-            {showPasswords.confirm ? '👁️' : '👁️‍🗨️'}
+            {showPasswords.confirm ? <FiEyeOff size={15} /> : <FiEye size={15} />}
           </button>
-          {errors.confirmPassword && <p className="text-xs text-red-600 mt-1">{errors.confirmPassword}</p>}
+          {errors.confirmPassword && (
+            <p className="text-xs text-red-600 mt-2">{errors.confirmPassword}</p>
+          )}
         </div>
 
-        <div className="border border-gray-300 p-4 bg-gray-50">
-          <p className="text-sm text-gray-900 mb-2">Lưu ý:</p>
-          <ul className="text-sm text-gray-600 space-y-1">
-            <li>— Mật khẩu phải có ít nhất 6 ký tự</li>
-            <li>— Bạn sẽ cần đăng nhập lại sau khi đổi mật khẩu</li>
+        {/* Lưu ý */}
+        <div className="p-5 bg-gray-50 border border-gray-200 ">
+          <p className="text-sm font-medium text-gray-900 mb-2">Lưu ý:</p>
+          <ul className="text-sm text-gray-600 space-y-1 list-disc list-inside">
+            <li>Mật khẩu phải có ít nhất 6 ký tự</li>
+            <li>Bạn sẽ cần đăng nhập lại trên các thiết bị khác sau khi đổi</li>
           </ul>
         </div>
       </div>
 
+      {/* Nút submit */}
       <button
         type="submit"
         disabled={loading}
-        className="w-full px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white transition-colors disabled:opacity-50"
+        className="w-full py-4 px-6 bg-gray-900 text-white font-medium hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-md hover:shadow-lg"
       >
         {loading ? 'Đang xử lý...' : 'Đổi mật khẩu'}
       </button>

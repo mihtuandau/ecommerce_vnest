@@ -1,5 +1,5 @@
-import React from 'react';
-import { FaTimes } from 'react-icons/fa';
+import React from "react";
+import { FaTimes } from "react-icons/fa";
 
 const AddressFormModal = ({
   show,
@@ -14,12 +14,14 @@ const AddressFormModal = ({
   onInputChange,
   onProvinceChange,
   onDistrictChange,
-  onWardChange
+  onWardChange,
 }) => {
   if (!show) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4">
+    <div
+      className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4 transition-opacity duration-400 ease-out"
+    >
       <div className="bg-white w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-5 flex justify-between items-center">
           <h2 className="text-xl font-normal text-gray-900">{title}</h2>
@@ -162,7 +164,10 @@ const AddressFormModal = ({
                 onChange={onInputChange}
                 className="w-4 h-4 border-gray-300 text-gray-900"
               />
-              <label htmlFor="isDefault" className="text-sm font-normal text-gray-900">
+              <label
+                htmlFor="isDefault"
+                className="text-sm font-normal text-gray-900"
+              >
                 Đặt làm địa chỉ mặc định
               </label>
             </div>
@@ -180,7 +185,7 @@ const AddressFormModal = ({
               type="submit"
               className="flex-1 px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white transition-colors"
             >
-              {title.includes('Thêm') ? 'Thêm địa chỉ' : 'Cập nhật'}
+              {title.includes("Thêm") ? "Thêm địa chỉ" : "Cập nhật"}
             </button>
           </div>
         </form>
