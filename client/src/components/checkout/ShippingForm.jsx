@@ -9,12 +9,10 @@ const ShippingForm = ({ shippingInfo, onInputChange, onSelectAddressClick, isGue
   const [wards, setWards] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Load provinces on mount
   useEffect(() => {
     loadProvinces();
   }, []);
 
-  // Load districts when province changes or when address is selected
   useEffect(() => {
     if (shippingInfo.cityCode) {
       loadDistricts(shippingInfo.cityCode);
@@ -24,7 +22,6 @@ const ShippingForm = ({ shippingInfo, onInputChange, onSelectAddressClick, isGue
     }
   }, [shippingInfo.cityCode]);
 
-  // Load wards when district changes or when address is selected
   useEffect(() => {
     if (shippingInfo.districtCode) {
       loadWards(shippingInfo.districtCode);
@@ -88,50 +85,49 @@ const ShippingForm = ({ shippingInfo, onInputChange, onSelectAddressClick, isGue
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm p-6">
-      <div className="flex items-center justify-between mb-6">
+    <div className="bg-white border border-gray-200 p-6">
+      <div className="flex items-center justify-between mb-8 pb-6 border-b border-gray-200">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-            <FaMapMarkerAlt className="text-blue-600" />
+          <div className="w-10 h-10 border border-gray-900 flex items-center justify-center">
+            <FaMapMarkerAlt className="text-gray-900 text-sm" />
           </div>
-          <h2 className="text-xl font-semibold text-gray-900">Thông tin giao hàng</h2>
+          <h2 className="text-lg font-normal text-gray-900">Thông Tin Giao Hàng</h2>
         </div>
         {!isGuest && (
-          <Button
+          <button
             onClick={onSelectAddressClick}
-            variant="outline"
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 px-4 py-2 border border-gray-300 hover:border-gray-900 text-gray-900 text-sm transition-colors"
           >
-            <FaAddressBook />
-            Chọn địa chỉ đã lưu
-          </Button>
+            <FaAddressBook size={14} />
+            Chọn địa chỉ
+          </button>
         )}
       </div>
 
-      <div className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="space-y-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Họ và tên <span className="text-red-500">*</span>
+            <label className="block text-sm font-normal text-gray-900 mb-2">
+              Họ và tên <span className="text-gray-400">*</span>
             </label>
             <input
               type="text"
               value={shippingInfo.fullName}
               onChange={(e) => onInputChange('fullName', e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:border-gray-900 transition-colors"
               placeholder="Nguyễn Văn A"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Số điện thoại <span className="text-red-500">*</span>
+            <label className="block text-sm font-normal text-gray-900 mb-2">
+              Số điện thoại <span className="text-gray-400">*</span>
             </label>
             <input
               type="tel"
               value={shippingInfo.phone}
               onChange={(e) => onInputChange('phone', e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:border-gray-900 transition-colors"
               placeholder="0123456789"
               maxLength={10}
             />
@@ -140,43 +136,43 @@ const ShippingForm = ({ shippingInfo, onInputChange, onSelectAddressClick, isGue
 
         {isGuest && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Email <span className="text-red-500">*</span>
+            <label className="block text-sm font-normal text-gray-900 mb-2">
+              Email <span className="text-gray-400">*</span>
             </label>
             <input
               type="email"
               value={shippingInfo.email || ''}
               onChange={(e) => onInputChange('email', e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:border-gray-900 transition-colors"
               placeholder="example@email.com"
             />
-            <p className="text-xs text-gray-500 mt-1">Email để nhận thông tin đơn hàng</p>
+            <p className="text-xs text-gray-500 mt-2">Email để nhận thông tin đơn hàng</p>
           </div>
         )}
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Địa chỉ <span className="text-red-500">*</span>
+          <label className="block text-sm font-normal text-gray-900 mb-2">
+            Địa chỉ <span className="text-gray-400">*</span>
           </label>
           <input
             type="text"
             value={shippingInfo.address}
             onChange={(e) => onInputChange('address', e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:border-gray-900 transition-colors"
             placeholder="Số nhà, tên đường"
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Tỉnh/Thành phố <span className="text-red-500">*</span>
+            <label className="block text-sm font-normal text-gray-900 mb-2">
+              Tỉnh/Thành phố <span className="text-gray-400">*</span>
             </label>
             <select
               value={shippingInfo.cityCode || ''}
               onChange={handleProvinceChange}
               disabled={loading}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+              className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:border-gray-900 transition-colors disabled:bg-gray-100 disabled:text-gray-500"
             >
               <option value="">Chọn tỉnh/thành phố</option>
               {provinces.map(province => (
@@ -188,14 +184,14 @@ const ShippingForm = ({ shippingInfo, onInputChange, onSelectAddressClick, isGue
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Quận/Huyện <span className="text-red-500">*</span>
+            <label className="block text-sm font-normal text-gray-900 mb-2">
+              Quận/Huyện <span className="text-gray-400">*</span>
             </label>
             <select
               value={shippingInfo.districtCode || ''}
               onChange={handleDistrictChange}
               disabled={!shippingInfo.cityCode || districts.length === 0}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+              className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:border-gray-900 transition-colors disabled:bg-gray-100 disabled:text-gray-500"
             >
               <option value="">Chọn quận/huyện</option>
               {districts.map(district => (
@@ -207,14 +203,14 @@ const ShippingForm = ({ shippingInfo, onInputChange, onSelectAddressClick, isGue
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Phường/Xã <span className="text-red-500">*</span>
+            <label className="block text-sm font-normal text-gray-900 mb-2">
+              Phường/Xã <span className="text-gray-400">*</span>
             </label>
             <select
               value={shippingInfo.wardCode || ''}
               onChange={handleWardChange}
               disabled={!shippingInfo.districtCode || wards.length === 0}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+              className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:border-gray-900 transition-colors disabled:bg-gray-100 disabled:text-gray-500"
             >
               <option value="">Chọn phường/xã</option>
               {wards.map(ward => (
@@ -227,14 +223,14 @@ const ShippingForm = ({ shippingInfo, onInputChange, onSelectAddressClick, isGue
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-normal text-gray-900 mb-2">
             Ghi chú (tùy chọn)
           </label>
           <textarea
             value={shippingInfo.note}
             onChange={(e) => onInputChange('note', e.target.value)}
-            rows={3}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+            rows={4}
+            className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:border-gray-900 transition-colors resize-none"
             placeholder="Ghi chú cho người bán..."
           />
         </div>
@@ -242,5 +238,4 @@ const ShippingForm = ({ shippingInfo, onInputChange, onSelectAddressClick, isGue
     </div>
   );
 };
-
 export default ShippingForm;

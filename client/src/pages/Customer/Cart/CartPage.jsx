@@ -123,7 +123,7 @@ const CartPage = () => {
 
   return (
     <Layout>
-      <div className="bg-gray-50 min-h-screen pt-32 pb-8">
+      <div className="bg-gray-50 min-h-screen pt-21 pb-8">
         <div className="container mx-auto px-4 lg:px-8">
           {/* Breadcrumb */}
           <Breadcrumb items={[{ label: 'Giỏ hàng' }]} />

@@ -17,27 +17,27 @@ const HomePage = () => {
   const { data: homeData, loading, error } = useHomeData();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { setUser } = useAuth(); 
+  const { setUser } = useAuth();
 
   useEffect(() => {
-    const oauthSuccess = searchParams.get('oauth_success');
+    const oauthSuccess = searchParams.get("oauth_success");
 
-    if (oauthSuccess === 'true') {
+    if (oauthSuccess === "true") {
       const fetchUser = async () => {
         try {
           const user = await authService.verifyAuth();
           if (user) {
             setUser(user);
-            notify.success('Đăng nhập Google thành công!');
+            notify.success("Đăng nhập Google thành công!");
           }
         } catch (error) {
-          notify.error('Lỗi khi xác thực người dùng');
+          notify.error("Lỗi khi xác thực người dùng");
         }
       };
-      
+
       fetchUser();
 
-      navigate('/', { replace: true });
+      navigate("/", { replace: true });
     }
   }, [searchParams, navigate, setUser]);
 
@@ -70,12 +70,13 @@ const HomePage = () => {
 
   return (
     <Layout>
-      <HeroBanner slides={homeData.banners}  />
-      <FeaturedCategories categories={homeData.categories} />
-      <BestSellingProducts products={homeData.bestSellers} />
-      <FeaturedProducts products={homeData.featuredProducts} />
-      <PromoBanner />
-  
+      <HeroBanner slides={homeData.banners} />
+      <div className="">
+        <FeaturedCategories categories={homeData.categories} />
+        <BestSellingProducts products={homeData.bestSellers} />
+        <FeaturedProducts products={homeData.featuredProducts} />
+        <PromoBanner />
+      </div>
     </Layout>
   );
 };

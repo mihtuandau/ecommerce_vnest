@@ -4,11 +4,10 @@ import Layout from '../../../components/layouts/Layout';
 import Loading from '../../../components/common/Loading';
 import Breadcrumb from '../../../components/common/Breadcrumb';
 import { ProductImageGallery, ProductDetails } from '../../../components/products/ProductDetail';
+import { ProductTabs } from '../../../components/products/detail';
 import { productService } from '../../../services/productService';
 import { useCart } from '../../../hooks/useCart';
 import { useAuth } from '../../../hooks/useAuth';
-import StarRating from '../../../components/common/StarRating';
-import ReviewList from '../../../components/products/ReviewList';
 import ProductRecommendations from '../../../components/products/ProductRecommendations';
 import { notify } from '../../../utils/notification';
 
@@ -202,8 +201,8 @@ const ProductDetailPage = () => {
           ]} />
 
           {/* Product Detail Card */}
-          <div className="mb-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+          <div className="mb-12">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
               <ProductImageGallery
                 images={images}
                 selectedImage={selectedImage}
@@ -229,58 +228,11 @@ const ProductDetailPage = () => {
             </div>
 
             {/* Tabs Section */}
-            <div className="border-t border-gray-200">
-              <div className="flex gap-8 px-6 lg:px-10 border-b border-gray-200">
-                <button
-                  onClick={() => setActiveTab('description')}
-                  className={`py-4 px-2 font-semibold transition-all relative ${
-                    activeTab === 'description'
-                      ? 'text-gray-900 border-b-3 border-gray-900'
-                      : 'text-gray-500 hover:text-gray-700'
-                  }`}
-                >
-                  Mô tả sản phẩm
-                  {activeTab === 'description' && (
-                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900"></div>
-                  )}
-                </button>
-                <button
-                  onClick={() => setActiveTab('reviews')}
-                  className={`py-4 px-2 font-semibold transition-all relative ${
-                    activeTab === 'reviews'
-                      ? 'text-gray-900 border-b-3 border-gray-900'
-                      : 'text-gray-500 hover:text-gray-700'
-                  }`}
-                >
-                  Đánh giá ({product.reviewCount || 0})
-                  {activeTab === 'reviews' && (
-                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900"></div>
-                  )}
-                </button>
-              </div>
-
-              <div className="p-6 lg:p-10">
-                {activeTab === 'description' && (
-                  <div className="prose max-w-none">
-                    <p className="text-gray-700 text-base leading-relaxed whitespace-pre-line">
-                      {product.description || 'Chưa có mô tả sản phẩm'}
-                    </p>
-                  </div>
-                )}
-
-                {activeTab === 'reviews' && (
-                  <div className="space-y-6">
-                    <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-                      <p className="text-sm text-blue-800">
-                        <span className="font-semibold">💡 Hướng dẫn:</span> Để đánh giá sản phẩm này, vui lòng đặt hàng và đợi đơn hàng được giao thành công. 
-                        Sau đó, bạn có thể đánh giá trong trang <Link to="/orders" className="font-semibold underline hover:text-blue-900">Đơn hàng của tôi</Link>.
-                      </p>
-                    </div>
-                    <ReviewList productId={product.id} />
-                  </div>
-                )}
-              </div>
-            </div>
+            <ProductTabs 
+              product={product}
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+            />
           </div>
 
           {/* Product Recommendations */}

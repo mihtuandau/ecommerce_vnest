@@ -1,45 +1,57 @@
-import ProductCard from './ProductCard';
-import { Link } from 'react-router-dom';
-import { FaEye } from 'react-icons/fa';
-import Button from '../common/Button';
-import { formatPrice } from '../../utils/formatters';
-import StarRating from '../common/StarRating';
+import ProductCard from "./ProductCard";
+import { Link } from "react-router-dom";
+import { FaEye } from "react-icons/fa";
+import Button from "../common/Button";
+import { formatPrice } from "../../utils/formatters";
+import StarRating from "../common/StarRating";
 
-const ProductGrid = ({ products = [], loading = false, viewMode = 'grid-3' }) => {
-  // Determine grid classes based on viewMode
+const ProductGrid = ({
+  products = [],
+  loading = false,
+  viewMode = "grid-3",
+}) => {
   const getGridClass = () => {
-    switch(viewMode) {
-      case 'grid-2':
-        return 'grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto';
-      case 'list':
-        return 'flex flex-col gap-4';
-      case 'grid-3':
+    switch (viewMode) {
+      case "grid-2":
+        return "grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto lg:gap-8";
+      case "list":
+        return "flex flex-col gap-4 max-w-4xl mx-auto ";
+      case "grid-3":
       default:
-        return 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6';
+        return "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6";
     }
   };
 
   if (loading) {
     return (
       <div className={getGridClass()}>
-        {[...Array(viewMode === 'list' ? 4 : 6)].map((_, i) => (
-          <div key={i} className="bg-white shadow-sm overflow-hidden animate-pulse">
-            {viewMode === 'list' ? (
-              <div className="flex gap-4 p-4">
-                <div className="w-32 h-32 bg-gray-200 flex-shrink-0"></div>
+        {[...Array(viewMode === "list" ? 4 : 6)].map((_, i) => (
+          <div
+            key={i}
+            className={`bg-white border border-gray-200 animate-pulse ${
+              viewMode === "list" ? "rounded-lg" : ""
+            }`}
+          >
+            {viewMode === "list" ? (
+              <div className="flex gap-6 p-6">
+                <div className="w-48 h-48 bg-gray-200 flex-shrink-0 rounded"></div>
                 <div className="flex-1 space-y-3">
-                  <div className="h-4 bg-gray-200 w-3/4"></div>
-                  <div className="h-4 bg-gray-200 w-1/2"></div>
-                  <div className="h-4 bg-gray-200 w-1/4"></div>
+                  <div className="h-6 bg-gray-200 w-3/4 rounded"></div>
+                  <div className="h-4 bg-gray-200 w-1/2 rounded"></div>
+                  <div className="flex items-center gap-4">
+                    <div className="h-5 bg-gray-200 w-32 rounded"></div>
+                    <div className="h-5 bg-gray-200 w-20 rounded"></div>
+                  </div>
+                  <div className="h-8 bg-gray-200 w-40 rounded"></div>
                 </div>
               </div>
             ) : (
               <>
-                <div className="aspect-square bg-gray-200"></div>
+                <div className={`aspect-square bg-gray-200 ${viewMode === "grid-2" ? "rounded-t-lg" : ""}`}></div>
                 <div className="p-4 space-y-3">
-                  <div className="h-4 bg-gray-200 w-3/4"></div>
-                  <div className="h-4 bg-gray-200 w-1/2"></div>
-                  <div className="h-10 bg-gray-200"></div>
+                  <div className="h-4 bg-gray-200 w-3/4 rounded"></div>
+                  <div className="h-4 bg-gray-200 w-1/2 rounded"></div>
+                  <div className="h-6 bg-gray-200 w-20 rounded"></div>
                 </div>
               </>
             )}
@@ -51,97 +63,17 @@ const ProductGrid = ({ products = [], loading = false, viewMode = 'grid-3' }) =>
 
   if (!products || products.length === 0) {
     return (
-      <div className="text-center py-16">
-        <div className="text-gray-400 text-6xl mb-4">📦</div>
-        <h3 className="text-xl font-medium text-gray-600 mb-2">
+      <div className="text-center py-20 border border-gray-200 rounded-lg bg-white">
+        <div className="text-6xl text-gray-300 mb-4">📦</div>
+        <h3 className="text-xl font-light text-gray-900 mb-2">
           Không tìm thấy sản phẩm
         </h3>
-        <p className="text-gray-500">
-          Vui lòng thử thay đổi bộ lọc hoặc tìm kiếm
-        </p>
+        <p className="text-gray-600">Vui lòng thử thay đổi bộ lọc</p>
       </div>
     );
   }
 
-  // List view component
-  if (viewMode === 'list') {
-    return (
-      <div className="flex flex-col gap-4">
-        {products.map((product) => {
-          const getLowestPrice = () => {
-            if (product.variants && product.variants.length > 0) {
-              const prices = product.variants.map(v => v.price).filter(p => p > 0);
-              return prices.length > 0 ? Math.min(...prices) : (product.basePrice || product.price || 0);
-            }
-            return product.basePrice || product.price || 0;
-          };
-          
-          const productPrice = getLowestPrice();
-          const productImage = product.image || (product.images && product.images.length > 0 ? product.images[0].url : '/placeholder-product.jpg');
-          
-          return (
-            <div key={product.id} className="bg-white transition-all duration-300 group rounded-lg overflow-hidden">
-              <div className="flex gap-6">
-                {/* Image */}
-                <Link to={`/products/${product.id}`} className="flex-shrink-0">
-                  <div className="w-48 h-48 bg-gray-50">
-                    <img
-                      src={productImage}
-                      alt={product.name}
-                      className="w-full h-full object-contain"
-                      loading="lazy"
-                    />
-                  </div>
-                </Link>
-                
-                {/* Info */}
-                <div className="flex-1 flex flex-col justify-center p-6">
-                  <Link to={`/products/${product.id}`}>
-                    <h3 className="text-xl font-medium text-gray-900 hover:text-blue-600 mb-3 line-clamp-2">
-                      {product.name}
-                    </h3>
-                  </Link>
-                  
-                  {product.description && (
-                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                      {product.description}
-                    </p>
-                  )}
-                  
-                  {/* Rating & Sold */}
-                  <div className="flex items-center gap-4 mb-4">
-                    <StarRating
-                      rating={product.averageRating || 0}
-                      size={16}
-                      showNumber
-                      reviewCount={product.reviewCount || 0}
-                    />
-                    <span className="text-sm text-gray-500">
-                      | 🔥 Đã bán {product.soldCount || 0}
-                    </span>
-                  </div>
-                  
-                  {/* Price */}
-                  <div className="flex items-baseline gap-3 mb-4">
-                    <span className="text-2xl font-bold text-gray-900">
-                      {formatPrice(productPrice)}
-                    </span>
-                    {product.originalPrice && product.originalPrice > productPrice && (
-                      <span className="text-lg text-gray-400 line-through">
-                        {formatPrice(product.originalPrice)}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    );
-  }
-
-  // Grid view
+  // Sử dụng ProductCard cho tất cả view modes
   return (
     <div className={getGridClass()}>
       {products.map((product) => (

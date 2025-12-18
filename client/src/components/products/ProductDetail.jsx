@@ -1,20 +1,14 @@
-// src/components/products/ProductDetailComponents.jsx
-
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { useState } from "react";
 import {
-  FaChevronLeft,
-  FaChevronRight,
-  FaStar,
-  FaShoppingCart,
-  FaFacebook,
-  FaTwitter,
-  FaPinterest,
-  FaShareAlt,
-  FaChevronDown,
-  FaClock,
-} from "react-icons/fa";
-import { useState, useEffect } from "react";
-import Button from "../common/Button"; // Điều chỉnh đường dẫn nếu cần
-import { formatPrice } from "../../utils/formatters"; // Điều chỉnh đường dẫn nếu cần
+  ProductInfo,
+  ProductPrice,
+  ProductOptions,
+  ProductQuantity,
+  ProductActions,
+  ProductAccordion,
+  ProductShare,
+} from "./detail";
 
 // ===================================================================
 // 1. PRODUCT IMAGE GALLERY
@@ -45,7 +39,7 @@ export const ProductImageGallery = ({
     <div className="space-y-4">
       {/* Main Image */}
       <div
-        className="relative aspect-square overflow-hidden group cursor-zoom-in bg-white rounded-lg"
+        className="relative aspect-square overflow-hidden group cursor-zoom-in bg-white border border-gray-200"
         onClick={() => setIsZoomed(true)}
       >
         <img
@@ -61,21 +55,21 @@ export const ProductImageGallery = ({
                 e.stopPropagation();
                 onPrevImage();
               }}
-              className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 p-3 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
+              className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/95 hover:bg-white text-gray-700 p-2.5 border border-gray-200 opacity-0 group-hover:opacity-100 transition-all"
             >
-              <FaChevronLeft size={20} />
+              <FaChevronLeft size={16} />
             </button>
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 onNextImage();
               }}
-              className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 p-3 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
+              className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/95 hover:bg-white text-gray-700 p-2.5 border border-gray-200 opacity-0 group-hover:opacity-100 transition-all"
             >
-              <FaChevronRight size={20} />
+              <FaChevronRight size={16} />
             </button>
 
-            <div className="absolute bottom-4 right-4 bg-black/70 text-white px-3 py-1.5 rounded-full text-sm font-medium">
+            <div className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm text-gray-900 px-3 py-1.5 border border-gray-200 text-xs font-light">
               {selectedImage + 1} / {images.length}
             </div>
           </>
@@ -84,15 +78,15 @@ export const ProductImageGallery = ({
 
       {/* Thumbnail */}
       {images.length > 1 && (
-        <div className="flex gap-3 overflow-x-auto pb-2">
+        <div className="flex gap-2.5 overflow-x-auto pb-2">
           {images.map((img, idx) => (
             <button
               key={idx}
               onClick={() => onImageSelect(idx)}
-              className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
+              className={`flex-shrink-0 w-20 h-20 overflow-hidden border transition-colors ${
                 selectedImage === idx
-                  ? "border-gray-900 ring-2 ring-gray-900 ring-offset-2"
-                  : "border-gray-200 hover:border-gray-400"
+                  ? "border-gray-900"
+                  : "border-gray-200 hover:border-gray-900"
               }`}
             >
               <img
@@ -162,7 +156,7 @@ export const ProductImageGallery = ({
 };
 
 // ===================================================================
-// 2. PRODUCT DETAILS (ĐÃ CẢI THIỆN HOÀN TOÀN)
+// 2. PRODUCT DETAILS (Refactored with smaller components)
 // ===================================================================
 export const ProductDetails = ({
   product,
@@ -176,363 +170,41 @@ export const ProductDetails = ({
   onQuantityChange,
   onAddToCart,
 }) => {
-  const [openAccordion, setOpenAccordion] = useState("description");
-  const [timeLeft, setTimeLeft] = useState({
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0
-  });
-
-  // Calculate countdown from discount end date
-  useEffect(() => {
-    // Nếu có giảm giá, tính countdown
-    // TODO: Sau này có thể lấy từ product.discountEndDate nếu backend thêm field này
-    if (originalPrice && originalPrice > currentPrice) {
-      // Demo: Set thời gian kết thúc flash sale (ví dụ: 74 ngày từ bây giờ)
-      // Sau này có thể lấy từ API: product.discountEndDate
-      const discountEndDate = new Date(Date.now() + 74 * 24 * 60 * 60 * 1000);
-
-      const timer = setInterval(() => {
-        const now = new Date().getTime();
-        const distance = discountEndDate.getTime() - now;
-
-        if (distance > 0) {
-          setTimeLeft({
-            days: Math.floor(distance / (1000 * 60 * 60 * 24)),
-            hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-            minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
-            seconds: Math.floor((distance % (1000 * 60)) / 1000)
-          });
-        } else {
-          setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-          clearInterval(timer);
-        }
-      }, 1000);
-
-      return () => clearInterval(timer);
-    }
-  }, [originalPrice, currentPrice]);
-
-  const getSizes = () => {
-    if (!product?.variants) return [];
-    return [...new Set(product.variants.map((v) => v.size).filter(Boolean))];
-  };
-
-  const getColors = () => {
-    if (!product?.variants) return [];
-    return [...new Set(product.variants.map((v) => v.color).filter(Boolean))];
-  };
-
-  const toggleAccordion = (section) => {
-    setOpenAccordion(openAccordion === section ? null : section);
-  };
-
-  const discountPercent =
-    originalPrice && originalPrice > currentPrice
-      ? Math.round(((originalPrice - currentPrice) / originalPrice) * 100)
-      : 0;
-
-  const sizes = getSizes();
-  const colors = getColors();
   const totalStock =
     product?.variants?.reduce((sum, v) => sum + (v.stock || 0), 0) || 0;
-  
-  // Tính số lượng đã bán để hiển thị progress bar
-  const soldCount = product.soldCount || 0;
-  const initialStock = totalStock + soldCount; // Tổng số lượng ban đầu
-  const stockPercentage = initialStock > 0 ? (totalStock / initialStock) * 100 : 0;
 
   return (
     <div className="max-w-2xl">
-      {/* SKU & Brand */}
-      <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
-        <span>
-          SKU:{" "}
-          <span className="font-medium text-gray-900">
-            {product.sku || "N/A"}
-          </span>
-        </span>
-        {product.brand && (
-          <>
-            <span className="text-gray-400">•</span>
-            <span>
-              Thương hiệu:{" "}
-              <span className="text-blue-600 font-medium">
-                {product.brand.name}
-              </span>
-            </span>
-          </>
-        )}
-      </div>
+      <ProductInfo product={product} />
+      
+      <ProductPrice 
+        currentPrice={currentPrice} 
+        originalPrice={originalPrice} 
+        product={product} 
+      />
 
-      {/* Title */}
-      <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4 leading-tight">
-        {product.name}
-      </h1>
+      <ProductOptions
+        product={product}
+        selectedSize={selectedSize}
+        selectedColor={selectedColor}
+        onSizeSelect={onSizeSelect}
+        onColorSelect={onColorSelect}
+      />
 
-      {/* Rating & Sold */}
-      <div className="flex items-center gap-4 mb-6">
-        <div className="flex items-center gap-2">
-          <div className="flex">
-            {[...Array(5)].map((_, i) => (
-              <FaStar
-                key={i}
-                className={`w-5 h-5 ${
-                  i < Math.floor(product.averageRating || 0)
-                    ? "text-yellow-400"
-                    : "text-gray-300"
-                }`}
-              />
-            ))}
-          </div>
-          <span className="text-sm font-medium text-gray-900">
-            {(product.averageRating || 0).toFixed(1)}
-          </span>
-          <span className="text-sm text-gray-600">
-            ({product.reviewCount || 0} đánh giá)
-          </span>
-        </div>
-        <span className="text-gray-400">•</span>
-        <span className="text-sm text-gray-600">
-          🔥 Đã bán{" "}
-          <strong className="text-gray-900">{product.soldCount || 0}</strong>
-        </span>
-      </div>
+      <ProductQuantity
+        quantity={quantity}
+        onQuantityChange={onQuantityChange}
+        totalStock={totalStock}
+      />
 
-      {/* Price */}
-      <div className="mb-8">
-        <div className="flex items-baseline gap-4">
-          <span className="text-4xl font-bold text-gray-900">
-            {formatPrice(currentPrice)}
-          </span>
-          {originalPrice && originalPrice > currentPrice && (
-            <>
-              <span className="text-xl text-gray-500 line-through">
-                {formatPrice(originalPrice)}
-              </span>
-              <span className="px-3 py-1.5 bg-red-100 text-red-700 font-bold rounded-full text-sm">
-                -{discountPercent}%
-              </span>
-            </>
-          )}
-        </div>
+      <ProductActions
+        onAddToCart={onAddToCart}
+        totalStock={totalStock}
+      />
 
-        {/* Stock Progress Bar */}
-        {totalStock > 0 && (
-          <div className="mt-4">
-            <p className="text-sm text-gray-700 font-medium mb-2">
-              Only {totalStock} items in stock!
-            </p>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div 
-                className="bg-gradient-to-r from-red-500 to-orange-500 h-2 rounded-full transition-all duration-300"
-                style={{ width: `${stockPercentage}%` }}
-              ></div>
-            </div>
-          </div>
-        )}
+      <ProductAccordion product={product} />
 
-        {/* Flash Sale Countdown */}
-        {originalPrice && originalPrice > currentPrice && (
-          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-            <div className="flex items-center gap-2 mb-3">
-              <FaClock className="text-red-500" />
-              <p className="text-sm font-semibold text-gray-900">
-                Hurry up! Sale ends in
-              </p>
-            </div>
-            <div className="flex gap-2">
-              {[
-                { value: timeLeft.days, label: 'Days' },
-                { value: timeLeft.hours, label: 'Hrs' },
-                { value: timeLeft.minutes, label: 'Min' },
-                { value: timeLeft.seconds, label: 'Sec' }
-              ].map((item, idx) => (
-                <div key={idx} className="flex flex-col items-center bg-black text-white rounded-lg px-3 py-2 min-w-[60px]">
-                  <span className="text-xl font-bold">{String(item.value).padStart(2, '0')}</span>
-                  <span className="text-xs mt-1">{item.label}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Color & Size Options */}
-      {(colors.length > 0 || sizes.length > 0) && (
-        <div className="space-y-7 mb-8">
-          {colors.length > 0 && (
-            <div>
-              <div className="text-sm font-semibold text-gray-900 mb-3">
-                Màu sắc:{" "}
-                <span className="font-normal text-gray-600">
-                  {selectedColor || "Chọn màu"}
-                </span>
-              </div>
-              <div className="flex flex-wrap gap-3">
-                {colors.map((color) => (
-                  <button
-                    key={color}
-                    onClick={() => onColorSelect(color)}
-                    className={`px-6 py-3 rounded-lg border-2 font-medium capitalize transition-all ${
-                      selectedColor === color
-                        ? "border-gray-900 bg-gray-900 text-white"
-                        : "border-gray-300 bg-white hover:border-gray-500"
-                    }`}
-                  >
-                    {color}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {sizes.length > 0 && (
-            <div>
-              <div className="text-sm font-semibold text-gray-900 mb-3">
-                Kích thước:{" "}
-                <span className="font-normal text-gray-600">
-                  {selectedSize || "Chọn kích thước"}
-                </span>
-              </div>
-              <div className="flex flex-wrap gap-3">
-                {sizes.map((size) => (
-                  <button
-                    key={size}
-                    onClick={() => onSizeSelect(size)}
-                    className={`w-16 h-12 rounded-lg border-2 font-medium transition-all ${
-                      selectedSize === size
-                        ? "border-gray-900 bg-gray-900 text-white"
-                        : "border-gray-300 bg-white hover:border-gray-500"
-                    }`}
-                  >
-                    {size}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Quantity */}
-      <div className="mb-8">
-        <div className="mb-4">
-          <span className="text-sm font-semibold text-gray-900">Số lượng</span>
-        </div>
-
-        <div className="flex items-center gap-4">
-          <div className="flex items-center border-2 border-gray-300 rounded-lg overflow-hidden">
-            <button
-              onClick={() => onQuantityChange(Math.max(1, quantity - 1))}
-              disabled={quantity <= 1 || totalStock === 0}
-              className="w-12 h-12 flex items-center justify-center hover:bg-gray-100 disabled:opacity-50 text-xl"
-            >
-              −
-            </button>
-            <input
-              type="text"
-              value={quantity}
-              onChange={(e) =>
-                onQuantityChange(Math.max(1, parseInt(e.target.value) || 1))
-              }
-              className="w-20 h-12 text-center font-semibold focus:outline-none"
-              disabled={totalStock === 0}
-            />
-            <button
-              onClick={() => onQuantityChange(quantity + 1)}
-              disabled={totalStock === 0}
-              className="w-12 h-12 flex items-center justify-center hover:bg-gray-100 disabled:opacity-50 text-xl"
-            >
-              +
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
-        <Button
-          variant="outline"
-          className="h-12 text-base font-semibold border-2 border-gray-900 hover:bg-gray-50"
-          onClick={() => onAddToCart(false)}
-          disabled={totalStock === 0}
-        >
-          <FaShoppingCart className="inline mr-2" />
-          Thêm vào giỏ hàng
-        </Button>
-        <Button
-          className="h-12 text-base font-semibold bg-teal-600 hover:bg-teal-700 text-white"
-          onClick={() => onAddToCart(true)}
-          disabled={totalStock === 0}
-        >
-          Mua ngay
-        </Button>
-      </div>
-
-      <div className="space-y-1 mb-10">
-        {[
-          {
-            key: "description",
-            title: "Mô tả sản phẩm",
-            content: product.description || "Không có mô tả chi tiết.",
-          },
-          {
-            key: "terms",
-            title: "Chính sách & Điều khoản",
-            content:
-              "Áp dụng các điều khoản tiêu chuẩn của cửa hàng. Liên hệ để biết thêm chi tiết.",
-          },
-          {
-            key: "ask",
-            title: "Hỏi về sản phẩm này",
-            content:
-              "Có thắc mắc về sản phẩm? Vui lòng liên hệ support@example.com hoặc gọi 1800-123-456",
-          },
-        ].map((item) => (
-          <div key={item.key} className="border-b border-gray-200">
-            <button
-              onClick={() => toggleAccordion(item.key)}
-              className="w-full flex items-center justify-between py-4 text-left font-semibold text-gray-900 hover:text-gray-700 transition"
-            >
-              <span>{item.title}</span>
-              <FaChevronDown
-                className={`w-4 h-4 transition-transform ${
-                  openAccordion === item.key ? "rotate-180" : ""
-                }`}
-              />
-            </button>
-            {openAccordion === item.key && (
-              <div className="pb-5 text-sm text-gray-600 leading-relaxed">
-                {typeof item.content === "string" ? (
-                  <p>{item.content}</p>
-                ) : (
-                  item.content
-                )}
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-
-      {/* Social Share */}
-      <div className="flex items-center gap-3 text-sm">
-        <span className="text-gray-700 font-medium">Chia sẻ:</span>
-        <div className="flex gap-2">
-          <button className="p-2.5 rounded-full border border-gray-300 hover:bg-gray-100 transition">
-            <FaFacebook />
-          </button>
-          <button className="p-2.5 rounded-full border border-gray-300 hover:bg-gray-100 transition">
-            <FaTwitter />
-          </button>
-          <button className="p-2.5 rounded-full border border-gray-300 hover:bg-gray-100 transition">
-            <FaPinterest />
-          </button>
-          <button className="p-2.5 rounded-full border border-gray-300 hover:bg-gray-100 transition">
-            <FaShareAlt />
-          </button>
-        </div>
-      </div>
+      <ProductShare />
     </div>
   );
 };

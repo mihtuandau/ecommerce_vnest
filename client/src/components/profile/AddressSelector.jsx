@@ -29,7 +29,6 @@ const AddressSelector = ({ onAddressSelect, selectedAddressId }) => {
 
   const handleSelectAddress = async (address) => {
     try {
-      // Fetch location codes based on names
       const provinces = await locationService.getAllProvinces();
       const selectedProvince = provinces.find(p => p.name === address.city);
       
@@ -41,14 +40,12 @@ const AddressSelector = ({ onAddressSelect, selectedAddressId }) => {
       let districtCode = '';
       let wardCode = '';
 
-      // Get district code
       if (address.state) {
         const districts = await locationService.getDistrictsByProvince(selectedProvince.id);
         const selectedDistrict = districts?.find(d => d.name === address.state);
         if (selectedDistrict) {
           districtCode = selectedDistrict.id;
 
-          // Get ward code
           if (address.ward) {
             const wards = await locationService.getWardsByDistrict(districtCode);
             const selectedWard = wards?.find(w => w.name === address.ward);
@@ -59,7 +56,6 @@ const AddressSelector = ({ onAddressSelect, selectedAddressId }) => {
         }
       }
 
-      // Add codes to address object
       const addressWithCodes = {
         ...address,
         cityCode: selectedProvince.id,
@@ -69,7 +65,6 @@ const AddressSelector = ({ onAddressSelect, selectedAddressId }) => {
 
       onAddressSelect(addressWithCodes);
     } catch (error) {
-      // Fallback to original address without codes
       onAddressSelect(address);
     }
   };
@@ -77,19 +72,19 @@ const AddressSelector = ({ onAddressSelect, selectedAddressId }) => {
   if (loading) {
     return (
       <div className="flex justify-center py-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <div className="w-8 h-8 border-2 border-gray-900 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
 
   if (addresses.length === 0) {
     return (
-      <div className="text-center py-8 border-2 border-dashed border-gray-300 rounded-xl">
-        <FaMapMarkerAlt className="mx-auto text-gray-400 mb-3" size={48} />
+      <div className="text-center py-12 border border-gray-300">
+        <FaMapMarkerAlt className="mx-auto text-gray-400 mb-4" size={40} />
         <p className="text-gray-600 mb-4">Chưa có địa chỉ nào được lưu</p>
         <a
           href="/profile"
-          className="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="inline-block px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white transition-colors"
         >
           Thêm địa chỉ trong trang cá nhân
         </a>
@@ -102,39 +97,39 @@ const AddressSelector = ({ onAddressSelect, selectedAddressId }) => {
       {addresses.map((address) => (
         <div
           key={address.id}
-          className={`bg-white border rounded-xl p-4 cursor-pointer transition-all ${
+          className={`bg-white border p-4 cursor-pointer transition-colors ${
             selectedAddressId === address.id
-              ? 'border-blue-500 border-2 bg-blue-50'
+              ? 'border-gray-900 bg-gray-50'
               : address.isDefault
-              ? 'border-blue-300 hover:border-blue-400'
-              : 'border-gray-200 hover:border-gray-300'
+              ? 'border-gray-400 hover:border-gray-900'
+              : 'border-gray-300 hover:border-gray-900'
           }`}
           onClick={() => handleSelectAddress(address)}
         >
           <div className="flex items-start gap-3">
-            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 mt-0.5 ${
+            <div className={`w-5 h-5 border-2 flex items-center justify-center flex-shrink-0 mt-0.5 ${
               selectedAddressId === address.id
-                ? 'border-blue-600 bg-blue-600'
-                : 'border-gray-300'
+                ? 'border-gray-900 bg-gray-900'
+                : 'border-gray-400'
             }`}>
               {selectedAddressId === address.id && (
-                <div className="w-2 h-2 bg-white rounded-full"></div>
+                <div className="w-2 h-2 bg-white"></div>
               )}
             </div>
             
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">
-                <FaMapMarkerAlt className="w-4 h-4 text-blue-600" />
-                <span className="font-bold text-gray-900">{address.fullName}</span>
+                <FaMapMarkerAlt className="w-4 h-4 text-gray-900" />
+                <span className="font-normal text-gray-900">{address.fullName}</span>
                 {address.isDefault && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-600 text-white text-xs font-bold rounded-full">
-                    <FaStar size={10} />
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-gray-900 text-white text-xs">
+                    <FaStar size={9} />
                     Mặc định
                   </span>
                 )}
               </div>
               <p className="text-sm text-gray-600 mb-1">
-                📱 {address.phone}
+                {address.phone}
               </p>
               <p className="text-sm text-gray-800">
                 {address.street}
@@ -149,7 +144,7 @@ const AddressSelector = ({ onAddressSelect, selectedAddressId }) => {
       
       <a
         href="/profile"
-        className="block text-center py-2 text-sm text-blue-600 hover:text-blue-700 font-medium"
+        className="block text-center py-3 text-sm text-gray-900 hover:text-gray-600 transition-colors"
       >
         + Thêm địa chỉ mới
       </a>

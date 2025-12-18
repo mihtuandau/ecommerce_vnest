@@ -32,28 +32,20 @@ const ProductRecommendations = ({ productId, categoryId }) => {
     );
   }
 
-  if (!recommendedProducts || recommendedProducts.length === 0) {
+ if (!recommendedProducts || recommendedProducts.length === 0) {
     return null;
   }
 
   return (
-    <div className="mt-12 bg-white rounded-lg shadow-sm p-6 lg:p-8">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-1 h-8 bg-blue-600 rounded"></div>
-        <h2 className="text-2xl font-bold text-gray-900">Sản phẩm gợi ý</h2>
-      </div>
+    <div className="mt-12 border-t border-gray-200 pt-12">
+      <h2 className="text-2xl font-light text-gray-900 mb-8 tracking-tight">Sản Phẩm Gợi Ý</h2>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 lg:gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
         {recommendedProducts.map((product) => (
-          <ProductCard 
-            key={product.id} 
-            product={product}
-            viewMode="grid-3"
-          />
+          <ProductCard key={product.id} product={product} viewMode="grid-3" />
         ))}
       </div>
     </div>
   );
 };
-
 export default ProductRecommendations;

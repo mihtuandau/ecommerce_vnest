@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import Button from '../common/Button';
-import Input from '../common/Input';
 import { notify } from '../../utils/notification';
 import authService from '../../services/authService';
 
@@ -79,82 +77,86 @@ const ChangePasswordForm = () => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="space-y-4">
+      <div className="space-y-5">
         <div className="relative">
-          <Input
-            label="Mật khẩu hiện tại"
+          <label className="block text-sm font-normal text-gray-900 mb-2">
+            Mật khẩu hiện tại <span className="text-gray-400">*</span>
+          </label>
+          <input
             type={showPasswords.current ? 'text' : 'password'}
             name="currentPassword"
             value={formData.currentPassword}
             onChange={handleChange}
-            error={errors.currentPassword}
-            required
+            className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:border-gray-900 transition-colors pr-12"
           />
           <button
             type="button"
             onClick={() => toggleShowPassword('current')}
-            className="absolute right-3 top-9 text-gray-500 hover:text-gray-700"
+            className="absolute right-3 top-11 text-gray-500 hover:text-gray-900 transition-colors"
           >
-            {showPasswords.current ? '🙈' : '👁️'}
+            {showPasswords.current ? '👁️' : '👁️‍🗨️'}
           </button>
+          {errors.currentPassword && <p className="text-xs text-red-600 mt-1">{errors.currentPassword}</p>}
         </div>
 
         <div className="relative">
-          <Input
-            label="Mật khẩu mới"
+          <label className="block text-sm font-normal text-gray-900 mb-2">
+            Mật khẩu mới <span className="text-gray-400">*</span>
+          </label>
+          <input
             type={showPasswords.new ? 'text' : 'password'}
             name="newPassword"
             value={formData.newPassword}
             onChange={handleChange}
-            error={errors.newPassword}
-            required
+            className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:border-gray-900 transition-colors pr-12"
           />
           <button
             type="button"
             onClick={() => toggleShowPassword('new')}
-            className="absolute right-3 top-9 text-gray-500 hover:text-gray-700"
+            className="absolute right-3 top-11 text-gray-500 hover:text-gray-900 transition-colors"
           >
-            {showPasswords.new ? '🙈' : '👁️'}
+            {showPasswords.new ? '👁️' : '👁️‍🗨️'}
           </button>
+          {errors.newPassword && <p className="text-xs text-red-600 mt-1">{errors.newPassword}</p>}
         </div>
 
         <div className="relative">
-          <Input
-            label="Xác nhận mật khẩu mới"
+          <label className="block text-sm font-normal text-gray-900 mb-2">
+            Xác nhận mật khẩu mới <span className="text-gray-400">*</span>
+          </label>
+          <input
             type={showPasswords.confirm ? 'text' : 'password'}
             name="confirmPassword"
             value={formData.confirmPassword}
             onChange={handleChange}
-            error={errors.confirmPassword}
-            required
+            className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:border-gray-900 transition-colors pr-12"
           />
           <button
             type="button"
             onClick={() => toggleShowPassword('confirm')}
-            className="absolute right-3 top-9 text-gray-500 hover:text-gray-700"
+            className="absolute right-3 top-11 text-gray-500 hover:text-gray-900 transition-colors"
           >
-            {showPasswords.confirm ? '🙈' : '👁️'}
+            {showPasswords.confirm ? '👁️' : '👁️‍🗨️'}
           </button>
+          {errors.confirmPassword && <p className="text-xs text-red-600 mt-1">{errors.confirmPassword}</p>}
         </div>
 
-        <div className="bg-yellow-50 border border-yellow-200 p-4 rounded">
-          <p className="text-sm text-yellow-800">
-            <strong>💡 Lưu ý:</strong>
-          </p>
-          <ul className="text-sm text-yellow-700 mt-2 space-y-1 list-disc list-inside">
-            <li>Mật khẩu phải có ít nhất 6 ký tự</li>
-            <li>Bạn sẽ cần đăng nhập lại sau khi đổi mật khẩu</li>
+        <div className="border border-gray-300 p-4 bg-gray-50">
+          <p className="text-sm text-gray-900 mb-2">Lưu ý:</p>
+          <ul className="text-sm text-gray-600 space-y-1">
+            <li>— Mật khẩu phải có ít nhất 6 ký tự</li>
+            <li>— Bạn sẽ cần đăng nhập lại sau khi đổi mật khẩu</li>
           </ul>
         </div>
       </div>
 
-      <Button
+      <button
         type="submit"
-        loading={loading}
-        className="w-full bg-black text-white hover:bg-gray-800"
+        disabled={loading}
+        className="w-full px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white transition-colors disabled:opacity-50"
       >
-        Đổi mật khẩu
-      </Button>
+        {loading ? 'Đang xử lý...' : 'Đổi mật khẩu'}
+      </button>
     </form>
   );
 };

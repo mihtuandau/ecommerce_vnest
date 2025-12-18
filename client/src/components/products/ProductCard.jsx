@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { FaHeart, FaEye } from 'react-icons/fa';
 import { notify } from '../../utils/notification';
-import Button from '../common/Button';
 import StarRating from '../common/StarRating';
 import { formatPrice, calculateDiscountPercent } from '../../utils/formatters';
 import wishlistService from '../../services/wishlistService';
@@ -19,25 +18,28 @@ const ProductCard = ({ product, viewMode = 'grid-3' }) => {
     originalPrice,
     image,
     images,
-    rating = 0,
-    reviews = 0,
     badge,
     discount,
   } = product;
 
-  // Determine text sizes based on viewMode
   const isGrid2 = viewMode === 'grid-2';
-  const titleClass = isGrid2 ? 'text-xl font-medium' : 'font-medium text-base';
-  const priceClass = isGrid2 ? 'text-lg font-bold' : 'text-lg font-bold';
-  const originalPriceClass = isGrid2 ? 'text-sm' : 'text-sm';
-  const ratingSize = isGrid2 ? 11 : 12;
-  const soldTextClass = isGrid2 ? 'text-sm' : 'text-sm';
-  const minTitleHeight = isGrid2 ? 'min-h-[1.5rem]' : 'min-h-[1rem]';
+  const isList = viewMode === 'list';
+  const isGrid = !isGrid2 && !isList; // Thêm điều kiện này
+  const titleClass = isGrid2 ? 'text-xl font-normal' : isGrid ? 'font-normal text-base' : 'font-light text-lg';
+  const priceClass = isGrid2 ? 'text-lg font-normal' : isGrid ? 'text-lg font-normal' : 'text-xl font-light';
+  const originalPriceClass = isGrid2 ? 'text-sm' : isGrid ? 'text-sm' : 'text-sm';
+  const ratingSize = isGrid2 ? 11 : isGrid ? 12 : 13;
+  const soldTextClass = isGrid2 ? 'text-sm' : isGrid ? 'text-sm' : 'text-sm';
+  
+  // Thêm các class cho padding dựa trên view mode
+  const containerClass = isGrid2 ? 'p-4' : isGrid ? 'p-4' : 'p-6';
+  const imageAspectClass = isGrid2 ? 'aspect-square' : isGrid ? 'aspect-square' : 'aspect-square';
+  const minHeightTitle = isGrid2 ? 'min-h-[3rem]' : isGrid ? 'min-h-[2.5rem]' : '';
+  const minHeightRating = isGrid2 ? 'min-h-[24px]' : isGrid ? 'min-h-[20px]' : 'min-h-[18px]';
+  const minHeightPrice = isGrid2 ? 'min-h-[28px]' : isGrid ? 'min-h-[24px]' : 'min-h-[20px]';
 
-  // Lấy ảnh đầu tiên hoặc ảnh thumbnail
   const productImage = image || (images && images.length > 0 ? images[0].url : '/placeholder-product.jpg');
   
-  // Lấy giá thấp nhất từ variants hoặc từ basePrice/price
   const getLowestPrice = () => {
     if (product.variants && product.variants.length > 0) {
       const prices = product.variants.map(v => v.price).filter(p => p > 0);
@@ -48,11 +50,7 @@ const ProductCard = ({ product, viewMode = 'grid-3' }) => {
   
   const productPrice = getLowestPrice();
   const productOriginalPrice = originalPrice;
-  
-  // Tính % giảm giá
   const discountPercent = calculateDiscountPercent(productOriginalPrice, productPrice) || discount || 0;
-
-  // Get first variant ID for wishlist
   const variantId = product.variants?.[0]?.id;
 
   useEffect(() => {
@@ -82,13 +80,11 @@ const ProductCard = ({ product, viewMode = 'grid-3' }) => {
         await wishlistService.removeFromWishlist(variantId);
         setIsInWishlist(false);
         notify.success('Đã xóa khỏi danh sách yêu thích');
-        // Trigger event to update header
         window.dispatchEvent(new CustomEvent('wishlistUpdated'));
       } else {
         await wishlistService.addToWishlist(variantId);
         setIsInWishlist(true);
         notify.success('Đã thêm vào danh sách yêu thích');
-        // Trigger event to update header
         window.dispatchEvent(new CustomEvent('wishlistUpdated'));
       }
     } catch (error) {
@@ -97,88 +93,108 @@ const ProductCard = ({ product, viewMode = 'grid-3' }) => {
   };
 
   return (
-    <div className="group relative bg-white rounded-lg transition-all duration-300 overflow-hidden flex flex-col h-full">
+    <div className={`group relative bg-white border border-gray-200 transition-all duration-300 hover:border-gray-900 overflow-hidden flex flex-col h-full ${isList ? 'flex-row min-h-[280px]' : ''}`}>
       {/* Badge */}
       {(badge || discountPercent > 0) && (
-        <div className="absolute top-3 left-3 z-10">
-          <span className={`px-2.5 py-1 text-xs font-bold rounded-full text-white ${
-            badge === 'Hot' ? 'bg-red-500' :
-            badge === 'New' ? 'bg-green-500' :
-            badge === 'Best Seller' ? 'bg-blue-500' :
-            'bg-orange-500'
-          }`}>
+        <div className={`absolute top-3 left-3 z-10 ${isList ? 'top-2 left-2' : ''}`}>
+          <span className={`px-2.5 py-1 text-xs font-normal bg-gray-900 text-white ${isList ? 'px-2 py-0.5 text-[10px]' : ''}`}>
             {badge || `-${discountPercent}%`}
           </span>
         </div>
       )}
 
-      {/* Quick Actions */}
-      <div className="absolute top-3 right-3 z-10 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-        <button 
-          onClick={handleWishlistToggle}
-          className={`p-2 rounded-full shadow-md transition-colors ${
-            isInWishlist 
-              ? 'bg-red-500 text-white hover:bg-red-600' 
-              : 'bg-white hover:bg-red-500 hover:text-white'
-          }`}
-          aria-label="Yêu thích"
-        >
-          <FaHeart size={16} />
-        </button>
-        <Link 
-          to={`/products/${id}`}
-          className="p-2 bg-white rounded-full shadow-md hover:bg-blue-500 hover:text-white transition-colors"
-          aria-label="Xem nhanh"
-        >
-          <FaEye size={16} />
-        </Link>
-      </div>
+      {/* Quick Actions - Ẩn trong list view */}
+      {!isList && (
+        <div className="absolute top-3 right-3 z-10 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <button 
+            onClick={handleWishlistToggle}
+            className={`p-2 border transition-colors ${
+              isInWishlist 
+                ? 'bg-gray-900 text-white border-gray-900' 
+                : 'bg-white border-gray-300 hover:bg-gray-900 hover:text-white hover:border-gray-900'
+            } ${isGrid2 ? 'p-2' : 'p-1.5'}`}
+            aria-label="Yêu thích"
+          >
+            <FaHeart size={isGrid2 ? 14 : 12} />
+          </button>
+          <Link 
+            to={`/products/${id}`}
+            className={`p-2 bg-white border border-gray-300 hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-colors ${isGrid2 ? 'p-2' : 'p-1.5'}`}
+            aria-label="Xem nhanh"
+          >
+            <FaEye size={isGrid2 ? 14 : 12} />
+          </Link>
+        </div>
+      )}
 
-      {/* Product Image - Fixed aspect ratio, tighter for grid-2 */}
-      <Link to={`/products/${id}`} className={`block relative overflow-hidden ${isGrid2 ? 'aspect-square' : 'aspect-square'} bg-gray-50`}>
+      {/* Product Image */}
+      <Link 
+        to={`/products/${id}`} 
+        className={`block relative overflow-hidden ${isList ? 'w-2/5' : 'w-full'} ${imageAspectClass} bg-gray-50`}
+      >
         <img
           src={productImage}
           alt={name}
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           loading="lazy"
         />
       </Link>
 
-      {/* Product Info - Flex grow to push button to bottom */}
-      <div className={`flex flex-col flex-grow ${isGrid2 ? 'p-3' : 'p-4'}`}>
-        {/* Product Name - Fixed height with ellipsis */}
-        <Link to={`/products/${id}`} className="block mb-2">
-          <h3 className={`${titleClass} text-gray-900 hover:text-blue-600 transition-colors line-clamp-2 ${isGrid2 ? 'min-h-[3rem]' : 'min-h-[2.5rem]'}`} title={name}>
+      {/* Product Info */}
+      <div className={`flex flex-col ${isList ? 'justify-center' : 'flex-grow'} ${containerClass} ${isList ? 'w-3/5' : ''}`}>
+        {/* Product Name */}
+        <Link to={`/products/${id}`} className={`block ${isList ? 'mb-5' : 'mb-3'}`}>
+          <h3 
+            className={`${titleClass} text-gray-900 hover:text-gray-600 transition-colors ${isList ? 'line-clamp-2 leading-normal' : 'line-clamp-2'} ${minHeightTitle}`} 
+            title={name}
+          >
             {name}
           </h3>
         </Link>
 
-        {/* Rating & Sold Count - Fixed height to maintain consistency */}
-        <div className={`flex items-center justify-between gap-2 mb-2 flex-wrap ${isGrid2 ? 'text-xs min-h-[24px]' : 'text-sm min-h-[20px]'}`}>
+        {/* Rating & Sold Count */}
+        <div className={`flex items-center ${isList ? 'gap-6 mb-5' : 'justify-between gap-2 mb-3 flex-wrap'} ${minHeightRating}`}>
           <StarRating
             rating={product.averageRating || 0}
             size={ratingSize}
-            showNumber
+            showNumber={true}
             reviewCount={product.reviewCount || 0}
           />
-          <span className={`${soldTextClass} text-gray-600 font-medium`}>
-            🔥 Đã bán {product.soldCount || product.sold || 0}
+          <span className={`${soldTextClass} font-light text-gray-500`}>
+            Đã bán {product.soldCount || product.sold || 0}
           </span>
         </div>
 
-        {/* Price - Fixed height */}
-        <div className={`flex items-baseline gap-2 flex-wrap ${isGrid2 ? 'min-h-[28px]' : 'min-h-[24px]'}`}>
+        {/* Price */}
+        <div className={`flex items-baseline gap-3 ${isList ? 'mb-6' : 'flex-wrap'} ${minHeightPrice}`}>
           <span className={`${priceClass} text-gray-900`}>
             {formatPrice(productPrice)}
           </span>
           {productOriginalPrice && productOriginalPrice > productPrice ? (
-            <span className={`${originalPriceClass} text-gray-400 line-through`}>
+            <span className={`${originalPriceClass} font-light text-gray-400 line-through`}>
               {formatPrice(productOriginalPrice)}
             </span>
           ) : (
-            <span className="invisible text-sm">000.000 ₫</span>
+            !isList && <span className={`${originalPriceClass} invisible`}>000.000 ₫</span>
           )}
         </div>
+
+        {/* Wishlist button for list view */}
+        {isList && (
+          <div className="pt-6 border-t border-gray-100">
+            <button  
+              onClick={handleWishlistToggle}
+              className={`p-2 border transition-colors flex items-center gap-2.5 text-sm font-light bg-white border-gray-300 hover:bg-gray-900 hover:text-white hover:border-gray-900${
+                isInWishlist 
+                  ? 'text-gray-900 hover:text-gray-700' 
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <FaHeart size={14} className={isInWishlist ? 'fill-current' : ''} />
+              {isInWishlist ? 'Đã yêu thích' : 'Thêm vào yêu thích'}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

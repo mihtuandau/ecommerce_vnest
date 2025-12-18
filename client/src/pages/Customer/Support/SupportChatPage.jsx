@@ -32,19 +32,15 @@ const SupportChatPage = () => {
 
   const initializeChat = async () => {
     try {
-      // Connect socket
       chatSocketService.connect();
       setIsConnected(true);
 
-      // Create room ID for user
       const userRoomId = `user-${user.id}`;
       setRoomId(userRoomId);
 
-      // Join room and get message history
       const history = await chatSocketService.joinRoom(userRoomId, user.id);
       setMessages(history || []);
 
-      // Listen for new messages
       chatSocketService.onNewMessage((message) => {
         setMessages((prev) => [...prev, message]);
       });
@@ -87,18 +83,23 @@ const SupportChatPage = () => {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 ">
-        <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full text-center">
-          <MessageSquare className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            Vui lòng đăng nhập
+      <div className="min-h-screen bg-white flex items-center justify-center p-4">
+        <div className="bg-white border border-gray-200 p-12 max-w-md w-full text-center">
+          <div className="w-20 h-20 border border-gray-300 mx-auto mb-6 flex items-center justify-center">
+            <MessageSquare className="w-10 h-10 text-gray-400" />
+          </div>
+          <h2 className="text-2xl font-light text-gray-900 mb-3 tracking-tight">
+            Vui Lòng Đăng Nhập
           </h2>
-          <p className="text-gray-600 mb-6">
+          <p className="text-gray-600 mb-8">
             Bạn cần đăng nhập để sử dụng dịch vụ hỗ trợ
           </p>
-          <Button onClick={() => navigate("/login")} variant="primary">
-            Đăng nhập
-          </Button>
+          <button
+            onClick={() => navigate("/login")}
+            className="px-8 py-3 bg-gray-900 hover:bg-gray-800 text-white transition-colors"
+          >
+            Đăng Nhập
+          </button>
         </div>
       </div>
     );
@@ -108,32 +109,32 @@ const SupportChatPage = () => {
     <Layout>
       <Header />
 
-      <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-50 py-6 lg:px-30 pt-21 pb-8">
+      <div className="min-h-screen bg-white py-6 lg:px-30 pt-21 pb-8">
         <div className="container mx-auto px-4 max-w-3xl">
           {/* Header */}
-          <div className="bg-gradient-to-r from-green-600 to-emerald-600 rounded-t-xl shadow-md p-4">
+          <div className="bg-gray-900 border border-gray-900 p-5">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-4">
                 <button
                   onClick={() => navigate(-1)}
-                  className="p-1.5 hover:bg-white/20 rounded-lg transition-all"
+                  className="p-2 hover:bg-white/10 transition-colors"
                 >
                   <ArrowLeft className="w-5 h-5 text-white" />
                 </button>
                 <div>
-                  <h1 className="text-lg font-semibold text-white flex items-center gap-2">
+                  <h1 className="text-lg font-normal text-white flex items-center gap-2">
                     <MessageSquare className="w-5 h-5" />
                     Hỗ Trợ Khách Hàng
                   </h1>
-                  <p className="text-xs text-green-100 mt-0.5">
+                  <p className="text-xs text-gray-400 mt-1">
                     {isConnected ? (
-                      <span className="flex items-center gap-1.5">
-                        <span className="w-1.5 h-1.5 bg-green-200 rounded-full animate-pulse"></span>
+                      <span className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-white rounded-full"></span>
                         Online
                       </span>
                     ) : (
-                      <span className="flex items-center gap-1.5">
-                        <span className="w-1.5 h-1.5 bg-yellow-300 rounded-full animate-pulse"></span>
+                      <span className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-gray-500 rounded-full"></span>
                         Đang kết nối...
                       </span>
                     )}
@@ -144,16 +145,16 @@ const SupportChatPage = () => {
           </div>
 
           {/* Messages Container */}
-          <div className="bg-white shadow-md h-[500px] flex flex-col">
+          <div className="bg-white border-x border-gray-200 h-[500px] flex flex-col">
             {/* Messages List */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-white custom-scrollbar">
+            <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-white custom-scrollbar">
               {messages.length === 0 ? (
-                <div className="text-center py-12">
-                  <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <MessageSquare className="w-8 h-8 text-green-500" />
+                <div className="text-center py-16">
+                  <div className="w-16 h-16 border border-gray-300 mx-auto mb-4 flex items-center justify-center">
+                    <MessageSquare className="w-8 h-8 text-gray-400" />
                   </div>
-                  <p className="text-gray-700 font-medium">Xin chào! 👋</p>
-                  <p className="text-gray-500 text-sm mt-1">
+                  <p className="text-gray-900 font-normal">Xin chào</p>
+                  <p className="text-gray-600 text-sm mt-2">
                     Chúng tôi có thể giúp gì cho bạn?
                   </p>
                 </div>
@@ -163,13 +164,13 @@ const SupportChatPage = () => {
                   return (
                     <div
                       key={index}
-                      className={`flex items-end gap-2 animate-fadeIn ${
+                      className={`flex items-end gap-3 animate-fadeIn ${
                         isOwn ? "flex-row-reverse" : ""
                       }`}
                     >
                       <div
-                        className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                          isOwn ? "bg-green-500" : "bg-gray-300"
+                        className={`w-8 h-8 border flex items-center justify-center flex-shrink-0 ${
+                          isOwn ? "border-gray-900 bg-gray-900" : "border-gray-300 bg-white"
                         }`}
                       >
                         <User
@@ -180,10 +181,10 @@ const SupportChatPage = () => {
                       </div>
                       <div className={`flex flex-col max-w-[75%]`}>
                         <div
-                          className={`px-3 py-2 rounded-2xl ${
+                          className={`px-4 py-3 ${
                             isOwn
-                              ? "bg-green-500 text-white rounded-br-md"
-                              : "bg-gray-100 text-gray-800 rounded-bl-md"
+                              ? "bg-gray-900 text-white"
+                              : "bg-gray-100 text-gray-900"
                           }`}
                         >
                           <p className="text-sm leading-relaxed">
@@ -191,10 +192,10 @@ const SupportChatPage = () => {
                           </p>
                         </div>
                         <span
-                          className={`text-xs mt-0.5 px-2 ${
+                          className={`text-xs mt-1 px-1 ${
                             isOwn
-                              ? "text-right text-gray-400"
-                              : "text-left text-gray-400"
+                              ? "text-right text-gray-500"
+                              : "text-left text-gray-500"
                           }`}
                         >
                           {formatTime(msg.createdAt)}
@@ -205,13 +206,13 @@ const SupportChatPage = () => {
                 })
               )}
               {isLoading && (
-                <div className="flex items-end gap-2 animate-fadeIn">
-                  <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 bg-gray-300">
+                <div className="flex items-end gap-3 animate-fadeIn">
+                  <div className="w-8 h-8 border border-gray-300 flex items-center justify-center flex-shrink-0 bg-white">
                     <User className="w-4 h-4 text-gray-600" />
                   </div>
-                  <div className="bg-gray-100 text-gray-800 px-3 py-2 rounded-2xl rounded-bl-md">
+                  <div className="bg-gray-100 text-gray-900 px-4 py-3">
                     <div className="flex items-center gap-2">
-                      <Loader2 className="w-3.5 h-3.5 animate-spin text-gray-500" />
+                      <Loader2 className="w-3.5 h-3.5 animate-spin text-gray-600" />
                       <span className="text-sm">Đang nhập...</span>
                     </div>
                   </div>
@@ -221,20 +222,20 @@ const SupportChatPage = () => {
             </div>
 
             {/* Input Form */}
-            <div className="border-t border-gray-100 p-3 bg-gray-50">
+            <div className="border-t border-gray-200 p-4 bg-white">
               <form onSubmit={handleSendMessage} className="flex gap-2">
                 <input
                   type="text"
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}
                   placeholder="Nhập tin nhắn..."
-                  className="flex-1 px-4 py-2.5 text-sm border border-gray-200 bg-white rounded-full focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                  className="flex-1 px-4 py-3 text-sm border border-gray-300 bg-white focus:outline-none focus:border-gray-900 transition-colors"
                   disabled={isLoading || !isConnected}
                 />
                 <button
                   type="submit"
                   disabled={isLoading || !inputMessage.trim() || !isConnected}
-                  className="w-10 h-10 bg-green-500 text-white rounded-full hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all flex items-center justify-center"
+                  className="w-12 h-12 bg-gray-900 text-white hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
                 >
                   <Send className="w-4 h-4" />
                 </button>
@@ -243,9 +244,9 @@ const SupportChatPage = () => {
           </div>
 
           {/* Footer Note */}
-          <div className="bg-green-50 rounded-b-xl shadow-md p-3 text-center border-t border-green-100">
-            <p className="text-xs text-green-700">
-              💬 Trả lời nhanh trong vài phút
+          <div className="bg-gray-100 border border-gray-200 border-t-0 p-4 text-center">
+            <p className="text-xs text-gray-600">
+              Trả lời nhanh trong vài phút
             </p>
           </div>
         </div>
@@ -266,7 +267,7 @@ const SupportChatPage = () => {
           }
           .custom-scrollbar {
             scrollbar-width: thin;
-            scrollbar-color: rgba(34, 197, 94, 0.3) transparent;
+            scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
           }
           .custom-scrollbar::-webkit-scrollbar {
             width: 4px;
@@ -275,11 +276,10 @@ const SupportChatPage = () => {
             background: transparent;
           }
           .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: rgba(34, 197, 94, 0.2);
-            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.15);
           }
           .custom-scrollbar:hover::-webkit-scrollbar-thumb {
-            background: rgba(34, 197, 94, 0.4);
+            background: rgba(0, 0, 0, 0.25);
           }
         `}</style>
       </div>
