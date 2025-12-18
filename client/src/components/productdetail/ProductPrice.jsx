@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { FaClock } from "react-icons/fa";
-import { formatPrice } from "../../../utils/formatters";
+import { formatPrice } from "../../utils/formatters";
 
 const ProductPrice = ({ currentPrice, originalPrice, product }) => {
   const [timeLeft, setTimeLeft] = useState({

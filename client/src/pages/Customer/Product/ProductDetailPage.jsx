@@ -4,7 +4,7 @@ import Layout from '../../../components/layouts/Layout';
 import Loading from '../../../components/common/Loading';
 import Breadcrumb from '../../../components/common/Breadcrumb';
 import { ProductImageGallery, ProductDetails } from '../../../components/products/ProductDetail';
-import { ProductTabs } from '../../../components/products/detail';
+import { ProductTabs } from '../../../components/productdetail';
 import { productService } from '../../../services/productService';
 import { useCart } from '../../../hooks/useCart';
 import { useAuth } from '../../../hooks/useAuth';

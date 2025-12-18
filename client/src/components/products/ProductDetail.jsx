@@ -8,7 +8,7 @@ import {
   ProductActions,
   ProductAccordion,
   ProductShare,
-} from "./detail";
+} from "../../../components/productdetail";
 
 // ===================================================================
 // 1. PRODUCT IMAGE GALLERY

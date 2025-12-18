@@ -1,5 +1,5 @@
 import { FaShoppingCart } from "react-icons/fa";
-import Button from "../../common/Button";
+import Button from "../common/Button";
 
 const ProductActions = ({ onAddToCart, totalStock }) => {
   return (

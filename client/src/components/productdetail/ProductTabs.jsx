@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import ReviewList from "../ReviewList";
+import ReviewList from "../products/ReviewList";
 
 const ProductTabs = ({ product, activeTab, onTabChange }) => {
   return (
