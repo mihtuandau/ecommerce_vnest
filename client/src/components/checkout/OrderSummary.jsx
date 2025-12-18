@@ -1,9 +1,10 @@
 import { FaShoppingBag, FaCheck } from 'react-icons/fa';
-import Button from '../../components/common/Button';
 import CartItemsList from './CartItemsList';
 import DiscountCodeSection from './DiscountCodeSection';
 import PriceSummary from './PriceSummary';
 import { formatPrice } from '../../utils/formatters';
+import Button from '../common/Button';
+import Input from '../common/Input';
 
 const OrderSummary = ({
   cartItems,
@@ -24,18 +25,16 @@ const OrderSummary = ({
   onSubmitOrder
 }) => {
   return (
-    <div className="bg-white rounded-lg shadow-sm p-6 sticky top-4">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-          <FaShoppingBag className="text-purple-600" />
+    <div className="bg-white border border-gray-200 p-6 sticky top-4">
+      <div className="flex items-center gap-3 mb-8 pb-6 border-b border-gray-200">
+        <div className="w-10 h-10 border border-gray-900 flex items-center justify-center">
+          <FaShoppingBag className="text-gray-900 text-sm" />
         </div>
-        <h2 className="text-xl font-semibold text-gray-900">Đơn hàng</h2>
+        <h2 className="text-lg font-normal text-gray-900">Đơn Hàng</h2>
       </div>
 
-      {/* Cart Items */}
       <CartItemsList cartItems={cartItems} />
 
-      {/* Discount Code */}
       <DiscountCodeSection
         discountCode={discountCode}
         setDiscountCode={setDiscountCode}
@@ -45,7 +44,6 @@ const OrderSummary = ({
         onRemoveDiscount={onRemoveDiscount}
       />
 
-      {/* Price Summary */}
       <PriceSummary
         itemCount={itemCount}
         subtotal={subtotal}
@@ -54,42 +52,40 @@ const OrderSummary = ({
         total={total}
       />
 
-      {/* Terms Agreement */}
       <div className="mt-6">
         <label className="flex items-start gap-2 cursor-pointer">
           <input
             type="checkbox"
             checked={agreedToTerms}
             onChange={(e) => setAgreedToTerms(e.target.checked)}
-            className="mt-1 w-4 h-4 text-blue-600 rounded"
+            className="mt-0.5 w-4 h-4 border-gray-300 text-gray-900"
           />
           <span className="text-sm text-gray-600">
             Tôi đã đọc và đồng ý với{' '}
-            <a href="#" className="text-blue-600 hover:underline">
+            <a href="#" className="text-gray-900 hover:underline">
               Điều khoản dịch vụ
             </a>
           </span>
         </label>
       </div>
 
-      {/* Submit Button */}
-      <Button
+      <button
         onClick={onSubmitOrder}
         disabled={submitting || !agreedToTerms}
-        className="w-full mt-6 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-3 rounded-lg font-semibold flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full mt-6 bg-gray-900 hover:bg-gray-800 text-white py-4 font-normal transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
       >
         {submitting ? (
           <>
-            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
             Đang xử lý...
           </>
         ) : (
           <>
-            <FaCheck />
+            <FaCheck size={14} />
             Đặt hàng ({formatPrice(total)})
           </>
         )}
-      </Button>
+      </button>
 
       <p className="text-xs text-center text-gray-500 mt-4">
         Bằng cách đặt hàng, bạn đồng ý với điều khoản sử dụng của chúng tôi

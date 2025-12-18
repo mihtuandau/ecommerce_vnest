@@ -49,13 +49,11 @@ const CartItemsList = ({ items, count, selectedItems, onToggleItem, onToggleAll,
     return Object.values(groups);
   }, [items]);
 
-  // Pagination calculations
   const totalPages = Math.ceil(groupedProducts.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
   const currentProducts = groupedProducts.slice(startIndex, endIndex);
 
-  // Reset to page 1 if current page exceeds total pages
   if (currentPage > totalPages && totalPages > 0) {
     setCurrentPage(1);
   }
@@ -74,21 +72,21 @@ const CartItemsList = ({ items, count, selectedItems, onToggleItem, onToggleAll,
 
   return (
     <div className="space-y-4">
-      <div className="bg-white rounded-lg shadow-sm p-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
+      <div className="bg-white border border-gray-200 p-6 flex items-center justify-between">
+        <div className="flex items-center gap-4">
           <input
             type="checkbox"
             checked={allSelected}
             onChange={onToggleAll}
-            className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+            className="w-4 h-4 border-gray-300 text-gray-900 focus:ring-gray-900 cursor-pointer"
           />
-          <h2 className="text-xl font-semibold text-gray-900">
+          <h2 className="text-base font-normal text-gray-900">
             Chọn tất cả ({count} sản phẩm)
           </h2>
         </div>
         <button
           onClick={onClearAll}
-          className="text-sm text-red-600 hover:text-red-700 font-medium transition-colors"
+          className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
         >
           Xóa tất cả
         </button>
@@ -111,19 +109,19 @@ const CartItemsList = ({ items, count, selectedItems, onToggleItem, onToggleAll,
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="bg-white rounded-lg shadow-sm p-4 mt-4">
+        <div className="bg-white border border-gray-200 p-6">
           <div className="flex items-center justify-between">
             <div className="text-sm text-gray-600">
-              Hiển thị {startIndex + 1}-{Math.min(endIndex, groupedProducts.length)} của {groupedProducts.length} sản phẩm
+              {startIndex + 1}–{Math.min(endIndex, groupedProducts.length)} / {groupedProducts.length}
             </div>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => goToPage(currentPage - 1)}
                 disabled={currentPage === 1}
-                className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                className={`px-4 py-2 text-sm transition-colors ${
                   currentPage === 1
-                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                    : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
+                    ? 'text-gray-400 cursor-not-allowed'
+                    : 'text-gray-900 hover:bg-gray-100'
                 }`}
               >
                 Trước
@@ -134,10 +132,10 @@ const CartItemsList = ({ items, count, selectedItems, onToggleItem, onToggleAll,
                   <button
                     key={page}
                     onClick={() => goToPage(page)}
-                    className={`min-w-[36px] h-9 rounded-md text-sm font-medium transition-colors ${
+                    className={`min-w-[36px] h-9 text-sm transition-colors ${
                       currentPage === page
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
+                        ? 'bg-gray-900 text-white'
+                        : 'text-gray-900 hover:bg-gray-100'
                     }`}
                   >
                     {page}
@@ -148,10 +146,10 @@ const CartItemsList = ({ items, count, selectedItems, onToggleItem, onToggleAll,
               <button
                 onClick={() => goToPage(currentPage + 1)}
                 disabled={currentPage === totalPages}
-                className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                className={`px-4 py-2 text-sm transition-colors ${
                   currentPage === totalPages
-                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                    : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
+                    ? 'text-gray-400 cursor-not-allowed'
+                    : 'text-gray-900 hover:bg-gray-100'
                 }`}
               >
                 Sau
@@ -163,5 +161,4 @@ const CartItemsList = ({ items, count, selectedItems, onToggleItem, onToggleAll,
     </div>
   );
 };
-
 export default CartItemsList;

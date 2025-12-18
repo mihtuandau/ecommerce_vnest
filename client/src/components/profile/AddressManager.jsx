@@ -66,32 +66,32 @@ const AddressManager = () => {
   if (loading) {
     return (
       <div className="flex justify-center py-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <div className="w-8 h-8 border-2 border-gray-900 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">Địa chỉ của tôi</h2>
+    <div className="space-y-6">
+      <div className="flex justify-between items-center pb-6 border-b border-gray-200">
+        <h2 className="text-2xl font-light text-gray-900">Địa Chỉ Của Tôi</h2>
         <button
           onClick={() => handleOpenModal()}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-gray-900 hover:bg-gray-800 text-white transition-colors"
         >
-          <FaPlus size={16} />
-          Thêm địa chỉ mới
+          <FaPlus size={14} />
+          Thêm địa chỉ
         </button>
       </div>
 
       {addresses.length === 0 ? (
-        <div className="text-center py-12 bg-gray-50 rounded-lg">
-          <p className="text-gray-500 mb-4">Chưa có địa chỉ nào</p>
+        <div className="text-center py-16 border border-gray-300">
+          <p className="text-gray-600 mb-4">Chưa có địa chỉ nào</p>
           <button
             onClick={() => handleOpenModal()}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white transition-colors"
           >
-            <FaPlus size={16} />
+            <FaPlus size={14} />
             Thêm địa chỉ đầu tiên
           </button>
         </div>

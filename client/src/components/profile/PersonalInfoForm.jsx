@@ -44,10 +44,7 @@ const PersonalInfoForm = ({ currentUser, onSubmit, loading }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Prevent submit if not in editing mode
     if (!isEditing) return;
-    
     if (!validateForm()) return;
     
     const success = await onSubmit(formData);
@@ -67,67 +64,73 @@ const PersonalInfoForm = ({ currentUser, onSubmit, loading }) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="space-y-4">
-        <Input
-          label="Họ và tên"
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-          error={errors.name}
-          disabled={!isEditing}
-          required
-        />
+      <div className="space-y-5">
+        <div>
+          <label className="block text-sm font-normal text-gray-900 mb-2">
+            Họ và tên <span className="text-gray-400">*</span>
+          </label>
+          <input
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            disabled={!isEditing}
+            className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:border-gray-900 transition-colors disabled:bg-gray-100 disabled:text-gray-500"
+          />
+          {errors.name && <p className="text-xs text-red-600 mt-1">{errors.name}</p>}
+        </div>
 
-        <Input
-          label="Email"
-          type="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          error={errors.email}
-          disabled={!isEditing}
-          required
-        />
+        <div>
+          <label className="block text-sm font-normal text-gray-900 mb-2">
+            Email <span className="text-gray-400">*</span>
+          </label>
+          <input
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            disabled={!isEditing}
+            className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:border-gray-900 transition-colors disabled:bg-gray-100 disabled:text-gray-500"
+          />
+          {errors.email && <p className="text-xs text-red-600 mt-1">{errors.email}</p>}
+        </div>
 
-        <div className="bg-gray-50 p-4 rounded">
+        <div className="border border-gray-300 p-4 bg-gray-50">
           <p className="text-sm text-gray-600">
-            <strong>Lưu ý:</strong> Email được dùng để đăng nhập và nhận thông báo.
+            Email được dùng để đăng nhập và nhận thông báo
           </p>
         </div>
       </div>
 
       <div className="flex gap-3">
         {!isEditing ? (
-          <Button
+          <button
             type="button"
             onClick={() => setIsEditing(true)}
-            variant="outline"
-            className="border-black text-black hover:bg-gray-100"
+            className="px-6 py-3 border border-gray-900 hover:bg-gray-900 hover:text-white text-gray-900 transition-colors"
           >
             Chỉnh sửa
-          </Button>
+          </button>
         ) : (
           <>
-            <Button
+            <button
               type="submit"
-              loading={loading}
-              className="bg-black text-white hover:bg-gray-800"
+              disabled={loading}
+              className="px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white transition-colors disabled:opacity-50"
             >
-              Lưu thay đổi
-            </Button>
-            <Button
+              {loading ? 'Đang lưu...' : 'Lưu thay đổi'}
+            </button>
+            <button
               type="button"
               onClick={handleCancel}
-              variant="outline"
-              className="border-gray-300"
+              className="px-6 py-3 border border-gray-300 hover:border-gray-900 text-gray-900 transition-colors"
             >
               Hủy
-            </Button>
+            </button>
           </>
         )}
       </div>
     </form>
   );
 };
-
 export default PersonalInfoForm;

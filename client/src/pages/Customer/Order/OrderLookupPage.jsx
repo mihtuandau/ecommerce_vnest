@@ -15,13 +15,11 @@ const OrderLookupPage = () => {
   const [order, setOrder] = useState(null);
   const [recentOrders, setRecentOrders] = useState([]);
 
-  // Load recent guest orders from localStorage
   useEffect(() => {
     const guestOrders = JSON.parse(localStorage.getItem('guest_orders') || '[]');
-    setRecentOrders(guestOrders.reverse()); // Newest first
+    setRecentOrders(guestOrders.reverse()); 
   }, []);
 
-  // Auto search if redirected from checkout
   useEffect(() => {
     if (location.state?.orderCode && location.state?.contact) {
       handleSearchDirect();
@@ -36,7 +34,6 @@ const OrderLookupPage = () => {
         location.state.contact
       );
       console.log('🔍 Guest order lookup response:', response);
-      // apiService.get() returns response.data directly
       setOrder(response);
       notify.success('Tìm thấy đơn hàng của bạn!');
     } catch (error) {

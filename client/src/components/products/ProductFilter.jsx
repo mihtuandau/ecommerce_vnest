@@ -9,14 +9,9 @@ const ProductFilter = ({
   currentFilters = {},
   hideCategories = false
 }) => {
-  // Debug: Log categories
   useEffect(() => {
-    console.log('ProductFilter received categories:', categories);
-    console.log('Categories length:', categories?.length);
-    console.log('Categories is array?', Array.isArray(categories));
   }, [categories]);
 
-  // Debug: Log priceRange
   useEffect(() => {
     console.log('ProductFilter received priceRange:', priceRange);
   }, [priceRange]);
@@ -43,14 +38,9 @@ const ProductFilter = ({
   }, [currentFilters, priceRange]);
 
   const handleChange = (name, value) => {
-    console.log('Filter handleChange:', name, '=', value);
     const newFilters = { ...filters, [name]: value };
-    console.log('New filters:', newFilters);
     setFilters(newFilters);
-    // Auto-apply for sort, category, rating, and stock (immediate feedback)
     if (name === 'sortBy' || name === 'categoryId' || name === 'minRating' || name === 'stockStatus') {
-      console.log('Auto-applying filter:', name, '=', value);
-      console.log('Filters to apply:', newFilters);
       onFilterChange(newFilters);
     }
   };
@@ -60,14 +50,11 @@ const ProductFilter = ({
   };
 
   const applyPriceFilter = () => {
-    // Chỉ truyền params khi khác với giá trị mặc định
     const filtersToApply = { ...filters };
     
-    // Nếu maxPrice bằng priceRange.maxPrice thì không truyền (lấy tất cả)
     if (filters.maxPrice >= priceRange.maxPrice) {
       filtersToApply.maxPrice = '';
     }
-    // Nếu minPrice bằng 0 thì không truyền
     if (filters.minPrice <= priceRange.minPrice) {
       filtersToApply.minPrice = '';
     }
@@ -85,7 +72,6 @@ const ProductFilter = ({
       stockStatus: '',
     };
     setFilters(defaultFilters);
-    // Không truyền minPrice/maxPrice khi reset (lấy tất cả)
     onFilterChange({
       ...defaultFilters,
       minPrice: '',
@@ -107,13 +93,13 @@ const ProductFilter = ({
     <div className="space-y-6">
       {/* Sort By */}
       <div>
-        <label className="block text-sm font-semibold text-gray-900 mb-3">
+        <label className="block text-sm font-normal text-gray-900 mb-2">
           Sắp xếp theo
         </label>
         <select
           value={filters.sortBy}
           onChange={(e) => handleChange('sortBy', e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 focus:ring-2 focus:ring-gray-900 focus:border-gray-900 text-sm"
+          className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:border-gray-900 text-sm"
         >
           {sortOptions.map(option => (
             <option key={option.value} value={option.value}>
@@ -162,24 +148,7 @@ const ProductFilter = ({
       </div>
       )}
 
-      {/* Brand */}
-      <div className="border-t pt-6">
-        <label className="block text-sm font-semibold text-gray-900 mb-3">
-          Thương hiệu
-        </label>
-        <select
-          value={filters.brandId}
-          onChange={(e) => handleChange('brandId', e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 focus:ring-2 focus:ring-gray-900 focus:border-gray-900 text-sm"
-        >
-          <option value="">Tất cả thương hiệu</option>
-          {brands?.map(brand => (
-            <option key={brand.id} value={brand.id}>
-              {brand.name}
-            </option>
-          ))}
-        </select>
-      </div>
+    
 
       {/* Rating Filter */}
       <div className="border-t pt-6">

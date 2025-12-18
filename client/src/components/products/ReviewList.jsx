@@ -42,49 +42,46 @@ const ReviewList = ({ productId }) => {
 
   if (reviews.length === 0) {
     return (
-      <div className="text-center py-12 bg-gray-50 rounded-lg">
-        <p className="text-gray-500">Chưa có đánh giá nào</p>
-        <p className="text-sm text-gray-400 mt-1">Hãy là người đầu tiên đánh giá sản phẩm này</p>
+      <div className="text-center py-12 border border-gray-200">
+        <p className="text-gray-600">Chưa có đánh giá nào</p>
+        <p className="text-sm text-gray-500 mt-1">Hãy là người đầu tiên đánh giá sản phẩm này</p>
       </div>
     );
   }
 
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {reviews.map((review) => (
-        <div key={review.id} className="bg-white rounded-lg p-6 border border-gray-200 hover:shadow-md transition-shadow">
-          {/* User Info */}
+        <div key={review.id} className="bg-white p-6 border border-gray-200 hover:border-gray-900 transition-colors">
+          {/* User avatar - square */}
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white">
-              <User size={20} />
+            <div className="w-10 h-10 bg-gray-900 flex items-center justify-center text-white">
+              <User size={18} />
             </div>
             <div>
-              <p className="font-medium text-gray-900">
-                {review.user?.name || 'Người dùng ẩn danh'}
-              </p>
+              <p className="font-normal text-gray-900">{review.user?.name || 'Người dùng'}</p>
               <p className="text-xs text-gray-500">{formatDate(review.createdAt)}</p>
             </div>
           </div>
 
-          {/* Rating */}
           <div className="mb-3">
-            <StarRating rating={review.rating} size={18} />
+            <StarRating rating={review.rating} size={16} />
           </div>
 
-          {/* Comment */}
           {review.comment && (
             <p className="text-gray-700 leading-relaxed">{review.comment}</p>
           )}
 
-          {/* Images */}
+          {/* Review images - square */}
           {review.images && review.images.length > 0 && (
-            <div className="flex gap-2 mt-4 flex-wrap">
+            <div className="flex gap-2 mt-4">
               {review.images.map((img, idx) => (
                 <img
                   key={idx}
                   src={img}
                   alt={`Review ${idx + 1}`}
-                  className="w-20 h-20 object-cover rounded-lg border border-gray-200 hover:scale-105 transition-transform cursor-pointer"
+                  className="w-20 h-20 object-cover border border-gray-200 hover:border-gray-900 transition-colors cursor-pointer"
                 />
               ))}
             </div>
@@ -92,24 +89,14 @@ const ReviewList = ({ productId }) => {
         </div>
       ))}
 
-      {/* Pagination */}
+      {/* Pagination - minimalist */}
       {totalPages > 1 && (
         <div className="flex justify-center gap-2 mt-6">
-          <button
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            disabled={page === 1}
-            className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
+          <button className="px-4 py-2 border border-gray-300 hover:border-gray-900 disabled:opacity-50">
             Trước
           </button>
-          <span className="px-4 py-2 text-gray-700">
-            Trang {page} / {totalPages}
-          </span>
-          <button
-            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-            disabled={page === totalPages}
-            className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
+          <span className="px-4 py-2 text-gray-700">Trang {page} / {totalPages}</span>
+          <button className="px-4 py-2 border border-gray-300 hover:border-gray-900 disabled:opacity-50">
             Sau
           </button>
         </div>
