@@ -34,6 +34,10 @@ const OrderDetailPage = lazy(() =>
 const OrderLookupPage = lazy(() =>
   import("../pages/Customer/Order/OrderLookupPage")
 );
+const GuestOrderDetailPage = lazy(() =>
+  import("../pages/Customer/Order/GuestOrderDetailPage")
+);
+
 const PaymentReturn = lazy(() =>
   import("../pages/Customer/Payment/PaymentReturn")
 );
@@ -117,6 +121,7 @@ const AppRoutes = () => {
           <Route path="/orders" element={<OrdersPage />} />
           <Route path="/orders/:id" element={<OrderDetailPage />} />
           <Route path="/order-lookup" element={<OrderLookupPage />} />
+          <Route path="/guest-order/:orderCode" element={<GuestOrderDetailPage />} />
 
           {/* Payment Routes */}
           <Route path="/payment/return" element={<PaymentReturn />} />

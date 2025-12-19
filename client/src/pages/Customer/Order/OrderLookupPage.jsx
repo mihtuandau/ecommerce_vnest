@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import { FaSearch, FaBox, FaCheckCircle } from 'react-icons/fa';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
+import { FaSearch, FaBox, FaCheckCircle, FaEye } from 'react-icons/fa';
 import { notify } from '../../../utils/notification';
 import Layout from '../../../components/layouts/Layout';
 import Button from '../../../components/common/Button';
@@ -9,6 +9,7 @@ import orderService from '../../../services/orderService';
 
 const OrderLookupPage = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [orderCode, setOrderCode] = useState(location.state?.orderCode || '');
   const [contact, setContact] = useState(location.state?.contact || '');
   const [searching, setSearching] = useState(false);
@@ -19,30 +20,6 @@ const OrderLookupPage = () => {
     const guestOrders = JSON.parse(localStorage.getItem('guest_orders') || '[]');
     setRecentOrders(guestOrders.reverse()); 
   }, []);
-
-  useEffect(() => {
-    if (location.state?.orderCode && location.state?.contact) {
-      handleSearchDirect();
-    }
-  }, []);
-
-  const handleSearchDirect = async () => {
-    try {
-      setSearching(true);
-      const response = await orderService.lookupGuestOrder(
-        location.state.orderCode,
-        location.state.contact
-      );
-      console.log('🔍 Guest order lookup response:', response);
-      setOrder(response);
-      notify.success('Tìm thấy đơn hàng của bạn!');
-    } catch (error) {
-      console.error('❌ Error looking up guest order:', error);
-      notify.error(error.response?.data?.message || 'Không tìm thấy đơn hàng');
-    } finally {
-      setSearching(false);
-    }
-  };
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -56,9 +33,29 @@ const OrderLookupPage = () => {
       setSearching(true);
       const response = await orderService.lookupGuestOrder(orderCode, contact);
       console.log('🔍 Guest order lookup response:', response);
+      
+      // Save to localStorage for recent orders
+      const guestOrders = JSON.parse(localStorage.getItem('guest_orders') || '[]');
+      const newOrder = {
+        orderCode: orderCode.trim(),
+        contact: contact.trim(),
+        date: new Date().toISOString()
+      };
+      
+      // Remove duplicate and add to front
+      const filtered = guestOrders.filter(o => o.orderCode !== orderCode.trim());
+      filtered.unshift(newOrder);
+      localStorage.setItem('guest_orders', JSON.stringify(filtered.slice(0, 5))); // Keep only 5 recent
+
       // apiService.get() returns response.data directly
       setOrder(response);
+      setRecentOrders(filtered.slice(0, 5));
       notify.success('Tìm thấy đơn hàng!');
+      
+      // Redirect to detail page
+      setTimeout(() => {
+        navigate(`/guest-order/${response.orderCode}`);
+      }, 500);
     } catch (error) {
       console.error('❌ Error looking up guest order:', error);
       notify.error(error.response?.data?.message || 'Không tìm thấy đơn hàng');
@@ -195,115 +192,7 @@ const OrderLookupPage = () => {
           </div>
 
           {/* Order Details */}
-          {order && (
-            <div className="bg-white rounded-lg shadow-md overflow-hidden">
-              {/* Order Header */}
-              <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <h2 className="text-2xl font-bold">Đơn hàng {order.orderCode}</h2>
-                    <p className="text-blue-100 mt-1">{formatDate(order.createdAt)}</p>
-                  </div>
-                  {getStatusBadge(order.status)}
-                </div>
-              </div>
-
-              {/* Shipping Info */}
-              <div className="p-6 border-b">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  Thông tin giao hàng
-                </h3>
-                <div className="space-y-2 text-gray-600">
-                  <p>
-                    <span className="font-medium">Người nhận:</span>{' '}
-                    {order.shippingInfo?.fullName || 'N/A'}
-                  </p>
-                  <p>
-                    <span className="font-medium">Số điện thoại:</span>{' '}
-                    {order.shippingInfo?.phone || order.guestPhone || 'N/A'}
-                  </p>
-                  <p>
-                    <span className="font-medium">Email:</span>{' '}
-                    {order.guestEmail || 'N/A'}
-                  </p>
-                  <p>
-                    <span className="font-medium">Địa chỉ:</span>{' '}
-                    {order.shippingAddress || 'N/A'}
-                  </p>
-                </div>
-              </div>
-
-              {/* Order Items */}
-              <div className="p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  Sản phẩm đã đặt
-                </h3>
-                <div className="space-y-4">
-                  {order.orderItems.map((item) => (
-                    <div
-                      key={item.id}
-                      className="flex items-center gap-4 p-4 border rounded-lg"
-                    >
-                      <img
-                        src={
-                          item.variant?.images?.[0]?.url ||
-                          item.variant?.product?.images?.[0]?.url ||
-                          '/placeholder.png'
-                        }
-                        alt={item.variant?.product?.name}
-                        className="w-20 h-20 object-cover rounded"
-                      />
-                      <div className="flex-1">
-                        <h4 className="font-medium text-gray-900">
-                          {item.variant?.product?.name}
-                        </h4>
-                        <p className="text-sm text-gray-600 mt-1">
-                          {item.variant?.size && `Size: ${item.variant.size}`}
-                          {item.variant?.color && ` • Màu: ${item.variant.color}`}
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          Số lượng: {item.quantity}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-semibold text-gray-900">
-                          {formatCurrency(item.price * item.quantity)}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Order Summary */}
-              <div className="bg-gray-50 p-6">
-                <div className="space-y-2">
-                  <div className="flex justify-between text-gray-600">
-                    <span>Tạm tính:</span>
-                    <span>{formatCurrency(order.total - order.taxAmount)}</span>
-                  </div>
-                  <div className="flex justify-between text-gray-600">
-                    <span>Thuế (10%):</span>
-                    <span>{formatCurrency(order.taxAmount)}</span>
-                  </div>
-                  <div className="flex justify-between text-lg font-bold text-gray-900 pt-2 border-t">
-                    <span>Tổng cộng:</span>
-                    <span className="text-blue-600">{formatCurrency(order.total)}</span>
-                  </div>
-                </div>
-
-                {/* Payment Method */}
-                <div className="mt-4 pt-4 border-t">
-                  <p className="text-sm text-gray-600">
-                    <span className="font-medium">Phương thức thanh toán:</span>{' '}
-                    {order.paymentMethod === 'CASH' && 'Thanh toán khi nhận hàng'}
-                    {order.paymentMethod === 'VNPAY' && 'VNPay'}
-                    {order.paymentMethod === 'MOMO' && 'MoMo'}
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
+          
 
           {/* Help Text */}
           <div className="mt-8 text-center text-sm text-gray-500">

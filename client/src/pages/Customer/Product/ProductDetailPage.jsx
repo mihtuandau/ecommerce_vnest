@@ -45,13 +45,7 @@ const ProductDetailPage = () => {
       const variantToSelect = matchingVariants.find(v => v.stock > 0) || matchingVariants[0];
       
       if (variantToSelect && (!selectedVariant || selectedVariant.id !== variantToSelect.id)) {
-        console.log('🔄 Setting variant:', {
-          id: variantToSelect.id,
-          size: variantToSelect.size,
-          color: variantToSelect.color,
-          stock: variantToSelect.stock
-        });
-        
+       
         setSelectedVariant(variantToSelect);
         
         const variantImage = product.images?.find(img => img.variantId === variantToSelect.id);

@@ -9,6 +9,7 @@ import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import { UserService } from '../user/user.service';
 import { RegisterDto } from './dto/register-dto';
+import { RegisterAdminDto } from './dto/register-admin.dto';
 import { ForgotPasswordDto, ResetPasswordDto } from './dto/forgot-password.dto';
 import { UpdateUserResetDto } from '../user/dto/user-reset.dto';
 import { MailService } from '../mail/mail.service';
@@ -32,6 +33,24 @@ export class AuthService {
       password: hashedPassword,
       name,
       role: 'CUSTOMER',
+    });
+
+    const { password: _, ...result } = user;
+    const tokenPayload = { sub: result.id };
+    return this.login(tokenPayload, result);
+  }
+
+  async registerAdmin(registerAdminDto: RegisterAdminDto) {
+    const { email, password, name } = registerAdminDto;
+    const existingUser = await this.userService.findByEmail(email);
+    if (existingUser) throw new UnauthorizedException('Email already exists');
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = await this.userService.create({
+      email,
+      password: hashedPassword,
+      name,
+      role: 'ADMIN',
     });
 
     const { password: _, ...result } = user;

@@ -1,29 +1,31 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FaHome, FaChevronRight } from 'react-icons/fa';
+import { FaChevronRight } from 'react-icons/fa';
 
 const Breadcrumb = ({ items = [] }) => {
   return (
-    <nav className="mb-6 flex items-center space-x-2 text-sm bg-gray-100 backdrop-blur-sm  px-4 py-3">
+    <nav className="mb-8 flex items-center space-x-2 text-sm py-4 border-b border-gray-100">
       <Link
         to="/"
-        className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors font-medium"
+        className="text-gray-600 hover:text-gray-900 transition-colors font-light"
       >
-        <span>Trang chủ</span>
+        Trang chủ
       </Link>
 
       {items.map((item, index) => (
         <React.Fragment key={index}>
-          <FaChevronRight className="text-gray-400 w-3 h-3" />
+          <FaChevronRight className="text-gray-300 w-2.5 h-2.5" />
           {item.path ? (
             <Link
               to={item.path}
-              className="text-gray-600 hover:text-gray-900 transition-colors font-medium"
+              className="text-gray-600 hover:text-gray-900 transition-colors font-light"
             >
               {item.label}
             </Link>
           ) : (
-            <span className="text-gray-900 font-semibold line-clamp-1">{item.label}</span>
+            <span className="text-gray-900 font-normal truncate max-w-md">
+              {item.label}
+            </span>
           )}
         </React.Fragment>
       ))}

@@ -120,12 +120,10 @@ export const useCheckoutSubmit = (user) => {
           { duration: 5000 }
         );
 
-        navigate("/order-lookup", {
-          state: {
-            orderCode: orderCode,
-            contact: shippingInfo.email,
-          },
-        });
+        // Redirect to guest order detail page
+        setTimeout(() => {
+          navigate(`/guest-order/${orderCode}`);
+        }, 1000);
       } else {
         // Handle logged-in user checkout (COD)
         notify.success("Đặt hàng thành công!");

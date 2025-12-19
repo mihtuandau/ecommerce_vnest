@@ -12,20 +12,25 @@ const Button = ({
   children, 
   ...props 
 }) => {
-  const baseClasses = 'inline-flex items-center justify-center font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200';
+  // Base classes - minimalist style
+  const baseClasses = 'inline-flex items-center justify-center font-normal focus:outline-none transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-50';
   
+  // Variants - minimalist palette
   const variants = {
-    primary: 'bg-gray-900 text-white hover:bg-gray-800 focus:ring-gray-900 disabled:bg-gray-400',
-    dark: 'bg-gray-900 text-white hover:bg-gray-800 focus:ring-gray-900 disabled:bg-gray-400',
-    outline: 'bg-white border-2 border-gray-300 text-gray-700 hover:bg-gray-50 focus:ring-gray-500 disabled:border-gray-200 disabled:text-gray-400',
-    secondary: 'bg-gray-200 text-gray-800 hover:bg-gray-300 focus:ring-gray-500 disabled:bg-gray-100',
-    ghost: 'bg-transparent text-gray-700 hover:bg-gray-100 focus:ring-gray-300 disabled:text-gray-400'
+    primary: 'bg-gray-900 text-white hover:bg-gray-800',
+    dark: 'bg-gray-900 text-white hover:bg-gray-800',
+    outline: 'border border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white bg-white',
+    'outline-light': 'border border-gray-300 text-gray-900 hover:border-gray-900 bg-white',
+    secondary: 'bg-gray-100 text-gray-900 hover:bg-gray-200 border border-gray-200',
+    ghost: 'bg-transparent text-gray-900 hover:bg-gray-100',
+    danger: 'bg-white border border-gray-300 text-gray-900 hover:border-gray-900',
   };
 
+  // Sizes - consistent spacing
   const sizes = {
-    sm: 'px-3 py-1.5 text-sm',
-    md: 'px-4 py-2',
-    lg: 'px-5 py-2.5 text-base'
+    sm: 'px-3 py-1.5 text-xs',
+    md: 'px-4 py-2.5 text-sm',
+    lg: 'px-6 py-3 text-base'
   };
 
   const widthClasses = fullWidth ? 'w-full' : '';
@@ -51,4 +56,4 @@ const Button = ({
   );
 };
 
-export default Button; 
+export default Button;

@@ -44,7 +44,7 @@ const ProductTabs = ({ product, activeTab, onTabChange }) => {
 
         {activeTab === 'reviews' && (
           <div className="space-y-8">
-            <div className="bg-gray-50 border border-gray-100 rounded-lg p-5">
+            <div className="bg-gray-50 border border-gray-100 p-5">
               <p className="text-sm font-light text-gray-600">
                 <span className="font-normal text-gray-900">💡 Hướng dẫn:</span> Để đánh giá sản phẩm này, vui lòng đặt hàng và đợi đơn hàng được giao thành công. 
                 Sau đó, bạn có thể đánh giá trong trang <Link to="/orders" className="font-normal underline hover:text-gray-900">Đơn hàng của tôi</Link>.

@@ -33,6 +33,7 @@ export class MailService {
       .join('');
 
     try {
+      console.log('📧 Attempting to send email to:', email);
       await this.mailerService.sendMail({
         to: email,
         subject: `Xác nhận đơn hàng ${orderCode}`,
@@ -119,7 +120,11 @@ export class MailService {
           </body>
           </html>
         `,
-      });} catch (error) {// Don't throw error to prevent order creation failure
+      });
+      console.log('✅ Email sent successfully to:', email);
+    } catch (error) {
+      console.error('❌ Failed to send order confirmation email:', error.message);
+      // Don't throw error to prevent order creation failure
     }
   }
 

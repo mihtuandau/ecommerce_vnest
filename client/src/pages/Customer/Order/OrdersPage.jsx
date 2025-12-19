@@ -20,7 +20,7 @@ const OrdersPage = () => {
   const [loading, setLoading] = useState(true);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [reviewedProducts, setReviewedProducts] = useState(new Set());
+  const [reviewedProducts, setReviewedProducts] = useState(new Set()); // Lưu "productId-orderId"
   const [isAutoRefreshing, setIsAutoRefreshing] = useState(false);
   const [statusFilter, setStatusFilter] = useState('ALL');
 
@@ -59,6 +59,16 @@ const OrdersPage = () => {
     }
   }, [orders]);
 
+  // Auto-refresh every 30 seconds while on this page
+  useEffect(() => {
+    const interval = setInterval(() => {
+      console.log('🔄 Auto-refreshing orders...');
+      loadOrders();
+    }, 30000); // 30 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
   const loadOrders = async () => {
     try {
       setLoading(true);
@@ -89,46 +99,73 @@ const OrdersPage = () => {
 
   const checkReviewedProducts = async () => {
     const reviewed = new Set();
+    console.log('🔄 Starting checkReviewedProducts, total orders:', orders.length);
+    
     for (const order of orders) {
       // Only allow review if order is DELIVERED AND payment is successful
       const canReviewOrder = order.status === 'DELIVERED' && order.payment?.status === 'SUCCESS';
       
+      console.log('📦 Order:', {
+        id: order.id,
+        code: order.orderCode,
+        status: order.status,
+        paymentStatus: order.payment?.status,
+        canReviewOrder
+      });
+      
       if (canReviewOrder && order.items) {
-        console.log('🔍 Checking review status for order:', { orderId: order.id, status: order.status, paymentStatus: order.payment?.status });
-        
         for (const item of order.items) {
           const productId = item.variant?.product?.id || item.variant?.productId;
+          const productName = item.variant?.product?.name;
+          
           if (productId) {
             try {
-              const response = await reviewService.canUserReview(productId);
-              const canReview = response.data?.canReview || response.canReview;
-              console.log('🔍 Can review product:', productId, '?', canReview);
-              // If canReview is false, it means user has already reviewed this product
-              if (!canReview) {
-                reviewed.add(productId);
+              console.log('🔍 Checking product:', { orderId: order.id, productId, productName });
+              const response = await reviewService.canUserReview(productId, order.id);
+              const result = response.data || response;
+              
+              console.log('📊 API Response:', {
+                orderId: order.id,
+                productId,
+                productName,
+                canReview: result.canReview,
+                hasReviewed: result.hasReviewed,
+                hasPurchased: result.hasPurchased,
+                reason: result.reason
+              });
+              
+              // Only add to reviewed if user has actually reviewed (not just can't review)
+              if (result.hasReviewed === true) {
+                const reviewKey = `${productId}-${order.id}`;
+                console.log('✅ Adding to reviewed:', reviewKey, productName);
+                reviewed.add(reviewKey);
+                console.log('✅ Current reviewed Set:', Array.from(reviewed));
+              } else {
+                console.log('❌ NOT adding to reviewed:', productId, productName, 'hasReviewed =', result.hasReviewed);
               }
             } catch (error) {
-              console.error('Error checking review:', error);
+              console.error('❌ Error checking review:', error);
             }
           }
         }
       }
     }
-    console.log('📝 Reviewed products:', Array.from(reviewed));
+    console.log('📝 Final reviewed products:', Array.from(reviewed));
     setReviewedProducts(reviewed);
   };
 
-  const handleOpenReviewModal = (item) => {
+  const handleOpenReviewModal = (item, orderId) => {
     const productId = item.variant?.product?.id || item.variant?.productId;
     const productName = item.variant?.product?.name;
-    setSelectedProduct({ id: productId, name: productName });
+    setSelectedProduct({ id: productId, name: productName, orderId });
     setShowReviewModal(true);
   };
 
   const handleReviewSuccess = () => {
     setShowReviewModal(false);
     notify.success('Đánh giá thành công!');
-    setReviewedProducts(prev => new Set([...prev, selectedProduct.id]));
+    const reviewKey = `${selectedProduct.id}-${selectedProduct.orderId}`;
+    setReviewedProducts(prev => new Set([...prev, reviewKey]));
     setSelectedProduct(null);
   };
 
@@ -183,9 +220,23 @@ const OrdersPage = () => {
           ]} />
 
           {/* Header */}
-          <div className="mb-6">
-            <h1 className="text-2xl font-bold text-gray-900">Đơn hàng của tôi</h1>
-            <p className="text-gray-600 mt-1">Quản lý và theo dõi đơn hàng của bạn</p>
+          <div className="mb-6 flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Đơn hàng của tôi</h1>
+              <p className="text-gray-600 mt-1">Quản lý và theo dõi đơn hàng của bạn</p>
+            </div>
+            <button
+              onClick={() => {
+                loadOrders();
+                notify.success('Đã làm mới danh sách đơn hàng');
+              }}
+              className="px-4 py-2 border border-gray-300 hover:border-gray-900 text-gray-700 hover:text-gray-900 text-sm transition-colors flex items-center gap-2"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              Làm mới
+            </button>
           </div>
 
           {/* Status Filter */}

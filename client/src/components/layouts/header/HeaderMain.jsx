@@ -120,7 +120,7 @@ const HeaderMain = ({ scrolled, searchOpen, setSearchOpen, mobileMenuOpen, setMo
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 flex-shrink-0">
             <span className="text-2xl font-bold text-gray-900 tracking-wider" style={{ fontFamily: 'serif' }}>
-              GLACIA
+              VALENTIA
             </span>
           </Link>
 
@@ -182,7 +182,7 @@ const HeaderMain = ({ scrolled, searchOpen, setSearchOpen, mobileMenuOpen, setMo
                               setShowSearchResults(false);
                               setSearchQuery('');
                             }}
-                            className="flex items-center gap-3 p-3 hover:bg-gray-50 transition-colors border-b last:border-b-0"
+                            className="flex items-center gap-3 p-3 hover:bg-gray-50 transition-colors "
                           >
                             <img
                               src={imageUrl}

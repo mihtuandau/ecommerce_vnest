@@ -147,11 +147,16 @@ const PaymentTable = ({
               </Table.Cell>
               <Table.Cell>
                 <div className="text-sm text-gray-900">
-                  {payment.order?.user?.name || 'N/A'}
+                  {payment.order?.user?.name || payment.order?.shippingInfo?.fullName || 'Khách vãng lai'}
                 </div>
                 <div className="text-xs text-gray-500">
-                  {payment.order?.user?.email || ''}
+                  {payment.order?.user?.email || payment.order?.guestEmail || 'N/A'}
                 </div>
+                {payment.order?.guestPhone && (
+                  <div className="text-xs text-gray-500">
+                    {payment.order?.guestPhone}
+                  </div>
+                )}
               </Table.Cell>
               <Table.Cell>
                 <span className="text-sm font-medium text-gray-900">

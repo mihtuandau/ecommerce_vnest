@@ -20,6 +20,7 @@ import { JwtService } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from '../common/guards/auth.guard';
 import { RegisterDto } from './dto/register-dto';
+import { RegisterAdminDto } from './dto/register-admin.dto';
 import { LoginDto } from './dto/login-dto';
 import { ForgotPasswordDto, ResetPasswordDto } from './dto/forgot-password.dto';
 
@@ -40,6 +41,17 @@ export class AuthController {
     return res.status(HttpStatus.CREATED).json({
       user: result.user,
       message: 'User registered successfully',
+    });
+  }
+
+  @Post('register-admin')
+  async registerAdmin(@Body() registerAdminDto: RegisterAdminDto, @Res() res: Response) {
+    const result = await this.authService.registerAdmin(registerAdminDto);
+    this.authService.setAuthCookie(res, result.access_token);
+
+    return res.status(HttpStatus.CREATED).json({
+      user: result.user,
+      message: 'Admin registered successfully',
     });
   }
 
