@@ -186,16 +186,43 @@ const PaymentReturn = () => {
           {/* Buttons */}
           <div className="space-y-3">
             <button
-              onClick={() => navigate(`/orders/${orderInfo?.order?.id || ''}?paymentSuccess=true`)}
+              onClick={() => {
+                // Check if guest order (no userId in order)
+                if (!orderInfo?.order?.userId) {
+                  // Guest order - save to localStorage and redirect to detail page
+                  const guestOrders = JSON.parse(localStorage.getItem('guest_orders') || '[]');
+                  const contact = orderInfo?.order?.guestEmail || orderInfo?.order?.guestPhone;
+                  const newOrder = {
+                    orderCode: orderInfo?.order?.orderCode,
+                    contact: contact,
+                    date: new Date().toISOString()
+                  };
+                  const filtered = guestOrders.filter(o => o.orderCode !== orderInfo?.order?.orderCode);
+                  filtered.unshift(newOrder);
+                  localStorage.setItem('guest_orders', JSON.stringify(filtered.slice(0, 5)));
+                  
+                  navigate(`/guest-order/${orderInfo?.order?.orderCode}`);
+                } else {
+                  // Logged in user - redirect to order detail
+                  navigate(`/orders/${orderInfo?.order?.id}?paymentSuccess=true`);
+                }
+              }}
               className="w-full bg-gray-900 text-white py-3 rounded-lg font-medium transition-all hover:bg-black active:scale-95"
             >
               Xem chi tiết đơn hàng
             </button>
             <button
-              onClick={() => navigate('/orders?paymentSuccess=true')}
+              onClick={() => {
+                // Check if guest or logged in
+                if (!orderInfo?.order?.userId) {
+                  navigate('/');
+                } else {
+                  navigate('/orders?paymentSuccess=true');
+                }
+              }}
               className="w-full bg-gray-700 text-white py-3 rounded-lg font-medium transition-all hover:bg-gray-800 active:scale-95"
             >
-              Danh sách đơn hàng
+              {!orderInfo?.order?.userId ? 'Về trang chủ' : 'Danh sách đơn hàng'}
             </button>
             <button
               onClick={() => navigate('/')}

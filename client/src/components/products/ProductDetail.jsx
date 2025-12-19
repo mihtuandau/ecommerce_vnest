@@ -8,11 +8,8 @@ import {
   ProductActions,
   ProductAccordion,
   ProductShare,
-} from "../../../components/productdetail";
+} from "../../components/productdetail";
 
-// ===================================================================
-// 1. PRODUCT IMAGE GALLERY
-// ===================================================================
 export const ProductImageGallery = ({
   images = [],
   selectedImage = 0,
@@ -37,7 +34,6 @@ export const ProductImageGallery = ({
 
   return (
     <div className="space-y-4">
-      {/* Main Image */}
       <div
         className="relative aspect-square overflow-hidden group cursor-zoom-in bg-white border border-gray-200"
         onClick={() => setIsZoomed(true)}
@@ -76,7 +72,6 @@ export const ProductImageGallery = ({
         )}
       </div>
 
-      {/* Thumbnail */}
       {images.length > 1 && (
         <div className="flex gap-2.5 overflow-x-auto pb-2">
           {images.map((img, idx) => (
@@ -99,7 +94,6 @@ export const ProductImageGallery = ({
         </div>
       )}
 
-      {/* Zoom Modal */}
       {isZoomed && (
         <div
           className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4"
@@ -155,9 +149,6 @@ export const ProductImageGallery = ({
   );
 };
 
-// ===================================================================
-// 2. PRODUCT DETAILS (Refactored with smaller components)
-// ===================================================================
 export const ProductDetails = ({
   product,
   currentPrice,

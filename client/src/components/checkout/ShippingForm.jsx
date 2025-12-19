@@ -84,6 +84,24 @@ const ShippingForm = ({ shippingInfo, onInputChange, onSelectAddressClick, isGue
     }
   };
 
+  const handleTextInputChange = (field, value) => {
+    // Khi người dùng nhập tay, xóa code tương ứng để tránh inconsistency
+    onInputChange(field, value);
+    if (field === 'city') {
+      onInputChange('cityCode', '');
+      onInputChange('districtCode', '');
+      onInputChange('district', '');
+      onInputChange('wardCode', '');
+      onInputChange('ward', '');
+    } else if (field === 'district') {
+      onInputChange('districtCode', '');
+      onInputChange('wardCode', '');
+      onInputChange('ward', '');
+    } else if (field === 'ward') {
+      onInputChange('wardCode', '');
+    }
+  };
+
   return (
     <div className="bg-white border border-gray-200 p-6">
       <div className="flex items-center justify-between mb-8 pb-6 border-b border-gray-200">
@@ -168,57 +186,87 @@ const ShippingForm = ({ shippingInfo, onInputChange, onSelectAddressClick, isGue
             <label className="block text-sm font-normal text-gray-900 mb-2">
               Tỉnh/Thành phố <span className="text-gray-400">*</span>
             </label>
-            <select
-              value={shippingInfo.cityCode || ''}
-              onChange={handleProvinceChange}
-              disabled={loading}
-              className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:border-gray-900 transition-colors disabled:bg-gray-100 disabled:text-gray-500"
-            >
-              <option value="">Chọn tỉnh/thành phố</option>
-              {provinces.map(province => (
-                <option key={province.id} value={province.id}>
-                  {province.name}
-                </option>
-              ))}
-            </select>
+            {shippingInfo.city && !shippingInfo.cityCode ? (
+              <input
+                type="text"
+                value={shippingInfo.city}
+                onChange={(e) => handleTextInputChange('city', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:border-gray-900 transition-colors"
+                placeholder="Tỉnh/Thành phố"
+              />
+            ) : (
+              <select
+                value={shippingInfo.cityCode || ''}
+                onChange={handleProvinceChange}
+                disabled={loading}
+                className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:border-gray-900 transition-colors disabled:bg-gray-100 disabled:text-gray-500"
+              >
+                <option value="">Chọn tỉnh/thành phố</option>
+                {provinces.map(province => (
+                  <option key={province.id} value={province.id}>
+                    {province.name}
+                  </option>
+                ))}
+              </select>
+            )}
           </div>
 
           <div>
             <label className="block text-sm font-normal text-gray-900 mb-2">
               Quận/Huyện <span className="text-gray-400">*</span>
             </label>
-            <select
-              value={shippingInfo.districtCode || ''}
-              onChange={handleDistrictChange}
-              disabled={!shippingInfo.cityCode || districts.length === 0}
-              className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:border-gray-900 transition-colors disabled:bg-gray-100 disabled:text-gray-500"
-            >
-              <option value="">Chọn quận/huyện</option>
-              {districts.map(district => (
-                <option key={district.id} value={district.id}>
-                  {district.name}
-                </option>
-              ))}
-            </select>
+            {shippingInfo.district && !shippingInfo.districtCode ? (
+              <input
+                type="text"
+                value={shippingInfo.district}
+                onChange={(e) => handleTextInputChange('district', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:border-gray-900 transition-colors"
+                placeholder="Quận/Huyện"
+              />
+            ) : (
+              <select
+                value={shippingInfo.districtCode || ''}
+                onChange={handleDistrictChange}
+                disabled={!shippingInfo.cityCode || districts.length === 0}
+                className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:border-gray-900 transition-colors disabled:bg-gray-100 disabled:text-gray-500"
+              >
+                <option value="">Chọn quận/huyện</option>
+                {districts.map(district => (
+                  <option key={district.id} value={district.id}>
+                    {district.name}
+                  </option>
+                ))}
+              </select>
+            )}
           </div>
 
           <div>
             <label className="block text-sm font-normal text-gray-900 mb-2">
               Phường/Xã <span className="text-gray-400">*</span>
             </label>
-            <select
-              value={shippingInfo.wardCode || ''}
-              onChange={handleWardChange}
-              disabled={!shippingInfo.districtCode || wards.length === 0}
-              className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:border-gray-900 transition-colors disabled:bg-gray-100 disabled:text-gray-500"
-            >
-              <option value="">Chọn phường/xã</option>
-              {wards.map(ward => (
-                <option key={ward.id} value={ward.id}>
-                  {ward.name}
-                </option>
-              ))}
-            </select>
+            {shippingInfo.ward && !shippingInfo.wardCode ? (
+              <input
+                type="text"
+                value={shippingInfo.ward}
+                onChange={(e) => handleTextInputChange('ward', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:border-gray-900 transition-colors"
+                placeholder="Phường/Xã"
+              />
+            ) : (
+              <select
+                value={shippingInfo.wardCode || ''}
+                onChange={handleWardChange}
+                disabled={!shippingInfo.districtCode || wards.length === 0}
+                className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:border-gray-900 transition-colors disabled:bg-gray-100 disabled:text-gray-500"
+              >
+                <option value="">Chọn phường/xã</option>
+                {wards.map(ward => (
+                  <option key={ward.id} value={ward.id}>
+                    {ward.name}
+                  </option>
+                ))}
+              </select>
+            )}
           </div>
         </div>
 

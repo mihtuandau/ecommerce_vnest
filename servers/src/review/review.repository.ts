@@ -32,9 +32,22 @@ export class ReviewRepository {
    * Find review by user and product
    */
   async findByUserAndProduct(userId: number, productId: number): Promise<Review | null> {
+    // Deprecated - use findByUserProductAndOrder instead
+    return this.prisma.review.findFirst({
+      where: {
+        userId,
+        productId,
+      },
+    });
+  }
+
+  /**
+   * Find review by user, product and order
+   */
+  async findByUserProductAndOrder(userId: number, productId: number, orderId: number): Promise<Review | null> {
     return this.prisma.review.findUnique({
       where: {
-        userId_productId: { userId, productId },
+        userId_productId_orderId: { userId, productId, orderId },
       },
     });
   }
@@ -91,6 +104,29 @@ export class ReviewRepository {
 
     console.log('❌ User cannot review - no matching order');
     return false;
+  }
+
+  /**
+   * Check if user has purchased product in specific order
+   */
+  async hasUserPurchasedProductInOrder(userId: number, productId: number, orderId: number): Promise<boolean> {
+    const orderItem = await this.prisma.orderItem.findFirst({
+      where: {
+        order: {
+          id: orderId,
+          userId,
+          status: 'DELIVERED',
+          payment: { 
+            status: 'SUCCESS' 
+          },
+        },
+        variant: {
+          productId,
+        },
+      },
+    });
+
+    return !!orderItem;
   }
 
   /**

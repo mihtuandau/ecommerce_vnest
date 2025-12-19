@@ -18,7 +18,13 @@ export class OrderRepository {
           },
         },
         payment: true,
-        user: true,
+        user: {
+          select: {
+            id: true,
+            email: true,
+            name: true,
+          }
+        },
       },
     });
   }
@@ -29,6 +35,39 @@ export class OrderRepository {
   async findByCode(orderCode: string): Promise<Order | null> {
     return this.prisma.order.findUnique({
       where: { orderCode },
+      include: {
+        orderItems: {
+          include: {
+            variant: {
+              include: { 
+                product: { 
+                  include: { 
+                    images: { 
+                      select: { 
+                        url: true 
+                      } 
+                    } 
+                  } 
+                }, 
+                images: { 
+                  select: { 
+                    url: true 
+                  } 
+                }
+              },
+            },
+          },
+        },
+        user: {
+          select: {
+            id: true,
+            email: true,
+            name: true,
+          }
+        },
+        payment: true,
+        address: true,
+      },
     });
   }
 
@@ -210,16 +249,29 @@ export class OrderRepository {
   }
 
   /**
-   * Increment product sold count
+   * Increment product sold count - with safety check
    */
   async incrementProductSoldCount(productId: number, quantity: number) {
-    return this.prisma.product.update({
+    // Log before increment
+    const currentProduct = await this.prisma.product.findUnique({
+      where: { id: productId },
+      select: { soldCount: true, name: true },
+    });
+    
+    console.log(`📊 Before increment - Product ${productId} (${currentProduct?.name}): soldCount = ${currentProduct?.soldCount}, incrementing by ${quantity}`);
+    
+    const updated = await this.prisma.product.update({
       where: { id: productId },
       data: {
         soldCount: {
           increment: quantity,
         },
       },
+      select: { id: true, name: true, soldCount: true },
     });
+    
+    console.log(`✅ After increment - Product ${productId}: soldCount = ${updated.soldCount}`);
+    
+    return updated;
   }
 }

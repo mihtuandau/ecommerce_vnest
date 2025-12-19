@@ -12,26 +12,27 @@ export class ReviewService {
   ) {}
 
   async createReview(userId: number, dto: CreateReviewDto) {
-    const { productId, rating, comment, images } = dto;
+    const { productId, orderId, rating, comment, images } = dto;
 
-    // Kiểm tra user đã mua sản phẩm chưa
-    const hasPurchased = await this.repository.hasUserPurchasedProduct(userId, productId);
+    // Kiểm tra user đã mua sản phẩm trong đơn hàng này chưa
+    const hasPurchased = await this.repository.hasUserPurchasedProductInOrder(userId, productId, orderId);
 
     if (!hasPurchased) {
-      throw new BadRequestException('Bạn cần mua sản phẩm này trước khi đánh giá');
+      throw new BadRequestException('Bạn cần mua sản phẩm này trong đơn hàng để đánh giá');
     }
 
-    // Kiểm tra đã review chưa
-    const existingReview = await this.repository.findByUserAndProduct(userId, productId);
+    // Kiểm tra đã review cho đơn hàng này chưa
+    const existingReview = await this.repository.findByUserProductAndOrder(userId, productId, orderId);
 
     if (existingReview) {
-      throw new BadRequestException('Bạn đã đánh giá sản phẩm này rồi');
+      throw new BadRequestException('Bạn đã đánh giá sản phẩm này trong đơn hàng này rồi');
     }
 
     // Tạo review
     const review = await this.repository.create({
       user: { connect: { id: userId } },
       product: { connect: { id: productId } },
+      order: { connect: { id: orderId } },
       rating,
       comment,
       images: images || [],
@@ -46,20 +47,60 @@ export class ReviewService {
     return review;
   }
 
-  async canUserReview(userId: number, productId: number): Promise<boolean> {
-    console.log('🔍 Checking if user can review:', { userId, productId });
+  async canUserReview(userId: number, productId: number, orderId: number): Promise<{ canReview: boolean; reason?: string; hasReviewed?: boolean; hasPurchased?: boolean }> {
+    console.log('🔍 [canUserReview] Checking:', { userId, productId, orderId });
     
-    // Kiểm tra đã review chưa
-    const existingReview = await this.repository.findByUserAndProduct(userId, productId);
+    // Kiểm tra đã review cho đơn hàng này chưa
+    const existingReview = await this.repository.findByUserProductAndOrder(userId, productId, orderId);
+    console.log('🔍 [canUserReview] Existing review:', existingReview ? { id: existingReview.id } : null);
+    
     if (existingReview) {
-      console.log('❌ User already reviewed this product');
-      return false; // Đã review rồi
+      console.log('❌ [canUserReview] Already reviewed this product in this order');
+      return { 
+        canReview: false, 
+        reason: 'already_reviewed',
+        hasReviewed: true,
+        hasPurchased: true
+      };
     }
 
-    // Kiểm tra đã mua và nhận hàng chưa
-    const hasPurchased = await this.repository.hasUserPurchasedProduct(userId, productId);
-    console.log('✅ User has purchased product?', hasPurchased);
-    return hasPurchased;
+    // Kiểm tra đã mua sản phẩm trong đơn hàng này và đã nhận hàng chưa
+    const hasPurchased = await this.repository.hasUserPurchasedProductInOrder(userId, productId, orderId);
+    console.log('✅ [canUserReview] Has purchased in this order?', hasPurchased);
+    
+    if (!hasPurchased) {
+      console.log('❌ [canUserReview] Not purchased/received in this order');
+      return {
+        canReview: false,
+        reason: 'not_purchased',
+        hasReviewed: false,
+        hasPurchased: false
+      };
+    }
+    
+    console.log('✅ [canUserReview] User CAN review - purchased but not reviewed yet');
+    return {
+      canReview: true,
+      hasReviewed: false,
+      hasPurchased: true
+    };
+  }
+
+  async getUserProductReview(userId: number, productId: number, orderId: number) {
+    const review = await this.repository.findByUserProductAndOrder(userId, productId, orderId);
+    if (review) {
+      return {
+        exists: true,
+        review: {
+          id: review.id,
+          rating: review.rating,
+          comment: review.comment,
+          createdAt: review.createdAt,
+          updatedAt: review.updatedAt
+        }
+      };
+    }
+    return { exists: false, review: null };
   }
 
   async getProductReviews(productId: number, page: number = 1, limit: number = 10) {

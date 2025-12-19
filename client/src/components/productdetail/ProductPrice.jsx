@@ -106,5 +106,4 @@ const ProductPrice = ({ currentPrice, originalPrice, product }) => {
     </div>
   );
 };
-
 export default ProductPrice;

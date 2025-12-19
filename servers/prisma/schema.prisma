@@ -166,18 +166,21 @@ model Discount {
 model Review {
   id        Int      @id @default(autoincrement())
   userId    Int
-  productId Int      // Đổi từ variantId sang productId
+  productId Int
+  orderId   Int      // Thêm orderId để gắn review với đơn hàng cụ thể
   rating    Int      // 1-5 sao
   comment   String?  @db.Text
   images    String[] // Mảng URLs hình ảnh review
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([userId, productId]) // 1 user chỉ review 1 product 1 lần
+  @@unique([userId, productId, orderId]) // 1 user chỉ review 1 product 1 lần trong 1 đơn hàng
   @@index([userId])
   @@index([productId])
+  @@index([orderId])
   @@index([rating])
 }
 
@@ -212,6 +215,7 @@ model Order {
   shippingMethod   ShippingMethod? @relation(fields: [shippingMethodId], references: [id])
   user             User?           @relation(fields: [userId], references: [id])
   orderItems       OrderItem[]
+  reviews          Review[]        // Thêm relation với Review
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
 

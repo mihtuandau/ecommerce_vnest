@@ -26,7 +26,7 @@ const ProductInfo = ({ product }) => {
 
       {/* Title */}
       <h1 className="text-3xl lg:text-4xl font-light text-gray-900 mb-6 leading-tight tracking-tight">
-        {product.name}
+        {product.name && product.name.length > 150 ? product.name.substring(0, 150) + '...' : product.name}
       </h1>
 
       {/* Rating & Sold */}

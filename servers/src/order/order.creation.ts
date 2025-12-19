@@ -55,8 +55,10 @@ export class OrderCreation {
     );
 
     // Create order
-    const order = await this.repository.create(orderData);
+    const order = await this.repository.create(orderData) as any;
     this.logger.log('✅ Order created with ID:', order.id);
+    this.logger.log('📧 Guest email for order:', order.guestEmail);
+    this.logger.log('👤 User email for order:', order.user?.email);
 
     // Create payment record
     await this.createPaymentRecord(order.id, dto.paymentMethod);
@@ -171,7 +173,18 @@ export class OrderCreation {
   }
 
   private async sendConfirmationEmail(order: any) {
+    this.logger.log('📧 Preparing email for order:', { 
+      orderCode: order.orderCode, 
+      guestEmail: order.guestEmail,
+      userEmail: order.user?.email 
+    });
+    
     const emailData = OrderHelper.prepareOrderEmailDetails(order);
+    
+    this.logger.log('📧 Email data prepared:', { 
+      customerEmail: emailData.customerEmail,
+      orderCode: order.orderCode 
+    });
     
     if (emailData.customerEmail && order.orderCode) {
       // Send email asynchronously (don't wait)
@@ -183,7 +196,9 @@ export class OrderCreation {
         this.logger.error('Failed to send confirmation email:', err);
         // Silent error - email sending is optional
       });
-      this.logger.log('📧 Confirmation email queued');
+      this.logger.log('📧 Confirmation email queued for:', emailData.customerEmail);
+    } else {
+      this.logger.warn('⚠️ No customer email found, skipping confirmation email');
     }
   }
 }

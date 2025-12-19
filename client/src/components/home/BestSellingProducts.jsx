@@ -99,7 +99,7 @@ const BestSellingProducts = ({ products = [] }) => {
 
         {/* Dots Indicator */}
         <div className="flex justify-center gap-2 mt-6">
-          {[...Array(products.length - 2)].map((_, index) => (
+          {products.length > 2 && [...Array(Math.max(0, products.length - 3))].map((_, index) => (
             <button
               key={index}
               onClick={() => setCurrentIndex(index)}

@@ -37,7 +37,8 @@ const OrderCard = ({
         <div className="space-y-4 mb-5">
           {order.items?.slice(0, 2).map((item, idx) => {
             const productId = item.variant?.product?.id || item.variant?.productId;
-            const isReviewed = reviewedProducts.has(productId);
+            const reviewKey = `${productId}-${order.id}`;
+            const isReviewed = reviewedProducts.has(reviewKey);
             const canShowReviewButton = isOrderCompletedForReview && !isReviewed;
 
             return (
@@ -46,7 +47,7 @@ const OrderCard = ({
                 item={item}
                 canReview={canShowReviewButton}
                 isReviewed={isReviewed}
-                onReview={() => onReviewClick(item)}
+                onReview={() => onReviewClick(item, order.id)}
                 showReviewButton={isOrderCompletedForReview}
               />
             );

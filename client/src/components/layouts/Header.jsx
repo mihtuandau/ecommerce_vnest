@@ -98,7 +98,7 @@ const Header = () => {
       isHomePage && !scrolled ? 'bg-transparent' : 'bg-white shadow-md'
     }`}>
       {/* Mobile Header */}
-      <div className="lg:hidden border-b border-gray-100">
+      <div className="lg:hidden">
         <HeaderMain 
           scrolled={true}
           searchOpen={searchOpen}
@@ -110,14 +110,158 @@ const Header = () => {
 
       {/* Desktop Header */}
       <div className="hidden lg:block">
-        {/* Top Row: Language + Logo + Icons */}
-        <div className="container mx-auto px-4 lg:px-8">
-          <div className="flex items-center justify-between py-4">
+        {scrolled ? (
+          /* Compact Header - Scrolled: Logo trái + Menu giữa + Icons phải */
+          <div className="">
+            <div className="container mx-auto px-4 lg:px-8">
+              <div className="flex items-center justify-between py-5">
+                {/* Left: Logo */}
+                <Link to="/" className="flex-shrink-0">
+                  <span 
+                    className="text-3xl font-bold tracking-wider text-gray-900 transition-all duration-300" 
+                    style={{ fontFamily: 'serif' }}
+                  >
+                    VALENTIA
+                  </span>
+                </Link>
+
+                {/* Center: Menu Navigation */}
+                <nav className="flex items-center gap-6 " >
+                  <Link to="/" className="text-gray-700 hover:text-gray-900 transition-all font-semibold text-lg uppercase hover:underline decoration-2 underline-offset-8">
+                    Home
+                  </Link>
+                  
+                  {/* Shop with Categories Dropdown */}
+                  <div className="relative group">
+                    <Link 
+                      to="/products" 
+                      className="text-gray-700 hover:text-gray-900 transition-all font-semibold text-lg uppercase hover:underline decoration-2 underline-offset-8"
+                    >
+                      Shop
+                    </Link>
+                    
+                    {/* Categories Dropdown */}
+                    {categories && categories.length > 0 && (
+                      <div className="absolute top-full left-0 pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+                        <div className="bg-white rounded-xl shadow-2xl border border-gray-100 py-3 min-w-[240px] overflow-hidden">
+                          <div className="px-4 py-2 border-b border-gray-100">
+                            <Link
+                              to="/products"
+                              className="block font-semibold text-gray-900 hover:text-blue-600 transition-colors text-sm"
+                            >
+                              Tất cả sản phẩm
+                            </Link>
+                          </div>
+                          <div className="py-1">
+                            {categories.map((category) => (
+                              <Link
+                                key={category.id}
+                                to={`/category/${category.id}`}
+                                className="block px-4 py-2.5 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all text-sm font-medium"
+                              >
+                                {category.name}
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <Link to="/about" className="text-gray-700 hover:text-gray-900 transition-all font-semibold text-lg uppercase hover:underline decoration-2 underline-offset-8">
+                    About Us
+                  </Link>
+
+                  <Link to="/contact" className="text-gray-700 hover:text-gray-900 transition-all font-semibold text-lg uppercase hover:underline decoration-2 underline-offset-8">
+                    Contact
+                  </Link>
+                </nav>
+
+                {/* Right: Icons */}
+                <div className="flex items-center gap-6">
+                  <button
+                    onClick={() => setDesktopSearchOpen(!desktopSearchOpen)}
+                    className="text-gray-700 hover:text-gray-900 transition-colors"
+                  >
+                    <FaSearch size={20} />
+                  </button>
+
+                  <Link to="/wishlist" className="relative">
+                    <FaHeart size={20} className="text-gray-700 hover:text-gray-900" />
+                    {wishlistCount > 0 && (
+                      <span className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-medium">
+                        {wishlistCount}
+                      </span>
+                    )}
+                  </Link>
+
+                  {user ? (
+                    <div ref={userDropdownRef} className="relative">
+                      <button
+                        onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                        className="flex items-center gap-1 text-gray-700 hover:text-gray-900 transition-all hover:underline decoration-2 underline-offset-4"
+                      >
+                        <FaUser size={20} />
+                      </button>
+
+                      {userDropdownOpen && (
+                        <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-100 z-50">
+                          <Link to="/profile" onClick={() => setUserDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-gray-700 text-sm">
+                            <FaUserCircle size={16} />
+                            <span>Tài khoản</span>
+                          </Link>
+                          <Link to="/orders" onClick={() => setUserDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-gray-700 text-sm">
+                            <FaClipboardList size={16} />
+                            <span>Đơn hàng</span>
+                          </Link>
+                          <Link to="/support" onClick={() => setUserDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-gray-700 text-sm">
+                            <FaHeadset size={16} />
+                            <span>Hỗ trợ</span>
+                          </Link>
+                          <div className="border-t border-gray-100">
+                            <button
+                              onClick={() => {
+                                setUserDropdownOpen(false);
+                                logout();
+                              }}
+                              className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-red-50 text-red-600 text-sm"
+                            >
+                              <FaSignOutAlt size={16} />
+                              <span>Đăng xuất</span>
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <Link to="/login" className="text-gray-700 hover:text-gray-900">
+                      <FaUser size={20} />
+                    </Link>
+                  )}
+
+                  <Link to="/cart" className="relative">
+                    <FaShoppingCart size={20} className="text-gray-700 hover:text-gray-900" />
+                    {cartCount > 0 && (
+                      <span className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-medium">
+                        {cartCount > 99 ? '99+' : cartCount}
+                      </span>
+                    )}
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          /* Full Header - Not Scrolled */
+          <>
+            {/* Top Row: Language + Logo + Icons */}
+            <div className="container mx-auto px-4 lg:px-8">
+              <div className="flex items-center justify-between py-5">
             {/* Left: Language Selector */}
             <div ref={languageDropdownRef} className="relative">
               <button
                 onClick={() => setLanguageDropdownOpen(!languageDropdownOpen)}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-md transition-colors ${
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-md transition-all hover:underline decoration-2 underline-offset-4 ${
                   isHomePage && !scrolled
                     ? 'text-white hover:text-blue-200 hover:bg-white/10'
                     : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50'
@@ -127,7 +271,6 @@ const Header = () => {
                 <span className="text-sm font-medium">
                   {selectedLanguage === 'vi' ? 'Tiếng Việt' : 'English'}
                 </span>
-                <FaChevronDown size={10} className={`transition-transform ${languageDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
 
               {languageDropdownOpen && (
@@ -163,7 +306,7 @@ const Header = () => {
             {/* Center: Logo */}
             <Link to="/" className="absolute left-1/2 transform -translate-x-1/2">
               <span 
-                className={`text-2xl font-bold tracking-wider transition-colors ${
+                className={`text-3xl font-bold tracking-wider transition-colors ${
                   isHomePage && !scrolled ? 'text-white' : 'text-gray-900'
                 }`} 
                 style={{ fontFamily: 'serif' }}
@@ -257,16 +400,18 @@ const Header = () => {
           </div>
         </div>
 
-        {/* Navigation Menu Below */}
-        <DesktopNav 
-          scrolled={isHomePage ? scrolled : true}
-          categories={categories}
-          categoryDropdown={categoryDropdown}
-          setCategoryDropdown={setCategoryDropdown}
-          desktopSearchOpen={desktopSearchOpen}
-          setDesktopSearchOpen={setDesktopSearchOpen}
-          logoHidden={true}
-        />
+            {/* Navigation Menu Below */}
+            <DesktopNav 
+              scrolled={isHomePage ? scrolled : true}
+              categories={categories}
+              categoryDropdown={categoryDropdown}
+              setCategoryDropdown={setCategoryDropdown}
+              desktopSearchOpen={desktopSearchOpen}
+              setDesktopSearchOpen={setDesktopSearchOpen}
+              logoHidden={true}
+            />
+          </>
+        )}
       </div>
 
       {/* Mobile Menu Overlay */}

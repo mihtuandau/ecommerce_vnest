@@ -4,8 +4,8 @@ import { X } from 'lucide-react';
 import { notify } from '../../utils/notification';
 import reviewService from '../../services/reviewService';
 
-const ReviewForm = ({ productId, onSuccess, onCancel }) => {
-  const [rating, setRating] = useState(5);
+const ReviewForm = ({ productId, orderId, onSuccess, onCancel }) => {
+  const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(null);
   const [comment, setComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -21,7 +21,7 @@ const ReviewForm = ({ productId, onSuccess, onCancel }) => {
     setIsSubmitting(true);
     try {
       // userId will be extracted from JWT token in backend
-      await reviewService.createReview(productId, null, rating, comment);
+      await reviewService.createReview(productId, orderId, rating, comment);
       notify.success('Đánh giá thành công!');
       onSuccess?.();
     } catch (error) {
@@ -72,6 +72,7 @@ const ReviewForm = ({ productId, onSuccess, onCancel }) => {
               </button>
             ))}
             <span className="ml-2 text-sm text-gray-600">
+              {rating === 0 && 'Chọn số sao'}
               {rating === 1 && 'Rất tệ'}
               {rating === 2 && 'Tệ'}
               {rating === 3 && 'Bình thường'}
@@ -99,7 +100,7 @@ const ReviewForm = ({ productId, onSuccess, onCancel }) => {
         <div className="flex items-center gap-3">
           <button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isSubmitting || rating === 0}
             className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {isSubmitting ? 'Đang gửi...' : 'Gửi đánh giá'}

@@ -30,7 +30,7 @@ const orderService = {
 
   // Lookup guest order by order code and contact
   lookupGuestOrder: async (orderCode, contact) => {
-    return await apiService.get(ORDER_ENDPOINTS.GUEST_LOOKUP(orderCode), { contact });
+    return await apiService.get(`${ORDER_ENDPOINTS.GUEST_LOOKUP(orderCode)}?contact=${encodeURIComponent(contact)}`);
   },
 
   // Get my orders (customer)

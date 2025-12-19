@@ -33,10 +33,27 @@ export class ReviewController {
   @Get('can-review/:productId')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  async canUserReview(@Param('productId') productId: string, @Req() req: any) {
+  async canUserReview(
+    @Param('productId') productId: string, 
+    @Query('orderId') orderId: string,
+    @Req() req: any
+  ) {
     const userId = req.user.userId;
-    const canReview = await this.reviewService.canUserReview(userId, +productId);
-    return { canReview };
+    const result = await this.reviewService.canUserReview(userId, +productId, +orderId);
+    return result;
+  }
+
+  @Get('my-review/:productId')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  async getMyReview(
+    @Param('productId') productId: string, 
+    @Query('orderId') orderId: string,
+    @Req() req: any
+  ) {
+    const userId = req.user.userId;
+    const review = await this.reviewService.getUserProductReview(userId, +productId, +orderId);
+    return review;
   }
 
   @Get('product/:productId')

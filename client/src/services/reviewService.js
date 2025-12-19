@@ -3,16 +3,22 @@ import { REVIEW_ENDPOINTS } from '../config/apiConstants';
 
 const reviewService = {
   // Kiểm tra có thể review không
-  async canUserReview(productId) {
-    const response = await apiService.get(`${REVIEW_ENDPOINTS.BASE}/can-review/${productId}`);
+  async canUserReview(productId, orderId) {
+    const response = await apiService.get(`${REVIEW_ENDPOINTS.BASE}/can-review/${productId}?orderId=${orderId}`);
+    return response;
+  },
+
+  // Lấy review của user cho product cụ thể trong order
+  async getMyReview(productId, orderId) {
+    const response = await apiService.get(`${REVIEW_ENDPOINTS.BASE}/my-review/${productId}?orderId=${orderId}`);
     return response;
   },
 
   // Tạo review mới (userId sẽ được lấy từ JWT token ở backend)
-  async createReview(productId, userId, rating, comment, images = []) {
+  async createReview(productId, orderId, rating, comment, images = []) {
     const response = await apiService.post(
       REVIEW_ENDPOINTS.BASE,
-      { productId, rating, comment, images }
+      { productId, orderId, rating, comment, images }
     );
     return response;
   },

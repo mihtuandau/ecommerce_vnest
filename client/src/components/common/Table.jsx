@@ -41,6 +41,7 @@ const TableHeader = ({
   className = "",
   sortable = false,
   onClick,
+  onSort, // Destructure onSort để không spread vào th
   sorted,
   sortDir,
   align = "left",

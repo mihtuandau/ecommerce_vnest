@@ -57,5 +57,4 @@ const ProductAccordion = ({ product }) => {
     </div>
   );
 };
-
 export default ProductAccordion;

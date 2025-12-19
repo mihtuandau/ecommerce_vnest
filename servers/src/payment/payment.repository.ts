@@ -60,7 +60,15 @@ export class PaymentRepository {
       take,
       include: {
         order: {
-          include: {
+          select: {
+            id: true,
+            orderCode: true,
+            total: true,
+            status: true,
+            guestEmail: true,
+            guestPhone: true,
+            shippingInfo: true,
+            createdAt: true,
             user: {
               select: {
                 id: true,
@@ -100,14 +108,27 @@ export class PaymentRepository {
       });
 
       if (status === 'SUCCESS') {
-        // Update order status & paymentId
-        await prisma.order.update({
+        // Get current order to check status
+        const currentOrder = await prisma.order.findUnique({
           where: { id: orderId },
-          data: {
-            status: 'PROCESSING',
-            paymentId,
-          },
+          select: { status: true },
         });
+
+        if (currentOrder && currentOrder.status === 'PENDING') {
+          await prisma.order.update({
+            where: { id: orderId },
+            data: {
+              status: 'PROCESSING',
+              paymentId,
+            },
+          });
+        } else if (currentOrder) {
+          // Just update paymentId without changing status
+          await prisma.order.update({
+            where: { id: orderId },
+            data: { paymentId },
+          });
+        }
 
         // Deduct stock from variants
         for (const item of orderItems) {

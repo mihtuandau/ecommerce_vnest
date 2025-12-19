@@ -27,12 +27,23 @@ const AddressSelector = ({ onAddressSelect, selectedAddressId }) => {
     }
   };
 
+  const normalizeText = (text) => {
+    if (!text) return '';
+    return text.toLowerCase().trim().replace(/\s+/g, ' ');
+  };
+
   const handleSelectAddress = async (address) => {
     try {
       const provinces = await locationService.getAllProvinces();
-      const selectedProvince = provinces.find(p => p.name === address.city);
+      const normalizedCity = normalizeText(address.city);
+      const selectedProvince = provinces.find(p => 
+        normalizeText(p.name) === normalizedCity ||
+        normalizeText(p.name).includes(normalizedCity) ||
+        normalizedCity.includes(normalizeText(p.name))
+      );
       
       if (!selectedProvince) {
+        console.log('Province not found for:', address.city);
         onAddressSelect(address);
         return;
       }
@@ -42,13 +53,25 @@ const AddressSelector = ({ onAddressSelect, selectedAddressId }) => {
 
       if (address.state) {
         const districts = await locationService.getDistrictsByProvince(selectedProvince.id);
-        const selectedDistrict = districts?.find(d => d.name === address.state);
+        const normalizedState = normalizeText(address.state);
+        const selectedDistrict = districts?.find(d => 
+          normalizeText(d.name) === normalizedState ||
+          normalizeText(d.name).includes(normalizedState) ||
+          normalizedState.includes(normalizeText(d.name))
+        );
+        
         if (selectedDistrict) {
           districtCode = selectedDistrict.id;
 
           if (address.ward) {
             const wards = await locationService.getWardsByDistrict(districtCode);
-            const selectedWard = wards?.find(w => w.name === address.ward);
+            const normalizedWard = normalizeText(address.ward);
+            const selectedWard = wards?.find(w => 
+              normalizeText(w.name) === normalizedWard ||
+              normalizeText(w.name).includes(normalizedWard) ||
+              normalizedWard.includes(normalizeText(w.name))
+            );
+            
             if (selectedWard) {
               wardCode = selectedWard.id;
             }
@@ -65,6 +88,7 @@ const AddressSelector = ({ onAddressSelect, selectedAddressId }) => {
 
       onAddressSelect(addressWithCodes);
     } catch (error) {
+      console.error('Error mapping address codes:', error);
       onAddressSelect(address);
     }
   };

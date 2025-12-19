@@ -21,5 +21,4 @@ const ProductShare = () => {
     </div>
   );
 };
-
 export default ProductShare;

@@ -35,5 +35,4 @@ const ProductQuantity = ({ quantity, onQuantityChange, totalStock }) => {
     </div>
   );
 };
-
 export default ProductQuantity;

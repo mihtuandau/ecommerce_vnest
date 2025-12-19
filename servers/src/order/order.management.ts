@@ -18,26 +18,33 @@ export class OrderManagement {
   ) {}
 
   async update(id: number, dto: UpdateOrderDto): Promise<any> {
+    // Clear cache FIRST to ensure we get fresh data from DB
+    await this.cacheService.deleteOrder(id);
+    
+    // Fetch current order from DB (not cache) - MUST be fresh data
     const oldOrder = await this.repository.findById(id);
 
     if (!oldOrder) {
       throw new NotFoundException(`Order with ID ${id} not found`);
     }
 
+    this.logger.log(`📝 Updating order ${id}: Old status = ${oldOrder.status}, New status = ${dto.status || 'unchanged'}`);
+
     // Không cho phép cập nhật đơn hàng đã hủy
     if (oldOrder.status === 'CANCELLED') {
       throw new BadRequestException('Cannot update a cancelled order');
     }
 
+    // Update order
     const order = await this.repository.update(id, dto);
 
     // Create payment record if not exists and status is updated
     await this.handlePaymentCreation(order, oldOrder, dto);
 
-    // Handle delivered status changes
+    // Handle delivered status changes - MUST pass oldOrder (before update)
     await this.handleDeliveredStatus(dto, oldOrder);
 
-    // Clear caches
+    // Clear caches after update
     await this.cacheService.clearRelatedCaches(id, order.userId || undefined);
 
     return order;
@@ -156,12 +163,37 @@ export class OrderManagement {
   }
 
   private async handleDeliveredStatus(dto: UpdateOrderDto, oldOrder: any) {
-    // If status changed to DELIVERED, update soldCount
+    this.logger.log(`🔍 handleDeliveredStatus called: dto.status=${dto.status}, oldOrder.status=${oldOrder.status}, orderId=${oldOrder.id}`);
+    
+    // Only increment soldCount if status is CHANGING TO DELIVERED from non-DELIVERED state
     if (dto.status === 'DELIVERED' && oldOrder.status !== 'DELIVERED') {
+      this.logger.log(`📦 Status CHANGING to DELIVERED for order ${oldOrder.id} (was ${oldOrder.status})`);
+      this.logger.log(`📊 Order has ${oldOrder.orderItems?.length || 0} items`);
+      
+      // Update soldCount for each product
       for (const item of oldOrder.orderItems) {
-        await this.repository.incrementProductSoldCount(item.variant.productId, item.quantity);
+        const productId = item.variant.productId;
+        const quantity = item.quantity;
+        this.logger.log(`➕ INCREMENTING soldCount: productId=${productId}, quantity=${quantity}`);
+        await this.repository.incrementProductSoldCount(productId, quantity);
+        this.logger.log(`✅ Incremented soldCount for product ${productId} by ${quantity}`);
       }
-      this.logger.log(`✅ Updated sold count for order ${oldOrder.id}`);
+      
+      // Automatically mark payment as SUCCESS when order is delivered
+      if (oldOrder.payment && oldOrder.payment.status !== 'SUCCESS') {
+        try {
+          await this.paymentService.updateStatus(oldOrder.payment.id, { status: 'SUCCESS' });
+          this.logger.log(`✅ Updated payment status to SUCCESS for order ${oldOrder.id}`);
+        } catch (error) {
+          this.logger.error('Failed to update payment status:', error);
+        }
+      } else if (oldOrder.payment?.status === 'SUCCESS') {
+        this.logger.log(`ℹ️ Payment already SUCCESS for order ${oldOrder.id}`);
+      }
+    } else if (dto.status === 'DELIVERED' && oldOrder.status === 'DELIVERED') {
+      this.logger.warn(`⚠️ Order ${oldOrder.id} is ALREADY DELIVERED, SKIPPING soldCount increment`);
+    } else {
+      this.logger.log(`ℹ️ Status update but not to DELIVERED (dto=${dto.status}, old=${oldOrder.status}), no soldCount change`);
     }
   }
 }

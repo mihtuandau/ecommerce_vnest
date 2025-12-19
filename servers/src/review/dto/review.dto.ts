@@ -5,6 +5,9 @@ export class CreateReviewDto {
   productId: number;
 
   @IsInt()
+  orderId: number;
+
+  @IsInt()
   @Min(1)
   @Max(5)
   rating: number;
