@@ -9,7 +9,7 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(helmet());
-  app.use(cookieParser()); // 🔒 Enable cookie parsing
+  app.use(cookieParser());
   app.setGlobalPrefix('api');
   
   // 🔒 CORS configuration - allow credentials with specific origin
@@ -19,7 +19,8 @@ async function bootstrap() {
     origin: allowedOrigins, 
     credentials: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    allowedHeaders: 'Authorization, Content-Type',
+    allowedHeaders: 'Authorization, Content-Type, Accept, Origin, X-Requested-With',
+    exposedHeaders: 'Content-Disposition',
   });
   app.useGlobalPipes(
     new ValidationPipe({

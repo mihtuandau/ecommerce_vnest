@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
+import { X, Upload, Image as ImageIcon } from 'lucide-react';
 import Modal from '../../common/Modal';
 import Button from '../../common/Button';
 import { notify } from '../../../utils/notification';
+import uploadService from '../../../services/uploadService';
 
 const DiscountModal = ({ isOpen, onClose, discount, onSubmit }) => {
   const [formData, setFormData] = useState({
     code: '',
     description: '',
+    image: '',
     discountType: 'percentage',
     percentage: '',
     fixedAmount: '',
@@ -16,6 +18,8 @@ const DiscountModal = ({ isOpen, onClose, discount, onSubmit }) => {
   });
 
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [imagePreview, setImagePreview] = useState(null);
 
   useEffect(() => {
     if (discount) {
@@ -23,29 +27,79 @@ const DiscountModal = ({ isOpen, onClose, discount, onSubmit }) => {
       setFormData({
         code: discount.code,
         description: discount.description || '',
+        image: discount.image || '',
         discountType: discount.percentage ? 'percentage' : 'fixedAmount',
         percentage: discount.percentage || '',
         fixedAmount: discount.fixedAmount || '',
         startDate: discount.startDate ? new Date(discount.startDate).toISOString().slice(0, 16) : '',
         endDate: discount.endDate ? new Date(discount.endDate).toISOString().slice(0, 16) : '',
       });
+      setImagePreview(discount.image || null);
     } else {
       // Create mode
       setFormData({
         code: '',
         description: '',
+        image: '',
         discountType: 'percentage',
         percentage: '',
         fixedAmount: '',
         startDate: '',
         endDate: '',
       });
+      setImagePreview(null);
     }
   }, [discount, isOpen]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      notify.error('Vui lòng chọn file ảnh');
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      notify.error('Kích thước ảnh không được vượt quá 5MB');
+      return;
+    }
+
+    try {
+      setUploading(true);
+      
+      // Show preview immediately
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+
+      // Upload to Cloudinary
+      const urls = await uploadService.uploadImages(file);
+      
+      if (urls && urls.length > 0) {
+        setFormData((prev) => ({ ...prev, image: urls[0] }));
+        notify.success('Tải ảnh lên thành công');
+      }
+    } catch (error) {
+      notify.error('Không thể tải ảnh lên');
+      setImagePreview(null);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setFormData((prev) => ({ ...prev, image: '' }));
+    setImagePreview(null);
   };
 
   const handleSubmit = async (e) => {
@@ -80,6 +134,7 @@ const DiscountModal = ({ isOpen, onClose, discount, onSubmit }) => {
     const submitData = {
       code: formData.code.toUpperCase().trim(),
       description: formData.description.trim() || undefined,
+      image: formData.image || undefined,
       percentage: formData.discountType === 'percentage' ? parseFloat(formData.percentage) : null,
       fixedAmount: formData.discountType === 'fixedAmount' ? parseFloat(formData.fixedAmount) : null,
       startDate: new Date(formData.startDate).toISOString(),
@@ -132,6 +187,64 @@ const DiscountModal = ({ isOpen, onClose, discount, onSubmit }) => {
             rows={3}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
+        </div>
+
+        {/* Ảnh banner */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Ảnh banner khuyến mãi
+          </label>
+          
+          {imagePreview ? (
+            <div className="relative">
+              <img 
+                src={imagePreview} 
+                alt="Preview" 
+                className="w-full h-48 object-cover rounded-lg border border-gray-300"
+              />
+              <button
+                type="button"
+                onClick={handleRemoveImage}
+                className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors"
+                disabled={uploading}
+              >
+                <X size={16} />
+              </button>
+            </div>
+          ) : (
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="hidden"
+                id="image-upload"
+                disabled={uploading}
+              />
+              <label
+                htmlFor="image-upload"
+                className="cursor-pointer flex flex-col items-center"
+              >
+                {uploading ? (
+                  <>
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mb-3"></div>
+                    <p className="text-sm text-gray-600">Đang tải lên...</p>
+                  </>
+                ) : (
+                  <>
+                    <Upload className="h-12 w-12 text-gray-400 mb-3" />
+                    <p className="text-sm text-gray-600 mb-1">
+                      Click để chọn ảnh hoặc kéo thả
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      PNG, JPG, GIF tối đa 5MB
+                    </p>
+                  </>
+                )}
+              </label>
+            </div>
+          )}
+          <p className="text-xs text-gray-500 mt-1">Ảnh sẽ hiển thị trên card khuyến mãi ở trang khách hàng</p>
         </div>
 
         {/* Loại giảm giá */}

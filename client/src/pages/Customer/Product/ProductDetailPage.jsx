@@ -134,11 +134,11 @@ const ProductDetailPage = () => {
       }
     };
 
-    addToCart(selectedVariant.id, quantity, productData);
-    
     if (buyNow) {
-      setTimeout(() => navigate('/cart'), 500);
+      // Go directly to checkout without adding to cart
+      navigate('/checkout', { state: { product: productData, quantity } });
     } else {
+      addToCart(selectedVariant.id, quantity, productData);
       notify.success('Thêm vào giỏ hàng thành công!', 2000);
     }
   };

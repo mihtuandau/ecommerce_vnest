@@ -118,16 +118,14 @@ const Header = () => {
             <div className="container mx-auto px-4 lg:px-8">
               <div className="flex items-center justify-between py-5">
                 {/* Left: Logo */}
-                <Link to="/" className="flex-shrink-0">
+                <Link to="/" className="flex-shrink-0 pl-20">
                   <span 
-                    className="text-3xl font-bold tracking-wider text-gray-900 transition-all duration-300" 
-                    style={{ fontFamily: 'serif' }}
+                    className="text-2xl font-bold tracking-wider text-gray-900 transition-all duration-300" 
                   >
                     VALENTIA
                   </span>
                 </Link>
 
-                {/* Center: Menu Navigation */}
                 <nav className="flex items-center gap-6 " >
                   <Link to="/" className="text-gray-700 hover:text-gray-900 transition-all font-semibold text-lg uppercase hover:underline decoration-2 underline-offset-8">
                     Home
@@ -168,6 +166,9 @@ const Header = () => {
                       </div>
                     )}
                   </div>
+                 <Link to="/promotions" className="text-gray-700 hover:text-gray-900 transition-all font-semibold text-lg uppercase hover:underline decoration-2 underline-offset-8">
+                    Promotions
+                  </Link>
 
                   <Link to="/about" className="text-gray-700 hover:text-gray-900 transition-all font-semibold text-lg uppercase hover:underline decoration-2 underline-offset-8">
                     About Us
@@ -307,10 +308,9 @@ const Header = () => {
             {/* Center: Logo */}
             <Link to="/" className="absolute left-1/2 transform -translate-x-1/2">
               <span 
-                className={`text-3xl font-bold tracking-wider transition-colors ${
+                className={`text-2xl font-bold tracking-wider transition-colors ${
                   isHomePage && !scrolled ? 'text-white' : 'text-gray-900'
                 }`} 
-                style={{ fontFamily: 'serif' }}
               >
                 VALENTIA
               </span>

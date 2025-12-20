@@ -11,6 +11,11 @@ export class CreateDiscountDto {
   @IsString()
   description?: string;
 
+  @ApiProperty({ example: 'https://res.cloudinary.com/...', description: 'URL ảnh banner', required: false })
+  @IsOptional()
+  @IsString()
+  image?: string;
+
   @ApiProperty({ example: 10, description: 'Phần trăm giảm giá (0-100)', required: false })
   @IsOptional()
   @IsNumber()

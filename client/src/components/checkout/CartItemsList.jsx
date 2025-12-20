@@ -4,15 +4,16 @@ const CartItemsList = ({ cartItems }) => {
   return (
     <div className="space-y-4 mb-6 max-h-64 overflow-y-auto">
       {cartItems.map((item) => {
-        const price = item.product?.variant?.price || 0;
-        const size = item.product?.variant?.size;
-        const color = item.product?.variant?.color;
-        const productName = item.product?.name || "Sản phẩm";
-        const image = item.product?.image || "/placeholder-product.jpg";
+        // Handle both cart items from Redux and direct product data from ProductDetailPage
+        const price = item.product?.variant?.price || item.price || 0;
+        const size = item.product?.variant?.size || item.size;
+        const color = item.product?.variant?.color || item.color;
+        const productName = item.product?.name || item.name || "Sản phẩm";
+        const image = item.product?.image || item.image || "/placeholder-product.jpg";
 
         return (
           <div
-            key={item.variantId}
+            key={item.variantId || item.id}
             className="flex gap-3 pb-4 border-b border-gray-100 last:border-0"
           >
             <div className="w-16 h-16 bg-gray-100 flex-shrink-0 overflow-hidden">
