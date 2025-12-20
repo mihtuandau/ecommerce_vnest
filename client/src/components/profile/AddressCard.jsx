@@ -8,7 +8,7 @@ const AddressCard = ({ address, onEdit, onDelete, onSetDefault }) => {
       className={`p-6 border transition-colors cursor-pointer ${
         address.isDefault
           ? 'border-gray-900 bg-gray-50'
-          : 'border-gray-300 hover:border-gray-900 hover:bg-gray-50'
+          : 'border-gray-300'
       }`}
     >
       <div className="flex justify-between items-start">

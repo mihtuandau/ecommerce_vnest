@@ -1,41 +1,46 @@
 import { useNavigate } from 'react-router-dom';
 import { FaTimesCircle } from 'react-icons/fa';
 
+
 const PaymentCancel = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full text-center">
-        <FaTimesCircle className="text-6xl text-red-600 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Thanh toán đã bị hủy</h2>
-        <p className="text-gray-600 mb-6">
+    <div className="min-h-screen bg-white flex items-center justify-center p-4">
+      <div className="border-2 border-gray-900 p-16 max-w-md w-full text-center">
+        <div className="w-20 h-20 mx-auto mb-6 border-2 border-gray-900 flex items-center justify-center">
+          <FaTimesCircle className="text-4xl text-gray-900" />
+        </div>
+        
+        <h2 className="text-2xl font-light text-gray-900 mb-3 tracking-tight">
+          Thanh Toán Đã Bị Hủy
+        </h2>
+        <p className="text-gray-600 font-light mb-8 leading-relaxed">
           Bạn đã hủy giao dịch thanh toán. Bạn có thể thử lại hoặc chọn phương thức thanh toán khác.
         </p>
         
         <div className="space-y-3">
           <button
             onClick={() => navigate('/cart')}
-            className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+            className="w-full bg-gray-900 text-white px-6 py-3 hover:bg-gray-800 transition-colors font-normal text-sm"
           >
-            Quay lại giỏ hàng
+            Quay Lại Giỏ Hàng
           </button>
           <button
             onClick={() => navigate('/checkout')}
-            className="w-full bg-gray-100 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-200 transition-colors font-semibold"
+            className="w-full border border-gray-300 text-gray-900 px-6 py-3 hover:border-gray-900 transition-colors font-normal text-sm"
           >
-            Thử lại thanh toán
+            Thử Lại Thanh Toán
           </button>
           <button
             onClick={() => navigate('/')}
-            className="w-full text-gray-600 px-6 py-3 rounded-lg hover:bg-gray-50 transition-colors"
+            className="w-full text-gray-600 px-6 py-3 hover:text-gray-900 transition-colors font-light text-sm"
           >
-            Về trang chủ
+            Về Trang Chủ
           </button>
         </div>
       </div>
     </div>
   );
 };
-
 export default PaymentCancel;

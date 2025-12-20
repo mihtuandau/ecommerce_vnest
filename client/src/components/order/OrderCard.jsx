@@ -17,7 +17,7 @@ const OrderCard = ({
     order.status === 'DELIVERED' && order.payment?.status === 'SUCCESS';
 
   return (
-    <div className="bg-white border border-gray-200 overflow-hidden hover:border-gray-900 transition-colors">
+    <div className="bg-white border border-gray-200 overflow-hidden">
       {/* Order Header */}
       <div className="px-6 py-4 bg-gray-50 border-b border-gray-200 flex items-center justify-between flex-wrap gap-3">
         <div className="flex items-center gap-4">

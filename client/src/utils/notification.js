@@ -1,6 +1,4 @@
-// Utility để import dễ dàng hơn
-// Thay vì import toast from 'react-hot-toast'
-// Chỉ cần import { notify } from './utils/notification'
+
 
 let notificationInstance = null;
 

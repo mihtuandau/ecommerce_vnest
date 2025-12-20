@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { FaTrash, FaMinus, FaPlus, FaTimes } from 'react-icons/fa';
 
+
 const CartItem = ({ groupedProduct, selectedItems, onToggleItem, onUpdateQuantity, onRemove, onRemoveAll, formatPrice }) => {
   const { productId, productName, productImage, variants, totalQuantity, totalPrice } = groupedProduct;
   
@@ -24,7 +25,7 @@ const CartItem = ({ groupedProduct, selectedItems, onToggleItem, onUpdateQuantit
   };
 
   return (
-    <div className="bg-white border border-gray-200 p-6 hover:border-gray-900 transition-colors">
+    <div className="bg-white border border-gray-200 p-6 shadow-md hover:shadow-lg transition-all duration-300 hover:translate-y-[-4px]">
       <div className="flex gap-6">
         {/* Checkbox */}
         <div className="flex-shrink-0 pt-1">
@@ -89,15 +90,15 @@ const CartItem = ({ groupedProduct, selectedItems, onToggleItem, onUpdateQuantit
                 
                 {/* Variant Info */}
                 <div className="flex-1">
-                  <div className="flex flex-wrap gap-2 text-xs mb-3">
+                  <div className="flex flex-wrap gap-2 text-xs mb-4">
                     {variant.size && (
-                      <span className="px-2 py-1 border border-gray-300 text-gray-700">
-                        {variant.size}
+                      <span className="px-3 py-1.5 bg-gray-100 border border-gray-300 text-gray-700 font-medium rounded">
+                        Kích thước: {variant.size}
                       </span>
                     )}
                     {variant.color && (
-                      <span className="px-2 py-1 border border-gray-300 text-gray-700">
-                        {variant.color}
+                      <span className="px-3 py-1.5 bg-gray-100 border border-gray-300 text-gray-700 font-medium rounded">
+                        Màu: {variant.color}
                       </span>
                     )}
                   </div>
@@ -135,13 +136,13 @@ const CartItem = ({ groupedProduct, selectedItems, onToggleItem, onUpdateQuantit
                     </div>
 
                     {/* Price */}
-                    <div className="text-sm">
-                      <span className="text-gray-900">
+                    <div className="text-right">
+                      <span className="text-lg font-bold text-gray-900 block">
                         {formatPrice(variant.price * variant.quantity)}
                       </span>
                       {variant.quantity > 1 && (
-                        <span className="text-xs text-gray-500 ml-2">
-                          ({formatPrice(variant.price)})
+                        <span className="text-xs text-gray-500">
+                          {formatPrice(variant.price)} x {variant.quantity}
                         </span>
                       )}
                     </div>
@@ -163,10 +164,10 @@ const CartItem = ({ groupedProduct, selectedItems, onToggleItem, onUpdateQuantit
           {/* Product Total */}
           <div className="mt-6 pt-6 border-t border-gray-200 flex items-center justify-between">
             <div className="text-sm text-gray-600">
-              Tổng: <span className="text-gray-900">{totalQuantity}</span> sản phẩm
+              Tổng: <span className="font-medium text-gray-900">{totalQuantity}</span> sản phẩm
             </div>
             <div className="text-right">
-              <p className="text-lg font-light text-gray-900">
+              <p className="text-xl font-bold text-gray-900">
                 {formatPrice(totalPrice)}
               </p>
             </div>
