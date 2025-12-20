@@ -112,13 +112,12 @@ const PromotionsPage = () => {
   }
 
   const breadcrumbItems = [
-    { label: 'Trang chủ', path: '/' },
-    { label: 'Khuyến mãi', path: '/promotions' },
+    { label: 'Khuyến mãi' },
   ];
 
   return (
     <Layout>
-      <div className="bg-white">
+      <div className="bg-white pt-20">
         {/* Breadcrumb */}
         <div className="container mx-auto px-4 py-4">
           <Breadcrumb items={breadcrumbItems} />
