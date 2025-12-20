@@ -53,7 +53,7 @@ const ReviewList = ({ productId }) => {
   return (
     <div className="space-y-4">
       {reviews.map((review) => (
-        <div key={review.id} className="bg-white p-6 border border-gray-200 hover:border-gray-900 transition-colors">
+        <div key={review.id} className="bg-white p-6 border border-gray-200">
           {/* User avatar - square */}
           <div className="flex items-center gap-3 mb-3">
             <div className="w-10 h-10 bg-gray-900 flex items-center justify-center text-white">
@@ -81,7 +81,7 @@ const ReviewList = ({ productId }) => {
                   key={idx}
                   src={img}
                   alt={`Review ${idx + 1}`}
-                  className="w-20 h-20 object-cover border border-gray-200 hover:border-gray-900 transition-colors cursor-pointer"
+                  className="w-20 h-20 object-cover border border-gray-200 cursor-pointer"
                 />
               ))}
             </div>

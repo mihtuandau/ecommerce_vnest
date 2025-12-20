@@ -125,8 +125,8 @@ const AddressSelector = ({ onAddressSelect, selectedAddressId }) => {
             selectedAddressId === address.id
               ? 'border-gray-900 bg-gray-50'
               : address.isDefault
-              ? 'border-gray-400 hover:border-gray-900'
-              : 'border-gray-300 hover:border-gray-900'
+              ? 'border-gray-400'
+              : 'border-gray-300'
           }`}
           onClick={() => handleSelectAddress(address)}
         >

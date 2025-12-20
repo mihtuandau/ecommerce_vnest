@@ -56,12 +56,12 @@ const ProfilePage = () => {
           ]} />
 
           {/* Header - Minimalist */}
-          <div className="border-b border-gray-200 pb-8 mb-12">
+          <div className="border-b border-gray-200 pb-8 mb-12 ">
             <div className="flex items-center gap-6">
-              <div className="w-20 h-20 border-2 border-gray-900 flex items-center justify-center text-gray-900 text-3xl font-light">
+              <div className="w-20 h-20 border-2 border-gray-900 flex items-center justify-center text-white text-3xl font-light bg-gray-900 rounded-full">
                 {currentUser.name?.charAt(0)?.toUpperCase() || currentUser.email?.charAt(0)?.toUpperCase()}
               </div>
-              <div className="flex-1">
+              <div className="flex-1 ">
                 <h1 className="text-3xl font-light text-gray-900 tracking-tight mb-2">
                   {currentUser.name || 'Người dùng'}
                 </h1>
@@ -116,7 +116,6 @@ const ProfilePage = () => {
               </div>
             </div>
 
-            {/* Address Manager Card */}
             
           </div>
         </div>

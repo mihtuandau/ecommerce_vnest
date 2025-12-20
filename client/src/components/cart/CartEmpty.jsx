@@ -5,7 +5,7 @@ import Button from '../common/Button';
 const CartEmpty = () => {
   return (
     <div className="max-w-2xl mx-auto text-center py-16">
-      <div className="bg-white border border-gray-200 p-16">
+      <div className="bg-gray-50 border border-gray-200 p-16 rounded-lg">
         <div className="w-24 h-24 border-2 border-gray-300 mx-auto mb-8 flex items-center justify-center">
           <FaShoppingBag className="text-4xl text-gray-400" />
         </div>

@@ -4,6 +4,7 @@ import categoryService from '../../services/categoryService';
 import HeaderMain from './header/HeaderMain';
 import DesktopNav from './header/DesktopNav';
 import MobileMenu from './header/MobileMenu';
+import CartDrawer from '../cart/CartDrawer';
 import { 
   FaSearch, 
   FaShoppingCart, 
@@ -33,6 +34,7 @@ const Header = () => {
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [languageDropdownOpen, setLanguageDropdownOpen] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState('vi');
+  const [cartDrawerOpen, setCartDrawerOpen] = useState(false);
 
   const userDropdownRef = useRef(null);
   const languageDropdownRef = useRef(null);
@@ -130,8 +132,7 @@ const Header = () => {
                   <Link to="/" className="text-gray-700 hover:text-gray-900 transition-all font-semibold text-lg uppercase hover:underline decoration-2 underline-offset-8">
                     Home
                   </Link>
-                  
-                  {/* Shop with Categories Dropdown */}
+           
                   <div className="relative group">
                     <Link 
                       to="/products" 
@@ -239,14 +240,14 @@ const Header = () => {
                     </Link>
                   )}
 
-                  <Link to="/cart" className="relative">
-                    <FaShoppingCart size={20} className="text-gray-700 hover:text-gray-900" />
+                  <button onClick={() => setCartDrawerOpen(true)} className="relative text-gray-700 hover:text-gray-900 transition-colors cursor-pointer">
+                    <FaShoppingCart size={20} />
                     {cartCount > 0 && (
                       <span className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-medium">
                         {cartCount > 99 ? '99+' : cartCount}
                       </span>
                     )}
-                  </Link>
+                  </button>
                 </div>
               </div>
             </div>
@@ -386,21 +387,20 @@ const Header = () => {
                 </Link>
               )}
 
-              <Link to="/cart" className="relative">
-                <FaShoppingCart size={20} className={
-                  isHomePage && !scrolled ? 'text-white hover:text-blue-200' : 'text-gray-700 hover:text-gray-900'
-                } />
+              <button onClick={() => setCartDrawerOpen(true)} className={`relative transition-colors cursor-pointer ${
+                isHomePage && !scrolled ? 'text-white hover:text-blue-200' : 'text-gray-700 hover:text-gray-900'
+              }`}>
+                <FaShoppingCart size={20} />
                 {cartCount > 0 && (
                   <span className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-medium">
                     {cartCount > 99 ? '99+' : cartCount}
                   </span>
                 )}
-              </Link>
+              </button>
             </div>
           </div>
         </div>
 
-            {/* Navigation Menu Below */}
             <DesktopNav 
               scrolled={isHomePage ? scrolled : true}
               categories={categories}
@@ -414,12 +414,13 @@ const Header = () => {
         )}
       </div>
 
-      {/* Mobile Menu Overlay */}
       <MobileMenu 
         searchOpen={searchOpen}
         mobileMenuOpen={mobileMenuOpen}
         categories={categories}
       />
+
+      <CartDrawer isOpen={cartDrawerOpen} onClose={() => setCartDrawerOpen(false)} />
     </header>
   );
 };

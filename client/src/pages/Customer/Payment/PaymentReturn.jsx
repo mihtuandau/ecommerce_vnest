@@ -1,12 +1,17 @@
-import { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { FaCheckCircle, FaTimesCircle, FaSpinner, FaClock } from 'react-icons/fa';
-import paymentService from '../../../services/paymentService';
+import { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import {
+  FaCheckCircle,
+  FaTimesCircle,
+  FaSpinner,
+  FaClock,
+} from "react-icons/fa";
+import paymentService from "../../../services/paymentService";
 
 const PaymentReturn = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const [status, setStatus] = useState('loading');
+  const [status, setStatus] = useState("loading");
   const [paymentInfo, setPaymentInfo] = useState(null);
   const [orderInfo, setOrderInfo] = useState(null);
   const [pollAttempts, setPollAttempts] = useState(0);
@@ -15,171 +20,142 @@ const PaymentReturn = () => {
     checkPaymentStatus();
   }, []);
 
-  // Poll payment status every 3 seconds if still PENDING (max 10 attempts = 30s)
   useEffect(() => {
-    if (status === 'pending' && pollAttempts < 10) {
+    if (status === "pending" && pollAttempts < 10) {
       const timer = setTimeout(() => {
-        console.log(`🔄 Polling payment status (attempt ${pollAttempts + 1}/10)...`);
         checkPaymentStatus();
-        setPollAttempts(prev => prev + 1);
+        setPollAttempts((prev) => prev + 1);
       }, 3000);
-
       return () => clearTimeout(timer);
     }
   }, [status, pollAttempts]);
 
   const checkPaymentStatus = async () => {
     try {
-      const code = searchParams.get('code');
-      const id = searchParams.get('id');
-      const cancel = searchParams.get('cancel');
-      const statusParam = searchParams.get('status');
-      const orderCode = searchParams.get('orderCode');
+      const orderCode = searchParams.get("orderCode") || searchParams.get("id");
+      const cancel = searchParams.get("cancel");
+      const statusParam = searchParams.get("status");
 
-      const payosOrderCode = orderCode || id;
-
-      console.log('🔍 PaymentReturn params:', { code, id, cancel, statusParam, orderCode, payosOrderCode });
-
-      if (!payosOrderCode) {
-        console.error('❌ No PayOS order code found');
-        setStatus('error');
+      if (!orderCode) {
+        setStatus("error");
         return;
       }
 
-      if (cancel === 'true' || statusParam === 'CANCELLED') {
-        console.log('❌ Payment cancelled');
-        setStatus('cancelled');
+      if (cancel === "true" || statusParam === "CANCELLED") {
+        setStatus("cancelled");
         return;
       }
 
-      // Call API to verify payment and get order details (public endpoint, no auth needed)
-      console.log('📡 Calling public API to verify payment with orderCode:', payosOrderCode);
-      try {
-        const response = await paymentService.verifyPaymentReturn(payosOrderCode);
-        console.log('✅ Payment verification response:', response);
+      const response = await paymentService.verifyPaymentReturn(orderCode);
 
-        if (response.data) {
-          const { payment, order } = response.data;
-          
-          setPaymentInfo({
-            id: payment?.id,
-            orderCode: payment?.payosOrderCode,
-            amount: payment?.amount || order?.total,
-            status: payment?.status || 'PENDING',
-            method: payment?.method,
-            createdAt: payment?.createdAt,
-          });
-          
-          setOrderInfo({
-            order: {
-              id: order?.id,
-              orderCode: order?.orderCode,
-              status: order?.status,
-              total: order?.total,
-              shippingInfo: order?.shippingInfo,
-            }
-          });
+      if (response.data) {
+        const { payment, order } = response.data;
 
-          // Check if payment is successful
-          if (payment?.status === 'SUCCESS' || statusParam === 'PAID') {
-            setStatus('success');
-            // Set flag để auto-refresh orders page
-            localStorage.setItem('paymentCompleted', 'true');
-          } else if (payment?.status === 'PENDING' || !statusParam) {
-            setStatus('pending');
-          } else {
-            setStatus('failed');
-          }
+        setPaymentInfo({
+          orderCode: payment?.payosOrderCode,
+          amount: payment?.amount || order?.total,
+          status: payment?.status,
+        });
+
+        setOrderInfo({ order });
+
+        if (payment?.status === "SUCCESS" || statusParam === "PAID") {
+          setStatus("success");
+          localStorage.setItem("paymentCompleted", "true");
+        } else if (payment?.status === "PENDING") {
+          setStatus("pending");
         } else {
-          console.error('❌ No data in response');
-          setStatus('error');
+          setStatus("failed");
         }
-      } catch (apiError) {
-        console.error('❌ API Error checking payment:', apiError);
-        // If API fails, check URL status parameter
-        if (statusParam === 'PAID' || statusParam === 'SUCCESS') {
-          setStatus('success');
-        } else {
-          setStatus('error');
-        }
+      } else {
+        setStatus("error");
       }
     } catch (error) {
-      console.error('❌ Error in checkPaymentStatus:', error);
-      setStatus('error');
+      const statusParam = searchParams.get("status");
+      setStatus(statusParam === "PAID" ? "success" : "error");
     }
   };
 
-  if (status === 'loading') {
+  // Loading State
+  if (status === "loading") {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center px-4">
+      <div className="min-h-screen bg-white flex items-center justify-center p-4">
         <div className="text-center">
-          <div className="flex justify-center mb-8">
-            <FaSpinner className="text-5xl text-gray-800 animate-spin" />
+          <div className="w-16 h-16 mx-auto mb-6 border-2 border-gray-900 flex items-center justify-center">
+            <FaSpinner className="text-2xl text-gray-900 animate-spin" />
           </div>
-          <h2 className="text-2xl font-light text-gray-900 mb-2">Đang xác nhận thanh toán</h2>
-          <p className="text-sm text-gray-500">Vui lòng chờ trong giây lát...</p>
+          <h2 className="text-xl font-light text-gray-900 mb-2 tracking-tight">
+            Đang Xác Nhận Thanh Toán
+          </h2>
+          <p className="text-sm text-gray-500 font-light">Vui lòng chờ...</p>
         </div>
       </div>
     );
   }
 
-  if (status === 'success') {
+  // Success State
+  if (status === "success") {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center px-4 py-8">
-        <div className="w-full max-w-lg">
-          {/* Success Icon */}
-          <div className="flex justify-center mb-8">
-            <div className="relative">
-              <div className="absolute inset-0 bg-gray-100 rounded-full blur-xl opacity-50"></div>
-              <FaCheckCircle className="text-6xl text-gray-900 relative" />
-            </div>
+      <div className="min-h-screen bg-white flex items-center justify-center p-4">
+        <div className="w-full max-w-lg border-2 border-gray-900 p-12">
+          {/* Icon */}
+          <div className="w-20 h-20 mx-auto mb-8 border-2 border-gray-900 flex items-center justify-center">
+            <FaCheckCircle className="text-4xl text-gray-900" />
           </div>
 
           {/* Header */}
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-light text-gray-900 mb-3">Thanh toán thành công</h1>
-            <p className="text-gray-600 text-base leading-relaxed">
-              Cảm ơn bạn. Đơn hàng đang được xử lý và sẽ được giao trong 2-3 ngày làm việc.
+            <h1 className="text-3xl font-light text-gray-900 mb-3 tracking-tight">
+              Thanh Toán Thành Công
+            </h1>
+            <p className="text-gray-600 font-light leading-relaxed">
+              Đơn hàng đang được xử lý và sẽ được giao trong 2-3 ngày làm việc
             </p>
           </div>
 
-          {/* Info Card */}
-          <div className="bg-gray-50 rounded-lg p-6 mb-8 border border-gray-200">
+          {/* Order Info */}
+          <div className="bg-gray-50 border border-gray-200 p-6 mb-8">
             <div className="space-y-4">
-              <div className="flex justify-between items-start border-b border-gray-300 pb-4">
-                <span className="text-sm font-medium text-gray-600">Mã đơn hàng</span>
-                <span className="text-right">
-                  <p className="font-semibold text-gray-900">#{orderInfo?.order?.orderCode}</p>
-                  <p className="text-xs text-gray-500 mt-1">{orderInfo?.order?.id}</p>
+              <div className="flex justify-between pb-4 border-b border-gray-200">
+                <span className="text-sm font-light text-gray-600">
+                  Mã đơn hàng
+                </span>
+                <span className="font-normal text-gray-900">
+                  #{orderInfo?.order?.orderCode}
                 </span>
               </div>
 
-              <div className="flex justify-between items-start border-b border-gray-300 pb-4">
-                <span className="text-sm font-medium text-gray-600">Số tiền</span>
-                <span className="font-semibold text-gray-900 text-lg">
-                  {paymentInfo?.amount?.toLocaleString('vi-VN')}đ
+              <div className="flex justify-between pb-4 border-b border-gray-200">
+                <span className="text-sm font-light text-gray-600">
+                  Số tiền
+                </span>
+                <span className="font-normal text-gray-900">
+                  {paymentInfo?.amount?.toLocaleString("vi-VN")}₫
                 </span>
               </div>
 
-              <div className="flex justify-between items-start border-b border-gray-300 pb-4">
-                <span className="text-sm font-medium text-gray-600">Phương thức</span>
-                <span className="text-gray-900 font-medium">PayOS - QR Transfer</span>
+              <div className="flex justify-between pb-4 border-b border-gray-200">
+                <span className="text-sm font-light text-gray-600">
+                  Phương thức
+                </span>
+                <span className="font-normal text-gray-900">PayOS - QR</span>
               </div>
 
               <div className="flex justify-between items-center">
-                <span className="text-sm font-medium text-gray-600">Trạng thái</span>
-                <div className="inline-flex items-center gap-2 bg-gray-900 text-white px-4 py-2 rounded-lg">
-                  <FaCheckCircle className="text-sm" />
-                  <span className="text-sm font-medium">Đã thanh toán</span>
-                </div>
+                <span className="text-sm font-light text-gray-600">
+                  Trạng thái
+                </span>
+                <span className="px-3 py-1 bg-gray-900 text-white text-xs">
+                  Đã thanh toán
+                </span>
               </div>
             </div>
           </div>
 
           {/* Notification */}
-          <div className="bg-gray-100 border-l-4 border-gray-800 p-4 mb-8">
-            <p className="text-sm text-gray-700 leading-relaxed">
-              <span className="font-semibold">Email xác nhận</span> đã được gửi đến địa chỉ email của bạn.
+          <div className="bg-gray-50 border-l-2 border-gray-900 p-4 mb-8">
+            <p className="text-sm text-gray-700 font-light">
+              Email xác nhận đã được gửi đến địa chỉ của bạn
             </p>
           </div>
 
@@ -187,48 +163,37 @@ const PaymentReturn = () => {
           <div className="space-y-3">
             <button
               onClick={() => {
-                // Check if guest order (no userId in order)
-                if (!orderInfo?.order?.userId) {
-                  // Guest order - save to localStorage and redirect to detail page
-                  const guestOrders = JSON.parse(localStorage.getItem('guest_orders') || '[]');
-                  const contact = orderInfo?.order?.guestEmail || orderInfo?.order?.guestPhone;
-                  const newOrder = {
+                const isGuest = !orderInfo?.order?.userId;
+                if (isGuest) {
+                  const guestOrders = JSON.parse(
+                    localStorage.getItem("guest_orders") || "[]"
+                  );
+                  const contact =
+                    orderInfo?.order?.guestEmail ||
+                    orderInfo?.order?.guestPhone;
+                  guestOrders.unshift({
                     orderCode: orderInfo?.order?.orderCode,
                     contact: contact,
-                    date: new Date().toISOString()
-                  };
-                  const filtered = guestOrders.filter(o => o.orderCode !== orderInfo?.order?.orderCode);
-                  filtered.unshift(newOrder);
-                  localStorage.setItem('guest_orders', JSON.stringify(filtered.slice(0, 5)));
-                  
+                    date: new Date().toISOString(),
+                  });
+                  localStorage.setItem(
+                    "guest_orders",
+                    JSON.stringify(guestOrders.slice(0, 5))
+                  );
                   navigate(`/guest-order/${orderInfo?.order?.orderCode}`);
                 } else {
-                  // Logged in user - redirect to order detail
-                  navigate(`/orders/${orderInfo?.order?.id}?paymentSuccess=true`);
+                  navigate(`/orders/${orderInfo?.order?.id}`);
                 }
               }}
-              className="w-full bg-gray-900 text-white py-3 rounded-lg font-medium transition-all hover:bg-black active:scale-95"
+              className="w-full bg-gray-900 text-white py-3 hover:bg-gray-800 transition-colors text-sm font-normal"
             >
-              Xem chi tiết đơn hàng
+              Xem Chi Tiết Đơn Hàng
             </button>
             <button
-              onClick={() => {
-                // Check if guest or logged in
-                if (!orderInfo?.order?.userId) {
-                  navigate('/');
-                } else {
-                  navigate('/orders?paymentSuccess=true');
-                }
-              }}
-              className="w-full bg-gray-700 text-white py-3 rounded-lg font-medium transition-all hover:bg-gray-800 active:scale-95"
+              onClick={() => navigate("/products")}
+              className="w-full border border-gray-300 text-gray-900 py-3 hover:border-gray-900 transition-colors text-sm font-normal"
             >
-              {!orderInfo?.order?.userId ? 'Về trang chủ' : 'Danh sách đơn hàng'}
-            </button>
-            <button
-              onClick={() => navigate('/')}
-              className="w-full bg-gray-200 text-gray-900 py-3 rounded-lg font-medium transition-all hover:bg-gray-300 active:scale-95"
-            >
-              Về trang chủ
+              Tiếp Tục Mua Sắm
             </button>
           </div>
         </div>
@@ -236,40 +201,34 @@ const PaymentReturn = () => {
     );
   }
 
-  if (status === 'cancelled') {
+  // Cancelled State
+  if (status === "cancelled") {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center px-4 py-8">
-        <div className="w-full max-w-lg text-center">
-          <div className="flex justify-center mb-8">
-            <div className="relative">
-              <div className="absolute inset-0 bg-gray-100 rounded-full blur-xl opacity-50"></div>
-              <FaTimesCircle className="text-6xl text-gray-600 relative" />
-            </div>
+      <div className="min-h-screen bg-white flex items-center justify-center p-4">
+        <div className="w-full max-w-lg border-2 border-gray-900 p-12 text-center">
+          <div className="w-20 h-20 mx-auto mb-8 border-2 border-gray-900 flex items-center justify-center">
+            <FaTimesCircle className="text-4xl text-gray-900" />
           </div>
 
-          <h1 className="text-4xl font-light text-gray-900 mb-3">Thanh toán đã bị hủy</h1>
-          <p className="text-gray-600 mb-8 leading-relaxed">
-            Bạn đã hủy giao dịch. Đơn hàng vẫn được giữ lại trong giỏ của bạn.
+          <h1 className="text-3xl font-light text-gray-900 mb-3 tracking-tight">
+            Thanh Toán Đã Bị Hủy
+          </h1>
+          <p className="text-gray-600 mb-8 font-light leading-relaxed">
+            Bạn đã hủy giao dịch. Đơn hàng vẫn được giữ trong giỏ hàng
           </p>
 
           <div className="space-y-3">
             <button
-              onClick={() => navigate('/cart')}
-              className="w-full bg-gray-900 text-white py-3 rounded-lg font-medium transition-all hover:bg-black active:scale-95"
+              onClick={() => navigate("/cart")}
+              className="w-full bg-gray-900 text-white py-3 hover:bg-gray-800 transition-colors text-sm font-normal"
             >
-              Quay lại giỏ hàng
+              Quay Lại Giỏ Hàng
             </button>
             <button
-              onClick={() => navigate('/checkout')}
-              className="w-full bg-gray-700 text-white py-3 rounded-lg font-medium transition-all hover:bg-gray-800 active:scale-95"
+              onClick={() => navigate("/checkout")}
+              className="w-full border border-gray-300 text-gray-900 py-3 hover:border-gray-900 transition-colors text-sm font-normal"
             >
-              Thử lại thanh toán
-            </button>
-            <button
-              onClick={() => navigate('/')}
-              className="w-full bg-gray-200 text-gray-900 py-3 rounded-lg font-medium transition-all hover:bg-gray-300 active:scale-95"
-            >
-              Về trang chủ
+              Thử Lại Thanh Toán
             </button>
           </div>
         </div>
@@ -277,89 +236,55 @@ const PaymentReturn = () => {
     );
   }
 
-  if (status === 'expired') {
+  // Pending State
+  if (status === "pending") {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center px-4 py-8">
-        <div className="w-full max-w-lg text-center">
-          <div className="flex justify-center mb-8">
-            <div className="relative">
-              <div className="absolute inset-0 bg-gray-100 rounded-full blur-xl opacity-50"></div>
-              <FaClock className="text-6xl text-gray-600 relative" />
-            </div>
-          </div>
-
-          <h1 className="text-4xl font-light text-gray-900 mb-3">Link thanh toán hết hạn</h1>
-          <p className="text-gray-600 mb-8 leading-relaxed">
-            Thời hạn thanh toán đã kết thúc. Vui lòng đặt hàng lại để tiếp tục.
-          </p>
-
-          <div className="space-y-3">
-            <button
-              onClick={() => navigate('/cart')}
-              className="w-full bg-gray-900 text-white py-3 rounded-lg font-medium transition-all hover:bg-black active:scale-95"
-            >
-              Đặt hàng lại
-            </button>
-            <button
-              onClick={() => navigate('/')}
-              className="w-full bg-gray-200 text-gray-900 py-3 rounded-lg font-medium transition-all hover:bg-gray-300 active:scale-95"
-            >
-              Về trang chủ
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Pending status
-  if (status === 'pending') {
-    return (
-      <div className="min-h-screen bg-white flex items-center justify-center px-4 py-8">
-        <div className="w-full max-w-lg">
-          <div className="flex justify-center mb-8">
-            <div className="relative">
-              <div className="absolute inset-0 bg-gray-100 rounded-full blur-xl opacity-50"></div>
-              <FaClock className="text-6xl text-gray-600 relative animate-pulse" />
-            </div>
+      <div className="min-h-screen bg-white flex items-center justify-center p-4">
+        <div className="w-full max-w-lg border-2 border-gray-900 p-12">
+          <div className="w-20 h-20 mx-auto mb-8 border-2 border-gray-900 flex items-center justify-center">
+            <FaClock className="text-4xl text-gray-900 animate-pulse" />
           </div>
 
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-light text-gray-900 mb-3">Đang xử lý thanh toán</h1>
-            <p className="text-gray-600 text-base leading-relaxed">
-              Giao dịch đang được xử lý. Vui lòng kiểm tra lại sau vài phút.
+            <h1 className="text-3xl font-light text-gray-900 mb-3 tracking-tight">
+              Đang Xử Lý Thanh Toán
+            </h1>
+            <p className="text-gray-600 font-light leading-relaxed">
+              Giao dịch đang được xử lý. Vui lòng kiểm tra lại sau vài phút
             </p>
             {pollAttempts > 0 && (
-              <p className="text-sm text-gray-500 mt-2">
+              <p className="text-sm text-gray-500 mt-2 font-light">
                 Đang tự động kiểm tra... ({pollAttempts}/10)
               </p>
             )}
           </div>
 
           {orderInfo?.order && (
-            <div className="bg-gray-50 rounded-lg p-6 mb-8 border border-gray-200">
+            <div className="bg-gray-50 border border-gray-200 p-6 mb-8">
               <div className="space-y-4">
-                <div className="flex justify-between items-start border-b border-gray-300 pb-4">
-                  <span className="text-sm font-medium text-gray-600">Mã đơn hàng</span>
-                  <span className="text-right">
-                    <p className="font-semibold text-gray-900">#{orderInfo?.order?.orderCode}</p>
-                    <p className="text-xs text-gray-500 mt-1">{orderInfo?.order?.id}</p>
+                <div className="flex justify-between pb-4 border-b border-gray-200">
+                  <span className="text-sm font-light text-gray-600">
+                    Mã đơn hàng
+                  </span>
+                  <span className="font-normal text-gray-900">
+                    #{orderInfo?.order?.orderCode}
                   </span>
                 </div>
-
-                <div className="flex justify-between items-start border-b border-gray-300 pb-4">
-                  <span className="text-sm font-medium text-gray-600">Số tiền</span>
-                  <span className="font-semibold text-gray-900 text-lg">
-                    {paymentInfo?.amount?.toLocaleString('vi-VN')}đ
+                <div className="flex justify-between pb-4 border-b border-gray-200">
+                  <span className="text-sm font-light text-gray-600">
+                    Số tiền
+                  </span>
+                  <span className="font-normal text-gray-900">
+                    {paymentInfo?.amount?.toLocaleString("vi-VN")}₫
                   </span>
                 </div>
-
                 <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium text-gray-600">Trạng thái</span>
-                  <div className="inline-flex items-center gap-2 bg-yellow-50 text-yellow-700 px-4 py-2 rounded-lg border border-yellow-200">
-                    <FaClock className="text-sm" />
-                    <span className="text-sm font-medium">Đang chờ</span>
-                  </div>
+                  <span className="text-sm font-light text-gray-600">
+                    Trạng thái
+                  </span>
+                  <span className="px-3 py-1 bg-gray-100 text-gray-900 text-xs border border-gray-300">
+                    Đang chờ
+                  </span>
                 </div>
               </div>
             </div>
@@ -368,15 +293,15 @@ const PaymentReturn = () => {
           <div className="space-y-3">
             <button
               onClick={checkPaymentStatus}
-              className="w-full bg-gray-900 text-white py-3 rounded-lg font-medium transition-all hover:bg-black active:scale-95"
+              className="w-full bg-gray-900 text-white py-3 hover:bg-gray-800 transition-colors text-sm font-normal"
             >
-              Kiểm tra lại
+              Kiểm Tra Lại
             </button>
             <button
-              onClick={() => navigate('/')}
-              className="w-full bg-gray-200 text-gray-900 py-3 rounded-lg font-medium transition-all hover:bg-gray-300 active:scale-95"
+              onClick={() => navigate("/")}
+              className="w-full border border-gray-300 text-gray-900 py-3 hover:border-gray-900 transition-colors text-sm font-normal"
             >
-              Về trang chủ
+              Về Trang Chủ
             </button>
           </div>
         </div>
@@ -384,38 +309,35 @@ const PaymentReturn = () => {
     );
   }
 
-  // Failed or error status
+  // Failed/Error State
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center px-4 py-8">
-      <div className="w-full max-w-lg text-center">
-        <div className="flex justify-center mb-8">
-          <div className="relative">
-            <div className="absolute inset-0 bg-gray-100 rounded-full blur-xl opacity-50"></div>
-            <FaTimesCircle className="text-6xl text-red-500 relative" />
-          </div>
+    <div className="min-h-screen bg-white flex items-center justify-center p-4">
+      <div className="w-full max-w-lg border-2 border-gray-900 p-12 text-center">
+        <div className="w-20 h-20 mx-auto mb-8 border-2 border-gray-900 flex items-center justify-center">
+          <FaTimesCircle className="text-4xl text-gray-900" />
         </div>
 
-        <h1 className="text-4xl font-light text-gray-900 mb-3">
-          {status === 'failed' ? 'Thanh toán thất bại' : 'Có lỗi xảy ra'}
+        <h1 className="text-3xl font-light text-gray-900 mb-3 tracking-tight">
+          {status === "failed" ? "Thanh Toán Thất Bại" : "Có Lỗi Xảy Ra"}
         </h1>
-        <p className="text-gray-600 mb-8 leading-relaxed">
-          {status === 'failed' 
-            ? 'Giao dịch không thành công. Vui lòng thử lại hoặc liên hệ hỗ trợ.'
-            : 'Không thể xác nhận trạng thái thanh toán. Vui lòng liên hệ hỗ trợ.'}
+        <p className="text-gray-600 mb-8 font-light leading-relaxed">
+          {status === "failed"
+            ? "Giao dịch không thành công. Vui lòng thử lại hoặc liên hệ hỗ trợ"
+            : "Không thể xác nhận trạng thái thanh toán. Vui lòng liên hệ hỗ trợ"}
         </p>
 
         <div className="space-y-3">
           <button
-            onClick={() => navigate('/checkout')}
-            className="w-full bg-gray-900 text-white py-3 rounded-lg font-medium transition-all hover:bg-black active:scale-95"
+            onClick={() => navigate("/checkout")}
+            className="w-full bg-gray-900 text-white py-3 hover:bg-gray-800 transition-colors text-sm font-normal"
           >
-            Thử lại thanh toán
+            Thử Lại Thanh Toán
           </button>
           <button
-            onClick={() => navigate('/')}
-            className="w-full bg-gray-200 text-gray-900 py-3 rounded-lg font-medium transition-all hover:bg-gray-300 active:scale-95"
+            onClick={() => navigate("/")}
+            className="w-full border border-gray-300 text-gray-900 py-3 hover:border-gray-900 transition-colors text-sm font-normal"
           >
-            Về trang chủ
+            Về Trang Chủ
           </button>
         </div>
       </div>

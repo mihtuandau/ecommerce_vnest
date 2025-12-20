@@ -24,9 +24,9 @@ const ProductCard = ({ product, viewMode = 'grid-3' }) => {
 
   const isGrid2 = viewMode === 'grid-2';
   const isList = viewMode === 'list';
-  const isGrid = !isGrid2 && !isList; // Thêm điều kiện này
-  const titleClass = isGrid2 ? 'text-xl font-normal' : isGrid ? 'font-normal text-base' : 'font-light text-lg';
-  const priceClass = isGrid2 ? 'text-lg font-normal' : isGrid ? 'text-lg font-normal' : 'text-xl font-light';
+  const isGrid = !isGrid2 && !isList;
+  const titleClass = isGrid2 ? 'text-xl font-medium' : isGrid ? 'font-medium text-base' : 'font-medium text-lg';
+  const priceClass = isGrid2 ? 'text-lg font-bold text-gray-900' : isGrid ? 'text-lg font-bold text-gray-900' : 'text-xl font-bold text-gray-900';
   const originalPriceClass = isGrid2 ? 'text-sm' : isGrid ? 'text-sm' : 'text-sm';
   const ratingSize = isGrid2 ? 11 : isGrid ? 12 : 13;
   const soldTextClass = isGrid2 ? 'text-sm' : isGrid ? 'text-sm' : 'text-sm';
@@ -93,7 +93,7 @@ const ProductCard = ({ product, viewMode = 'grid-3' }) => {
   };
 
   return (
-    <div className={`group relative bg-white border border-gray-200 transition-all duration-300 hover:border-gray-900 overflow-hidden flex flex-col h-full ${isList ? 'flex-row min-h-[280px]' : ''}`}>
+    <div className={`group relative bg-white border border-gray-200 transition-all duration-300 overflow-hidden flex flex-col h-full ${isList ? 'flex-row min-h-[280px]' : ''}`}>
       {/* Badge */}
       {(badge || discountPercent > 0) && (
         <div className={`absolute top-3 left-3 z-10 ${isList ? 'top-2 left-2' : ''}`}>
@@ -167,7 +167,7 @@ const ProductCard = ({ product, viewMode = 'grid-3' }) => {
 
         {/* Price */}
         <div className={`flex items-baseline gap-3 ${isList ? 'mb-6' : 'flex-wrap'} ${minHeightPrice}`}>
-          <span className={`${priceClass} text-gray-900`}>
+          <span className={priceClass}>
             {formatPrice(productPrice)}
           </span>
           {productOriginalPrice && productOriginalPrice > productPrice ? (
