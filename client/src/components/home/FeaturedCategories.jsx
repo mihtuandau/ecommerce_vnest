@@ -59,7 +59,7 @@ const FeaturedCategories = ({ categories = [] }) => {
             <div
               key={category.id}
               onClick={() => navigate(`/category/${category.id}`)}
-              className="group relative overflow-hidden rounded-xl cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-300 h-[400px]"
+              className="group relative overflow-hidden rounded-xl cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-300 h-[500px]"
             >
               {/* Background Image */}
               <img

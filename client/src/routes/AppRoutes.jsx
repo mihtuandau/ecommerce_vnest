@@ -84,6 +84,9 @@ const ContactPage = lazy(() =>
 const SupportChatPage = lazy(() =>
   import("../pages/Customer/Support/SupportChatPage")
 );
+const PromotionsPage = lazy(() =>
+  import("../pages/Customer/Promotions/PromotionsPage")
+);
 
 const AppRoutes = () => {
   return (
@@ -105,6 +108,8 @@ const AppRoutes = () => {
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/support" element={<SupportChatPage />} />
+          <Route path="/promotions" element={<PromotionsPage />} />
+          <Route path="/deals" element={<PromotionsPage />} />
 
           {/* Product Routes */}
           <Route path="/products" element={<ProductsPage />} />

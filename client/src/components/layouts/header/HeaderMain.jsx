@@ -119,7 +119,7 @@ const HeaderMain = ({ scrolled, searchOpen, setSearchOpen, mobileMenuOpen, setMo
         }`}>
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 flex-shrink-0">
-            <span className="text-2xl font-bold text-gray-900 tracking-wider" style={{ fontFamily: 'serif' }}>
+            <span className="text-2xl font-bold text-gray-900 tracking-wider" >
               VALENTIA
             </span>
           </Link>

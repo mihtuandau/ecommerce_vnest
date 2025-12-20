@@ -5,6 +5,7 @@ import { FaArrowLeft } from "react-icons/fa";
 import toast from "react-hot-toast";
 import { notify } from "../../../utils/notification";
 import { useAuth } from "../../../contexts/authContext";
+import { useCart } from "../../../hooks/useCart";
 import Loading from "../../../components/common/Loading";
 import Modal from "../../../components/common/Modal";
 import AddressSelector from "../../../components/profile/AddressSelector";
@@ -21,9 +22,32 @@ const CheckoutPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
+  const { addToCart } = useCart();
 
   const allCartItems = useSelector((state) => state.cart.items);
-  const cartItems = location.state?.items || allCartItems;
+
+  // Handle both cases: coming from cart page (items) or product detail page (product + quantity)
+  let cartItems = location.state?.items || [];
+  
+  // If coming from product detail page (single product)
+  if (location.state?.product && !location.state?.items) {
+    const { product, quantity } = location.state;
+    // Create a cart item from the product data
+    const cartItem = {
+      id: product.variant.id,
+      productId: product.id,
+      name: product.name,
+      image: product.image,
+      price: product.variant.price,
+      quantity: quantity,
+      size: product.variant.size,
+      color: product.variant.color,
+      stock: product.variant.stock,
+    };
+    cartItems = [cartItem];
+  } else {
+    cartItems = location.state?.items || allCartItems;
+  }
 
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);

@@ -144,6 +144,17 @@ const DesktopNav = ({
               </Link>
 
               <Link
+                to="/promotions"
+                className={`transition-all font-semibold uppercase hover:underline decoration-2 underline-offset-8 ${
+                  scrolled
+                    ? 'text-gray-700 hover:text-blue-600'
+                    : 'text-white hover:text-blue-200'
+                }`}
+              >
+                Promotions
+              </Link>
+
+              <Link
                 to="#"
                 className={`transition-all font-semibold uppercase hover:underline decoration-2 underline-offset-8 ${
                   scrolled
