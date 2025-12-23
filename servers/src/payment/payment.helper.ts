@@ -1,15 +1,7 @@
-// src/payment/payment.helper.ts
+
 import { BadRequestException } from '@nestjs/common';
 import { PayOSService } from '../payos/payos.service';
 
-/**
- * Pure utility functions for payment operations
- * No dependency injection - just pure functions
- */
-
-/**
- * Helper to serialize payment (convert BigInt to Number)
- */
 export function serializePayment(payment: any) {
   if (!payment) return null;
   return {
@@ -18,9 +10,6 @@ export function serializePayment(payment: any) {
   };
 }
 
-/**
- * Generate transaction ID for different payment methods
- */
 export function generateTransactionId(method: string): string {
   if (method === 'PAYOS') {
     return Date.now().toString();
@@ -28,16 +17,10 @@ export function generateTransactionId(method: string): string {
   return `TXN_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 }
 
-/**
- * Generate PayOS order code
- */
 export function generatePayOSOrderCode(): number {
   return Date.now();
 }
 
-/**
- * Create PayOS payment link
- */
 export async function createPayOSPaymentLink(payosService: PayOSService, order: any, orderCode: number) {
   const shippingInfo = order.shippingInfo as any;
   const buyerName = order.user?.name || shippingInfo?.fullName || order.address?.fullName || 'Customer';
@@ -68,9 +51,6 @@ export async function createPayOSPaymentLink(payosService: PayOSService, order: 
   }
 }
 
-/**
- * Serialize PayOS payment info (convert BigInt fields)
- */
 export function serializePayOSPaymentInfo(paymentInfo: any) {
   return {
     ...paymentInfo,

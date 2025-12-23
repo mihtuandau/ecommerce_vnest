@@ -111,9 +111,7 @@ const cartSlice = createSlice({
       })
       .addCase(addToCartServer.fulfilled, (state, action) => {
         state.loading = false;
-        // Don't update local state since fetchCart() already synced from server
-        // This avoids duplicate items that cause wrong cart count
-        notify.success('Đã lưu vào giỏ hàng!', 2000);
+    
       })
       .addCase(addToCartServer.rejected, (state, action) => {
         state.loading = false;

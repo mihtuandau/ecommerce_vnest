@@ -44,34 +44,23 @@ const ProductsPage = () => {
   useEffect(() => {
     const loadFilters = async () => {
       try {
-        console.log('Loading filters...');
         const categoriesRes = await categoryService.getAll();
-        console.log('Categories API response:', categoriesRes);
-        console.log('Categories type:', typeof categoriesRes);
-        console.log('Categories is array?', Array.isArray(categoriesRes));
         
         const priceRangeRes = await productService.getPriceRange();
-        console.log('Price range API response:', priceRangeRes);
         
         const priceRangeData = priceRangeRes || { minPrice: 0, maxPrice: 10000000 };
-        console.log('Price range data:', priceRangeData);
         
         setCategories(categoriesRes || []);
         setPriceRange(priceRangeData);
-        console.log('Categories set to state:', categoriesRes);
       } catch (error) {
-        console.error('Error loading filters:', error);
       }
     };
     loadFilters();
   }, []);
-
-  // Load products
   useEffect(() => {
     loadProducts();
   }, [searchParams]);
 
-  // Debug priceRange state
   useEffect(() => {
     console.log('PriceRange state updated:', priceRange);
   }, [priceRange]);
@@ -80,8 +69,7 @@ const ProductsPage = () => {
     try {
       setLoading(true);
       const filters = getFiltersFromURL();
-      
-      // Build API params - only include values that should filter
+
       const apiParams = {
         page: filters.page,
         limit: pagination.limit,
@@ -96,15 +84,9 @@ const ProductsPage = () => {
       if (filters.stockStatus === 'inStock') apiParams.inStock = true;
       if (filters.stockStatus === 'outOfStock') apiParams.outOfStock = true;
       
-      console.log('Loading products with params:', apiParams);
       const response = await productService.getAll(apiParams);
-      console.log('Products API response:', response);
-
-      // Response is already unwrapped: {data: [...], page, limit, total, totalPages}
       const productsData = response.data || [];
 
-      console.log('Products array:', productsData);
-      console.log('Products count:', productsData.length);
 
       setProducts(productsData);
       setPagination({
@@ -120,15 +102,12 @@ const ProductsPage = () => {
   };
 
   const handleFilterChange = (filters) => {
-    console.log('ProductsPage handleFilterChange:', filters);
     const params = new URLSearchParams();
-    
-    // Convert string IDs to numbers and validate
+
     if (filters.categoryId) {
       const categoryId = parseInt(filters.categoryId);
       if (!isNaN(categoryId)) params.set('category', categoryId);
     }
-    // Always add price params to trigger filtering
     if (filters.minPrice !== undefined && filters.minPrice !== '') {
       const minPrice = parseFloat(filters.minPrice);
       if (!isNaN(minPrice)) params.set('minPrice', minPrice);
@@ -158,12 +137,10 @@ const ProductsPage = () => {
     <Layout>
       <div className="bg-white min-h-screen pt-21 pb-8">
         <div className="container mx-auto px-4 lg:px-30">
-          {/* Breadcrumb */}
           <Breadcrumb items={[
             { label: 'Sản phẩm' }
           ]} />
 
-          {/* Page Header */}
           <div className="mb-8 flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 mb-2">

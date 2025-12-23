@@ -84,8 +84,8 @@ const DesktopNav = ({
                 to="/"
                 className={`transition-all font-semibold uppercase hover:underline decoration-2 underline-offset-8 ${
                   scrolled
-                    ? 'text-gray-700 hover:text-blue-600'
-                    : 'text-white hover:text-blue-200'
+                    ? 'text-gray-700 hover:text-gray-600'
+                    : 'text-white hover:text-gray-200'
                 }`}
               >
                 Home
@@ -97,8 +97,8 @@ const DesktopNav = ({
                   to="/products"
                   className={`transition-all font-semibold uppercase hover:underline decoration-2 underline-offset-8 ${
                     scrolled
-                      ? 'text-gray-700 hover:text-blue-600'
-                      : 'text-white hover:text-blue-200'
+                      ? 'text-gray-700 hover:text-gray-600'
+                      : 'text-white hover:text-gray-200'
                   }`}
                 >
                   Shop
@@ -136,8 +136,8 @@ const DesktopNav = ({
                 to="/about"
                 className={`transition-all font-semibold uppercase hover:underline decoration-2 underline-offset-8 ${
                   scrolled
-                    ? 'text-gray-700 hover:text-blue-600'
-                    : 'text-white hover:text-blue-200'
+                    ? 'text-gray-700 hover:text-gray-600'
+                    : 'text-white hover:text-gray-200'
                 }`}
               >
                 About Us
@@ -147,8 +147,8 @@ const DesktopNav = ({
                 to="/promotions"
                 className={`transition-all font-semibold uppercase hover:underline decoration-2 underline-offset-8 ${
                   scrolled
-                    ? 'text-gray-700 hover:text-blue-600'
-                    : 'text-white hover:text-blue-200'
+                    ? 'text-gray-700 hover:text-gray-600'
+                    : 'text-white hover:text-gray-200'
                 }`}
               >
                 Promotions
@@ -158,8 +158,8 @@ const DesktopNav = ({
                 to="#"
                 className={`transition-all font-semibold uppercase hover:underline decoration-2 underline-offset-8 ${
                   scrolled
-                    ? 'text-gray-700 hover:text-blue-600'
-                    : 'text-white hover:text-blue-200'
+                    ? 'text-gray-700 hover:text-gray-600'
+                    : 'text-white hover:text-gray-200'
                 }`}
               >
                 Blogs
@@ -169,8 +169,8 @@ const DesktopNav = ({
                 to="/contact"
                 className={`transition-all font-semibold uppercase hover:underline decoration-2 underline-offset-8 ${
                   scrolled
-                    ? 'text-gray-700 hover:text-blue-600'
-                    : 'text-white hover:text-blue-200'
+                    ? 'text-gray-700 hover:text-gray-600'
+                    : 'text-white hover:text-gray-200'
                 }`}
               >
                 Contact
@@ -206,8 +206,7 @@ const DesktopNav = ({
                   className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
                   size={16}
                 />
-
-                {/* Search Results Dropdown */}
+                
                 {showSearchResults && (
                   <div className="absolute top-full mt-2 w-full bg-white rounded-lg shadow-xl border border-gray-200 max-h-80 overflow-y-auto z-[9999]">
                     {isSearching ? (
@@ -245,7 +244,7 @@ const DesktopNav = ({
                                 <h4 className="text-xs font-medium text-gray-900 truncate">
                                   {product.name}
                                 </h4>
-                                <p className="text-xs text-green-600 font-semibold">
+                                <p className="text-xs text-gray-600 font-semibold">
                                   {new Intl.NumberFormat('vi-VN', {
                                     style: 'currency',
                                     currency: 'VND',
@@ -263,7 +262,7 @@ const DesktopNav = ({
                             setShowSearchResults(false);
                             setDesktopSearchOpen(false);
                           }}
-                          className="block p-2 text-center text-xs text-blue-600 font-medium hover:bg-gray-50 border-t"
+                          className="block p-2 text-center text-xs text-gray-600 font-medium hover:bg-gray-50 border-t"
                         >
                           Xem tất cả →
                         </Link>

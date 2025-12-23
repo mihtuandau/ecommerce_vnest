@@ -37,7 +37,6 @@ const LoginPage = () => {
 
     try {
       await handleLogin(formData);
-      notify.success('Đăng nhập thành công!');
     } catch (err) {
       notify.error(err.message || 'Đăng nhập thất bại');
     }
