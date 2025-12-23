@@ -43,7 +43,6 @@ export class DiscountService {
       ];
     }
 
-    // Status filter
     if (status === 'active') {
       where.startDate = { lte: now };
       where.OR = [{ endDate: null }, { endDate: { gte: now } }];
@@ -55,7 +54,6 @@ export class DiscountService {
 
     const discounts = await this.repository.findAll(where);
 
-    // Add status to each discount
     return discounts.map((discount) => ({
       ...discount,
       status: this.getDiscountStatus(discount.startDate, discount.endDate),
@@ -102,7 +100,6 @@ export class DiscountService {
 
     const now = new Date();
 
-    // Check if discount is active (started and not expired)
     if (discount.startDate > now) {
       return {
         isValid: false,
@@ -117,7 +114,6 @@ export class DiscountService {
       };
     }
 
-    // Valid discount
     return {
       isValid: true,
       message: 'Mã giảm giá hợp lệ',
@@ -134,7 +130,6 @@ export class DiscountService {
   async update(id: number, updateDiscountDto: UpdateDiscountDto) {
     const current = await this.findOne(id);
 
-    // Validate nếu cập nhật percentage hoặc fixedAmount
     if (updateDiscountDto.percentage !== undefined || updateDiscountDto.fixedAmount !== undefined) {
       const newPercentage = updateDiscountDto.percentage ?? current.percentage;
       const newFixedAmount = updateDiscountDto.fixedAmount ?? current.fixedAmount;
@@ -164,8 +159,6 @@ export class DiscountService {
 
   async remove(id: number) {
     await this.findOne(id);
-
-    // Check if discount is being used
     const usageCount = await this.repository.countOrdersUsingDiscount(id);
 
     if (usageCount > 0) {

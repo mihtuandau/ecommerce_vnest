@@ -99,7 +99,6 @@ const Header = () => {
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
       isHomePage && !scrolled ? 'bg-transparent' : 'bg-white shadow-md'
     }`}>
-      {/* Mobile Header */}
       <div className="lg:hidden">
         <HeaderMain 
           scrolled={true}
@@ -110,14 +109,11 @@ const Header = () => {
         />
       </div>
 
-      {/* Desktop Header */}
       <div className="hidden lg:block">
         {scrolled ? (
-          /* Compact Header - Scrolled: Logo trái + Menu giữa + Icons phải */
           <div className="">
             <div className="container mx-auto px-4 lg:px-8">
               <div className="flex items-center justify-between py-5">
-                {/* Left: Logo */}
                 <Link to="/" className="flex-shrink-0 pl-20">
                   <span 
                     className="text-2xl font-bold tracking-wider text-gray-900 transition-all duration-300" 
@@ -139,7 +135,6 @@ const Header = () => {
                       Shop
                     </Link>
                     
-                    {/* Categories Dropdown */}
                     {categories && categories.length > 0 && (
                       <div className="absolute top-full left-0 pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
                         <div className="bg-white rounded-xl shadow-2xl border border-gray-100 py-3 min-w-[240px] overflow-hidden">
@@ -178,8 +173,6 @@ const Header = () => {
                     Contact
                   </Link>
                 </nav>
-
-                {/* Right: Icons */}
                 <div className="flex items-center gap-6">
                   <button
                     onClick={() => setDesktopSearchOpen(!desktopSearchOpen)}

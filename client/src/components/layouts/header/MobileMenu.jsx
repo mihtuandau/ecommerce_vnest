@@ -60,14 +60,14 @@ const MobileMenu = ({ searchOpen, mobileMenuOpen, categories }) => {
       {/* Mobile Search */}
       {searchOpen && (
         <div className="lg:hidden p-4" ref={searchRef}>
-          <div className="relative ">
+          <div className="relative flex items-center">
             <input
               type="text"
               placeholder="Tìm kiếm sản phẩm..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => searchQuery.trim().length >= 2 && setShowSearchResults(true)}
-              className="w-full pl-10 pr-4 py-2 border-2  rounded-full focus:border-green-500 focus:outline-none"
+              className="w-full pl-10 pr-4 py-2 border-2  rounded-full focus:border-gray-500 focus:outline-none item-center "
             />
             <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
 
@@ -76,7 +76,7 @@ const MobileMenu = ({ searchOpen, mobileMenuOpen, categories }) => {
               <div className="absolute top-full mt-2 w-full bg-white rounded-lg shadow-2xl border border-gray-200 max-h-96 overflow-y-auto z-[9999]">
                 {isSearching ? (
                   <div className="p-4 text-center text-gray-500">
-                    <div className="animate-spin w-6 h-6 border-2 border-green-500 border-t-transparent rounded-full mx-auto"></div>
+                    <div className="animate-spin w-6 h-6 border-2 border-gray-500 border-t-transparent rounded-full mx-auto"></div>
                     <p className="mt-2 text-sm">Đang tìm kiếm...</p>
                   </div>
                 ) : searchResults.length > 0 ? (
@@ -107,7 +107,7 @@ const MobileMenu = ({ searchOpen, mobileMenuOpen, categories }) => {
                             <h4 className="text-sm font-medium text-gray-900 mb-1 leading-tight">
                               {product.name}
                             </h4>
-                            <p className="text-sm text-green-600 font-semibold whitespace-nowrap">
+                            <p className="text-sm text-gray-600 font-semibold whitespace-nowrap">
                               {new Intl.NumberFormat('vi-VN', {
                                 style: 'currency',
                                 currency: 'VND'

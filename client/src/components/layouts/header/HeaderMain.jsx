@@ -124,7 +124,6 @@ const HeaderMain = ({ scrolled, searchOpen, setSearchOpen, mobileMenuOpen, setMo
             </span>
           </Link>
 
-          {/* Search Bar - Desktop */}
           <div className="flex-1 flex justify-end lg:justify-center">
             {!desktopSearchOpen ? (
               <button
@@ -135,7 +134,7 @@ const HeaderMain = ({ scrolled, searchOpen, setSearchOpen, mobileMenuOpen, setMo
               </button>
             ) : (
               <div className="hidden lg:flex max-w-md w-full mx-4" ref={searchRef}>
-                <div className="relative w-full">
+                <div className="relative flex items-center">
                   <Input
                     type="text"
                     placeholder="Tìm kiếm sản phẩm..."
@@ -196,7 +195,7 @@ const HeaderMain = ({ scrolled, searchOpen, setSearchOpen, mobileMenuOpen, setMo
                               <h4 className="text-sm font-medium text-gray-900 mb-1 leading-tight">
                                 {product.name}
                               </h4>
-                              <p className="text-sm text-green-600 font-semibold whitespace-nowrap">
+                              <p className="text-sm text-gray-600 font-semibold whitespace-nowrap">
                                 {new Intl.NumberFormat('vi-VN', {
                                   style: 'currency',
                                   currency: 'VND'

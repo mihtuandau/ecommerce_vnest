@@ -87,7 +87,6 @@ export class ChatService {
       lastMessage: any;
     }> = [];
 
-    // For each unique room, get last message and unread count
     for (const roomId of uniqueRoomIds) {
       const lastMessage = await this.prisma.chatMessage.findFirst({
         where: { roomId },
@@ -105,7 +104,6 @@ export class ChatService {
       });
 
       if (lastMessage) {
-        // Get unread count for admin (messages sent by customer that admin hasn't read)
         const unreadCount = await this.prisma.chatMessage.count({
           where: {
             roomId,
@@ -124,7 +122,6 @@ export class ChatService {
       }
     }
 
-    // Sort by last message time (newest first)
     rooms.sort((a, b) => {
       const timeA = new Date(a.lastMessage.createdAt).getTime();
       const timeB = new Date(b.lastMessage.createdAt).getTime();

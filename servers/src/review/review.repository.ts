@@ -2,17 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Review, Prisma } from '@prisma/client';
 
-/**
- * Repository pattern for Review data access
- * Handles all database queries related to reviews
- */
 @Injectable()
 export class ReviewRepository {
   constructor(private prisma: PrismaService) {}
 
-  /**
-   * Create a new review
-   */
   async create(data: Prisma.ReviewCreateInput): Promise<Review> {
     return this.prisma.review.create({
       data,

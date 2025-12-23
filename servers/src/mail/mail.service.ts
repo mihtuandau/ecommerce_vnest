@@ -33,8 +33,7 @@ export class MailService {
       .join('');
 
     try {
-      console.log('📧 Attempting to send email to:', email);
-      await this.mailerService.sendMail({
+      await this.mailerService.sendMail({ 
         to: email,
         subject: `Xác nhận đơn hàng ${orderCode}`,
         html: `
@@ -59,7 +58,7 @@ export class MailService {
           <body>
             <div class="container">
               <div class="header">
-                <h1>🎉 Đặt hàng thành công!</h1>
+                <h1> Đặt hàng thành công!</h1>
                 <p>Cảm ơn bạn đã tin tưởng mua sắm tại cửa hàng</p>
               </div>
               
@@ -72,7 +71,7 @@ export class MailService {
                   </p>
                 </div>
 
-                <h3>📦 Chi tiết đơn hàng</h3>
+                <h3>Chi tiết đơn hàng</h3>
                 <p><strong>Người nhận:</strong> ${customerName}</p>
                 <p><strong>Địa chỉ:</strong> ${shippingAddress}</p>
 
@@ -121,10 +120,7 @@ export class MailService {
           </html>
         `,
       });
-      console.log('✅ Email sent successfully to:', email);
     } catch (error) {
-      console.error('❌ Failed to send order confirmation email:', error.message);
-      // Don't throw error to prevent order creation failure
     }
   }
 
@@ -132,7 +128,7 @@ export class MailService {
     try {
       await this.mailerService.sendMail({
         to: email,
-        subject: '🔐 Đặt lại mật khẩu',
+        subject: 'Đặt lại mật khẩu',
         html: `
           <!DOCTYPE html>
           <html>
@@ -152,7 +148,7 @@ export class MailService {
           <body>
             <div class="container">
               <div class="header">
-                <h1>🔐 Đặt lại mật khẩu</h1>
+                <h1>Đặt lại mật khẩu</h1>
                 <p>Yêu cầu khôi phục mật khẩu</p>
               </div>
               
@@ -201,7 +197,7 @@ export class MailService {
           </body>
           </html>
         `,
-      });} catch (error) {throw error; // Throw error for password reset to ensure user knows
+      });} catch (error) {throw error; 
     }
   }
 

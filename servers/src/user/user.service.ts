@@ -30,7 +30,7 @@ export class UserService {
   async findOne(id: number): Promise<User | null> {
     return this.repository.findById(id);
   }
-
+  
   async update(id: number, data: UpdateUserDto): Promise<User> {
     const updateData: Prisma.UserUpdateInput = {};
     

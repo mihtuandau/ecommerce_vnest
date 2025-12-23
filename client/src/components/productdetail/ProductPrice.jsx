@@ -49,7 +49,7 @@ const ProductPrice = ({ currentPrice, originalPrice, product }) => {
   return (
     <div className="mb-10">
       <div className="flex items-baseline gap-4 mb-1">
-        <span className="text-4xl font-light text-gray-900 tracking-tight">
+        <span className="text-4xl font-semibold text-red-500 tracking-tight">
           {formatPrice(currentPrice)}
         </span>
         {originalPrice && originalPrice > currentPrice && (
@@ -68,7 +68,7 @@ const ProductPrice = ({ currentPrice, originalPrice, product }) => {
       {totalStock > 0 && (
         <div className="mt-5 p-4 bg-gray-50 border border-gray-100">
           <p className="text-sm font-light text-gray-600 mb-3">
-            Chỉ còn <span className="font-normal text-gray-900">{totalStock}</span> sản phẩm trong kho
+            Chỉ còn <span className="font-normal text-gray-900 font-semibold">{totalStock}</span> sản phẩm trong kho
           </p>
           <div className="w-full bg-gray-200 h-1.5">
             <div 

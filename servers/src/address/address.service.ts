@@ -4,24 +4,14 @@ import { AddressRepository } from './address.repository';
 import { CreateAddressDto } from './dto/create-address.dto';
 import { UpdateAddressDto } from './dto/update-address.dto';
 
-/**
- * Service for Address business logic
- * Handles all address-related operations
- */
 @Injectable()
 export class AddressService {
   constructor(private repository: AddressRepository) {}
 
-  /**
-   * Get all addresses for a user
-   */
   async getAddressesByUser(userId: number) {
     return this.repository.findByUserId(userId);
   }
 
-  /**
-   * Get a specific address
-   */
   async getAddress(id: number) {
     const address = await this.repository.findById(id);
     if (!address) {
@@ -30,17 +20,11 @@ export class AddressService {
     return address;
   }
 
-  /**
-   * Create a new address
-   */
   async createAddress(userId: number, data: CreateAddressDto) {
-    // Check if user has any addresses
     const addressCount = await this.repository.countByUserId(userId);
-    
-    // First address is always default
+
     const isDefault = addressCount === 0 ? true : (data.isDefault === true);
 
-    // If new address should be default, remove default from all other addresses
     if (isDefault) {
       await this.repository.removeDefaultFromAllAddresses(userId);
     }
@@ -59,22 +43,16 @@ export class AddressService {
       isDefault,
     });
   }
-
-  /**
-   * Update an address
-   */
   async updateAddress(id: number, data: UpdateAddressDto) {
     const address = await this.repository.findById(id);
     if (!address) {
       throw new NotFoundException('Address not found');
     }
 
-    // If setting as default, remove default from all other addresses
     if (data.isDefault === true) {
       await this.repository.removeDefaultFromAllAddresses(address.userId);
     }
 
-    // Build update data - only include fields that are provided
     const updateData: Prisma.AddressUpdateInput = {};
     
     if (data.fullName !== undefined) updateData.fullName = data.fullName;
@@ -91,16 +69,12 @@ export class AddressService {
     return this.repository.update(id, updateData);
   }
 
-  /**
-   * Delete an address
-   */
   async deleteAddress(id: number) {
     const address = await this.repository.findById(id);
     if (!address) {
       throw new NotFoundException('Address not found');
     }
 
-    // If deleting default address, set next address as default
     if (address.isDefault) {
       const nextAddress = await this.repository.findNextAddress(address.userId, id);
       if (nextAddress) {
@@ -111,16 +85,12 @@ export class AddressService {
     return this.repository.delete(id);
   }
 
-  /**
-   * Set an address as default
-   */
   async setDefaultAddress(id: number, userId: number) {
     const address = await this.repository.findById(id);
     if (!address) {
       throw new NotFoundException('Address not found');
     }
 
-    // Ensure both are numbers for comparison
     const addressUserId = Number(address.userId);
     const requestUserId = Number(userId);
 
@@ -128,16 +98,11 @@ export class AddressService {
       throw new BadRequestException('Address does not belong to user');
     }
 
-    // Remove default from all user's addresses
     await this.repository.removeDefaultFromAllAddresses(requestUserId);
 
-    // Set this address as default
     return this.repository.update(id, { isDefault: true });
   }
 
-  /**
-   * Verify address belongs to user
-   */
   async verifyAddressOwnership(addressId: number, userId: number): Promise<boolean> {
     const address = await this.repository.findById(addressId);
     return address ? address.userId === userId : false;
