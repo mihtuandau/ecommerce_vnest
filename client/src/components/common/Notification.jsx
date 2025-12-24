@@ -193,7 +193,7 @@ const NotificationItem = ({ notification, onClose }) => {
                 <FaTimes className="text-sm" />
               </button>
             </div>
-            <p className={`text-sm ${style.textColor} leading-relaxed break-words`}>
+            <p className={`text-sm ${style.textColor} leading-relaxed break-words whitespace-pre-line`}>
               {message}
             </p>
           </div>

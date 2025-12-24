@@ -13,13 +13,10 @@
       private userService: UserService,
     ) {
       super({
-        // ✅ Extract token từ Cookie HOẶC Authorization header
         jwtFromRequest: ExtractJwt.fromExtractors([
-          // Try cookie first
           (request: Request) => {
             const token = request?.cookies?.access_token;return token;
           },
-          // Fallback to Authorization header
           ExtractJwt.fromAuthHeaderAsBearerToken(),
         ]),
         ignoreExpiration: false,

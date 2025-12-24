@@ -21,11 +21,7 @@ export class ReviewRepository {
     });
   }
 
-  /**
-   * Find review by user and product
-   */
   async findByUserAndProduct(userId: number, productId: number): Promise<Review | null> {
-    // Deprecated - use findByUserProductAndOrder instead
     return this.prisma.review.findFirst({
       where: {
         userId,
@@ -34,9 +30,6 @@ export class ReviewRepository {
     });
   }
 
-  /**
-   * Find review by user, product and order
-   */
   async findByUserProductAndOrder(userId: number, productId: number, orderId: number): Promise<Review | null> {
     return this.prisma.review.findUnique({
       where: {
@@ -45,28 +38,18 @@ export class ReviewRepository {
     });
   }
 
-  /**
-   * Find review by ID
-   */
   async findById(id: number): Promise<Review | null> {
     return this.prisma.review.findUnique({
       where: { id },
     });
   }
 
-  /**
-   * Check if user has purchased product
-   */
   async hasUserPurchasedProduct(userId: number, productId: number): Promise<boolean> {
-    // Check if user has purchased this product and order is delivered
-    // Only allow review if: order status is DELIVERED (must receive product first)
     const orderItem = await this.prisma.orderItem.findFirst({
       where: {
         order: {
           userId,
-          // Only allow review when order is delivered
           status: 'DELIVERED',
-          // And payment must be successful
           payment: { 
             status: 'SUCCESS' 
           },
@@ -99,9 +82,6 @@ export class ReviewRepository {
     return false;
   }
 
-  /**
-   * Check if user has purchased product in specific order
-   */
   async hasUserPurchasedProductInOrder(userId: number, productId: number, orderId: number): Promise<boolean> {
     const orderItem = await this.prisma.orderItem.findFirst({
       where: {

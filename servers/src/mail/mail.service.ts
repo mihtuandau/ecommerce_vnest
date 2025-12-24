@@ -33,7 +33,7 @@ export class MailService {
       .join('');
 
     try {
-      await this.mailerService.sendMail({ 
+      await this.mailerService.sendMail({
         to: email,
         subject: `Xác nhận đơn hàng ${orderCode}`,
         html: `
@@ -120,8 +120,7 @@ export class MailService {
           </html>
         `,
       });
-    } catch (error) {
-    }
+    } catch (error) {}
   }
 
   async sendPasswordReset(email: string, resetUrl: string, userName?: string) {
@@ -137,7 +136,7 @@ export class MailService {
             <style>
               body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
               .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-              .header { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+              .header { background: linear-gradient(135deg, #f093fb 0%, #122ddcff 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
               .content { background: #fff; padding: 30px; border: 1px solid #ddd; border-top: none; }
               .button { display: inline-block; padding: 12px 30px; background: #f5576c; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0; font-weight: bold; }
               .info-box { background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #f5576c; }
@@ -197,7 +196,9 @@ export class MailService {
           </body>
           </html>
         `,
-      });} catch (error) {throw error; 
+      });
+    } catch (error) {
+      throw error;
     }
   }
 

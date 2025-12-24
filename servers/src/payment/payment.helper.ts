@@ -27,6 +27,11 @@ export async function createPayOSPaymentLink(payosService: PayOSService, order: 
   const buyerEmail = order.user?.email || order.guestEmail || '';
   const buyerPhone = shippingInfo?.phone || order.guestPhone || order.address?.phone || '';
 
+  // Validate order items
+  if (!order.orderItems || order.orderItems.length === 0) {
+    throw new BadRequestException('Order has no items');
+  }
+
   try {
     const payosResponse = await payosService.createPaymentLink({
       orderCode,

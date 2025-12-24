@@ -41,7 +41,6 @@ export class CategoryController {
       name: body.name
     };
 
-    // Nếu có upload ảnh, upload lên Cloudinary
     if (file) {
       const imageUrls = await this.uploadService.uploadImages([file]);
       createCategoryDto.image = imageUrls[0];
@@ -65,7 +64,6 @@ export class CategoryController {
       name: body.name
     };
 
-    // Nếu có upload ảnh mới, upload lên Cloudinary
     if (file) {
       const imageUrls = await this.uploadService.uploadImages([file]);
       updateCategoryDto.image = imageUrls[0];

@@ -12,7 +12,7 @@ export class UploadController {
   @Post('images')
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FilesInterceptor('files', 10, multerConfig))
-  async uploadImages(@UploadedFiles() files: Express.Multer.File[]) {  // Fix: Full type Express.Multer.File[]
+  async uploadImages(@UploadedFiles() files: Express.Multer.File[]) {  
     if (!files || files.length === 0) {
       throw new BadRequestException('No files uploaded');
     }

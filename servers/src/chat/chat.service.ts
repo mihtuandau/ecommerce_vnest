@@ -73,12 +73,10 @@ export class ChatService {
   }
 
   async getAllRooms() {
-    // Get all unique room IDs first
     const allMessages = await this.prisma.chatMessage.findMany({
       select: { roomId: true },
     });
 
-    // Extract unique roomIds
     const uniqueRoomIds = [...new Set(allMessages.map((m) => m.roomId))];
 
     const rooms: Array<{
