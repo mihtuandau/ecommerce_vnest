@@ -15,7 +15,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       clientSecret: configService.get('GOOGLE_CLIENT_SECRET'),
       callbackURL: 'http://localhost:5000/api/auth/google-login/callback',
       scope: ['email', 'profile'],
-      prompt: 'select_account consent', // Force account selection and consent screen
+      prompt: 'select_account consent', 
       accessType: 'offline',
     });
   }
@@ -30,7 +30,6 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     const email = emails[0].value;
     let user = await this.userService.findByEmail(email);
     
-    // List of admin emails - should be moved to environment config
     const adminEmails = (this.configService.get('ADMIN_EMAILS') || '').split(',').map(e => e.trim()).filter(Boolean);
     const isAdminEmail = adminEmails.includes(email);
     
@@ -38,8 +37,8 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       user = await this.userService.create({
         email,
         name: displayName,
-        role: isAdminEmail ? 'ADMIN' : 'CUSTOMER', // ✅ Check if email is in admin list
-        password: 'google-oauth', // Placeholder
+        role: isAdminEmail ? 'ADMIN' : 'CUSTOMER',
+        password: 'google-oauth', 
       });
     }
     done(null, { userId: user.id, email: user.email, role: user.role });

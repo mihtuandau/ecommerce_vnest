@@ -34,16 +34,65 @@ export class PaymentService {
       throw new BadRequestException('Order not found');
     }
 
-    // Check if order already has payment
+    // Check if order already has a successful or pending payment
     const existingPayment = await this.repository.findByOrderId(data.orderId);
     if (existingPayment) {
-      this.logger.log(`Order ${data.orderId} already has payment ${existingPayment.id}`);
+      // If payment is successful, return it
+      if (existingPayment.status === 'SUCCESS') {
+        this.logger.log(`Order ${data.orderId} already has successful payment ${existingPayment.id}`);
+        return PaymentHelper.serializePayment({
+          ...existingPayment,
+          paymentLink: existingPayment.paymentLink,
+        });
+      }
+      
+      // If payment is pending and has a valid payment link (for PayOS), return it
+      if (existingPayment.status === 'PENDING' && existingPayment.paymentLink && data.method === 'PAYOS') {
+        this.logger.log(`Order ${data.orderId} already has pending PayOS payment ${existingPayment.id}`);
+        return PaymentHelper.serializePayment({
+          ...existingPayment,
+          paymentLink: existingPayment.paymentLink,
+        });
+      }
+      
+      // For failed/cancelled payments or pending without link, update with new payment link
+      this.logger.log(`Order ${data.orderId} has ${existingPayment.status} payment, updating with new payment link`);
+      
+      // Generate new payment data
+      let transactionId: string | null = null;
+      let paymentLink: string | null = null;
+      let payosOrderCode: number | null = null;
+
+      if (data.method === 'PAYOS') {
+        payosOrderCode = PaymentHelper.generatePayOSOrderCode();
+        const payosData = await PaymentHelper.createPayOSPaymentLink(this.payosService, order, payosOrderCode);
+        paymentLink = payosData.paymentLink;
+        transactionId = payosData.transactionId;
+      } else if (data.method === 'VNPAY' || data.method === 'MOMO') {
+        transactionId = PaymentHelper.generateTransactionId(data.method);
+      }
+
+      // Update existing payment with new data
+      const updatedPayment = await this.repository.update(existingPayment.id, {
+        method: data.method,
+        status: 'PENDING',
+        amount: order.total,
+        transactionId,
+        paymentLink,
+        payosOrderCode,
+      });
+
+      // Clear caches
+      await this.cacheService.clearPaymentCaches();
+      await this.cacheService.deletePayment(updatedPayment.id);
+
       return PaymentHelper.serializePayment({
-        ...existingPayment,
-        paymentLink: existingPayment.paymentLink,
+        ...updatedPayment,
+        paymentLink,
       });
     }
 
+    // No existing payment, create new one
     // Generate transaction data for different payment methods
     let transactionId: string | null = null;
     let paymentLink: string | null = null;

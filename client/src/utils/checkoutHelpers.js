@@ -87,11 +87,34 @@ export const buildOrderData = (cartItems, shippingInfo, paymentMethod, isGuest, 
   }
 
   const orderData = {
-    items: cartItems.map((item) => {
-      console.log('📦 Processing item:', { variantId: item.variantId, quantity: item.quantity });
+    items: cartItems.map((item, index) => {
+      // Handle both cart items (variantId) and buy-now items (id)
+      const variantId = parseInt(item.variantId || item.id, 10);
+      const quantity = parseInt(item.quantity, 10);
+      
+      console.log('📦 Processing item:', { 
+        index,
+        variantId, 
+        quantity, 
+        original: { 
+          variantId: item.variantId, 
+          id: item.id,
+          quantity: item.quantity 
+        } 
+      });
+      
+      if (!Number.isInteger(variantId) || variantId <= 0) {
+        console.error(`❌ Invalid variantId at item ${index}:`, item);
+        throw new Error(`Sản phẩm #${index + 1} có dữ liệu không hợp lệ (variantId: ${item.variantId || item.id})`);
+      }
+      if (!Number.isInteger(quantity) || quantity <= 0) {
+        console.error(`❌ Invalid quantity at item ${index}:`, item);
+        throw new Error(`Sản phẩm #${index + 1} có số lượng không hợp lệ (${item.quantity})`);
+      }
+      
       return {
-        variantId: item.variantId,
-        quantity: item.quantity,
+        variantId,
+        quantity,
       };
     }),
     shippingAddress: formatShippingAddress(shippingInfo),

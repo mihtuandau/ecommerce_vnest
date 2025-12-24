@@ -6,7 +6,6 @@ export class WishlistService {
   constructor(private prisma: PrismaService) {}
 
   async addToWishlist(userId: number, variantId: number) {
-    // Check if already exists
     const existing = await this.prisma.wishlistItem.findUnique({
       where: {
         userId_variantId: {
@@ -17,7 +16,6 @@ export class WishlistService {
     });
 
     if (existing) {
-      // Return existing item with full relations
       return this.prisma.wishlistItem.findUnique({
         where: { id: existing.id },
         include: {

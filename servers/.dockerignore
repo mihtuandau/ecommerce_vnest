@@ -13,4 +13,4 @@ coverage
 .nyc_output
 .DS_Store
 *.log
-.cache
+.cachex1
