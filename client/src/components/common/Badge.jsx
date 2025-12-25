@@ -3,11 +3,11 @@ import React from 'react';
 const Badge = ({ children, variant = 'default', className = '' }) => {
   const variants = {
     default: 'bg-gray-100 text-gray-700',
-    admin: 'bg-gray-900 text-white',
+    admin: 'bg-[#00a85a] text-white',
     customer: 'bg-gray-700 text-white',
     success: 'bg-gray-800 text-white',
     warning: 'bg-gray-600 text-white',
-    danger: 'bg-gray-900 text-white',
+    danger: 'bg-red-600 text-white',
   };
 
   return (

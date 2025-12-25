@@ -2,27 +2,17 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Payment, Prisma } from '@prisma/client';
 
-/**
- * Repository pattern for Payment data access
- * Handles all database queries related to payments
- */
 @Injectable()
 export class PaymentRepository {
   constructor(private prisma: PrismaService) {}
 
-  /**
-   * Create a new payment
-   */
   async create(data: Prisma.PaymentCreateInput): Promise<Payment> {
     return this.prisma.payment.create({
       data,
       include: { order: true },
     });
   }
-
-  /**
-   * Find payment by ID
-   */
+ 
   async findById(id: number) {
     return this.prisma.payment.findUnique({
       where: { id },
@@ -83,16 +73,10 @@ export class PaymentRepository {
     });
   }
 
-  /**
-   * Count payments with filters
-   */
   async count(where: Prisma.PaymentWhereInput): Promise<number> {
     return this.prisma.payment.count({ where });
   }
 
-  /**
-   * Update payment status with transaction
-   */
   async updateStatusWithTransaction(
     paymentId: number,
     status: string,
@@ -100,7 +84,6 @@ export class PaymentRepository {
     orderItems: any[],
   ) {
     return this.prisma.$transaction(async (prisma) => {
-      // Update payment status
       const paymentUpdated = await prisma.payment.update({
         where: { id: paymentId },
         data: { status: status as any },
@@ -108,7 +91,6 @@ export class PaymentRepository {
       });
 
       if (status === 'SUCCESS') {
-        // Get current order to check status
         const currentOrder = await prisma.order.findUnique({
           where: { id: orderId },
           select: { status: true },
@@ -123,14 +105,12 @@ export class PaymentRepository {
             },
           });
         } else if (currentOrder) {
-          // Just update paymentId without changing status
           await prisma.order.update({
             where: { id: orderId },
             data: { paymentId },
           });
         }
 
-        // Deduct stock from variants
         for (const item of orderItems) {
           await prisma.productVariant.update({
             where: { id: item.variantId },
@@ -165,9 +145,6 @@ export class PaymentRepository {
     });
   }
 
-  /**
-   * Find payment by PayOS order code
-   */
   async findByPayosOrderCode(orderCode: number) {
     return this.prisma.payment.findFirst({
       where: { payosOrderCode: orderCode },
@@ -183,9 +160,6 @@ export class PaymentRepository {
     });
   }
 
-  /**
-   * Update payment
-   */
   async update(id: number, data: Prisma.PaymentUpdateInput) {
     return this.prisma.payment.update({
       where: { id },

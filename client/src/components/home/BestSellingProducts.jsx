@@ -46,7 +46,7 @@ const BestSellingProducts = ({ products = [] }) => {
           {currentIndex > 0 && (
             <button
               onClick={prevSlide}
-              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 bg-gray-900 hover:bg-black text-white p-3 rounded-full shadow-lg transition-colors"
+              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 bg-[#00a85a] hover:bg-[#008f4d] text-white p-3 rounded-full shadow-lg transition-colors"
             >
               <FaChevronLeft className="text-xl" />
             </button>
@@ -55,7 +55,7 @@ const BestSellingProducts = ({ products = [] }) => {
           {currentIndex < products.length - 4 && (
             <button
               onClick={nextSlide}
-              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 bg-gray-900 hover:bg-black text-white p-3 rounded-full shadow-lg transition-colors"
+              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 bg-[#00a85a] hover:bg-[#008f4d] text-white p-3 rounded-full shadow-lg transition-colors"
             >
               <FaChevronRight className="text-xl" />
             </button>
@@ -81,7 +81,7 @@ const BestSellingProducts = ({ products = [] }) => {
           {currentIndex > 0 && (
             <button
               onClick={prevSlide}
-              className="absolute left-0 top-1/2 -translate-y-1/2 bg-gray-900 text-white p-2 rounded-full shadow-lg"
+              className="absolute left-0 top-1/2 -translate-y-1/2 bg-[#00a85a] text-white p-2 rounded-full shadow-lg"
             >
               <FaChevronLeft />
             </button>
@@ -90,7 +90,7 @@ const BestSellingProducts = ({ products = [] }) => {
           {currentIndex < products.length - 1 && (
             <button
               onClick={nextSlide}
-              className="absolute right-0 top-1/2 -translate-y-1/2 bg-gray-900 text-white p-2 rounded-full shadow-lg"
+              className="absolute right-0 top-1/2 -translate-y-1/2 bg-[#00a85a] text-white p-2 rounded-full shadow-lg"
             >
               <FaChevronRight />
             </button>
@@ -104,7 +104,7 @@ const BestSellingProducts = ({ products = [] }) => {
               key={index}
               onClick={() => setCurrentIndex(index)}
               className={`w-2 h-2 rounded-full transition-all ${
-                currentIndex === index ? 'bg-gray-900 w-8' : 'bg-gray-300'
+                currentIndex === index ? 'bg-[#00a85a] w-8' : 'bg-gray-300'
               }`}
             />
           ))}

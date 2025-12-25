@@ -17,7 +17,7 @@ const EmptyOrder = ({ type = 'no-orders', onResetFilter }) => {
         </p>
         <button
           onClick={() => navigate('/products')}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors"
+          className="bg-[#00a85a] hover:bg-[#008f4d] text-white px-6 py-2 rounded-lg transition-colors"
         >
           Mua sắm ngay
         </button>
@@ -37,7 +37,7 @@ const EmptyOrder = ({ type = 'no-orders', onResetFilter }) => {
         </p>
         <button
           onClick={onResetFilter}
-          className="bg-gray-900 hover:bg-gray-800 text-white px-6 py-2 rounded-lg transition-colors"
+          className="bg-[#00a85a] hover:bg-[#008f4d] text-white px-6 py-2 rounded-lg transition-colors"
         >
           Xem tất cả đơn hàng
         </button>

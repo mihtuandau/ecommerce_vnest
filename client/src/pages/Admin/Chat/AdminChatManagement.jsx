@@ -131,7 +131,7 @@ const AdminChatManagement = () => {
     <div className="h-[calc(100vh-200px)] flex gap-4">
       {/* Rooms List */}
       <div className="w-1/3 bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        <div className="bg-gray-900 text-white px-4 py-3">
+        <div className="bg-[#00a85a] text-white px-4 py-3">
           <h2 className="text-lg font-semibold flex items-center gap-2">
             <FaComments />
             Cuộc trò chuyện
@@ -197,7 +197,7 @@ const AdminChatManagement = () => {
       <div className="flex-1 bg-white rounded-lg shadow-sm border border-gray-200 flex flex-col">
         {selectedRoom ? (
           <>
-            <div className="bg-gray-900 text-white px-4 py-3 rounded-t-lg">
+            <div className="bg-[#00a85a] text-white px-4 py-3 rounded-t-lg">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
                   <FaUser size={18} />
@@ -227,7 +227,7 @@ const AdminChatManagement = () => {
                     <div
                       className={`max-w-[75%] px-4 py-2 rounded-lg ${
                         isAdmin
-                          ? 'bg-gray-900 text-white'
+                          ? 'bg-[#00a85a] text-white'
                           : 'bg-white border border-gray-200'
                       }`}
                     >
@@ -276,7 +276,7 @@ const AdminChatManagement = () => {
                 <button
                   onClick={handleSend}
                   disabled={!newMessage.trim()}
-                  className="px-4 bg-gray-900 text-white rounded-lg hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-4 bg-[#00a85a] text-white rounded-lg hover:bg-[#008f4d] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <FaPaperPlane size={18} />
                 </button>

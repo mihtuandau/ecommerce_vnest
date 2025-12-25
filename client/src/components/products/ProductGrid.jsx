@@ -8,17 +8,22 @@ import StarRating from "../common/StarRating";
 const ProductGrid = ({
   products = [],
   loading = false,
-  viewMode = "grid-3",
+  viewMode = "grid-4",
 }) => {
   const getGridClass = () => {
     switch (viewMode) {
+      case "grid-4":
+        return "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4";
+      case "grid-3":
+        return "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6";
       case "grid-2":
         return "grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto lg:gap-8";
+      case "grid-1":
+        return "grid grid-cols-1 gap-6 max-w-3xl mx-auto";
       case "list":
-        return "flex flex-col gap-4 max-w-4xl mx-auto ";
-      case "grid-3":
+        return "flex flex-col gap-4 max-w-4xl mx-auto";
       default:
-        return "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6";
+        return "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4";
     }
   };
 

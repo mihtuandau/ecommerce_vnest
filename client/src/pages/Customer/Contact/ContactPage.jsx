@@ -192,7 +192,7 @@ const ContactPage = () => {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="bg-gray-900 hover:bg-gray-800 text-white font-normal py-3 md:py-4 px-6 md:px-8 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2 text-sm md:text-base"
+                    className="bg-[#00a85a] hover:bg-[#008f4d] text-white font-normal py-3 md:py-4 px-6 md:px-8 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2 text-sm md:text-base"
                   >
                     <FaPaperPlane className="text-xs md:text-sm" />
                     {loading ? 'Đang gửi...' : 'Gửi Tin Nhắn'}
@@ -206,8 +206,8 @@ const ContactPage = () => {
               {/* Working Hours */}
               <div className="border-t border-gray-200 pt-8 lg:pt-0 lg:border-t-0">
                 <div className="flex items-center gap-3 mb-5 md:mb-6">
-                  <div className="w-10 h-10 border border-gray-900 flex items-center justify-center">
-                    <FaClock className="text-gray-900 text-base" />
+                  <div className="w-10 h-10 border border-[#00a85a] flex items-center justify-center">
+                    <FaClock className="text-[#00a85a] text-base" />
                   </div>
                   <h3 className="text-base md:text-lg font-normal text-gray-900">Giờ Làm Việc</h3>
                 </div>
@@ -234,19 +234,19 @@ const ContactPage = () => {
                 <div className="flex gap-2.5 md:gap-3">
                   <a 
                     href="#" 
-                    className="w-12 h-12 border border-gray-300 hover:border-gray-900 hover:bg-gray-900 flex items-center justify-center transition-all duration-300 group"
+                    className="w-12 h-12 border border-gray-300 hover:border-[#00a85a] hover:bg-[#00a85a] flex items-center justify-center transition-all duration-300 group"
                   >
                     <FaFacebookF className="text-gray-900 group-hover:text-white transition-colors" />
                   </a>
                   <a 
                     href="#" 
-                    className="w-12 h-12 border border-gray-300 hover:border-gray-900 hover:bg-gray-900 flex items-center justify-center transition-all duration-300 group"
+                    className="w-12 h-12 border border-gray-300 hover:border-[#00a85a] hover:bg-[#00a85a] flex items-center justify-center transition-all duration-300 group"
                   >
                     <FaInstagram className="text-gray-900 group-hover:text-white transition-colors" />
                   </a>
                   <a 
                     href="#" 
-                    className="w-12 h-12 border border-gray-300 hover:border-gray-900 hover:bg-gray-900 flex items-center justify-center transition-all duration-300 group"
+                    className="w-12 h-12 border border-gray-300 hover:border-[#00a85a] hover:bg-[#00a85a] flex items-center justify-center transition-all duration-300 group"
                   >
                     <FaTwitter className="text-gray-900 group-hover:text-white transition-colors" />
                   </a>

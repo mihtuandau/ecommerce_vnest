@@ -12,17 +12,13 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const initAuth = async () => {
       try {
-        // 🔒 Fetch user from backend using httpOnly cookie
         const currentUser = await authService.verifyAuth();
         
         if (currentUser) {
-          console.log('Current user from backend:', currentUser);
           setUser(currentUser);
         } else {
-          console.log('No user returned from backend');
         }
       } catch (error) {
-        console.error('Auth verification error:', error);
         setUser(null);
       } finally {
         setLoading(false);
@@ -94,7 +90,6 @@ export const AuthProvider = ({ children }) => {
       }
       return currentUser;
     } catch (error) {
-      console.error('Refresh user error:', error);
       return null;
     }
   };

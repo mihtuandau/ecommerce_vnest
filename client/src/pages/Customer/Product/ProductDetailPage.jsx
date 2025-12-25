@@ -166,7 +166,7 @@ const ProductDetailPage = () => {
       <Layout>
         <div className="container mx-auto px-4 py-16 text-center">
           <h1 className="text-2xl font-bold mb-4">Không tìm thấy sản phẩm</h1>
-          <Link to="/products" className="text-blue-600 hover:underline">
+          <Link to="/products" className="text-[#00a85a] hover:underline">
             Quay lại danh sách sản phẩm
           </Link>
         </div>

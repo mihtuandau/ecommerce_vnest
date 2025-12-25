@@ -68,7 +68,7 @@ const PromoBanner = () => {
                   Giày Thể Thao
                 </h3>
                 <p className="text-white/90 mb-4">
-                  <span className="bg-gray-900 border border-white text-white px-2 py-1 text-sm font-bold mr-2">TREND</span>
+                  <span className="bg-[#00a85a] border border-white text-white px-2 py-1 text-sm font-bold mr-2">TREND</span>
                   Xu hướng 2024
                 </p>
                 <Button className="btn-shine w-fit px-6 py-2 bg-white text-gray-900 hover:bg-gray-100 font-semibold text-sm hover:-translate-y-1 transition-all duration-300">

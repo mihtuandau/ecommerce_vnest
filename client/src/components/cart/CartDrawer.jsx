@@ -49,7 +49,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
             <div className="relative px-6 py-4 border-b border-gray-100 flex-shrink-0 bg-gradient-to-r from-gray-50 to-white">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gray-900 flex items-center justify-center">
+                  <div className="w-10 h-10 bg-[#00a85a] flex items-center justify-center">
                     <FaShoppingBag className="text-white text-lg" />
                   </div>
                   <div>
@@ -127,7 +127,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
 
                       {/* Quantity & Price - no border radius */}
                       <div className="flex items-center justify-between mt-auto">
-                        <span className="inline-flex items-center justify-center px-3 py-1 text-xs font-semibold bg-gray-900 text-white">
+                        <span className="inline-flex items-center justify-center px-3 py-1 text-xs font-semibold bg-[#00a85a] text-white">
                           x{item.quantity}
                         </span>
                         <span className="text-base font-bold text-gray-900">
@@ -153,7 +153,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
                 </p>
                 <button
                   onClick={onClose}
-                  className="px-6 py-2.5 bg-gray-900 hover:bg-gray-800 text-white text-sm font-medium transition-colors cursor-pointer"
+                  className="px-6 py-2.5 bg-[#00a85a] hover:bg-[#008f4d] text-white text-sm font-medium transition-colors cursor-pointer"
                 >
                   Tiếp tục mua sắm
                 </button>
@@ -186,7 +186,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
                 <Link
                   to="/cart"
                   onClick={onClose}
-                  className="flex-1 text-center bg-white hover:bg-gray-50 text-gray-900 text-sm font-semibold py-3 transition-all duration-200 cursor-pointer border-2 border-gray-900 hover:border-gray-700"
+                  className="flex-1 text-center bg-white hover:bg-gray-50 text-gray-900 text-sm font-semibold py-3 transition-all duration-200 cursor-pointer border-2 border-[#00a85a] hover:border-[#008f4d]"
                 >
                   Xem Giỏ Hàng
                 </Link>
@@ -194,7 +194,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
                 <Link
                   to="/checkout"
                   onClick={onClose}
-                  className="flex-1 text-center bg-gray-900 hover:bg-gray-800 text-white text-sm font-semibold py-3 transition-all duration-200 cursor-pointer shadow-lg hover:shadow-xl"
+                  className="flex-1 text-center bg-[#00a85a] hover:bg-[#008f4d] text-white text-sm font-semibold py-3 transition-all duration-200 cursor-pointer shadow-lg hover:shadow-xl"
                 >
                   Thanh Toán
                 </Link>

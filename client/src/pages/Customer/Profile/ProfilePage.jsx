@@ -58,7 +58,7 @@ const ProfilePage = () => {
           {/* Header - Minimalist */}
           <div className="border-b border-gray-200 pb-8 mb-12 ">
             <div className="flex items-center gap-6">
-              <div className="w-20 h-20 border-2 border-gray-900 flex items-center justify-center text-white text-3xl font-light bg-gray-900 rounded-full">
+              <div className="w-20 h-20 border-2 border-[#00a85a] flex items-center justify-center text-white text-3xl font-light bg-[#00a85a] rounded-full">
                 {currentUser.name?.charAt(0)?.toUpperCase() || currentUser.email?.charAt(0)?.toUpperCase()}
               </div>
               <div className="flex-1 ">

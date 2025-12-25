@@ -14,8 +14,8 @@ const DeleteConfirmModal = ({
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={title} size="sm">
       <div className="space-y-4">
-        <div className="flex items-center gap-3 p-4 bg-gray-100 rounded-lg border-2 border-gray-900">
-          <AlertTriangle className="text-gray-900 flex-shrink-0" size={24} />
+        <div className="flex items-center gap-3 p-4 bg-green-50 rounded-lg border-2 border-[#00a85a]">
+          <AlertTriangle className="text-[#00a85a] flex-shrink-0" size={24} />
           <div>
             <p className="text-sm text-gray-900 font-medium">
               {message || 'Hành động này không thể hoàn tác!'}

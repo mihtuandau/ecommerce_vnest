@@ -15,9 +15,6 @@ export class PaymentSync {
     private cacheService: PaymentCache,
   ) {}
 
-  /**
-   * Tự động sync payment status với PayOS khi tìm payment theo order code
-   */
   async findByPayosOrderCodeWithSync(orderCode: number) {
     const payment = await this.repository.findByPayosOrderCode(orderCode);
     
@@ -25,30 +22,23 @@ export class PaymentSync {
       return null;
     }
     
-    // If payment is still PENDING, try to sync with PayOS
     if (payment.status === 'PENDING') {
       try {
         this.logger.log(`🔄 Payment ${payment.id} is PENDING, syncing with PayOS...`);
         const payosInfo = await this.payosService.getPaymentInfo(orderCode);
         this.logger.log('📡 PayOS info:', { status: payosInfo.status });
-        
-        // Check if PayOS says payment is successful
         if (payosInfo.status === 'PAID') {
           const updatedPayment = await this.updatePaymentToSuccess(payment);
           return this.formatPaymentResponse(updatedPayment, payment.order);
         }
       } catch (error) {
         this.logger.warn('⚠️ Failed to sync with PayOS:', error.message);
-        // Continue and return existing payment data
       }
     }
     
     return this.formatPaymentResponse(payment, payment.order);
   }
 
-  /**
-   * Format response to include both payment and order data
-   */
   private formatPaymentResponse(payment: any, order: any) {
     return {
       payment: PaymentHelper.serializePayment(payment),
@@ -63,9 +53,6 @@ export class PaymentSync {
     };
   }
 
-  /**
-   * Manually sync payment status with PayOS (for admin)
-   */
   async syncPaymentWithPayOS(paymentId: number) {
     const payment = await this.repository.findById(paymentId);
     
@@ -115,9 +102,6 @@ export class PaymentSync {
     }
   }
 
-  /**
-   * Update payment to SUCCESS status
-   */
   private async updatePaymentToSuccess(payment: any) {
     this.logger.log('✅ PayOS confirmed payment is PAID, updating status to SUCCESS...');
     
@@ -134,9 +118,6 @@ export class PaymentSync {
     return updatedPayment;
   }
 
-  /**
-   * Update payment to CANCELLED status
-   */
   private async updatePaymentToCancelled(payment: any) {
     const updatedPayment = await this.repository.update(payment.id, {
       status: 'CANCELLED',

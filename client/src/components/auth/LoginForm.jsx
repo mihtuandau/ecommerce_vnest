@@ -82,14 +82,14 @@ export default function LoginForm({ toggleForm }) {
       </form>
 
       <p className="text-center text-sm">
-        <button onClick={() => toggleForm('forgotPassword')} className="text-blue-600 hover:text-blue-500">
+        <button onClick={() => toggleForm('forgotPassword')} className="text-[#00a85a] hover:text-[#008f4d]">
           Quên mật khẩu?
         </button>
       </p>
 
       <p className="text-center text-sm text-gray-600">
         Chưa có tài khoản?{' '}
-        <button onClick={() => toggleForm('register')} className="font-medium text-blue-600 hover:text-blue-500">
+        <button onClick={() => toggleForm('register')} className="font-medium text-[#00a85a] hover:text-[#008f4d]">
           Đăng ký ngay
         </button>
       </p>

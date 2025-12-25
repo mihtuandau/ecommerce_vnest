@@ -1,4 +1,4 @@
-// src/app.module.ts
+
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaService } from './prisma/prisma.service';
@@ -21,7 +21,6 @@ import { MailModule } from './mail/mail.module';
 import { ChatbotModule } from './chatbot/chatbot.module';
 import { ReviewModule } from './review/review.module';
 import { AddressModule } from './address/address.module';
-// import { ShippingModule } from './shipping/shipping.module';
 
 @Module({
   imports: [
@@ -45,7 +44,6 @@ import { AddressModule } from './address/address.module';
     ChatbotModule,
     ReviewModule,
     AddressModule,
-    // ShippingModule
   ],
   providers: [PrismaService],
   exports: [PrismaService],

@@ -19,7 +19,6 @@ export class UserService {
   async findByEmail(email: string): Promise<User | null> {
     return this.repository.findByEmail(email);
   }
-
   async findAll(query: QueryUserDto): Promise<User[]> {
     const { page = 1, limit = 10, role } = query;
     const skip = (page - 1) * limit;
@@ -39,15 +38,12 @@ export class UserService {
     if (data.password) {
       updateData.password = await bcrypt.hash(data.password, 10);
     }
-    
     return this.repository.update(id, updateData);
   }
 
   async remove(id: number): Promise<User> {
     return this.repository.delete(id);
   }
-
-
 
   async updateResetToken(id: number, resetData: UpdateUserResetDto): Promise<User> {
     const resetPasswordExpires = resetData.resetPasswordExpires 

@@ -1,4 +1,9 @@
-import { Injectable, Inject, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  Inject,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
 import { ProductRepository } from './product.repository';
@@ -27,11 +32,13 @@ export class ProductService {
   async findAll(query: QueryProductDto): Promise<any> {
     const cacheKey = `products:${JSON.stringify(query)}`;
     let cached = await this.cacheManager.get<any>(cacheKey);
-    if (cached) {return cached;
-    }const { 
-      page = 1, 
-      limit = 10, 
-      search, 
+    if (cached) {
+      return cached;
+    }
+    const {
+      page = 1,
+      limit = 10,
+      search,
       categoryId,
       brandId,
       minPrice,
@@ -39,53 +46,51 @@ export class ProductService {
       minRating,
       sortBy = 'newest',
       inStock,
-      outOfStock
+      outOfStock,
     } = query;
-    
+
     const skip = (page - 1) * limit;
-    
-    // Build where clause
+
     const where: any = {};
-    
+
     if (search) {
       where.name = { contains: search, mode: 'insensitive' };
     }
-    
+
     if (categoryId) {
       where.categoryId = categoryId;
     }
-    
+
     if (brandId) {
       where.brandId = brandId;
     }
-    
+
     if (minPrice || maxPrice) {
       where.basePrice = {};
       if (minPrice) where.basePrice.gte = minPrice;
       if (maxPrice) where.basePrice.lte = maxPrice;
     }
-    
+
     if (minRating) {
       where.averageRating = { gte: minRating };
     }
-    
+
     if (inStock) {
       where.variants = {
         some: {
-          stock: { gt: 0 }
-        }
+          stock: { gt: 0 },
+        },
       };
     }
-    
+
     if (outOfStock) {
       where.variants = {
         every: {
-          stock: { lte: 0 }
-        }
+          stock: { lte: 0 },
+        },
       };
     }
-    
-    // Build order by
+
     let orderBy: any = {};
     switch (sortBy) {
       case 'price-asc':
@@ -115,7 +120,6 @@ export class ProductService {
         break;
     }
 
-    // Get total count and products
     const [total, products] = await Promise.all([
       this.repository.count(where),
       this.repository.findAll(where, skip, limit, orderBy),
@@ -162,7 +166,6 @@ export class ProductService {
   }
 
   async remove(id: number): Promise<Product> {
-    // Xóa ảnh trên Cloudinary trước
     const product = await this.repository.findById(id);
 
     if (product?.images) {
@@ -186,7 +189,8 @@ export class ProductService {
 
   async updateVariant(variantId: number, data: any): Promise<any> {
     const existing = await this.repository.findVariantById(variantId);
-    if (!existing) throw new NotFoundException(`Variant #${variantId} không tồn tại`);
+    if (!existing)
+      throw new NotFoundException(`Variant #${variantId} không tồn tại`);
 
     const updated = await this.repository.updateVariant(variantId, data);
     await this.cacheManager.del(`product:${updated.productId}`);
@@ -196,9 +200,9 @@ export class ProductService {
 
   async deleteVariant(variantId: number): Promise<any> {
     const existing = await this.repository.findVariantById(variantId);
-    if (!existing) throw new NotFoundException(`Variant #${variantId} không tồn tại`);
+    if (!existing)
+      throw new NotFoundException(`Variant #${variantId} không tồn tại`);
 
-    // remove any images associated with this variant
     const images = await this.repository.findImagesByVariant(variantId);
     for (const img of images) {
       await this.deleteImageFromCloudinary(img.url);
@@ -211,28 +215,27 @@ export class ProductService {
     return deleted;
   }
 
-  // ============ UPLOAD ẢNH TỪ MÁY TÍNH ============
   async uploadProductImages(
     productId: number,
     files: Express.Multer.File[],
-    metadata: { altText?: string; isThumbnail?: boolean; variantId?: number }
+    metadata: { altText?: string; isThumbnail?: boolean; variantId?: number },
   ): Promise<any> {
-    // 1. Kiểm tra product tồn tại
     const product = await this.repository.findById(productId);
 
     if (!product) {
       throw new NotFoundException(`Sản phẩm #${productId} không tồn tại`);
     }
 
-    // 2. Upload lên Cloudinary
     const urls = await this.uploadService.uploadImages(files);
 
-    // 3. Nếu set thumbnail, bỏ thumbnail cũ
     if (metadata.isThumbnail) {
-      await this.repository.updateThumbnailStatus(productId, metadata.variantId || null, false);
+      await this.repository.updateThumbnailStatus(
+        productId,
+        metadata.variantId || null,
+        false,
+      );
     }
 
-    // 4. Lưu vào DB
     const imageData = urls.map((url, index) => ({
       productId,
       variantId: metadata.variantId || null,
@@ -240,10 +243,9 @@ export class ProductService {
       altText: metadata.altText || `${product.name} - Ảnh ${index + 1}`,
       isThumbnail: metadata.isThumbnail && index === 0,
     }));
-    
+
     await this.repository.createImages(imageData);
 
-    // 5. Invalidate cache
     await this.cacheManager.del(`product:${productId}`);
     await this.cacheManager.del('products:all');
 
@@ -253,7 +255,6 @@ export class ProductService {
     };
   }
 
-  // ============ XÓA ẢNH ============
   async deleteProductImage(imageId: number): Promise<any> {
     const image = await this.repository.findImageById(imageId);
 
@@ -261,13 +262,10 @@ export class ProductService {
       throw new NotFoundException(`Ảnh #${imageId} không tồn tại`);
     }
 
-    // Xóa trên Cloudinary
     await this.deleteImageFromCloudinary(image.url);
 
-    // Xóa trong DB
     await this.repository.deleteImages([imageId]);
 
-    // Invalidate cache
     await this.cacheManager.del(`product:${image.productId}`);
     await this.cacheManager.del('products:all');
 
@@ -277,23 +275,18 @@ export class ProductService {
     };
   }
 
-  // Helper: Extract public_id và xóa trên Cloudinary
   private async deleteImageFromCloudinary(imageUrl: string): Promise<void> {
     try {
-      // URL format: https://res.cloudinary.com/xxx/image/upload/v123/folder/image.jpg
       const parts = imageUrl.split('/');
       const uploadIndex = parts.indexOf('upload');
-      
+
       if (uploadIndex === -1) return;
 
-      // Lấy phần sau "upload/v123/"
-      const pathParts = parts.slice(uploadIndex + 2); // Skip 'upload' and version
-      const publicId = pathParts.join('/').replace(/\.[^/.]+$/, ''); // Remove extensionawait cloudinary.uploader.destroy(publicId);
-    } catch (error) {// Không throw error để không block việc xóa trong DB
-    }
+      const pathParts = parts.slice(uploadIndex + 2);
+      const publicId = pathParts.join('/').replace(/\.[^/.]+$/, '');
+    } catch (error) {}
   }
 
-  // Cập nhật soldCount khi order delivered (called from OrderService)
   async incrementSoldCount(productId: number, quantity: number) {
     await this.repository.incrementSoldCount(productId, quantity);
     await this.cacheManager.del(`product:${productId}`);

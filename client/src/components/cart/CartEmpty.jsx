@@ -16,7 +16,7 @@ const CartEmpty = () => {
           Bạn chưa có sản phẩm nào trong giỏ hàng. Hãy khám phá các sản phẩm của chúng tôi!
         </p>
         <Link to="/products">
-          <Button className="bg-gray-900 hover:bg-gray-800 text-white px-8 py-4 font-normal transition-colors inline-flex items-center gap-2">
+          <Button className="bg-[#00a85a] hover:bg-[#008f4d] text-white px-8 py-4 font-normal transition-colors inline-flex items-center gap-2">
             <FaShoppingBag size={16} />
             Mua Sắm Ngay
           </Button>

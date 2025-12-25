@@ -156,7 +156,7 @@ const SupportChat = ({ scrolled, isOpen: externalIsOpen, onClose }) => {
                   <div
                     className={`px-4 py-2.5 rounded-2xl ${
                       isOwn
-                        ? 'bg-gray-900 text-white rounded-br-sm'
+                        ? 'bg-[#00a85a] text-white rounded-br-sm'
                         : 'bg-white text-gray-900 border border-gray-200 rounded-bl-sm shadow-sm'
                     }`}
                   >
@@ -173,7 +173,7 @@ const SupportChat = ({ scrolled, isOpen: externalIsOpen, onClose }) => {
                   </span>
                 </div>
                 {isOwn && (
-                  <div className="w-8 h-8 bg-gray-900 rounded-full flex items-center justify-center ml-2 flex-shrink-0">
+                  <div className="w-8 h-8 bg-[#00a85a] rounded-full flex items-center justify-center ml-2 flex-shrink-0">
                     <User size={16} className="text-white" />
                   </div>
                 )}
@@ -214,7 +214,7 @@ const SupportChat = ({ scrolled, isOpen: externalIsOpen, onClose }) => {
         />
         <button
           type="submit"
-          className="flex items-center justify-center w-10 h-10 bg-gray-900 text-white rounded-full hover:bg-black disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:scale-105 active:scale-95"
+          className="flex items-center justify-center w-10 h-10 bg-[#00a85a] text-white rounded-full hover:bg-[#008f4d] disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:scale-105 active:scale-95"
           disabled={!inputMessage.trim() || isLoading || !roomId}
           aria-label="Send message"
         >
@@ -288,7 +288,7 @@ const SupportChat = ({ scrolled, isOpen: externalIsOpen, onClose }) => {
         onClick={() => setInternalIsOpen(!internalIsOpen)}
         className={`relative p-2 rounded-full transition-all duration-300 ${
           scrolled
-            ? 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+            ? 'text-gray-600 hover:text-[#00a85a] hover:bg-gray-100'
             : 'text-white hover:bg-white/20'
         }`}
         aria-label="Support Chat"

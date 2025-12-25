@@ -40,7 +40,7 @@ const OrderItem = ({
           {canReview && !isReviewed && (
             <button
               onClick={onReview}
-              className="px-3 py-2 text-xs bg-gray-900 hover:bg-gray-800 text-white transition-colors flex items-center gap-1.5 whitespace-nowrap flex-shrink-0"
+              className="px-3 py-2 text-xs bg-[#00a85a] hover:bg-[#008f4d] text-white transition-colors flex items-center gap-1.5 whitespace-nowrap flex-shrink-0"
             >
               <FaStar size={11} />
               Đánh giá

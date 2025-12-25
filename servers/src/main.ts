@@ -1,4 +1,3 @@
-// src/main.ts
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe, Logger } from '@nestjs/common';
 import helmet from 'helmet';
@@ -11,8 +10,6 @@ async function bootstrap() {
   app.use(helmet());
   app.use(cookieParser());
   app.setGlobalPrefix('api');
-  
-  // 🔒 CORS configuration - allow credentials with specific origin
   const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:5173,http://localhost:3000').split(',');
   
   app.enableCors({
@@ -32,8 +29,6 @@ async function bootstrap() {
       },
     }),
   );
-
-  // Setup Swagger
   const config = new DocumentBuilder()
     .setTitle('E-commerce API')
     .setDescription('API for clothing e-commerce backend')

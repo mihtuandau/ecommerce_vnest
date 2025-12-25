@@ -23,7 +23,7 @@ const TopBanner = ({ scrolled }) => {
   return (
     <div className={`transition-all duration-300 py-2 relative ${
       scrolled 
-        ? 'bg-gray-900 text-white' 
+        ? 'bg-[#00a85a] text-white' 
         : 'bg-transparent text-white'
     }`}>
       <div className="container mx-auto px-4 flex items-center justify-center gap-4">

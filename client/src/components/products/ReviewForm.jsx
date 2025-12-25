@@ -101,7 +101,7 @@ const ReviewForm = ({ productId, orderId, onSuccess, onCancel }) => {
           <button
             type="submit"
             disabled={isSubmitting || rating === 0}
-            className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="flex-1 bg-[#00a85a] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#008f4d] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {isSubmitting ? 'Đang gửi...' : 'Gửi đánh giá'}
           </button>

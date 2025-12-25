@@ -177,13 +177,13 @@ const AddressFormModal = ({
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-6 py-3 border border-gray-300 hover:border-gray-900 text-gray-900 transition-colors"
+              className="flex-1 px-6 py-3 border border-gray-300 hover:border-[#00a85a] text-gray-900 transition-colors"
             >
               Hủy
             </button>
             <button
               type="submit"
-              className="flex-1 px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white transition-colors"
+              className="flex-1 px-6 py-3 bg-[#00a85a] hover:bg-[#008f4d] text-white transition-colors"
             >
               {title.includes("Thêm") ? "Thêm địa chỉ" : "Cập nhật"}
             </button>

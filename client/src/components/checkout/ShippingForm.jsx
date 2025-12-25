@@ -106,7 +106,7 @@ const ShippingForm = ({ shippingInfo, onInputChange, onSelectAddressClick, isGue
     <div className="bg-white border border-gray-200 p-6">
       <div className="flex items-center justify-between mb-8 pb-6 border-b border-gray-200">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 border border-gray-900 flex items-center justify-center">
+          <div className="w-10 h-10 border border-[#00a85a] flex items-center justify-center">
             <FaMapMarkerAlt className="text-gray-900 text-sm" />
           </div>
           <h2 className="text-lg font-normal text-gray-900">Thông Tin Giao Hàng</h2>

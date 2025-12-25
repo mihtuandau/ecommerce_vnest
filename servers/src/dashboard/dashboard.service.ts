@@ -1,16 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { DashboardRepository } from './dashboard.repository';
 
-/**
- * Service layer for dashboard business logic
- * Orchestrates data from repository and applies business rules
- */
 @Injectable()
 export class DashboardService {
   constructor(private repository: DashboardRepository) {}
 
   async getStats() {
-    // Get all data from repository
     const [
       totalUsers,
       totalProducts,
@@ -63,10 +58,8 @@ export class DashboardService {
     const currentYear = now.getFullYear();
     const currentMonth = now.getMonth();
 
-    // Get revenue by month for current year from repository
     const monthlyRevenue = await this.repository.getMonthlyRevenue(currentYear);
 
-    // Process monthly data
     const monthlyData = Array.from({ length: 12 }, (_, i) => ({
       month: i + 1,
       revenue: 0,
@@ -79,7 +72,6 @@ export class DashboardService {
       monthlyData[month].orders += 1;
     });
 
-    // Get daily revenue for current month from repository
     const dailyRevenue = await this.repository.getDailyRevenue(
       currentYear,
       currentMonth,
@@ -111,10 +103,8 @@ export class DashboardService {
   }
 
   async getTopProducts(limit: number = 10) {
-    // Get order items with variant information from repository
     const orderItems = await this.repository.getAllOrderItemsWithProducts();
 
-    // Group by product and calculate totals
     const productMap = new Map<
       number,
       {
@@ -140,7 +130,6 @@ export class DashboardService {
       }
     });
 
-    // Convert to array and sort by total sold
     const topProducts = Array.from(productMap.values())
       .sort((a, b) => b.totalSold - a.totalSold)
       .slice(0, limit);

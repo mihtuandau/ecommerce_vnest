@@ -18,7 +18,6 @@ export const useAddressManagement = () => {
       const addressList = response.addresses || response.data?.addresses || response || [];
       setAddresses(Array.isArray(addressList) ? addressList : []);
     } catch (error) {
-      console.error('Load addresses error:', error);
       notify.error('Không thể tải danh sách địa chỉ');
       setAddresses([]);
     } finally {
@@ -28,14 +27,12 @@ export const useAddressManagement = () => {
 
   const createAddress = async (addressData) => {
     try {
-      // Remove fields that shouldn't be sent to backend
       const { id, userId, createdAt, updatedAt, ...cleanData } = addressData;
       await addressService.createAddress(cleanData);
       notify.success('Thêm địa chỉ mới thành công');
       await loadAddresses();
       return true;
     } catch (error) {
-      console.error('Create address error:', error);
       notify.error(error.response?.data?.message || 'Có lỗi xảy ra');
       return false;
     }
@@ -43,14 +40,12 @@ export const useAddressManagement = () => {
 
   const updateAddress = async (addressId, addressData) => {
     try {
-      // Remove fields that shouldn't be sent to backend
       const { id, userId, createdAt, updatedAt, ...cleanData } = addressData;
       await addressService.updateAddress(addressId, cleanData);
       notify.success('Cập nhật địa chỉ thành công');
       await loadAddresses();
       return true;
     } catch (error) {
-      console.error('Update address error:', error);
       notify.error(error.response?.data?.message || 'Có lỗi xảy ra');
       return false;
     }
@@ -64,7 +59,6 @@ export const useAddressManagement = () => {
       await loadAddresses();
       return true;
     } catch (error) {
-      console.error('Delete address error:', error);
       notify.error('Không thể xóa địa chỉ');
       return false;
     }
@@ -77,7 +71,6 @@ export const useAddressManagement = () => {
       await loadAddresses();
       return true;
     } catch (error) {
-      console.error('Set default address error:', error);
       notify.error('Có lỗi xảy ra');
       return false;
     }

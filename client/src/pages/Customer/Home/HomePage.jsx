@@ -11,7 +11,7 @@ import Loading from "../../../components/common/Loading";
 import { useHomeData } from "../../../hooks/useHomeData";
 import { useAuth } from "../../../contexts/authContext";
 import authService from "../../../services/authService";
-import toast from "react-hot-toast";
+// import toast from "react-hot-toast";
 
 const HomePage = () => {
   const { data: homeData, loading, error } = useHomeData();
@@ -58,7 +58,7 @@ const HomePage = () => {
             <p className="text-gray-600 mb-4">{error}</p>
             <button
               onClick={() => window.location.reload()}
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              className="px-6 py-2 bg-[#00a85a] text-white rounded-lg hover:bg-[#008f4d]"
             >
               Thử lại
             </button>

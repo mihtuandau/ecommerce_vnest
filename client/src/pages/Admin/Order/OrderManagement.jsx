@@ -136,7 +136,7 @@ const AdminOrdersPage = () => {
             <button
               onClick={handleRefresh}
               disabled={refreshing}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-4 py-2 bg-[#00a85a] hover:bg-[#008f4d] text-white rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <FaSync className={refreshing ? 'animate-spin' : ''} />
               {refreshing ? 'Đang cập nhật...' : 'Làm mới'}

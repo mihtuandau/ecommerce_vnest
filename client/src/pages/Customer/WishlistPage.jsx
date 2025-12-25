@@ -102,7 +102,7 @@ const WishlistPage = () => {
               </p>
               <Link
                 to="/products"
-                className="inline-block px-8 py-3 bg-gray-900 text-white text-sm font-normal hover:bg-gray-800 transition-colors"
+                className="inline-block px-8 py-3 bg-[#00a85a] text-white text-sm font-normal hover:bg-[#008f4d] transition-colors"
               >
                 Khám Phá Sản Phẩm
               </Link>
@@ -179,7 +179,7 @@ const WishlistPage = () => {
                       {/* View Details Button */}
                       <Link
                         to={`/products/${productId}`}
-                        className="block w-full py-3 bg-gray-900 text-white text-sm font-normal text-center hover:bg-gray-800 transition-colors"
+                        className="block w-full py-3 bg-[#00a85a] text-white text-sm font-normal text-center hover:bg-[#008f4d] transition-colors"
                       >
                         Xem Chi Tiết
                       </Link>

@@ -168,10 +168,8 @@ export class ReviewService {
       ...(dto.images && { images: dto.images }),
     });
 
-    // Cập nhật rating của product
     await this.updateProductRating(review.productId);
 
-    // Clear cache
     await this.cacheManager.del(`product:${review.productId}`);
 
     return updated;

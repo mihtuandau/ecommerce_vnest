@@ -145,7 +145,7 @@ const PaymentReturn = () => {
                 <span className="text-sm font-light text-gray-600">
                   Trạng thái
                 </span>
-                <span className="px-3 py-1 bg-gray-900 text-white text-xs">
+                <span className="px-3 py-1 bg-[#00a85a] text-white text-xs">
                   Đã thanh toán
                 </span>
               </div>
@@ -185,7 +185,7 @@ const PaymentReturn = () => {
                   navigate(`/orders/${orderInfo?.order?.id}`);
                 }
               }}
-              className="w-full bg-gray-900 text-white py-3 hover:bg-gray-800 transition-colors text-sm font-normal"
+              className="w-full bg-[#00a85a] text-white py-3 hover:bg-[#008f4d] transition-colors text-sm font-normal"
             >
               Xem Chi Tiết Đơn Hàng
             </button>
@@ -220,7 +220,7 @@ const PaymentReturn = () => {
           <div className="space-y-3">
             <button
               onClick={() => navigate("/cart")}
-              className="w-full bg-gray-900 text-white py-3 hover:bg-gray-800 transition-colors text-sm font-normal"
+              className="w-full bg-[#00a85a] text-white py-3 hover:bg-[#008f4d] transition-colors text-sm font-normal"
             >
               Quay Lại Giỏ Hàng
             </button>
@@ -293,7 +293,7 @@ const PaymentReturn = () => {
           <div className="space-y-3">
             <button
               onClick={checkPaymentStatus}
-              className="w-full bg-gray-900 text-white py-3 hover:bg-gray-800 transition-colors text-sm font-normal"
+              className="w-full bg-[#00a85a] text-white py-3 hover:bg-[#008f4d] transition-colors text-sm font-normal"
             >
               Kiểm Tra Lại
             </button>
@@ -329,7 +329,7 @@ const PaymentReturn = () => {
         <div className="space-y-3">
           <button
             onClick={() => navigate("/checkout")}
-            className="w-full bg-gray-900 text-white py-3 hover:bg-gray-800 transition-colors text-sm font-normal"
+            className="w-full bg-[#00a85a] text-white py-3 hover:bg-[#008f4d] transition-colors text-sm font-normal"
           >
             Thử Lại Thanh Toán
           </button>

@@ -108,7 +108,7 @@ const ProductDetails = ({ product, onEditVariant, onDeleteVariant }) => {
                               {onEditVariant && (
                                 <button
                                   onClick={() => onEditVariant(variant)}
-                                  className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 p-1 rounded transition-colors"
+                                  className="text-[#00a85a] hover:text-[#008f4d] hover:bg-green-50 p-1 rounded transition-colors"
                                   title="Sửa"
                                 >
                                   <Edit2 size={13} />

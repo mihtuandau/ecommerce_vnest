@@ -60,7 +60,7 @@ const AdminHeader = ({ sidebarOpen, setSidebarOpen }) => {
             <div className="w-15 h-15 rounded-lg flex items-center justify-center pb-2">
                 <img src="./public/logoMT.png" alt="Logo" />
             </div>
-            <span className="text-xl font-bold text-blue-600 hidden sm:block">
+            <span className="text-xl font-bold text-[#00a85a] hidden sm:block">
               Admin Panel
             </span>
           </Link>
@@ -127,7 +127,7 @@ const AdminHeader = ({ sidebarOpen, setSidebarOpen }) => {
                     <h3 className="font-semibold text-gray-900">
                       Notifications
                     </h3>
-                    <button className="text-xs text-blue-600 hover:text-blue-700">
+                    <button className="text-xs text-[#00a85a] hover:text-[#008f4d]">
                       Mark all as read
                     </button>
                   </div>
@@ -149,7 +149,7 @@ const AdminHeader = ({ sidebarOpen, setSidebarOpen }) => {
                     ))}
                   </div>
                   <div className="px-4 py-3 border-t border-gray-200 text-center">
-                    <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">
+                    <button className="text-sm text-[#00a85a] hover:text-[#008f4d] font-medium">
                       View all notifications
                     </button>
                   </div>
