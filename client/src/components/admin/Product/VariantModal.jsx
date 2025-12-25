@@ -112,7 +112,7 @@ const VariantModal = ({ product, onClose, onSave, onImagesUploaded, editingVaria
               onClick={() => setBulkMode(false)}
               className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                 !bulkMode 
-                  ? 'bg-gray-900 text-white hover:bg-gray-800' 
+                  ? 'bg-[#00a85a] text-white hover:bg-[#008f4d]' 
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
@@ -122,7 +122,7 @@ const VariantModal = ({ product, onClose, onSave, onImagesUploaded, editingVaria
               onClick={() => setBulkMode(true)}
               className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                 bulkMode 
-                  ? 'bg-gray-900 text-white hover:bg-gray-800' 
+                  ? 'bg-[#00a85a] text-white hover:bg-[#008f4d]' 
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >

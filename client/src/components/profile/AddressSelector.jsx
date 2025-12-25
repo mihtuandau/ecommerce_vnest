@@ -108,7 +108,7 @@ const AddressSelector = ({ onAddressSelect, selectedAddressId }) => {
         <p className="text-gray-600 mb-4">Chưa có địa chỉ nào được lưu</p>
         <a
           href="/profile"
-          className="inline-block px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white transition-colors"
+          className="inline-block px-6 py-3 bg-[#00a85a] hover:bg-[#008f4d] text-white transition-colors"
         >
           Thêm địa chỉ trong trang cá nhân
         </a>
@@ -133,7 +133,7 @@ const AddressSelector = ({ onAddressSelect, selectedAddressId }) => {
           <div className="flex items-start gap-3">
             <div className={`w-5 h-5 border-2 flex items-center justify-center flex-shrink-0 mt-0.5 ${
               selectedAddressId === address.id
-                ? 'border-gray-900 bg-gray-900'
+                ? 'border-[#00a85a] bg-[#00a85a]'
                 : 'border-gray-400'
             }`}>
               {selectedAddressId === address.id && (
@@ -146,7 +146,7 @@ const AddressSelector = ({ onAddressSelect, selectedAddressId }) => {
                 <FaMapMarkerAlt className="w-4 h-4 text-gray-900" />
                 <span className="font-normal text-gray-900">{address.fullName}</span>
                 {address.isDefault && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-gray-900 text-white text-xs">
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#00a85a] text-white text-xs">
                     <FaStar size={9} />
                     Mặc định
                   </span>

@@ -56,7 +56,7 @@ const TableHeader = ({
     >
       {sortable ? (
         <button
-          className="inline-flex items-center gap-1 hover:text-gray-900 transition-colors group"
+          className="inline-flex items-center gap-1 hover:text-[#00a85a] transition-colors group"
           onClick={onClick}
         >
           {children}
@@ -64,14 +64,14 @@ const TableHeader = ({
             <ArrowUp
               className={`w-3 h-3 ${
                 sorted && sortDir === "asc"
-                  ? "text-gray-900"
+                  ? "text-[#00a85a]"
                   : "text-gray-300 group-hover:text-gray-400"
               }`}
             />
             <ArrowDown
               className={`w-3 h-3 ${
                 sorted && sortDir === "desc"
-                  ? "text-gray-900"
+                  ? "text-[#00a85a]"
                   : "text-gray-300 group-hover:text-gray-400"
               }`}
             />

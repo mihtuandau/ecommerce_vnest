@@ -22,10 +22,10 @@ const Loading = memo(({
         {/* Loading Spinner Overlay */}
         <div className="fixed inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-[9999]">
           <div className="relative w-16 h-16">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3 h-3 bg-gray-900 rounded-full animate-spin-dot" style={{ animationDelay: '0s' }}></div>
-            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-gray-900 rounded-full animate-spin-dot" style={{ animationDelay: '0.2s' }}></div>
-            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-3 h-3 bg-gray-900 rounded-full animate-spin-dot" style={{ animationDelay: '0.4s' }}></div>
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-gray-900 rounded-full animate-spin-dot" style={{ animationDelay: '0.6s' }}></div>
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3 h-3 bg-[#00a85a] rounded-full animate-spin-dot" style={{ animationDelay: '0s' }}></div>
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-[#00a85a] rounded-full animate-spin-dot" style={{ animationDelay: '0.2s' }}></div>
+            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-3 h-3 bg-[#00a85a] rounded-full animate-spin-dot" style={{ animationDelay: '0.4s' }}></div>
+            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-[#00a85a] rounded-full animate-spin-dot" style={{ animationDelay: '0.6s' }}></div>
           </div>
         </div>
         
@@ -50,7 +50,7 @@ const Loading = memo(({
 
   return (
     <div className={`flex flex-col items-center justify-center py-12 ${className}`}>
-      <Loader2 className={`${iconSize} animate-spin text-blue-600 mb-3`} />
+      <Loader2 className={`${iconSize} animate-spin text-[#00a85a] mb-3`} />
       {text && <p className="text-gray-600">{text}</p>}
     </div>
   );

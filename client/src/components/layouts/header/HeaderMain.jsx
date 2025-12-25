@@ -119,16 +119,18 @@ const HeaderMain = ({ scrolled, searchOpen, setSearchOpen, mobileMenuOpen, setMo
         }`}>
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 flex-shrink-0">
-            <span className="text-2xl font-bold text-gray-900 tracking-wider" >
-              VALENTIA
-            </span>
+            <img 
+              src="/textlogo.png" 
+              alt="Logo" 
+              className="h-10 w-auto object-contain"
+            />
           </Link>
 
           <div className="flex-1 flex justify-end lg:justify-center">
             {!desktopSearchOpen ? (
               <button
                 onClick={() => setDesktopSearchOpen(true)}
-                className="hidden lg:block text-gray-700 hover:text-gray-900 transition-colors duration-300"
+                className="hidden lg:block text-gray-700 hover:text-[#00a85a] transition-colors duration-300"
               >
                 <FaSearch size={20} />
               </button>
@@ -142,7 +144,7 @@ const HeaderMain = ({ scrolled, searchOpen, setSearchOpen, mobileMenuOpen, setMo
                     onChange={(e) => setSearchQuery(e.target.value)}
                     onFocus={() => searchQuery.trim().length >= 2 && setShowSearchResults(true)}
                     autoFocus
-                    className="w-full pl-12 pr-4 py-3 border-2 border-gray-300 bg-white focus:border-gray-900 rounded-full focus:outline-none transition-all duration-300"
+                    className="w-full pl-12 pr-4 py-3 border-2 border-gray-300 bg-white focus:border-[#00a85a] rounded-full focus:outline-none transition-all duration-300"
                   />
                   <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 transition-colors duration-300" size={20} />
                   <Button
@@ -154,7 +156,7 @@ const HeaderMain = ({ scrolled, searchOpen, setSearchOpen, mobileMenuOpen, setMo
                         setDesktopSearchOpen(false);
                       }
                     }}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-gray-900 text-white hover:bg-gray-800"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-[#00a85a] text-white hover:bg-[#008f4d]"
                   >
                     Tìm
                   </Button>
@@ -164,7 +166,7 @@ const HeaderMain = ({ scrolled, searchOpen, setSearchOpen, mobileMenuOpen, setMo
                     <div className="absolute top-full mt-2 w-[400px] bg-white rounded-lg shadow-2xl border border-gray-200 max-h-96 overflow-y-auto z-[9999]">
                   {isSearching ? (
                     <div className="p-4 text-center text-gray-500">
-                      <div className="animate-spin w-6 h-6 border-2 border-gray-900 border-t-transparent rounded-full mx-auto"></div>
+                      <div className="animate-spin w-6 h-6 border-2 border-[#00a85a] border-t-transparent rounded-full mx-auto"></div>
                       <p className="mt-2 text-sm">Đang tìm kiếm...</p>
                     </div>
                   ) : searchResults.length > 0 ? (
@@ -232,7 +234,7 @@ const HeaderMain = ({ scrolled, searchOpen, setSearchOpen, mobileMenuOpen, setMo
           <div className="flex items-center gap-4 sm:gap-9 flex-shrink-0">
             {/* Search Mobile */}
             <button 
-              className="lg:hidden text-gray-700 hover:text-gray-900 transition-colors duration-300"
+              className="lg:hidden text-gray-700 hover:text-[#00a85a] transition-colors duration-300"
               onClick={() => setSearchOpen(!searchOpen)}
             >
               <FaSearch size={20} />
@@ -260,7 +262,7 @@ const HeaderMain = ({ scrolled, searchOpen, setSearchOpen, mobileMenuOpen, setMo
               >
                 <button 
                   onClick={toggleDropdown}
-                  className="flex items-center gap-2 text-gray-700 hover:text-gray-900 transition-colors duration-300"
+                  className="flex items-center gap-2 text-gray-700 hover:text-[#00a85a] transition-colors duration-300"
                 >
                   <FaUser size={20} />
                   <FaChevronDown 
@@ -328,7 +330,7 @@ const HeaderMain = ({ scrolled, searchOpen, setSearchOpen, mobileMenuOpen, setMo
                 )}
               </div>
             ) : (
-              <Link to="/login" className="hidden sm:flex items-center text-gray-700 hover:text-gray-900">
+              <Link to="/login" className="hidden sm:flex items-center text-gray-700 hover:text-[#00a85a]">
                 <FaUser size={20} />
               </Link>
             )}

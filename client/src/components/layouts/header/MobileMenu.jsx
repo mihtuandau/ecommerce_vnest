@@ -67,7 +67,7 @@ const MobileMenu = ({ searchOpen, mobileMenuOpen, categories }) => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => searchQuery.trim().length >= 2 && setShowSearchResults(true)}
-              className="w-full pl-10 pr-4 py-2 border-2  rounded-full focus:border-gray-500 focus:outline-none item-center "
+              className="w-full pl-10 pr-4 py-2 border-2  rounded-full focus:border-[#00a85a] focus:outline-none item-center "
             />
             <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
 
@@ -143,7 +143,7 @@ const MobileMenu = ({ searchOpen, mobileMenuOpen, categories }) => {
       {mobileMenuOpen && (
         <div className="lg:hidden bg-white">
           <nav className="container mx-auto px-4 py-6 space-y-1">
-            <Link to="/" className="block py-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg px-4 font-semibold uppercase text-sm transition-all">
+            <Link to="/" className="block py-3 text-gray-700 hover:text-[#00a85a] hover:bg-green-50 rounded-lg px-4 font-semibold uppercase text-sm transition-all">
               HOME
             </Link>
             
@@ -151,7 +151,7 @@ const MobileMenu = ({ searchOpen, mobileMenuOpen, categories }) => {
             <div className="space-y-1">
               <button
                 onClick={() => setShopDropdownOpen(!shopDropdownOpen)}
-                className="w-full flex items-center justify-between py-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg px-4 font-semibold uppercase text-sm transition-all"
+                className="w-full flex items-center justify-between py-3 text-gray-700 hover:text-[#00a85a] hover:bg-green-50 rounded-lg px-4 font-semibold uppercase text-sm transition-all"
               >
                 <span>SHOP</span>
                 <FaChevronDown 
@@ -167,7 +167,7 @@ const MobileMenu = ({ searchOpen, mobileMenuOpen, categories }) => {
                     <Link
                       key={cat.id}
                       to={`/category/${cat.id}`}
-                      className="block py-2 pl-4 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg text-sm font-medium transition-all"
+                      className="block py-2 pl-4 text-gray-600 hover:text-[#00a85a] hover:bg-green-50 rounded-lg text-sm font-medium transition-all"
                     >
                       {cat.name}
                     </Link>
@@ -176,11 +176,11 @@ const MobileMenu = ({ searchOpen, mobileMenuOpen, categories }) => {
               )}
             </div>
 
-            <Link to="/about" className="block py-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg px-4 font-semibold uppercase text-sm transition-all">
-              ABOUT US
+            <Link to="/about" className="block py-3 text-gray-700 hover:text-[#00a85a] hover:bg-green-50 rounded-lg px-4 font-semibold uppercase text-sm transition-all">
+              About Us
             </Link>
 
-            <Link to="/contact" className="block py-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg px-4 font-semibold uppercase text-sm transition-all">
+            <Link to="/contact" className="block py-3 text-gray-700 hover:text-[#00a85a] hover:bg-green-50 rounded-lg px-4 font-semibold uppercase text-sm transition-all">
               CONTACT
             </Link>
             
@@ -189,18 +189,18 @@ const MobileMenu = ({ searchOpen, mobileMenuOpen, categories }) => {
             
             {user ? (
               <>
-                <Link to="/profile" className="block py-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg px-4 font-medium text-sm transition-all">
-                   Tài khoản
+                <Link to="/profile" className="block py-3 text-gray-700 hover:text-[#00a85a] hover:bg-green-50 rounded-lg px-4 font-medium text-sm transition-all">
+                  Tài khoản
                 </Link>
-                <Link to="/orders" className="block py-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg px-4 font-medium text-sm transition-all">
-                   Đơn hàng
+                <Link to="/orders" className="block py-3 text-gray-700 hover:text-[#00a85a] hover:bg-green-50 rounded-lg px-4 font-medium text-sm transition-all">
+                  Đơn hàng
                 </Link>
-                <Link to="/support" className="block py-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg px-4 font-medium text-sm transition-all">
+                <Link to="/support" className="block py-3 text-gray-700 hover:text-[#00a85a] hover:bg-green-50 rounded-lg px-4 font-medium text-sm transition-all">
                    Hỗ trợ
                 </Link>
               </>
             ) : (
-              <Link to="/login" className="block py-3 text-white bg-blue-600 hover:bg-blue-700 rounded-lg px-4 font-semibold text-sm text-center transition-all">
+              <Link to="/login" className="block py-3 text-white bg-[#00a85a] hover:bg-[#008f4d] rounded-lg px-4 font-semibold text-sm text-center transition-all">
                 Đăng nhập
               </Link>
             )}

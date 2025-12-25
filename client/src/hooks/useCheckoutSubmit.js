@@ -27,13 +27,10 @@ export const useCheckoutSubmit = (user) => {
   ) => {
     const isGuest = !user;
 
-    // Ngăn chặn submit nếu đang xử lý
     if (submitting) {
-      console.log('⚠️ Already submitting, ignoring duplicate request');
       return false;
     }
 
-    console.log('🚀 Submit order with discount:', appliedDiscount);
 
     // Validate form
     if (!validateCheckoutForm(shippingInfo, isGuest, agreedToTerms)) {
@@ -53,58 +50,39 @@ export const useCheckoutSubmit = (user) => {
         shipping
       );
 
-      console.log('📨 Sending order to API:', orderData);
-
-      // Submit order
       const response = isGuest
         ? await orderService.createGuestOrder(orderData)
         : await orderService.createOrder(orderData);
 
-      console.log('📦 Order response:', response);
-      
-      // apiService.post() returns response.data directly, so response is the order object
       const orderId = response?.id;
       const orderCode = response?.orderCode;
       
       if (!orderId || !orderCode) {
-        console.error('❌ Missing orderId or orderCode in response:', response);
         notify.error('Lỗi: Không nhận được mã đơn hàng từ server');
         return false;
       }
       
-      console.log('✅ Order created:', { orderId, orderCode });
-
-      // Xử lý thanh toán PayOS
       if (paymentMethod === 'PAYOS') {
         try {
-          console.log('💳 Creating PayOS payment for order:', orderId);
           const paymentResponse = await paymentService.createPayment(orderId, 'PAYOS');
-          console.log('💳 PayOS Response:', paymentResponse);
           
           if (paymentResponse.paymentLink) {
-            // Lưu thông tin đơn hàng trước khi redirect
             if (isGuest) {
               saveGuestOrder(orderCode, shippingInfo.email);
               clearGuestCart();
             }
             
             notify.success('Đang chuyển đến trang thanh toán...', { duration: 2000 });
-            
-            console.log('🔗 Redirecting to:', paymentResponse.paymentLink);
-            
-            // Redirect đến PayOS payment link
             setTimeout(() => {
               window.location.href = paymentResponse.paymentLink;
             }, 1000);
             
             return true;
           } else {
-            console.error('❌ No payment link in response:', paymentResponse);
             notify.error('Không nhận được link thanh toán từ PayOS');
             return false;
           }
         } catch (error) {
-          console.error('❌ PayOS Error:', error);
           notify.error(error.response?.data?.message || 'Không thể tạo link thanh toán. Vui lòng thử lại.');
           return false;
         }

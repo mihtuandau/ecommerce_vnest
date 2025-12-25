@@ -57,7 +57,7 @@ const ProductPrice = ({ currentPrice, originalPrice, product }) => {
             <span className="text-xl font-light text-gray-400 line-through">
               {formatPrice(originalPrice)}
             </span>
-            <span className="px-3 py-1 bg-gray-900 text-white font-light text-sm">
+            <span className="px-3 py-1 bg-[#00a85a] text-white font-light text-sm">>
               -{discountPercent}%
             </span>
           </>
@@ -72,7 +72,7 @@ const ProductPrice = ({ currentPrice, originalPrice, product }) => {
           </p>
           <div className="w-full bg-gray-200 h-1.5">
             <div 
-              className="bg-gray-900 h-1.5 transition-all duration-300"
+              className="bg-[#00a85a] h-1.5 transition-all duration-300"
               style={{ width: `${stockPercentage}%` }}
             ></div>
           </div>

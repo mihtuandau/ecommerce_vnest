@@ -96,8 +96,8 @@ const Header = () => {
   };
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-      isHomePage && !scrolled ? 'bg-transparent' : 'bg-white shadow-md'
+    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out ${
+      isHomePage && !scrolled ? 'bg-transparent' : 'bg-white shadow-lg'
     }`}>
       <div className="lg:hidden">
         <HeaderMain 
@@ -114,34 +114,34 @@ const Header = () => {
           <div className="">
             <div className="container mx-auto px-4 lg:px-8">
               <div className="flex items-center justify-between py-5">
-                <Link to="/" className="flex-shrink-0 pl-20">
-                  <span 
-                    className="text-2xl font-bold tracking-wider text-gray-900 transition-all duration-300" 
-                  >
-                    VALENTIA
-                  </span>
+                <Link to="/" className="flex-shrink-0 pl-20 transform hover:scale-105 transition-transform duration-300">
+                  <img 
+                    src="/logoMT.png" 
+                    alt="Logo" 
+                    className="h-12 w-auto object-contain"
+                  />
                 </Link>
 
                 <nav className="flex items-center gap-6 " >
-                  <Link to="/" className="text-gray-700 hover:text-gray-900 transition-all font-semibold text-lg uppercase hover:underline decoration-2 underline-offset-8">
+                  <Link to="/" className="text-gray-700 hover:text-[#00a85a] transition-all duration-300 font-semibold text-lg uppercase hover:underline decoration-2 underline-offset-8 hover:translate-y-[-2px]">
                     Home
                   </Link>
            
                   <div className="relative group">
                     <Link 
                       to="/products" 
-                      className="text-gray-700 hover:text-gray-900 transition-all font-semibold text-lg uppercase hover:underline decoration-2 underline-offset-8"
+                      className="text-gray-700 hover:text-[#00a85a] transition-all duration-300 font-semibold text-lg uppercase hover:underline decoration-2 underline-offset-8 hover:translate-y-[-2px]"
                     >
                       Shop
                     </Link>
                     
                     {categories && categories.length > 0 && (
-                      <div className="absolute top-full left-0 pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
-                        <div className="bg-white rounded-xl shadow-2xl border border-gray-100 py-3 min-w-[240px] overflow-hidden">
+                      <div className="absolute top-full left-0 pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-out z-50">
+                        <div className="bg-white rounded-xl shadow-2xl border border-gray-100 py-3 min-w-[240px] overflow-hidden transform scale-95 group-hover:scale-100 transition-transform duration-300">
                           <div className="px-4 py-2 border-b border-gray-100">
                             <Link
                               to="/products"
-                              className="block font-semibold text-gray-900 hover:text-blue-600 transition-colors text-sm"
+                              className="block font-semibold text-gray-900 hover:text-[#00a85a] transition-all duration-200 text-sm hover:translate-x-1"
                             >
                               Tất cả sản phẩm
                             </Link>
@@ -151,7 +151,7 @@ const Header = () => {
                               <Link
                                 key={category.id}
                                 to={`/category/${category.id}`}
-                                className="block px-4 py-2.5 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all text-sm font-medium"
+                                className="block px-4 py-2.5 text-gray-700 hover:bg-green-50 hover:text-[#00a85a] transition-all duration-200 text-sm font-medium hover:translate-x-1"
                               >
                                 {category.name}
                               </Link>
@@ -161,28 +161,28 @@ const Header = () => {
                       </div>
                     )}
                   </div>
-                 <Link to="/promotions" className="text-gray-700 hover:text-gray-900 transition-all font-semibold text-lg uppercase hover:underline decoration-2 underline-offset-8">
+                 <Link to="/promotions" className="text-gray-700 hover:text-[#00a85a] transition-all duration-300 font-semibold text-lg uppercase hover:underline decoration-2 underline-offset-8 hover:translate-y-[-2px]">
                     Promotions
                   </Link>
 
-                  <Link to="/about" className="text-gray-700 hover:text-gray-900 transition-all font-semibold text-lg uppercase hover:underline decoration-2 underline-offset-8">
+                  <Link to="/about" className="text-gray-700 hover:text-[#00a85a] transition-all duration-300 font-semibold text-lg uppercase hover:underline decoration-2 underline-offset-8 hover:translate-y-[-2px]">
                     About Us
                   </Link>
 
-                  <Link to="/contact" className="text-gray-700 hover:text-gray-900 transition-all font-semibold text-lg uppercase hover:underline decoration-2 underline-offset-8">
+                  <Link to="/contact" className="text-gray-700 hover:text-[#00a85a] transition-all duration-300 font-semibold text-lg uppercase hover:underline decoration-2 underline-offset-8 hover:translate-y-[-2px]">
                     Contact
                   </Link>
                 </nav>
                 <div className="flex items-center gap-6">
                   <button
                     onClick={() => setDesktopSearchOpen(!desktopSearchOpen)}
-                    className="text-gray-700 hover:text-gray-900 transition-colors"
+                    className="text-gray-700 hover:text-[#00a85a] transition-all duration-300 hover:scale-110 transform"
                   >
                     <FaSearch size={20} />
                   </button>
 
-                  <Link to="/wishlist" className="relative">
-                    <FaHeart size={20} className="text-gray-700 hover:text-gray-900" />
+                  <Link to="/wishlist" className="relative transform hover:scale-110 transition-transform duration-300">
+                    <FaHeart size={20} className="text-gray-700 hover:text-[#00a85a] transition-colors duration-300" />
                     {wishlistCount > 0 && (
                       <span className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-medium">
                         {wishlistCount}
@@ -194,22 +194,22 @@ const Header = () => {
                     <div ref={userDropdownRef} className="relative">
                       <button
                         onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                        className="flex items-center gap-1 text-gray-700 hover:text-gray-900 transition-all hover:underline decoration-2 underline-offset-4"
+                        className="flex items-center gap-1 text-gray-700 hover:text-[#00a85a] transition-all duration-300 hover:underline decoration-2 underline-offset-4 hover:scale-110 transform"
                       >
                         <FaUser size={20} />
                       </button>
 
                       {userDropdownOpen && (
-                        <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-100 z-50">
-                          <Link to="/profile" onClick={() => setUserDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-gray-700 text-sm">
+                        <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-100 z-50 animate-fadeIn origin-top-right transform transition-all duration-300 ease-out">
+                          <Link to="/profile" onClick={() => setUserDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-green-50 hover:text-[#00a85a] text-gray-700 text-sm transition-all duration-200 hover:translate-x-1">
                             <FaUserCircle size={16} />
                             <span>Tài khoản</span>
                           </Link>
-                          <Link to="/orders" onClick={() => setUserDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-gray-700 text-sm">
+                          <Link to="/orders" onClick={() => setUserDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-green-50 hover:text-[#00a85a] text-gray-700 text-sm transition-all duration-200 hover:translate-x-1">
                             <FaClipboardList size={16} />
                             <span>Đơn hàng</span>
                           </Link>
-                          <Link to="/support" onClick={() => setUserDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-gray-700 text-sm">
+                          <Link to="/support" onClick={() => setUserDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-green-50 hover:text-[#00a85a] text-gray-700 text-sm transition-all duration-200 hover:translate-x-1">
                             <FaHeadset size={16} />
                             <span>Hỗ trợ</span>
                           </Link>
@@ -229,12 +229,12 @@ const Header = () => {
                       )}
                     </div>
                   ) : (
-                    <Link to="/login" className="text-gray-700 hover:text-gray-900">
+                    <Link to="/login" className="text-gray-700 hover:text-[#00a85a]">
                       <FaUser size={20} />
                     </Link>
                   )}
 
-                  <button onClick={() => setCartDrawerOpen(true)} className="relative text-gray-700 hover:text-gray-900 transition-colors cursor-pointer">
+                  <button onClick={() => setCartDrawerOpen(true)} className="relative text-gray-700 hover:text-[#00a85a] transition-all duration-300 cursor-pointer transform hover:scale-110">
                     <FaShoppingCart size={20} />
                     {cartCount > 0 && (
                       <span className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-medium">
@@ -256,10 +256,10 @@ const Header = () => {
             <div ref={languageDropdownRef} className="relative">
               <button
                 onClick={() => setLanguageDropdownOpen(!languageDropdownOpen)}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-md transition-all hover:underline decoration-2 underline-offset-4 ${
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-md transition-all duration-300 hover:underline decoration-2 underline-offset-4 hover:scale-105 transform ${
                   isHomePage && !scrolled
-                    ? 'text-white hover:text-blue-200 hover:bg-white/10'
-                    : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50'
+                    ? 'text-white hover:text-green-200 hover:bg-white/10'
+                    : 'text-gray-700 hover:text-[#00a85a] hover:bg-gray-50'
                 }`}
               >
                 <FaGlobe size={18} />
@@ -269,14 +269,14 @@ const Header = () => {
               </button>
 
               {languageDropdownOpen && (
-                <div className="absolute left-0 mt-2 w-40 bg-white rounded-lg shadow-xl border border-gray-100 z-[9999]">
+                <div className="absolute left-0 mt-2 w-40 bg-white rounded-lg shadow-xl border border-gray-100 z-[9999] animate-fadeIn origin-top transform transition-all duration-300 ease-out">
                   <button
                     onClick={() => {
                       setSelectedLanguage('vi');
                       setLanguageDropdownOpen(false);
                     }}
-                    className={`w-full flex items-center gap-2 px-4 py-2.5 hover:bg-gray-50 text-sm ${
-                      selectedLanguage === 'vi' ? 'text-blue-600 bg-blue-50' : 'text-gray-700'
+                    className={`w-full flex items-center gap-2 px-4 py-2.5 hover:bg-green-50 hover:text-[#00a85a] text-sm transition-all duration-200 hover:translate-x-1 ${
+                      selectedLanguage === 'vi' ? 'text-[#00a85a] bg-green-50' : 'text-gray-700'
                     }`}
                   >
                     <span className="text-lg">🇻🇳</span>
@@ -287,8 +287,8 @@ const Header = () => {
                       setSelectedLanguage('en');
                       setLanguageDropdownOpen(false);
                     }}
-                    className={`w-full flex items-center gap-2 px-4 py-2.5 hover:bg-gray-50 text-sm ${
-                      selectedLanguage === 'en' ? 'text-blue-600 bg-blue-50' : 'text-gray-700'
+                    className={`w-full flex items-center gap-2 px-4 py-2.5 hover:bg-green-50 hover:text-[#00a85a] text-sm transition-all duration-200 hover:translate-x-1 ${
+                      selectedLanguage === 'en' ? 'text-[#00a85a] bg-green-50' : 'text-gray-700'
                     }`}
                   >
                     <span className="text-lg">🇬🇧</span>
@@ -299,30 +299,24 @@ const Header = () => {
             </div>
 
             {/* Center: Logo */}
-            <Link to="/" className="absolute left-1/2 transform -translate-x-1/2">
-              <span 
-                className={`text-2xl font-bold tracking-wider transition-colors ${
-                  isHomePage && !scrolled ? 'text-white' : 'text-gray-900'
-                }`} 
-              >
-                VALENTIA
-              </span>
+            <Link to="/" className="absolute left-1/2 transform -translate-x-1/2 hover:scale-110 transition-transform duration-300">
+              <img src="/textlogo.png" alt="Logo" className="h-12 w-auto object-contain" />
             </Link>
 
             {/* Right: Icons */}
             <div className="flex items-center gap-6">
               <button
                 onClick={() => setDesktopSearchOpen(!desktopSearchOpen)}
-                className={`transition-colors ${
-                  isHomePage && !scrolled ? 'text-white hover:text-blue-200' : 'text-gray-700 hover:text-gray-900'
+                className={`transition-all duration-300 hover:scale-110 transform ${
+                  isHomePage && !scrolled ? 'text-white hover:text-green-200' : 'text-gray-700 hover:text-[#00a85a]'
                 }`}
               >
                 <FaSearch size={20} />
               </button>
 
-              <Link to="/wishlist" className="relative">
+              <Link to="/wishlist" className="relative transform hover:scale-110 transition-transform duration-300">
                 <FaHeart size={20} className={
-                  isHomePage && !scrolled ? 'text-white hover:text-blue-200' : 'text-gray-700 hover:text-gray-900'
+                  isHomePage && !scrolled ? 'text-white hover:text-green-200 transition-colors duration-300' : 'text-gray-700 hover:text-[#00a85a] transition-colors duration-300'
                 } />
                 {wishlistCount > 0 && (
                   <span className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-medium">
@@ -335,8 +329,8 @@ const Header = () => {
                 <div ref={userDropdownRef} className="relative">
                   <button
                     onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                    className={`flex items-center gap-1 transition-colors ${
-                      isHomePage && !scrolled ? 'text-white hover:text-blue-200' : 'text-gray-700 hover:text-gray-900'
+                    className={`flex items-center gap-1 transition-all duration-300 hover:scale-110 transform ${
+                      isHomePage && !scrolled ? 'text-white hover:text-green-200' : 'text-gray-700 hover:text-[#00a85a]'
                     }`}
                   >
                     <FaUser size={20} />
@@ -344,16 +338,16 @@ const Header = () => {
                   </button>
 
                   {userDropdownOpen && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-100 z-50">
-                      <Link to="/profile" onClick={() => setUserDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-gray-700 text-sm">
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-100 z-50 animate-fadeIn origin-top-right transform transition-all duration-300 ease-out">
+                      <Link to="/profile" onClick={() => setUserDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-green-50 hover:text-[#00a85a] text-gray-700 text-sm transition-all duration-200 hover:translate-x-1">
                         <FaUserCircle size={16} />
                         <span>Tài khoản</span>
                       </Link>
-                      <Link to="/orders" onClick={() => setUserDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-gray-700 text-sm">
+                      <Link to="/orders" onClick={() => setUserDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-green-50 hover:text-[#00a85a] text-gray-700 text-sm transition-all duration-200 hover:translate-x-1">
                         <FaClipboardList size={16} />
                         <span>Đơn hàng</span>
                       </Link>
-                      <Link to="/support" onClick={() => setUserDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-gray-700 text-sm">
+                      <Link to="/support" onClick={() => setUserDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-green-50 hover:text-[#00a85a] text-gray-700 text-sm transition-all duration-200 hover:translate-x-1">
                         <FaHeadset size={16} />
                         <span>Hỗ trợ</span>
                       </Link>
@@ -374,14 +368,14 @@ const Header = () => {
                 </div>
               ) : (
                 <Link to="/login" className={
-                  isHomePage && !scrolled ? 'text-white hover:text-blue-200' : 'text-gray-700 hover:text-gray-900'
+                  isHomePage && !scrolled ? 'text-white hover:text-green-200' : 'text-gray-700 hover:text-[#00a85a]'
                 }>
                   <FaUser size={20} />
                 </Link>
               )}
 
-              <button onClick={() => setCartDrawerOpen(true)} className={`relative transition-colors cursor-pointer ${
-                isHomePage && !scrolled ? 'text-white hover:text-blue-200' : 'text-gray-700 hover:text-gray-900'
+              <button onClick={() => setCartDrawerOpen(true)} className={`relative transition-all duration-300 cursor-pointer transform hover:scale-110 ${
+                isHomePage && !scrolled ? 'text-white hover:text-green-200' : 'text-gray-700 hover:text-[#00a85a]'
               }`}>
                 <FaShoppingCart size={20} />
                 {cartCount > 0 && (

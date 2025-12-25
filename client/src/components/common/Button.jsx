@@ -15,15 +15,15 @@ const Button = ({
   // Base classes - minimalist style
   const baseClasses = 'inline-flex items-center justify-center font-normal focus:outline-none transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-50';
   
-  // Variants - minimalist palette
+  // Variants - minimalist palette with #00a85a primary color
   const variants = {
-    primary: 'bg-gray-900 text-white hover:bg-gray-800',
-    dark: 'bg-gray-900 text-white hover:bg-gray-800',
-    outline: 'border border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white bg-white',
-    'outline-light': 'border border-gray-300 text-gray-900 hover:border-gray-900 bg-white',
+    primary: 'bg-[#00a85a] text-white hover:bg-[#008f4d]',
+    dark: 'bg-[#00a85a] text-white hover:bg-[#008f4d]',
+    outline: 'border border-[#00a85a] text-[#00a85a] hover:bg-[#00a85a] hover:text-white bg-white',
+    'outline-light': 'border border-gray-300 text-[#00a85a] hover:border-[#00a85a] bg-white',
     secondary: 'bg-gray-100 text-gray-900 hover:bg-gray-200 border border-gray-200',
-    ghost: 'bg-transparent text-gray-900 hover:bg-gray-100',
-    danger: 'bg-white border border-gray-300 text-gray-900 hover:border-gray-900',
+    ghost: 'bg-transparent text-[#00a85a] hover:bg-gray-100',
+    danger: 'bg-white border border-gray-300 text-gray-900 hover:border-[#00a85a]',
   };
 
   // Sizes - consistent spacing

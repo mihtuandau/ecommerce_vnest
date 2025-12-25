@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { FaFilter, FaTh, FaThLarge, FaList } from 'react-icons/fa';
+import { FaFilter } from 'react-icons/fa';
 import Layout from '../../../components/layouts/Layout';
 import Breadcrumb from '../../../components/common/Breadcrumb';
 import ProductGrid from '../../../components/products/ProductGrid';
 import ProductFilter from '../../../components/products/ProductFilter';
+import ActiveFilters from '../../../components/products/ActiveFilters';
 import Pagination from '../../../components/common/Pagination';
 import { productService } from '../../../services/productService';
 import categoryService from '../../../services/categoryService';
@@ -18,7 +19,6 @@ const CategoryPage = () => {
   const [brands, setBrands] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showFilter, setShowFilter] = useState(false);
-  const [viewMode, setViewMode] = useState('grid-3'); // grid-3, grid-2, list
   const [priceRange, setPriceRange] = useState({ minPrice: 0, maxPrice: 10000000 });
   const [pagination, setPagination] = useState({
     page: 1,
@@ -144,6 +144,29 @@ const CategoryPage = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handleRemoveFilter = (filterKey) => {
+    const params = new URLSearchParams(searchParams);
+    
+    if (filterKey === 'brandId') {
+      params.delete('brand');
+    } else if (filterKey === 'price') {
+      params.delete('minPrice');
+      params.delete('maxPrice');
+    } else if (filterKey === 'minRating') {
+      params.delete('rating');
+    } else if (filterKey === 'stockStatus') {
+      params.delete('stock');
+    } else if (filterKey === 'sortBy') {
+      params.delete('sort');
+    }
+    
+    setSearchParams(params);
+  };
+
+  const handleClearAllFilters = () => {
+    setSearchParams(new URLSearchParams());
+  };
+
   if (!category && !loading) {
     return (
       <Layout>
@@ -151,7 +174,7 @@ const CategoryPage = () => {
           <h1 className="text-2xl font-bold text-gray-900 mb-4">
             Không tìm thấy danh mục
           </h1>
-          <a href="/products" className="text-blue-600 hover:underline">
+          <a href="/products" className="text-[#00a85a] hover:underline">
             Xem tất cả sản phẩm
           </a>
         </div>
@@ -163,116 +186,66 @@ const CategoryPage = () => {
     <Layout>
       <div className="bg-gray-50 min-h-screen pt-21 pb-8">
         <div className="container mx-auto px-4 lg:px-30">
-          {/* Breadcrumb */}
-          <Breadcrumb items={[
-            { label: 'Sản phẩm', path: '/products' },
-            { label: category?.name || 'Danh mục' }
-          ]} />
+          <div className="mb-4">
+            <Breadcrumb items={[
+              { label: 'Sản phẩm', path: '/products' },
+              { label: category?.name || 'Danh mục' }
+            ]} />
+          </div>
 
-          {/* Category Header */}
           {category && (
-            <div className="mb-8 flex items-center justify-between">
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                  {category.name}
-                </h1>
-                {category.description && (
-                  <p className="text-gray-600 mb-2">{category.description}</p>
-                )}
-                <p className="text-gray-600">
-                  Tìm thấy {pagination.total} sản phẩm
-                </p>
-              </div>
-
-              {/* View Mode Switcher */}
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setViewMode('grid-3')}
-                  className={`p-2.5 transition-colors ${
-                    viewMode === 'grid-3'
-                      ? 'bg-gray-900 text-white'
-                      : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-300'
-                  }`}
-                  title="3 cột"
-                >
-                  <FaTh size={18} />
-                </button>
-                <button
-                  onClick={() => setViewMode('grid-2')}
-                  className={`p-2.5 transition-colors ${
-                    viewMode === 'grid-2'
-                      ? 'bg-gray-900 text-white'
-                      : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-300'
-                  }`}
-                  title="2 cột"
-                >
-                  <FaThLarge size={18} />
-                </button>
-                <button
-                  onClick={() => setViewMode('list')}
-                  className={`p-2.5 transition-colors ${
-                    viewMode === 'list'
-                      ? 'bg-gray-900 text-white'
-                      : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-300'
-                  }`}
-                  title="Danh sách"
-                >
-                  <FaList size={18} />
-                </button>
-              </div>
+            <div className="mb-6">
+              <h1 className="text-3xl font-bold text-gray-900 mb-1">
+                {category.name}
+              </h1>
+              {category.description && (
+                <p className="text-gray-600 mb-2">{category.description}</p>
+              )}
+              <p className="text-sm text-gray-600">
+                Tìm thấy {pagination.total} sản phẩm
+              </p>
             </div>
           )}
 
-          {/* Main Content with Sidebar */}
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            {/* Sidebar Filters - Left Side */}
-            <div className="lg:col-span-1">
-              <div className="sticky top-24">
-                {/* Mobile Toggle Button */}
-                <button
-                  onClick={() => setShowFilter(!showFilter)}
-                  className="lg:hidden w-full flex items-center justify-center gap-2 px-4 py-3 mb-4 bg-gray-900 text-white font-medium"
-                >
-                  <FaFilter size={16} />
-                  <span>Bộ lọc</span>
-                </button>
+          {/* Filter Bar - Sticky */}
+          <div className="sticky top-16 z-10 mb-6">
+            <div className="bg-gray-50 rounded-lg">
+              <ProductFilter
+                brands={brands}
+                priceRange={priceRange}
+                currentFilters={getFiltersFromURL()}
+                onFilterChange={handleFilterChange}
+                hideCategories={true}
+                layout="horizontal"
+              />
+            </div>
+          </div>
 
-                {/* Filter Panel */}
-                <div className={`bg-white shadow-sm p-6 ${
-                  showFilter ? 'block' : 'hidden lg:block'
-                }`}>
-                  <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                    <FaFilter size={16} />
-                    Bộ lọc sản phẩm
-                  </h2>
-                  <ProductFilter
-                    brands={brands}
-                    priceRange={priceRange}
-                    currentFilters={getFiltersFromURL()}
-                    onFilterChange={handleFilterChange}
-                    hideCategories={true}
-                  />
-                </div>
-              </div>
+          {/* Active Filters */}
+          <ActiveFilters
+            filters={getFiltersFromURL()}
+            categories={[]}
+            priceRange={priceRange}
+            onRemoveFilter={handleRemoveFilter}
+            onClearAll={handleClearAllFilters}
+          />
+
+          {/* Products Grid */}
+          <div className="w-full">
+            <div className="min-h-[600px]">
+              <ProductGrid products={products} loading={loading} />
             </div>
 
-            {/* Products Content - Right Side */}
-            <div className="lg:col-span-3">
-              <div className="min-h-[1200px]">
-                <ProductGrid products={products} loading={loading} viewMode={viewMode} />
+            {/* Pagination */}
+            {!loading && products.length > 0 && (
+              <div className="mt-8 flex justify-center">
+                <Pagination
+                  currentPage={pagination.page}
+                  totalPages={pagination.totalPages}
+                  onPageChange={handlePageChange}
+                />
               </div>
-
-              {/* Pagination */}
-              {!loading && products.length > 0 && (
-                <div className="mt-8">
-                  <Pagination
-                    currentPage={pagination.page}
-                    totalPages={pagination.totalPages}
-                    onPageChange={handlePageChange}
-                  />
-                </div>
-              )}
-            </div>
+            )}
           </div>
         </div>
       </div>

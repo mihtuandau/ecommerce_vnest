@@ -180,7 +180,7 @@ const AdminSidebar = ({ isOpen }) => {
                           'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all group',
                           'hover:scale-[1.02]',
                           active
-                            ? 'bg-blue-50 text-blue-600 shadow-sm'
+                            ? 'bg-green-50 text-[#00a85a] shadow-sm'
                             : 'text-gray-700 hover:bg-gray-100'
                         )}
                       >
@@ -188,7 +188,7 @@ const AdminSidebar = ({ isOpen }) => {
                           size={20}
                           className={clsx(
                             'flex-shrink-0 transition-transform',
-                            active ? 'text-blue-600' : 'text-gray-500 group-hover:text-gray-700',
+                            active ? 'text-[#00a85a]' : 'text-gray-500 group-hover:text-gray-700',
                             'group-hover:scale-110'
                           )}
                         />
@@ -213,14 +213,14 @@ const AdminSidebar = ({ isOpen }) => {
 
                             {/* Active Indicator */}
                             {active && (
-                              <ChevronRight size={16} className="text-blue-600" />
+                              <ChevronRight size={16} className="text-[#00a85a]" />
                             )}
                           </>
                         )}
 
                         {/* Tooltip for collapsed state */}
                         {!isOpen && (
-                          <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+                          <div className="absolute left-full ml-2 px-2 py-1 bg-[#00a85a] text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
                             {item.label}
                           </div>
                         )}

@@ -89,7 +89,7 @@ const OrderDetailPage = () => {
             </h3>
             <button
               onClick={() => navigate('/orders')}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+              className="px-4 py-2 bg-[#00a85a] hover:bg-[#008f4d] text-white rounded-lg transition-colors"
             >
               Quay lại danh sách đơn hàng
             </button>

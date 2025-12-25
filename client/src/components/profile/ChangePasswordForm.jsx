@@ -172,7 +172,7 @@ const ChangePasswordForm = () => {
       <button
         type="submit"
         disabled={loading}
-        className="w-full py-4 px-6 bg-gray-900 text-white font-medium hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-md hover:shadow-lg"
+        className="w-full py-4 px-6 bg-[#00a85a] text-white font-medium hover:bg-[#008f4d] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-md hover:shadow-lg"
       >
         {loading ? 'Đang xử lý...' : 'Đổi mật khẩu'}
       </button>

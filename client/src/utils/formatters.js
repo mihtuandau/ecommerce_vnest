@@ -104,6 +104,6 @@ export const getStockStatus = (stock) => {
   }
   return {
     text: 'Còn hàng',
-    color: 'text-emerald-700 bg-emerald-50 border-emerald-200'
+    color: 'text-[#00a85a] bg-green-50 border-green-200'
   };
 };

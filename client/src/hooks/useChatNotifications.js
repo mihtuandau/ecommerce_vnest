@@ -18,16 +18,13 @@ export const useChatNotifications = (user) => {
 
     loadUnreadCount();
 
-    // Connect socket and listen for new messages
     chatSocketService.connect();
     chatSocketService.onNewMessage((message) => {
-      // Only count messages from customers to admin
       if (message.sender?.role === 'CUSTOMER') {
         setUnreadCount((prev) => prev + 1);
       }
     });
 
-    // Listen for custom event when admin reads messages
     const handleChatRead = () => {
       loadUnreadCount();
     };

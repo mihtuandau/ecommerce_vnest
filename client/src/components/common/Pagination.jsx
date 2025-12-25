@@ -55,7 +55,7 @@ const Pagination = memo(({
   }, [currentPage, totalPages]);
 
   return (
-    <div className={`px-6 py-4 border-t flex items-center justify-between bg-white ${className}`}>
+    <div className={`px-6 py-4 rounded-lg flex items-center justify-between bg-gray-50 ${className}`}>
       <div className="text-sm text-gray-600">
         {itemsCount !== undefined && totalItems !== undefined ? (
           <span>
@@ -94,8 +94,8 @@ const Pagination = memo(({
                 disabled={page === currentPage}
                 className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
                   page === currentPage
-                    ? 'bg-gray-900 text-white'
-                    : 'text-gray-700 hover:bg-gray-100'
+                    ? 'bg-[#00a85a] text-white shadow-sm'
+                    : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
                 }`}
               >
                 {page}

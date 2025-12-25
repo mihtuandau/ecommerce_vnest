@@ -90,8 +90,8 @@ const AboutPage = () => {
 
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10 lg:gap-12">
               <div className="group">
-                <div className="w-12 h-12 border border-gray-900 flex items-center justify-center mb-5 md:mb-6 group-hover:bg-gray-900 transition-colors duration-300">
-                  <FaShieldAlt className="text-gray-900 text-lg group-hover:text-white transition-colors duration-300" />
+                <div className="w-12 h-12 border border-[#00a85a] flex items-center justify-center mb-5 md:mb-6 group-hover:bg-[#00a85a] transition-colors duration-300">
+                  <FaShieldAlt className="text-[#00a85a] text-lg group-hover:text-white transition-colors duration-300" />
                 </div>
                 <h3 className="text-lg md:text-xl font-normal text-gray-900 mb-3 md:mb-4">
                   Chất Lượng
@@ -103,8 +103,8 @@ const AboutPage = () => {
               </div>
 
               <div className="group">
-                <div className="w-12 h-12 border border-gray-900 flex items-center justify-center mb-5 md:mb-6 group-hover:bg-gray-900 transition-colors duration-300">
-                  <FaUsers className="text-gray-900 text-lg group-hover:text-white transition-colors duration-300" />
+                <div className="w-12 h-12 border border-[#00a85a] flex items-center justify-center mb-5 md:mb-6 group-hover:bg-[#00a85a] transition-colors duration-300">
+                  <FaUsers className="text-[#00a85a] text-lg group-hover:text-white transition-colors duration-300" />
                 </div>
                 <h3 className="text-lg md:text-xl font-normal text-gray-900 mb-3 md:mb-4">
                   Khách Hàng Là Trung Tâm
@@ -116,8 +116,8 @@ const AboutPage = () => {
               </div>
 
               <div className="group">
-                <div className="w-12 h-12 border border-gray-900 flex items-center justify-center mb-5 md:mb-6 group-hover:bg-gray-900 transition-colors duration-300">
-                  <FaHeart className="text-gray-900 text-lg group-hover:text-white transition-colors duration-300" />
+                <div className="w-12 h-12 border border-[#00a85a] flex items-center justify-center mb-5 md:mb-6 group-hover:bg-[#00a85a] transition-colors duration-300">
+                  <FaHeart className="text-[#00a85a] text-lg group-hover:text-white transition-colors duration-300" />
                 </div>
                 <h3 className="text-lg md:text-xl font-normal text-gray-900 mb-3 md:mb-4">
                   Đam Mê Thời Trang
@@ -201,7 +201,7 @@ const AboutPage = () => {
             <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center items-center">
               <a
                 href="/products"
-                className="inline-block bg-gray-900 hover:bg-gray-800 text-white px-8 py-4 font-normal transition-colors duration-300"
+                className="inline-block bg-[#00a85a] hover:bg-[#008f4d] text-white px-8 py-4 font-normal transition-colors duration-300"
               >
                 Mua Sắm Ngay
               </a>

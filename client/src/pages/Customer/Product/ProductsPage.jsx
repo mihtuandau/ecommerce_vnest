@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { FaFilter, FaTh, FaThLarge, FaList } from 'react-icons/fa';
+import { FaFilter } from 'react-icons/fa';
 import Layout from '../../../components/layouts/Layout';
 import Breadcrumb from '../../../components/common/Breadcrumb';
 import ProductGrid from '../../../components/products/ProductGrid';
 import ProductFilter from '../../../components/products/ProductFilter';
+import ActiveFilters from '../../../components/products/ActiveFilters';
 import Pagination from '../../../components/common/Pagination';
 import { productService } from '../../../services/productService';
 import categoryService from '../../../services/categoryService';
@@ -18,7 +19,6 @@ const ProductsPage = () => {
   const [brands, setBrands] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showFilter, setShowFilter] = useState(false);
-  const [viewMode, setViewMode] = useState('grid-3'); // grid-3, grid-2, list
   const [priceRange, setPriceRange] = useState({ minPrice: 0, maxPrice: 10000000 });
   const [pagination, setPagination] = useState({
     page: 1,
@@ -133,112 +133,93 @@ const ProductsPage = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handleRemoveFilter = (filterKey) => {
+    const params = new URLSearchParams(searchParams);
+    
+    if (filterKey === 'categoryId') {
+      params.delete('category');
+    } else if (filterKey === 'price') {
+      params.delete('minPrice');
+      params.delete('maxPrice');
+    } else if (filterKey === 'minRating') {
+      params.delete('rating');
+    } else if (filterKey === 'stockStatus') {
+      params.delete('stock');
+    } else if (filterKey === 'sortBy') {
+      params.delete('sort');
+    }
+    
+    setSearchParams(params);
+  };
+
+  const handleClearAllFilters = () => {
+    const params = new URLSearchParams();
+    // Keep search query if exists
+    const search = searchParams.get('search');
+    if (search) params.set('search', search);
+    setSearchParams(params);
+  };
+
   return (
     <Layout>
-      <div className="bg-white min-h-screen pt-21 pb-8">
+      <div className="bg-gray-50 min-h-screen pt-21 pb-8">
         <div className="container mx-auto px-4 lg:px-30">
-          <Breadcrumb items={[
-            { label: 'Sản phẩm' }
-          ]} />
+          {/* Breadcrumb */}
+          <div className="mb-4">
+            <Breadcrumb items={[
+              { label: 'Sản phẩm' }
+            ]} />
+          </div>
 
-          <div className="mb-8 flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                Tất cả sản phẩm
-              </h1>
-              <p className="text-gray-600">
-                Tìm thấy {pagination.total} sản phẩm
-              </p>
-            </div>
-            
-            {/* View Mode Switcher */}
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setViewMode('grid-3')}
-                className={`p-2.5 transition-colors ${
-                  viewMode === 'grid-3'
-                    ? 'bg-gray-900 text-white'
-                    : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-300'
-                }`}
-                title="3 cột"
-              >
-                <FaTh size={18} />
-              </button>
-              <button
-                onClick={() => setViewMode('grid-2')}
-                className={`p-2.5 transition-colors ${
-                  viewMode === 'grid-2'
-                    ? 'bg-gray-900 text-white'
-                    : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-300'
-                }`}
-                title="2 cột"
-              >
-                <FaThLarge size={18} />
-              </button>
-              <button
-                onClick={() => setViewMode('list')}
-                className={`p-2.5 transition-colors ${
-                  viewMode === 'list'
-                    ? 'bg-gray-900 text-white'
-                    : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-300'
-                }`}
-                title="Danh sách"
-              >
-                <FaList size={18} />
-              </button>
+          {/* Page Header */}
+          <div className="mb-6">
+            <h1 className="text-3xl font-bold text-gray-900 mb-1">
+              Tất cả sản phẩm
+            </h1>
+            <p className="text-sm text-gray-600">
+              Tìm thấy {pagination.total} sản phẩm
+            </p>
+          </div>
+
+          {/* Filter Bar - Sticky */}
+          <div className="sticky top-16 z-10 mb-6">
+            <div className="bg-gray-50 rounded-lg">
+              <ProductFilter
+                categories={categories}
+                brands={brands}
+                priceRange={priceRange}
+                currentFilters={getFiltersFromURL()}
+                onFilterChange={handleFilterChange}
+                layout="horizontal"
+              />
             </div>
           </div>
 
-          {/* Main Content with Sidebar */}
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            {/* Sidebar Filters - Left Side */}
-            <div className="lg:col-span-1">
-              <div className="sticky top-24">
-                {/* Mobile Toggle Button */}
-                <button
-                  onClick={() => setShowFilter(!showFilter)}
-                  className="lg:hidden w-full flex items-center justify-center gap-2 px-4 py-3 mb-4 bg-gray-900 text-white font-medium"
-                >
-                  <FaFilter size={16} />
-                  <span>Bộ lọc</span>
-                </button>
+          {/* Active Filters */}
+          <ActiveFilters
+            filters={getFiltersFromURL()}
+            categories={categories}
+            priceRange={priceRange}
+            onRemoveFilter={handleRemoveFilter}
+            onClearAll={handleClearAllFilters}
+          />
 
-                {/* Filter Panel */}
-                <div className={`bg-white shadow-sm p-6 ${
-                  showFilter ? 'block' : 'hidden lg:block'
-                }`}>
-                  <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                    <FaFilter size={16} />
-                    Bộ lọc sản phẩm
-                  </h2>
-                  <ProductFilter
-                    categories={categories}
-                    brands={brands}
-                    priceRange={priceRange}
-                    currentFilters={getFiltersFromURL()}
-                    onFilterChange={handleFilterChange}
-                  />
-                </div>
-              </div>
+          {/* Products Grid */}
+          <div className="w-full">
+            <div className="min-h-[600px]">
+              <ProductGrid products={products} loading={loading} />
             </div>
 
-            {/* Products Content - Right Side */}
-            <div className="lg:col-span-3">
-              <div className="min-h-[1400px]">
-                <ProductGrid products={products} loading={loading} viewMode={viewMode} />
+            {/* Pagination */}
+            {!loading && products.length > 0 && (
+              <div className="mt-8 flex justify-center">
+                <Pagination
+                  currentPage={pagination.page}
+                  totalPages={pagination.totalPages}
+                  onPageChange={handlePageChange}
+                />
               </div>
-
-              {/* Pagination */}
-              {!loading && products.length > 0 && (
-                <div className="mt-8">
-                  <Pagination
-                    currentPage={pagination.page}
-                    totalPages={pagination.totalPages}
-                    onPageChange={handlePageChange}
-                  />
-                </div>
-              )}
-            </div>
+            )}
           </div>
         </div>
       </div>

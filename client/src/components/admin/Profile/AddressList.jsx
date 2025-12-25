@@ -44,7 +44,7 @@ const AddressList = ({ addresses, onAdd, onEdit, onDelete }) => {
                 <div className="flex gap-2">
                   <button
                     onClick={() => onEdit(address)}
-                    className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
+                    className="p-2 text-[#00a85a] hover:bg-green-50 rounded-lg"
                     title="Chỉnh sửa"
                   >
                     <Edit2 className="w-4 h-4" />

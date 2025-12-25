@@ -169,7 +169,7 @@ const PromotionCard = ({ promotion, onCopy, copiedCode, getTimeRemaining, format
   console.log('Rendering promotion card:', promotion.code, 'has image:', !!promotion.image, 'image URL:', promotion.image || 'none');
   
   return (
-    <div className="bg-white border border-gray-200 hover:border-gray-900 transition-all duration-300 overflow-hidden group hover:shadow-lg">
+    <div className="bg-white border border-gray-200 hover:border-[#00a85a] transition-all duration-300 overflow-hidden group hover:shadow-lg">
       {/* Banner with Image or Gradient */}
       <div className={`relative h-48 ${promotion.image ? '' : `bg-gradient-to-br ${promotion.gradient}`}`}>
         {/* Background Image if available */}
@@ -243,7 +243,7 @@ const PromotionCard = ({ promotion, onCopy, copiedCode, getTimeRemaining, format
             className={`px-3 py-2 text-xs font-bold transition-all ${
               copiedCode === promotion.code
                 ? 'bg-green-600 text-white'
-                : 'bg-gray-900 text-white hover:bg-black'
+                : 'bg-[#00a85a] text-white hover:bg-[#008f4d]'
             }`}
           >
             {copiedCode === promotion.code ? (

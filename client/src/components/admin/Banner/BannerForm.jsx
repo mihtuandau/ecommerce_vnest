@@ -106,7 +106,6 @@ const BannerFormModal = ({ banner = null, onSave, onClose }) => {
 
       await onSave(submitData);
     } catch (error) {
-      console.error('Error saving banner:', error);
     } finally {
       setLoading(false);
     }

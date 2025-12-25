@@ -39,8 +39,8 @@ const ProductOptions = ({
                 onClick={() => onColorSelect(color)}
                 className={`px-5 py-2.5 border font-light capitalize transition-colors ${
                   selectedColor === color
-                    ? "border-gray-900 bg-gray-900 text-white"
-                    : "border-gray-200 bg-white text-gray-700 hover:border-gray-900"
+                    ? "border-[#00a85a] bg-[#00a85a] text-white"
+                    : "border-gray-200 bg-white text-gray-700 hover:border-[#00a85a]"
                 }`}
               >
                 {color}
@@ -65,8 +65,8 @@ const ProductOptions = ({
                 onClick={() => onSizeSelect(size)}
                 className={`w-14 h-11 border font-light transition-colors ${
                   selectedSize === size
-                    ? "border-gray-900 bg-gray-900 text-white"
-                    : "border-gray-200 bg-white text-gray-700 hover:border-gray-900"
+                    ? "border-[#00a85a] bg-[#00a85a] text-white"
+                    : "border-gray-200 bg-white text-gray-700 hover:border-[#00a85a]"
                 }`}
               >
                 {size}

@@ -72,23 +72,23 @@ const CartItemsList = ({ items, count, selectedItems, onToggleItem, onToggleAll,
 
   return (
     <div className="space-y-4">
-      <div className="bg-white border border-gray-200 p-6 flex items-center justify-between  shadow-md">
-        <div className="flex items-center gap-4">
+      <div className="bg-white border border-gray-200 p-3 md:p-6 flex items-center justify-between shadow-md">
+        <div className="flex items-center gap-2 md:gap-4">
           <input
             type="checkbox"
             checked={allSelected}
             onChange={onToggleAll}
-            className="w-5 h-5 border-gray-300 text-red-600 focus:ring-red-600 cursor-pointer rounded"
+            className="w-4 h-4 md:w-5 md:h-5 border-gray-300 text-red-600 focus:ring-red-600 cursor-pointer rounded"
           />
-          <h2 className="text-base font-bold text-gray-900">
-            Chọn tất cả ({count} sản phẩm)
+          <h2 className="text-sm md:text-base font-bold text-gray-900">
+            <span className="hidden sm:inline">Chọn tất cả </span>({count})
           </h2>
         </div>
         <button
           onClick={onClearAll}
-          className="text-sm font-medium text-gray-600 hover:text-red-600 transition-colors"
+          className="text-xs md:text-sm font-medium text-gray-600 hover:text-red-600 transition-colors"
         >
-          Xóa tất cả
+          Xóa <span className="hidden sm:inline">tất cả</span>
         </button>
       </div>
 
@@ -134,7 +134,7 @@ const CartItemsList = ({ items, count, selectedItems, onToggleItem, onToggleAll,
                     onClick={() => goToPage(page)}
                     className={`min-w-[36px] h-9 text-sm transition-colors ${
                       currentPage === page
-                        ? 'bg-gray-900 text-white'
+                        ? 'bg-[#00a85a] text-white'
                         : 'text-gray-900 hover:bg-gray-100'
                     }`}
                   >

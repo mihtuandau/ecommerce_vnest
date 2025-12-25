@@ -58,7 +58,7 @@ const GuestOrderDetailPage = () => {
           <div className="text-center">
             <FaBox className="text-6xl text-gray-300 mx-auto mb-4" />
             <h2 className="text-xl font-bold text-gray-900 mb-2">Không tìm thấy đơn hàng</h2>
-            <Link to="/order-lookup" className="text-blue-600 hover:underline">
+            <Link to="/order-lookup" className="text-[#00a85a] hover:underline">
               Quay lại tra cứu
             </Link>
           </div>

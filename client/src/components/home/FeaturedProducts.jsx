@@ -31,7 +31,7 @@ const FeaturedProducts = ({ products = [] }) => {
         <div className="text-center mt-8">
           <Link
             to="/products"
-            className="inline-block px-8 py-3 bg-gray-900 hover:bg-black text-white font-semibold transition-colors"
+            className="inline-block px-8 py-3 bg-[#00a85a] hover:bg-[#008f4d] text-white font-semibold transition-colors"
           >
             Xem Tất Cả Sản Phẩm
           </Link>

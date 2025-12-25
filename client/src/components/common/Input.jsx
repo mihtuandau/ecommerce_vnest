@@ -19,7 +19,7 @@ const Input = ({
   // Error/Normal state - simple border change
   const errorClasses = error 
     ? 'border-red-500 focus:border-red-600 text-red-900' 
-    : 'border-gray-300 focus:border-gray-900 hover:border-gray-400';
+    : 'border-gray-300 focus:border-[#00a85a] hover:border-gray-400';
 
   // Disabled state
   const disabledClasses = disabled 

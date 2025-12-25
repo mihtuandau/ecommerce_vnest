@@ -1,7 +1,6 @@
 import { useAuth as useAuthContext } from '../contexts/authContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-// Wrapper hook: exposes context and provides aliases expected by components
 export const useAuth = () => {
   const context = useAuthContext();
   const navigate = useNavigate();
@@ -10,7 +9,6 @@ export const useAuth = () => {
   const handleLogin = async (credentials) => {
     const data = await context.login(credentials);
     const role = data?.user?.role;
-    // 🔒 Use location state instead of localStorage for redirect
     const from = location.state?.from || null;
     if (from) {
       navigate(from, { replace: true });

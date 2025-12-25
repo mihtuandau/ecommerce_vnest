@@ -131,7 +131,7 @@ const OrderTable = ({ orders, loading, sortBy, sortDir, onSort, onViewDetails, o
                         className="p-1 hover:bg-blue-100 rounded transition-colors disabled:opacity-50"
                         title="Kiểm tra trạng thái thanh toán"
                       >
-                        <RefreshCw className={`w-3 h-3 text-blue-600 ${syncingPaymentId === order.payment.id ? 'animate-spin' : ''}`} />
+                        <RefreshCw className={`w-3 h-3 text-[#00a85a] ${syncingPaymentId === order.payment.id ? 'animate-spin' : ''}`} />
                       </button>
                     )}
                   </div>

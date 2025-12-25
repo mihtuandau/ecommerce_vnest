@@ -15,7 +15,7 @@ const ProductTabs = ({ product, activeTab, onTabChange }) => {
         >
           Mô tả sản phẩm
           {activeTab === 'description' && (
-            <div className="absolute bottom-0 left-0 right-0 h-px bg-gray-900"></div>
+            <div className="absolute bottom-0 left-0 right-0 h-px bg-[#00a85a]"></div>
           )}
         </button>
         <button
@@ -28,7 +28,7 @@ const ProductTabs = ({ product, activeTab, onTabChange }) => {
         >
           Đánh giá ({product.reviewCount || 0})
           {activeTab === 'reviews' && (
-            <div className="absolute bottom-0 left-0 right-0 h-px bg-gray-900"></div>
+            <div className="absolute bottom-0 left-0 right-0 h-px bg-[#00a85a]"></div>
           )}
         </button>
       </div>

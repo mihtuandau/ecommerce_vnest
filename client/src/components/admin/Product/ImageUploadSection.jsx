@@ -63,7 +63,7 @@ const ImageUploadSection = ({
                 </div>
                 
                 {img.isThumbnail && (
-                  <span className="absolute top-1 left-1 bg-blue-600 text-white text-[10px] px-1.5 py-0.5 rounded">
+                  <span className="absolute top-1 left-1 bg-[#00a85a] text-white text-[10px] px-1.5 py-0.5 rounded">
                     Main
                   </span>
                 )}

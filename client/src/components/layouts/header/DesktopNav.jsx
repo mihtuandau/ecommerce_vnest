@@ -84,8 +84,8 @@ const DesktopNav = ({
                 to="/"
                 className={`transition-all font-semibold uppercase hover:underline decoration-2 underline-offset-8 ${
                   scrolled
-                    ? 'text-gray-700 hover:text-gray-600'
-                    : 'text-white hover:text-gray-200'
+                    ? 'text-gray-700 hover:text-[#00a85a]'
+                    : 'text-white hover:text-green-200'
                 }`}
               >
                 Home
@@ -97,7 +97,7 @@ const DesktopNav = ({
                   to="/products"
                   className={`transition-all font-semibold uppercase hover:underline decoration-2 underline-offset-8 ${
                     scrolled
-                      ? 'text-gray-700 hover:text-gray-600'
+                      ? 'text-gray-700 hover:text-[#00a85a]'
                       : 'text-white hover:text-gray-200'
                   }`}
                 >
@@ -111,7 +111,7 @@ const DesktopNav = ({
                       <div className="px-4 py-2 ">
                         <Link
                           to="/products"
-                          className="block font-semibold text-gray-900 hover:text-gray-600 transition-all text-sm"
+                          className="block font-semibold text-gray-900 hover:text-[#00a85a] transition-all text-sm"
                         >
                           Tất cả sản phẩm
                         </Link>
@@ -121,7 +121,7 @@ const DesktopNav = ({
                           <Link
                             key={category.id}
                             to={`/category/${category.id}`}
-                            className="block px-4 py-2.5 text-gray-700 hover:bg-gray-100 hover:text-gray-600 transition-all text-sm font-medium"
+                            className="block px-4 py-2.5 text-gray-700 hover:bg-green-50 hover:text-[#00a85a] transition-all text-sm font-medium"
                           >
                             {category.name}
                           </Link>
@@ -136,8 +136,8 @@ const DesktopNav = ({
                 to="/about"
                 className={`transition-all font-semibold uppercase hover:underline decoration-2 underline-offset-8 ${
                   scrolled
-                    ? 'text-gray-700 hover:text-gray-600'
-                    : 'text-white hover:text-gray-200'
+                    ? 'text-gray-700 hover:text-[#00a85a]'
+                    : 'text-white hover:text-green-200'
                 }`}
               >
                 About Us
@@ -147,8 +147,8 @@ const DesktopNav = ({
                 to="/promotions"
                 className={`transition-all font-semibold uppercase hover:underline decoration-2 underline-offset-8 ${
                   scrolled
-                    ? 'text-gray-700 hover:text-gray-600'
-                    : 'text-white hover:text-gray-200'
+                    ? 'text-gray-700 hover:text-[#00a85a]'
+                    : 'text-white hover:text-green-200'
                 }`}
               >
                 Promotions
@@ -158,8 +158,8 @@ const DesktopNav = ({
                 to="#"
                 className={`transition-all font-semibold uppercase hover:underline decoration-2 underline-offset-8 ${
                   scrolled
-                    ? 'text-gray-700 hover:text-gray-600'
-                    : 'text-white hover:text-gray-200'
+                    ? 'text-gray-700 hover:text-[#00a85a]'
+                    : 'text-white hover:text-green-200'
                 }`}
               >
                 Blogs
@@ -169,8 +169,8 @@ const DesktopNav = ({
                 to="/contact"
                 className={`transition-all font-semibold uppercase hover:underline decoration-2 underline-offset-8 ${
                   scrolled
-                    ? 'text-gray-700 hover:text-gray-600'
-                    : 'text-white hover:text-gray-200'
+                    ? 'text-gray-700 hover:text-[#00a85a]'
+                    : 'text-white hover:text-green-200'
                 }`}
               >
                 Contact
@@ -200,7 +200,7 @@ const DesktopNav = ({
                     }
                   }}
                   autoFocus
-                  className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 bg-white focus:border-gray-500 focus:outline-none rounded-full transition-all"
+                  className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 bg-white focus:border-[#00a85a] focus:outline-none rounded-full transition-all"
                 />
                 <FaSearch
                   className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
@@ -211,7 +211,7 @@ const DesktopNav = ({
                   <div className="absolute top-full mt-2 w-full bg-white rounded-lg shadow-xl border border-gray-200 max-h-80 overflow-y-auto z-[9999]">
                     {isSearching ? (
                       <div className="p-3 text-center text-gray-500">
-                        <div className="animate-spin w-5 h-5 border-2 border-gray-900 border-t-transparent rounded-full mx-auto"></div>
+                        <div className="animate-spin w-5 h-5 border-2 border-[#00a85a] border-t-transparent rounded-full mx-auto"></div>
                         <p className="mt-2 text-xs">Đang tìm...</p>
                       </div>
                     ) : searchResults.length > 0 ? (

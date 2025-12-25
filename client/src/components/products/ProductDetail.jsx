@@ -78,10 +78,10 @@ export const ProductImageGallery = ({
             <button
               key={idx}
               onClick={() => onImageSelect(idx)}
-              className={`flex-shrink-0 w-20 h-20 overflow-hidden border transition-colors ${
+              className={`flex-shrink-0 w-20 h-20 overflow-hidden border transition-all duration-300 rounded-lg transform hover:scale-105 ${
                 selectedImage === idx
-                  ? "border-gray-900"
-                  : "border-gray-200 hover:border-gray-900"
+                  ? "border-[#00a85a] shadow-lg ring-2 ring-green-100"
+                  : "border-gray-200 hover:border-[#00a85a] hover:shadow-md"
               }`}
             >
               <img

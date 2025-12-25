@@ -48,7 +48,7 @@ const CartSummary = ({ total, selectedCount, totalCount, formatPrice, onCheckout
         <Button
           onClick={onCheckout}
           disabled={selectedCount === 0}
-          className="w-full bg-gray-900 hover:bg-gray-800 text-white py-4 font-normal transition-colors disabled:opacity-50 disabled:cursor-not-allowed mb-4"
+          className="w-full bg-[#00a85a] hover:bg-[#008f4d] text-white py-4 font-normal transition-colors disabled:opacity-50 disabled:cursor-not-allowed mb-4"
         >
           Tiến Hành Thanh Toán
         </Button>

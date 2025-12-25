@@ -96,7 +96,7 @@ const SupportChatPage = () => {
           </p>
           <button
             onClick={() => navigate("/login")}
-            className="px-8 py-3 bg-gray-900 hover:bg-gray-800 text-white transition-colors"
+            className="px-8 py-3 bg-[#00a85a] hover:bg-[#008f4d] text-white transition-colors"
           >
             Đăng Nhập
           </button>
@@ -112,7 +112,7 @@ const SupportChatPage = () => {
       <div className="min-h-screen bg-white py-6 lg:px-30 pt-21 pb-8">
         <div className="container mx-auto px-4 max-w-3xl">
           {/* Header */}
-          <div className="bg-gray-900 border border-gray-900 p-5">
+          <div className="bg-[#00a85a] border border-[#00a85a] p-5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <button
@@ -170,7 +170,7 @@ const SupportChatPage = () => {
                     >
                       <div
                         className={`w-8 h-8 border flex items-center justify-center flex-shrink-0 ${
-                          isOwn ? "border-gray-900 bg-gray-900" : "border-gray-300 bg-white"
+                          isOwn ? "border-[#00a85a] bg-[#00a85a]" : "border-gray-300 bg-white"
                         }`}
                       >
                         <User
@@ -183,7 +183,7 @@ const SupportChatPage = () => {
                         <div
                           className={`px-4 py-3 ${
                             isOwn
-                              ? "bg-gray-900 text-white"
+                              ? "bg-[#00a85a] text-white"
                               : "bg-gray-100 text-gray-900"
                           }`}
                         >
@@ -235,7 +235,7 @@ const SupportChatPage = () => {
                 <button
                   type="submit"
                   disabled={isLoading || !inputMessage.trim() || !isConnected}
-                  className="w-12 h-12 bg-gray-900 text-white hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+                  className="w-12 h-12 bg-[#00a85a] text-white hover:bg-[#008f4d] disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
                 >
                   <Send className="w-4 h-4" />
                 </button>

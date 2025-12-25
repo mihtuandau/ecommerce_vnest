@@ -7,7 +7,7 @@ const AuthLayout = ({ children, title, subtitle }) => {
         {/* Logo */}
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center space-x-2">
-            <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg">
+            <div className="w-12 h-12 bg-[#00a85a] rounded-lg flex items-center justify-center shadow-lg">
               <span className="text-white font-bold text-2xl">E</span>
             </div>
             <span className="text-3xl font-bold text-gray-900">E-Commerce</span>

@@ -7,7 +7,7 @@ const Breadcrumb = ({ items = [] }) => {
     <nav className="mb-8 flex items-center space-x-2 text-sm py-4 border-b border-gray-100">
       <Link
         to="/"
-        className="text-gray-600 hover:text-gray-900 transition-colors font-light"
+        className="text-gray-600 hover:text-[#00a85a] transition-colors font-light"
       >
         Trang chủ
       </Link>
@@ -18,7 +18,7 @@ const Breadcrumb = ({ items = [] }) => {
           {item.path ? (
             <Link
               to={item.path}
-              className="text-gray-600 hover:text-gray-900 transition-colors font-light"
+              className="text-gray-600 hover:text-[#00a85a] transition-colors font-light"
             >
               {item.label}
             </Link>

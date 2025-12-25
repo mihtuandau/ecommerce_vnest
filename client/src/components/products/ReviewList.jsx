@@ -35,7 +35,7 @@ const ReviewList = ({ productId }) => {
   if (loading) {
     return (
       <div className="flex justify-center py-12">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#00a85a]"></div>
       </div>
     );
   }
@@ -56,7 +56,7 @@ const ReviewList = ({ productId }) => {
         <div key={review.id} className="bg-white p-6 border border-gray-200">
           {/* User avatar - square */}
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 bg-gray-900 flex items-center justify-center text-white">
+            <div className="w-10 h-10 bg-[#00a85a] flex items-center justify-center text-white">
               <User size={18} />
             </div>
             <div>
@@ -92,11 +92,11 @@ const ReviewList = ({ productId }) => {
       {/* Pagination - minimalist */}
       {totalPages > 1 && (
         <div className="flex justify-center gap-2 mt-6">
-          <button className="px-4 py-2 border border-gray-300 hover:border-gray-900 disabled:opacity-50">
+          <button className="px-4 py-2 border border-gray-300 hover:border-[#00a85a] hover:bg-green-50 hover:text-[#00a85a] disabled:opacity-50 transition-all duration-300 rounded-lg disabled:hover:border-gray-300 disabled:hover:bg-white disabled:hover:text-gray-900">
             Trước
           </button>
           <span className="px-4 py-2 text-gray-700">Trang {page} / {totalPages}</span>
-          <button className="px-4 py-2 border border-gray-300 hover:border-gray-900 disabled:opacity-50">
+          <button className="px-4 py-2 border border-gray-300 hover:border-[#00a85a] hover:bg-green-50 hover:text-[#00a85a] disabled:opacity-50 transition-all duration-300 rounded-lg disabled:hover:border-gray-300 disabled:hover:bg-white disabled:hover:text-gray-900">
             Sau
           </button>
         </div>
