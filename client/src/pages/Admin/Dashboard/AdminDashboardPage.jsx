@@ -8,6 +8,8 @@ import {
   AlertTriangle,
   ShoppingCart
 } from 'lucide-react';
+import { Card, Row, Col, Statistic, Badge, Typography, Space, Spin } from 'antd';
+import { ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
 import dashboardService from '../../../services/dashboardService';
 import { notify } from '../../../utils/notification';
 import Loading from '../../../components/common/Loading';
@@ -16,6 +18,8 @@ import TopProducts from '../../../components/admin/Dashboard/TopProducts';
 import SalesChart from '../../../components/admin/Dashboard/SalesChart';
 import OrderStatusChart from '../../../components/admin/Dashboard/OrderStatusChart';
 import { formatPrice, formatDateTime } from '../../../utils/formatters';
+
+const { Title, Text } = Typography;
 
 // Custom scrollbar styles
 const scrollbarStyles = `
@@ -46,29 +50,43 @@ const AdminDashboardPage = () => {
   const formatCurrency = formatPrice;
 
   useEffect(() => {
-    loadDashboardData();
+    let isMounted = true;
+
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        const [statsData, revenueData, ordersData, productsData] = await Promise.all([
+          dashboardService.getStats(),
+          dashboardService.getRevenue(),
+          dashboardService.getRecentOrders(),
+          dashboardService.getTopProducts(),
+        ]);
+
+        // Only update state if component is still mounted
+        if (isMounted) {
+          setStats(statsData);
+          setRevenue(revenueData);
+          setRecentOrders(ordersData);
+          setTopProducts(productsData);
+        }
+      } catch (error) {
+        if (isMounted) {
+          notify.error('Không thể tải dữ liệu dashboard');
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadData();
+
+    // Cleanup function to prevent state updates after unmount
+    return () => {
+      isMounted = false;
+    };
   }, []);
-
-  const loadDashboardData = async () => {
-    try {
-      setLoading(true);
-      const [statsData, revenueData, ordersData, productsData] = await Promise.all([
-        dashboardService.getStats(),
-        dashboardService.getRevenue(),
-        dashboardService.getRecentOrders(),
-        dashboardService.getTopProducts(),
-      ]);
-
-      setStats(statsData);
-      setRevenue(revenueData);
-      setRecentOrders(ordersData);
-      setTopProducts(productsData);
-    } catch (error) {
-      notify.error('Không thể tải dữ liệu dashboard');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // Prepare chart data
   const revenueData = {
@@ -95,108 +113,187 @@ const AdminDashboardPage = () => {
   }));
 
   if (loading) {
-    return <Loading fullScreen text="Đang tải dữ liệu..." />;
+    return <Loading fullScreen text="Đang tải dữ liệu..." variant="admin" />;
   }
 
   return (
     <>
       <style>{scrollbarStyles}</style>
-      <div className="space-y-6 p-6">
+      <div className="p-6">
         {/* Header */}
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-            <p className="text-gray-600 mt-1">Tổng quan hệ thống</p>
-          </div>
-        </div>
+        <Space direction="vertical" size="small" style={{ marginBottom: 24 }}>
+          <Title level={2} style={{ margin: 0 }}>Dashboard</Title>
+          <Text type="secondary">Tổng quan hệ thống</Text>
+        </Space>
 
-      {/* Stats Cards - Clean & Professional */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-        {/* Revenue Card */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 bg-emerald-50 rounded-lg flex items-center justify-center">
-              <DollarSign className="w-6 h-6 text-emerald-600" />
-            </div>
-            <span className="text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded">
-              +12.5%
-            </span>
-          </div>
-          <p className="text-sm text-gray-600 font-medium mb-1">Tổng doanh thu</p>
-          <p className="text-2xl font-bold text-gray-900">
-            {stats?.revenue?.total ? formatCurrency(stats.revenue.total) : '0 ₫'}
-          </p>
-        </div>
+        {/* Stats Cards - Ant Design Style */}
+        <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+          {/* Revenue Card */}
+          <Col xs={24} sm={12} lg={6}>
+            <Card 
+              hoverable
+              style={{ height: '100%' }}
+              bodyStyle={{ padding: '20px' }}
+            >
+              <Space direction="vertical" size="small" style={{ width: '100%' }}>
+                <Space style={{ width: '100%', justifyContent: 'space-between' }}>
+                  <div style={{ 
+                    width: 48, 
+                    height: 48, 
+                    background: '#f6ffed', 
+                    borderRadius: 8, 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center' 
+                  }}>
+                    <DollarSign size={24} style={{ color: '#52c41a' }} />
+                  </div>
+                  <Badge count={<ArrowUpOutlined style={{ color: '#52c41a' }} />} />
+                </Space>
+                <Statistic 
+                  title="Tổng doanh thu"
+                  value={stats?.revenue?.total || 0}
+                  suffix="₫"
+                  valueStyle={{ color: '#000', fontSize: 24, fontWeight: 600 }}
+                  formatter={(value) => formatCurrency(value).replace('₫', '')}
+                />
+                <Text type="success" style={{ fontSize: 12 }}>+12.5% so với tháng trước</Text>
+              </Space>
+            </Card>
+          </Col>
 
-        {/* Orders Card */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 bg-gray-50 rounded-lg flex items-center justify-center">
-              <Package className="w-6 h-6 text-gray-900" />
-            </div>
-            {stats?.orders?.pending > 0 && (
-              <span className="text-xs font-medium text-orange-600 bg-orange-50 px-2 py-1 rounded">
-                {stats.orders.pending} chờ
-              </span>
-            )}
-          </div>
-          <p className="text-sm text-gray-600 font-medium mb-1">Tổng đơn hàng</p>
-          <p className="text-2xl font-bold text-gray-900">{stats?.orders?.total || 0}</p>
-        </div>
+          {/* Orders Card */}
+          <Col xs={24} sm={12} lg={6}>
+            <Card 
+              hoverable
+              style={{ height: '100%' }}
+              bodyStyle={{ padding: '20px' }}
+            >
+              <Space direction="vertical" size="small" style={{ width: '100%' }}>
+                <Space style={{ width: '100%', justifyContent: 'space-between' }}>
+                  <div style={{ 
+                    width: 48, 
+                    height: 48, 
+                    background: '#fafafa', 
+                    borderRadius: 8, 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center' 
+                  }}>
+                    <Package size={24} style={{ color: '#000' }} />
+                  </div>
+                  {stats?.orders?.pending > 0 && (
+                    <Badge count={stats.orders.pending} style={{ backgroundColor: '#faad14' }} />
+                  )}
+                </Space>
+                <Statistic 
+                  title="Tổng đơn hàng"
+                  value={stats?.orders?.total || 0}
+                  valueStyle={{ color: '#000', fontSize: 24, fontWeight: 600 }}
+                />
+                {stats?.orders?.pending > 0 && (
+                  <Text type="warning" style={{ fontSize: 12 }}>{stats.orders.pending} đơn chờ xử lý</Text>
+                )}
+              </Space>
+            </Card>
+          </Col>
 
-        {/* Users Card */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 bg-gray-50 rounded-lg flex items-center justify-center">
-              <Users className="w-6 h-6 text-gray-700" />
-            </div>
-            {stats?.users?.new > 0 && (
-              <span className="text-xs font-medium text-gray-700 bg-gray-50 px-2 py-1 rounded">
-                +{stats.users.new} mới
-              </span>
-            )}
-          </div>
-          <p className="text-sm text-gray-600 font-medium mb-1">Người dùng</p>
-          <p className="text-2xl font-bold text-gray-900">{stats?.users?.total || 0}</p>
-        </div>
+          {/* Users Card */}
+          <Col xs={24} sm={12} lg={6}>
+            <Card 
+              hoverable
+              style={{ height: '100%' }}
+              bodyStyle={{ padding: '20px' }}
+            >
+              <Space direction="vertical" size="small" style={{ width: '100%' }}>
+                <Space style={{ width: '100%', justifyContent: 'space-between' }}>
+                  <div style={{ 
+                    width: 48, 
+                    height: 48, 
+                    background: '#fafafa', 
+                    borderRadius: 8, 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center' 
+                  }}>
+                    <Users size={24} style={{ color: '#595959' }} />
+                  </div>
+                  {stats?.users?.new > 0 && (
+                    <Badge count={`+${stats.users.new}`} style={{ backgroundColor: '#1890ff' }} />
+                  )}
+                </Space>
+                <Statistic 
+                  title="Người dùng"
+                  value={stats?.users?.total || 0}
+                  valueStyle={{ color: '#000', fontSize: 24, fontWeight: 600 }}
+                />
+                {stats?.users?.new > 0 && (
+                  <Text type="secondary" style={{ fontSize: 12 }}>{stats.users.new} người dùng mới</Text>
+                )}
+              </Space>
+            </Card>
+          </Col>
 
-        {/* Products Card */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 bg-amber-50 rounded-lg flex items-center justify-center">
-              <ShoppingBag className="w-6 h-6 text-amber-600" />
-            </div>
-            {stats?.products?.lowStock > 0 && (
-              <span className="text-xs font-medium text-red-600 bg-red-50 px-2 py-1 rounded">
-                {stats.products.lowStock} sắp hết
-              </span>
-            )}
-          </div>
-          <p className="text-sm text-gray-600 font-medium mb-1">Sản phẩm</p>
-          <p className="text-2xl font-bold text-gray-900">{stats?.products?.total || 0}</p>
-        </div>
-      </div>
+          {/* Products Card */}
+          <Col xs={24} sm={12} lg={6}>
+            <Card 
+              hoverable
+              style={{ height: '100%' }}
+              bodyStyle={{ padding: '20px' }}
+            >
+              <Space direction="vertical" size="small" style={{ width: '100%' }}>
+                <Space style={{ width: '100%', justifyContent: 'space-between' }}>
+                  <div style={{ 
+                    width: 48, 
+                    height: 48, 
+                    background: '#fffbe6', 
+                    borderRadius: 8, 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center' 
+                  }}>
+                    <ShoppingBag size={24} style={{ color: '#faad14' }} />
+                  </div>
+                  {stats?.products?.lowStock > 0 && (
+                    <Badge count={stats.products.lowStock} style={{ backgroundColor: '#ff4d4f' }} />
+                  )}
+                </Space>
+                <Statistic 
+                  title="Sản phẩm"
+                  value={stats?.products?.total || 0}
+                  valueStyle={{ color: '#000', fontSize: 24, fontWeight: 600 }}
+                />
+                {stats?.products?.lowStock > 0 && (
+                  <Text type="danger" style={{ fontSize: 12 }}>{stats.products.lowStock} sản phẩm sắp hết</Text>
+                )}
+              </Space>
+            </Card>
+          </Col>
+        </Row>
 
-      {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        <div className="lg:col-span-2">
-          <SalesChart revenueData={revenueData} topProductsData={topProductsChartData} />
-        </div>
-      </div>
+        {/* Charts Section */}
+        <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+          <Col xs={24}>
+            <SalesChart revenueData={revenueData} topProductsData={topProductsChartData} />
+          </Col>
+        </Row>
 
-      {/* Order Status & Recent Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        <OrderStatusChart orderStatusData={orderStatusData} />
-        <div className="lg:col-span-2">
-          <RecentOrders orders={recentOrders} />
-        </div>
-      </div>
+        {/* Order Status & Recent Activity */}
+        <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+          <Col xs={24} lg={8}>
+            <OrderStatusChart orderStatusData={orderStatusData} />
+          </Col>
+          <Col xs={24} lg={16}>
+            <RecentOrders orders={recentOrders} />
+          </Col>
+        </Row>
 
-      {/* Top Products */}
-      <div className="grid grid-cols-1 gap-5">
-        <TopProducts products={topProducts} />
-      </div>
-
+        {/* Top Products */}
+        <Row gutter={[16, 16]}>
+          <Col xs={24}>
+            <TopProducts products={topProducts} />
+          </Col>
+        </Row>
       </div>
     </>
   );

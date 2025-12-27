@@ -1,250 +1,188 @@
 import { Link, useLocation } from 'react-router-dom';
+import { Menu, Badge, Layout } from 'antd';
 import {
-  LayoutDashboard,
-  Package,
-  ShoppingCart,
-  Users,
-  Folder,
-  Tag,
-  Percent,
-  Settings,
-  ChevronRight,
-  TrendingUp,
-  FileText,
-  Truck,
-  CreditCard,
-  MessageSquare,
-  Image,
-} from 'lucide-react';
-import clsx from 'clsx';
+  DashboardOutlined,
+  LineChartOutlined,
+  AppstoreOutlined,
+  FolderOutlined,
+  TagsOutlined,
+  PictureOutlined,
+  ShoppingCartOutlined,
+  PercentageOutlined,
+  CarOutlined,
+  CreditCardOutlined,
+  UserOutlined,
+  MessageOutlined,
+  FileTextOutlined,
+  SettingOutlined,
+} from '@ant-design/icons';
 import { useAuth } from '../../hooks/useAuth';
 import { useChatNotifications } from '../../hooks/useChatNotifications';
+
+const { Sider } = Layout;
 
 const AdminSidebar = ({ isOpen }) => {
   const location = useLocation();
   const { user } = useAuth();
   const unreadChatCount = useChatNotifications(user);
 
-  const menuGroups = [
+  // Menu items configuration
+  const menuItems = [
     {
-      label: 'Main',
-      items: [
+      key: 'main',
+      label: 'MAIN',
+      type: 'group',
+      children: [
         {
-          path: '/admin-dashboard',
-          icon: LayoutDashboard,
-          label: 'Dashboard',
-          badge: null,
+          key: '/admin-dashboard',
+          icon: <DashboardOutlined />,
+          label: <Link to="/admin-dashboard">Dashboard</Link>,
         },
         {
-          path: '/admin-analytics',
-          icon: TrendingUp,
-          label: 'Analytics',
-          badge: 'New',
+          key: '/admin-analytics',
+          icon: <LineChartOutlined />,
+          label: (
+            <Link to="/admin-analytics">
+              Analytics
+              <Badge count="New" style={{ marginLeft: 8, fontSize: 10 }} />
+            </Link>
+          ),
         },
       ],
     },
     {
-      label: 'Catalog',
-      items: [
+      key: 'catalog',
+      label: 'CATALOG',
+      type: 'group',
+      children: [
         {
-          path: '/admin-products',
-          icon: Package,
-          label: 'Products',
-          badge: null,
+          key: '/admin-products',
+          icon: <AppstoreOutlined />,
+          label: <Link to="/admin-products">Products</Link>,
         },
         {
-          path: '/admin-categories',
-          icon: Folder,
-          label: 'Categories',
-          badge: null,
+          key: '/admin-categories',
+          icon: <FolderOutlined />,
+          label: <Link to="/admin-categories">Categories</Link>,
         },
         {
-          path: '/admin-brands',
-          icon: Tag,
-          label: 'Brands',
-          badge: null,
+          key: '/admin-brands',
+          icon: <TagsOutlined />,
+          label: <Link to="/admin-brands">Brands</Link>,
         },
         {
-          path: '/admin-banners',
-          icon: Image,
-          label: 'Banners',
-          badge: null,
+          key: '/admin-banners',
+          icon: <PictureOutlined />,
+          label: <Link to="/admin-banners">Banners</Link>,
         },
       ],
     },
     {
-      label: 'Sales',
-      items: [
+      key: 'sales',
+      label: 'SALES',
+      type: 'group',
+      children: [
         {
-          path: '/admin-orders',
-          icon: ShoppingCart,
-          label: 'Orders',
-          badge: '12',
+          key: '/admin-orders',
+          icon: <ShoppingCartOutlined />,
+          label: (
+            <Link to="/admin-orders">
+              Orders
+              <Badge count={12} style={{ marginLeft: 8 }} />
+            </Link>
+          ),
         },
         {
-          path: '/admin-discounts',
-          icon: Percent,
-          label: 'Discounts',
-          badge: null,
+          key: '/admin-discounts',
+          icon: <PercentageOutlined />,
+          label: <Link to="/admin-discounts">Discounts</Link>,
         },
         {
-          path: '/admin-shipping',
-          icon: Truck,
-          label: 'Shipping',
-          badge: null,
+          key: '/admin-shipping',
+          icon: <CarOutlined />,
+          label: <Link to="/admin-shipping">Shipping</Link>,
         },
         {
-          path : '/admin-payments',
-          icon: CreditCard,
-          label: 'Payments',
-          badge: null,
-        }
-      ],
-    },
-    {
-      label: 'Management',
-      items: [
-        {
-          path: '/admin-users',
-          icon: Users,
-          label: 'Users',
-          badge: null,
-        },
-        {
-          path: '/admin-chat',
-          icon: MessageSquare,
-          label: 'Chat Support',
-          badge: unreadChatCount > 0 ? unreadChatCount : null,
-        },
-        {
-          path: '/admin-reports',
-          icon: FileText,
-          label: 'Reports',
-          badge: null,
+          key: '/admin-payments',
+          icon: <CreditCardOutlined />,
+          label: <Link to="/admin-payments">Payments</Link>,
         },
       ],
     },
     {
-      label: 'System',
-      items: [
+      key: 'management',
+      label: 'MANAGEMENT',
+      type: 'group',
+      children: [
         {
-          path: '/admin-settings',
-          icon: Settings,
-          label: 'Settings',
-          badge: null,
+          key: '/admin-users',
+          icon: <UserOutlined />,
+          label: <Link to="/admin-users">Users</Link>,
+        },
+        {
+          key: '/admin-chat',
+          icon: <MessageOutlined />,
+          label: (
+            <Link to="/admin-chat">
+              Chat Support
+              {unreadChatCount > 0 && (
+                <Badge count={unreadChatCount} style={{ marginLeft: 8 }} />
+              )}
+            </Link>
+          ),
+        },
+        {
+          key: '/admin-reports',
+          icon: <FileTextOutlined />,
+          label: <Link to="/admin-reports">Reports</Link>,
+        },
+      ],
+    },
+    {
+      key: 'system',
+      label: 'SYSTEM',
+      type: 'group',
+      children: [
+        {
+          key: '/admin-settings',
+          icon: <SettingOutlined />,
+          label: <Link to="/admin-settings">Settings</Link>,
         },
       ],
     },
   ];
 
-  const isActive = (path) => {
-    if (path === '/admin-dashboard') {
-      return location.pathname === '/admin-dashboard';
-    }
-    return location.pathname.startsWith(path);
-  };
+  // Get selected key from current path
+  const selectedKey = location.pathname;
 
   return (
-    <>
-      {/* Sidebar */}
-      <aside
-        className={clsx(
-          'fixed top-16 left-0 bottom-0 bg-white border-r border-gray-200',
-          'transition-all duration-300 z-20',
-          isOpen ? 'w-64' : 'w-0 md:w-20'
-        )}
-      >
-        <nav className="h-full overflow-y-auto py-4">
-          {menuGroups.map((group, groupIndex) => (
-            <div key={groupIndex} className="mb-6">
-              {/* Group Label */}
-              {isOpen && (
-                <div className="px-6 mb-2">
-                  <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                    {group.label}
-                  </h3>
-                </div>
-              )}
-
-              {/* Menu Items */}
-              <ul className="space-y-1 px-3">
-                {group.items.map((item) => {
-                  const Icon = item.icon;
-                  const active = isActive(item.path);
-
-                  return (
-                    <li key={item.path}>
-                      <Link
-                        to={item.path}
-                        className={clsx(
-                          'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all group',
-                          'hover:scale-[1.02]',
-                          active
-                            ? 'bg-green-50 text-[#00a85a] shadow-sm'
-                            : 'text-gray-700 hover:bg-gray-100'
-                        )}
-                      >
-                        <Icon
-                          size={20}
-                          className={clsx(
-                            'flex-shrink-0 transition-transform',
-                            active ? 'text-[#00a85a]' : 'text-gray-500 group-hover:text-gray-700',
-                            'group-hover:scale-110'
-                          )}
-                        />
-
-                        {isOpen && (
-                          <>
-                            <span className="font-medium flex-1">{item.label}</span>
-
-                            {/* Badge */}
-                            {item.badge && (
-                              <span
-                                className={clsx(
-                                  'px-2 py-0.5 text-xs font-semibold rounded-full',
-                                  item.badge === 'New'
-                                    ? 'bg-green-100 text-green-700'
-                                    : 'bg-blue-100 text-blue-700'
-                                )}
-                              >
-                                {item.badge}
-                              </span>
-                            )}
-
-                            {/* Active Indicator */}
-                            {active && (
-                              <ChevronRight size={16} className="text-[#00a85a]" />
-                            )}
-                          </>
-                        )}
-
-                        {/* Tooltip for collapsed state */}
-                        {!isOpen && (
-                          <div className="absolute left-full ml-2 px-2 py-1 bg-[#00a85a] text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
-                            {item.label}
-                          </div>
-                        )}
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          ))}
-        </nav>
-
-        {/* Sidebar Footer */}
-        
-      </aside>
-
-      {/* Mobile Overlay */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-opacity-50 z-10 md:hidden"
-          onClick={() => {}}
-        />
-      )}
-    </>
+    <Sider
+      collapsed={!isOpen}
+      collapsedWidth={80}
+      width={256}
+      breakpoint="md"
+      style={{
+        position: 'fixed',
+        left: 0,
+        top: 64,
+        bottom: 0,
+        overflow: 'auto',
+        height: 'calc(100vh - 64px)',
+        zIndex: 20,
+        background: '#fff',
+        borderRight: '1px solid #f0f0f0',
+      }}
+      className="admin-sidebar"
+    >
+      <Menu
+        mode="inline"
+        selectedKeys={[selectedKey]}
+        defaultOpenKeys={['main', 'catalog', 'sales', 'management', 'system']}
+        style={{ height: '100%', borderRight: 0, paddingTop: 16 }}
+        items={menuItems}
+        inlineCollapsed={!isOpen}
+      />
+    </Sider>
   );
 };
 

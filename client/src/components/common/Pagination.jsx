@@ -22,7 +22,6 @@ const Pagination = memo(({
     }
   }, [currentPage, totalPages, onPageChange]);
 
-  // Generate page numbers to display
   const pageNumbers = useMemo(() => {
     const pages = [];
     const maxVisible = 5;
@@ -69,7 +68,6 @@ const Pagination = memo(({
       </div>
       
       <div className="flex items-center gap-2">
-        {/* Previous Button */}
         <Button 
           variant="secondary" 
           size="sm" 
@@ -80,7 +78,6 @@ const Pagination = memo(({
           Trước
         </Button>
 
-        {/* Page Numbers */}
         <div className="hidden sm:flex gap-1">
           {pageNumbers.map((page, index) => (
             page === '...' ? (
@@ -92,9 +89,9 @@ const Pagination = memo(({
                 key={page}
                 onClick={() => onPageChange(page)}
                 disabled={page === currentPage}
-                className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
+                className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors pagination-btn ${
                   page === currentPage
-                    ? 'bg-[#00a85a] text-white shadow-sm'
+                    ? 'bg-[#00a85a] text-white shadow-sm active'
                     : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
                 }`}
               >
@@ -104,7 +101,6 @@ const Pagination = memo(({
           ))}
         </div>
 
-        {/* Next Button */}
         <Button 
           variant="secondary" 
           size="sm" 

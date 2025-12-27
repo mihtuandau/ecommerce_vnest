@@ -153,7 +153,7 @@ const DiscountModal = ({ isOpen, onClose, discount, onSubmit }) => {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={discount ? 'Chỉnh sửa mã giảm giá' : 'Tạo mã giảm giá mới'}>
+    <Modal isOpen={isOpen} onClose={onClose} title={discount ? 'Chỉnh sửa mã giảm giá' : 'Tạo mã giảm giá mới'} variant="admin">
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Mã giảm giá */}
         <div>

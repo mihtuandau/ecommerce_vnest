@@ -1,6 +1,7 @@
-import { Search, Filter, Plus } from 'lucide-react';
-import Input from '../../common/Input';
-import Button from '../../common/Button';
+import { Input, Select, Button, Space, Badge } from 'antd';
+import { SearchOutlined, FilterOutlined, PlusOutlined, DeleteOutlined } from '@ant-design/icons';
+
+const { Option } = Select;
 
 const ProductToolbar = ({
   search,
@@ -13,52 +14,80 @@ const ProductToolbar = ({
   onAddProduct
 }) => {
   return (
-    <div className="bg-white rounded-lg shadow mb-6">
-      <div className="p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div className="flex-1 max-w-md">
-          <Input
-            type="text"
-            placeholder="Search products..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            icon={Search}
-          />
-        </div>
+    <div style={{ 
+      background: '#fff', 
+      borderRadius: 8, 
+      padding: 16, 
+      marginBottom: 24,
+      boxShadow: '0 1px 2px 0 rgba(0,0,0,0.05)'
+    }}>
+      <Space style={{ width: '100%', justifyContent: 'space-between' }} wrap>
+        <Input
+          placeholder="Search products..."
+          prefix={<SearchOutlined />}
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{ width: 300 }}
+          size="large"
+          allowClear
+        />
 
-        <div className="flex items-center gap-3">
-          <select
+        <Space wrap>
+          <Select
             value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            onChange={setSelectedCategory}
+            style={{ width: 200 }}
+            size="large"
+            placeholder="All Categories"
           >
-            <option value="">All Categories</option>
+            <Option value="">All Categories</Option>
             {categories.map(cat => (
-              <option key={cat.id} value={cat.id}>{cat.name}</option>
+              <Option key={cat.id} value={cat.id}>{cat.name}</Option>
             ))}
-          </select>
+          </Select>
 
-          <button className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50">
-            <Filter size={20} />
-          </button>
+          <Button 
+            type="default" 
+            icon={<FilterOutlined />}
+            size="large"
+          />
 
-          <Button variant="primary" onClick={onAddProduct}>
-            <Plus size={20} className="mr-2" />
+          <Button 
+            type="primary" 
+            icon={<PlusOutlined />}
+            onClick={onAddProduct}
+            size="large"
+          >
             Add Product
           </Button>
-        </div>
-      </div>
+        </Space>
+      </Space>
 
       {selectedProducts.length > 0 && (
-        <div className="px-4 py-3 bg-blue-50 border-t border-blue-200 flex items-center justify-between">
-          <span className="text-sm text-blue-900 font-medium">
-            {selectedProducts.length} selected
-          </span>
-          <div className="flex gap-2">
-            <Button variant="secondary" size="sm" onClick={onBulkDelete}>
-              <Trash2 size={16} className="mr-1" />
-              Delete
-            </Button>
-          </div>
+        <div style={{ 
+          marginTop: 16, 
+          padding: '12px 16px', 
+          background: '#e6f7ff', 
+          borderRadius: 8,
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}>
+          <Badge 
+            count={selectedProducts.length} 
+            style={{ backgroundColor: '#1890ff' }}
+          >
+            <span style={{ marginRight: 8, color: '#0050b3', fontWeight: 500 }}>
+              selected
+            </span>
+          </Badge>
+          <Button 
+            danger
+            icon={<DeleteOutlined />}
+            onClick={onBulkDelete}
+          >
+            Delete
+          </Button>
         </div>
       )}
     </div>

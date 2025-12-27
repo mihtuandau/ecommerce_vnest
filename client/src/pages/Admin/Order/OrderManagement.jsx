@@ -120,7 +120,7 @@ const AdminOrdersPage = () => {
   const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white p-8">
+    <div className="p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -133,14 +133,7 @@ const AdminOrdersPage = () => {
                 Theo dõi và quản lý tất cả đơn hàng trong hệ thống
               </p>
             </div>
-            <button
-              onClick={handleRefresh}
-              disabled={refreshing}
-              className="flex items-center gap-2 px-4 py-2 bg-[#00a85a] hover:bg-[#008f4d] text-white rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <FaSync className={refreshing ? 'animate-spin' : ''} />
-              {refreshing ? 'Đang cập nhật...' : 'Làm mới'}
-            </button>
+        
           </div>
 
           {/* Stats */}

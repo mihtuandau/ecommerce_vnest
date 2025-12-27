@@ -1,21 +1,23 @@
 import React from 'react';
-import { Clock } from 'lucide-react';
-import Badge from '../../common/Badge';
+import { Card, List, Tag, Typography, Space, Button, Empty } from 'antd';
+import { ClockCircleOutlined, EyeOutlined } from '@ant-design/icons';
 import { formatPrice, formatDateTime } from '../../../utils/formatters';
+
+const { Text, Title } = Typography;
 
 const RecentOrders = ({ orders }) => {
   const formatCurrency = formatPrice;
   const formatDate = formatDateTime;
 
-  const getOrderStatusVariant = (status) => {
-    const variants = {
+  const getOrderStatusColor = (status) => {
+    const colors = {
       PENDING: 'warning',
-      PROCESSING: 'info',
-      SHIPPED: 'info',
+      PROCESSING: 'processing',
+      SHIPPED: 'blue',
       DELIVERED: 'success',
-      CANCELLED: 'danger',
+      CANCELLED: 'error',
     };
-    return variants[status] || 'default';
+    return colors[status] || 'default';
   };
 
   const getOrderStatusText = (status) => {
@@ -30,61 +32,90 @@ const RecentOrders = ({ orders }) => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-      <div className="flex items-center justify-between mb-5">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-indigo-50 rounded-lg flex items-center justify-center">
-            <Clock className="w-4 h-4 text-indigo-600" />
-          </div>
-          <h2 className="text-lg font-semibold text-gray-900">
-            Đơn hàng gần đây
-          </h2>
-        </div>
-        {orders.length > 5 && (
-          <span className="text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded">
-            5/{orders.length}
-          </span>
-        )}
-      </div>
-
-      {/* Scrollable container with fixed height */}
-      <div className="overflow-y-auto max-h-[400px] space-y-3 pr-2 custom-scrollbar">
-        {orders.length === 0 ? (
-          <p className="text-gray-500 text-center py-8">Chưa có đơn hàng nào</p>
-        ) : (
-          orders.slice(0, 5).map((order) => (
-            <div
-              key={order.id}
-              className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 hover:shadow-md transition-all"
-            >
-              <div className="flex-1">
-                <div className="flex items-center gap-3">
-                  <span className="font-semibold text-gray-900">{order.orderCode || `#${order.id}`}</span>
-                  <Badge variant={getOrderStatusVariant(order.status)}>
+    <Card
+      title={
+        <Space>
+          <ClockCircleOutlined style={{ color: '#1890ff', fontSize: 18 }} />
+          <Text strong style={{ fontSize: 16 }}>Đơn hàng gần đây</Text>
+        </Space>
+      }
+      extra={
+        orders.length > 5 && (
+          <Tag color="blue">{orders.length} đơn hàng</Tag>
+        )
+      }
+      style={{ height: '100%' }}
+    >
+      <List
+        dataSource={orders.slice(0, 5)}
+        locale={{
+          emptyText: <Empty description="Chưa có đơn hàng nào" />
+        }}
+        renderItem={(order) => (
+          <List.Item
+            key={order.id}
+            style={{ 
+              padding: '16px',
+              border: '1px solid #f0f0f0',
+              borderRadius: 8,
+              marginBottom: 12,
+              cursor: 'pointer',
+              transition: 'all 0.3s'
+            }}
+            className="hover-list-item"
+            actions={[
+              <Button 
+                type="link" 
+                icon={<EyeOutlined />}
+                size="small"
+              >
+                Xem
+              </Button>
+            ]}
+          >
+            <List.Item.Meta
+              title={
+                <Space>
+                  <Text strong>{order.orderCode || `#${order.id}`}</Text>
+                  <Tag color={getOrderStatusColor(order.status)}>
                     {getOrderStatusText(order.status)}
-                  </Badge>
-                </div>
-                <p className="text-sm text-gray-600 mt-1">
-                  {order.user ? order.user.name : (order.guestEmail || 'Khách vãng lai')}
-                </p>
-                <p className="text-xs text-gray-500 mt-1">{formatDate(order.createdAt)}</p>
-              </div>
-              <div className="text-right">
-                <p className="font-bold text-gray-900">{formatCurrency(order.total)}</p>
-              </div>
+                  </Tag>
+                </Space>
+              }
+              description={
+                <Space direction="vertical" size={2}>
+                  <Text type="secondary">
+                    {order.user ? order.user.name : (order.guestEmail || 'Khách vãng lai')}
+                  </Text>
+                  <Text type="secondary" style={{ fontSize: 12 }}>
+                    {formatDate(order.createdAt)}
+                  </Text>
+                </Space>
+              }
+            />
+            <div>
+              <Text strong style={{ fontSize: 16 }}>{formatCurrency(order.total)}</Text>
             </div>
-          ))
+          </List.Item>
         )}
-      </div>
+      />
+      
       
       {orders.length > 5 && (
-        <div className="mt-4 pt-4 border-t border-gray-100 text-center">
-          <button className="text-sm font-medium text-indigo-600 hover:text-indigo-700 transition-colors">
+        <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid #f0f0f0', textAlign: 'center' }}>
+          <Button type="link">
             Xem tất cả {orders.length} đơn hàng →
-          </button>
+          </Button>
         </div>
       )}
-    </div>
+      
+      <style>{`
+        .hover-list-item:hover {
+          background-color: #fafafa;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+      `}</style>
+    </Card>
   );
 };
 

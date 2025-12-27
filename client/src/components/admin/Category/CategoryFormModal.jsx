@@ -78,6 +78,7 @@ const CategoryFormModal = ({ isOpen, onClose, onSubmit, category = null }) => {
       onClose={handleClose} 
       size="md"
       title={category ? 'Chỉnh sửa danh mục' : 'Thêm danh mục mới'}
+      variant="admin"
     >
       <form onSubmit={handleSubmit} className="flex flex-col h-full -m-6">
         <div className="p-6 overflow-y-auto flex-1">

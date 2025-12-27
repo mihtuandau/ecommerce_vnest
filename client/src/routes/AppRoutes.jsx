@@ -1,7 +1,6 @@
 // src/routes/AppRoutes.jsx
 import React, { Suspense, lazy } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider } from "../contexts/authContext";
 import Loading from "../components/common/Loading";
 import AdminRoute from "./AdminRoute";
 // import ProtectedRoute from './ProtectedRoute';
@@ -89,10 +88,12 @@ const PromotionsPage = lazy(() =>
 );
 
 const AppRoutes = () => {
+  // Detect if current path is admin route
+  const isAdminRoute = window.location.pathname.startsWith('/admin');
+  
   return (
-    <AuthProvider>
-      <Suspense fallback={<Loading fullScreen text="Loading page..." />}>
-        <Routes>
+    <Suspense fallback={<Loading fullScreen text="Đang tải..." variant={isAdminRoute ? "admin" : "user"} />}>
+      <Routes>
           {/* Auth Routes */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
@@ -246,7 +247,6 @@ const AppRoutes = () => {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>
-    </AuthProvider>
   );
 };
 

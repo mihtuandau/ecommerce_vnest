@@ -7,6 +7,142 @@ body {
   color: #666666;
 }
 
+/* Admin Theme Override - Blue Color */
+.admin-layout .ant-btn-primary {
+  background-color: #1890ff !important;
+  border-color: #1890ff !important;
+}
+
+.admin-layout .ant-btn-primary:hover {
+  background-color: #40a9ff !important;
+  border-color: #40a9ff !important;
+}
+
+.admin-layout .ant-btn-primary:active {
+  background-color: #096dd9 !important;
+  border-color: #096dd9 !important;
+}
+
+.admin-layout .ant-btn-link {
+  color: #1890ff !important;
+}
+
+.admin-layout .ant-btn-link:hover {
+  color: #40a9ff !important;
+}
+
+/* Admin Custom Button Override */
+.admin-layout .btn-primary {
+  background-color: #1890ff !important;
+}
+
+.admin-layout .btn-primary:hover {
+  background-color: #40a9ff !important;
+}
+
+.admin-layout .btn-dark {
+  background-color: #1890ff !important;
+}
+
+.admin-layout .btn-dark:hover {
+  background-color: #40a9ff !important;
+}
+
+.admin-layout .btn-outline {
+  border-color: #1890ff !important;
+  color: #1890ff !important;
+}
+
+.admin-layout .btn-outline:hover {
+  background-color: #1890ff !important;
+}
+
+.admin-layout .btn-outline-light {
+  color: #1890ff !important;
+}
+
+.admin-layout .btn-outline-light:hover {
+  border-color: #1890ff !important;
+}
+
+.admin-layout .btn-ghost {
+  color: #1890ff !important;
+}
+
+/* Admin Loading Spinner Override */
+.admin-layout .loading-dot {
+  background-color: #1890ff !important;
+}
+
+.admin-layout .loading-icon {
+  color: #1890ff !important;
+}
+
+/* Admin Pagination Override */
+.admin-layout .pagination-btn.active {
+  background-color: #1890ff !important;
+}
+
+/* Admin Radio & Checkbox Override */
+.admin-layout input[type="radio"]:checked {
+  accent-color: #1890ff;
+}
+
+.admin-layout input[type="checkbox"]:checked {
+  accent-color: #1890ff;
+}
+
+/* Admin Sidebar Ant Design Customization */
+.admin-sidebar .ant-menu-item-group-title {
+  padding-left: 24px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #8c8c8c;
+  letter-spacing: 0.5px;
+}
+
+.admin-sidebar .ant-menu-item,
+.admin-sidebar .ant-menu-submenu-title {
+  border-radius: 8px;
+  margin: 4px 8px;
+  padding-left: 16px !important;
+  height: 40px;
+  line-height: 40px;
+  transition: all 0.2s ease;
+}
+
+.admin-sidebar .ant-menu-item:hover,
+.admin-sidebar .ant-menu-submenu-title:hover {
+  background: #e6f7ff;
+  color: #1890ff;
+  transform: translateX(4px);
+}
+
+.admin-sidebar .ant-menu-item:hover .anticon,
+.admin-sidebar .ant-menu-submenu-title:hover .anticon {
+  color: #1890ff;
+}
+
+.admin-sidebar .ant-menu-item-selected {
+  background: linear-gradient(90deg, #e6f7ff 0%, #f0f9ff 100%) !important;
+  color: #1890ff !important;
+  font-weight: 600;
+  border-left: 3px solid #1890ff;
+}
+
+.admin-sidebar .ant-menu-item-selected .anticon {
+  color: #1890ff;
+  transform: scale(1.1);
+}
+
+.admin-sidebar .ant-menu-inline-collapsed .ant-menu-item {
+  padding-left: 0 !important;
+  text-align: center;
+}
+
+.admin-sidebar .ant-badge {
+  font-size: 10px;
+}
 
 
 /* Alternative font options you can use:

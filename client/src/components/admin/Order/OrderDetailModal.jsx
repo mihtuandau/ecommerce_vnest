@@ -80,6 +80,7 @@ const OrderDetailModal = ({
       onClose={onClose}
       title={`Đơn hàng ${order.orderCode || `#${order.id}`}`}
       size="lg"
+      variant="admin"
     >
       <div className="grid grid-cols-2 gap-8">
         
@@ -148,7 +149,7 @@ const OrderDetailModal = ({
         <div className="space-y-6">
 
           {/* Total */}
-          <div className="bg-[#00a85a] text-white p-6 border border-black">
+          <div className="bg-[#1890ff] text-white p-6 border border-black">
             <p className="text-xs font-medium text-gray-400 mb-2">TỔNG ĐƠN HÀNG</p>
             <p className="text-3xl font-bold mb-6">{formatCurrency(order.total)}</p>
             
@@ -206,7 +207,7 @@ const OrderDetailModal = ({
                   <button
                     onClick={handleSyncPayment}
                     disabled={syncingPayment}
-                    className="w-full mt-3 bg-[#00a85a] hover:bg-[#008f4d] disabled:bg-gray-600 text-white py-2.5 px-4 text-sm font-semibold transition-all disabled:cursor-not-allowed border border-black"
+                    className="w-full mt-3 bg-[#1890ff] hover:bg-[#40a9ff] disabled:bg-gray-600 text-white py-2.5 px-4 text-sm font-semibold transition-all disabled:cursor-not-allowed border border-black"
                   >
                     {syncingPayment ? 'Đang kiểm tra...' : 'Kiểm tra thanh toán'}
                   </button>

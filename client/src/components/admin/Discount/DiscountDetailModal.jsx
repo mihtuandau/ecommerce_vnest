@@ -13,7 +13,7 @@ const DiscountDetailModal = ({ isOpen, onClose, discount }) => {
   if (!discount) return null;
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Chi tiết mã giảm giá">
+    <Modal isOpen={isOpen} onClose={onClose} title="Chi tiết mã giảm giá" variant="admin">
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b">

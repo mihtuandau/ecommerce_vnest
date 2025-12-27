@@ -1,26 +1,31 @@
 import React from 'react';
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
-import { PieChart as PieChartIcon } from 'lucide-react';
+import { Card, Space, Typography, List } from 'antd';
+import { PieChartOutlined } from '@ant-design/icons';
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+
+const { Text } = Typography;
 
 const OrderStatusChart = ({ orderStatusData }) => {
+  const totalOrders = orderStatusData.reduce((sum, item) => sum + item.value, 0);
+
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-      <div className="flex items-center gap-2 mb-6">
-        <div className="w-8 h-8 bg-indigo-50 rounded-lg flex items-center justify-center">
-          <PieChartIcon className="w-4 h-4 text-indigo-600" />
-        </div>
-        <h2 className="text-lg font-semibold text-gray-900">
-          Trạng thái đơn hàng
-        </h2>
-      </div>
-      <ResponsiveContainer width="100%" height={300}>
+    <Card
+      title={
+        <Space>
+          <PieChartOutlined style={{ color: '#722ed1', fontSize: 18 }} />
+          <Text strong style={{ fontSize: 16 }}>Trạng thái đơn hàng</Text>
+        </Space>
+      }
+      style={{ height: '100%' }}
+    >
+      <ResponsiveContainer width="100%" height={250}>
         <PieChart>
           <Pie
             data={orderStatusData}
             cx="50%"
             cy="50%"
             labelLine={false}
-            label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+            label={({ name, percent }) => `${(percent * 100).toFixed(0)}%`}
             outerRadius={80}
             fill="#8884d8"
             dataKey="value"
@@ -33,12 +38,38 @@ const OrderStatusChart = ({ orderStatusData }) => {
             contentStyle={{ 
               backgroundColor: '#fff', 
               border: '1px solid #e5e7eb',
-              borderRadius: '8px'
+              borderRadius: '8px',
+              boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
             }}
           />
         </PieChart>
       </ResponsiveContainer>
-    </div>
+      
+      {/* Legend with counts */}
+      <List
+        size="small"
+        dataSource={orderStatusData}
+        style={{ marginTop: 16 }}
+        renderItem={(item) => (
+          <List.Item style={{ padding: '8px 0', borderBottom: 'none' }}>
+            <Space style={{ width: '100%', justifyContent: 'space-between' }}>
+              <Space>
+                <div 
+                  style={{ 
+                    width: 12, 
+                    height: 12, 
+                    backgroundColor: item.color, 
+                    borderRadius: 2 
+                  }} 
+                />
+                <Text style={{ fontSize: 13 }}>{item.name}</Text>
+              </Space>
+              <Text strong>{item.value}</Text>
+            </Space>
+          </List.Item>
+        )}
+      />
+    </Card>
   );
 };
 

@@ -125,11 +125,11 @@ const DiscountManagement = () => {
   };
 
   if (loading) {
-    return <Loading fullScreen text="Đang tải..." />;
+    return <Loading fullScreen text="Đang tải..." variant="admin" />;
   }
 
   return (
-    <div className="p-6">
+    <div>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>

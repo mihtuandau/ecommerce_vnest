@@ -1,7 +1,5 @@
-import { Edit, Trash2, Eye, Tag } from 'lucide-react';
-import Badge from '../../common/Badge';
-import Button from '../../common/Button';
-import Table from '../../common/Table';
+import { Table, Tag, Button, Space, Tooltip, Typography } from 'antd';
+import { EditOutlined, DeleteOutlined, EyeOutlined, TagOutlined } from '@ant-design/icons';
 import {
   formatDateShort,
   getStatusVariant,
@@ -9,157 +7,140 @@ import {
   getDiscountTypeText,
 } from '../../../utils/discountHelpers';
 
-const DiscountTable = ({ discounts, loading, onSort, onView, onEdit, onDelete }) => {
-  if (loading) {
-    return (
-      <Table>
-        <Table.Head>
-          <Table.Row>
-            <Table.Header>STT</Table.Header>
-            <Table.Header>Mã giảm giá</Table.Header>
-            <Table.Header>Mô tả</Table.Header>
-            <Table.Header>Giá trị</Table.Header>
-            <Table.Header>Ngày bắt đầu</Table.Header>
-            <Table.Header>Ngày kết thúc</Table.Header>
-            <Table.Header>Lượt dùng</Table.Header>
-            <Table.Header>Trạng thái</Table.Header>
-            <Table.Header>Thao tác</Table.Header>
-          </Table.Row>
-        </Table.Head>
-        <Table.Body>
-          <Table.Skeleton rows={5} cols={9} />
-        </Table.Body>
-      </Table>
-    );
-  }
+const { Text } = Typography;
 
-  if (discounts.length === 0) {
-    return (
-      <Table>
-        <Table.Head>
-          <Table.Row>
-            <Table.Header>STT</Table.Header>
-            <Table.Header>Mã giảm giá</Table.Header>
-            <Table.Header>Mô tả</Table.Header>
-            <Table.Header>Giá trị</Table.Header>
-            <Table.Header>Ngày bắt đầu</Table.Header>
-            <Table.Header>Ngày kết thúc</Table.Header>
-            <Table.Header>Lượt dùng</Table.Header>
-            <Table.Header>Trạng thái</Table.Header>
-            <Table.Header>Thao tác</Table.Header>
-          </Table.Row>
-        </Table.Head>
-        <Table.Body>
-          <Table.Empty icon={Tag}>
-            <p className="text-gray-700 font-medium">Không tìm thấy mã giảm giá nào</p>
-          </Table.Empty>
-        </Table.Body>
-      </Table>
-    );
-  }
+// Map status colors for Ant Design Tags
+const getStatusColor = (status) => {
+  const colors = {
+    success: 'success',
+    warning: 'warning',
+    error: 'error',
+    default: 'default',
+  };
+  return colors[getStatusVariant(status)] || 'default';
+};
+
+const DiscountTable = ({ discounts, loading, onSort, onView, onEdit, onDelete }) => {
+  const columns = [
+    {
+      title: 'STT',
+      key: 'index',
+      width: 60,
+      render: (_, __, index) => index + 1,
+    },
+    {
+      title: 'Mã giảm giá',
+      dataIndex: 'code',
+      key: 'code',
+      sorter: true,
+      render: (code) => <Text strong>{code}</Text>,
+    },
+    {
+      title: 'Mô tả',
+      dataIndex: 'description',
+      key: 'description',
+      ellipsis: {
+        showTitle: true,
+      },
+      render: (description) => description || '-',
+    },
+    {
+      title: 'Giá trị',
+      key: 'value',
+      render: (_, record) => (
+        <Text strong>{getDiscountTypeText(record)}</Text>
+      ),
+    },
+    {
+      title: 'Ngày bắt đầu',
+      dataIndex: 'startDate',
+      key: 'startDate',
+      sorter: true,
+      render: (startDate) => formatDateShort(startDate),
+    },
+    {
+      title: 'Ngày kết thúc',
+      dataIndex: 'endDate',
+      key: 'endDate',
+      render: (endDate) => endDate ? formatDateShort(endDate) : 'Không giới hạn',
+    },
+    {
+      title: 'Lượt dùng',
+      dataIndex: 'usageCount',
+      key: 'usageCount',
+      sorter: true,
+      render: (usageCount) => usageCount || 0,
+    },
+    {
+      title: 'Trạng thái',
+      dataIndex: 'status',
+      key: 'status',
+      render: (status) => (
+        <Tag color={getStatusColor(status)}>
+          {getStatusText(status)}
+        </Tag>
+      ),
+    },
+    {
+      title: 'Thao tác',
+      key: 'actions',
+      width: 150,
+      render: (_, record) => (
+        <Space>
+          <Tooltip title="Xem chi tiết">
+            <Button
+              type="text"
+              icon={<EyeOutlined />}
+              onClick={() => onView(record)}
+            />
+          </Tooltip>
+          <Tooltip title="Chỉnh sửa">
+            <Button
+              type="text"
+              icon={<EditOutlined />}
+              onClick={() => onEdit(record)}
+            />
+          </Tooltip>
+          <Tooltip title={record.usageCount > 0 ? 'Không thể xóa mã đã sử dụng' : 'Xóa'}>
+            <Button
+              type="text"
+              danger
+              icon={<DeleteOutlined />}
+              onClick={() => onDelete(record)}
+              disabled={record.usageCount > 0}
+            />
+          </Tooltip>
+        </Space>
+      ),
+    },
+  ];
+
+  const handleTableChange = (pagination, filters, sorter) => {
+    if (sorter.field) {
+      onSort(sorter.field);
+    }
+  };
 
   return (
-    <Table>
-      <Table.Head>
-        <Table.Row>
-          <Table.Header>STT</Table.Header>
-          <Table.Header
-            sortable
-            onSort={() => onSort('code')}
-          >
-            Mã giảm giá
-          </Table.Header>
-          <Table.Header>Mô tả</Table.Header>
-          <Table.Header>Giá trị</Table.Header>
-          <Table.Header
-            sortable
-            onSort={() => onSort('startDate')}
-          >
-            Ngày bắt đầu
-          </Table.Header>
-          <Table.Header>Ngày kết thúc</Table.Header>
-          <Table.Header
-            sortable
-            onSort={() => onSort('usageCount')}
-          >
-            Lượt dùng
-          </Table.Header>
-          <Table.Header>Trạng thái</Table.Header>
-          <Table.Header>Thao tác</Table.Header>
-        </Table.Row>
-      </Table.Head>
-      <Table.Body>
-        {discounts.map((discount, index) => (
-          <Table.Row key={discount.id}>
-            <Table.Cell>
-              <span className="text-sm text-gray-900">{index + 1}</span>
-            </Table.Cell>
-            <Table.Cell>
-              <span className="text-sm font-medium text-gray-900">{discount.code}</span>
-            </Table.Cell>
-            <Table.Cell>
-              <div className="text-sm text-gray-900 max-w-xs truncate" title={discount.description}>
-                {discount.description || '-'}
-              </div>
-            </Table.Cell>
-            <Table.Cell>
-              <span className="text-sm font-medium text-gray-900">
-                {getDiscountTypeText(discount)}
-              </span>
-            </Table.Cell>
-            <Table.Cell>
-              <span className="text-sm text-gray-900">
-                {formatDateShort(discount.startDate)}
-              </span>
-            </Table.Cell>
-            <Table.Cell>
-              <span className="text-sm text-gray-900">
-                {discount.endDate ? formatDateShort(discount.endDate) : 'Không giới hạn'}
-              </span>
-            </Table.Cell>
-            <Table.Cell>
-              <span className="text-sm text-gray-900">
-                {discount.usageCount || 0}
-              </span>
-            </Table.Cell>
-            <Table.Cell>
-              <Badge variant={getStatusVariant(discount.status)}>
-                {getStatusText(discount.status)}
-              </Badge>
-            </Table.Cell>
-            <Table.Cell>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onView(discount)}
-                  title="Xem chi tiết"
-                >
-                  <Eye className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onEdit(discount)}
-                  title="Chỉnh sửa"
-                >
-                  <Edit className="h-4 w-4 text-gray-900" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onDelete(discount)}
-                  title="Xóa"
-                  disabled={discount.usageCount > 0}
-                >
-                  <Trash2 className="h-4 w-4 text-red-600" />
-                </Button>
-              </div>
-            </Table.Cell>
-          </Table.Row>
-        ))}
-      </Table.Body>
-    </Table>
+    <Table
+      columns={columns}
+      dataSource={discounts}
+      loading={loading}
+      rowKey="id"
+      onChange={handleTableChange}
+      pagination={{
+        pageSize: 10,
+        showTotal: (total) => `Tổng ${total} mã giảm giá`,
+      }}
+      locale={{
+        emptyText: (
+          <div style={{ textAlign: 'center', padding: '40px 0' }}>
+            <TagOutlined style={{ fontSize: 48, color: '#bfbfbf', marginBottom: 16 }} />
+            <div style={{ fontWeight: 500 }}>Không tìm thấy mã giảm giá nào</div>
+          </div>
+        ),
+      }}
+    />
   );
 };
 

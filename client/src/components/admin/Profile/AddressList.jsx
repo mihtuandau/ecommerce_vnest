@@ -27,7 +27,7 @@ const AddressList = ({ addresses, onAdd, onEdit, onDelete }) => {
                   <div className="flex items-center gap-2 mb-2">
                     <p className="font-medium text-gray-900">{address.fullName}</p>
                     {address.isDefault && (
-                      <span className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded">
+                      <span className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded">
                         Mặc định
                       </span>
                     )}
@@ -44,7 +44,7 @@ const AddressList = ({ addresses, onAdd, onEdit, onDelete }) => {
                 <div className="flex gap-2">
                   <button
                     onClick={() => onEdit(address)}
-                    className="p-2 text-[#00a85a] hover:bg-green-50 rounded-lg"
+                    className="p-2 text-[#1890ff] hover:bg-blue-50 rounded-lg"
                     title="Chỉnh sửa"
                   >
                     <Edit2 className="w-4 h-4" />
