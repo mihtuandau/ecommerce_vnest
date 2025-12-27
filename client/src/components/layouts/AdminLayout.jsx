@@ -11,7 +11,7 @@ const AdminLayout = memo(({ children }) => {
   
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="admin-layout min-h-screen bg-gray-50">
       {/* Header */}
       <AdminHeader sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 

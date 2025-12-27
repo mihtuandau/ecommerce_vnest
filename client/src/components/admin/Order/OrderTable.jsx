@@ -1,179 +1,233 @@
-import { Eye, Package, RefreshCw } from 'lucide-react';
-import Badge from '../../common/Badge';
-import Table from '../../common/Table';
-import { formatCurrency, formatDate, statusVariants, statusLabels } from '../../../utils/orderHelpers';
 import { useState } from 'react';
+import { Table, Tag, Space, Button, Tooltip, Empty, Typography } from 'antd';
+import { 
+  EyeOutlined, 
+  SyncOutlined, 
+  DollarOutlined,
+  CreditCardOutlined 
+} from '@ant-design/icons';
+import Badge from '../../common/Badge';
+import { formatCurrency, formatDate, statusVariants, statusLabels } from '../../../utils/orderHelpers';
 
-const OrderTable = ({ orders, loading, sortBy, sortDir, onSort, onViewDetails, onSyncPayment }) => {
+const { Text } = Typography;
+
+const OrderTable = ({ 
+  orders = [], 
+  loading, 
+  sortBy, 
+  sortDir, 
+  onSort, 
+  onViewDetails, 
+  onSyncPayment 
+}) => {
   const [syncingPaymentId, setSyncingPaymentId] = useState(null);
 
   const handleSyncPayment = async (e, paymentId) => {
     e.stopPropagation();
     setSyncingPaymentId(paymentId);
-    await onSyncPayment(paymentId);
-    setSyncingPaymentId(null);
+    try {
+      await onSyncPayment(paymentId);
+    } catch (error) {
+      console.error('Sync payment error:', error);
+    } finally {
+      setSyncingPaymentId(null);
+    }
   };
-  if (loading) {
-    return (
-      <Table>
-        <Table.Head>
-          <Table.Row>
-            <Table.Header>ID</Table.Header>
-            <Table.Header>Mã đơn</Table.Header>
-            <Table.Header>Khách hàng</Table.Header>
-            <Table.Header>Tổng tiền</Table.Header>
-            <Table.Header>Thanh toán</Table.Header>
-            <Table.Header>Trạng thái</Table.Header>
-            <Table.Header>Ngày đặt</Table.Header>
-            <Table.Header align="right">Thao tác</Table.Header>
-          </Table.Row>
-        </Table.Head>
-        <Table.Body>
-          <Table.Skeleton rows={5} cols={8} />
-        </Table.Body>
-      </Table>
-    );
-  }
 
-  if (orders.length === 0) {
-    return (
-      <Table>
-        <Table.Head>
-          <Table.Row>
-            <Table.Header>ID</Table.Header>
-            <Table.Header>Mã đơn</Table.Header>
-            <Table.Header>Khách hàng</Table.Header>
-            <Table.Header>Tổng tiền</Table.Header>
-            <Table.Header>Thanh toán</Table.Header>
-            <Table.Header>Trạng thái</Table.Header>
-            <Table.Header>Ngày đặt</Table.Header>
-            <Table.Header align="right">Thao tác</Table.Header>
-          </Table.Row>
-        </Table.Head>
-        <Table.Body>
-          <Table.Empty icon={Package}>
-            <p className="text-gray-700 font-medium">Không tìm thấy đơn hàng phù hợp</p>
-            <p className="text-sm text-gray-500">Thử thay đổi từ khóa tìm kiếm</p>
-          </Table.Empty>
-        </Table.Body>
-      </Table>
-    );
-  }
+  const getPaymentStatusColor = (status) => {
+    switch(status) {
+      case 'SUCCESS': return 'success';
+      case 'PENDING': return 'warning';
+      case 'CANCELLED': return 'default';
+      case 'FAILED': return 'error';
+      default: return 'default';
+    }
+  };
+
+  const getOrderStatusColor = (status) => {
+    const variants = {
+      PENDING: 'warning',
+      PROCESSING: 'processing',
+      SHIPPED: 'blue',
+      DELIVERED: 'success',
+      CANCELLED: 'error',
+    };
+    return variants[status] || 'default';
+  };
+
+  const columns = [
+    {
+      title: 'ID',
+      dataIndex: 'id',
+      key: 'id',
+      width: 80,
+      render: (id) => (
+        <Text type="secondary" style={{ fontSize: 12, fontFamily: 'monospace' }}>
+          #{id}
+        </Text>
+      )
+    },
+    {
+      title: 'Mã đơn',
+      dataIndex: 'orderCode',
+      key: 'orderCode',
+      width: 120,
+      render: (code, record) => (
+        <Text strong style={{ fontSize: 13 }}>
+          {code || `#${record.id}`}
+        </Text>
+      )
+    },
+    {
+      title: 'Khách hàng',
+      key: 'customer',
+      width: 200,
+      render: (_, record) => (
+        <div>
+          <Text style={{ display: 'block', fontSize: 13, fontWeight: 500 }}>
+            {record.user?.name || 
+             record.shippingInfo?.fullName || 
+             record.guestEmail || 
+             'Khách vãng lai'}
+          </Text>
+          <Text type="secondary" style={{ fontSize: 11 }}>
+            {record.user?.email || 
+             record.guestEmail || 
+             record.guestPhone || 
+             'N/A'}
+          </Text>
+        </div>
+      )
+    },
+    {
+      title: 'Tổng tiền',
+      dataIndex: 'total',
+      key: 'total',
+      width: 130,
+      sorter: true,
+      render: (total) => (
+        <Text strong style={{ fontSize: 13 }}>
+          {formatCurrency(total)}
+        </Text>
+      )
+    },
+    {
+      title: 'Thanh toán',
+      key: 'payment',
+      width: 150,
+      render: (_, record) => {
+        if (!record.payment) {
+          return (
+            <Text type="secondary" style={{ fontSize: 11 }}>
+              Chưa có
+            </Text>
+          );
+        }
+        
+        const paymentIcons = {
+          CASH: '💵',
+          PAYOS: '💳',
+          VNPAY: '💳',
+          MOMO: '💳'
+        };
+
+        return (
+          <Space direction="vertical" size={2}>
+            <Space size={4}>
+              <Text style={{ fontSize: 11, fontWeight: 500 }}>
+                {paymentIcons[record.payment.method]} {' '}
+                {record.payment.method === 'CASH' ? 'COD' : record.payment.method}
+              </Text>
+              {record.payment.status === 'PENDING' && 
+               record.payment.method === 'PAYOS' && (
+                <Button
+                  type="text"
+                  size="small"
+                  icon={<SyncOutlined spin={syncingPaymentId === record.payment.id} />}
+                  onClick={(e) => handleSyncPayment(e, record.payment.id)}
+                  disabled={syncingPaymentId === record.payment.id}
+                  title="Kiểm tra trạng thái thanh toán"
+                  style={{ padding: 0, height: 'auto' }}
+                />
+              )}
+            </Space>
+            <Tag 
+              color={getPaymentStatusColor(record.payment.status)} 
+              style={{ fontSize: 10, margin: 0 }}
+            >
+              {record.payment.status === 'SUCCESS' && '✓ Đã TT'}
+              {record.payment.status === 'PENDING' && '⏳ Chờ'}
+              {record.payment.status === 'FAILED' && '✗ Lỗi'}
+              {record.payment.status === 'CANCELLED' && '✗ Hủy'}
+            </Tag>
+          </Space>
+        );
+      }
+    },
+    {
+      title: 'Trạng thái',
+      dataIndex: 'status',
+      key: 'status',
+      width: 120,
+      render: (status) => (
+        <Tag color={getOrderStatusColor(status)}>
+          {statusLabels[status] || status}
+        </Tag>
+      )
+    },
+    {
+      title: 'Ngày đặt',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
+      width: 150,
+      sorter: true,
+      defaultSortOrder: 'descend',
+      render: (date) => (
+        <Text type="secondary" style={{ fontSize: 12 }}>
+          {formatDate(date)}
+        </Text>
+      )
+    },
+    {
+      title: 'Thao tác',
+      key: 'actions',
+      width: 100,
+      align: 'right',
+      fixed: 'right',
+      render: (_, record) => (
+        <Tooltip title="Xem chi tiết">
+          <Button
+            type="text"
+            icon={<EyeOutlined />}
+            onClick={() => onViewDetails(record)}
+          />
+        </Tooltip>
+      )
+    }
+  ];
 
   return (
-    <Table>
-      <Table.Head>
-        <Table.Row>
-          <Table.Header>ID</Table.Header>
-          <Table.Header>Mã đơn</Table.Header>
-          <Table.Header>Khách hàng</Table.Header>
-          <Table.Header 
-            sortable 
-            sorted={sortBy === 'total'}
-            sortDir={sortDir}
-            onSort={() => onSort('total')}
-          >
-            Tổng tiền
-          </Table.Header>
-          <Table.Header>Thanh toán</Table.Header>
-          <Table.Header>Trạng thái</Table.Header>
-          <Table.Header
-            sortable
-            sorted={sortBy === 'createdAt'}
-            sortDir={sortDir}
-            onSort={() => onSort('createdAt')}
-          >
-            Ngày đặt
-          </Table.Header>
-          <Table.Header align="right">Thao tác</Table.Header>
-        </Table.Row>
-      </Table.Head>
-      <Table.Body>
-        {orders.map((order) => (
-          <Table.Row key={order.id}>
-            <Table.Cell>
-              <span className="text-xs font-mono text-gray-500">
-                #{order.id}
-              </span>
-            </Table.Cell>
-            <Table.Cell>
-              <span className="text-sm font-medium text-gray-900">
-                {order.orderCode || `#${order.id}`}
-              </span>
-            </Table.Cell>
-            <Table.Cell>
-              <div className="text-sm font-medium text-gray-900">
-                {order.user?.name || order.shippingInfo?.fullName || order.guestEmail || 'Khách vãng lai'}
-              </div>
-              <div className="text-xs text-gray-500">
-                {order.user?.email || order.guestEmail || order.guestPhone || 'N/A'}
-              </div>
-            </Table.Cell>
-            <Table.Cell>
-              <span className="text-sm font-medium text-gray-900">
-                {formatCurrency(order.total)}
-              </span>
-            </Table.Cell>
-            <Table.Cell>
-              {order.payment ? (
-                <div className="space-y-1">
-                  <div className="flex items-center gap-1">
-                    <div className="text-xs font-medium">
-                      {order.payment.method === 'CASH' && '💵 COD'}
-                      {order.payment.method === 'PAYOS' && '💳 PayOS'}
-                      {order.payment.method === 'VNPAY' && '💳 VNPay'}
-                      {order.payment.method === 'MOMO' && '💳 MoMo'}
-                    </div>
-                    {order.payment.status === 'PENDING' && order.payment.method === 'PAYOS' && (
-                      <button
-                        onClick={(e) => handleSyncPayment(e, order.payment.id)}
-                        disabled={syncingPaymentId === order.payment.id}
-                        className="p-1 hover:bg-blue-100 rounded transition-colors disabled:opacity-50"
-                        title="Kiểm tra trạng thái thanh toán"
-                      >
-                        <RefreshCw className={`w-3 h-3 text-[#00a85a] ${syncingPaymentId === order.payment.id ? 'animate-spin' : ''}`} />
-                      </button>
-                    )}
-                  </div>
-                  <Badge variant={
-                    order.payment.status === 'SUCCESS' ? 'success' 
-                    : order.payment.status === 'PENDING' ? 'warning'
-                    : order.payment.status === 'CANCELLED' ? 'default'
-                    : 'danger'
-                  } size="sm">
-                    {order.payment.status === 'SUCCESS' && '✓ Đã TT'}
-                    {order.payment.status === 'PENDING' && '⏳ Chờ'}
-                    {order.payment.status === 'FAILED' && '✗ Lỗi'}
-                    {order.payment.status === 'CANCELLED' && '✗ Hủy'}
-                  </Badge>
-                </div>
-              ) : (
-                <span className="text-xs text-gray-400">Chưa có</span>
-              )}
-            </Table.Cell>
-            <Table.Cell>
-              <Badge variant={statusVariants[order.status]}>
-                {statusLabels[order.status]}
-              </Badge>
-            </Table.Cell>
-            <Table.Cell>
-              <span className="text-sm text-gray-600">
-                {formatDate(order.createdAt)}
-              </span>
-            </Table.Cell>
-            <Table.Cell align="right">
-              <button
-                onClick={() => onViewDetails(order)}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors inline-flex"
-                title="Xem chi tiết"
-              >
-                <Eye className="w-4 h-4 text-gray-900" />
-              </button>
-            </Table.Cell>
-          </Table.Row>
-        ))}
-      </Table.Body>
-    </Table>
+    <Table
+      columns={columns}
+      dataSource={orders}
+      rowKey="id"
+      loading={loading}
+      pagination={{
+        pageSize: 10,
+        showSizeChanger: true,
+        showTotal: (total) => `Tổng ${total} đơn hàng`,
+        pageSizeOptions: ['10', '20', '50', '100']
+      }}
+      locale={{
+        emptyText: <Empty description="Không tìm thấy đơn hàng phù hợp" />
+      }}
+      scroll={{ x: 1100 }}
+      onChange={(pagination, filters, sorter) => {
+        if (sorter.field) {
+          onSort(sorter.field);
+        }
+      }}
+    />
   );
 };
 

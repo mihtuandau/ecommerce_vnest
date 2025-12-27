@@ -1,6 +1,5 @@
-import { Edit, Trash2, ImageIcon, ArrowUp, ArrowDown } from 'lucide-react';
-import Table from '../../common/Table';
-import Button from '../../common/Button';
+import { Table, Image, Tag, Button, Space, Tooltip } from 'antd';
+import { EditOutlined, DeleteOutlined, ArrowUpOutlined, ArrowDownOutlined, PictureOutlined } from '@ant-design/icons';
 
 const BannerTable = ({
   banners,
@@ -9,155 +8,152 @@ const BannerTable = ({
   onDelete,
   onReorder,
 }) => {
-  if (loading) {
-    return (
-      <Table>
-        <Table.Head>
-          <Table.Row>
-            <Table.Header>STT</Table.Header>
-            <Table.Header>Hình ảnh</Table.Header>
-            <Table.Header>Tiêu đề</Table.Header>
-            <Table.Header>Button Text</Table.Header>
-            <Table.Header>Thứ tự</Table.Header>
-            <Table.Header>Trạng thái</Table.Header>
-            <Table.Header align="right">Thao tác</Table.Header>
-          </Table.Row>
-        </Table.Head>
-        <Table.Body>
-          <Table.Skeleton rows={5} cols={7} />
-        </Table.Body>
-      </Table>
-    );
-  }
-
-  if (banners.length === 0) {
-    return (
-      <Table>
-        <Table.Head>
-          <Table.Row>
-            <Table.Header>STT</Table.Header>
-            <Table.Header>Hình ảnh</Table.Header>
-            <Table.Header>Tiêu đề</Table.Header>
-            <Table.Header>Button Text</Table.Header>
-            <Table.Header>Thứ tự</Table.Header>
-            <Table.Header>Trạng thái</Table.Header>
-            <Table.Header align="right">Thao tác</Table.Header>
-          </Table.Row>
-        </Table.Head>
-        <Table.Body>
-          <Table.Empty icon={ImageIcon}>
-            <p className="text-gray-700 font-medium">Không tìm thấy banner nào</p>
-            <p className="text-sm text-gray-500">Hãy thêm banner mới</p>
-          </Table.Empty>
-        </Table.Body>
-      </Table>
-    );
-  }
+  const columns = [
+    {
+      title: 'STT',
+      key: 'index',
+      width: 60,
+      render: (_, __, index) => index + 1,
+    },
+    {
+      title: 'Hình ảnh',
+      dataIndex: 'image',
+      key: 'image',
+      width: 120,
+      render: (image, record) => (
+        image ? (
+          <Image
+            src={image}
+            alt={record.title}
+            width={80}
+            height={48}
+            style={{ objectFit: 'cover', borderRadius: 8 }}
+            fallback="data:image/png;base64,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"
+          />
+        ) : (
+          <div style={{ 
+            width: 80, 
+            height: 48, 
+            background: '#f5f5f5', 
+            borderRadius: 8, 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center' 
+          }}>
+            <PictureOutlined style={{ fontSize: 24, color: '#bfbfbf' }} />
+          </div>
+        )
+      ),
+    },
+    {
+      title: 'Tiêu đề',
+      dataIndex: 'title',
+      key: 'title',
+      render: (title, record) => (
+        <div>
+          <div style={{ fontWeight: 500 }}>{title}</div>
+          {record.subtitle && (
+            <div style={{ fontSize: 12, color: '#8c8c8c', marginTop: 2 }}>
+              {record.subtitle}
+            </div>
+          )}
+        </div>
+      ),
+    },
+    {
+      title: 'Button Text',
+      dataIndex: 'buttonText',
+      key: 'buttonText',
+      render: (buttonText) => buttonText || 'Mua ngay',
+    },
+    {
+      title: 'Thứ tự',
+      dataIndex: 'order',
+      key: 'order',
+      width: 150,
+      render: (order, record, index) => (
+        <Space>
+          <Tag color="blue">#{order}</Tag>
+          <Space direction="vertical" size={2}>
+            <Tooltip title="Di chuyển lên">
+              <Button
+                type="text"
+                size="small"
+                icon={<ArrowUpOutlined />}
+                onClick={() => onReorder(record.id, 'up')}
+                disabled={index === 0}
+              />
+            </Tooltip>
+            <Tooltip title="Di chuyển xuống">
+              <Button
+                type="text"
+                size="small"
+                icon={<ArrowDownOutlined />}
+                onClick={() => onReorder(record.id, 'down')}
+                disabled={index === banners.length - 1}
+              />
+            </Tooltip>
+          </Space>
+        </Space>
+      ),
+    },
+    {
+      title: 'Trạng thái',
+      dataIndex: 'isActive',
+      key: 'isActive',
+      render: (isActive) => (
+        <Tag color={isActive ? 'success' : 'default'}>
+          {isActive ? 'Active' : 'Inactive'}
+        </Tag>
+      ),
+    },
+    {
+      title: 'Thao tác',
+      key: 'actions',
+      align: 'right',
+      width: 120,
+      render: (_, record) => (
+        <Space>
+          <Tooltip title="Sửa banner">
+            <Button
+              type="text"
+              icon={<EditOutlined />}
+              onClick={() => onEdit(record)}
+            />
+          </Tooltip>
+          <Tooltip title="Xóa banner">
+            <Button
+              type="text"
+              danger
+              icon={<DeleteOutlined />}
+              onClick={() => onDelete(record)}
+            />
+          </Tooltip>
+        </Space>
+      ),
+    },
+  ];
 
   return (
-    <Table>
-      <Table.Head>
-        <Table.Row>
-          <Table.Header>STT</Table.Header>
-          <Table.Header>Hình ảnh</Table.Header>
-          <Table.Header>Tiêu đề</Table.Header>
-          <Table.Header>Button Text</Table.Header>
-          <Table.Header>Thứ tự</Table.Header>
-          <Table.Header>Trạng thái</Table.Header>
-          <Table.Header align="right">Thao tác</Table.Header>
-        </Table.Row>
-      </Table.Head>
-      <Table.Body>
-        {banners.map((banner, idx) => (
-          <Table.Row key={banner.id}>
-            <Table.Cell>
-              <span className="text-sm text-gray-600">{idx + 1}</span>
-            </Table.Cell>
-            <Table.Cell>
-              {banner.image ? (
-                <img 
-                  src={banner.image} 
-                  alt={banner.title}
-                  className="w-20 h-12 object-cover rounded-lg border border-gray-200"
-                />
-              ) : (
-                <div className="w-20 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                  <ImageIcon className="w-6 h-6 text-gray-400" />
-                </div>
-              )}
-            </Table.Cell>
-            <Table.Cell>
-              <div>
-                <p className="font-medium text-gray-900">{banner.title}</p>
-                {banner.subtitle && (
-                  <p className="text-sm text-gray-500 mt-0.5">{banner.subtitle}</p>
-                )}
-              </div>
-            </Table.Cell>
-            <Table.Cell>
-              <span className="text-sm text-gray-700">{banner.buttonText || 'Mua ngay'}</span>
-            </Table.Cell>
-            <Table.Cell>
-              <div className="flex items-center gap-2">
-                <span className="px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800">
-                  #{banner.order}
-                </span>
-                <div className="flex flex-col gap-1">
-                  <button
-                    onClick={() => onReorder(banner.id, 'up')}
-                    disabled={idx === 0}
-                    className="p-1 text-gray-600 hover:bg-gray-100 rounded disabled:opacity-50 disabled:cursor-not-allowed"
-                    title="Di chuyển lên"
-                  >
-                    <ArrowUp className="w-3 h-3" />
-                  </button>
-                  <button
-                    onClick={() => onReorder(banner.id, 'down')}
-                    disabled={idx === banners.length - 1}
-                    className="p-1 text-gray-600 hover:bg-gray-100 rounded disabled:opacity-50 disabled:cursor-not-allowed"
-                    title="Di chuyển xuống"
-                  >
-                    <ArrowDown className="w-3 h-3" />
-                  </button>
-                </div>
-              </div>
-            </Table.Cell>
-            <Table.Cell>
-              <span
-                className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
-                  banner.isActive
-                    ? 'bg-green-100 text-green-800'
-                    : 'bg-gray-100 text-gray-800'
-                }`}
-              >
-                {banner.isActive ? 'Active' : 'Inactive'}
-              </span>
-            </Table.Cell>
-            <Table.Cell align="right">
-              <div className="flex items-center justify-end gap-2">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => onEdit(banner)}
-                  title="Sửa banner"
-                >
-                  <Edit className="w-4 h-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => onDelete(banner)}
-                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                  title="Xóa banner"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-              </div>
-            </Table.Cell>
-          </Table.Row>
-        ))}
-      </Table.Body>
-    </Table>
+    <Table
+      columns={columns}
+      dataSource={banners}
+      loading={loading}
+      rowKey="id"
+      pagination={{
+        pageSize: 10,
+        showTotal: (total) => `Tổng ${total} banners`,
+      }}
+      locale={{
+        emptyText: (
+          <div style={{ textAlign: 'center', padding: '40px 0' }}>
+            <PictureOutlined style={{ fontSize: 48, color: '#bfbfbf', marginBottom: 16 }} />
+            <div style={{ fontWeight: 500, marginBottom: 4 }}>Không tìm thấy banner nào</div>
+            <div style={{ fontSize: 14, color: '#8c8c8c' }}>Hãy thêm banner mới</div>
+          </div>
+        ),
+      }}
+    />
   );
 };
 

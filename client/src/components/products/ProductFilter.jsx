@@ -105,12 +105,12 @@ const ProductFilter = ({
   // Horizontal layout
   if (layout === "horizontal") {
     return (
-      <div className="flex items-center gap-4 flex-wrap p-5 rounded-lg">
+      <div className="flex items-center gap-4 flex-wrap pt-5 pb-5 rounded-lg">
         {/* Sort Dropdown */}
         <div className="relative" ref={(el) => (dropdownRefs.current["sort"] = el)}>
           <button
             onClick={() => setOpenDropdown(openDropdown === "sort" ? null : "sort")}
-            className="min-w-[160px] px-5 py-2.5 border border-gray-300 rounded-lg bg-white text-sm font-medium text-gray-700 hover:border-[#00a85a] flex items-center justify-between gap-3 transition-all"
+            className="min-w-[160px] px-5 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:border-[#00a85a] flex items-center justify-between gap-3 transition-all"
           >
             <span>{sortOptions.find((opt) => opt.value === filters.sortBy)?.label || "Sắp xếp"}</span>
             <FaChevronDown size={10} className={`transition-transform ${openDropdown === "sort" ? "rotate-180" : ""}`} />
@@ -138,7 +138,7 @@ const ProductFilter = ({
         <div className="relative" ref={(el) => (dropdownRefs.current["price"] = el)}>
           <button
             onClick={() => setOpenDropdown(openDropdown === "price" ? null : "price")}
-            className="min-w-[160px] px-5 py-2.5 border border-gray-300 rounded-lg bg-white text-sm font-medium text-gray-700 hover:border-[#00a85a] flex items-center justify-between gap-3 transition-all"
+            className="min-w-[160px] px-5 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:border-[#00a85a] flex items-center justify-between gap-3 transition-all"
           >
             <span>Khoảng giá</span>
             <FaChevronDown size={10} className={`transition-transform ${openDropdown === "price" ? "rotate-180" : ""}`} />
@@ -197,7 +197,7 @@ const ProductFilter = ({
         <div className="relative" ref={(el) => (dropdownRefs.current["rating"] = el)}>
           <button
             onClick={() => setOpenDropdown(openDropdown === "rating" ? null : "rating")}
-            className="min-w-[160px] px-5 py-2.5 border border-gray-300 rounded-lg bg-white text-sm font-medium text-gray-700 hover:border-[#00a85a] flex items-center justify-between gap-3 transition-all"
+            className="min-w-[160px] px-5 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:border-[#00a85a] flex items-center justify-between gap-3 transition-all"
           >
             <span>Đánh giá</span>
             <FaChevronDown size={10} className={`transition-transform ${openDropdown === "rating" ? "rotate-180" : ""}`} />
@@ -228,7 +228,7 @@ const ProductFilter = ({
         <div className="relative" ref={(el) => (dropdownRefs.current["stock"] = el)}>
           <button
             onClick={() => setOpenDropdown(openDropdown === "stock" ? null : "stock")}
-            className="min-w-[160px] px-5 py-2.5 border border-gray-300 rounded-lg bg-white text-sm font-medium text-gray-700 hover:border-[#00a85a] flex items-center justify-between gap-3 transition-all"
+            className="min-w-[160px] px-5 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:border-[#00a85a] flex items-center justify-between gap-3 transition-all"
           >
             <span>Tình trạng</span>
             <FaChevronDown size={10} className={`transition-transform ${openDropdown === "stock" ? "rotate-180" : ""}`} />

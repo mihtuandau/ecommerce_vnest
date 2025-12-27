@@ -117,6 +117,7 @@ const BannerFormModal = ({ banner = null, onSave, onClose }) => {
       onClose={onClose}
       size="lg"
       title={banner ? 'Sửa Banner' : 'Thêm Banner Mới'}
+      variant="admin"
     >
       <form onSubmit={handleSubmit} className="flex flex-col h-full -m-6">
         <div className="p-6 overflow-y-auto flex-1 space-y-4">

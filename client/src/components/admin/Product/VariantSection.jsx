@@ -26,7 +26,7 @@ const VariantSection = ({
           type="button"
           onClick={onAddVariant}
           size="sm"
-          className="flex items-center gap-1.5 bg-[#00a85a] hover:bg-[#008f4d] text-white text-sm px-3 py-1.5"
+          className="flex items-center gap-1.5 bg-[#1890ff] hover:bg-[#40a9ff] text-white text-sm px-3 py-1.5"
         >
           <Plus size={16} />
           Thêm
@@ -200,7 +200,7 @@ const VariantSection = ({
           <button
             type="button"
             onClick={onAddVariant}
-            className="text-[#00a85a] hover:text-[#008f4d] font-medium text-sm"
+            className="text-[#1890ff] hover:text-[#40a9ff] font-medium text-sm"
           >
             Thêm variant đầu tiên
           </button>

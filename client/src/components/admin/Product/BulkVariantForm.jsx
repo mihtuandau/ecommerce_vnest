@@ -76,7 +76,7 @@ const BulkVariantForm = ({ product, bulkData, setBulkData }) => {
 
       {/* Preview */}
       {bulkData.color && bulkData.sizes && (
-        <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
           <p className="text-sm font-medium text-green-900 mb-2">
             📋 Sẽ tạo {bulkData.sizes.split(',').filter(s => s.trim()).length} variants:
           </p>

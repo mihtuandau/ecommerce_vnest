@@ -1,6 +1,7 @@
-import { Edit, Trash2, ImageIcon, FolderOpen } from 'lucide-react';
-import Table from '../../common/Table';
-import Button from '../../common/Button';
+import { Table, Image, Button, Space, Tooltip, Empty, Typography } from 'antd';
+import { EditOutlined, DeleteOutlined, PictureOutlined } from '@ant-design/icons';
+
+const { Text } = Typography;
 
 const CategoryTable = ({
   categories,
@@ -13,126 +14,128 @@ const CategoryTable = ({
   currentPage = 1,
   itemsPerPage = 10,
 }) => {
-  if (loading) {
-    return (
-      <Table>
-        <Table.Head>
-          <Table.Row>
-            <Table.Header>STT</Table.Header>
-            <Table.Header>Hình ảnh</Table.Header>
-            <Table.Header>Tên danh mục</Table.Header>
-            <Table.Header>Số sản phẩm</Table.Header>
-            <Table.Header align="right">Thao tác</Table.Header>
-          </Table.Row>
-        </Table.Head>
-        <Table.Body>
-          <Table.Skeleton rows={5} cols={5} />
-        </Table.Body>
-      </Table>
-    );
-  }
-
-  if (categories.length === 0) {
-    return (
-      <Table>
-        <Table.Head>
-          <Table.Row>
-            <Table.Header>STT</Table.Header>
-            <Table.Header>Hình ảnh</Table.Header>
-            <Table.Header>Tên danh mục</Table.Header>
-            <Table.Header>Số sản phẩm</Table.Header>
-            <Table.Header align="right">Thao tác</Table.Header>
-          </Table.Row>
-        </Table.Head>
-        <Table.Body>
-          <Table.Empty icon={FolderOpen}>
-            <p className="text-gray-700 font-medium">Không tìm thấy danh mục nào</p>
-            <p className="text-sm text-gray-500">Thử thay đổi từ khóa tìm kiếm</p>
-          </Table.Empty>
-        </Table.Body>
-      </Table>
-    );
-  }
+  const columns = [
+    {
+      title: 'STT',
+      key: 'index',
+      width: 70,
+      align: 'center',
+      render: (_, __, index) => (
+        <Text type="secondary">{(currentPage - 1) * itemsPerPage + index + 1}</Text>
+      )
+    },
+    {
+      title: 'Hình ảnh',
+      dataIndex: 'image',
+      key: 'image',
+      width: 100,
+      render: (image, record) => (
+        image ? (
+          <Image
+            width={48}
+            height={48}
+            src={image}
+            alt={record.name}
+            style={{ objectFit: 'cover', borderRadius: 8 }}
+            fallback="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Crect fill='%23f0f0f0' width='48' height='48'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23999' font-size='16'%3E📁%3C/text%3E%3C/svg%3E"
+          />
+        ) : (
+          <div style={{ 
+            width: 48, 
+            height: 48, 
+            background: '#f0f0f0', 
+            borderRadius: 8, 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center' 
+          }}>
+            <PictureOutlined style={{ fontSize: 24, color: '#999' }} />
+          </div>
+        )
+      )
+    },
+    {
+      title: 'Tên danh mục',
+      dataIndex: 'name',
+      key: 'name',
+      sorter: true,
+      render: (name, record) => (
+        <div>
+          <Text strong style={{ display: 'block', fontSize: 13 }}>{name}</Text>
+          {record.description && (
+            <Text type="secondary" style={{ fontSize: 11 }}>{record.description}</Text>
+          )}
+        </div>
+      )
+    },
+    {
+      title: 'Số sản phẩm',
+      key: 'products',
+      width: 150,
+      align: 'center',
+      sorter: true,
+      render: (_, record) => (
+        <Text strong style={{ 
+          display: 'inline-flex', 
+          padding: '4px 12px', 
+          borderRadius: 16, 
+          background: '#f0f0f0',
+          fontSize: 12
+        }}>
+          {record._count?.products || 0} sản phẩm
+        </Text>
+      )
+    },
+    {
+      title: 'Thao tác',
+      key: 'actions',
+      width: 120,
+      align: 'right',
+      render: (_, record) => (
+        <Space>
+          <Tooltip title="Chỉnh sửa">
+            <Button
+              type="text"
+              icon={<EditOutlined />}
+              onClick={() => onEdit(record)}
+            />
+          </Tooltip>
+          <Tooltip title="Xóa">
+            <Button
+              type="text"
+              danger
+              icon={<DeleteOutlined />}
+              onClick={() => onDelete(record.id)}
+            />
+          </Tooltip>
+        </Space>
+      )
+    }
+  ];
 
   return (
-    <Table>
-      <Table.Head>
-        <Table.Row>
-          <Table.Header>STT</Table.Header>
-          <Table.Header>Hình ảnh</Table.Header>
-          <Table.Header
-            sortable
-            sorted={sortBy === 'name'}
-            sortDir={sortDir}
-            onSort={() => onSort('name')}
-          >
-            Tên danh mục
-          </Table.Header>
-          <Table.Header
-            sortable
-            sorted={sortBy === 'products'}
-            sortDir={sortDir}
-            onSort={() => onSort('products')}
-          >
-            Số sản phẩm
-          </Table.Header>
-          <Table.Header align="right">Thao tác</Table.Header>
-        </Table.Row>
-      </Table.Head>
-      <Table.Body>
-        {categories.map((category, idx) => (
-          <Table.Row key={category.id}>
-            <Table.Cell>
-              <span className="text-sm text-gray-600">
-                {(currentPage - 1) * itemsPerPage + idx + 1}
-              </span>
-            </Table.Cell>
-            <Table.Cell>
-              {category.image ? (
-                <img 
-                  src={category.image} 
-                  alt={category.name}
-                  className="w-12 h-12 object-cover rounded-lg border border-gray-200"
-                />
-              ) : (
-                <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                  <ImageIcon className="w-6 h-6 text-gray-400" />
-                </div>
-              )}
-            </Table.Cell>
-            <Table.Cell>
-              <div className="text-sm font-medium text-gray-900">{category.name}</div>
-              {category.description && (
-                <div className="text-xs text-gray-500 mt-0.5">{category.description}</div>
-              )}
-            </Table.Cell>
-            <Table.Cell>
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-900">
-                {category._count?.products || 0} sản phẩm
-              </span>
-            </Table.Cell>
-            <Table.Cell align="right">
-              <div className="inline-flex gap-1">
-                <button
-                  onClick={() => onEdit(category)}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors inline-flex"
-                  title="Chỉnh sửa"
-                >
-                  <Edit className="w-4 h-4 text-gray-900" />
-                </button>
-                <button
-                  onClick={() => onDelete(category.id)}
-                  className="p-2 hover:bg-red-100 rounded-lg transition-colors inline-flex"
-                  title="Xóa"
-                >
-                  <Trash2 className="w-4 h-4 text-red-600" />
-                </button>
-              </div>
-            </Table.Cell>
-          </Table.Row>
-        ))}
-      </Table.Body>
-    </Table>
+    <Table
+      columns={columns}
+      dataSource={categories}
+      rowKey="id"
+      loading={loading}
+      pagination={{
+        current: currentPage,
+        pageSize: itemsPerPage,
+        showSizeChanger: true,
+        showTotal: (total) => `Tổng ${total} danh mục`,
+        pageSizeOptions: ['10', '20', '50']
+      }}
+      locale={{
+        emptyText: <Empty description="Không tìm thấy danh mục nào" />
+      }}
+      scroll={{ x: 800 }}
+      onChange={(pagination, filters, sorter) => {
+        if (sorter.field) {
+          onSort(sorter.field);
+        }
+      }}
+    />
   );
 };
 

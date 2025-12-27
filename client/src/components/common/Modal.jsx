@@ -9,6 +9,7 @@ const Modal = ({
   children,
   size = "md",
   showClose = true,
+  variant = "user", // 'user' or 'admin'
 }) => {
   const [isAnimating, setIsAnimating] = useState(false);
 
@@ -53,7 +54,7 @@ const Modal = ({
         style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
       >
         <div
-          className={`pointer-events-auto bg-white shadow-2xl ${
+          className={`${variant === 'admin' ? 'admin-layout' : ''} pointer-events-auto bg-white shadow-2xl ${
             sizeClasses[size]
           } w-full max-h-[90vh] my-8 flex flex-col transform transition-all duration-300 ${
             isAnimating

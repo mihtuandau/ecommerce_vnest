@@ -20,7 +20,7 @@ const PaymentDetailModal = ({
   if (!payment) return null;
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Chi tiết thanh toán" size="lg">
+    <Modal isOpen={isOpen} onClose={onClose} title="Chi tiết thanh toán" size="lg" variant="admin">
       <div className="space-y-6">
         {/* Payment Info */}
         <div className="grid grid-cols-2 gap-4">

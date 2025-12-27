@@ -51,7 +51,7 @@ const ImageUploadSection = ({
           <p className="text-xs text-gray-600 mb-2">
             {images.length} ảnh
           </p>
-          <div className="grid grid-cols-3 md:grid-cols-5 gap-3">
+          <div className="grid grid-cols-4 gap-3">
             {images.map((img, index) => (
               <div key={img.id || index} className="relative group">
                 <div className="aspect-square rounded overflow-hidden border border-gray-200">
@@ -63,7 +63,7 @@ const ImageUploadSection = ({
                 </div>
                 
                 {img.isThumbnail && (
-                  <span className="absolute top-1 left-1 bg-[#00a85a] text-white text-[10px] px-1.5 py-0.5 rounded">
+                  <span className="absolute top-1 left-1 bg-[#1890ff] text-white text-[10px] px-1.5 py-0.5 rounded">
                     Main
                   </span>
                 )}

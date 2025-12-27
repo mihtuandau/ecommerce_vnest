@@ -6,18 +6,23 @@ import { notify } from '../../../utils/notification';
 import Button from '../../common/Button';
 
 const ImageManagerModal = ({ product, isOpen, onClose, onUpdated }) => {
-  const [images, setImages] = useState(product?.images || []);
+  // Chỉ lấy ảnh chung (không thuộc variant nào)
+  const [images, setImages] = useState(
+    product?.images?.filter(img => !img.variantId) || []
+  );
   const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
-    setImages(product?.images || []);
+    // Lọc chỉ lấy ảnh chung khi product thay đổi
+    setImages(product?.images?.filter(img => !img.variantId) || []);
   }, [product]);
 
   const refresh = async () => {
     try {
       const res = await productService.getOne(product.id);
       const p = res?.data || res;
-      setImages(p?.images || []);
+      // Cập nhật chỉ ảnh chung
+      setImages(p?.images?.filter(img => !img.variantId) || []);
       if (onUpdated) onUpdated(p);
     } catch (err) {}
   };
@@ -52,6 +57,7 @@ const ImageManagerModal = ({ product, isOpen, onClose, onUpdated }) => {
       onClose={onClose}
       title={`Quản lý ảnh - ${product?.name || ''}`}
       size="lg"
+      variant="admin"
     >
       <div className="space-y-4">
         <ImageUploadSection

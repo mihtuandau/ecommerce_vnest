@@ -27,7 +27,7 @@ const PaymentStatsCards = ({ stats }) => {
       icon: CheckCircle,
       borderColor: 'border-green-500',
       iconColor: 'text-green-500',
-      bgColor: 'bg-green-100',
+      bgColor: 'bg-blue-100',
     },
     {
       title: 'Thất bại',

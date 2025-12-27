@@ -1,6 +1,11 @@
-import { FaStar, FaStarHalfAlt, FaRegStar } from 'react-icons/fa';
+import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
 
-const StarRating = ({ rating = 0, size = 16, showNumber = false, reviewCount = 0 }) => {
+const StarRating = ({
+  rating = 0,
+  size = 16,
+  showNumber = false,
+  reviewCount = 0,
+}) => {
   const validRating = Number(rating) || 0;
   const fullStars = Math.floor(validRating);
   const hasHalfStar = validRating % 1 >= 0.5;

@@ -1,71 +1,141 @@
 import React from 'react';
-import { TrendingUp } from 'lucide-react';
+import { Card, List, Tag, Typography, Space, Avatar, Button, Empty } from 'antd';
+import { TrophyOutlined, FireOutlined } from '@ant-design/icons';
+
+const { Text } = Typography;
 
 const TopProducts = ({ products }) => {
-  return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-      <div className="flex items-center justify-between mb-5">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-indigo-50 rounded-lg flex items-center justify-center">
-            <TrendingUp className="w-4 h-4 text-indigo-600" />
-          </div>
-          <h2 className="text-lg font-semibold text-gray-900">
-            Sản phẩm bán chạy
-          </h2>
-        </div>
-        {products.length > 5 && (
-          <span className="text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded">
-            Top 5/{products.length}
-          </span>
-        )}
-      </div>
+  const getRankColor = (index) => {
+    if (index === 0) return '#ffd700'; // Gold
+    if (index === 1) return '#c0c0c0'; // Silver
+    if (index === 2) return '#cd7f32'; // Bronze
+    return '#1890ff';
+  };
 
-      {/* Scrollable container with fixed height */}
-      <div className="overflow-y-auto max-h-[400px] space-y-3 pr-2 custom-scrollbar">
-        {products.length === 0 ? (
-          <p className="text-gray-500 text-center py-8">Chưa có dữ liệu</p>
-        ) : (
-          products.slice(0, 5).map((item, index) => (
-            <div
-              key={item.product.id}
-              className="flex items-center gap-3 p-3 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors"
+  const getRankIcon = (index) => {
+    if (index < 3) return <TrophyOutlined style={{ color: getRankColor(index) }} />;
+    return <FireOutlined style={{ color: '#1890ff' }} />;
+  };
+
+  return (
+    <Card
+      title={
+        <Space>
+          <TrophyOutlined style={{ color: '#faad14', fontSize: 18 }} />
+          <Text strong style={{ fontSize: 16 }}>Sản phẩm bán chạy</Text>
+        </Space>
+      }
+      extra={
+        products.length > 5 && (
+          <Tag color="orange">Top {products.length}</Tag>
+        )
+      }
+      style={{ height: '100%' }}
+    >
+      <List
+        grid={{ 
+          gutter: 16, 
+          xs: 1, 
+          sm: 2, 
+          md: 3,
+          lg: 5,
+          xl: 5,
+          xxl: 5
+        }}
+        dataSource={products.slice(0, 5)}
+        locale={{
+          emptyText: <Empty description="Chưa có dữ liệu" />
+        }}
+        renderItem={(item, index) => (
+          <List.Item>
+            <Card
+              hoverable
+              style={{ 
+                height: '100%',
+                borderRadius: 8,
+                border: index < 3 ? `2px solid ${getRankColor(index)}` : '1px solid #f0f0f0'
+              }}
+              bodyStyle={{ padding: 16 }}
             >
-              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 font-semibold text-sm">
-                {index + 1}
-              </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-medium text-gray-900 truncate text-sm">{item.product.name}</h3>
-                <div className="flex items-center gap-2 mt-1">
-                  <span className="text-xs text-gray-500">
-                    {item.product.category?.name}
-                  </span>
-                  {item.product.brand?.name && (
-                    <>
-                      <span className="text-gray-300">•</span>
-                      <span className="text-xs text-gray-500">
-                        {item.product.brand.name}
-                      </span>
-                    </>
-                  )}
+              <Space direction="vertical" size={8} style={{ width: '100%' }}>
+                {/* Rank Badge */}
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: 8
+                }}>
+                  <Avatar 
+                    size={32}
+                    style={{ 
+                      backgroundColor: index < 3 ? getRankColor(index) : '#1890ff',
+                      color: '#fff',
+                      fontWeight: 'bold'
+                    }}
+                  >
+                    {index + 1}
+                  </Avatar>
+                  {getRankIcon(index)}
                 </div>
-              </div>
-              <div className="text-right flex-shrink-0">
-                <p className="font-semibold text-gray-900">{item.totalSold}</p>
-                <p className="text-xs text-gray-500">Đã bán</p>
-              </div>
-            </div>
-          ))
+
+                {/* Product Info */}
+                <div>
+                  <Text 
+                    strong 
+                    style={{ 
+                      fontSize: 14,
+                      display: 'block',
+                      marginBottom: 4,
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap'
+                    }}
+                    title={item.product.name}
+                  >
+                    {item.product.name}
+                  </Text>
+                  
+                  <Space size={4} style={{ marginBottom: 8 }}>
+                    {item.product.category?.name && (
+                      <Tag color="blue" style={{ fontSize: 11, padding: '0 4px' }}>
+                        {item.product.category.name}
+                      </Tag>
+                    )}
+                    {item.product.brand?.name && (
+                      <Tag color="green" style={{ fontSize: 11, padding: '0 4px' }}>
+                        {item.product.brand.name}
+                      </Tag>
+                    )}
+                  </Space>
+
+                  <div style={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    paddingTop: 8,
+                    borderTop: '1px solid #f0f0f0'
+                  }}>
+                    <Text type="secondary" style={{ fontSize: 12 }}>Đã bán</Text>
+                    <Text strong style={{ fontSize: 16, color: '#1890ff' }}>
+                      {item.totalSold}
+                    </Text>
+                  </div>
+                </div>
+              </Space>
+            </Card>
+          </List.Item>
         )}
-      </div>
+      />
+      
       
       {products.length > 5 && (
-        <div className="mt-4 pt-4 border-t border-gray-100 text-center">
-          <button className="text-sm font-medium text-indigo-600 hover:text-indigo-700 transition-colors">
+        <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid #f0f0f0', textAlign: 'center' }}>
+          <Button type="link">
             Xem tất cả {products.length} sản phẩm →
-          </button>
+          </Button>
         </div>
       )}
-    </div>
+    </Card>
   );
 };
 

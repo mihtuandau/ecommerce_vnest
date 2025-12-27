@@ -1,22 +1,36 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { 
+  Layout, 
+  Input, 
+  Badge, 
+  Dropdown, 
+  Avatar, 
+  Space, 
+  Button,
+  List,
+  Typography,
+  Divider
+} from "antd";
 import {
-  Menu,
-  X,
-  Search,
-  Bell,
-  Settings,
-  User,
-  LogOut,
-  ChevronDown,
-} from "lucide-react";
+  MenuOutlined,
+  SearchOutlined,
+  BellOutlined,
+  SettingOutlined,
+  UserOutlined,
+  LogoutOutlined,
+  DownOutlined,
+  CloseOutlined
+} from "@ant-design/icons";
 import { useAuth } from "../../contexts/authContext";
+
+const { Header } = Layout;
+const { Search } = Input;
+const { Text } = Typography;
 
 const AdminHeader = ({ sidebarOpen, setSidebarOpen }) => {
   const { user, logout } = useAuth();
-  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
-  const [searchFocused, setSearchFocused] = useState(false);
 
   const notifications = [
     {
@@ -41,212 +55,187 @@ const AdminHeader = ({ sidebarOpen, setSidebarOpen }) => {
 
   const unreadCount = notifications.filter((n) => n.unread).length;
 
-  return (
-    <header className="bg-white border-b border-gray-200 fixed top-0 left-0 right-0 z-30 h-16">
-      <div className="flex items-center justify-between h-full px-4 lg:px-6">
-        {/* Left: Menu Toggle + Logo */}
-        <div className="flex items-center gap-4">
-          {/* Menu Toggle Button */}
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-            aria-label="Toggle Sidebar"
-          >
-            {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+  // User menu items
+  const userMenuItems = [
+    {
+      key: 'profile',
+      icon: <UserOutlined />,
+      label: <Link to="/admin/profile">My Profile</Link>,
+    },
+    {
+      key: 'settings',
+      icon: <SettingOutlined />,
+      label: <Link to="/admin/settings">Settings</Link>,
+    },
+    {
+      type: 'divider',
+    },
+    {
+      key: 'logout',
+      icon: <LogoutOutlined />,
+      label: 'Logout',
+      danger: true,
+      onClick: logout,
+    },
+  ];
 
-          {/* Logo */}
-          <Link to="/admin-dashboard" className="flex items-center gap-2">
-            <div className="w-15 h-15 rounded-lg flex items-center justify-center pb-2">
-                <img src="./public/logoMT.png" alt="Logo" />
-            </div>
-            <span className="text-xl font-bold text-[#00a85a] hidden sm:block">
-              Admin Panel
-            </span>
-          </Link>
-        </div>
-
-        {/* Center: Search Bar */}
-        <div className="flex-1 max-w-2xl mx-4 hidden md:block">
-          <div
-            className={`relative transition-all ${
-              searchFocused ? "scale-105" : "scale-100"
-            }`}
-          >
-            <Search
-              size={20}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-            />
-            <input
-              type="text"
-              placeholder="Search products, orders, users..."
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-              onFocus={() => setSearchFocused(true)}
-              onBlur={() => setSearchFocused(false)}
-            />
-            {searchFocused && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-lg border border-gray-200 p-2">
-                <p className="text-sm text-gray-500 px-3 py-2">
-                  Type to search...
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Right: Actions + User */}
-        <div className="flex items-center gap-2">
-          {/* Mobile Search Icon */}
-          <button className="p-2 hover:bg-gray-100 rounded-lg md:hidden">
-            <Search size={20} />
-          </button>
-
-          {/* Notifications */}
-          <div className="relative">
-            <button
-              onClick={() => setNotificationOpen(!notificationOpen)}
-              className="relative p-2 hover:bg-gray-100 rounded-lg transition-colors"
-            >
-              <Bell size={20} />
-              {unreadCount > 0 && (
-                <span className="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-semibold">
-                  {unreadCount}
-                </span>
-              )}
-            </button>
-
-            {/* Notification Dropdown */}
-            {notificationOpen && (
-              <>
-                <div
-                  className="fixed inset-0 z-10"
-                  onClick={() => setNotificationOpen(false)}
-                />
-                <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-200 z-20">
-                  <div className="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
-                    <h3 className="font-semibold text-gray-900">
-                      Notifications
-                    </h3>
-                    <button className="text-xs text-[#00a85a] hover:text-[#008f4d]">
-                      Mark all as read
-                    </button>
-                  </div>
-                  <div className="max-h-96 overflow-y-auto">
-                    {notifications.map((notification) => (
-                      <div
-                        key={notification.id}
-                        className={`px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${
-                          notification.unread ? "bg-blue-50" : ""
-                        }`}
-                      >
-                        <p className="text-sm text-gray-900">
-                          {notification.text}
-                        </p>
-                        <p className="text-xs text-gray-500 mt-1">
-                          {notification.time}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="px-4 py-3 border-t border-gray-200 text-center">
-                    <button className="text-sm text-[#00a85a] hover:text-[#008f4d] font-medium">
-                      View all notifications
-                    </button>
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
-
-          {/* Settings */}
-          <Link
-            to="/admin/settings"
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors hidden lg:block"
-          >
-            <Settings size={20} />
-          </Link>
-
-          {/* User Menu */}
-          <div className="relative ml-2 pl-2 border-l border-gray-200">
-            <button
-              onClick={() => setUserMenuOpen(!userMenuOpen)}
-              className="flex items-center gap-2 px-2 py-1 hover:bg-gray-100 rounded-lg transition-colors"
-            >
-              <div className="w-9 h-9 bg-gradient-to-br from-blue-600 to-blue-700 rounded-full flex items-center justify-center text-white font-semibold shadow-md">
-                {user?.name?.charAt(0)?.toUpperCase() || "A"}
-              </div>
-              <div className="hidden lg:block text-left">
-                <p className="text-sm font-medium text-gray-900 leading-tight">
-                  {user?.name || "Admin"}
-                </p>
-                <p className="text-xs text-gray-500">
-                  {user?.role || "Administrator"}
-                </p>
-              </div>
-              <ChevronDown
-                size={16}
-                className="text-gray-400 hidden lg:block"
-              />
-            </button>
-
-            {/* User Dropdown */}
-            {userMenuOpen && (
-              <>
-                <div
-                  className="fixed inset-0 z-10"
-                  onClick={() => setUserMenuOpen(false)}
-                />
-                <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 z-20">
-                  {/* User Info */}
-                  <div className="px-4 py-3 border-b border-gray-200">
-                    <p className="font-medium text-gray-900">
-                      {user?.name || "Admin"}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      {user?.email || "admin@example.com"}
-                    </p>
-                  </div>
-
-                  {/* Menu Items */}
-                  <div className="py-2">
-                    <Link
-                      to="/admin/profile"
-                      className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-                      onClick={() => setUserMenuOpen(false)}
-                    >
-                      <User size={16} />
-                      <span>My Profile</span>
-                    </Link>
-                    <Link
-                      to="/admin/settings"
-                      className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-                      onClick={() => setUserMenuOpen(false)}
-                    >
-                      <Settings size={16} />
-                      <span>Settings</span>
-                    </Link>
-                  </div>
-
-                  {/* Logout */}
-                  <div className="border-t border-gray-200 py-2">
-                    <button
-                      onClick={() => {
-                        logout();
-                        setUserMenuOpen(false);
-                      }}
-                      className="flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors w-full"
-                    >
-                      <LogOut size={16} />
-                      <span>Logout</span>
-                    </button>
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
+  // Notification dropdown content
+  const notificationContent = (
+    <div style={{ width: 320 }}>
+      <div style={{ 
+        padding: '12px 16px', 
+        borderBottom: '1px solid #f0f0f0',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+      }}>
+        <Text strong>Notifications</Text>
+        <Button type="link" size="small" style={{ padding: 0 }}>
+          Mark all as read
+        </Button>
       </div>
-    </header>
+      <List
+        dataSource={notifications}
+        renderItem={(item) => (
+          <List.Item
+            style={{ 
+              padding: '12px 16px',
+              cursor: 'pointer',
+              backgroundColor: item.unread ? '#e6f7ff' : 'transparent',
+            }}
+            className="notification-item"
+          >
+            <List.Item.Meta
+              title={<Text style={{ fontSize: 13 }}>{item.text}</Text>}
+              description={<Text type="secondary" style={{ fontSize: 11 }}>{item.time}</Text>}
+            />
+          </List.Item>
+        )}
+      />
+      <div style={{ 
+        padding: '12px 16px', 
+        borderTop: '1px solid #f0f0f0',
+        textAlign: 'center'
+      }}>
+        <Button type="link" size="small">
+          View all notifications
+        </Button>
+      </div>
+      <style>{`
+        .notification-item:hover {
+          background-color: #fafafa !important;
+        }
+      `}</style>
+    </div>
+  );
+
+  return (
+    <Header 
+      style={{ 
+        position: 'fixed', 
+        top: 0, 
+        left: 0, 
+        right: 0, 
+        zIndex: 30, 
+        height: 64,
+        padding: '0 24px',
+        background: '#fff',
+        borderBottom: '1px solid #f0f0f0',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between'
+      }}
+    >
+      {/* Left: Menu Toggle + Logo */}
+      <Space size="middle">
+        <Button
+          type="text"
+          icon={sidebarOpen ? <CloseOutlined /> : <MenuOutlined />}
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          style={{ fontSize: 18 }}
+        />
+        
+        <Link to="/admin-dashboard" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+     
+          <Text strong style={{ fontSize: 18, color: 'rgb(24, 144, 255)', display: window.innerWidth >= 640 ? 'block' : 'none' }}>
+            ADMIN PANEL
+          </Text>
+        </Link>
+      </Space>
+
+      {/* Center: Search Bar */}
+      <div style={{ flex: 1, maxWidth: 600, margin: '0 24px', display: window.innerWidth >= 768 ? 'block' : 'none' }}>
+        <Search
+          placeholder="Search products, orders, users..."
+          prefix={<SearchOutlined />}
+          size="large"
+          allowClear
+          style={{ width: '100%' }}
+        />
+      </div>
+
+      {/* Right: Actions + User */}
+      <Space size="middle">
+        {/* Mobile Search Icon */}
+        <Button 
+          type="text" 
+          icon={<SearchOutlined />}
+          size="large"
+          style={{ display: window.innerWidth >= 768 ? 'none' : 'inline-flex' }}
+        />
+
+        {/* Notifications */}
+        <Dropdown
+          dropdownRender={() => notificationContent}
+          trigger={['click']}
+          placement="bottomRight"
+        >
+          <Badge count={unreadCount} size="small">
+            <Button 
+              type="text" 
+              icon={<BellOutlined />}
+              size="large"
+            />
+          </Badge>
+        </Dropdown>
+
+        {/* Settings */}
+        <Link to="/admin/settings" style={{ display: window.innerWidth >= 1024 ? 'inline-flex' : 'none' }}>
+          <Button 
+            type="text" 
+            icon={<SettingOutlined />}
+            size="large"
+          />
+        </Link>
+
+        <Divider type="vertical" />
+
+        {/* User Menu */}
+        <Dropdown
+          menu={{ items: userMenuItems }}
+          trigger={['click']}
+          placement="bottomRight"
+        >
+          <Space style={{ cursor: 'pointer' }}>
+            <Avatar 
+              style={{ backgroundColor: '#1890ff' }}
+              size="large"
+            >
+              {user?.name?.charAt(0)?.toUpperCase() || "A"}
+            </Avatar>
+            <div style={{ display: window.innerWidth >= 1024 ? 'block' : 'none', textAlign: 'left' }}>
+              <Text strong style={{ display: 'block', fontSize: 14, lineHeight: '20px' }}>
+                {user?.name || "Admin"}
+              </Text>
+              <Text type="secondary" style={{ fontSize: 12, lineHeight: '16px' }}>
+                {user?.role || "Administrator"}
+              </Text>
+            </div>
+            <DownOutlined style={{ fontSize: 12, display: window.innerWidth >= 1024 ? 'block' : 'none' }} />
+          </Space>
+        </Dropdown>
+      </Space>
+    </Header>
   );
 };
 

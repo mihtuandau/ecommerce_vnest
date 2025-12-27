@@ -39,7 +39,7 @@ const ProductRow = ({
             type="checkbox"
             checked={isSelected}
             onChange={onSelect}
-            className="w-4 h-4 text-[#00a85a] rounded border-gray-300 focus:ring-2 focus:ring-[#00a85a] focus:ring-offset-0 cursor-pointer"
+            className="w-4 h-4 text-[#1890ff] rounded border-gray-300 focus:ring-2 focus:ring-[#1890ff] focus:ring-offset-0 cursor-pointer"
           />
         </td>
 
@@ -128,7 +128,7 @@ const ProductRow = ({
               variant="ghost"
               size="sm"
               onClick={() => onEdit(product)}
-              className="text-[#00a85a] hover:text-[#008f4d] hover:bg-green-50 rounded-lg p-2 transition-colors"
+              className="text-[#1890ff] hover:text-[#40a9ff] hover:bg-blue-50 rounded-lg p-2 transition-colors"
               title="Chỉnh sửa"
             >
               <Edit size={18} />
