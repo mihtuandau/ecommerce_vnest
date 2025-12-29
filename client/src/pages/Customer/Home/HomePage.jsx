@@ -1,5 +1,7 @@
 import { useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
+import { Spin, Result, Button as AntButton } from "antd";
+import { ReloadOutlined, WarningOutlined } from "@ant-design/icons";
 import Layout from "../../../components/layouts/Layout";
 import HeroBanner from "../../../components/home/HeroBanner";
 import FeaturedCategories from "../../../components/home/FeaturedCategories";
@@ -11,6 +13,7 @@ import Loading from "../../../components/common/Loading";
 import { useHomeData } from "../../../hooks/useHomeData";
 import { useAuth } from "../../../contexts/authContext";
 import authService from "../../../services/authService";
+import { notify } from "../../../utils/notification";
 // import toast from "react-hot-toast";
 
 const HomePage = () => {
@@ -44,7 +47,9 @@ const HomePage = () => {
   if (loading) {
     return (
       <Layout>
-        <Loading fullScreen text="Đang tải dữ liệu..." />
+        <div className="flex items-center justify-center min-h-screen">
+          <Spin size="large" tip="Đang tải dữ liệu..." />
+        </div>
       </Layout>
     );
   }
@@ -53,16 +58,21 @@ const HomePage = () => {
     return (
       <Layout>
         <div className="flex items-center justify-center min-h-screen">
-          <div className="text-center">
-            <div className="text-red-500 text-5xl mb-4">⚠️</div>
-            <p className="text-gray-600 mb-4">{error}</p>
-            <button
-              onClick={() => window.location.reload()}
-              className="px-6 py-2 bg-[#00a85a] text-white rounded-lg hover:bg-[#008f4d]"
-            >
-              Thử lại
-            </button>
-          </div>
+          <Result
+            status="error"
+            icon={<WarningOutlined />}
+            title="Có lỗi xảy ra"
+            subTitle={error}
+            extra={
+              <AntButton 
+                type="primary" 
+                icon={<ReloadOutlined />}
+                onClick={() => window.location.reload()}
+              >
+                Thử lại
+              </AntButton>
+            }
+          />
         </div>
       </Layout>
     );

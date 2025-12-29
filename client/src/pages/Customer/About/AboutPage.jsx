@@ -1,14 +1,8 @@
 import React from "react";
+import { Card, Row, Col, Divider, Timeline } from "antd";
+import { ShopOutlined, RocketOutlined, CustomerServiceOutlined, SafetyOutlined, TeamOutlined, HeartOutlined } from "@ant-design/icons";
 import Layout from "../../../components/layouts/Layout";
 import Breadcrumb from "../../../components/common/Breadcrumb";
-import {
-  FaStore,
-  FaShippingFast,
-  FaHeadset,
-  FaShieldAlt,
-  FaUsers,
-  FaHeart,
-} from "react-icons/fa";
 
 const AboutPage = () => {
   return (
@@ -89,9 +83,9 @@ const AboutPage = () => {
             </div>
 
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10 lg:gap-12">
-              <div className="group">
+              <Card bordered={false} className="shadow-sm">
                 <div className="w-12 h-12 border border-[#00a85a] flex items-center justify-center mb-5 md:mb-6 group-hover:bg-[#00a85a] transition-colors duration-300">
-                  <FaShieldAlt className="text-[#00a85a] text-lg group-hover:text-white transition-colors duration-300" />
+                  <SafetyOutlined className="text-[#00a85a] text-lg group-hover:text-white transition-colors duration-300" />
                 </div>
                 <h3 className="text-lg md:text-xl font-normal text-gray-900 mb-3 md:mb-4">
                   Chất Lượng
@@ -100,11 +94,11 @@ const AboutPage = () => {
                   Cam kết mang đến sản phẩm chất lượng cao, được kiểm định kỹ
                   lưỡng từ nguồn gốc đến khi đến tay khách hàng.
                 </p>
-              </div>
+              </Card>
 
-              <div className="group">
+              <Card bordered={false} className="shadow-sm">
                 <div className="w-12 h-12 border border-[#00a85a] flex items-center justify-center mb-5 md:mb-6 group-hover:bg-[#00a85a] transition-colors duration-300">
-                  <FaUsers className="text-[#00a85a] text-lg group-hover:text-white transition-colors duration-300" />
+                  <TeamOutlined className="text-[#00a85a] text-lg group-hover:text-white transition-colors duration-300" />
                 </div>
                 <h3 className="text-lg md:text-xl font-normal text-gray-900 mb-3 md:mb-4">
                   Khách Hàng Là Trung Tâm
@@ -113,11 +107,11 @@ const AboutPage = () => {
                   Luôn lắng nghe và đặt nhu cầu của khách hàng lên hàng đầu,
                   mang đến trải nghiệm mua sắm tuyệt vời nhất.
                 </p>
-              </div>
+              </Card>
 
-              <div className="group">
+              <Card bordered={false} className="shadow-sm">
                 <div className="w-12 h-12 border border-[#00a85a] flex items-center justify-center mb-5 md:mb-6 group-hover:bg-[#00a85a] transition-colors duration-300">
-                  <FaHeart className="text-[#00a85a] text-lg group-hover:text-white transition-colors duration-300" />
+                  <HeartOutlined className="text-[#00a85a] text-lg group-hover:text-white transition-colors duration-300" />
                 </div>
                 <h3 className="text-lg md:text-xl font-normal text-gray-900 mb-3 md:mb-4">
                   Đam Mê Thời Trang
@@ -126,7 +120,7 @@ const AboutPage = () => {
                   Đội ngũ của chúng tôi luôn cháy hết mình với niềm đam mê thời
                   trang, không ngừng học hỏi và cập nhật xu hướng mới.
                 </p>
-              </div>
+              </Card>
             </div>
           </div>
 
@@ -138,55 +132,63 @@ const AboutPage = () => {
               </h2>
             </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
-              <div>
-                <div className="w-12 h-12 border border-gray-300 flex items-center justify-center mb-4 md:mb-5">
-                  <FaStore className="text-lg md:text-xl text-gray-900" />
-                </div>
-                <h3 className="text-sm md:text-base font-normal text-gray-900 mb-2 md:mb-3">
-                  Đa Dạng Sản Phẩm
-                </h3>
-                <p className="text-xs md:text-sm text-gray-600 leading-relaxed">
-                  Hàng nghìn sản phẩm từ nhiều thương hiệu uy tín
-                </p>
-              </div>
+            <Row gutter={[32, 32]}>
+              <Col xs={12} lg={6}>
+                <Card bordered={false} className="text-center shadow-sm hover:shadow-md transition-shadow">
+                  <div className="w-12 h-12 border border-gray-300 flex items-center justify-center mb-4 md:mb-5 mx-auto">
+                    <ShopOutlined className="text-lg md:text-xl text-gray-900" />
+                  </div>
+                  <h3 className="text-sm md:text-base font-normal text-gray-900 mb-2 md:mb-3">
+                    Đa Dạng Sản Phẩm
+                  </h3>
+                  <p className="text-xs md:text-sm text-gray-600 leading-relaxed">
+                    Hàng nghìn sản phẩm từ nhiều thương hiệu uy tín
+                  </p>
+                </Card>
+              </Col>
 
-              <div>
-                <div className="w-12 h-12 border border-gray-300 flex items-center justify-center mb-4 md:mb-5">
-                  <FaShippingFast className="text-lg md:text-xl text-gray-900" />
-                </div>
-                <h3 className="text-sm md:text-base font-normal text-gray-900 mb-2 md:mb-3">
-                  Giao Hàng Nhanh
-                </h3>
-                <p className="text-xs md:text-sm text-gray-600 leading-relaxed">
-                  Giao hàng toàn quốc, nhanh chóng và an toàn
-                </p>
-              </div>
+              <Col xs={12} lg={6}>
+                <Card bordered={false} className="text-center shadow-sm hover:shadow-md transition-shadow">
+                  <div className="w-12 h-12 border border-gray-300 flex items-center justify-center mb-4 md:mb-5 mx-auto">
+                    <RocketOutlined className="text-lg md:text-xl text-gray-900" />
+                  </div>
+                  <h3 className="text-sm md:text-base font-normal text-gray-900 mb-2 md:mb-3">
+                    Giao Hàng Nhanh
+                  </h3>
+                  <p className="text-xs md:text-sm text-gray-600 leading-relaxed">
+                    Giao hàng toàn quốc, nhanh chóng và an toàn
+                  </p>
+                </Card>
+              </Col>
 
-              <div>
-                <div className="w-12 h-12 border border-gray-300 flex items-center justify-center mb-4 md:mb-5">
-                  <FaHeadset className="text-lg md:text-xl text-gray-900" />
-                </div>
-                <h3 className="text-sm md:text-base font-normal text-gray-900 mb-2 md:mb-3">
-                  Hỗ Trợ 24/7
-                </h3>
-                <p className="text-xs md:text-sm text-gray-600 leading-relaxed">
-                  Đội ngũ CSKH luôn sẵn sàng hỗ trợ bạn
-                </p>
-              </div>
+              <Col xs={12} lg={6}>
+                <Card bordered={false} className="text-center shadow-sm hover:shadow-md transition-shadow">
+                  <div className="w-12 h-12 border border-gray-300 flex items-center justify-center mb-4 md:mb-5 mx-auto">
+                    <CustomerServiceOutlined className="text-lg md:text-xl text-gray-900" />
+                  </div>
+                  <h3 className="text-sm md:text-base font-normal text-gray-900 mb-2 md:mb-3">
+                    Hỗ Trợ 24/7
+                  </h3>
+                  <p className="text-xs md:text-sm text-gray-600 leading-relaxed">
+                    Đội ngũ CSKH luôn sẵn sàng hỗ trợ bạn
+                  </p>
+                </Card>
+              </Col>
 
-              <div>
-                <div className="w-12 h-12 border border-gray-300 flex items-center justify-center mb-4 md:mb-5">
-                  <FaShieldAlt className="text-lg md:text-xl text-gray-900" />
-                </div>
-                <h3 className="text-sm md:text-base font-normal text-gray-900 mb-2 md:mb-3">
-                  Đổi Trả Dễ Dàng
-                </h3>
-                <p className="text-xs md:text-sm text-gray-600 leading-relaxed">
-                  Chính sách đổi trả trong vòng 7 ngày
-                </p>
-              </div>
-            </div>
+              <Col xs={12} lg={6}>
+                <Card bordered={false} className="text-center shadow-sm hover:shadow-md transition-shadow">
+                  <div className="w-12 h-12 border border-gray-300 flex items-center justify-center mb-4 md:mb-5 mx-auto">
+                    <SafetyOutlined className="text-lg md:text-xl text-gray-900" />
+                  </div>
+                  <h3 className="text-sm md:text-base font-normal text-gray-900 mb-2 md:mb-3">
+                    Đổi Trả Dễ Dàng
+                  </h3>
+                  <p className="text-xs md:text-sm text-gray-600 leading-relaxed">
+                    Chính sách đổi trả trong vòng 7 ngày
+                  </p>
+                </Card>
+              </Col>
+            </Row>
           </div>
 
           {/* CTA Section - Minimalist */}

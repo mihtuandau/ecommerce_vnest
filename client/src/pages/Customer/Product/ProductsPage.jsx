@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { FaFilter } from 'react-icons/fa';
+import { Drawer, Badge, Spin, Empty, Select } from 'antd';
+import { FilterOutlined } from '@ant-design/icons';
 import Layout from '../../../components/layouts/Layout';
 import Breadcrumb from '../../../components/common/Breadcrumb';
 import ProductGrid from '../../../components/products/ProductGrid';
@@ -165,25 +166,47 @@ const ProductsPage = () => {
       <div className="bg-gray-50 min-h-screen pt-21 pb-8">
         <div className="container mx-auto px-4 lg:px-30">
           {/* Breadcrumb */}
-          <div className="mb-4">
-            <Breadcrumb items={[
-              { label: 'Sản phẩm' }
-            ]} />
-          </div>
+          <Breadcrumb items={[
+            { label: 'Sản Phẩm', path: '/products' }
+            
+          ]} />
 
-          {/* Page Header */}
-          <div className="mb-6">
-            <h1 className="text-3xl font-bold text-gray-900 mb-1">
-              Tất cả sản phẩm
-            </h1>
-            <p className="text-sm text-gray-600">
-              Tìm thấy {pagination.total} sản phẩm
-            </p>
-          </div>
+          {/* Page Title */}
+          <h1 className="text-3xl font-bold text-gray-900 mb-6">TẤT CẢ</h1>
 
-          {/* Filter Bar - Sticky */}
-          <div className="sticky top-16 z-10 mb-6">
-            <div className="bg-gray-50 rounded-lg">
+          {/* Mobile Filter Button */}
+          <button 
+            onClick={() => setShowFilter(true)}
+            className="lg:hidden flex items-center gap-2 px-4 py-2 mb-4 bg-white border border-gray-300 rounded-lg hover:border-[#00a85a] w-full justify-center"
+          >
+            <FilterOutlined />
+            <span>Lọc sản phẩm</span>
+          </button>
+
+          {/* Filter Drawer for Mobile */}
+          <Drawer
+            title="Bộ lọc"
+            placement="right"
+            onClose={() => setShowFilter(false)}
+            open={showFilter}
+            width={320}
+          >
+            <ProductFilter
+              categories={categories}
+              brands={brands}
+              priceRange={priceRange}
+              currentFilters={getFiltersFromURL()}
+              onFilterChange={(filters) => {
+                handleFilterChange(filters);
+                setShowFilter(false);
+              }}
+              layout="vertical"
+            />
+          </Drawer>
+
+          {/* Desktop Filter Bar */}
+          <div className="hidden lg:block mb-6">
+            <div className="bg-white border-t border-b border-gray-200 py-4">
               <ProductFilter
                 categories={categories}
                 brands={brands}
@@ -206,19 +229,32 @@ const ProductsPage = () => {
 
           {/* Products Grid */}
           <div className="w-full">
-            <div className="min-h-[600px]">
-              <ProductGrid products={products} loading={loading} />
-            </div>
-
-            {/* Pagination */}
-            {!loading && products.length > 0 && (
-              <div className="mt-8 flex justify-center">
-                <Pagination
-                  currentPage={pagination.page}
-                  totalPages={pagination.totalPages}
-                  onPageChange={handlePageChange}
+            {loading ? (
+              <div className="flex justify-center items-center min-h-[600px]">
+                <Spin size="large" tip="Đang tải sản phẩm..." />
+              </div>
+            ) : products.length === 0 ? (
+              <div className="flex justify-center items-center min-h-[600px]">
+                <Empty 
+                  description="Không tìm thấy sản phẩm nào"
+                  image={Empty.PRESENTED_IMAGE_SIMPLE}
                 />
               </div>
+            ) : (
+              <>
+                <ProductGrid products={products} loading={loading} />
+                
+                {/* Pagination */}
+                {products.length > 0 && (
+                  <div className="mt-8 flex justify-center">
+                    <Pagination
+                      currentPage={pagination.page}
+                      totalPages={pagination.totalPages}
+                      onPageChange={handlePageChange}
+                    />
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>

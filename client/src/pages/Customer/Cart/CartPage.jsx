@@ -1,6 +1,7 @@
 import { useCallback, useState, useMemo, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaArrowLeft } from 'react-icons/fa';
+import { Button as AntButton, Modal, Badge, Divider, Space } from 'antd';
+import { ArrowLeftOutlined, ShoppingCartOutlined, DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import Layout from '../../../components/layouts/Layout';
 import Breadcrumb from '../../../components/common/Breadcrumb';
 import Button from '../../../components/common/Button';
@@ -11,6 +12,8 @@ import { useAuth } from '../../../hooks/useAuth';
 import { useCart } from '../../../hooks/useCart';
 import { notify } from '../../../utils/notification';
 import { formatPrice } from '../../../utils/formatters';
+
+const { confirm } = Modal;
 
 const CartPage = () => {
   const navigate = useNavigate();
@@ -57,16 +60,35 @@ const CartPage = () => {
   }, [updateCartItem]);
 
   const handleRemoveItem = useCallback((variantId, skipConfirm = false) => {
-    if (skipConfirm || window.confirm('Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng?')) {
+    if (skipConfirm) {
       return removeFromCart(variantId);
     }
-    return Promise.resolve();
+    
+    confirm({
+      title: 'Xác nhận xóa',
+      icon: <ExclamationCircleOutlined />,
+      content: 'Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng?',
+      okText: 'Xóa',
+      okType: 'danger',
+      cancelText: 'Hủy',
+      onOk() {
+        return removeFromCart(variantId);
+      },
+    });
   }, [removeFromCart]);
 
   const handleClearCart = useCallback(() => {
-    if (window.confirm('Bạn có chắc muốn xóa toàn bộ giỏ hàng?')) {
-      clearCart();
-    }
+    confirm({
+      title: 'Xác nhận xóa tất cả',
+      icon: <ExclamationCircleOutlined />,
+      content: 'Bạn có chắc muốn xóa toàn bộ giỏ hàng?',
+      okText: 'Xóa tất cả',
+      okType: 'danger',
+      cancelText: 'Hủy',
+      onOk() {
+        clearCart();
+      },
+    });
   }, [clearCart]);
 
   const handleToggleItem = useCallback((variantId) => {
@@ -123,18 +145,31 @@ const CartPage = () => {
 
   return (
     <Layout>
-      <div className="bg-white min-h-screen pt-21 pb-8">
+      <div className="bg-gray-50 min-h-screen pt-21 pb-8">
         <div className="container mx-auto px-4 lg:px-30">
           {/* Breadcrumb */}
           <Breadcrumb items={[{ label: 'Giỏ hàng' }]} />
 
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Giỏ hàng của bạn
-            </h1>
-            <p className="text-gray-600">
-              Bạn có {cartCount} sản phẩm trong giỏ hàng
-            </p>
+          <div className="mb-8 flex justify-between items-center">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-3">
+                <ShoppingCartOutlined />
+                Giỏ hàng của bạn
+              </h1>
+              <p className="text-gray-600">
+                Bạn có <Badge count={cartCount} showZero color="#00a85a" /> sản phẩm trong giỏ hàng
+              </p>
+            </div>
+            
+            {cartItems.length > 0 && (
+              <AntButton 
+                danger 
+                icon={<DeleteOutlined />}
+                onClick={handleClearCart}
+              >
+                Xóa tất cả
+              </AntButton>
+            )}
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -151,23 +186,27 @@ const CartPage = () => {
                 formatPrice={formatPrice}
               />
 
+              <Divider />
+
               <div className="mt-6">
                 <Link to="/products">
-                  <Button variant="outline" icon={FaArrowLeft}>
+                  <AntButton type="default" icon={<ArrowLeftOutlined />} size="large">
                     Tiếp tục mua sắm
-                  </Button>
+                  </AntButton>
                 </Link>
               </div>
             </div>
 
             <div className="lg:col-span-1">
-              <CartSummary
-                total={selectedTotal}
-                selectedCount={selectedCount}
-                totalCount={cartCount}
-                formatPrice={formatPrice}
-                onCheckout={handleCheckout}
-              />
+              <div className="sticky top-24">
+                <CartSummary
+                  total={selectedTotal}
+                  selectedCount={selectedCount}
+                  totalCount={cartCount}
+                  formatPrice={formatPrice}
+                  onCheckout={handleCheckout}
+                />
+              </div>
             </div>
           </div>
         </div>
