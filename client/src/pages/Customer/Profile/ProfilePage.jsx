@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import { Card, Avatar, Tag, Spin, Empty, Divider, Row, Col } from 'antd';
+import { UserOutlined, LockOutlined, EnvironmentOutlined, IdcardOutlined } from '@ant-design/icons';
 import authService from '../../../services/authService';
 import userService from '../../../services/userService';
 import Layout from '../../../components/layouts/Layout';
@@ -31,16 +33,20 @@ const ProfilePage = () => {
   };
 
   if (authLoading) {
-    return <Loading />;
+    return (
+      <Layout>
+        <div className="flex items-center justify-center min-h-screen">
+          <Spin size="large" tip="Đang tải..." />
+        </div>
+      </Layout>
+    );
   }
 
   if (!currentUser) {
     return (
       <Layout>
         <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center">
-            <p className="text-gray-600">Vui lòng đăng nhập</p>
-          </div>
+          <Empty description="Vui lòng đăng nhập" />
         </div>
       </Layout>
     );
@@ -48,76 +54,93 @@ const ProfilePage = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-white pt-21 pb-8">
+      <div className="min-h-screen bg-gray-50 pt-21 pb-8">
         <div className="container mx-auto px-4 lg:px-30">
           {/* Breadcrumb */}
           <Breadcrumb items={[
             { label: 'Thông tin tài khoản' }
           ]} />
 
-          {/* Header - Minimalist */}
-          <div className="border-b border-gray-200 pb-8 mb-12 ">
+          {/* Header Card */}
+          <Card className="mb-8 shadow-sm">
             <div className="flex items-center gap-6">
-              <div className="w-20 h-20 border-2 border-[#00a85a] flex items-center justify-center text-white text-3xl font-light bg-[#00a85a] rounded-full">
+              <Avatar 
+                size={80} 
+                icon={<UserOutlined />}
+                style={{ backgroundColor: '#00a85a' }}
+              >
                 {currentUser.name?.charAt(0)?.toUpperCase() || currentUser.email?.charAt(0)?.toUpperCase()}
-              </div>
-              <div className="flex-1 ">
-                <h1 className="text-3xl font-light text-gray-900 tracking-tight mb-2">
+              </Avatar>
+              <div className="flex-1">
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">
                   {currentUser.name || 'Người dùng'}
                 </h1>
                 <p className="text-gray-600">{currentUser.email}</p>
               </div>
               <div className="text-right">
-                <span className={`inline-block px-3 py-1 text-sm ${
-                  currentUser.role === 'ADMIN' 
-                    ? 'border border-gray-900 text-gray-900' 
-                    : 'border border-gray-400 text-gray-700'
-                }`}>
+                <Tag color={currentUser.role === 'ADMIN' ? 'blue' : 'green'} className="mb-2">
                   {currentUser.role === 'ADMIN' ? 'Admin' : 'Khách hàng'}
-                </span>
-                <p className="text-xs text-gray-500 mt-2">ID:{currentUser.id}</p>
+                </Tag>
+                <p className="text-xs text-gray-500">
+                  <IdcardOutlined /> ID: {currentUser.id}
+                </p>
               </div>
             </div>
-          </div>
+          </Card>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <Row gutter={[24, 24]}>
             {/* Personal Info Card */}
-            <div className="bg-white border border-gray-200">
-              <div className="border-b border-gray-200 px-6 py-5">
-                <h2 className="text-lg font-normal text-gray-900 mb-1">Thông Tin Cá Nhân</h2>
-                <p className="text-sm text-gray-600">Cập nhật thông tin của bạn</p>
-              </div>
-              <div className="p-6">
+            <Col xs={24} lg={8}>
+              <Card 
+                title={
+                  <div className="flex items-center gap-2">
+                    <UserOutlined />
+                    <span>Thông Tin Cá Nhân</span>
+                  </div>
+                }
+                bordered={false}
+                className="shadow-sm h-full"
+              >
                 <PersonalInfoForm
                   currentUser={currentUser}
                   onSubmit={handleUpdateProfile}
                   loading={loading}
                 />
-              </div>
-            </div>
+              </Card>
+            </Col>
 
             {/* Change Password Card */}
-            <div className="bg-white border border-gray-200">
-              <div className="border-b border-gray-200 px-6 py-5">
-                <h2 className="text-lg font-normal text-gray-900 mb-1">Đổi Mật Khẩu</h2>
-                <p className="text-sm text-gray-600">Cập nhật mật khẩu của bạn</p>
-              </div>
-              <div className="p-6">
+            <Col xs={24} lg={8}>
+              <Card 
+                title={
+                  <div className="flex items-center gap-2">
+                    <LockOutlined />
+                    <span>Đổi Mật Khẩu</span>
+                  </div>
+                }
+                bordered={false}
+                className="shadow-sm h-full"
+              >
                 <ChangePasswordForm />
-              </div>
-            </div>
-            <div className="bg-white border border-gray-200">
-              <div className="border-b border-gray-200 px-6 py-5">
-                <h2 className="text-lg font-normal text-gray-900 mb-1">Địa Chỉ Giao Hàng</h2>
-                <p className="text-sm text-gray-600">Quản lý địa chỉ nhận hàng</p>
-              </div>
-              <div className="p-6">
-                <AddressManager />
-              </div>
-            </div>
+              </Card>
+            </Col>
 
-            
-          </div>
+            {/* Address Manager Card */}
+            <Col xs={24} lg={8}>
+              <Card 
+                title={
+                  <div className="flex items-center gap-2">
+                    <EnvironmentOutlined />
+                    <span>Địa Chỉ Giao Hàng</span>
+                  </div>
+                }
+                bordered={false}
+                className="shadow-sm h-full"
+              >
+                <AddressManager />
+              </Card>
+            </Col>
+          </Row>
         </div>
       </div>
     </Layout>

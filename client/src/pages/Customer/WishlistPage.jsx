@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { FaHeart, FaTrash } from 'react-icons/fa';
+import { Button, Card, Empty, Spin, Modal, Row, Col, Badge } from 'antd';
+import { HeartOutlined, DeleteOutlined, ShoppingCartOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import { notify } from '../../utils/notification';
 import wishlistService from '../../services/wishlistService';
 import Breadcrumb from '../../components/common/Breadcrumb';
 import Layout from '../../components/layouts/Layout';
+
+const { confirm } = Modal;
 
 const WishlistPage = () => {
   const [wishlistItems, setWishlistItems] = useState([]);
@@ -39,29 +42,39 @@ const WishlistPage = () => {
   };
 
   const handleClearAll = async () => {
-    if (!window.confirm('Bạn có chắc muốn xóa tất cả sản phẩm yêu thích?')) return;
-    
-    try {
-      await wishlistService.clearWishlist();
-      setWishlistItems([]);
-      notify.success('Đã xóa tất cả sản phẩm yêu thích');
-      window.dispatchEvent(new CustomEvent('wishlistUpdated'));
-    } catch (error) {
-      notify.error('Không thể xóa danh sách');
-    }
+    confirm({
+      title: 'Xác nhận xóa tất cả',
+      icon: <ExclamationCircleOutlined />,
+      content: 'Bạn có chắc muốn xóa tất cả sản phẩm yêu thích?',
+      okText: 'Xóa tất cả',
+      okType: 'danger',
+      cancelText: 'Hủy',
+      async onOk() {
+        try {
+          await wishlistService.clearWishlist();
+          setWishlistItems([]);
+          notify.success('Đã xóa tất cả sản phẩm yêu thích');
+          window.dispatchEvent(new CustomEvent('wishlistUpdated'));
+        } catch (error) {
+          notify.error('Không thể xóa danh sách');
+        }
+      },
+    });
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-gray-900 border-t-transparent rounded-full animate-spin"></div>
-      </div>
+      <Layout>
+        <div className="min-h-screen flex items-center justify-center">
+          <Spin size="large" tip="Đang tải..." />
+        </div>
+      </Layout>
     );
   }
 
   return (
     <Layout>
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-gray-50">
         <div className="container mx-auto px-4 lg:px-8 pt-6 pb-8">
           <Breadcrumb items={[{ label: 'Sản phẩm yêu thích' }]} />
 
@@ -69,47 +82,43 @@ const WishlistPage = () => {
           <div className="border-b border-gray-200 pb-8 mb-12">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div>
-                <h1 className="text-3xl font-light text-gray-900 mb-2 tracking-tight">
+                <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-2">
+                  <HeartOutlined />
                   Sản Phẩm Yêu Thích
                 </h1>
-                <p className="text-sm text-gray-600 font-light">
-                  {wishlistItems.length} sản phẩm
+                <p className="text-sm text-gray-600">
+                  <Badge count={wishlistItems.length} showZero color="#00a85a" /> sản phẩm
                 </p>
               </div>
               {wishlistItems.length > 0 && (
-                <button
+                <Button
+                  danger
+                  icon={<DeleteOutlined />}
                   onClick={handleClearAll}
-                  className="text-sm text-gray-600 hover:text-gray-900 transition-colors flex items-center gap-2 font-light"
                 >
-                  <FaTrash size={12} />
                   Xóa tất cả
-                </button>
+                </Button>
               )}
             </div>
           </div>
 
           {/* Empty State */}
           {wishlistItems.length === 0 ? (
-            <div className="border border-gray-200 p-12 md:p-20 text-center">
-              <div className="w-20 h-20 mx-auto mb-6 border border-gray-300 flex items-center justify-center">
-                <FaHeart className="text-gray-400" size={32} />
-              </div>
-              <h2 className="text-2xl font-light text-gray-900 mb-3 tracking-tight">
-                Chưa Có Sản Phẩm Yêu Thích
-              </h2>
-              <p className="text-gray-600 font-light mb-8 max-w-md mx-auto leading-relaxed">
-                Lưu lại những sản phẩm bạn quan tâm để dễ dàng theo dõi và mua sắm sau
-              </p>
-              <Link
-                to="/products"
-                className="inline-block px-8 py-3 bg-[#00a85a] text-white text-sm font-normal hover:bg-[#008f4d] transition-colors"
+            <div className="flex justify-center items-center min-h-[400px]">
+              <Empty
+                description="Chưa có sản phẩm yêu thích"
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
               >
-                Khám Phá Sản Phẩm
-              </Link>
+                <Link to="/products">
+                  <Button type="primary" icon={<ShoppingCartOutlined />} style={{ backgroundColor: '#00a85a', borderColor: '#00a85a' }}>
+                    Khám Phá Sản Phẩm
+                  </Button>
+                </Link>
+              </Empty>
             </div>
           ) : (
             /* Product Grid */
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <Row gutter={[24, 24]}>
               {wishlistItems.map((item) => {
                 // Kiểm tra dữ liệu trước khi sử dụng
                 const product = item.variant?.product;
@@ -123,71 +132,61 @@ const WishlistPage = () => {
                   || { url: product?.category?.image };
                 
                 return (
-                  <div 
-                    key={item.id} 
-                    className="bg-white border border-gray-200 overflow-hidden group"
-                  >
-                    {/* Product Image */}
-                    <Link to={`/products/${productId}`} className="block relative">
-                      <div className="aspect-square overflow-hidden bg-gray-50">
-                        <img
-                          src={thumbnail?.url || '/placeholder.png'}
-                          alt={product.name || 'Product'}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
-                      </div>
-                    </Link>
-
-                    {/* Product Info */}
-                    <div className="p-4">
-                      <Link to={`/products/${productId}`}>
-                        <h3 className="font-normal text-gray-900 mb-3 line-clamp-2 hover:text-gray-600 transition-colors min-h-[3rem]">
-                          {product.name || 'Sản phẩm'}
-                        </h3>
-                      </Link>
-
-                      {/* Variant Info */}
-                      {(variant.color || variant.size) && (
-                        <div className="flex items-center gap-2 mb-4 text-xs">
-                          {variant.color && (
-                            <span className="px-2 py-1 border border-gray-300 text-gray-700">
-                              {variant.color}
-                            </span>
-                          )}
-                          {variant.size && (
-                            <span className="px-2 py-1 border border-gray-300 text-gray-700">
-                              {variant.size}
-                            </span>
-                          )}
-                        </div>
-                      )}
-
-                      {/* Price & Remove */}
-                      <div className="flex items-center justify-between mb-4">
-                        <span className="text-lg font-normal text-gray-900">
-                          {variant.price ? variant.price.toLocaleString('vi-VN') : '0'}₫
-                        </span>
-                        <button
-                          onClick={() => handleRemove(item.variantId)}
-                          className="p-2 text-gray-400 hover:text-gray-900 transition-colors"
-                          title="Xóa"
-                        >
-                          <FaTrash size={12} />
-                        </button>
-                      </div>
-
-                      {/* View Details Button */}
-                      <Link
-                        to={`/products/${productId}`}
-                        className="block w-full py-3 bg-[#00a85a] text-white text-sm font-normal text-center hover:bg-[#008f4d] transition-colors"
-                      >
-                        Xem Chi Tiết
-                      </Link>
-                    </div>
-                  </div>
+                  <Col xs={24} sm={12} lg={8} xl={6} key={item.id}>
+                    <Card
+                      hoverable
+                      cover={
+                        <Link to={`/products/${productId}`}>
+                          <div className="aspect-square overflow-hidden bg-gray-50">
+                            <img
+                              src={thumbnail?.url || '/placeholder.png'}
+                              alt={product.name || 'Product'}
+                              className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                            />
+                          </div>
+                        </Link>
+                      }
+                      actions={[
+                        <Link to={`/products/${productId}`} key="view">
+                          <Button type="primary" block style={{ backgroundColor: '#00a85a', borderColor: '#00a85a' }}>
+                            Xem Chi Tiết
+                          </Button>
+                        </Link>,
+                      ]}
+                    >
+                      <Card.Meta
+                        title={
+                          <Link to={`/products/${productId}`} className="hover:text-[#00a85a]">
+                            {product.name || 'Sản phẩm'}
+                          </Link>
+                        }
+                        description={
+                          <Space direction="vertical" className="w-full">
+                            {(variant.color || variant.size) && (
+                              <Space>
+                                {variant.color && <Badge color="blue" text={variant.color} />}
+                                {variant.size && <Badge color="green" text={variant.size} />}
+                              </Space>
+                            )}
+                            <div className="flex items-center justify-between">
+                              <span className="text-lg font-bold text-[#00a85a]">
+                                {variant.price ? variant.price.toLocaleString('vi-VN') : '0'}₫
+                              </span>
+                              <Button
+                                type="text"
+                                danger
+                                icon={<DeleteOutlined />}
+                                onClick={() => handleRemove(item.variantId)}
+                              />
+                            </div>
+                          </Space>
+                        }
+                      />
+                    </Card>
+                  </Col>
                 );
               })}
-            </div>
+            </Row>
           )}
         </div>
       </div>

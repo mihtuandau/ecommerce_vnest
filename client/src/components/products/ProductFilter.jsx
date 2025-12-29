@@ -1,6 +1,9 @@
 import { useState, useEffect, useRef } from "react";
-import { FaTimes, FaChevronDown } from "react-icons/fa";
+import { Select, Space, Button, Popover, Slider, InputNumber } from "antd";
+import { StarFilled, SyncOutlined, DollarOutlined } from "@ant-design/icons";
 import Accordion from "../common/Accordion";
+
+const { Option } = Select;
 
 const ProductFilter = ({
   categories = [],
@@ -58,7 +61,7 @@ const ProductFilter = ({
       )
     ) {
       onFilterChange(newFilters);
-      setOpenDropdown(null); // Close dropdown after selection
+      setOpenDropdown(null);
     }
   };
 
@@ -105,159 +108,126 @@ const ProductFilter = ({
   // Horizontal layout
   if (layout === "horizontal") {
     return (
-      <div className="flex items-center gap-4 flex-wrap pt-5 pb-5 rounded-lg">
-        {/* Sort Dropdown */}
-        <div className="relative" ref={(el) => (dropdownRefs.current["sort"] = el)}>
-          <button
-            onClick={() => setOpenDropdown(openDropdown === "sort" ? null : "sort")}
-            className="min-w-[160px] px-5 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:border-[#00a85a] flex items-center justify-between gap-3 transition-all"
+      <div className="flex items-center gap-4">
+        {/* Filter label */}
+        <div className="flex items-center gap-2 text-gray-700">
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+          </svg>
+          <span className="font-medium text-sm uppercase">Bộ lọc</span>
+        </div>
+
+        {/* Category filter */}
+        {!hideCategories && categories.length > 0 && (
+          <Select
+            placeholder="Danh mục"
+            style={{ width: 180 }}
+            value={filters.categoryId || undefined}
+            onChange={(value) => handleChange("categoryId", value || "")}
+            allowClear
           >
-            <span>{sortOptions.find((opt) => opt.value === filters.sortBy)?.label || "Sắp xếp"}</span>
-            <FaChevronDown size={10} className={`transition-transform ${openDropdown === "sort" ? "rotate-180" : ""}`} />
-          </button>
-          <div className={`absolute top-full left-0 mt-1 bg-white border border-gray-200 shadow-lg rounded-lg min-w-[200px] transition-all z-50 ${
-            openDropdown === "sort" ? "opacity-100 visible" : "opacity-0 invisible"
-          }`}>
+            {categories.map((cat) => (
+              <Option key={cat.id} value={cat.id}>
+                {cat.name}
+              </Option>
+            ))}
+          </Select>
+        )}
+
+        {/* Brand filter */}
+        {brands.length > 0 && (
+          <Select
+            placeholder="Thương hiệu"
+            style={{ width: 180 }}
+            value={filters.brandId || undefined}
+            onChange={(value) => handleChange("brandId", value || "")}
+            allowClear
+          >
+            {brands.map((brand) => (
+              <Option key={brand.id} value={brand.id}>
+                {brand.name}
+              </Option>
+            ))}
+          </Select>
+        )}
+
+        {/* Price filter */}
+        <Select
+          placeholder="Giá sản phẩm"
+          style={{ width: 180 }}
+          value={filters.minPrice !== priceRange.minPrice || filters.maxPrice !== priceRange.maxPrice ? `${filters.minPrice}-${filters.maxPrice}` : undefined}
+          onChange={(value) => {
+            if (!value) {
+              handleChange('minPrice', priceRange.minPrice);
+              handleChange('maxPrice', priceRange.maxPrice);
+              onFilterChange({ ...filters, minPrice: priceRange.minPrice, maxPrice: priceRange.maxPrice });
+            } else {
+              const [min, max] = value.split('-').map(Number);
+              const newFilters = { ...filters, minPrice: min, maxPrice: max };
+              setFilters(newFilters);
+              onFilterChange(newFilters);
+            }
+          }}
+          allowClear
+        >
+          <Option value="0-500000">Dưới 500,000₫</Option>
+          <Option value="500000-1000000">500,000₫ - 1,000,000₫</Option>
+          <Option value="1000000-2000000">1,000,000₫ - 2,000,000₫</Option>
+          <Option value="2000000-5000000">2,000,000₫ - 5,000,000₫</Option>
+          <Option value="5000000-999999999">Trên 5,000,000₫</Option>
+        </Select>
+
+        {/* Rating filter */}
+        <Select
+          placeholder="Đánh giá"
+          style={{ width: 150 }}
+          value={filters.minRating || undefined}
+          onChange={(value) => handleChange("minRating", value || "")}
+          allowClear
+        >
+          {ratingOptions.filter(opt => opt.value !== "").map((opt) => (
+            <Option key={opt.value} value={opt.value}>
+              {opt.stars} {opt.label}
+            </Option>
+          ))}
+        </Select>
+
+        {/* Stock Status filter */}
+        <Select
+          placeholder="Tình trạng"
+          style={{ width: 150 }}
+          value={filters.stockStatus || undefined}
+          onChange={(value) => handleChange("stockStatus", value || "")}
+          allowClear
+        >
+          <Option value="inStock">Còn hàng</Option>
+          <Option value="outOfStock">Hết hàng</Option>
+        </Select>
+
+        {/* Sort by - Right aligned */}
+        <div className="ml-auto">
+          <Select
+            value={filters.sortBy}
+            onChange={(value) => handleChange("sortBy", value)}
+            style={{ width: 200 }}
+          >
             {sortOptions.map((opt) => (
-              <button
-                key={opt.value}
-                onClick={() => handleChange("sortBy", opt.value)}
-                className={`w-full text-left px-4 py-2.5 text-sm transition-all first:rounded-t-lg last:rounded-b-lg ${
-                  filters.sortBy === opt.value
-                    ? "bg-green-50 text-[#00a85a] font-medium"
-                    : "text-gray-700 hover:bg-gray-50"
-                }`}
-              >
+              <Option key={opt.value} value={opt.value}>
                 {opt.label}
-              </button>
+              </Option>
             ))}
-          </div>
-        </div>
-
-        {/* Price Range Dropdown */}
-        <div className="relative" ref={(el) => (dropdownRefs.current["price"] = el)}>
-          <button
-            onClick={() => setOpenDropdown(openDropdown === "price" ? null : "price")}
-            className="min-w-[160px] px-5 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:border-[#00a85a] flex items-center justify-between gap-3 transition-all"
-          >
-            <span>Khoảng giá</span>
-            <FaChevronDown size={10} className={`transition-transform ${openDropdown === "price" ? "rotate-180" : ""}`} />
-          </button>
-          <div className={`absolute top-full left-0 mt-1 bg-white border border-gray-200 shadow-lg rounded-lg p-4 min-w-[280px] transition-all z-50 ${
-            openDropdown === "price" ? "opacity-100 visible" : "opacity-0 invisible"
-          }`}>
-            <div className="text-xs font-medium mb-3 flex justify-between text-gray-700">
-              <span>{filters.minPrice.toLocaleString("vi-VN")}₫</span>
-              <span>{filters.maxPrice.toLocaleString("vi-VN")}₫</span>
-            </div>
-            <div className="space-y-3">
-              <div>
-                <label className="text-xs text-gray-600 mb-1.5 block">
-                  Tối thiểu
-                </label>
-                <input
-                  type="range"
-                  min={priceRange.minPrice}
-                  max={priceRange.maxPrice}
-                  step="10000"
-                  value={filters.minPrice}
-                  onChange={(e) => {
-                    const value = parseInt(e.target.value);
-                    if (value <= filters.maxPrice)
-                      handlePriceChange("minPrice", value);
-                  }}
-                  onMouseUp={applyPriceFilter}
-                  className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#00a85a]"
-                />
-              </div>
-              <div>
-                <label className="text-xs text-gray-600 mb-1.5 block">
-                  Tối đa
-                </label>
-                <input
-                  type="range"
-                  min={priceRange.minPrice}
-                  max={priceRange.maxPrice}
-                  step="10000"
-                  value={filters.maxPrice}
-                  onChange={(e) => {
-                    const value = parseInt(e.target.value);
-                    if (value >= filters.minPrice)
-                      handlePriceChange("maxPrice", value);
-                  }}
-                  onMouseUp={applyPriceFilter}
-                  className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#00a85a]"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Rating Dropdown */}
-        <div className="relative" ref={(el) => (dropdownRefs.current["rating"] = el)}>
-          <button
-            onClick={() => setOpenDropdown(openDropdown === "rating" ? null : "rating")}
-            className="min-w-[160px] px-5 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:border-[#00a85a] flex items-center justify-between gap-3 transition-all"
-          >
-            <span>Đánh giá</span>
-            <FaChevronDown size={10} className={`transition-transform ${openDropdown === "rating" ? "rotate-180" : ""}`} />
-          </button>
-          <div className={`absolute top-full left-0 mt-1 bg-white border border-gray-200 shadow-lg rounded-lg min-w-[200px] transition-all z-50 ${
-            openDropdown === "rating" ? "opacity-100 visible" : "opacity-0 invisible"
-          }`}>
-            {ratingOptions.map((opt) => (
-              <button
-                key={opt.value}
-                onClick={() => handleChange("minRating", opt.value)}
-                className={`w-full text-left px-4 py-2.5 text-sm transition-all flex items-center gap-2 first:rounded-t-lg last:rounded-b-lg ${
-                  filters.minRating === opt.value
-                    ? "bg-green-50 text-[#00a85a] font-medium"
-                    : "text-gray-700 hover:bg-gray-50"
-                }`}
-              >
-                {opt.stars && (
-                  <span className="text-yellow-500 text-sm">{opt.stars}</span>
-                )}
-                <span>{opt.label}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Stock Status Dropdown */}
-        <div className="relative" ref={(el) => (dropdownRefs.current["stock"] = el)}>
-          <button
-            onClick={() => setOpenDropdown(openDropdown === "stock" ? null : "stock")}
-            className="min-w-[160px] px-5 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:border-[#00a85a] flex items-center justify-between gap-3 transition-all"
-          >
-            <span>Tình trạng</span>
-            <FaChevronDown size={10} className={`transition-transform ${openDropdown === "stock" ? "rotate-180" : ""}`} />
-          </button>
-          <div className={`absolute top-full left-0 mt-1 bg-white border border-gray-200 shadow-lg rounded-lg min-w-[180px] transition-all z-50 ${
-            openDropdown === "stock" ? "opacity-100 visible" : "opacity-0 invisible"
-          }`}>
-            {[
-              { value: "", label: "Tất cả" },
-              { value: "inStock", label: "Còn hàng" },
-              { value: "outOfStock", label: "Hết hàng" },
-            ].map((opt) => (
-              <button
-                key={opt.value}
-                onClick={() => handleChange("stockStatus", opt.value)}
-                className={`w-full text-left px-4 py-2.5 text-sm transition-all first:rounded-t-lg last:rounded-b-lg ${
-                  filters.stockStatus === opt.value
-                    ? "bg-green-50 text-[#00a85a] font-medium"
-                    : "text-gray-700 hover:bg-gray-50"
-                }`}
-              >
-                {opt.label}
-              </button>
-            ))}
-          </div>
+          </Select>
         </div>
       </div>
     );
   }
+
+  // Vertical layout - for mobile drawer
+  const stockOptions = [
+    { value: "", label: "Tất cả" },
+    { value: "inStock", label: "Còn hàng" },
+    { value: "outOfStock", label: "Hết hàng" },
+  ];
 
   // Vertical layout
   return (

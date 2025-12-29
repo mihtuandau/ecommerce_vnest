@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { FaArrowLeft } from "react-icons/fa";
+import { Steps, Card, Divider, Button as AntButton, Modal as AntModal, Spin } from "antd";
+import { ArrowLeftOutlined, ShoppingOutlined, EnvironmentOutlined, CreditCardOutlined } from "@ant-design/icons";
 import toast from "react-hot-toast";
 import { notify } from "../../../utils/notification";
 import { useAuth } from "../../../contexts/authContext";
@@ -108,70 +109,120 @@ const CheckoutPage = () => {
   };
 
   if (cartItems.length === 0) {
-    return <Loading fullScreen />;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Spin size="large" tip="Đang tải..." />
+      </div>
+    );
   }
 
   return (
     <div className="min-h-screen bg-gray-50 pt-21 pb-8">
       <div className="container mx-auto px-4 max-w-6xl">
-        <div className="mb-6">
-          <button
+        <div className="mb-8">
+          <AntButton
+            icon={<ArrowLeftOutlined />}
             onClick={() => navigate("/cart")}
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4"
+            className="mb-4"
           >
-            <FaArrowLeft /> Quay lại giỏ hàng
-          </button>
-          <h1 className="text-3xl font-bold text-gray-900">Thanh toán</h1>
+            Quay lại giỏ hàng
+          </AntButton>
+          
+          <h1 className="text-3xl font-bold text-gray-900 mb-6">Thanh toán</h1>
+          
+          {/* Progress Steps */}
+          <Steps
+            current={1}
+            items={[
+              {
+                title: 'Giỏ hàng',
+                icon: <ShoppingOutlined />,
+              },
+              {
+                title: 'Thanh toán',
+                icon: <CreditCardOutlined />,
+              },
+              {
+                title: 'Hoàn thành',
+              },
+            ]}
+          />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
-            <ShippingForm
-              shippingInfo={shippingInfo}
-              onInputChange={handleInputChange}
-              onSelectAddressClick={() => setShowAddressModal(true)}
-              isGuest={!user}
-            />
+            {/* Shipping Information Card */}
+            <Card 
+              title={
+                <div className="flex items-center gap-2">
+                  <EnvironmentOutlined />
+                  <span>Thông tin giao hàng</span>
+                </div>
+              }
+              bordered={false}
+            >
+              <ShippingForm
+                shippingInfo={shippingInfo}
+                onInputChange={handleInputChange}
+                onSelectAddressClick={() => setShowAddressModal(true)}
+                isGuest={!user}
+              />
+            </Card>
 
-            <PaymentMethodSelector
-              paymentMethod={paymentMethod}
-              onPaymentMethodChange={setPaymentMethod}
-            />
+            {/* Payment Method Card */}
+            <Card 
+              title={
+                <div className="flex items-center gap-2">
+                  <CreditCardOutlined />
+                  <span>Phương thức thanh toán</span>
+                </div>
+              }
+              bordered={false}
+            >
+              <PaymentMethodSelector
+                paymentMethod={paymentMethod}
+                onPaymentMethodChange={setPaymentMethod}
+              />
+            </Card>
           </div>
 
           <div className="lg:col-span-1">
-            <OrderSummary
-              cartItems={cartItems}
-              subtotal={subtotal}
-              shipping={shipping}
-              discount={discount}
-              total={total}
-              itemCount={itemCount}
-              discountCode={discountCode}
-              setDiscountCode={setDiscountCode}
-              appliedDiscount={appliedDiscount}
-              checkingDiscount={checkingDiscount}
-              onApplyDiscount={handleApplyDiscount}
-              onRemoveDiscount={handleRemoveDiscount}
-              agreedToTerms={agreedToTerms}
-              setAgreedToTerms={setAgreedToTerms}
-              submitting={submitting}
-              onSubmitOrder={onSubmitOrder}
-            />
+            <div className="sticky top-24">
+              <OrderSummary
+                cartItems={cartItems}
+                subtotal={subtotal}
+                shipping={shipping}
+                discount={discount}
+                total={total}
+                itemCount={itemCount}
+                discountCode={discountCode}
+                setDiscountCode={setDiscountCode}
+                appliedDiscount={appliedDiscount}
+                checkingDiscount={checkingDiscount}
+                onApplyDiscount={handleApplyDiscount}
+                onRemoveDiscount={handleRemoveDiscount}
+                agreedToTerms={agreedToTerms}
+                setAgreedToTerms={setAgreedToTerms}
+                submitting={submitting}
+                onSubmitOrder={onSubmitOrder}
+              />
+            </div>
           </div>
         </div>
 
-        <Modal
-          isOpen={showAddressModal}
-          onClose={() => setShowAddressModal(false)}
+        {/* Address Selection Modal */}
+        <AntModal
           title="Chọn địa chỉ giao hàng"
-          size="md"
+          open={showAddressModal}
+          onCancel={() => setShowAddressModal(false)}
+          footer={null}
+          width={600}
         >
           <AddressSelector
             onAddressSelect={onSelectAddress}
             selectedAddressId={null}
           />
-        </Modal>
+        </AntModal>
       </div>
     </div>
   );

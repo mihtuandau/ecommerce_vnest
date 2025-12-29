@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { Tabs, Button, Badge, Spin, Empty, Modal, Space } from 'antd';
+import { ReloadOutlined, ExclamationCircleOutlined, ShoppingOutlined } from '@ant-design/icons';
 import { notify } from '../../../utils/notification';
 import Loading from '../../../components/common/Loading';
 import Layout from '../../../components/layouts/Layout';
@@ -12,6 +14,8 @@ import {
   EmptyOrder,
   ReviewModal
 } from '../../../components/order';
+
+const { confirm } = Modal;
 
 const OrdersPage = () => {
   const navigate = useNavigate();
@@ -170,19 +174,24 @@ const OrdersPage = () => {
   };
 
   const handleCancelOrder = async (orderId) => {
-    if (!window.confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')) {
-      return;
-    }
-    
-    try {
-      await orderService.cancelOrder(orderId);
-      notify.success('Hủy đơn hàng thành công!');
-      // Refresh orders list
-      loadOrders();
-    } catch (error) {
-      console.error('Cancel order error:', error);
-      notify.error(error.response?.data?.message || 'Không thể hủy đơn hàng');
-    }
+    confirm({
+      title: 'Xác nhận hủy đơn hàng',
+      icon: <ExclamationCircleOutlined />,
+      content: 'Bạn có chắc chắn muốn hủy đơn hàng này?',
+      okText: 'Hủy đơn hàng',
+      okType: 'danger',
+      cancelText: 'Đóng',
+      async onOk() {
+        try {
+          await orderService.cancelOrder(orderId);
+          notify.success('Hủy đơn hàng thành công!');
+          loadOrders();
+        } catch (error) {
+          console.error('Cancel order error:', error);
+          notify.error(error.response?.data?.message || 'Không thể hủy đơn hàng');
+        }
+      },
+    });
   };
 
   const safeOrders = Array.isArray(orders) ? orders : [];
@@ -205,7 +214,9 @@ const OrdersPage = () => {
   if (loading) {
     return (
       <Layout>
-        <Loading fullScreen text="Đang tải đơn hàng..." />
+        <div className="flex items-center justify-center min-h-screen">
+          <Spin size="large" tip="Đang tải đơn hàng..." />
+        </div>
       </Layout>
     );
   }
@@ -222,21 +233,21 @@ const OrdersPage = () => {
           {/* Header */}
           <div className="mb-6 flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Đơn hàng của tôi</h1>
+              <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                <ShoppingOutlined />
+                Đơn hàng của tôi
+              </h1>
               <p className="text-gray-600 mt-1">Quản lý và theo dõi đơn hàng của bạn</p>
             </div>
-            <button
+            <Button
+              icon={<ReloadOutlined />}
               onClick={() => {
                 loadOrders();
                 notify.success('Đã làm mới danh sách đơn hàng');
               }}
-              className="px-4 py-2 border border-gray-300 hover:border-gray-900 text-gray-700 hover:text-gray-900 text-sm transition-colors flex items-center gap-2"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
               Làm mới
-            </button>
+            </Button>
           </div>
 
           {/* Status Filter */}
@@ -250,12 +261,23 @@ const OrdersPage = () => {
 
           {/* Orders List */}
           {safeOrders.length === 0 ? (
-            <EmptyOrder type="no-orders" />
+            <div className="flex justify-center items-center min-h-[400px]">
+              <Empty 
+                description="Bạn chưa có đơn hàng nào"
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+              />
+            </div>
           ) : filteredOrders.length === 0 ? (
-            <EmptyOrder 
-              type="no-filter-results" 
-              onResetFilter={() => setStatusFilter('ALL')}
-            />
+            <div className="flex justify-center items-center min-h-[400px]">
+              <Empty 
+                description="Không tìm thấy đơn hàng phù hợp"
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+              >
+                <Button type="primary" onClick={() => setStatusFilter('ALL')}>
+                  Xem tất cả đơn hàng
+                </Button>
+              </Empty>
+            </div>
           ) : (
             <div className="space-y-4">
               {filteredOrders.map((order) => (
