@@ -11,11 +11,11 @@ const Breadcrumb = ({ items = [] }) => {
         <React.Fragment key={index}>
           <span className="mx-2">/</span>
           {item.path ? (
-            <Link to={item.path} className="hover:text-gray-700">
+            <Link to={item.path} className="hover:text-gray-700 text-gray-900 uppercase">
               {item.label}
-            </Link>
+            </Link> 
           ) : (
-            <span className="text-gray-900">{item.label}</span>
+            <span className="text-gray-900 uppercase">{item.label}</span>
           )}
         </React.Fragment>
       ))}

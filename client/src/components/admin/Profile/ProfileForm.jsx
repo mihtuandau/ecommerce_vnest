@@ -3,7 +3,7 @@ import Button from '../../common/Button';
 
 const ProfileForm = ({ profileForm, setProfileForm, onSubmit, loading }) => {
   return (
-    <div className="bg-white rounded-2xl border shadow-sm p-6">
+    <div className="bg-white rounded-2xl shadow-sm p-6">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-semibold text-gray-900">Thông tin tài khoản</h3>
       </div>

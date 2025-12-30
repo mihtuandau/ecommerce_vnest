@@ -32,9 +32,6 @@ const OrderLookupPage = () => {
     try {
       setSearching(true);
       const response = await orderService.lookupGuestOrder(orderCode, contact);
-      console.log('🔍 Guest order lookup response:', response);
-      
-      // Save to localStorage for recent orders
       const guestOrders = JSON.parse(localStorage.getItem('guest_orders') || '[]');
       const newOrder = {
         orderCode: orderCode.trim(),
@@ -42,17 +39,13 @@ const OrderLookupPage = () => {
         date: new Date().toISOString()
       };
       
-      // Remove duplicate and add to front
       const filtered = guestOrders.filter(o => o.orderCode !== orderCode.trim());
       filtered.unshift(newOrder);
-      localStorage.setItem('guest_orders', JSON.stringify(filtered.slice(0, 5))); // Keep only 5 recent
-
-      // apiService.get() returns response.data directly
+      localStorage.setItem('guest_orders', JSON.stringify(filtered.slice(0, 5)));
       setOrder(response);
       setRecentOrders(filtered.slice(0, 5));
       notify.success('Tìm thấy đơn hàng!');
       
-      // Redirect to detail page
       setTimeout(() => {
         navigate(`/guest-order/${response.orderCode}`);
       }, 500);
@@ -100,14 +93,14 @@ const OrderLookupPage = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-50 py-12">
+      <div className="min-h-screen bg-gray-50 py-12 ">
         <div className="container mx-auto px-4 max-w-4xl">
           {/* Header */}
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
               <FaSearch className="text-3xl text-[#00a85a]" />
             </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Tra cứu đơn hàng</h1>
+            <h1 className="text-3xl font-bold text-gray-900 pt-4 pb-4 ">TRA CỨU ĐƠN HÀNG</h1>
             <p className="text-gray-600">
               Nhập mã đơn hàng và email/số điện thoại để tra cứu
             </p>
@@ -142,7 +135,6 @@ const OrderLookupPage = () => {
             </div>
           )}
 
-          {/* Search Form */}
           <div className="bg-white rounded-lg shadow-md p-6 mb-8">
             <form onSubmit={handleSearch} className="space-y-4">
               <div>
@@ -189,17 +181,6 @@ const OrderLookupPage = () => {
                 )}
               </Button>
             </form>
-          </div>
-
-          {/* Order Details */}
-          
-
-          {/* Help Text */}
-          <div className="mt-8 text-center text-sm text-gray-500">
-            <p>
-              💡 <strong>Lưu ý:</strong> Mã đơn hàng được gửi qua email sau khi đặt hàng
-              thành công
-            </p>
           </div>
         </div>
       </div>

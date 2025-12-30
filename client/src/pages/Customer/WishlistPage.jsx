@@ -74,32 +74,21 @@ const WishlistPage = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-50">
-        <div className="container mx-auto px-4 lg:px-8 pt-6 pb-8">
+      <div className="min-h-screen bg-gray-50 pt-21 pb-8">
+        <div className="container mx-auto px-4 lg:px-30">
           <Breadcrumb items={[{ label: 'Sản phẩm yêu thích' }]} />
 
-          {/* Header */}
-          <div className="border-b border-gray-200 pb-8 mb-12">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-2">
-                  <HeartOutlined />
-                  Sản Phẩm Yêu Thích
-                </h1>
-                <p className="text-sm text-gray-600">
-                  <Badge count={wishlistItems.length} showZero color="#00a85a" /> sản phẩm
-                </p>
-              </div>
-              {wishlistItems.length > 0 && (
-                <Button
-                  danger
-                  icon={<DeleteOutlined />}
-                  onClick={handleClearAll}
-                >
-                  Xóa tất cả
-                </Button>
-              )}
-            </div>
+          <div className="flex justify-between items-center pt-4 pb-4">
+            <h1 className="text-3xl font-bold text-gray-900">SẢN PHẨM YÊU THÍCH</h1>
+            {wishlistItems.length > 0 && (
+              <Button
+                danger
+                icon={<DeleteOutlined />}
+                onClick={handleClearAll}
+              >
+                Xóa tất cả
+              </Button>
+            )}
           </div>
 
           {/* Empty State */}

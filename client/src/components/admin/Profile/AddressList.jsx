@@ -3,7 +3,7 @@ import Button from '../../common/Button';
 
 const AddressList = ({ addresses, onAdd, onEdit, onDelete }) => {
   return (
-    <div className="bg-white rounded-2xl border shadow-sm p-6">
+    <div className="bg-white rounded-2xl shadow-sm p-6">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-semibold text-gray-900">Địa chỉ giao hàng</h3>
         <Button onClick={onAdd}>

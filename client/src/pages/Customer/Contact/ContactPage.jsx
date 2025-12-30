@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Card, Form, Input, Button, Row, Col, Space } from 'antd';
-import { PhoneOutlined, MailOutlined, EnvironmentOutlined, ClockCircleOutlined, FacebookOutlined, InstagramOutlined, TwitterOutlined, SendOutlined } from '@ant-design/icons';
+import { PhoneOutlined, MailOutlined, EnvironmentOutlined, ClockCircleOutlined, SendOutlined } from '@ant-design/icons';
+import { FaFacebookF, FaInstagram, FaTwitter } from 'react-icons/fa';
 import Layout from '../../../components/layouts/Layout';
 import Breadcrumb from '../../../components/common/Breadcrumb';
 import { notify } from '../../../utils/notification';
@@ -24,24 +25,13 @@ const ContactPage = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-white pt-21 pb-8">
+      <div className="min-h-screen bg-gray-50 pt-21 pb-8">
         <div className="container mx-auto px-4 lg:px-30">
-          {/* Breadcrumb */}
           <Breadcrumb items={[
             { label: 'Liên hệ' }
           ]} />
 
-          {/* Hero Section - Minimalist */}
-          <div className="border-b border-gray-200 pb-12 md:pb-16 mb-16 md:mb-20">
-            <div className="max-w-4xl mx-auto text-center">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-light text-gray-900 mb-6 tracking-tight">
-                Liên Hệ Với Chúng Tôi
-              </h1>
-              <p className="text-lg md:text-xl text-gray-600 font-light leading-relaxed max-w-3xl mx-auto">
-                Chúng tôi luôn sẵn sàng lắng nghe và hỗ trợ bạn
-              </p>
-            </div>
-          </div>
+          <h1 className="text-3xl font-bold text-gray-900 pt-4 pb-4">LIÊN HỆ</h1>
 
           {/* Contact Info Cards */}
           <Row gutter={[24, 24]} className="mb-16 md:mb-20">
@@ -186,67 +176,67 @@ const ContactPage = () => {
                     <div className="w-10 h-10 border border-[#00a85a] flex items-center justify-center">
                       <ClockCircleOutlined className="text-[#00a85a] text-base" />
                     </div>
+                    <h3 className="text-base md:text-lg font-normal text-gray-900">Giờ Làm Việc</h3>
                   </div>
-                  <h3 className="text-base md:text-lg font-normal text-gray-900">Giờ Làm Việc</h3>
-                </div>
-                <div className="space-y-2.5 md:space-y-3 text-xs md:text-sm text-gray-600">
-                  <div className="flex justify-between">
-                    <span>Thứ 2 - Thứ 6:</span>
-                    <span className="text-gray-900">8:00 - 20:00</span>
+                  <div className="space-y-2.5 md:space-y-3 text-xs md:text-sm text-gray-600">
+                    <div className="flex justify-between">
+                      <span>Thứ 2 - Thứ 6:</span>
+                      <span className="text-gray-900">8:00 - 20:00</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Thứ 7:</span>
+                      <span className="text-gray-900">8:00 - 18:00</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Chủ nhật:</span>
+                      <span className="text-gray-900">9:00 - 17:00</span>
+                    </div>
                   </div>
-                  <div className="flex justify-between">
-                    <span>Thứ 7:</span>
-                    <span className="text-gray-900">8:00 - 18:00</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Chủ nhật:</span>
-                    <span className="text-gray-900">9:00 - 17:00</span>
-                  </div>
-                </div>
-              </div>
+                </Card>
 
-              {/* Social Media */}
-              <div className="border-t border-gray-200 pt-8 md:pt-10">
-                <h3 className="text-base md:text-lg font-normal text-gray-900 mb-2 md:mb-3">Kết Nối Với Chúng Tôi</h3>
-                <p className="mb-5 md:mb-6 text-xs md:text-sm text-gray-600 leading-relaxed">Theo dõi chúng tôi trên các nền tảng mạng xã hội</p>
-                <div className="flex gap-2.5 md:gap-3">
-                  <a 
-                    href="#" 
-                    className="w-12 h-12 border border-gray-300 hover:border-[#00a85a] hover:bg-[#00a85a] flex items-center justify-center transition-all duration-300 group"
-                  >
-                    <FaFacebookF className="text-gray-900 group-hover:text-white transition-colors" />
-                  </a>
-                  <a 
-                    href="#" 
-                    className="w-12 h-12 border border-gray-300 hover:border-[#00a85a] hover:bg-[#00a85a] flex items-center justify-center transition-all duration-300 group"
-                  >
-                    <FaInstagram className="text-gray-900 group-hover:text-white transition-colors" />
-                  </a>
-                  <a 
-                    href="#" 
-                    className="w-12 h-12 border border-gray-300 hover:border-[#00a85a] hover:bg-[#00a85a] flex items-center justify-center transition-all duration-300 group"
-                  >
-                    <FaTwitter className="text-gray-900 group-hover:text-white transition-colors" />
-                  </a>
-                </div>
-              </div>
+                {/* Social Media */}
+                <Card bordered={false} className="shadow-sm">
+                  <h3 className="text-base md:text-lg font-normal text-gray-900 mb-2 md:mb-3">Kết Nối Với Chúng Tôi</h3>
+                  <p className="mb-5 md:mb-6 text-xs md:text-sm text-gray-600 leading-relaxed">Theo dõi chúng tôi trên các nền tảng mạng xã hội</p>
+                  <div className="flex gap-2.5 md:gap-3">
+                    <a 
+                      href="#" 
+                      className="w-12 h-12 border border-gray-300 hover:border-[#00a85a] hover:bg-[#00a85a] flex items-center justify-center transition-all duration-300 group"
+                    >
+                      <FaFacebookF className="text-gray-900 group-hover:text-white transition-colors" />
+                    </a>
+                    <a 
+                      href="#" 
+                      className="w-12 h-12 border border-gray-300 hover:border-[#00a85a] hover:bg-[#00a85a] flex items-center justify-center transition-all duration-300 group"
+                    >
+                      <FaInstagram className="text-gray-900 group-hover:text-white transition-colors" />
+                    </a>
+                    <a 
+                      href="#" 
+                      className="w-12 h-12 border border-gray-300 hover:border-[#00a85a] hover:bg-[#00a85a] flex items-center justify-center transition-all duration-300 group"
+                    >
+                      <FaTwitter className="text-gray-900 group-hover:text-white transition-colors" />
+                    </a>
+                  </div>
+                </Card>
 
-              {/* FAQ Link */}
-              <div className="border-t border-gray-200 pt-8 md:pt-10">
-                <h3 className="text-base md:text-lg font-normal text-gray-900 mb-2">Có Câu Hỏi?</h3>
-                <p className="text-gray-600 text-xs md:text-sm mb-3 md:mb-4 leading-relaxed">
-                  Xem các câu hỏi thường gặp hoặc trò chuyện trực tiếp với chúng tôi
-                </p>
-                <a 
-                  href="#" 
-                  className="text-gray-900 hover:text-gray-600 text-xs md:text-sm inline-flex items-center gap-2 transition-colors"
-                >
-                  Xem FAQ
-                  <span>→</span>
-                </a>
-              </div>
-            </div>
-          </div>
+                {/* FAQ Link */}
+                <Card bordered={false} className="shadow-sm">
+                  <h3 className="text-base md:text-lg font-normal text-gray-900 mb-2">Có Câu Hỏi?</h3>
+                  <p className="text-gray-600 text-xs md:text-sm mb-3 md:mb-4 leading-relaxed">
+                    Xem các câu hỏi thường gặp hoặc trò chuyện trực tiếp với chúng tôi
+                  </p>
+                  <a 
+                    href="#" 
+                    className="text-gray-900 hover:text-gray-600 text-xs md:text-sm inline-flex items-center gap-2 transition-colors"
+                  >
+                    Xem FAQ
+                    <span>→</span>
+                  </a>
+                </Card>
+              </Space>
+            </Col>
+          </Row>
 
           {/* Map Section */}
           <div className="border-t border-gray-200 pt-16 md:pt-20 pb-8">
@@ -273,4 +263,4 @@ const ContactPage = () => {
   );
 };
 
-export default ContactPage;
+export default ContactPage

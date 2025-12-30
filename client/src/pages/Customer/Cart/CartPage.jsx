@@ -133,9 +133,10 @@ const CartPage = () => {
   if (!cartItems || cartItems.length === 0) {
     return (
       <Layout>
-        <div className="bg-white min-h-screen pt-21 pb-8">
+        <div className="bg-gray-50 min-h-screen pt-21 pb-8">
           <div className="container mx-auto px-4 lg:px-30">
             <Breadcrumb items={[{ label: 'Giỏ hàng' }]} />
+            <h1 className="text-3xl font-bold text-gray-900 pt-4 pb-4">GIỎ HÀNG</h1>
             <CartEmpty />
           </div>
         </div>
@@ -147,18 +148,14 @@ const CartPage = () => {
     <Layout>
       <div className="bg-gray-50 min-h-screen pt-21 pb-8">
         <div className="container mx-auto px-4 lg:px-30">
-          {/* Breadcrumb */}
+          
           <Breadcrumb items={[{ label: 'Giỏ hàng' }]} />
 
-          <div className="mb-8 flex justify-between items-center">
+          <div className=" flex justify-between items-center">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-3">
-                <ShoppingCartOutlined />
-                Giỏ hàng của bạn
+              <h1 className="text-3xl font-bold text-gray-900 pt-4 pb-4 flex items-center gap-3">
+                GIỎ HÀNG
               </h1>
-              <p className="text-gray-600">
-                Bạn có <Badge count={cartCount} showZero color="#00a85a" /> sản phẩm trong giỏ hàng
-              </p>
             </div>
             
             {cartItems.length > 0 && (

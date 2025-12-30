@@ -57,6 +57,7 @@ const ProductToolbar = ({
             icon={<PlusOutlined />}
             onClick={onAddProduct}
             size="large"
+            // style ={{ backgroundColor: '#1890ff', borderColor: '#1890ff' }}
           >
             Add Product
           </Button>

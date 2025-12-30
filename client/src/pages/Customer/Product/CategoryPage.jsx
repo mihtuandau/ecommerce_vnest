@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { FaFilter } from 'react-icons/fa';
 import Layout from '../../../components/layouts/Layout';
 import Breadcrumb from '../../../components/common/Breadcrumb';
 import ProductGrid from '../../../components/products/ProductGrid';
@@ -45,7 +44,8 @@ const CategoryPage = () => {
         const categories = await categoryService.getAll();
         const found = categories.find(cat => cat.id === parseInt(id));
         setCategory(found);
-      } catch (error) {notify.error('Không tìm thấy danh mục');
+      } catch (error) {
+        notify.error('Không tìm thấy danh mục');
       }
     };
     loadCategory();
@@ -61,7 +61,9 @@ const CategoryPage = () => {
         ]);
         setBrands(brandsRes?.data || []);
         setPriceRange(priceRangeRes?.data || { minPrice: 0, maxPrice: 10000000 });
-      } catch (error) {}
+      } catch (error) {
+        console.error('Error loading brands and price range:', error);
+      }
     };
     loadBrandsAndPrice();
   }, []);
@@ -108,7 +110,8 @@ const CategoryPage = () => {
         total: pageInfo?.total || 0,
         totalPages: pageInfo?.totalPages || 1,
       });
-    } catch (error) {notify.error('Lỗi tải sản phẩm');
+    } catch (error) {
+      notify.error('Lỗi tải sản phẩm');
     } finally {
       setLoading(false);
     }
@@ -185,31 +188,26 @@ const CategoryPage = () => {
   return (
     <Layout>
       <div className="bg-gray-50 min-h-screen pt-21 pb-8">
-        <div className="container mx-auto px-4 lg:px-30">
-          <div className="mb-4">
-            <Breadcrumb items={[
-              { label: 'Sản phẩm', path: '/products' },
-              { label: category?.name || 'Danh mục' }
-            ]} />
-          </div>
+        <div className="container mx-auto lg:px-30">
+          <Breadcrumb items={[
+            { label: 'Sản Phẩm', path: '/products' },
+            { label: category?.name || 'Danh mục' }
+          ]} />
 
           {category && (
-            <div className="mb-6">
-              <h1 className="text-3xl font-bold text-gray-900 mb-1">
-                {category.name}
+            <div className="">
+              <h1 className="text-3xl font-bold text-gray-900 pt-4 pb-4">
+                {category.name.toUpperCase()}
               </h1>
               {category.description && (
-                <p className="text-gray-600 mb-2">{category.description}</p>
+                <p className="text-gray-600">{category.description}</p>
               )}
-              <p className="text-sm text-gray-600">
-                Tìm thấy {pagination.total} sản phẩm
-              </p>
             </div>
           )}
 
           {/* Filter Bar - Sticky */}
           <div className="sticky top-16 z-10 mb-6">
-            <div className="bg-gray-50 rounded-lg">
+            <div className=" rounded-lg p-3">
               <ProductFilter
                 brands={brands}
                 priceRange={priceRange}
@@ -225,6 +223,7 @@ const CategoryPage = () => {
           <ActiveFilters
             filters={getFiltersFromURL()}
             categories={[]}
+            brands={brands}
             priceRange={priceRange}
             onRemoveFilter={handleRemoveFilter}
             onClearAll={handleClearAllFilters}

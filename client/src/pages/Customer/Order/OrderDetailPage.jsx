@@ -81,18 +81,19 @@ const OrderDetailPage = () => {
   if (!order) {
     return (
       <Layout>
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center py-8">
-          <div className="text-center">
-            <FaBox size={48} className="text-gray-400 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 mb-4">
-              Không tìm thấy đơn hàng
-            </h3>
-            <button
-              onClick={() => navigate('/orders')}
-              className="px-4 py-2 bg-[#00a85a] hover:bg-[#008f4d] text-white rounded-lg transition-colors"
-            >
-              Quay lại danh sách đơn hàng
-            </button>
+        <div className="min-h-screen bg-gray-50 pt-21 pb-8">
+          <div className="container mx-auto px-4 lg:px-30">
+            <div className="text-center py-16">
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                Không tìm thấy đơn hàng
+              </h3>
+              <button
+                onClick={() => navigate('/orders')}
+                className="px-4 py-2 bg-[#00a85a] hover:bg-[#008f4d] text-white rounded-lg transition-colors"
+              >
+                Quay lại danh sách đơn hàng
+              </button>
+            </div>
           </div>
         </div>
       </Layout>

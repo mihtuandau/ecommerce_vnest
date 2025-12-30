@@ -12,7 +12,7 @@ const ProductFilter = ({
   onFilterChange,
   currentFilters = {},
   hideCategories = false,
-  layout = "vertical", // "vertical" or "horizontal"
+  layout = "vertical", 
 }) => {
   const [filters, setFilters] = useState({
     categoryId: currentFilters.categoryId || "",
@@ -59,7 +59,7 @@ const ProductFilter = ({
       ["sortBy", "categoryId", "brandId", "minRating", "stockStatus"].includes(
         name
       )
-    ) {
+    ) { 
       onFilterChange(newFilters);
       setOpenDropdown(null);
     }
@@ -108,7 +108,7 @@ const ProductFilter = ({
   // Horizontal layout
   if (layout === "horizontal") {
     return (
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 text ">
         {/* Filter label */}
         <div className="flex items-center gap-2 text-gray-700">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -122,12 +122,12 @@ const ProductFilter = ({
           <Select
             placeholder="Danh mục"
             style={{ width: 180 }}
-            value={filters.categoryId || undefined}
+            value={filters.categoryId ? String(filters.categoryId) : undefined}
             onChange={(value) => handleChange("categoryId", value || "")}
             allowClear
           >
             {categories.map((cat) => (
-              <Option key={cat.id} value={cat.id}>
+              <Option key={cat.id} value={String(cat.id)}>
                 {cat.name}
               </Option>
             ))}
@@ -139,12 +139,12 @@ const ProductFilter = ({
           <Select
             placeholder="Thương hiệu"
             style={{ width: 180 }}
-            value={filters.brandId || undefined}
+            value={filters.brandId ? String(filters.brandId) : undefined}
             onChange={(value) => handleChange("brandId", value || "")}
             allowClear
           >
             {brands.map((brand) => (
-              <Option key={brand.id} value={brand.id}>
+              <Option key={brand.id} value={String(brand.id)}>
                 {brand.name}
               </Option>
             ))}
@@ -180,7 +180,7 @@ const ProductFilter = ({
         {/* Rating filter */}
         <Select
           placeholder="Đánh giá"
-          style={{ width: 150 }}
+          style={{ width: 150,  }}
           value={filters.minRating || undefined}
           onChange={(value) => handleChange("minRating", value || "")}
           allowClear
@@ -284,7 +284,7 @@ const ProductFilter = ({
             </label>
             {categories.map((cat) => (
               <label
-                key={cat.id}
+                key={cat.name}
                 className="flex items-center gap-3 cursor-pointer hover:bg-gray-50 p-2.5 rounded-lg transition-all duration-200 group"
               >
                 <input

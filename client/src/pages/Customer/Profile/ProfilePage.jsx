@@ -56,12 +56,12 @@ const ProfilePage = () => {
     <Layout>
       <div className="min-h-screen bg-gray-50 pt-21 pb-8">
         <div className="container mx-auto px-4 lg:px-30">
-          {/* Breadcrumb */}
           <Breadcrumb items={[
             { label: 'Thông tin tài khoản' }
           ]} />
 
-          {/* Header Card */}
+          <h1 className="text-3xl font-bold text-gray-900 pt-4 pb-4">THÔNG TIN TÀI KHOẢN</h1>
+
           <Card className="mb-8 shadow-sm">
             <div className="flex items-center gap-6">
               <Avatar 
@@ -72,24 +72,15 @@ const ProfilePage = () => {
                 {currentUser.name?.charAt(0)?.toUpperCase() || currentUser.email?.charAt(0)?.toUpperCase()}
               </Avatar>
               <div className="flex-1">
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                <h2 className="text-xl font-semibold text-gray-900 mb-1">
                   {currentUser.name || 'Người dùng'}
-                </h1>
+                </h2>
                 <p className="text-gray-600">{currentUser.email}</p>
-              </div>
-              <div className="text-right">
-                <Tag color={currentUser.role === 'ADMIN' ? 'blue' : 'green'} className="mb-2">
-                  {currentUser.role === 'ADMIN' ? 'Admin' : 'Khách hàng'}
-                </Tag>
-                <p className="text-xs text-gray-500">
-                  <IdcardOutlined /> ID: {currentUser.id}
-                </p>
               </div>
             </div>
           </Card>
 
-          <Row gutter={[24, 24]}>
-            {/* Personal Info Card */}
+          <Row gutter={[32, 32]} className="mt-6">
             <Col xs={24} lg={8}>
               <Card 
                 title={

@@ -77,23 +77,6 @@ const ProductDetailPage = () => {
         const variantWithStock = variantsWithStock.length > 0 
           ? variantsWithStock.sort((a, b) => b.stock - a.stock)[0]  
           : productData.variants[0]; 
-          
-        console.log('📦 Loading product with variants:', {
-          totalVariants: productData.variants.length,
-          allVariants: productData.variants.map(v => ({
-            id: v.id,
-            size: v.size,
-            color: v.color,
-            stock: v.stock
-          })),
-          selectedVariant: {
-            id: variantWithStock.id,
-            stock: variantWithStock.stock,
-            size: variantWithStock.size,
-            color: variantWithStock.color
-          }
-        });
-        
         setSelectedVariant(variantWithStock);
       }
     } catch (error) {
@@ -180,15 +163,15 @@ const ProductDetailPage = () => {
 
   return (
     <Layout>
-      <div className="bg-white min-h-screen pt-21 pb-8">
+      <div className="bg-gray-50 min-h-screen pt-21 pb-8">
         <div className="container mx-auto px-4 lg:px-30">
           <Breadcrumb items={[
-            { label: 'Sản phẩm', path: '/products' },
+            { label: 'Sản Phẩm', path: '/products' },
             { label: product.name }
           ]} />
 
           <div className="mb-12">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 pt-4 pb-4">
               <ProductImageGallery
                 images={images}
                 selectedImage={selectedImage}
