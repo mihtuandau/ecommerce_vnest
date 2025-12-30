@@ -6,24 +6,12 @@ import Breadcrumb from "../../../components/common/Breadcrumb";
 
 const AboutPage = () => {
   return (
-    <Layout>
-      <div className="min-h-screen bg-white pt-21 pb-8">
+    <Layout >
+      <div className="min-h-screen bg-gray-50 pt-21 pb-8">
         <div className="container mx-auto px-4 lg:px-30">
-          {/* Breadcrumb */}
           <Breadcrumb items={[{ label: "Về chúng tôi" }]} />
 
-          {/* Hero Section - Minimalist */}
-          <div className="border-b border-gray-200 pb-12 md:pb-16 mb-16 md:mb-20">
-            <div className="max-w-4xl mx-auto text-center">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-light text-gray-900 mb-6 tracking-tight">
-                Về Chúng Tôi
-              </h1>
-              <p className="text-lg md:text-xl text-gray-600 font-light leading-relaxed max-w-3xl mx-auto">
-                MINH TUAN STORE — Điểm đến tin cậy cho phong cách thời trang
-                hiện đại
-              </p>
-            </div>
-          </div>
+          <h1 className="text-3xl font-bold text-gray-900 pt-4 pb-4">VỀ CHÚNG TÔI</h1>
 
           {/* Story Section */}
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center mb-20 md:mb-28">

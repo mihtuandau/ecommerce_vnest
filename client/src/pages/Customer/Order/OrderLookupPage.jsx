@@ -107,7 +107,7 @@ const OrderLookupPage = () => {
             <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
               <FaSearch className="text-3xl text-[#00a85a]" />
             </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Tra cứu đơn hàng</h1>
+            <h1 className="text-3xl font-bold text-gray-900 pt-4 pb-4 ">TRA CỨU ĐƠN HÀNG</h1>
             <p className="text-gray-600">
               Nhập mã đơn hàng và email/số điện thoại để tra cứu
             </p>

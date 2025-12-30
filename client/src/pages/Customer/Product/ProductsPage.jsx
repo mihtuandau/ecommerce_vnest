@@ -165,16 +165,13 @@ const ProductsPage = () => {
     <Layout>
       <div className="bg-gray-50 min-h-screen pt-21 pb-8">
         <div className="container mx-auto px-4 lg:px-30">
-          {/* Breadcrumb */}
           <Breadcrumb items={[
             { label: 'Sản Phẩm', path: '/products' }
             
           ]} />
 
-          {/* Page Title */}
-          <h1 className="text-3xl font-bold text-gray-900 mb-6">TẤT CẢ</h1>
+          <h1 className="text-3xl font-bold text-gray-900 pt-4 pb-4">TẤT CẢ</h1>
 
-          {/* Mobile Filter Button */}
           <button 
             onClick={() => setShowFilter(true)}
             className="lg:hidden flex items-center gap-2 px-4 py-2 mb-4 bg-white border border-gray-300 rounded-lg hover:border-[#00a85a] w-full justify-center"
@@ -183,7 +180,6 @@ const ProductsPage = () => {
             <span>Lọc sản phẩm</span>
           </button>
 
-          {/* Filter Drawer for Mobile */}
           <Drawer
             title="Bộ lọc"
             placement="right"

@@ -122,12 +122,12 @@ const ProductFilter = ({
           <Select
             placeholder="Danh mục"
             style={{ width: 180 }}
-            value={filters.categoryId || undefined}
+            value={filters.categoryId ? String(filters.categoryId) : undefined}
             onChange={(value) => handleChange("categoryId", value || "")}
             allowClear
           >
             {categories.map((cat) => (
-              <Option key={cat.id} value={cat.id}>
+              <Option key={cat.id} value={String(cat.id)}>
                 {cat.name}
               </Option>
             ))}
@@ -139,12 +139,12 @@ const ProductFilter = ({
           <Select
             placeholder="Thương hiệu"
             style={{ width: 180 }}
-            value={filters.brandId || undefined}
+            value={filters.brandId ? String(filters.brandId) : undefined}
             onChange={(value) => handleChange("brandId", value || "")}
             allowClear
           >
             {brands.map((brand) => (
-              <Option key={brand.id} value={brand.id}>
+              <Option key={brand.id} value={String(brand.id)}>
                 {brand.name}
               </Option>
             ))}
@@ -284,7 +284,7 @@ const ProductFilter = ({
             </label>
             {categories.map((cat) => (
               <label
-                key={cat.id}
+                key={cat.name}
                 className="flex items-center gap-3 cursor-pointer hover:bg-gray-50 p-2.5 rounded-lg transition-all duration-200 group"
               >
                 <input

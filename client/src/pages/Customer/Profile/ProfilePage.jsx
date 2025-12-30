@@ -56,10 +56,11 @@ const ProfilePage = () => {
     <Layout>
       <div className="min-h-screen bg-gray-50 pt-21 pb-8">
         <div className="container mx-auto px-4 lg:px-30">
-          {/* Breadcrumb */}
           <Breadcrumb items={[
             { label: 'Thông tin tài khoản' }
           ]} />
+
+          <h1 className="text-3xl font-bold text-gray-900 pt-4 pb-4">THÔNG TIN TÀI KHOẢN</h1>
 
           {/* Header Card */}
           <Card className="mb-8 shadow-sm">
@@ -72,9 +73,9 @@ const ProfilePage = () => {
                 {currentUser.name?.charAt(0)?.toUpperCase() || currentUser.email?.charAt(0)?.toUpperCase()}
               </Avatar>
               <div className="flex-1">
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                <h2 className="text-xl font-semibold text-gray-900 mb-1">
                   {currentUser.name || 'Người dùng'}
-                </h1>
+                </h2>
                 <p className="text-gray-600">{currentUser.email}</p>
               </div>
               <div className="text-right">

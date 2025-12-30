@@ -127,8 +127,9 @@ const CheckoutPage = () => {
           >
             Quay lại giỏ hàng
           </AntButton>
+          <Breadcrumb items={[{ label: 'Thanh toán' }]} />
           
-          <h1 className="text-3xl font-bold text-gray-900 mb-6">Thanh toán</h1>
+          <h1 className="text-3xl font-bold text-gray-900 pt-4 pb-4">THANH TOÁN</h1>
           
           {/* Progress Steps */}
           <Steps
@@ -136,7 +137,6 @@ const CheckoutPage = () => {
             items={[
               {
                 title: 'Giỏ hàng',
-                icon: <ShoppingOutlined />,
               },
               {
                 title: 'Thanh toán',

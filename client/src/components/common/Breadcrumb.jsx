@@ -15,7 +15,7 @@ const Breadcrumb = ({ items = [] }) => {
               {item.label}
             </Link>
           ) : (
-            <span className="text-gray-900">{item.label}</span>
+            <span className="text-gray-900 uppercase">{item.label}</span>
           )}
         </React.Fragment>
       ))}
