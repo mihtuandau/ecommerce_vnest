@@ -3,10 +3,9 @@ import { MessageSquare, Send, Loader2, User, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import chatSocketService from "../../../services/chatSocketService";
 import { useAuth } from "../../../hooks/useAuth";
-import Button from "../../../components/common/Button";
 import Layout from "../../../components/layouts/Layout";
 import Header from "../../../components/layouts/Header";
-import Footer from "../../../components/layouts/Footer";
+
 
 const SupportChatPage = () => {
   const { user } = useAuth();
@@ -111,7 +110,6 @@ const SupportChatPage = () => {
 
       <div className="min-h-screen bg-white py-6 lg:px-30 pt-21 pb-8">
         <div className="container mx-auto px-4 max-w-3xl">
-          {/* Header */}
           <div className="bg-[#00a85a] border border-[#00a85a] p-5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">

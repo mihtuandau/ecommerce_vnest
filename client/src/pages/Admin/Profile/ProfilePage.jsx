@@ -58,7 +58,7 @@ const ProfilePage = () => {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold tracking-tight text-gray-900 mb-2">
-            Thông tin cá nhân
+            THÔNG TIN CÁ NHÂN
           </h1>
           <p className="text-gray-600">
             Quản lý thông tin tài khoản và địa chỉ giao hàng của bạn

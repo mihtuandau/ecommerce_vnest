@@ -24,7 +24,7 @@ const Footer = () => {
               <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
                 <ShoppingCart className="text-gray-900" size={20} />
               </div>
-              <span className="text-2xl font-bold text-white">SHOP</span>
+              <span className="text-2xl font-bold text-white">MINHTUANSHOP</span>
             </div>
             <p className="text-sm mb-4">
               Cửa hàng thời trang trực tuyến hàng đầu Việt Nam. Chất lượng - Uy
@@ -61,19 +61,19 @@ const Footer = () => {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-white font-bold text-lg mb-4">Liên Kết</h3>
+            <h3 className="text-white font-bold text-lg mb-4">LIÊN KẾT</h3>
             <ul className="space-y-2">
               <li>
                 <Link
                   to="/products"
                   className="hover:text-white transition-colors"
                 >
-                  Sản Phẩm
+                  SẢN PHẨM
                 </Link>
               </li>
               <li>
                 <Link to="/blog" className="hover:text-white transition-colors">
-                  Blog
+                  BLOG
                 </Link>
               </li>
               <li>
@@ -81,7 +81,7 @@ const Footer = () => {
                   to="/careers"
                   className="hover:text-white transition-colors"
                 >
-                  Về Chúng Tôi
+                  VỀ CHÚNG TÔI
                 </Link>
               </li>
               <li>
@@ -89,7 +89,7 @@ const Footer = () => {
                   to="/contact"
                   className="hover:text-white transition-colors"
                 >
-                  Liên Hệ
+                  LIÊN HỆ
                 </Link>
               </li>
             </ul>
@@ -97,14 +97,14 @@ const Footer = () => {
 
           {/* Customer Support */}
           <div>
-            <h3 className="text-white font-bold text-lg mb-4">Hỗ Trợ</h3>
+            <h3 className="text-white font-bold text-lg mb-4">HỖ TRỢ</h3>
             <ul className="space-y-2">
               <li>
                 <Link
                   to="/order-lookup"
                   className="hover:text-white transition-colors flex items-center gap-2"
                 >
-                  Tra Cứu Đơn Hàng
+                  TRA CỨU ĐƠN HÀNG
                 </Link>
               </li>
               <li>
@@ -112,7 +112,7 @@ const Footer = () => {
                   to="/privacy"
                   className="hover:text-white transition-colors"
                 >
-                  Chính Sách Bảo Mật
+                  CHÍNH SÁCH BẢO MẬT
                 </Link>
               </li>
               <li>
@@ -120,12 +120,12 @@ const Footer = () => {
                   to="/terms"
                   className="hover:text-white transition-colors"
                 >
-                  Điều Khoản Sử Dụng
+                  ĐIỀU KHOẢN SỬ DỤNG
                 </Link>
               </li>
               <li>
                 <Link to="/faq" className="hover:text-white transition-colors">
-                  Câu Hỏi Thường Gặp
+                  CÂU HỎI THƯỜNG GẶP
                 </Link>
               </li>
             </ul>
@@ -133,7 +133,7 @@ const Footer = () => {
 
           {/* Contact Info */}
           <div>
-            <h3 className="text-white font-bold text-lg mb-4">Liên Hệ</h3>
+            <h3 className="text-white font-bold text-lg mb-4">LIÊN HỆ</h3>
             <ul className="space-y-3">
               <li className="flex items-start gap-3">
                 <MapPin size={18} className="flex-shrink-0 mt-1" />
@@ -160,14 +160,14 @@ const Footer = () => {
       </div>
 
       {/* Bottom Bar */}
-      <div className="border-t border-gray-800">
+      <div className="border-t border-white/20">
         <div className="container mx-auto px-4 lg:px-8 py-4">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-2 text-sm text-gray-400">
-            <p>© {currentYear} SHOP. All rights reserved.</p>
+          <div className="flex flex-col md:flex-row items-center justify-between gap-2 text-sm text-white">
+            <p>© {currentYear} MINHTUANSHOP. ALL RIGHTS RESERVED.</p>
             <p>
-              Designed with by{" "}
-              <a href="#" className="text-blue-400 hover:text-blue-300">
-                Minh Tuấn
+              Designed with by {" "}
+              <a href="#" className="text-blue-400 hover:text-gray-300 text-gray-900">
+                TuanDau Design
               </a>
             </p>
           </div>

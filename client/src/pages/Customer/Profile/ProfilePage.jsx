@@ -62,7 +62,6 @@ const ProfilePage = () => {
 
           <h1 className="text-3xl font-bold text-gray-900 pt-4 pb-4">THÔNG TIN TÀI KHOẢN</h1>
 
-          {/* Header Card */}
           <Card className="mb-8 shadow-sm">
             <div className="flex items-center gap-6">
               <Avatar 
@@ -78,19 +77,10 @@ const ProfilePage = () => {
                 </h2>
                 <p className="text-gray-600">{currentUser.email}</p>
               </div>
-              <div className="text-right">
-                <Tag color={currentUser.role === 'ADMIN' ? 'blue' : 'green'} className="mb-2">
-                  {currentUser.role === 'ADMIN' ? 'Admin' : 'Khách hàng'}
-                </Tag>
-                <p className="text-xs text-gray-500">
-                  <IdcardOutlined /> ID: {currentUser.id}
-                </p>
-              </div>
             </div>
           </Card>
 
-          <Row gutter={[24, 24]}>
-            {/* Personal Info Card */}
+          <Row gutter={[32, 32]} className="mt-6">
             <Col xs={24} lg={8}>
               <Card 
                 title={

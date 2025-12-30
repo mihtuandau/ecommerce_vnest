@@ -4,7 +4,7 @@ import { statusOptions } from '../../../utils/orderHelpers';
 
 const OrderFilters = ({ searchQuery, setSearchQuery, statusFilter, setStatusFilter }) => {
   return (
-    <div className="bg-white rounded-2xl border shadow-sm p-6 mb-6">
+    <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
       <div className="flex flex-col md:flex-row md:items-center gap-4">
         <div className="flex-1 relative">
           <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />

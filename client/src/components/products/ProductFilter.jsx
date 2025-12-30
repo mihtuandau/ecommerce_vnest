@@ -12,7 +12,7 @@ const ProductFilter = ({
   onFilterChange,
   currentFilters = {},
   hideCategories = false,
-  layout = "vertical", // "vertical" or "horizontal"
+  layout = "vertical", 
 }) => {
   const [filters, setFilters] = useState({
     categoryId: currentFilters.categoryId || "",
@@ -59,7 +59,7 @@ const ProductFilter = ({
       ["sortBy", "categoryId", "brandId", "minRating", "stockStatus"].includes(
         name
       )
-    ) {
+    ) { 
       onFilterChange(newFilters);
       setOpenDropdown(null);
     }
@@ -108,7 +108,7 @@ const ProductFilter = ({
   // Horizontal layout
   if (layout === "horizontal") {
     return (
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 text ">
         {/* Filter label */}
         <div className="flex items-center gap-2 text-gray-700">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -180,7 +180,7 @@ const ProductFilter = ({
         {/* Rating filter */}
         <Select
           placeholder="Đánh giá"
-          style={{ width: 150 }}
+          style={{ width: 150,  }}
           value={filters.minRating || undefined}
           onChange={(value) => handleChange("minRating", value || "")}
           allowClear

@@ -151,11 +151,9 @@ const AdminChatManagement = () => {
             </div>
           ) : (
             rooms.map((room) => {
-              // Get user info from last message sender (if customer sent the message)
-              const userName = room.lastMessage?.sender?.role === 'CUSTOMER' 
-                ? room.lastMessage.sender.name 
-                : room.roomId.replace('user-', 'User #');
-              const userEmail = room.lastMessage?.sender?.email;
+              // Get user info from room object or last message
+              const userName = room.user?.name || room.lastMessage?.sender?.name || 'Khách hàng';
+              const userEmail = room.user?.email || room.lastMessage?.sender?.email;
               
               return (
                 <button
@@ -204,9 +202,7 @@ const AdminChatManagement = () => {
                 </div>
                 <div>
                   <h3 className="font-semibold">
-                    {messages[0]?.sender?.role === 'CUSTOMER' 
-                      ? messages[0].sender.name 
-                      : selectedRoom.replace('user-', 'User #')}
+                    {messages.find(m => m.sender?.role === 'CUSTOMER')?.sender?.name || 'Khách hàng'}
                   </h3>
                   <p className="text-xs text-gray-100 flex items-center gap-1">
                     <FaCircle size={8} className="text-green-400" />

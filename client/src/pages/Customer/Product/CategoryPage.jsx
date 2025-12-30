@@ -207,7 +207,7 @@ const CategoryPage = () => {
 
           {/* Filter Bar - Sticky */}
           <div className="sticky top-16 z-10 mb-6">
-            <div className="bg-gray-50 rounded-lg">
+            <div className=" rounded-lg p-3">
               <ProductFilter
                 brands={brands}
                 priceRange={priceRange}

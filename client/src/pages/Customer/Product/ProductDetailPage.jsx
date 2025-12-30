@@ -77,23 +77,6 @@ const ProductDetailPage = () => {
         const variantWithStock = variantsWithStock.length > 0 
           ? variantsWithStock.sort((a, b) => b.stock - a.stock)[0]  
           : productData.variants[0]; 
-          
-        console.log('📦 Loading product with variants:', {
-          totalVariants: productData.variants.length,
-          allVariants: productData.variants.map(v => ({
-            id: v.id,
-            size: v.size,
-            color: v.color,
-            stock: v.stock
-          })),
-          selectedVariant: {
-            id: variantWithStock.id,
-            stock: variantWithStock.stock,
-            size: variantWithStock.size,
-            color: variantWithStock.color
-          }
-        });
-        
         setSelectedVariant(variantWithStock);
       }
     } catch (error) {

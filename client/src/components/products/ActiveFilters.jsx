@@ -96,7 +96,7 @@ const ActiveFilters = ({
 
       <button
         onClick={onClearAll}
-        className="ml-auto px-4 py-1.5 text-sm font-medium text-red-600 hover:text-red-700 hover:underline transition-colors"
+        className="ml-auto px-4 py-1.5 text-sm font-medium text-red-600 hover:text-red-900 hover:underline transition-colors"
       >
         Xóa hết
       </button>

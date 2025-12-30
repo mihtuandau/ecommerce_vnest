@@ -3,7 +3,7 @@ import { User, Shield } from 'lucide-react';
 const ProfileCard = ({ user, addressCount, formatDate }) => {
   const getRoleBadge = (role) => {
     return role === 'ADMIN' ? (
-      <span className="inline-flex items-center gap-1 px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-medium">
+      <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
         <Shield className="w-3 h-3" />
         Quản trị viên
       </span>
@@ -16,12 +16,12 @@ const ProfileCard = ({ user, addressCount, formatDate }) => {
   };
 
   return (
-    <div className="bg-white rounded-2xl border shadow-sm p-6">
+    <div className="bg-white rounded-2xl shadow-sm p-6">
       <div className="text-center mb-6">
-        <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mx-auto mb-4 flex items-center justify-center">
+        <div className="w-24 h-24 bg-blue-500 rounded-full mx-auto mb-4 flex items-center justify-center">
           <User className="w-12 h-12 text-white" />
         </div>
-        <h2 className="text-xl font-bold text-gray-900">{user?.name || 'User'}</h2>
+        <h2 className="text-xl font-bold text-gray-900">{user?.name}</h2>
         <p className="text-sm text-gray-500 mb-3">{user?.email}</p>
         {getRoleBadge(user?.role)}
       </div>

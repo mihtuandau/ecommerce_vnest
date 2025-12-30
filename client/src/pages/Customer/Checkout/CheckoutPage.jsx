@@ -18,6 +18,7 @@ import { useCheckoutCalculations } from "../../../hooks/useCheckoutCalculations"
 import { useDiscountCode } from "../../../hooks/useDiscountCode";
 import { useCheckoutForm } from "../../../hooks/useCheckoutForm";
 import { useCheckoutSubmit } from "../../../hooks/useCheckoutSubmit";
+// import Breadcrumb from "../../../components/common/Breadcrumb";
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
@@ -99,12 +100,9 @@ const CheckoutPage = () => {
   const onSelectAddress = (addressData) => {
     handleSelectAddress(addressData, shippingInfo.email);
     setShowAddressModal(false);
-    notify.success("Đã chọn địa chỉ");
   };
 
   const onSubmitOrder = () => {
-    console.log('🛒 CheckoutPage - submitting with discount:', appliedDiscount);
-    console.log('🚚 Shipping fee:', shipping);
     submitOrder(cartItems, shippingInfo, paymentMethod, agreedToTerms, appliedDiscount, shipping);
   };
 
@@ -117,7 +115,7 @@ const CheckoutPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-21 pb-8">
+    <div className="min-h-screen bg-gray-50 pt-10 pb-8">
       <div className="container mx-auto px-4 max-w-6xl">
         <div className="mb-8">
           <AntButton
@@ -127,7 +125,6 @@ const CheckoutPage = () => {
           >
             Quay lại giỏ hàng
           </AntButton>
-          <Breadcrumb items={[{ label: 'Thanh toán' }]} />
           
           <h1 className="text-3xl font-bold text-gray-900 pt-4 pb-4">THANH TOÁN</h1>
           

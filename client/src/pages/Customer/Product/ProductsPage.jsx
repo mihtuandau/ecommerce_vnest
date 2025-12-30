@@ -202,7 +202,7 @@ const ProductsPage = () => {
 
           {/* Desktop Filter Bar */}
           <div className="hidden lg:block mb-6">
-            <div className="bg-white border-t border-b border-gray-200 py-4">
+            <div className=" py-4 p-3">
               <ProductFilter
                 categories={categories}
                 brands={brands}

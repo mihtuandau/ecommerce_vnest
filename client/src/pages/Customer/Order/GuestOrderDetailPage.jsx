@@ -77,18 +77,11 @@ const GuestOrderDetailPage = () => {
             { label: 'Tra cứu đơn hàng', path: '/order-lookup' },
             { label: `Đơn hàng ${order.orderCode}` }
           ]} />
-          <button
-            onClick={() => navigate('/order-lookup')}
-            className="mb-6 flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
-          >
-            <FaArrowLeft />
-            <span>QUAY LẠI TRA CỨU</span>
-          </button>
 
           <div className="mb-6 flex items-center justify-between flex-wrap gap-4">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">
-                Chi tiết đơn hàng #{order.orderCode}
+                CHI TIẾT ĐƠN HÀNG #{order.orderCode}
               </h1>
               <p className="text-gray-600 mt-1">
                 Đặt lúc: {formatDateTime(order.createdAt)}
