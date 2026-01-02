@@ -1,102 +1,147 @@
-import { useState, useEffect, useCallback } from 'react';
+// src/hooks/useProducts.js
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import productService from '../services/productService';
 import { notify } from '../utils/notification';
 
-export const useProducts = () => {
-  const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [brands, setBrands] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [filters, setFilters] = useState({
-    search: '',
-    categoryId: '',
-    page: 1,
-    limit: 10
-  });
-  const [totalPages, setTotalPages] = useState(1);
-
-  // Helper: Extract data from response
-  const extractData = (response) => {
-    if (Array.isArray(response?.data)) return response.data;
-    if (Array.isArray(response)) return response;
-    return [];
-  };
-
-  // Load products
-  const loadProducts = useCallback(async () => {
-    try {
-      setLoading(true);
+// Hook lấy danh sách products với filters & pagination
+export const useProducts = (filters = {}) => {
+  return useQuery({
+    queryKey: ['products', filters],
+    queryFn: async () => {
       const response = await productService.getAll(filters);
       
       // Backend trả về { data: [], page, limit, total, totalPages }
       const productsData = response?.data?.data || response?.data || [];
-      const total = response?.data?.total || 0;
-      const totalPagesFromAPI = response?.data?.totalPages || 1;
+      const pagination = {
+        total: response?.data?.total || 0,
+        totalPages: response?.data?.totalPages || 1,
+        page: response?.data?.page || filters.page || 1,
+        limit: response?.data?.limit || filters.limit || 10,
+      };
       
-      setProducts(productsData);
-      setTotalPages(totalPagesFromAPI);
-    } catch (error) {notify.error('Không thể tải danh sách sản phẩm');
-      setProducts([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [filters]);
+      return {
+        products: productsData,
+        pagination,
+      };
+    },
+    staleTime: 2 * 60 * 1000, // Cache 2 phút
+    placeholderData: (previousData) => previousData, // Giữ data cũ khi refetch
+  });
+};
 
-  // Load categories
-  const loadCategories = useCallback(async () => {
-    try {
+// Hook lấy categories
+export const useCategories = () => {
+  return useQuery({
+    queryKey: ['categories'],
+    queryFn: async () => {
       const response = await productService.getCategories();
-      const categoriesData = extractData(response);
-      setCategories(categoriesData);
-    } catch (error) {notify.error('Không thể tải danh mục');
-      setCategories([]);
-    }
-  }, []);
+      const data = Array.isArray(response?.data) ? response.data : 
+                   Array.isArray(response) ? response : [];
+      return data;
+    },
+    staleTime: 10 * 60 * 1000, // Cache 10 phút (categories ít thay đổi)
+  });
+};
 
-  // Load brands
-  const loadBrands = useCallback(async () => {
-  try {
-    const response = await productService.getBrands();
-    const brandsData = extractData(response);
-    setBrands(brandsData);
-  } catch (error) {
-    // im lặng khi lỗi
-    setBrands([]);
-  }
-}, []);
+// Hook lấy brands
+export const useBrands = () => {
+  return useQuery({
+    queryKey: ['brands'],
+    queryFn: async () => {
+      const response = await productService.getBrands();
+      const data = Array.isArray(response?.data) ? response.data : 
+                   Array.isArray(response) ? response : [];
+      return data;
+    },
+    staleTime: 10 * 60 * 1000, // Cache 10 phút
+    retry: false, // Không retry nếu lỗi (brands có thể optional)
+  });
+};
 
-  // Load all data
-  const loadAllData = useCallback(async () => {
-    await Promise.all([loadCategories(), loadBrands(), loadProducts()]);
-  }, [loadCategories, loadBrands, loadProducts]);
+// Hook lấy chi tiết product
+export const useProduct = (productId) => {
+  return useQuery({
+    queryKey: ['products', productId],
+    queryFn: () => productService.getById(productId),
+    enabled: !!productId,
+    staleTime: 5 * 60 * 1000,
+  });
+};
 
-  // Update filters
-  const updateFilters = useCallback((newFilters) => {
-    setFilters(prev => ({ ...prev, ...newFilters }));
-  }, []);
+// Hook tạo product mới
+export const useCreateProduct = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: (productData) => productService.create(productData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+      notify.success('Tạo sản phẩm thành công');
+    },
+  });
+};
 
-  // Load initial data on mount
-  useEffect(() => {
-    loadCategories();
-    loadBrands();
-  }, []);
+// Hook cập nhật product
+export const useUpdateProduct = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: ({ id, data }) => productService.update(id, data),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+      queryClient.invalidateQueries({ queryKey: ['products', variables.id] });
+      notify.success('Cập nhật sản phẩm thành công');
+    },
+  });
+};
 
-  // Auto reload when filters change (debounced)
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      loadProducts();
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [filters, loadProducts]);
+// Hook xóa product
+export const useDeleteProduct = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: (productId) => productService.delete(productId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+      notify.success('Xóa sản phẩm thành công');
+    },
+  });
+};
 
-  return {
-    products,
-    categories,
-    brands,
-    loading,
-    filters,
-    totalPages,
-    loadProducts,
-    updateFilters
-  };
+// Hook toggle product status (active/inactive)
+export const useToggleProductStatus = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: ({ id, isActive }) => 
+      productService.updateStatus(id, isActive),
+    onMutate: async ({ id, isActive }) => {
+      // Optimistic update
+      await queryClient.cancelQueries({ queryKey: ['products'] });
+      
+      const previousData = queryClient.getQueryData(['products']);
+      
+      // Cập nhật cache tạm thời
+      queryClient.setQueriesData(['products'], (old) => {
+        if (!old?.products) return old;
+        return {
+          ...old,
+          products: old.products.map(p => 
+            p.id === id ? { ...p, isActive } : p
+          ),
+        };
+      });
+      
+      return { previousData };
+    },
+    onError: (err, variables, context) => {
+      // Rollback nếu lỗi
+      if (context?.previousData) {
+        queryClient.setQueryData(['products'], context.previousData);
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+    },
+  });
 };

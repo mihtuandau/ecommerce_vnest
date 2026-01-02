@@ -1,7 +1,12 @@
 // src/pages/AdminUserManagement.jsx
 import React, { useState, useMemo } from 'react';
 import { Search, Plus } from 'lucide-react';
-import { useUsers } from '../../../hooks/useUsers';
+import { 
+  useUsers, 
+  useCreateUser, 
+  useUpdateUser, 
+  useDeleteUser 
+} from '../../../hooks/useUsers';
 import userService from '../../../services/userService';
 
 // Components
@@ -16,7 +21,11 @@ import UserForm from '../../../components/admin/UserManagement/UserForm';
 import AddressList from '../../../components/admin/UserManagement/AddressList';
 
 const AdminUserManagement = () => {
-  const { users, loading, error, pagination, setPagination, refetch } = useUsers();
+  const { data: users = [], isLoading, error, refetch } = useUsers();
+  const createMutation = useCreateUser();
+  const updateMutation = useUpdateUser();
+  const deleteMutation = useDeleteUser();
+  
   const [searchQuery, setSearchQuery] = useState('');
   const [roleFilter, setRoleFilter] = useState('');
   const [modalState, setModalState] = useState({ type: null, data: null });
@@ -43,28 +52,36 @@ const AdminUserManagement = () => {
 
   // User CRUD handlers
   const handleCreateUser = async (formData) => {
-    await userService.createUser(formData);
-    refetch();
-    closeModal();
+    try {
+      await createMutation.mutateAsync(formData);
+      closeModal();
+    } catch (err) {
+      // Error already handled by mutation
+    }
   };
 
   const handleUpdateUser = async (formData) => {
-    const updateData = { name: formData.name };
-    if (formData.password) {
-      updateData.password = formData.password;
+    try {
+      const updateData = { name: formData.name };
+      if (formData.password) {
+        updateData.password = formData.password;
+      }
+      await updateMutation.mutateAsync({ 
+        id: modalState.data.id, 
+        data: updateData 
+      });
+      closeModal();
+    } catch (err) {
+      // Error already handled by mutation
     }
-    await userService.updateUser(modalState.data.id, updateData);
-    refetch();
-    closeModal();
   };
 
   const handleDeleteUser = async (user) => {
     if (window.confirm(`Xác nhận xóa người dùng "${user.email}"?`)) {
       try {
-        await userService.deleteUser(user.id);
-        refetch();
+        await deleteMutation.mutateAsync(user.id);
       } catch (err) {
-        alert('Có lỗi xảy ra khi xóa người dùng: ' + err.message);
+        // Error already handled by mutation
       }
     }
   };
@@ -81,13 +98,14 @@ const AdminUserManagement = () => {
     }
   };
 
-  // Pagination handler
-  const handlePageChange = (newPage) => {
-    setPagination((prev) => ({ ...prev, page: newPage }));
-  };
-
-  // Calculate total pages (estimate based on current data)
-  const totalPages = Math.max(1, Math.ceil(users.length / pagination.limit));
+  // Client-side pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  const paginatedUsers = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return filteredUsers.slice(start, start + itemsPerPage);
+  }, [filteredUsers, currentPage]);
+  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
 
   return (
     <div className="p-6">
@@ -132,7 +150,7 @@ const AdminUserManagement = () => {
 
         {/* Table */}
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-          {loading ? (
+          {isLoading ? (
             <Loading text="Đang tải dữ liệu..." variant="admin" />
           ) : error ? (
             <div className="p-12 text-center">
@@ -143,7 +161,7 @@ const AdminUserManagement = () => {
             </div>
           ) : (
             <UserTable
-              users={filteredUsers}
+              users={paginatedUsers}
               onEdit={(user) => openModal('edit', user)}
               onDelete={handleDeleteUser}
               onViewAddresses={(user) => openModal('addresses', user)}
@@ -151,11 +169,11 @@ const AdminUserManagement = () => {
           )}
 
           {/* Pagination */}
-          {!loading && !error && filteredUsers.length > 0 && (
+          {!isLoading && !error && filteredUsers.length > 0 && (
             <Pagination
-              currentPage={pagination.page}
+              currentPage={currentPage}
               totalPages={totalPages}
-              onPageChange={handlePageChange}
+              onPageChange={setCurrentPage}
             />
           )}
         </div>

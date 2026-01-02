@@ -1,7 +1,6 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Plus, RefreshCw } from 'lucide-react';
 import { notify } from '../../../utils/notification';
-import discountService from '../../../services/discountService';
 import Button from '../../../components/common/Button';
 import Pagination from '../../../components/common/Pagination';
 import DiscountStatsCards from '../../../components/admin/Discount/DiscountStatsCards';
@@ -9,12 +8,15 @@ import DiscountFilters from '../../../components/admin/Discount/DiscountFilters'
 import DiscountTable from '../../../components/admin/Discount/DiscountTable';
 import DiscountModal from '../../../components/admin/Discount/DiscountModal';
 import DiscountDetailModal from '../../../components/admin/Discount/DiscountDetailModal';
-import { useDiscountFilters, useDiscountStats } from '../../../hooks/useDiscountFilters';
+import { 
+  useDiscounts, 
+  useCreateDiscount, 
+  useUpdateDiscount, 
+  useDeleteDiscount 
+} from '../../../hooks/useDiscounts';
 import Loading from '../../../components/common/Loading';
 
 const DiscountManagement = () => {
-  const [discounts, setDiscounts] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
@@ -27,26 +29,23 @@ const DiscountManagement = () => {
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedDiscount, setSelectedDiscount] = useState(null);
 
-  // Load discounts
-  useEffect(() => {
-    loadDiscounts();
-  }, []);
+  // Load discounts with TanStack Query
+  const { 
+    data: filteredDiscounts = [], 
+    stats, 
+    isLoading, 
+    refetch 
+  } = useDiscounts({}, {
+    search,
+    status: statusFilter,
+    sortKey: sortConfig.key,
+    sortDir: sortConfig.direction
+  });
 
-  const loadDiscounts = async () => {
-    try {
-      setLoading(true);
-      const data = await discountService.getDiscounts();
-      setDiscounts(data);
-    } catch (error) {
-      notify.error('Không thể tải danh sách mã giảm giá');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Filter and sort discounts
-  const filteredDiscounts = useDiscountFilters(discounts, search, statusFilter, sortConfig);
-  const stats = useDiscountStats(discounts);
+  // Mutations
+  const createMutation = useCreateDiscount();
+  const updateMutation = useUpdateDiscount();
+  const deleteMutation = useDeleteDiscount();
 
   // Pagination
   const paginatedDiscounts = useMemo(() => {
@@ -67,9 +66,8 @@ const DiscountManagement = () => {
   // CRUD operations
   const handleCreate = async (data) => {
     try {
-      await discountService.createDiscount(data);
-      notify.success('Tạo mã giảm giá thành công');
-      loadDiscounts();
+      await createMutation.mutateAsync(data);
+      handleCloseModals();
     } catch (error) {
       notify.error(error.response?.data?.message || 'Không thể tạo mã giảm giá');
       throw error;
@@ -78,9 +76,8 @@ const DiscountManagement = () => {
 
   const handleUpdate = async (data) => {
     try {
-      await discountService.updateDiscount(selectedDiscount.id, data);
-      notify.success('Cập nhật mã giảm giá thành công');
-      loadDiscounts();
+      await updateMutation.mutateAsync({ id: selectedDiscount.id, data });
+      handleCloseModals();
     } catch (error) {
       notify.error(error.response?.data?.message || 'Không thể cập nhật mã giảm giá');
       throw error;
@@ -98,9 +95,7 @@ const DiscountManagement = () => {
     }
 
     try {
-      await discountService.deleteDiscount(discount.id);
-      notify.success('Xóa mã giảm giá thành công');
-      loadDiscounts();
+      await deleteMutation.mutateAsync(discount.id);
     } catch (error) {
       notify.error(error.response?.data?.message || 'Không thể xóa mã giảm giá');
     }
@@ -124,7 +119,7 @@ const DiscountManagement = () => {
     setSelectedDiscount(null);
   };
 
-  if (loading) {
+  if (isLoading) {
     return <Loading fullScreen text="Đang tải..." variant="admin" />;
   }
 
@@ -137,8 +132,8 @@ const DiscountManagement = () => {
           <p className="text-gray-600 mt-1">Quản lý các mã giảm giá và khuyến mãi</p>
         </div>
         <div className="flex gap-3">
-          <Button variant="secondary" onClick={loadDiscounts}>
-            <RefreshCw className="h-4 w-4 mr-2" />
+          <Button variant="secondary" onClick={() => refetch()} disabled={isLoading}>
+            <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
             Làm mới
           </Button>
           <Button onClick={() => setShowCreateModal(true)}>
@@ -163,14 +158,14 @@ const DiscountManagement = () => {
       <div>
         <DiscountTable
           discounts={paginatedDiscounts}
-          loading={loading}
+          loading={isLoading}
           onSort={handleSort}
           onView={handleView}
           onEdit={handleEdit}
           onDelete={handleDelete}
         />
         
-        {!loading && filteredDiscounts.length > 0 && (
+        {!isLoading && filteredDiscounts.length > 0 && (
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}

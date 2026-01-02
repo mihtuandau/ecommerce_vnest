@@ -1,43 +1,67 @@
-// src/hooks/useUsers.js
-import { useState, useEffect } from 'react';
+
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import userService from '../services/userService';
+import { notify } from '../utils/notification';
 
-export const useUsers = () => {
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [pagination, setPagination] = useState({ 
-    page: 1, 
-    limit: 10 
+// Hook lấy danh sách users với pagination
+export const useUsers = (params = {}) => {
+  return useQuery({
+    queryKey: ['users', params],
+    queryFn: async () => {
+      const data = await userService.getUsers(params);
+      return Array.isArray(data) ? data : [];
+    },
+    staleTime: 2 * 60 * 1000, // Cache 2 phút
   });
+};
 
-  const fetchUsers = async (params = {}) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await userService.getUsers({ 
-        ...pagination, 
-        ...params 
-      });
-      setUsers(Array.isArray(data) ? data : []);
-    } catch (err) {
-      setError(err.message);
-      setUsers([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+// Hook lấy chi tiết user
+export const useUser = (userId) => {
+  return useQuery({
+    queryKey: ['users', userId],
+    queryFn: () => userService.getUserById(userId),
+    enabled: !!userId, // Chỉ fetch khi có userId
+  });
+};
 
-  useEffect(() => {
-    fetchUsers();
-  }, [pagination.page, pagination.limit]);
+// Hook tạo user mới
+export const useCreateUser = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: (userData) => userService.createUser(userData),
+    onSuccess: () => {
+      // Invalidate users list để refetch
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      notify.success('Tạo người dùng thành công');
+    },
+  });
+};
 
-  return {
-    users,
-    loading,
-    error,
-    pagination,
-    setPagination,
-    refetch: fetchUsers,
-  };
+// Hook cập nhật user
+export const useUpdateUser = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: ({ id, data }) => userService.updateUser(id, data),
+    onSuccess: (_, variables) => {
+      // Invalidate cả list và detail
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      queryClient.invalidateQueries({ queryKey: ['users', variables.id] });
+      notify.success('Cập nhật người dùng thành công');
+    },
+  });
+};
+
+// Hook xóa user
+export const useDeleteUser = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: (userId) => userService.deleteUser(userId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      notify.success('Xóa người dùng thành công');
+    },
+  });
 };

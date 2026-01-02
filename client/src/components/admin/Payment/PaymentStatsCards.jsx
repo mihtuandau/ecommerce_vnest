@@ -23,7 +23,7 @@ const PaymentStatsCards = ({ stats }) => {
     },
     {
       title: 'Thành công',
-      value: stats.success,
+      value: stats.completed,
       icon: CheckCircle,
       borderColor: 'border-green-500',
       iconColor: 'text-green-500',

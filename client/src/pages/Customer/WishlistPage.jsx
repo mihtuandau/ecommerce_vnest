@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Card, Empty, Spin, Modal, Row, Col, Badge } from 'antd';
+import { Button, Card, Empty, Spin, Modal, Row, Col, Badge, Space } from 'antd';
 import { HeartOutlined, DeleteOutlined, ShoppingCartOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import { notify } from '../../utils/notification';

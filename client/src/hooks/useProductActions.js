@@ -1,14 +1,23 @@
 import { useState } from 'react';
 import { notify } from '../utils/notification';
 import productService from '../services/productService';
+import {
+  useCreateProduct as useCreateProductMutation,
+  useUpdateProduct as useUpdateProductMutation,
+  useDeleteProduct as useDeleteProductMutation,
+} from './useProducts';
 
-export const useProductActions = ({ products, loadProducts, selectedProducts = [] }) => {
+export const useProductActions = ({ refetch, products, selectedProducts = [] }) => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
   const [editingProduct, setEditingProduct] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [managingVariantsProduct, setManagingVariantsProduct] = useState(null);
   const [showVariantManager, setShowVariantManager] = useState(false);
+
+  const createMutation = useCreateProductMutation();
+  const updateMutation = useUpdateProductMutation();
+  const deleteMutation = useDeleteProductMutation();
 
   // Basic actions
   const handleEdit = (product) => {
@@ -42,7 +51,7 @@ export const useProductActions = ({ products, loadProducts, selectedProducts = [
         brandId: product.brandId,
       });
       notify.success('Đã nhân bản sản phẩm');
-      loadProducts();
+      refetch();
     } catch (error) {
       notify.error('Không thể nhân bản sản phẩm');
     }
@@ -55,7 +64,7 @@ export const useProductActions = ({ products, loadProducts, selectedProducts = [
     try {
       await productService.bulkDelete(selectedProducts);
       notify.success(`Đã xóa ${selectedProducts.length} sản phẩm`);
-      loadProducts();
+      refetch();
     } catch (error) {
       notify.error('Không thể xóa sản phẩm');
     }
@@ -64,15 +73,12 @@ export const useProductActions = ({ products, loadProducts, selectedProducts = [
   const confirmDelete = async () => {
     if (!productToDelete) return;
 
-    try {
-      await productService.delete(productToDelete.id);
-      notify.success(`Đã xóa "${productToDelete.name}"`);
-      setDeleteModalOpen(false);
-      setProductToDelete(null);
-      loadProducts();
-    } catch (error) {
-      notify.error(error.response?.data?.message || 'Không thể xóa sản phẩm');
-    }
+    deleteMutation.mutate(productToDelete.id, {
+      onSuccess: () => {
+        setDeleteModalOpen(false);
+        setProductToDelete(null);
+      }
+    });
   };
 
   const handleSaveProduct = async (productData, images) => {
@@ -88,7 +94,7 @@ export const useProductActions = ({ products, loadProducts, selectedProducts = [
 
       setShowForm(false);
       setEditingProduct(null);
-      loadProducts();
+      refetch();
       return true;
     } catch (error) {
       notify.error(error.response?.data?.message || 'Lưu sản phẩm thất bại');
@@ -112,7 +118,7 @@ export const useProductActions = ({ products, loadProducts, selectedProducts = [
       notify.success('Đã cập nhật biến thể thành công');
       setShowVariantManager(false);
       setManagingVariantsProduct(null);
-      loadProducts();
+      refetch();
     } catch (error) {
       notify.error('Không thể lưu biến thể');
     }

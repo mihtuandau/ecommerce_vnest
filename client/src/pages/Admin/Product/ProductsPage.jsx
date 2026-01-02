@@ -1,6 +1,8 @@
 import { useState } from 'react';
-import { useProducts } from '../../../hooks/useProducts';
+import { useProducts, useCategories, useBrands } from '../../../hooks/useProducts';
 import { useProductActions } from '../../../hooks/useProductActions';
+import { PageHeader } from '../../../components/common/PageHeader';
+import { QueryListWrapper } from '../../../components/common/QueryWrapper';
 import ProductStats from '../../../components/admin/Product/ProductStats';
 import ProductToolbar from '../../../components/admin/Product/ProductToolbar';
 import ProductTable from '../../../components/admin/Product/ProductTable';
@@ -10,16 +12,19 @@ import DeleteConfirmModal from '../../../components/common/DeleteConfirm';
 import { formatPrice, getTotalStock } from '../../../utils/formatters';
 
 const ProductsPage = () => {
-  const {
-    products,
-    categories,
-    brands,
-    loading,
-    filters,
-    totalPages,
-    loadProducts,
-    updateFilters
-  } = useProducts();
+  const [filters, setFilters] = useState({
+    search: '',
+    categoryId: '',
+    page: 1,
+    limit: 10
+  });
+
+  const { data: productsData, isLoading, refetch, error } = useProducts(filters);
+  const { data: categories = [] } = useCategories();
+  const { data: brands = [] } = useBrands();
+
+  const products = productsData?.products || [];
+  const pagination = productsData?.pagination || {};
 
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [editingVariant, setEditingVariant] = useState(null);
@@ -50,7 +55,7 @@ const ProductsPage = () => {
     setShowForm,
     setManagingVariantsProduct,
     setShowVariantManager
-  } = useProductActions({ loadProducts, products });
+  } = useProductActions({ refetch, products });
 
   // Selection handlers
   const handleSelectAll = (e) => {
@@ -63,13 +68,21 @@ const ProductsPage = () => {
     );
   };
 
+  // Update filters helper
+  const updateFilters = (newFilters) => {
+    setFilters(prev => ({ ...prev, ...newFilters }));
+  };
+
   return (
     <div>
       {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Products Management</h1>
-        <p className="text-gray-600">Manage your product inventory and details</p>
-      </div>
+      <PageHeader
+        title="Products Management"
+        subtitle="Manage your product inventory and details"
+        showRefresh
+        onRefresh={refetch}
+        refreshing={isLoading}
+      />
 
       {/* Stats */}
       <ProductStats 
@@ -94,25 +107,33 @@ const ProductsPage = () => {
       />
 
       {/* Products Table */}
-      <ProductTable
-        products={products}
-        loading={loading}
-        totalPages={totalPages}
-        currentPage={filters.page}
-        onPageChange={(page) => updateFilters({ page })}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        onDuplicate={handleDuplicate}
-        onManageVariants={(product, variant) => {
-          setManagingVariantsProduct(product);
-          setEditingVariant(variant || null);
-          setShowVariantManager(true);
-        }}
-        onRefresh={loadProducts}
-        selectedProducts={selectedProducts}
-        onSelectAll={handleSelectAll}
-        onSelectProduct={handleSelectProduct}
-      />
+      <QueryListWrapper
+        isLoading={isLoading}
+        error={error}
+        data={products}
+        onRetry={refetch}
+        emptyMessage="Chưa có sản phẩm nào. Thêm sản phẩm đầu tiên!"
+      >
+        <ProductTable
+          products={products}
+          loading={false}
+          totalPages={pagination.totalPages || 1}
+          currentPage={filters.page}
+          onPageChange={(page) => updateFilters({ page })}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          onDuplicate={handleDuplicate}
+          onManageVariants={(product, variant) => {
+            setManagingVariantsProduct(product);
+            setEditingVariant(variant || null);
+            setShowVariantManager(true);
+          }}
+          onRefresh={refetch}
+          selectedProducts={selectedProducts}
+          onSelectAll={handleSelectAll}
+          onSelectProduct={handleSelectProduct}
+        />
+      </QueryListWrapper>
 
       {/* Modals */}
       {showForm && (
@@ -143,7 +164,7 @@ const ProductsPage = () => {
             // Upload images for this variant
             const productService = (await import('../../../services/productService')).default;
             await productService.uploadImages(managingVariantsProduct.id, images, { variantId });
-            loadProducts();
+            refetch();
           }}
         />
       )}

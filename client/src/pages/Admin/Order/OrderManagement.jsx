@@ -1,6 +1,7 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
+import { Button as AntButton } from 'antd';
 import { FaSync } from 'react-icons/fa';
-import orderService from '../../../services/orderService';
+import { useOrders, useUpdateOrderStatus } from '../../../hooks/useOrders';
 import paymentService from '../../../services/paymentService';
 import { notify } from '../../../utils/notification';
 import Loading from '../../../components/common/Loading';
@@ -9,64 +10,30 @@ import OrderStatsCards from '../../../components/admin/Order/OrderStatsCards';
 import OrderFilters from '../../../components/admin/Order/OrderFilters';
 import OrderTable from '../../../components/admin/Order/OrderTable';
 import OrderDetailModal from '../../../components/admin/Order/OrderDetailModal';
-import { useOrderFilters, useOrderStats } from '../../../hooks/useOrderFilters';
 
 const AdminOrdersPage = () => {
-  const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [sortBy, setSortBy] = useState('createdAt');
   const [sortDir, setSortDir] = useState('desc');
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
-  const [updatingStatus, setUpdatingStatus] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [refreshing, setRefreshing] = useState(false);
   const itemsPerPage = 10;
 
-  useEffect(() => {
-    loadOrders();
-  }, [statusFilter]);
+  // Build params object, only include status if it has a value
+  const params = { limit: 1000 };
+  if (statusFilter && statusFilter !== '') {
+    params.status = statusFilter;
+  }
 
-  const loadOrders = async () => {
-    try {
-      setLoading(true);
-      const params = { limit: 1000 };
-      if (statusFilter) params.status = statusFilter;
-      
-      console.log('📦 Loading orders with params:', params);
-      const data = await orderService.getOrders(params);
-      
-      console.log('📦 Orders data received:', data);
-      
-      // Handle different response structures
-      let ordersList = [];
-      if (Array.isArray(data)) {
-        ordersList = data;
-      } else if (Array.isArray(data.orders)) {
-        ordersList = data.orders;
-      } else if (data.data && Array.isArray(data.data)) {
-        ordersList = data.data;
-      } else if (data.orders && Array.isArray(data.orders.data)) {
-        ordersList = data.orders.data;
-      }
-      
-      console.log('✅ Orders loaded:', ordersList.length, 'orders');
-      setOrders(ordersList);
-    } catch (error) {
-      console.error('❌ Error loading orders:', error);
-      notify.error('Không thể tải đơn hàng: ' + (error.response?.data?.message || error.message));
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  };
+  // Fetch orders with filters
+  const { data: filteredOrders = [], stats, isLoading, refetch } = useOrders(
+    params,
+    { search: searchQuery, sortBy, sortDir }
+  );
 
-  const handleRefresh = async () => {
-    setRefreshing(true);
-    await loadOrders();
-  };
+  const updateStatusMutation = useUpdateOrderStatus();
 
   const handleViewDetails = (order) => {
     setSelectedOrder(order);
@@ -74,26 +41,20 @@ const AdminOrdersPage = () => {
   };
 
   const handleUpdateStatus = async (orderId, newStatus) => {
-    try {
-      setUpdatingStatus(true);
-      await orderService.updateOrderStatus(orderId, newStatus);
-      notify.success('Cập nhật trạng thái thành công');
-      loadOrders();
-      if (selectedOrder?.id === orderId) {
-        setSelectedOrder({ ...selectedOrder, status: newStatus });
+    updateStatusMutation.mutate({ orderId, status: newStatus }, {
+      onSuccess: () => {
+        if (selectedOrder?.id === orderId) {
+          setSelectedOrder({ ...selectedOrder, status: newStatus });
+        }
       }
-    } catch (error) {
-      notify.error('Không thể cập nhật trạng thái');
-    } finally {
-      setUpdatingStatus(false);
-    }
+    });
   };
 
   const handleSyncPayment = async (paymentId) => {
     try {
       const result = await paymentService.syncPaymentStatus(paymentId);
       notify.success(result.message || 'Đồng bộ trạng thái thành công!');
-      await loadOrders();
+      refetch();
     } catch (error) {
       notify.error(error.response?.data?.message || 'Không thể đồng bộ trạng thái thanh toán');
     }
@@ -107,9 +68,6 @@ const AdminOrdersPage = () => {
       setSortDir('asc');
     }
   };
-
-  const filteredOrders = useOrderFilters(orders, searchQuery, sortBy, sortDir);
-  const stats = useOrderStats(orders);
 
   // Pagination
   const paginatedOrders = useMemo(() => {
@@ -133,14 +91,20 @@ const AdminOrdersPage = () => {
                 Theo dõi và quản lý tất cả đơn hàng trong hệ thống
               </p>
             </div>
-        
+            <AntButton
+              icon={<FaSync />}
+              onClick={refetch}
+              loading={isLoading}
+            >
+              Làm mới
+            </AntButton>
           </div>
 
-          {/* Stats */}
+          {/* Stats Cards */}
           <OrderStatsCards stats={stats} />
         </div>
 
-        {/* Search & Filter */}
+        {/* Filters */}
         <OrderFilters
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
@@ -149,27 +113,29 @@ const AdminOrdersPage = () => {
         />
 
         {/* Orders Table */}
-        <div>
-          <OrderTable
-            orders={paginatedOrders}
-            loading={loading}
-            sortBy={sortBy}
-            sortDir={sortDir}
-            onSort={toggleSort}
-            onViewDetails={handleViewDetails}
-            onSyncPayment={handleSyncPayment}
-          />
-          
-          {!loading && filteredOrders.length > 0 && (
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-              itemsCount={paginatedOrders.length}
-              totalItems={filteredOrders.length}
+        {isLoading ? (
+          <Loading />
+        ) : (
+          <>
+            <OrderTable
+              orders={paginatedOrders}
+              sortBy={sortBy}
+              sortDir={sortDir}
+              onSort={toggleSort}
+              onViewDetails={handleViewDetails}
+              onSyncPayment={handleSyncPayment}
             />
-          )}
-        </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+              />
+            )}
+          </>
+        )}
       </div>
 
       {/* Order Detail Modal */}
@@ -178,7 +144,7 @@ const AdminOrdersPage = () => {
         onClose={() => setShowDetailModal(false)}
         order={selectedOrder}
         onUpdateStatus={handleUpdateStatus}
-        updatingStatus={updatingStatus}
+        updatingStatus={updateStatusMutation.isPending}
       />
     </div>
   );

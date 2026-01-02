@@ -17,7 +17,7 @@ import { notify } from "../../../utils/notification";
 // import toast from "react-hot-toast";
 
 const HomePage = () => {
-  const { data: homeData, loading, error } = useHomeData();
+  const { data: homeData, isLoading, error, refetch } = useHomeData();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { setUser } = useAuth();
@@ -44,7 +44,7 @@ const HomePage = () => {
     }
   }, [searchParams, navigate, setUser]);
 
-  if (loading) {
+  if (isLoading) {
     return (
       <Layout>
         <div className="flex items-center justify-center min-h-screen">
@@ -62,12 +62,12 @@ const HomePage = () => {
             status="error"
             icon={<WarningOutlined />}
             title="Có lỗi xảy ra"
-            subTitle={error}
+            subTitle={error?.message || "Không thể tải dữ liệu"}
             extra={
               <AntButton 
                 type="primary" 
                 icon={<ReloadOutlined />}
-                onClick={() => window.location.reload()}
+                onClick={() => refetch()}
               >
                 Thử lại
               </AntButton>
@@ -78,13 +78,24 @@ const HomePage = () => {
     );
   }
 
+  // Đảm bảo homeData có giá trị trước khi render
+  if (!homeData) {
+    return (
+      <Layout>
+        <div className="flex items-center justify-center min-h-screen">
+          <Spin size="large" tip="Đang tải dữ liệu..." />
+        </div>
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
-      <HeroBanner slides={homeData.banners} />
+      <HeroBanner slides={homeData.banners || []} />
       <div className="">
-        <FeaturedCategories categories={homeData.categories} />
-        <BestSellingProducts products={homeData.bestSellers} />
-        <FeaturedProducts products={homeData.featuredProducts} />
+        <FeaturedCategories categories={homeData.categories || []} />
+        <BestSellingProducts products={homeData.bestSellers || []} />
+        <FeaturedProducts products={homeData.featuredProducts || []} />
         <PromoBanner />
       </div>
     </Layout>
