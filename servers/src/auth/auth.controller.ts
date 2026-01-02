@@ -16,6 +16,7 @@ import type { Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtService } from '@nestjs/jwt';
+import { Throttle } from '@nestjs/throttler';
 
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from '../common/guards/auth.guard';
@@ -34,6 +35,7 @@ export class AuthController {
   ) {}
 
   @Post('register')
+  @Throttle({ default: { limit: 5, ttl: 60000 } }) // 5 requests per minute
   async register(@Body() registerDto: RegisterDto, @Res() res: Response) {
     const result = await this.authService.register(registerDto);
     this.authService.setAuthCookie(res, result.access_token);
@@ -45,6 +47,7 @@ export class AuthController {
   }
 
   @Post('register-admin')
+  @Throttle({ default: { limit: 3, ttl: 60000 } }) // 3 requests per minute
   async registerAdmin(@Body() registerAdminDto: RegisterAdminDto, @Res() res: Response) {
     const result = await this.authService.registerAdmin(registerAdminDto);
     this.authService.setAuthCookie(res, result.access_token);
@@ -56,6 +59,7 @@ export class AuthController {
   }
 
   @Post('login')
+  @Throttle({ default: { limit: 5, ttl: 60000 } }) // 5 requests per minute
   async login(@Body() loginDto: LoginDto, @Res() res: Response) {
     const user = await this.authService.validateUser(loginDto.email, loginDto.password);
     const result = await this.authService.login({ sub: user.id }, user);
@@ -75,6 +79,7 @@ export class AuthController {
   }
 
   @Post('forgot-password')
+  @Throttle({ default: { limit: 3, ttl: 3600000 } }) // 3 requests per hour
   async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
     return this.authService.forgotPassword(forgotPasswordDto);
   }
@@ -88,6 +93,7 @@ export class AuthController {
   }
 
   @Post('reset-password')
+  @Throttle({ default: { limit: 3, ttl: 3600000 } }) // 3 requests per hour
   async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
     return this.authService.resetPassword(
       resetPasswordDto.token,

@@ -13,6 +13,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import { JwtAuthGuard } from '../common/guards/auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
@@ -27,6 +28,7 @@ export class PaymentController {
   constructor(private paymentService: PaymentService) {}
 
   @Post()
+  @Throttle({ default: { limit: 10, ttl: 60000 } }) // 10 requests per minute
   @ApiOperation({ summary: 'Tạo payment mới và lấy payment link (nếu là PayOS) - Public endpoint cho guest checkout' })
   create(@Body() createPaymentDto: CreatePaymentDto) {
     // Public endpoint - allows guest checkout with PayOS
