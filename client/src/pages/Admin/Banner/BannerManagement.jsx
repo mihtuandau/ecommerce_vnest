@@ -1,36 +1,31 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Plus, Image as ImageIcon } from 'lucide-react';
-import bannerService from '../../../services/bannerService';
 import { notify } from '../../../utils/notification';
 import Button from '../../../components/common/Button';
 import DeleteConfirmModal from '../../../components/common/DeleteConfirm';
 import BannerFormModal from '../../../components/admin/Banner/BannerForm';
 import BannerTable from '../../../components/admin/Banner/BannerTable';
+import { 
+  useBanners, 
+  useCreateBanner, 
+  useUpdateBanner, 
+  useDeleteBanner,
+  useReorderBanner 
+} from '../../../hooks/useBanners';
 
 const BannerManagement = () => {
-  const [banners, setBanners] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingBanner, setEditingBanner] = useState(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [bannerToDelete, setBannerToDelete] = useState(null);
   const [showAllBanners, setShowAllBanners] = useState(false);
 
-  useEffect(() => {
-    loadBanners();
-  }, [showAllBanners]);
-
-  const loadBanners = async () => {
-    try {
-      setLoading(true);
-      const data = await bannerService.getAll(!showAllBanners);
-      setBanners(data);
-    } catch (error) {
-      notify.error('Không thể tải danh sách banner');
-    } finally {
-      setLoading(false);
-    }
-  };
+  // TanStack Query hooks
+  const { data: banners = [], isLoading, refetch } = useBanners(!showAllBanners);
+  const createMutation = useCreateBanner();
+  const updateMutation = useUpdateBanner();
+  const deleteMutation = useDeleteBanner();
+  const reorderMutation = useReorderBanner();
 
   const handleEdit = (banner) => {
     setEditingBanner(banner);
@@ -44,30 +39,24 @@ const BannerManagement = () => {
 
   const confirmDelete = async () => {
     try {
-      await bannerService.delete(bannerToDelete.id);
-      notify.success('Xóa banner thành công');
-      loadBanners();
+      await deleteMutation.mutateAsync(bannerToDelete.id);
       setDeleteModalOpen(false);
       setBannerToDelete(null);
     } catch (error) {
-      notify.error('Không thể xóa banner');
+      // Error already handled in hook
     }
   };
 
   const handleSave = async (formData) => {
     try {
       if (editingBanner) {
-        await bannerService.update(editingBanner.id, formData);
-        notify.success('Cập nhật banner thành công');
+        await updateMutation.mutateAsync({ id: editingBanner.id, formData });
       } else {
-        await bannerService.create(formData);
-        notify.success('Tạo banner thành công');
+        await createMutation.mutateAsync(formData);
       }
-      loadBanners();
       setShowForm(false);
       setEditingBanner(null);
     } catch (error) {
-      notify.error(editingBanner ? 'Không thể cập nhật banner' : 'Không thể tạo banner');
       throw error;
     }
   };
@@ -78,24 +67,12 @@ const BannerManagement = () => {
   };
 
   const handleReorder = async (bannerId, direction) => {
-    const currentBanner = banners.find(b => b.id === bannerId);
     const currentIndex = banners.findIndex(b => b.id === bannerId);
     
-    let newOrder;
     if (direction === 'up' && currentIndex > 0) {
-      newOrder = banners[currentIndex - 1].order;
+      await reorderMutation.mutateAsync({ bannerId, direction });
     } else if (direction === 'down' && currentIndex < banners.length - 1) {
-      newOrder = banners[currentIndex + 1].order;
-    } else {
-      return;
-    }
-
-    try {
-      await bannerService.reorder(bannerId, newOrder);
-      notify.success('Đã thay đổi thứ tự banner');
-      loadBanners();
-    } catch (error) {
-      notify.error('Không thể thay đổi thứ tự banner');
+      await reorderMutation.mutateAsync({ bannerId, direction });
     }
   };
 
@@ -140,7 +117,7 @@ const BannerManagement = () => {
       {/* Banner Table */}
       <BannerTable
         banners={banners}
-        loading={loading}
+        loading={isLoading}
         onEdit={handleEdit}
         onDelete={handleDelete}
         onReorder={handleReorder}

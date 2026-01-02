@@ -15,7 +15,7 @@ import PaymentMethodSelector from "../../../components/checkout/PaymentMethodSel
 import OrderSummary from "../../../components/checkout/OrderSummary";
 import userService from "../../../services/userService";
 import { useCheckoutCalculations } from "../../../hooks/useCheckoutCalculations";
-import { useDiscountCode } from "../../../hooks/useDiscountCode";
+import { useDiscountCode } from "../../../hooks/useDiscounts";
 import { useCheckoutForm } from "../../../hooks/useCheckoutForm";
 import { useCheckoutSubmit } from "../../../hooks/useCheckoutSubmit";
 // import Breadcrumb from "../../../components/common/Breadcrumb";
@@ -65,12 +65,12 @@ const CheckoutPage = () => {
   } = useCheckoutForm();
 
   const {
-    discountCode,
-    setDiscountCode,
-    appliedDiscount,
-    checkingDiscount,
-    handleApplyDiscount,
-    handleRemoveDiscount,
+    code: discountCode,
+    setCode: setDiscountCode,
+    applied: appliedDiscount,
+    isChecking: checkingDiscount,
+    apply: handleApplyDiscount,
+    remove: handleRemoveDiscount,
   } = useDiscountCode();
 
   const { subtotal, shipping, discount, total, itemCount } =
