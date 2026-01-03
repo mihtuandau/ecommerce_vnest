@@ -1,113 +1,273 @@
-import ProductCard from '../products/ProductCard';
-import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { Link, useNavigate } from 'react-router-dom';
+import { FaShoppingCart, FaHeart } from 'react-icons/fa';
 import { useState } from 'react';
+import { useAuth } from '../../hooks/useAuth';
+import { useCart } from '../../hooks/useCart';
+import { notify } from '../../utils/notification';
+import wishlistService from '../../services/wishlistService';
 
 const BestSellingProducts = ({ products = [] }) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [hoveredProduct, setHoveredProduct] = useState(null);
+  const [wishlistIds, setWishlistIds] = useState([]);
+  const { user } = useAuth();
+  const { addToCart } = useCart();
+  const navigate = useNavigate();
 
   if (!products || products.length === 0) return null;
 
-  const nextSlide = () => {
-    if (currentIndex < products.length - 4) {
-      setCurrentIndex(currentIndex + 1);
-    }
+  const featuredProduct = products[0];
+  const gridProducts = products.slice(1, 5);
+
+  const formatPrice = (price) => {
+    if (!price) return '0 ₫';
+    return new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND'
+    }).format(price);
   };
 
-  const prevSlide = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
+  const getLowestPrice = (product) => {
+    if (product.variants && product.variants.length > 0) {
+      const prices = product.variants.map(v => v.price).filter(p => p > 0);
+      return prices.length > 0 ? Math.min(...prices) : (product.basePrice || product.price || 0);
+    }
+    return product.basePrice || product.price || 0;
+  };
+
+  const getDiscountPercent = (product) => {
+    const currentPrice = getLowestPrice(product);
+    const originalPrice = product.originalPrice || product.price;
+    if (originalPrice && currentPrice && originalPrice > currentPrice) {
+      return Math.round((1 - currentPrice / originalPrice) * 100);
+    }
+    return product.discount || 0;
+  };
+
+  const handleAddToCart = (e, product) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const variants = product.variants || [];
+    
+    // Nếu không có variant hoặc có nhiều hơn 1 variant → vào trang chi tiết để chọn
+    if (variants.length === 0) {
+      notify.info('Vui lòng chọn biến thể sản phẩm');
+      navigate(`/products/${product.id}`);
+      return;
+    }
+    
+    if (variants.length > 1) {
+      notify.info('Vui lòng chọn size và màu');
+      navigate(`/products/${product.id}`);
+      return;
+    }
+
+    // Chỉ có 1 variant → thêm trực tiếp
+    const variant = variants[0];
+    addToCart(variant.id, 1, {
+      name: product.name,
+      image: product.images?.[0]?.url,
+      price: variant.price,
+      size: variant.size,
+      color: variant.color,
+    });
+    notify.success('Đã thêm vào giỏ hàng');
+  };
+
+  const handleWishlistToggle = async (e, product) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (!user) {
+      notify.error('Vui lòng đăng nhập để thêm vào yêu thích');
+      return;
+    }
+
+    const variantId = product.variants?.[0]?.id;
+    if (!variantId) {
+      notify.error('Không tìm thấy sản phẩm');
+      return;
+    }
+
+    try {
+      const isInWishlist = wishlistIds.includes(variantId);
+      if (isInWishlist) {
+        await wishlistService.removeFromWishlist(variantId);
+        setWishlistIds(prev => prev.filter(id => id !== variantId));
+        notify.success('Đã xóa khỏi yêu thích');
+      } else {
+        await wishlistService.addToWishlist(variantId);
+        setWishlistIds(prev => [...prev, variantId]);
+        notify.success('Đã thêm vào yêu thích');
+      }
+      window.dispatchEvent(new CustomEvent('wishlistUpdated'));
+    } catch (error) {
+      notify.error('Có lỗi xảy ra');
     }
   };
 
   return (
-    <section className="py-12 bg-white">
+    <section className="py-20 bg-white">
       <div className="container mx-auto px-4 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-gray-900">SẢN PHẨM BÁN CHẠY</h2>
+        <div className="text-center mb-14">
+          <span className="text-xs uppercase tracking-[0.3em] text-gray-500 mb-4 block">Xu hướng</span>
+          <h2 className="text-3xl md:text-4xl font-light text-gray-900 mb-4">SẢN PHẨM BÁN CHẠY</h2>
+          <div className="w-12 h-px bg-gray-900 mx-auto"></div>
         </div>
 
-        {/* Desktop View - 4 Cards Slider */}
-        <div className="hidden md:block relative">
-          <div className="overflow-hidden">
-            <div 
-              className="flex gap-6 transition-transform duration-500 ease-in-out"
-              style={{ transform: `translateX(-${currentIndex * (100 / 4 + 1.5)}%)` }}
-            >
-              {products.slice(0, 8).map((product) => (
-                <div key={product.id} className="flex-shrink-0" style={{ width: 'calc(25% - 18px)' }}>
-                  <ProductCard product={product} />
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Navigation Arrows */}
-          {currentIndex > 0 && (
-            <button
-              onClick={prevSlide}
-              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 bg-[#00a85a] hover:bg-[#008f4d] text-white p-3 rounded-full shadow-lg transition-colors"
-            >
-              <FaChevronLeft className="text-xl" />
-            </button>
-          )}
-
-          {currentIndex < products.length - 4 && (
-            <button
-              onClick={nextSlide}
-              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 bg-[#00a85a] hover:bg-[#008f4d] text-white p-3 rounded-full shadow-lg transition-colors"
-            >
-              <FaChevronRight className="text-xl" />
-            </button>
-          )}
-        </div>
-
-        {/* Mobile View - Single Card Slider */}
-        <div className="md:hidden relative">
-          <div className="overflow-hidden">
-            <div 
-              className="flex transition-transform duration-500 ease-in-out"
-              style={{ transform: `translateX(-${currentIndex * 100}%)` }}
-            >
-              {products.slice(0, 5).map((product) => (
-                <div key={product.id} className="flex-shrink-0 w-full px-2">
-                  <ProductCard product={product} />
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Mobile Navigation */}
-          {currentIndex > 0 && (
-            <button
-              onClick={prevSlide}
-              className="absolute left-0 top-1/2 -translate-y-1/2 bg-[#00a85a] text-white p-2 rounded-full shadow-lg"
-            >
-              <FaChevronLeft />
-            </button>
-          )}
-
-          {currentIndex < products.length - 1 && (
-            <button
-              onClick={nextSlide}
-              className="absolute right-0 top-1/2 -translate-y-1/2 bg-[#00a85a] text-white p-2 rounded-full shadow-lg"
-            >
-              <FaChevronRight />
-            </button>
-          )}
-        </div>
-
-        {/* Dots Indicator */}
-        <div className="flex justify-center gap-2 mt-6">
-          {products.length > 2 && [...Array(Math.max(0, products.length - 3))].map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentIndex(index)}
-              className={`w-2 h-2 rounded-full transition-all ${
-                currentIndex === index ? 'bg-[#00a85a] w-8' : 'bg-gray-300'
-              }`}
+        {/* Featured + Grid Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Featured Product - Large */}
+          <div 
+            className="relative group overflow-hidden bg-gray-50 h-[500px] lg:h-[600px] cursor-pointer"
+            onMouseEnter={() => setHoveredProduct(featuredProduct.id)}
+            onMouseLeave={() => setHoveredProduct(null)}
+            onClick={() => navigate(`/products/${featuredProduct.id}`)}
+          >
+            <img
+              src={featuredProduct.images?.[0]?.url || '/placeholder-product.jpg'}
+              alt={featuredProduct.name}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
             />
-          ))}
+              
+            {/* Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+            
+            {/* Badge */}
+            {getDiscountPercent(featuredProduct) > 0 && (
+              <span className="absolute top-4 left-4 bg-white text-gray-900 px-3 py-1 text-xs uppercase tracking-wide pointer-events-none">
+                -{getDiscountPercent(featuredProduct)}%
+              </span>
+            )}
+            <span className="absolute top-4 right-4 bg-[#1a1a1a] text-white px-3 py-1 text-xs uppercase tracking-wide pointer-events-none">
+              Best Seller
+            </span>
+
+            {/* Product Info */}
+            <div className="absolute bottom-0 left-0 right-0 p-6 text-white transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 pointer-events-none">
+              <div className="text-center">
+                <p className="text-xs uppercase tracking-wider text-gray-300 mb-2">
+                  {featuredProduct.category?.name || 'Thời trang'}
+                </p>
+                <h3 className="text-xl font-light mb-3 line-clamp-2">
+                  {featuredProduct.name}
+                </h3>
+                <div className="flex items-center justify-center gap-3 mb-4">
+                  {getDiscountPercent(featuredProduct) > 0 ? (
+                    <>
+                      <span className="text-2xl font-light">{formatPrice(getLowestPrice(featuredProduct))}</span>
+                      <span className="text-sm text-gray-400 line-through">{formatPrice(featuredProduct.originalPrice || featuredProduct.price)}</span>
+                    </>
+                  ) : (
+                    <span className="text-2xl font-light">{formatPrice(getLowestPrice(featuredProduct))}</span>
+                  )}
+                </div>
+              </div>
+            </div>
+              
+            {/* Actions */}
+            <div className="absolute bottom-6 left-0 right-0 flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <button 
+                onClick={(e) => handleAddToCart(e, featuredProduct)}
+                className="h-11 px-5 !bg-white !text-[#1a1a1a] text-xs uppercase tracking-wider hover:!bg-gray-100 transition-colors inline-flex items-center justify-center gap-2 pointer-events-auto"
+              >
+                <FaShoppingCart className="!text-[#1a1a1a] text-sm" />
+                <span className="!text-[#1a1a1a]">Thêm giỏ hàng</span>
+              </button>
+              <button 
+                onClick={(e) => handleWishlistToggle(e, featuredProduct)}
+                className={`h-11 w-11 flex items-center justify-center transition-colors pointer-events-auto ${
+                  wishlistIds.includes(featuredProduct.variants?.[0]?.id)
+                    ? '!bg-red-500 !text-white hover:!bg-red-600'
+                    : '!bg-white !text-[#1a1a1a] hover:!bg-gray-100'
+                }`}
+              >
+                <FaHeart className="text-sm" />
+              </button>
+            </div>
+          </div>
+
+          {/* Grid Products - 2x2 */}
+          <div className="grid grid-cols-2 gap-4">
+            {gridProducts.map((product, index) => (
+              <div 
+                key={product.id}
+                className="relative group overflow-hidden bg-gray-50 h-[240px] lg:h-[290px] cursor-pointer"
+                onMouseEnter={() => setHoveredProduct(product.id)}
+                onMouseLeave={() => setHoveredProduct(null)}
+                onClick={() => navigate(`/products/${product.id}`)}
+              >
+                <img
+                  src={product.images?.[0]?.url || '/placeholder-product.jpg'}
+                  alt={product.name}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                  
+                {/* Overlay */}
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                
+                {/* Badge */}
+                {getDiscountPercent(product) > 0 && (
+                  <span className="absolute top-3 left-3 bg-white text-gray-900 px-2 py-1 text-[10px] uppercase tracking-wide pointer-events-none">
+                    -{getDiscountPercent(product)}%
+                  </span>
+                )}
+
+                {/* Rank Badge */}
+                <span className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-[#1a1a1a] text-white text-xs font-medium pointer-events-none">
+                  #{index + 2}
+                </span>
+
+                {/* Product Info */}
+                <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent pointer-events-none">
+                  <h3 className="text-sm font-light text-white mb-1 line-clamp-1">
+                    {product.name}
+                  </h3>
+                  <div className="flex items-center gap-2">
+                    {getDiscountPercent(product) > 0 ? (
+                      <>
+                        <span className="text-white font-light">{formatPrice(getLowestPrice(product))}</span>
+                        <span className="text-xs text-gray-400 line-through">{formatPrice(product.originalPrice || product.price)}</span>
+                      </>
+                    ) : (
+                      <span className="text-white font-light">{formatPrice(getLowestPrice(product))}</span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Quick Actions */}
+                <div className="absolute inset-0 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <button 
+                    onClick={(e) => handleAddToCart(e, product)}
+                    className="w-10 h-10 flex items-center justify-center bg-white text-[#1a1a1a] hover:bg-gray-100 transition-colors pointer-events-auto"
+                  >
+                    <FaShoppingCart className="text-sm" />
+                  </button>
+                  <button 
+                    onClick={(e) => handleWishlistToggle(e, product)}
+                    className={`w-10 h-10 flex items-center justify-center transition-colors pointer-events-auto ${
+                      wishlistIds.includes(product.variants?.[0]?.id)
+                        ? 'bg-red-500 text-white hover:bg-red-600'
+                        : 'bg-white text-[#1a1a1a] hover:bg-gray-100'
+                    }`}
+                  >
+                    <FaHeart className="text-sm" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* View All Link */}
+        <div className="text-center mt-12">
+          <Link 
+            to="/products/bestselling" 
+            className="inline-block px-10 py-4 border border-[#1a1a1a] text-[#1a1a1a] text-xs uppercase tracking-wider hover:bg-[#1a1a1a] hover:text-white transition-all"
+          >
+            Xem tất cả sản phẩm bán chạy
+          </Link>
         </div>
       </div>
     </section>

@@ -49,55 +49,56 @@ const ProductPrice = ({ currentPrice, originalPrice, product }) => {
   return (
     <div className="mb-10">
       <div className="flex items-baseline gap-4 mb-1">
-        <span className="text-4xl font-semibold text-red-500 tracking-tight">
+        <span className="text-3xl font-light text-gray-900 tracking-tight">
           {formatPrice(currentPrice)}
         </span>
         {originalPrice && originalPrice > currentPrice && (
           <>
-            <span className="text-xl font-light text-gray-400 line-through">
+            <span className="text-base text-gray-400 line-through">
               {formatPrice(originalPrice)}
             </span>
-            <span className="px-3 py-1 bg-[#00a85a] text-white font-light text-sm">>
+            <span className="px-2 py-0.5 text-xs font-medium text-gray-900 border border-gray-900">
               -{discountPercent}%
             </span>
           </>
         )}
       </div>
 
-      {/* Stock Progress Bar */}
-      {totalStock > 0 && (
-        <div className="mt-5 p-4 bg-gray-50 border border-gray-100">
-          <p className="text-sm font-light text-gray-600 mb-3">
-            Chỉ còn <span className="font-normal text-gray-900 font-semibold">{totalStock}</span> sản phẩm trong kho
-          </p>
-          <div className="w-full bg-gray-200 h-1.5">
+      {/* Stock Progress Bar - tinh tế */}
+      {totalStock > 0 && totalStock <= 20 && (
+        <div className="mt-6 py-4 border-t border-b border-gray-100">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-xs text-gray-500 uppercase tracking-wide">Tồn kho</span>
+            <span className="text-xs text-gray-900">{totalStock} sản phẩm</span>
+          </div>
+          <div className="w-full bg-gray-100 h-0.5">
             <div 
-              className="bg-[#00a85a] h-1.5 transition-all duration-300"
-              style={{ width: `${stockPercentage}%` }}
+              className="bg-gray-900 h-0.5 transition-all duration-300"
+              style={{ width: `${Math.min(stockPercentage, 100)}%` }}
             ></div>
           </div>
         </div>
       )}
 
-      {/* Flash Sale Countdown */}
+      {/* Flash Sale Countdown - tinh tế hơn */}
       {originalPrice && originalPrice > currentPrice && (
-        <div className="mt-5 p-5 bg-white border border-gray-200">
+        <div className="mt-6 py-5 border-t border-gray-100">
           <div className="flex items-center gap-2.5 mb-4">
-            <FaClock className="text-gray-600 w-4 h-4" />
-            <p className="text-sm font-light text-gray-600">
+            <FaClock className="text-gray-400 w-3.5 h-3.5" />
+            <p className="text-xs text-gray-500 uppercase tracking-wide">
               Ưu đãi kết thúc sau
             </p>
           </div>
-          <div className="flex gap-3">
+          <div className="flex gap-2">
             {[
               { value: timeLeft.days, label: 'Ngày' },
               { value: timeLeft.hours, label: 'Giờ' },
               { value: timeLeft.minutes, label: 'Phút' },
               { value: timeLeft.seconds, label: 'Giây' }
             ].map((item, idx) => (
-              <div key={idx} className="flex flex-col items-center bg-gray-50 border border-gray-200 px-3 py-2.5 min-w-[62px]">
-                <span className="text-xl font-light text-gray-900 tracking-tight">{String(item.value).padStart(2, '0')}</span>
-                <span className="text-xs font-light text-gray-500 mt-1">{item.label}</span>
+              <div key={idx} className="flex flex-col items-center bg-gray-50 px-4 py-3 min-w-[60px]">
+                <span className="text-lg font-light text-gray-900 tabular-nums">{String(item.value).padStart(2, '0')}</span>
+                <span className="text-[10px] text-gray-400 uppercase tracking-wide mt-1">{item.label}</span>
               </div>
             ))}
           </div>

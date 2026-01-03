@@ -92,11 +92,19 @@ const ReviewList = ({ productId }) => {
       {/* Pagination - minimalist */}
       {totalPages > 1 && (
         <div className="flex justify-center gap-2 mt-6">
-          <button className="px-4 py-2 border border-gray-300 hover:border-[#00a85a] hover:bg-green-50 hover:text-[#00a85a] disabled:opacity-50 transition-all duration-300 rounded-lg disabled:hover:border-gray-300 disabled:hover:bg-white disabled:hover:text-gray-900">
+          <button 
+            onClick={() => setPage(p => Math.max(1, p - 1))}
+            disabled={page === 1}
+            className="px-4 py-2 border border-gray-300 hover:border-[#00a85a] hover:text-[#00a85a] disabled:opacity-50 transition-all duration-300 disabled:hover:border-gray-300 disabled:hover:text-gray-900"
+          >
             Trước
           </button>
           <span className="px-4 py-2 text-gray-700">Trang {page} / {totalPages}</span>
-          <button className="px-4 py-2 border border-gray-300 hover:border-[#00a85a] hover:bg-green-50 hover:text-[#00a85a] disabled:opacity-50 transition-all duration-300 rounded-lg disabled:hover:border-gray-300 disabled:hover:bg-white disabled:hover:text-gray-900">
+          <button 
+            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+            disabled={page === totalPages}
+            className="px-4 py-2 border border-gray-300 hover:border-[#00a85a] hover:text-[#00a85a] disabled:opacity-50 transition-all duration-300 disabled:hover:border-gray-300 disabled:hover:text-gray-900"
+          >
             Sau
           </button>
         </div>

@@ -99,16 +99,16 @@ const HeroBanner = ({ slides = [] }) => {
             <div className="flex gap-2 sm:gap-3 md:gap-4 animate-slideUp animation-delay-400">
               <Link
                 to={currentBanner.ctaLink}
-                className="px-4 py-2 sm:px-6 sm:py-3 md:px-8 md:py-4 text-sm sm:text-base md:text-lg font-semibold bg-teal-600 hover:bg-teal-700 text-white rounded-full shadow-2xl hover:scale-105 transition-transform"
+                className="px-6 py-3 sm:px-8 sm:py-4 md:px-10 md:py-4 text-sm sm:text-base md:text-lg font-medium bg-white text-gray-900 hover:bg-gray-100 shadow-2xl hover:scale-105 transition-all duration-300 uppercase tracking-wider"
               >
                 {currentBanner.cta}
               </Link>
               {currentBanner.type === 'video' && (
                 <button
                   onClick={() => setVideoMuted(!videoMuted)}
-                  className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 flex items-center justify-center rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-colors"
+                  className="w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-colors"
                 >
-                  {videoMuted ? <Play size={16} className="sm:w-5 sm:h-5" /> : <Pause size={16} className="sm:w-5 sm:h-5" />}
+                  {videoMuted ? <Play size={18} /> : <Pause size={18} />}
                 </button>
               )}
             </div>
@@ -119,15 +119,15 @@ const HeroBanner = ({ slides = [] }) => {
       {/* Navigation Arrows */}
       <button
         onClick={prevSlide}
-        className="absolute left-2 sm:left-4 lg:left-8 top-1/2 -translate-y-1/2 z-30 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-colors"
+        className="absolute left-2 sm:left-4 lg:left-8 top-1/2 -translate-y-1/2 z-30 w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 flex items-center justify-center bg-white/90 text-gray-900 hover:bg-white transition-colors"
       >
-        <ChevronLeft size={16} className="sm:w-5 sm:h-5 md:w-6 md:h-6" />
+        <ChevronLeft size={20} />
       </button>
       <button
         onClick={nextSlide}
-        className="absolute right-2 sm:right-4 lg:right-8 top-1/2 -translate-y-1/2 z-30 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-colors"
+        className="absolute right-2 sm:right-4 lg:right-8 top-1/2 -translate-y-1/2 z-30 w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 flex items-center justify-center bg-white/90 text-gray-900 hover:bg-white transition-colors"
       >
-        <ChevronRight size={16} className="sm:w-5 sm:h-5 md:w-6 md:h-6" />
+        <ChevronRight size={20} />
       </button>
 
       {/* Dots Indicator */}

@@ -6,6 +6,7 @@ import { notify } from '../../../utils/notification';
 import Loading from '../../../components/common/Loading';
 import Layout from '../../../components/layouts/Layout';
 import Breadcrumb from '../../../components/common/Breadcrumb';
+import PageTitle from '../../../components/common/PageTitle';
 import orderService from '../../../services/orderService';
 import reviewService from '../../../services/reviewService';
 import {
@@ -223,13 +224,20 @@ const OrdersPage = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-50 pt-21 pb-8">
-        <div className="container mx-auto px-4 lg:px-30">
+      <div className="min-h-screen bg-white pt-21 pb-8">
+        <div className="container mx-auto px-4 lg:px-8">
           <Breadcrumb items={[
             { label: 'Đơn hàng của tôi' }
           ]} />
 
-          <h1 className="text-3xl font-bold text-gray-900 pt-4 pb-4">ĐỚN HÀNG CỦA TÔI</h1>
+          {/* Header */}
+          <PageTitle
+            subtitle="Theo dõi"
+            title="ĐƠN HÀNG CỦA TÔI"
+            count={safeOrders.length}
+            countLabel="đơn hàng"
+            className="mt-6"
+          />
 
           {/* Status Filter */}
           <div className="mb-6">

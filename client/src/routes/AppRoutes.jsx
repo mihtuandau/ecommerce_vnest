@@ -21,6 +21,8 @@ import HomePage from "../pages/Customer/Home/HomePage";
 const ProductsPage = lazy(() => import("../pages/Customer/Product/ProductsPage"));
 const ProductDetailPage = lazy(() => import("../pages/Customer/Product/ProductDetailPage"));
 const CategoryPage = lazy(() => import("../pages/Customer/Product/CategoryPage"));
+const FeaturedProductsPage = lazy(() => import("../pages/Customer/Product/FeaturedProductsPage"));
+const BestSellingProductsPage = lazy(() => import("../pages/Customer/Product/BestSellingProductsPage"));
 const CartPage = lazy(() => import("../pages/Customer/Cart/CartPage"));
 const WishlistPage = lazy(() => import("../pages/Customer/WishlistPage"));
 const CheckoutPage = lazy(() =>
@@ -114,6 +116,8 @@ const AppRoutes = () => {
 
           {/* Product Routes */}
           <Route path="/products" element={<ProductsPage />} />
+          <Route path="/products/featured" element={<FeaturedProductsPage />} />
+          <Route path="/products/bestselling" element={<BestSellingProductsPage />} />
           <Route path="/products/:id" element={<ProductDetailPage />} />
           <Route path="/products/category/:id" element={<CategoryPage />} />
           <Route path="/category/:id" element={<CategoryPage />} />

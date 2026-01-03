@@ -3,15 +3,21 @@ import { Card, Row, Col, Divider, Timeline } from "antd";
 import { ShopOutlined, RocketOutlined, CustomerServiceOutlined, SafetyOutlined, TeamOutlined, HeartOutlined } from "@ant-design/icons";
 import Layout from "../../../components/layouts/Layout";
 import Breadcrumb from "../../../components/common/Breadcrumb";
+import PageTitle from "../../../components/common/PageTitle";
 
 const AboutPage = () => {
   return (
     <Layout >
-      <div className="min-h-screen bg-gray-50 pt-21 pb-8">
-        <div className="container mx-auto px-4 lg:px-30">
+      <div className="min-h-screen bg-white pt-21 pb-8">
+        <div className="container mx-auto px-4 lg:px-8">
           <Breadcrumb items={[{ label: "Về chúng tôi" }]} />
 
-          <h1 className="text-3xl font-bold text-gray-900 pt-4 pb-4">VỀ CHÚNG TÔI</h1>
+          {/* Header */}
+          <PageTitle
+            subtitle="Câu chuyện"
+            title="VỀ CHÚNG TÔI"
+            className="mt-6 mb-14"
+          />
 
           {/* Story Section */}
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center mb-20 md:mb-28">

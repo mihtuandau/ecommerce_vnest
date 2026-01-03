@@ -4,6 +4,7 @@ import { Drawer, Badge, Spin, Empty, Select } from 'antd';
 import { FilterOutlined } from '@ant-design/icons';
 import Layout from '../../../components/layouts/Layout';
 import Breadcrumb from '../../../components/common/Breadcrumb';
+import PageTitle from '../../../components/common/PageTitle';
 import ProductGrid from '../../../components/products/ProductGrid';
 import ProductFilter from '../../../components/products/ProductFilter';
 import ActiveFilters from '../../../components/products/ActiveFilters';
@@ -163,18 +164,21 @@ const ProductsPage = () => {
 
   return (
     <Layout>
-      <div className="bg-gray-50 min-h-screen pt-21 pb-8">
-        <div className="container mx-auto px-4 lg:px-30">
+      <div className="bg-white min-h-screen pt-21 pb-8">
+        <div className="container mx-auto px-4 lg:px-8">
           <Breadcrumb items={[
             { label: 'Sản Phẩm', path: '/products' }
             
           ]} />
 
-          <h1 className="text-3xl font-bold text-gray-900 pt-4 pb-4">TẤT CẢ</h1>
+          <PageTitle 
+            subtitle="Bộ sưu tập"
+            title="TẤT CẢ SẢN PHẨM"
+          />
 
           <button 
             onClick={() => setShowFilter(true)}
-            className="lg:hidden flex items-center gap-2 px-4 py-2 mb-4 bg-white border border-gray-300 rounded-lg hover:border-[#00a85a] w-full justify-center"
+            className="lg:hidden flex items-center gap-2 px-4 py-2 mb-4 bg-white border border-gray-300 hover:border-[#1a1a1a] w-full justify-center"
           >
             <FilterOutlined />
             <span>Lọc sản phẩm</span>

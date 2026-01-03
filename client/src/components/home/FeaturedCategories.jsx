@@ -41,25 +41,24 @@ const FeaturedCategories = ({ categories = [] }) => {
     : defaultCategories;
 
   return (
-    <section className="py-16 bg-gray-50">
+    <section className="py-20 bg-gray-50">
       <div className="container mx-auto px-4 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">
-            Danh Mục Nổi Bật
+        <div className="text-center mb-14">
+          <span className="text-xs uppercase tracking-[0.3em] text-gray-500 mb-4 block">Khám phá</span>
+          <h2 className="text-3xl md:text-4xl font-light text-gray-900 mb-4">
+            DANH MỤC NỔI BẬT
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Khám phá những bộ sưu tập thời trang hot nhất hiện nay
-          </p>
+          <div className="w-12 h-px bg-gray-900 mx-auto"></div>
         </div>
 
         {/* Categories Grid - 3 cột với card cao hơn */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {displayCategories.slice(0, 6).map((category) => (
             <div
               key={category.id}
               onClick={() => navigate(`/category/${category.id}`)}
-              className="group relative overflow-hidden rounded-xl cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-300 h-[500px]"
+              className="group relative overflow-hidden cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-500 h-[450px]"
             >
               {/* Background Image */}
               <img

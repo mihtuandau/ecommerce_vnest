@@ -8,6 +8,7 @@ import userService from '../../../services/userService';
 import Layout from '../../../components/layouts/Layout';
 import Loading from '../../../components/common/Loading';
 import Breadcrumb from '../../../components/common/Breadcrumb';
+import PageTitle from '../../../components/common/PageTitle';
 import PersonalInfoForm from '../../../components/profile/PersonalInfoForm';
 import AddressManager from '../../../components/profile/AddressManager';
 import ChangePasswordForm from '../../../components/profile/ChangePasswordForm';
@@ -54,13 +55,18 @@ const ProfilePage = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-50 pt-21 pb-8">
-        <div className="container mx-auto px-4 lg:px-30">
+      <div className="min-h-screen bg-white pt-21 pb-8">
+        <div className="container mx-auto px-4 lg:px-8">
           <Breadcrumb items={[
             { label: 'Thông tin tài khoản' }
           ]} />
 
-          <h1 className="text-3xl font-bold text-gray-900 pt-4 pb-4">THÔNG TIN TÀI KHOẢN</h1>
+          {/* Header */}
+          <PageTitle
+            subtitle="Tài khoản"
+            title="THÔNG TIN CÁ NHÂN"
+            className="mt-6"
+          />
 
           <Card className="mb-8 shadow-sm">
             <div className="flex items-center gap-6">

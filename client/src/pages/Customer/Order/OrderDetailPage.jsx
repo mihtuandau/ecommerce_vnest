@@ -89,7 +89,7 @@ const OrderDetailPage = () => {
               </h3>
               <button
                 onClick={() => navigate('/orders')}
-                className="px-4 py-2 bg-[#00a85a] hover:bg-[#008f4d] text-white rounded-lg transition-colors"
+                className="px-4 py-2 bg-[#00a85a] hover:bg-[#008f4d] text-white transition-colors"
               >
                 Quay lại danh sách đơn hàng
               </button>
@@ -112,7 +112,7 @@ const OrderDetailPage = () => {
 
           {/* Header */}
           <div className="mb-6">
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div className="bg-white border border-gray-200 p-6">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-4 flex-wrap">
                   <h1 className="text-xl font-bold text-gray-900">
@@ -140,10 +140,10 @@ const OrderDetailPage = () => {
 
             {/* Action Button */}
             {(order.status === 'PENDING' || order.status === 'AWAITING_PAYMENT') && (
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <div className="bg-white border border-gray-200 p-6">
                 <button
                   onClick={handleCancelOrder}
-                  className="w-full px-4 py-3 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors"
+                  className="w-full px-4 py-3 bg-red-600 hover:bg-red-700 text-white font-medium transition-colors"
                 >
                   Hủy đơn hàng
                 </button>
