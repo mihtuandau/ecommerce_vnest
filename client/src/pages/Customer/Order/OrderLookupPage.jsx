@@ -93,7 +93,7 @@ const OrderLookupPage = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-50 py-12 ">
+      <div className="min-h-screen bg-gray-50 pt-21 pb-8">
         <div className="container mx-auto px-4 max-w-4xl">
           {/* Header */}
           <div className="text-center mb-8">
@@ -108,7 +108,7 @@ const OrderLookupPage = () => {
 
           {/* Recent Orders */}
           {recentOrders.length > 0 && !order && (
-            <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+            <div className="bg-white border border-gray-200 p-6 mb-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">Đơn hàng gần đây</h2>
               <div className="space-y-2">
                 {recentOrders.map((recentOrder, index) => (
@@ -118,7 +118,7 @@ const OrderLookupPage = () => {
                       setOrderCode(recentOrder.orderCode);
                       setContact(recentOrder.contact);
                     }}
-                    className="w-full text-left p-3 border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-blue-500 transition-colors"
+                    className="w-full text-left p-3 border border-gray-200 hover:bg-gray-50 hover:border-[#00a85a] transition-colors"
                   >
                     <div className="flex items-center justify-between">
                       <div>
@@ -135,7 +135,7 @@ const OrderLookupPage = () => {
             </div>
           )}
 
-          <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+          <div className="bg-white border border-gray-200 p-6 mb-8">
             <form onSubmit={handleSearch} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -146,7 +146,7 @@ const OrderLookupPage = () => {
                   value={orderCode}
                   onChange={(e) => setOrderCode(e.target.value)}
                   placeholder="Ví dụ: ORD-A1B2C3"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:border-gray-900"
                 />
               </div>
 
@@ -159,7 +159,7 @@ const OrderLookupPage = () => {
                   value={contact}
                   onChange={(e) => setContact(e.target.value)}
                   placeholder="example@email.com hoặc 0901234567"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:border-gray-900"
                 />
               </div>
 

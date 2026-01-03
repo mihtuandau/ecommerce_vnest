@@ -3,8 +3,9 @@ import { Tag, Clock, Eye, Copy, CheckCircle } from 'lucide-react';
 import Layout from '../../../components/layouts/Layout';
 import Loading from '../../../components/common/Loading';
 import Breadcrumb from '../../../components/common/Breadcrumb';
+import PageTitle from '../../../components/common/PageTitle';
 import discountService from '../../../services/discountService';
-import toast from 'react-hot-toast';
+import { notify } from '../../../utils/notification';
 
 const PromotionsPage = () => {
   const [promotions, setPromotions] = useState([]);
@@ -54,7 +55,7 @@ const PromotionsPage = () => {
       }
     } catch (error) {
       console.error('Error loading promotions:', error);
-      toast.error('Không thể tải khuyến mãi');
+      notify.error('Không thể tải khuyến mãi');
     } finally {
       setLoading(false);
     }
@@ -84,7 +85,7 @@ const PromotionsPage = () => {
   const handleCopyCode = (code) => {
     navigator.clipboard.writeText(code);
     setCopiedCode(code);
-    toast.success('Đã copy mã: ' + code);
+    notify.success('Đã copy mã: ' + code);
     setTimeout(() => setCopiedCode(null), 2000);
   };
 
@@ -117,11 +118,17 @@ const PromotionsPage = () => {
 
  return (
   <Layout>
-    <div className="bg-gray-50 pt-21 pb-8">
-      <div className="container mx-auto px-4 lg:px-30">
+    <div className="min-h-screen bg-white pt-21 pb-8">
+      <div className="container mx-auto px-4 lg:px-8">
         <Breadcrumb items={breadcrumbItems} />
 
-        <h1 className="text-3xl font-bold text-gray-900 pt-4 pb-4">KHUYẾN MÃI</h1>
+        {/* Header */}
+        <PageTitle
+          subtitle="Ưu đãi"
+          title="KHUYẾN MÃI"
+          description="Những ưu đãi hấp dẫn dành riêng cho bạn"
+          className="mt-6 mb-14"
+        />
       
         {promotions.length === 0 ? (
           <div>

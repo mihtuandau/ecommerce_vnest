@@ -4,6 +4,7 @@ import { Button as AntButton, Modal, Badge, Divider, Space } from 'antd';
 import { ArrowLeftOutlined, ShoppingCartOutlined, DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import Layout from '../../../components/layouts/Layout';
 import Breadcrumb from '../../../components/common/Breadcrumb';
+import PageTitle from '../../../components/common/PageTitle';
 import Button from '../../../components/common/Button';
 import CartEmpty from '../../../components/cart/CartEmpty';
 import CartItemsList from '../../../components/cart/CartItemsList';
@@ -133,10 +134,17 @@ const CartPage = () => {
   if (!cartItems || cartItems.length === 0) {
     return (
       <Layout>
-        <div className="bg-gray-50 min-h-screen pt-21 pb-8">
-          <div className="container mx-auto px-4 lg:px-30">
+        <div className="bg-white min-h-screen pt-21 pb-8">
+          <div className="container mx-auto px-4 lg:px-8">
             <Breadcrumb items={[{ label: 'Giỏ hàng' }]} />
-            <h1 className="text-3xl font-bold text-gray-900 pt-4 pb-4">GIỎ HÀNG</h1>
+            
+            {/* Header */}
+            <PageTitle
+              subtitle="Mua sắm"
+              title="GIỎ HÀNG CỦA BẠN"
+              className="mt-6"
+            />
+            
             <CartEmpty />
           </div>
         </div>
@@ -146,19 +154,22 @@ const CartPage = () => {
 
   return (
     <Layout>
-      <div className="bg-gray-50 min-h-screen pt-21 pb-8">
-        <div className="container mx-auto px-4 lg:px-30">
+      <div className="bg-white min-h-screen pt-21 pb-8">
+        <div className="container mx-auto px-4 lg:px-8">
           
           <Breadcrumb items={[{ label: 'Giỏ hàng' }]} />
 
-          <div className=" flex justify-between items-center">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 pt-4 pb-4 flex items-center gap-3">
-                GIỎ HÀNG
-              </h1>
-            </div>
+          {/* Header */}
+          <PageTitle
+            subtitle="Mua sắm"
+            title="GIỎ HÀNG CỦA BẠN"
+            count={cartCount}
+            countLabel="sản phẩm trong giỏ hàng"
+            className="mt-6"
+          />
             
-            {cartItems.length > 0 && (
+          {cartItems.length > 0 && (
+            <div className="flex justify-end mb-6">
               <AntButton 
                 danger 
                 icon={<DeleteOutlined />}
@@ -166,8 +177,8 @@ const CartPage = () => {
               >
                 Xóa tất cả
               </AntButton>
-            )}
-          </div>
+            </div>
+          )}
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">

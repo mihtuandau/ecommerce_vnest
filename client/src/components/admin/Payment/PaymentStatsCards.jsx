@@ -13,7 +13,7 @@ const PaymentStatsCards = ({ stats }) => {
       iconColor: 'text-indigo-500',
       bgColor: 'bg-indigo-100',
     },
-    {
+    { 
       title: 'Chờ xử lý',
       value: stats.pending,
       icon: Clock,

@@ -4,6 +4,7 @@ import { PhoneOutlined, MailOutlined, EnvironmentOutlined, ClockCircleOutlined, 
 import { FaFacebookF, FaInstagram, FaTwitter } from 'react-icons/fa';
 import Layout from '../../../components/layouts/Layout';
 import Breadcrumb from '../../../components/common/Breadcrumb';
+import PageTitle from '../../../components/common/PageTitle';
 import { notify } from '../../../utils/notification';
 
 const { TextArea } = Input;
@@ -25,13 +26,19 @@ const ContactPage = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-50 pt-21 pb-8">
-        <div className="container mx-auto px-4 lg:px-30">
+      <div className="min-h-screen bg-white pt-21 pb-8">
+        <div className="container mx-auto px-4 lg:px-8">
           <Breadcrumb items={[
             { label: 'Liên hệ' }
           ]} />
 
-          <h1 className="text-3xl font-bold text-gray-900 pt-4 pb-4">LIÊN HỆ</h1>
+          {/* Header */}
+          <PageTitle
+            subtitle="Kết nối"
+            title="LIÊN HỆ"
+            description="Chúng tôi luôn sẵn lòng hỗ trợ bạn"
+            className="mt-6 mb-14"
+          />
 
           {/* Contact Info Cards */}
           <Row gutter={[24, 24]} className="mb-16 md:mb-20">

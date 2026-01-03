@@ -91,7 +91,7 @@ const ReviewForm = ({ productId, orderId, onSuccess, onCancel }) => {
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             rows={4}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+            className="w-full px-4 py-2 border border-gray-300 focus:outline-none focus:border-gray-900 resize-none"
             placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm..."
           />
         </div>
@@ -101,7 +101,7 @@ const ReviewForm = ({ productId, orderId, onSuccess, onCancel }) => {
           <button
             type="submit"
             disabled={isSubmitting || rating === 0}
-            className="flex-1 bg-[#00a85a] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#008f4d] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="flex-1 bg-[#00a85a] text-white px-6 py-3 font-medium hover:bg-[#008f4d] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {isSubmitting ? 'Đang gửi...' : 'Gửi đánh giá'}
           </button>
@@ -109,7 +109,7 @@ const ReviewForm = ({ productId, orderId, onSuccess, onCancel }) => {
             <button
               type="button"
               onClick={onCancel}
-              className="px-6 py-3 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+              className="px-6 py-3 border border-gray-300 font-medium hover:border-gray-900 transition-colors"
             >
               Hủy
             </button>

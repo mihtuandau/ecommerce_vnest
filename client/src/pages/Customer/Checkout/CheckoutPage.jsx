@@ -3,12 +3,12 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Steps, Card, Divider, Button as AntButton, Modal as AntModal, Spin } from "antd";
 import { ArrowLeftOutlined, ShoppingOutlined, EnvironmentOutlined, CreditCardOutlined } from "@ant-design/icons";
-import toast from "react-hot-toast";
 import { notify } from "../../../utils/notification";
 import { useAuth } from "../../../contexts/authContext";
 import { useCart } from "../../../hooks/useCart";
 import Loading from "../../../components/common/Loading";
 import Modal from "../../../components/common/Modal";
+import PageTitle from "../../../components/common/PageTitle";
 import AddressSelector from "../../../components/profile/AddressSelector";
 import ShippingForm from "../../../components/checkout/ShippingForm";
 import PaymentMethodSelector from "../../../components/checkout/PaymentMethodSelector";
@@ -115,8 +115,8 @@ const CheckoutPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-10 pb-8">
-      <div className="container mx-auto px-4 max-w-6xl">
+    <div className="min-h-screen bg-white pt-10 pb-8">
+      <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
         <div className="mb-8">
           <AntButton
             icon={<ArrowLeftOutlined />}
@@ -126,7 +126,12 @@ const CheckoutPage = () => {
             Quay lại giỏ hàng
           </AntButton>
           
-          <h1 className="text-3xl font-bold text-gray-900 pt-4 pb-4">THANH TOÁN</h1>
+          {/* Header */}
+          <PageTitle
+            subtitle="Hoàn tất đơn hàng"
+            title="THANH TOÁN"
+            className="mt-4 mb-8"
+          />
           
           {/* Progress Steps */}
           <Steps

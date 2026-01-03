@@ -73,15 +73,15 @@ export const ProductImageGallery = ({
       </div>
 
       {images.length > 1 && (
-        <div className="flex gap-2.5 overflow-x-auto pb-2">
+        <div className="flex gap-2 overflow-x-auto pb-2">
           {images.map((img, idx) => (
             <button
               key={idx}
               onClick={() => onImageSelect(idx)}
-              className={`flex-shrink-0 w-20 h-20 overflow-hidden border transition-all duration-300 rounded-lg transform hover:scale-105 ${
+              className={`flex-shrink-0 w-20 h-20 overflow-hidden border transition-all duration-200 ${
                 selectedImage === idx
-                  ? "border-[#00a85a] shadow-lg ring-2 ring-green-100"
-                  : "border-gray-200 hover:border-[#00a85a] hover:shadow-md"
+                  ? "border-gray-900"
+                  : "border-gray-200 hover:border-gray-400"
               }`}
             >
               <img
@@ -113,7 +113,7 @@ export const ProductImageGallery = ({
                   e.stopPropagation();
                   onPrevImage();
                 }}
-                className="absolute left-8 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-4 rounded-full"
+                className="absolute left-8 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-4"
               >
                 <FaChevronLeft size={28} />
               </button>
@@ -122,7 +122,7 @@ export const ProductImageGallery = ({
                   e.stopPropagation();
                   onNextImage();
                 }}
-                className="absolute right-8 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-4 rounded-full"
+                className="absolute right-8 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-4"
               >
                 <FaChevronRight size={28} />
               </button>
@@ -139,7 +139,7 @@ export const ProductImageGallery = ({
           </div>
 
           {images.length > 1 && (
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-black/60 text-white px-4 py-2 rounded-full text-sm font-medium">
+            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-white/90 text-gray-900 px-4 py-2 text-sm">
               {selectedImage + 1} / {images.length}
             </div>
           )}

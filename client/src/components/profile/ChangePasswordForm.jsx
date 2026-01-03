@@ -90,7 +90,7 @@ const ChangePasswordForm = () => {
             name="currentPassword"
             value={formData.currentPassword}
             onChange={handleChange}
-            className="w-full px-4 py-3.5 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
+            className="w-full px-4 py-3.5 pr-12 border border-gray-300 focus:outline-none focus:border-gray-900 transition-all"
             placeholder="Nhập mật khẩu hiện tại"
           />
           <button
@@ -116,7 +116,7 @@ const ChangePasswordForm = () => {
             name="newPassword"
             value={formData.newPassword}
             onChange={handleChange}
-            className="w-full px-4 py-3.5 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
+            className="w-full px-4 py-3.5 pr-12 border border-gray-300 focus:outline-none focus:border-gray-900 transition-all"
             placeholder="Nhập mật khẩu mới"
           />
           <button
@@ -142,7 +142,7 @@ const ChangePasswordForm = () => {
             name="confirmPassword"
             value={formData.confirmPassword}
             onChange={handleChange}
-            className="w-full px-4 py-3.5 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
+            className="w-full px-4 py-3.5 pr-12 border border-gray-300 focus:outline-none focus:border-gray-900 transition-all"
             placeholder="Nhập lại mật khẩu mới"
           />
           <button

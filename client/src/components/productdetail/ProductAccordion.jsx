@@ -29,22 +29,22 @@ const ProductAccordion = ({ product }) => {
   ];
 
   return (
-    <div className="space-y-0 mb-12">
+    <div className="mb-12">
       {accordionItems.map((item) => (
         <div key={item.key} className="border-b border-gray-100">
           <button
             onClick={() => toggleAccordion(item.key)}
-            className="w-full flex items-center justify-between py-5 text-left font-light text-gray-900 hover:text-gray-600 transition-colors"
+            className="w-full flex items-center justify-between py-5 text-left group"
           >
-            <span className="text-sm">{item.title}</span>
+            <span className="text-xs uppercase tracking-wide text-gray-500 group-hover:text-gray-900 transition-colors">{item.title}</span>
             <FaChevronDown
-              className={`w-3.5 h-3.5 text-gray-400 transition-transform duration-200 ${
+              className={`w-3 h-3 text-gray-300 group-hover:text-gray-500 transition-all duration-200 ${
                 openAccordion === item.key ? "rotate-180" : ""
               }`}
             />
           </button>
           {openAccordion === item.key && (
-            <div className="pb-6 text-sm font-light text-gray-600 leading-relaxed">
+            <div className="pb-6 text-sm text-gray-600 leading-relaxed">
               {typeof item.content === "string" ? (
                 <p>{item.content}</p>
               ) : (

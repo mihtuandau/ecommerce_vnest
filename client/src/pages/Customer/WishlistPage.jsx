@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Card, Empty, Spin, Modal, Row, Col, Badge, Space } from 'antd';
+import { Empty, Spin, Modal } from 'antd';
 import { HeartOutlined, DeleteOutlined, ShoppingCartOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { notify } from '../../utils/notification';
 import wishlistService from '../../services/wishlistService';
 import Breadcrumb from '../../components/common/Breadcrumb';
 import Layout from '../../components/layouts/Layout';
+import PageTitle from '../../components/common/PageTitle';
 
 const { confirm } = Modal;
 
 const WishlistPage = () => {
+  const navigate = useNavigate();
   const [wishlistItems, setWishlistItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -74,46 +76,50 @@ const WishlistPage = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-50 pt-21 pb-8">
-        <div className="container mx-auto px-4 lg:px-30">
+      <div className="min-h-screen bg-white pt-21 pb-8">
+        <div className="container mx-auto px-4 lg:px-8">
           <Breadcrumb items={[{ label: 'Sản phẩm yêu thích' }]} />
 
-          <div className="flex justify-between items-center pt-4 pb-4">
-            <h1 className="text-3xl font-bold text-gray-900">SẢN PHẨM YÊU THÍCH</h1>
-            {wishlistItems.length > 0 && (
-              <Button
-                danger
-                icon={<DeleteOutlined />}
+          {/* Header */}
+          <PageTitle
+            subtitle="Danh sách"
+            title="SẢN PHẨM YÊU THÍCH"
+            count={wishlistItems.length}
+            countLabel="sản phẩm"
+            className="mt-6"
+          />
+          
+          {wishlistItems.length > 0 && (
+            <div className="flex justify-end mb-6">
+              <button
                 onClick={handleClearAll}
+                className="flex items-center gap-2 px-4 py-2 text-sm text-red-600 border border-red-300 hover:bg-red-50 transition-colors"
               >
+                <DeleteOutlined />
                 Xóa tất cả
-              </Button>
-            )}
-          </div>
+              </button>
+            </div>
+          )}
 
           {/* Empty State */}
           {wishlistItems.length === 0 ? (
-            <div className="flex justify-center items-center min-h-[400px]">
-              <Empty
-                description="Chưa có sản phẩm yêu thích"
-                image={Empty.PRESENTED_IMAGE_SIMPLE}
-              >
-                <Link to="/products">
-                  <Button type="primary" icon={<ShoppingCartOutlined />} style={{ backgroundColor: '#00a85a', borderColor: '#00a85a' }}>
-                    Khám Phá Sản Phẩm
-                  </Button>
-                </Link>
-              </Empty>
+            <div className="flex flex-col justify-center items-center min-h-[400px]">
+              <HeartOutlined className="text-6xl text-gray-300 mb-4" />
+              <p className="text-gray-500 text-lg mb-6">Chưa có sản phẩm yêu thích</p>
+              <Link to="/products">
+                <button className="px-8 py-3 bg-[#1a1a1a] text-white text-sm uppercase tracking-wider hover:bg-gray-800 transition-colors">
+                  Khám Phá Sản Phẩm
+                </button>
+              </Link>
             </div>
           ) : (
             /* Product Grid */
-            <Row gutter={[24, 24]}>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
               {wishlistItems.map((item) => {
-                // Kiểm tra dữ liệu trước khi sử dụng
                 const product = item.variant?.product;
                 const variant = item.variant;
                 
-                if (!product || !variant) return null; // Bỏ qua item bị lỗi
+                if (!product || !variant) return null;
                 
                 const productId = product.id;
                 const thumbnail = variant?.images?.find(img => img.isThumbnail) 
@@ -121,61 +127,74 @@ const WishlistPage = () => {
                   || { url: product?.category?.image };
                 
                 return (
-                  <Col xs={24} sm={12} lg={8} xl={6} key={item.id}>
-                    <Card
-                      hoverable
-                      cover={
-                        <Link to={`/products/${productId}`}>
-                          <div className="aspect-square overflow-hidden bg-gray-50">
-                            <img
-                              src={thumbnail?.url || '/placeholder.png'}
-                              alt={product.name || 'Product'}
-                              className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-                            />
-                          </div>
-                        </Link>
-                      }
-                      actions={[
-                        <Link to={`/products/${productId}`} key="view">
-                          <Button type="primary" block style={{ backgroundColor: '#00a85a', borderColor: '#00a85a' }}>
-                            Xem Chi Tiết
-                          </Button>
-                        </Link>,
-                      ]}
+                  <div key={item.id} className="group relative bg-white border border-gray-200 transition-all duration-300 overflow-hidden flex flex-col h-full">
+                    {/* Variant Badge */}
+                    {(variant.color || variant.size) && (
+                      <div className="absolute top-3 left-3 z-10 flex gap-1">
+                        {variant.color && (
+                          <span className="px-2 py-1 text-xs font-normal bg-gray-100 text-gray-700">
+                            {variant.color}
+                          </span>
+                        )}
+                        {variant.size && (
+                          <span className="px-2 py-1 text-xs font-normal bg-gray-100 text-gray-700">
+                            {variant.size}
+                          </span>
+                        )}
+                      </div>
+                    )}
+                    
+                    {/* Remove Button */}
+                    <div className="absolute top-3 right-3 z-10 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRemove(item.variantId);
+                        }}
+                        className="p-1.5 bg-white border border-gray-300 hover:bg-red-50 hover:border-red-300 transition-colors"
+                      >
+                        <DeleteOutlined className="text-red-500 text-xs" />
+                      </button>
+                    </div>
+                    
+                    {/* Product Image */}
+                    <div 
+                      className="block relative overflow-hidden w-full aspect-square bg-gray-50 cursor-pointer"
+                      onClick={() => navigate(`/products/${productId}`)}
                     >
-                      <Card.Meta
-                        title={
-                          <Link to={`/products/${productId}`} className="hover:text-[#00a85a]">
-                            {product.name || 'Sản phẩm'}
-                          </Link>
-                        }
-                        description={
-                          <Space direction="vertical" className="w-full">
-                            {(variant.color || variant.size) && (
-                              <Space>
-                                {variant.color && <Badge color="blue" text={variant.color} />}
-                                {variant.size && <Badge color="green" text={variant.size} />}
-                              </Space>
-                            )}
-                            <div className="flex items-center justify-between">
-                              <span className="text-lg font-bold text-[#00a85a]">
-                                {variant.price ? variant.price.toLocaleString('vi-VN') : '0'}₫
-                              </span>
-                              <Button
-                                type="text"
-                                danger
-                                icon={<DeleteOutlined />}
-                                onClick={() => handleRemove(item.variantId)}
-                              />
-                            </div>
-                          </Space>
-                        }
+                      <img
+                        src={thumbnail?.url || '/placeholder.png'}
+                        alt={product.name || 'Product'}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
-                    </Card>
-                  </Col>
+                    </div>
+                    
+                    {/* Product Info */}
+                    <div className="flex flex-col flex-grow p-3">
+                      {/* Product Name */}
+                      <div 
+                        className="block mb-3 cursor-pointer"
+                        onClick={() => navigate(`/products/${productId}`)}
+                      >
+                        <h3 
+                          className="text-sm font-medium text-gray-900 hover:text-gray-600 transition-colors line-clamp-2 min-h-[2rem]" 
+                          title={product.name}
+                        >
+                          {product.name || 'Sản phẩm'}
+                        </h3>
+                      </div>
+
+                      {/* Price */}
+                      <div className="flex items-baseline gap-3 min-h-[20px]">
+                        <span className="text-base font-bold text-gray-900">
+                          {variant.price ? variant.price.toLocaleString('vi-VN') : '0'}₫
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                 );
               })}
-            </Row>
+            </div>
           )}
         </div>
       </div>

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import Layout from '../../../components/layouts/Layout';
 import Breadcrumb from '../../../components/common/Breadcrumb';
+import PageTitle from '../../../components/common/PageTitle';
 import ProductGrid from '../../../components/products/ProductGrid';
 import ProductFilter from '../../../components/products/ProductFilter';
 import ActiveFilters from '../../../components/products/ActiveFilters';
@@ -187,27 +188,25 @@ const CategoryPage = () => {
 
   return (
     <Layout>
-      <div className="bg-gray-50 min-h-screen pt-21 pb-8">
-        <div className="container mx-auto lg:px-30">
+      <div className="bg-white min-h-screen pt-21 pb-8">
+        <div className="container mx-auto px-4 lg:px-8">
           <Breadcrumb items={[
             { label: 'Sản Phẩm', path: '/products' },
             { label: category?.name || 'Danh mục' }
           ]} />
 
           {category && (
-            <div className="">
-              <h1 className="text-3xl font-bold text-gray-900 pt-4 pb-4">
-                {category.name.toUpperCase()}
-              </h1>
-              {category.description && (
-                <p className="text-gray-600">{category.description}</p>
-              )}
-            </div>
+            <PageTitle
+              subtitle="Danh mục"
+              title={category.name.toUpperCase()}
+              description={category.description}
+              className="mt-6"
+            />
           )}
 
           {/* Filter Bar - Sticky */}
           <div className="sticky top-16 z-10 mb-6">
-            <div className=" rounded-lg p-3">
+            <div className="p-3">
               <ProductFilter
                 brands={brands}
                 priceRange={priceRange}

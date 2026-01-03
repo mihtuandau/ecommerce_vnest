@@ -7,7 +7,7 @@ const EmptyOrder = ({ type = 'no-orders', onResetFilter }) => {
 
   if (type === 'no-orders') {
     return (
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
+      <div className="bg-white border border-gray-200 p-12 text-center">
         <FaBox size={48} className="text-gray-400 mx-auto mb-4" />
         <h3 className="text-xl font-semibold text-gray-900 mb-2">
           Chưa có đơn hàng nào
@@ -17,7 +17,7 @@ const EmptyOrder = ({ type = 'no-orders', onResetFilter }) => {
         </p>
         <button
           onClick={() => navigate('/products')}
-          className="bg-[#00a85a] hover:bg-[#008f4d] text-white px-6 py-2 rounded-lg transition-colors"
+          className="bg-[#00a85a] hover:bg-[#008f4d] text-white px-6 py-3 transition-colors"
         >
           Mua sắm ngay
         </button>
@@ -27,7 +27,7 @@ const EmptyOrder = ({ type = 'no-orders', onResetFilter }) => {
 
   if (type === 'no-filter-results') {
     return (
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
+      <div className="bg-white border border-gray-200 p-12 text-center">
         <FaClock size={48} className="text-gray-400 mx-auto mb-4" />
         <h3 className="text-xl font-semibold text-gray-900 mb-2">
           Không tìm thấy đơn hàng
@@ -37,7 +37,7 @@ const EmptyOrder = ({ type = 'no-orders', onResetFilter }) => {
         </p>
         <button
           onClick={onResetFilter}
-          className="bg-[#00a85a] hover:bg-[#008f4d] text-white px-6 py-2 rounded-lg transition-colors"
+          className="bg-[#00a85a] hover:bg-[#008f4d] text-white px-6 py-3 transition-colors"
         >
           Xem tất cả đơn hàng
         </button>

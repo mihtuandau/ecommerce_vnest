@@ -26,21 +26,21 @@ const ProductOptions = ({
     <div className="space-y-8 mb-10 pb-10 border-b border-gray-100">
       {colors.length > 0 && (
         <div>
-          <div className="text-sm font-light text-gray-600 mb-4">
+          <div className="text-xs text-gray-500 uppercase tracking-wide mb-4">
             Màu sắc:{" "}
-            <span className="font-normal text-gray-900">
+            <span className="text-gray-900 font-medium">
               {selectedColor || "Chọn màu"}
             </span>
           </div>
-          <div className="flex flex-wrap gap-2.5">
+          <div className="flex flex-wrap gap-2">
             {colors.map((color) => (
               <button
                 key={color}
                 onClick={() => onColorSelect(color)}
-                className={`px-5 py-2.5 border font-light capitalize transition-colors ${
+                className={`px-5 py-2.5 text-xs uppercase tracking-wide transition-all duration-200 ${
                   selectedColor === color
-                    ? "border-[#00a85a] bg-[#00a85a] text-white"
-                    : "border-gray-200 bg-white text-gray-700 hover:border-[#00a85a]"
+                    ? "bg-[#1a1a1a] !text-white hover:opacity-80"
+                    : "bg-white text-gray-700 border border-gray-200 hover:border-gray-400 hover:opacity-80"
                 }`}
               >
                 {color}
@@ -52,21 +52,21 @@ const ProductOptions = ({
 
       {sizes.length > 0 && (
         <div>
-          <div className="text-sm font-light text-gray-600 mb-4">
+          <div className="text-xs text-gray-500 uppercase tracking-wide mb-4">
             Kích thước:{" "}
-            <span className="font-normal text-gray-900">
+            <span className="text-gray-900 font-medium">
               {selectedSize || "Chọn kích thước"}
             </span>
           </div>
-          <div className="flex flex-wrap gap-2.5">
+          <div className="flex flex-wrap gap-2">
             {sizes.map((size) => (
               <button
                 key={size}
                 onClick={() => onSizeSelect(size)}
-                className={`w-14 h-11 border font-light transition-colors ${
+                className={`w-12 h-12 text-xs font-medium transition-all duration-200 ${
                   selectedSize === size
-                    ? "border-[#00a85a] bg-[#00a85a] text-white"
-                    : "border-gray-200 bg-white text-gray-700 hover:border-[#00a85a]"
+                    ? "bg-[#1a1a1a] !text-white hover:opacity-80"
+                    : "bg-white text-gray-700 border border-gray-200 hover:border-gray-400 hover:opacity-80"
                 }`}
               >
                 {size}
