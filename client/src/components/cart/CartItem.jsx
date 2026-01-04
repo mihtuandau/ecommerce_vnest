@@ -63,9 +63,8 @@ const CartItem = ({ groupedProduct, selectedItems, onToggleItem, onUpdateQuantit
   };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow mb-4 last:mb-0">
+    <div className="bg-white border border-gray-200 p-4 shadow-sm hover:shadow-md transition-shadow mb-4 last:mb-0">
       <div className="flex gap-4">
-        {/* Checkbox */}
         <div className="flex-shrink-0 pt-1">
           <input
             ref={checkboxRef}
@@ -77,10 +76,9 @@ const CartItem = ({ groupedProduct, selectedItems, onToggleItem, onUpdateQuantit
           />
         </div>
         
-        {/* Image */}
         <Link
           to={`/products/${productId}`}
-          className="flex-shrink-0 w-20 h-20 bg-gray-100 overflow-hidden rounded"
+          className="flex-shrink-0 w-20 h-20 bg-gray-100 overflow-hidden"
           aria-label={`Xem chi tiết ${productName}`}
         >
           <img
@@ -89,19 +87,17 @@ const CartItem = ({ groupedProduct, selectedItems, onToggleItem, onUpdateQuantit
             className="w-full h-full object-cover hover:opacity-75 transition-opacity"
             onError={(e) => {
               e.target.src = '/placeholder.jpg';
-              e.target.onerror = null; // Ngăn loop lỗi
+              e.target.onerror = null; 
             }}
             loading="lazy"
           />
         </Link>
 
-        {/* Info */}
         <div className="flex-1 min-w-0">
-          {/* Product Name & Remove Button */}
-          <div className="flex items-start justify-between mb-3">
+          <div className="flex items-start justify-between mb-3 cursor-pointer">
             <Link
               to={`/products/${productId}`}
-              className="font-medium text-sm text-gray-900 hover:text-gray-600 transition-colors line-clamp-2 flex-1 mr-3"
+              className="font-medium text-sm text-gray-900 hover:text-red-600 transition-colors line-clamp-2 flex-1 mr-3 cur"
             >
               {productName}
             </Link>
@@ -111,7 +107,7 @@ const CartItem = ({ groupedProduct, selectedItems, onToggleItem, onUpdateQuantit
                   onRemoveAll(variants.map(v => v.variantId));
                 }
               }}
-              className="flex-shrink-0 p-1.5 text-gray-400 hover:text-red-500 transition-colors"
+              className="flex-shrink-0 p-1.5 text-gray-400 hover:text-red-900 transition-colors"
               title="Xóa tất cả"
               aria-label="Xóa tất cả biến thể"
             >
@@ -139,17 +135,17 @@ const CartItem = ({ groupedProduct, selectedItems, onToggleItem, onUpdateQuantit
                 <div className="flex-1">
                   <div className="flex flex-wrap gap-2 text-xs mb-2">
                     {variant.size && (
-                      <span className="px-2 py-1 bg-gray-100 border border-gray-300 text-gray-700 rounded text-xs">
+                      <span className="px-2 py-1 bg-gray-100 border border-gray-300 text-gray-700 text-xs">
                         Size: {variant.size}
                       </span>
                     )}
                     {variant.color && (
-                      <span className="px-2 py-1 bg-gray-100 border border-gray-300 text-gray-700 rounded text-xs">
+                      <span className="px-2 py-1 bg-gray-100 border border-gray-300 text-gray-700 text-xs">
                         Màu: {variant.color}
                       </span>
                     )}
                     {variant.stock !== undefined && (
-                      <span className={`px-2 py-1 text-xs rounded ${
+                      <span className={`px-2 py-1 text-xs ${
                         variant.stock > 10 
                           ? 'bg-green-100 text-green-800' 
                           : variant.stock > 0 
@@ -163,7 +159,7 @@ const CartItem = ({ groupedProduct, selectedItems, onToggleItem, onUpdateQuantit
 
                   <div className="flex items-center justify-between gap-4">
                     {/* Quantity Controls */}
-                    <div className="flex items-center border border-gray-300 rounded overflow-hidden">
+                    <div className="flex items-center border border-gray-300 overflow-hidden">
                       <button
                         onClick={() => onUpdateQuantity(variant.variantId, variant.quantity, -1)}
                         disabled={variant.quantity <= 1}

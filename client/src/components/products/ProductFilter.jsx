@@ -121,10 +121,11 @@ const ProductFilter = ({
         {!hideCategories && categories.length > 0 && (
           <Select
             placeholder="Danh mục"
-            style={{ width: 180 }}
+            style={{ width: 180, borderRadius: 0 }}
             value={filters.categoryId ? String(filters.categoryId) : undefined}
             onChange={(value) => handleChange("categoryId", value || "")}
             allowClear
+            popupClassName="no-border-radius"
           >
             {categories.map((cat) => (
               <Option key={cat.id} value={String(cat.id)}>
@@ -138,10 +139,11 @@ const ProductFilter = ({
         {brands.length > 0 && (
           <Select
             placeholder="Thương hiệu"
-            style={{ width: 180 }}
+            style={{ width: 180, borderRadius: 0 }}
             value={filters.brandId ? String(filters.brandId) : undefined}
             onChange={(value) => handleChange("brandId", value || "")}
             allowClear
+            popupClassName="no-border-radius"
           >
             {brands.map((brand) => (
               <Option key={brand.id} value={String(brand.id)}>
@@ -154,7 +156,8 @@ const ProductFilter = ({
         {/* Price filter */}
         <Select
           placeholder="Giá sản phẩm"
-          style={{ width: 180 }}
+          style={{ width: 180, borderRadius: 0 }}
+          popupClassName="no-border-radius"
           value={filters.minPrice !== priceRange.minPrice || filters.maxPrice !== priceRange.maxPrice ? `${filters.minPrice}-${filters.maxPrice}` : undefined}
           onChange={(value) => {
             if (!value) {
@@ -180,10 +183,11 @@ const ProductFilter = ({
         {/* Rating filter */}
         <Select
           placeholder="Đánh giá"
-          style={{ width: 150,  }}
+          style={{ width: 150, borderRadius: 0 }}
           value={filters.minRating || undefined}
           onChange={(value) => handleChange("minRating", value || "")}
           allowClear
+          popupClassName="no-border-radius"
         >
           {ratingOptions.filter(opt => opt.value !== "").map((opt) => (
             <Option key={opt.value} value={opt.value}>
@@ -195,10 +199,11 @@ const ProductFilter = ({
         {/* Stock Status filter */}
         <Select
           placeholder="Tình trạng"
-          style={{ width: 150 }}
+          style={{ width: 150, borderRadius: 0 }}
           value={filters.stockStatus || undefined}
           onChange={(value) => handleChange("stockStatus", value || "")}
           allowClear
+          popupClassName="no-border-radius"
         >
           <Option value="inStock">Còn hàng</Option>
           <Option value="outOfStock">Hết hàng</Option>
@@ -209,7 +214,8 @@ const ProductFilter = ({
           <Select
             value={filters.sortBy}
             onChange={(value) => handleChange("sortBy", value)}
-            style={{ width: 200 }}
+            style={{ width: 200, borderRadius: 0 }}
+            popupClassName="no-border-radius"
           >
             {sortOptions.map((opt) => (
               <Option key={opt.value} value={opt.value}>

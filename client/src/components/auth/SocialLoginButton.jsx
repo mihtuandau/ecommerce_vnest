@@ -48,8 +48,8 @@ const SocialLoginButton = ({ provider = 'google', redirectUrl = '/' }) => {
       onClick={handleClick}
       className={`
         w-full flex items-center justify-center space-x-2 px-4 py-2.5 
-        border border-gray-300 rounded-lg transition-colors
-        ${config.bgColor} ${config.hoverColor} ${config.textColor}
+        border border-gray-300 rounded-lg bg-white ${config.textColor}
+        hover:bg-gray-50 transition-all duration-200
       `}
     >
       <Icon />

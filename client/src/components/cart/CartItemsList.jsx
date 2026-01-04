@@ -78,7 +78,7 @@ const CartItemsList = ({ items, count, selectedItems, onToggleItem, onToggleAll,
             type="checkbox"
             checked={allSelected}
             onChange={onToggleAll}
-            className="w-4 h-4 md:w-5 md:h-5 border-gray-300 text-red-600 focus:ring-red-600 cursor-pointer rounded"
+            className="w-4 h-4 md:w-5 md:h-5 border-gray-300 text-red-600 focus:ring-red-600 cursor-pointer"
           />
           <h2 className="text-sm md:text-base font-bold text-gray-900">
             <span className="hidden sm:inline">Chọn tất cả </span>({count})

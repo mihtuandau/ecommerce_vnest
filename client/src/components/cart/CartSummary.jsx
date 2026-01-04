@@ -54,7 +54,7 @@ const CartSummary = ({ total, selectedCount, totalCount, formatPrice, onCheckout
         </Button>
         
         {selectedCount === 0 && (
-          <div className="flex items-center gap-3 bg-yellow-50 border-l-4 border-yellow-400 rounded-r-lg p-4 mb-6 animate-pulse">
+          <div className="flex items-center gap-3 bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 animate-pulse">
             <FaExclamationCircle className="text-yellow-600 text-xl flex-shrink-0" />
             <div>
               <p className="text-sm font-bold text-yellow-800 mb-1">Chưa chọn sản phẩm</p>
@@ -67,15 +67,15 @@ const CartSummary = ({ total, selectedCount, totalCount, formatPrice, onCheckout
 
         <div className="text-sm text-gray-600 space-y-3 pt-8 border-t border-gray-200">
           <p className="flex items-center gap-3 text-gray-700 font-medium">
-            <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+            <span className="w-1.5 h-1.5 bg-green-500"></span>
             Miễn phí vận chuyển toàn quốc
           </p>
           <p className="flex items-center gap-3 text-gray-700 font-medium">
-            <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+            <span className="w-1.5 h-1.5 bg-green-500"></span>
             Đổi trả trong 30 ngày
           </p>
           <p className="flex items-center gap-3 text-gray-700 font-medium">
-            <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+            <span className="w-1.5 h-1.5 bg-green-500"></span>
             Thanh toán an toàn
           </p>
         </div>
