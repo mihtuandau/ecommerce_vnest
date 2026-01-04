@@ -167,18 +167,6 @@ const CartPage = () => {
             countLabel="sản phẩm trong giỏ hàng"
             className="mt-6"
           />
-            
-          {cartItems.length > 0 && (
-            <div className="flex justify-end mb-6">
-              <AntButton 
-                danger 
-                icon={<DeleteOutlined />}
-                onClick={handleClearCart}
-              >
-                Xóa tất cả
-              </AntButton>
-            </div>
-          )}
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">

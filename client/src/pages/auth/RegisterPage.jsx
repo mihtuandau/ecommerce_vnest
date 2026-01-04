@@ -116,6 +116,7 @@ const RegisterPage = () => {
               fullWidth
               size="lg"
               icon={!isLoading && ArrowRight}
+              className="cursor-pointer"
             >
               {isLoading ? 'Creating account...' : 'Sign up'}
             </Button>
@@ -138,6 +139,7 @@ const RegisterPage = () => {
               fullWidth
               size="lg"
               icon={Chrome}
+              className="cursor-pointer"
             >
               Sign up with Google
             </Button>
