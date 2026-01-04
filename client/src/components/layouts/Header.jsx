@@ -15,7 +15,8 @@ import {
   FaClipboardList, 
   FaSignOutAlt, 
   FaGlobe, 
-  FaHeadset 
+  FaHeadset,
+  FaUserShield
 } from 'react-icons/fa';
 import { useAuth } from '../../hooks/useAuth';
 import { useCartCount } from '../../hooks/useCart';
@@ -39,7 +40,7 @@ const Header = () => {
   const userDropdownRef = useRef(null);
   const languageDropdownRef = useRef(null);
 
-  const { user, logout } = useAuth();
+  const { user, logout, isAdmin } = useAuth();
   const cartCount = useCartCount();
 
   const isHomePage = location.pathname === '/';
@@ -201,6 +202,13 @@ const Header = () => {
 
                       {userDropdownOpen && (
                         <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-100 z-50 animate-fadeIn origin-top-right transform transition-all duration-300 ease-out">
+                          {isAdmin() && (
+                            <Link to="/admin-dashboard" onClick={() => setUserDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-blue-50 hover:text-blue-600 text-gray-700 text-sm transition-all duration-200 hover:translate-x-1 font-semibold">
+                              <FaUserShield size={16} />
+                              <span>Quản lý</span>
+                            </Link>
+                          )}
+                          {isAdmin() && <div className="border-t border-gray-100 my-1"></div>}
                           <Link to="/profile" onClick={() => setUserDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-green-50 hover:text-[#00a85a] text-gray-700 text-sm transition-all duration-200 hover:translate-x-1">
                             <FaUserCircle size={16} />
                             <span>Tài khoản</span>
@@ -339,6 +347,13 @@ const Header = () => {
 
                   {userDropdownOpen && (
                     <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-100 z-50 animate-fadeIn origin-top-right transform transition-all duration-300 ease-out">
+                      {isAdmin() && (
+                        <Link to="/admin-dashboard" onClick={() => setUserDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-blue-50 hover:text-blue-600 text-gray-700 text-sm transition-all duration-200 hover:translate-x-1 font-semibold">
+                          <FaUserShield size={16} />
+                          <span>Quản lý</span>
+                        </Link>
+                      )}
+                      {isAdmin() && <div className="border-t border-gray-100 my-1"></div>}
                       <Link to="/profile" onClick={() => setUserDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-green-50 hover:text-[#00a85a] text-gray-700 text-sm transition-all duration-200 hover:translate-x-1">
                         <FaUserCircle size={16} />
                         <span>Tài khoản</span>
@@ -405,6 +420,7 @@ const Header = () => {
         searchOpen={searchOpen}
         mobileMenuOpen={mobileMenuOpen}
         categories={categories}
+        onClose={() => setMobileMenuOpen(false)}
       />
 
       <CartDrawer isOpen={cartDrawerOpen} onClose={() => setCartDrawerOpen(false)} />

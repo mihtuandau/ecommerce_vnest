@@ -130,7 +130,7 @@ const HeaderMain = ({ scrolled, searchOpen, setSearchOpen, mobileMenuOpen, setMo
             {!desktopSearchOpen ? (
               <button
                 onClick={() => setDesktopSearchOpen(true)}
-                className="hidden lg:block text-gray-700 hover:text-[#00a85a] transition-colors duration-300"
+                className="hidden lg:block text-gray-700 hover:text-gray-900 transition-colors duration-300"
               >
                 <FaSearch size={20} />
               </button>
@@ -234,16 +234,16 @@ const HeaderMain = ({ scrolled, searchOpen, setSearchOpen, mobileMenuOpen, setMo
           <div className="flex items-center gap-4 sm:gap-9 flex-shrink-0">
             {/* Search Mobile */}
             <button 
-              className="lg:hidden text-gray-700 hover:text-[#00a85a] transition-colors duration-300"
+              className="lg:hidden text-gray-700 hover:text-gray-900 transition-colors duration-300"
               onClick={() => setSearchOpen(!searchOpen)}
             >
               <FaSearch size={20} />
             </button>
 
-            {/* Wishlist */}
+            {/* Wishlist - hidden on mobile, visible on tablet/desktop */}
             <Link 
               to="/wishlist" 
-              className="relative text-gray-700 hover:text-gray-900 transition-colors duration-300"
+              className="relative hidden sm:block text-gray-700 hover:text-gray-900 transition-colors duration-300 [&>svg]:fill-current"
               title="Sản phẩm yêu thích"
             >
               <FaHeart size={20} />
@@ -262,7 +262,7 @@ const HeaderMain = ({ scrolled, searchOpen, setSearchOpen, mobileMenuOpen, setMo
               >
                 <button 
                   onClick={toggleDropdown}
-                  className="flex items-center gap-2 text-gray-700 hover:text-[#00a85a] transition-colors duration-300"
+                  className="flex items-center gap-2 text-gray-700 hover:text-gray-900 transition-colors duration-300"
                 >
                   <FaUser size={20} />
                   <FaChevronDown 
@@ -303,7 +303,7 @@ const HeaderMain = ({ scrolled, searchOpen, setSearchOpen, mobileMenuOpen, setMo
                         <FaComments size={18} className="pointer-events-none" />
                         <span className="pointer-events-none">Hỗ trợ</span>
                       </Link>
-                      {user.role === 'ADMIN' && (
+                      {user.role?.toUpperCase() === 'ADMIN' && (
                         <Link 
                           to="/admin-dashboard" 
                           onClick={() => setDropdownOpen(false)}
@@ -330,7 +330,7 @@ const HeaderMain = ({ scrolled, searchOpen, setSearchOpen, mobileMenuOpen, setMo
                 )}
               </div>
             ) : (
-              <Link to="/login" className="hidden sm:flex items-center text-gray-700 hover:text-[#00a85a]">
+              <Link to="/login" className="hidden sm:flex items-center text-gray-700 hover:text-gray-900 transition-colors duration-300">
                 <FaUser size={20} />
               </Link>
             )}
@@ -338,7 +338,7 @@ const HeaderMain = ({ scrolled, searchOpen, setSearchOpen, mobileMenuOpen, setMo
             {/* Cart */}
             <Link 
               to="/cart" 
-              className="relative text-gray-700 hover:text-gray-900 transition-colors duration-300"
+              className="relative text-gray-700 hover:text-gray-900 transition-colors duration-300 [&>svg]:fill-current"
               title="Giỏ hàng"
             >
               <FaShoppingCart size={20} />

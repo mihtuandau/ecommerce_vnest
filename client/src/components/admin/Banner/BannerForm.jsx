@@ -94,7 +94,6 @@ const BannerFormModal = ({ banner = null, onSave, onClose }) => {
       
       submitData.append('title', formData.title);
       submitData.append('subtitle', formData.subtitle);
-      submitData.append('link', '/products'); // Mặc định điều hướng tới trang sản phẩm
       submitData.append('buttonText', formData.buttonText);
       submitData.append('video', formData.video);
       submitData.append('isActive', formData.isActive);
