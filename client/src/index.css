@@ -1,5 +1,26 @@
 @import "tailwindcss";
 
+/* Header Icons - Force consistent colors for all icons including nested */
+header a,
+header a svg,
+header a path,
+header button,
+header button svg,
+header button path {
+  color: inherit !important;
+  fill: currentColor !important;
+}
+
+header a:hover,
+header a:hover svg,
+header a:hover path,
+header button:hover,
+header button:hover svg,
+header button:hover path {
+  color: #374151 !important; /* gray-700 */
+  fill: #374151 !important;
+}
+
 /* Font family - Sans-serif (clean, modern) */
 body {
   font-family: 'Monospace', 'Open Sans', sans-serif;

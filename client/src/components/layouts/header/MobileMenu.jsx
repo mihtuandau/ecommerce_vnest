@@ -1,18 +1,33 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { FaSearch, FaChevronDown } from 'react-icons/fa';
+import { FaSearch, FaChevronDown, FaHeart, FaShoppingCart, FaUserShield, FaSignOutAlt } from 'react-icons/fa';
 import { useAuth } from '../../../hooks/useAuth';
+import { useCartCount } from '../../../hooks/useCart';
+import wishlistService from '../../../services/wishlistService';
 import { useState, useEffect, useRef } from 'react';
 import productService from '../../../services/productService';
 
-const MobileMenu = ({ searchOpen, mobileMenuOpen, categories }) => {
-  const { user } = useAuth();
+const MobileMenu = ({ searchOpen, mobileMenuOpen, categories, onClose }) => {
+  const { user, logout, isAdmin } = useAuth();
   const navigate = useNavigate();
+  const cartCount = useCartCount();
+  const [wishlistCount, setWishlistCount] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const [shopDropdownOpen, setShopDropdownOpen] = useState(false);
   const searchRef = useRef(null);
+
+  // Load wishlist count
+  useEffect(() => {
+    if (user) {
+      wishlistService.getWishlist().then(data => {
+        setWishlistCount(data?.length || 0);
+      }).catch(() => setWishlistCount(0));
+    } else {
+      setWishlistCount(0);
+    }
+  }, [user]);
 
   // Handle search
   useEffect(() => {
@@ -143,7 +158,7 @@ const MobileMenu = ({ searchOpen, mobileMenuOpen, categories }) => {
       {mobileMenuOpen && (
         <div className="lg:hidden bg-white">
           <nav className="container mx-auto px-4 py-6 space-y-1">
-            <Link to="/" className="block py-3 text-gray-700 hover:text-[#00a85a] hover:bg-green-50 rounded-lg px-4 font-semibold uppercase text-sm transition-all">
+            <Link to="/" onClick={onClose} className="block py-3 text-gray-700 hover:text-[#00a85a] hover:bg-green-50 rounded-lg px-4 font-semibold uppercase text-sm transition-all">
               HOME
             </Link>
             
@@ -163,10 +178,18 @@ const MobileMenu = ({ searchOpen, mobileMenuOpen, categories }) => {
               </button>
               {shopDropdownOpen && categories && categories.length > 0 && (
                 <div className="pl-4 space-y-1 border-l-2 border-gray-200 ml-4">
+                  <Link
+                    to="/products"
+                    onClick={onClose}
+                    className="block py-2 pl-4 text-gray-600 hover:text-[#00a85a] hover:bg-green-50 rounded-lg text-sm font-medium transition-all"
+                  >
+                    Tất cả sản phẩm
+                  </Link>
                   {categories.map(cat => (
                     <Link
                       key={cat.id}
                       to={`/category/${cat.id}`}
+                      onClick={onClose}
                       className="block py-2 pl-4 text-gray-600 hover:text-[#00a85a] hover:bg-green-50 rounded-lg text-sm font-medium transition-all"
                     >
                       {cat.name}
@@ -176,12 +199,44 @@ const MobileMenu = ({ searchOpen, mobileMenuOpen, categories }) => {
               )}
             </div>
 
-            <Link to="/about" className="block py-3 text-gray-700 hover:text-[#00a85a] hover:bg-green-50 rounded-lg px-4 font-semibold uppercase text-sm transition-all">
-              About Us
+            <Link to="/promotions" onClick={onClose} className="block py-3 text-gray-700 hover:text-[#00a85a] hover:bg-green-50 rounded-lg px-4 font-semibold uppercase text-sm transition-all">
+              PROMOTIONS
             </Link>
 
-            <Link to="/contact" className="block py-3 text-gray-700 hover:text-[#00a85a] hover:bg-green-50 rounded-lg px-4 font-semibold uppercase text-sm transition-all">
+            <Link to="/about" onClick={onClose} className="block py-3 text-gray-700 hover:text-[#00a85a] hover:bg-green-50 rounded-lg px-4 font-semibold uppercase text-sm transition-all">
+              ABOUT US
+            </Link>
+
+            <Link to="/contact" onClick={onClose} className="block py-3 text-gray-700 hover:text-[#00a85a] hover:bg-green-50 rounded-lg px-4 font-semibold uppercase text-sm transition-all">
               CONTACT
+            </Link>
+            
+            {/* Divider */}
+            <div className="border-t border-gray-200 my-4"></div>
+
+            {/* Wishlist & Cart */}
+            <Link to="/wishlist" onClick={onClose} className="flex items-center justify-between py-3 text-gray-700 hover:text-[#00a85a] hover:bg-green-50 rounded-lg px-4 font-medium text-sm transition-all">
+              <div className="flex items-center gap-3">
+                <FaHeart size={18} />
+                <span>Yêu thích</span>
+              </div>
+              {wishlistCount > 0 && (
+                <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                  {wishlistCount}
+                </span>
+              )}
+            </Link>
+
+            <Link to="/cart" onClick={onClose} className="flex items-center justify-between py-3 text-gray-700 hover:text-[#00a85a] hover:bg-green-50 rounded-lg px-4 font-medium text-sm transition-all">
+              <div className="flex items-center gap-3">
+                <FaShoppingCart size={18} />
+                <span>Giỏ hàng</span>
+              </div>
+              {cartCount > 0 && (
+                <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                  {cartCount > 99 ? '99+' : cartCount}
+                </span>
+              )}
             </Link>
             
             {/* Divider */}
@@ -189,18 +244,39 @@ const MobileMenu = ({ searchOpen, mobileMenuOpen, categories }) => {
             
             {user ? (
               <>
-                <Link to="/profile" className="block py-3 text-gray-700 hover:text-[#00a85a] hover:bg-green-50 rounded-lg px-4 font-medium text-sm transition-all">
+                {isAdmin() && (
+                  <Link to="/admin-dashboard" onClick={onClose} className="flex items-center gap-3 py-3 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg px-4 font-semibold text-sm transition-all">
+                    <FaUserShield size={18} />
+                    <span>Quản lý</span>
+                  </Link>
+                )}
+                {isAdmin() && <div className="border-t border-gray-100 my-2"></div>}
+                <Link to="/profile" onClick={onClose} className="block py-3 text-gray-700 hover:text-[#00a85a] hover:bg-green-50 rounded-lg px-4 font-medium text-sm transition-all">
                   Tài khoản
                 </Link>
-                <Link to="/orders" className="block py-3 text-gray-700 hover:text-[#00a85a] hover:bg-green-50 rounded-lg px-4 font-medium text-sm transition-all">
+                <Link to="/orders" onClick={onClose} className="block py-3 text-gray-700 hover:text-[#00a85a] hover:bg-green-50 rounded-lg px-4 font-medium text-sm transition-all">
                   Đơn hàng
                 </Link>
-                <Link to="/support" className="block py-3 text-gray-700 hover:text-[#00a85a] hover:bg-green-50 rounded-lg px-4 font-medium text-sm transition-all">
-                   Hỗ trợ
+                <Link to="/support" onClick={onClose} className="block py-3 text-gray-700 hover:text-[#00a85a] hover:bg-green-50 rounded-lg px-4 font-medium text-sm transition-all">
+                  Hỗ trợ
                 </Link>
+                
+                {/* Divider */}
+                <div className="border-t border-gray-200 my-4"></div>
+                
+                <button 
+                  onClick={() => {
+                    logout();
+                    onClose?.();
+                  }} 
+                  className="w-full flex items-center gap-3 py-3 text-red-600 hover:bg-red-50 rounded-lg px-4 font-medium text-sm transition-all"
+                >
+                  <FaSignOutAlt size={18} />
+                  <span>Đăng xuất</span>
+                </button>
               </>
             ) : (
-              <Link to="/login" className="block py-3 text-white bg-[#00a85a] hover:bg-[#008f4d] rounded-lg px-4 font-semibold text-sm text-center transition-all">
+              <Link to="/login" onClick={onClose} className="block py-3 text-white bg-[#00a85a] hover:bg-[#008f4d] rounded-lg px-4 font-semibold text-sm text-center transition-all">
                 Đăng nhập
               </Link>
             )}

@@ -100,7 +100,7 @@ export class BannerController {
       subtitle: body.subtitle,
       image: imageUrls[0],
       video: body.video,
-      link: body.link,
+      link: body.link || '/products',
       buttonText: body.buttonText || 'Mua ngay',
       isActive: body.isActive === 'true' || body.isActive === true,
       order: body.order ? parseInt(body.order) : 0

@@ -48,7 +48,7 @@ export const PageHeader = ({
           </div>
         </div>
 
-        <div className="flex gap-2">
+        {/* <div className="flex gap-2">
           {showRefresh && (
             <Button
               icon={<ReloadOutlined />}
@@ -59,7 +59,7 @@ export const PageHeader = ({
             </Button>
           )}
           {actions}
-        </div>
+        </div> */}
       </div>
     </div>
   );
