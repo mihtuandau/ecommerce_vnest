@@ -81,7 +81,7 @@ const OrderDetailPage = () => {
   if (!order) {
     return (
       <Layout>
-        <div className="min-h-screen bg-gray-50 pt-21 pb-8">
+        <div className="min-h-screen bg-white pt-21 pb-8">
           <div className="container mx-auto px-4 lg:px-30">
             <div className="text-center py-16">
               <h3 className="text-xl font-semibold text-gray-900 mb-4">
@@ -102,7 +102,7 @@ const OrderDetailPage = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-50 pt-21 pb-8">
+      <div className="min-h-screen bg-white pt-21 pb-8">
         <div className="container mx-auto px-4 lg:px-30">
           {/* Breadcrumb */}
           <Breadcrumb items={[

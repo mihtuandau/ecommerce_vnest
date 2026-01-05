@@ -43,7 +43,7 @@ const ForgotPasswordPage = () => {
 
   if (sent) {
     return (
-      <div className="min-h-screen flex overflow-hidden bg-gray-100">
+      <div className="min-h-screen flex overflow-hidden bg-white">
         {/* Left Side - Success Message */}
         <div className="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-12 bg-white relative animate-slideInLeft lg:shadow-[8px_0_24px_-8px_rgba(0,0,0,0.12)] z-10">
           <div className="w-full max-w-md">
@@ -100,7 +100,7 @@ const ForgotPasswordPage = () => {
   }
 
   return (
-    <div className="min-h-screen flex overflow-hidden bg-gray-100">
+    <div className="min-h-screen flex overflow-hidden bg-white">
       {/* Left Side - Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-12 bg-white relative animate-slideInLeft lg:shadow-[8px_0_24px_-8px_rgba(0,0,0,0.12)] z-10">
         <div className="w-full max-w-md">

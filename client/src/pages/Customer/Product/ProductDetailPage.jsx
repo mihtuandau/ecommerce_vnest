@@ -163,7 +163,7 @@ const ProductDetailPage = () => {
 
   return (
     <Layout>
-      <div className="bg-gray-50 min-h-screen pt-21 pb-8">
+      <div className="bg-white min-h-screen pt-21 pb-8">
         <div className="container mx-auto px-4 lg:px-30">
           <Breadcrumb items={[
             { label: 'Sản Phẩm', path: '/products' },

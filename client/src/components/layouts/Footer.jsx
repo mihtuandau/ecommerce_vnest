@@ -150,11 +150,7 @@ const Footer = () => {
                 <span className="text-sm">dautuan032004@gmail.com</span>
               </li>
             </ul>
-            <div className="mt-4">
-              <h4 className="text-white font-semibold mb-2">Giờ làm việc:</h4>
-              <p className="text-sm">Thứ 2 - Thứ 7: 8:00 - 21:00</p>
-              <p className="text-sm">Chủ Nhật: 9:00 - 21:00</p>
-            </div>
+            
           </div>
         </div>
       </div>

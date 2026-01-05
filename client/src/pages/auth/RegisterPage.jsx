@@ -51,7 +51,7 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex overflow-hidden bg-gray-100">
+    <div className="min-h-screen flex overflow-hidden bg-white">
       <div className="hidden lg:block lg:w-1/2 relative overflow-hidden animate-slideInLeft">
         <img 
           src="/register.png" 

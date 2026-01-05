@@ -93,7 +93,7 @@ const OrderLookupPage = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-50 pt-21 pb-8">
+      <div className="min-h-screen bg-white pt-21 pb-8">
         <div className="container mx-auto px-4 max-w-4xl">
           {/* Header */}
           <div className="text-center mb-8">
