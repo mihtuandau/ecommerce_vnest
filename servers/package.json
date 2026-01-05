@@ -44,6 +44,8 @@
     "cloudinary": "^2.8.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
+    "dayjs": "^1.11.19",
+    "exceljs": "^4.4.0",
     "express": "^5.2.1",
     "helmet": "^8.1.0",
     "multer": "^2.0.2",

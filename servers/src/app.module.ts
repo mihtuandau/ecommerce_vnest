@@ -23,6 +23,7 @@ import { MailModule } from './mail/mail.module';
 import { ChatbotModule } from './chatbot/chatbot.module';
 import { ReviewModule } from './review/review.module';
 import { AddressModule } from './address/address.module';
+import { ReportModule } from './report/report.module';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { AddressModule } from './address/address.module';
     ChatbotModule,
     ReviewModule,
     AddressModule,
+    ReportModule,
   ],
   providers: [
     PrismaService,

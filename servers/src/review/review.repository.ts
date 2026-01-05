@@ -74,11 +74,9 @@ export class ReviewRepository {
     });
 
     if (orderItem) {
-      console.log('✅ User can review - Order status:', orderItem.order.status, 'Payment status:', orderItem.order.payment?.status);
       return true;
     }
 
-    console.log('❌ User cannot review - no matching order');
     return false;
   }
 
@@ -102,9 +100,6 @@ export class ReviewRepository {
     return !!orderItem;
   }
 
-  /**
-   * Find all reviews for a product
-   */
   async findByProduct(productId: number, skip: number, take: number) {
     return this.prisma.review.findMany({
       where: { productId },
@@ -123,9 +118,6 @@ export class ReviewRepository {
     });
   }
 
-  /**
-   * Count reviews for a product
-   */
   async countByProduct(productId: number): Promise<number> {
     return this.prisma.review.count({ where: { productId } });
   }
@@ -182,9 +174,6 @@ export class ReviewRepository {
     });
   }
 
-  /**
-   * Find all reviews with filters (for admin)
-   */
   async findAll(where: Prisma.ReviewWhereInput, skip: number, take: number) {
     return this.prisma.review.findMany({
       where,
@@ -209,9 +198,6 @@ export class ReviewRepository {
     });
   }
 
-  /**
-   * Count all reviews with filters
-   */
   async count(where: Prisma.ReviewWhereInput): Promise<number> {
     return this.prisma.review.count({ where });
   }
