@@ -1,7 +1,7 @@
 import { useCallback, useState, useMemo, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button as AntButton, Modal, Badge, Divider, Space } from 'antd';
-import { ArrowLeftOutlined, ShoppingCartOutlined, DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, BagOutlined, DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import Layout from '../../../components/layouts/Layout';
 import Breadcrumb from '../../../components/common/Breadcrumb';
 import PageTitle from '../../../components/common/PageTitle';
@@ -138,7 +138,6 @@ const CartPage = () => {
           <div className="container mx-auto px-4 lg:px-8">
             <Breadcrumb items={[{ label: 'Giỏ hàng' }]} />
             
-            {/* Header */}
             <PageTitle
               subtitle="Mua sắm"
               title="GIỎ HÀNG CỦA BẠN"
@@ -159,7 +158,6 @@ const CartPage = () => {
           
           <Breadcrumb items={[{ label: 'Giỏ hàng' }]} />
 
-          {/* Header */}
           <PageTitle
             subtitle="Mua sắm"
             title="GIỎ HÀNG CỦA BẠN"

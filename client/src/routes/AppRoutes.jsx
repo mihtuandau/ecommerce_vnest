@@ -70,6 +70,9 @@ const AdminBannersPage = lazy(() =>
 const AdminChatPage = lazy(() =>
   import("../pages/Admin/Chat/AdminChatManagement")
 );
+const AdminReportPage = lazy(() =>
+  import("../pages/Admin/Report/ReportPage")
+);
 const AdminProfilePage = lazy(() =>
   import("../pages/Admin/Profile/ProfilePage")
 );
@@ -231,6 +234,17 @@ const AppRoutes = () => {
               <AdminRoute>
                 <AdminLayout>
                   <AdminChatPage />
+                </AdminLayout>
+              </AdminRoute>
+            }
+          />
+
+          <Route
+            path="/admin-reports"
+            element={
+              <AdminRoute>
+                <AdminLayout>
+                  <AdminReportPage />
                 </AdminLayout>
               </AdminRoute>
             }
