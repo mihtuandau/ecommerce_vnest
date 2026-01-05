@@ -105,7 +105,7 @@ const SupportChatPage = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-50 pt-21 pb-8">
+      <div className="min-h-screen bg-white pt-21 pb-8">
         <div className="container mx-auto px-4 max-w-3xl">
           <div className="bg-[#00a85a] border border-[#00a85a] p-5">
             <div className="flex items-center justify-between">

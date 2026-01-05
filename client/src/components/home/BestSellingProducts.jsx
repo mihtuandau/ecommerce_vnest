@@ -116,9 +116,7 @@ const BestSellingProducts = ({ products = [] }) => {
           <div className="w-12 h-px bg-gray-900 mx-auto"></div>
         </div>
 
-        {/* Featured + Grid Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Featured Product - Large */}
           <div 
             className="relative group overflow-hidden bg-gray-50 h-[500px] lg:h-[600px] cursor-pointer"
             onMouseEnter={() => setHoveredProduct(featuredProduct.id)}
@@ -131,10 +129,8 @@ const BestSellingProducts = ({ products = [] }) => {
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
             />
               
-            {/* Overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
             
-            {/* Badge */}
             {getDiscountPercent(featuredProduct) > 0 && (
               <span className="absolute top-4 left-4 bg-white text-gray-900 px-3 py-1 text-xs uppercase tracking-wide pointer-events-none">
                 -{getDiscountPercent(featuredProduct)}%
@@ -144,7 +140,6 @@ const BestSellingProducts = ({ products = [] }) => {
               Best Seller
             </span>
 
-            {/* Product Info */}
             <div className="absolute bottom-0 left-0 right-0 p-6 text-white transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 pointer-events-none">
               <div className="text-center">
                 <p className="text-xs uppercase tracking-wider text-gray-300 mb-2">
@@ -166,7 +161,6 @@ const BestSellingProducts = ({ products = [] }) => {
               </div>
             </div>
               
-            {/* Actions */}
             <div className="absolute bottom-6 left-0 right-0 flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
               <button 
                 onClick={(e) => handleAddToCart(e, featuredProduct)}
@@ -188,7 +182,6 @@ const BestSellingProducts = ({ products = [] }) => {
             </div>
           </div>
 
-          {/* Grid Products - 2x2 */}
           <div className="grid grid-cols-2 gap-4">
             {gridProducts.map((product, index) => (
               <div 
@@ -204,22 +197,18 @@ const BestSellingProducts = ({ products = [] }) => {
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
                   
-                {/* Overlay */}
                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
                 
-                {/* Badge */}
                 {getDiscountPercent(product) > 0 && (
                   <span className="absolute top-3 left-3 bg-white text-gray-900 px-2 py-1 text-[10px] uppercase tracking-wide pointer-events-none">
                     -{getDiscountPercent(product)}%
                   </span>
                 )}
 
-                {/* Rank Badge */}
                 <span className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-[#1a1a1a] text-white text-xs font-medium pointer-events-none">
-                  #{index + 2}
+                  {index + 2}
                 </span>
 
-                {/* Product Info */}
                 <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent pointer-events-none">
                   <h3 className="text-sm font-light text-white mb-1 line-clamp-1">
                     {product.name}
@@ -235,8 +224,6 @@ const BestSellingProducts = ({ products = [] }) => {
                     )}
                   </div>
                 </div>
-
-                {/* Quick Actions */}
                 <div className="absolute inset-0 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <button 
                     onClick={(e) => handleAddToCart(e, product)}
@@ -259,8 +246,6 @@ const BestSellingProducts = ({ products = [] }) => {
             ))}
           </div>
         </div>
-
-        {/* View All Link */}
         <div className="text-center mt-12">
           <Link 
             to="/products/bestselling" 

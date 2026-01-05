@@ -54,7 +54,7 @@ const GuestOrderDetailPage = () => {
   if (!order) {
     return (
       <Layout>
-        <div className="min-h-screen bg-gray-50 pt-21 flex items-center justify-center">
+        <div className="min-h-screen bg-white pt-21 flex items-center justify-center">
           <div className="text-center">
             <FaBox className="text-6xl text-gray-300 mx-auto mb-4" />
             <h2 className="text-xl font-bold text-gray-900 mb-2">Không tìm thấy đơn hàng</h2>
@@ -71,7 +71,7 @@ const GuestOrderDetailPage = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-50 pt-21 pb-8">
+      <div className="min-h-screen bg-white pt-21 pb-8">
         <div className="container mx-auto px-4 lg:px-40">
           <Breadcrumb items={[
             { label: 'Tra cứu đơn hàng', path: '/order-lookup' },
