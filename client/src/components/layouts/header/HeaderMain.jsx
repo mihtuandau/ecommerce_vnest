@@ -1,5 +1,8 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { FaSearch, FaShoppingCart, FaUser, FaHeart, FaBars, FaTimes, FaChevronDown, FaUserCircle, FaClipboardList, FaUserShield, FaSignOutAlt, FaShoppingBag, FaComments } from 'react-icons/fa';
+import { FaSearch , FaUser, FaHeart, FaBars, FaTimes, FaChevronDown, FaUserCircle, FaClipboardList, FaUserShield, FaSignOutAlt, FaShoppingBag, FaComments } from 'react-icons/fa';
+import { CiHeart } from "react-icons/ci";
+
+
 import { useAuth } from '../../../hooks/useAuth';
 import { useCartCount } from '../../../hooks/useCart';
 import wishlistService from '../../../services/wishlistService';
@@ -246,7 +249,7 @@ const HeaderMain = ({ scrolled, searchOpen, setSearchOpen, mobileMenuOpen, setMo
               className="relative hidden sm:block text-gray-700 hover:text-gray-900 transition-colors duration-300 [&>svg]:fill-current"
               title="Sản phẩm yêu thích"
             >
-              <FaHeart size={20} />
+              <CiHeart size={20} />
               {wishlistCount > 0 && (
                 <span className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-medium">
                   {wishlistCount}
@@ -341,7 +344,7 @@ const HeaderMain = ({ scrolled, searchOpen, setSearchOpen, mobileMenuOpen, setMo
               className="relative text-gray-700 hover:text-gray-900 transition-colors duration-300 [&>svg]:fill-current"
               title="Giỏ hàng"
             >
-              <FaShoppingCart size={20} />
+              <FaShoppingBag  size={20} />
               {cartCount > 0 && (
                 <span className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-medium">
                   {cartCount > 99 ? '99+' : cartCount}

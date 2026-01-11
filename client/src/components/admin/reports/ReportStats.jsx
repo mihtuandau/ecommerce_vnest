@@ -8,7 +8,7 @@ const ReportStats = ({ summaryData, customerData }) => {
   const totalCustomers = (customerData?.newCustomers || 0) + (customerData?.returningCustomers || 0);
 
   return (
-    <Row gutter={[16, 16]} className="mb-6">
+    <Row gutter={[16, 16]} className="mb-6 mt-6">
       <Col xs={24} sm={12} lg={6}>
         <Card bordered={false} className="shadow-sm">
           <Statistic
@@ -19,9 +19,6 @@ const ReportStats = ({ summaryData, customerData }) => {
             valueStyle={{ color: '#3f8600' }}
             formatter={(value) => new Intl.NumberFormat('vi-VN').format(value)}
           />
-          <div className="text-xs text-gray-500 mt-2">
-            {revenueChange > 0 ? '+' : ''}{revenueChange.toFixed(2)}% so với kỳ trước
-          </div>
         </Card>
       </Col>
       <Col xs={24} sm={12} lg={6}>

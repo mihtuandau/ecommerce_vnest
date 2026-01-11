@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { FaSearch, FaChevronDown, FaHeart, FaShoppingCart, FaUserShield, FaSignOutAlt } from 'react-icons/fa';
+import { FaSearch, FaChevronDown, FaHeart, FaShoppingBag , FaUserShield, FaSignOutAlt } from 'react-icons/fa';
 import { useAuth } from '../../../hooks/useAuth';
 import { useCartCount } from '../../../hooks/useCart';
 import wishlistService from '../../../services/wishlistService';
@@ -229,7 +229,7 @@ const MobileMenu = ({ searchOpen, mobileMenuOpen, categories, onClose }) => {
 
             <Link to="/cart" onClick={onClose} className="flex items-center justify-between py-3 text-gray-700 hover:text-[#00a85a] hover:bg-green-50 rounded-lg px-4 font-medium text-sm transition-all">
               <div className="flex items-center gap-3">
-                <FaShoppingCart size={18} />
+                <FaShoppingBag  size={18} />
                 <span>Giỏ hàng</span>
               </div>
               {cartCount > 0 && (

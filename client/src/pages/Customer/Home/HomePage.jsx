@@ -14,7 +14,7 @@ import { useHomeData } from "../../../hooks/useHomeData";
 import { useAuth } from "../../../contexts/authContext";
 import authService from "../../../services/authService";
 import { notify } from "../../../utils/notification";
-// import toast from "react-hot-toast";
+
 
 const HomePage = () => {
   const { data: homeData, isLoading, error, refetch } = useHomeData();
@@ -78,7 +78,6 @@ const HomePage = () => {
     );
   }
 
-  // Đảm bảo homeData có giá trị trước khi render
   if (!homeData) {
     return (
       <Layout>

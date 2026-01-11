@@ -8,7 +8,7 @@ import AdminRoute from "./AdminRoute";
 // Layouts
 import AdminLayout from "../components/layouts/AdminLayout";
 
-// Auth Pages (eager load for quick access)
+// Auth Pages 
 import LoginPage from "../pages/Auth/LoginPage";
 import RegisterPage from "../pages/Auth/RegisterPage";
 import ForgotPasswordPage from "../pages/Auth/ForgotPasswordPage";

@@ -138,7 +138,6 @@ export class ReportRepository {
   async getCustomerStats(startDate: Date, endDate: Date) {
     const [newCustomers, returningCustomers, totalOrdersInPeriod] =
       await Promise.all([
-        // New customers (created in period)
         this.prisma.user.count({
           where: {
             role: 'CUSTOMER',
