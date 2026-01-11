@@ -7,17 +7,20 @@ import MobileMenu from './header/MobileMenu';
 import CartDrawer from '../cart/CartDrawer';
 import { 
   FaSearch, 
-  FaShoppingCart, 
+  FaShoppingBag , 
   FaUser, 
   FaHeart, 
   FaChevronDown, 
   FaUserCircle, 
   FaClipboardList, 
   FaSignOutAlt, 
-  FaGlobe, 
+  FaGlobe,
   FaHeadset,
   FaUserShield
 } from 'react-icons/fa';
+import{CiHeart}  from "react-icons/ci";
+import { MdOutlineAccountCircle } from "react-icons/md";
+
 import { useAuth } from '../../hooks/useAuth';
 import { useCartCount } from '../../hooks/useCart';
 import wishlistService from '../../services/wishlistService';
@@ -243,7 +246,7 @@ const Header = () => {
                   )}
 
                   <button onClick={() => setCartDrawerOpen(true)} className="relative text-gray-700 hover:text-[#00a85a] transition-all duration-300 cursor-pointer transform hover:scale-110">
-                    <FaShoppingCart size={20} />
+                    <FaShoppingBag  size={20} />
                     {cartCount > 0 && (
                       <span className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-medium">
                         {cartCount > 99 ? '99+' : cartCount}
@@ -392,7 +395,7 @@ const Header = () => {
               <button onClick={() => setCartDrawerOpen(true)} className={`relative transition-all duration-300 cursor-pointer transform hover:scale-110 ${
                 isHomePage && !scrolled ? 'text-white hover:text-green-200' : 'text-gray-700 hover:text-[#00a85a]'
               }`}>
-                <FaShoppingCart size={20} />
+                <FaShoppingBag size={20} />
                 {cartCount > 0 && (
                   <span className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-medium">
                     {cartCount > 99 ? '99+' : cartCount}

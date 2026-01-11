@@ -1,7 +1,7 @@
 import { useCallback, useState, useMemo, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button as AntButton, Modal, Badge, Divider, Space } from 'antd';
-import { ArrowLeftOutlined, BagOutlined, DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import Layout from '../../../components/layouts/Layout';
 import Breadcrumb from '../../../components/common/Breadcrumb';
 import PageTitle from '../../../components/common/PageTitle';
