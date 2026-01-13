@@ -29,7 +29,6 @@ const ProductsPage = () => {
     totalPages: 0,
   });
 
-  // Get filters from URL
   const getFiltersFromURL = () => ({
     categoryId: searchParams.get('category') || '',
     brandId: searchParams.get('brand') || '',
@@ -42,7 +41,6 @@ const ProductsPage = () => {
     page: parseInt(searchParams.get('page')) || 1,
   });
 
-  // Load categories, brands, and price range
   useEffect(() => {
     const loadFilters = async () => {
       try {
@@ -64,7 +62,6 @@ const ProductsPage = () => {
   }, [searchParams]);
 
   useEffect(() => {
-    console.log('PriceRange state updated:', priceRange);
   }, [priceRange]);
 
   const loadProducts = async () => {
@@ -156,7 +153,6 @@ const ProductsPage = () => {
 
   const handleClearAllFilters = () => {
     const params = new URLSearchParams();
-    // Keep search query if exists
     const search = searchParams.get('search');
     if (search) params.set('search', search);
     setSearchParams(params);
@@ -204,7 +200,6 @@ const ProductsPage = () => {
             />
           </Drawer>
 
-          {/* Desktop Filter Bar */}
           <div className="hidden lg:block mb-6">
             <div className=" py-4 p-3">
               <ProductFilter
@@ -218,7 +213,6 @@ const ProductsPage = () => {
             </div>
           </div>
 
-          {/* Active Filters */}
           <ActiveFilters
             filters={getFiltersFromURL()}
             categories={categories}
@@ -227,7 +221,6 @@ const ProductsPage = () => {
             onClearAll={handleClearAllFilters}
           />
 
-          {/* Products Grid */}
           <div className="w-full">
             {loading ? (
               <div className="flex justify-center items-center min-h-[600px]">
@@ -244,7 +237,6 @@ const ProductsPage = () => {
               <>
                 <ProductGrid products={products} loading={loading} />
                 
-                {/* Pagination */}
                 {products.length > 0 && (
                   <div className="mt-8 flex justify-center">
                     <Pagination

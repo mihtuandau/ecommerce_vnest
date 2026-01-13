@@ -222,7 +222,7 @@ const SupportChat = ({ scrolled, isOpen: externalIsOpen, onClose }) => {
         </button>
       </form>
 
-      <style jsx>{`
+      <style>{`
         @keyframes slideDown {
           from {
             opacity: 0;

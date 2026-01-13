@@ -10,15 +10,12 @@ const AboutPage = () => {
       <div className="min-h-screen bg-white pt-21 pb-8">
         <div className="container mx-auto px-4 lg:px-8">
           <Breadcrumb items={[{ label: "Về chúng tôi" }]} />
-
-          {/* Header */}
           <PageTitle
             subtitle="Câu chuyện"
             title="VỀ CHÚNG TÔI"
             className="mt-6 mb-14"
           />
 
-          {/* Story Section */}
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center mb-20 md:mb-28">
             <div className="order-2 lg:order-1">
               <h2 className="text-2xl md:text-3xl lg:text-4xl font-light text-gray-900 mb-6 md:mb-8 tracking-tight">
@@ -63,7 +60,6 @@ const AboutPage = () => {
             </div>
           </div>
 
-          {/* Values Section */}
           <div className="mb-20 md:mb-28">
             <div className="max-w-2xl mb-12 md:mb-16">
               <h2 className="text-2xl md:text-3xl lg:text-4xl font-light text-gray-900 mb-4 md:mb-5 tracking-tight">
@@ -117,7 +113,6 @@ const AboutPage = () => {
             </div>
           </div>
 
-          {/* Why Choose Us Section */}
           <div className="border-t border-gray-200 pt-16 md:pt-20 mb-20 md:mb-28">
             <div className="max-w-2xl mb-12 md:mb-16">
               <h2 className="text-2xl md:text-3xl lg:text-4xl font-light text-gray-900 mb-0 tracking-tight">
@@ -176,7 +171,6 @@ const AboutPage = () => {
             </div>
           </div>
 
-          {/* CTA Section - Minimalist */}
           <div className="border-t border-gray-200 pt-16 md:pt-20 pb-8 text-center">
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-light text-gray-900 mb-4 md:mb-5 tracking-tight">
               Sẵn Sàng Khám Phá Bộ Sưu Tập Của Chúng Tôi?

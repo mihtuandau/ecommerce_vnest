@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useAuth } from '../../../contexts/authContext';
+import { useAuth } from '../../../contexts/AuthContext';
 import ProfileCard from '../../../components/admin/Profile/ProfileCard';
 import ProfileForm from '../../../components/admin/Profile/ProfileForm';
 import AddressList from '../../../components/admin/Profile/AddressList';
@@ -12,10 +12,7 @@ const ProfilePage = () => {
 
   const loadAddresses = async () => {
     try {
-      // TODO: Implement address API endpoint
-      // const data = await addressService.getAddresses();
-      // setAddresses(data);
-      setAddresses([]); // Placeholder
+      setAddresses([]);
     } catch (error) {}
   };
 
@@ -23,7 +20,6 @@ const ProfilePage = () => {
     loadAddresses();
   }, []);
 
-  // Profile form hook
   const {
     profileForm,
     setProfileForm,
@@ -31,7 +27,6 @@ const ProfilePage = () => {
     handleProfileUpdate,
   } = useProfileForm(authUser, updateProfile);
 
-  // Address form hook
   const {
     addressForm,
     setAddressForm,
@@ -55,7 +50,6 @@ const ProfilePage = () => {
   return (
     <div className="p-6">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold tracking-tight text-gray-900 mb-2">
             THÔNG TIN CÁ NHÂN
@@ -66,7 +60,6 @@ const ProfilePage = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Profile Card */}
           <div className="lg:col-span-1">
             <ProfileCard 
               user={authUser} 
@@ -75,9 +68,7 @@ const ProfilePage = () => {
             />
           </div>
 
-          {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Profile Information */}
             <ProfileForm
               profileForm={profileForm}
               setProfileForm={setProfileForm}
@@ -85,7 +76,6 @@ const ProfilePage = () => {
               loading={profileLoading}
             />
 
-            {/* Addresses */}
             <AddressList
               addresses={addresses}
               onAdd={() => openAddressModal()}
@@ -96,7 +86,6 @@ const ProfilePage = () => {
         </div>
       </div>
 
-      {/* Address Modal */}
       <AddressModal
         isOpen={showAddressModal}
         onClose={closeAddressModal}

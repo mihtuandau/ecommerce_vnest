@@ -17,7 +17,6 @@ const GuestOrderDetailPage = () => {
   const [contact, setContact] = useState('');
 
   useEffect(() => {
-    // Get contact from localStorage or prompt user
     const guestOrders = JSON.parse(localStorage.getItem('guest_orders') || '[]');
     const savedOrder = guestOrders.find(o => o.orderCode === orderCode);
     
@@ -25,7 +24,6 @@ const GuestOrderDetailPage = () => {
       setContact(savedOrder.contact);
       loadOrder(savedOrder.contact);
     } else {
-      // Redirect to lookup page if no saved contact
       navigate('/order-lookup');
     }
   }, [orderCode]);
@@ -91,9 +89,7 @@ const GuestOrderDetailPage = () => {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Main Content */}
             <div className="lg:col-span-2 space-y-6">
-              {/* Order Items */}
               <div className="bg-white border border-gray-200 overflow-hidden">
                 <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
                   <h2 className="text-lg font-semibold text-gray-900">Sản phẩm đã đặt</h2>
@@ -135,7 +131,6 @@ const GuestOrderDetailPage = () => {
                 </div>
               </div>
 
-              {/* Shipping Info */}
               <div className="bg-white border border-gray-200 overflow-hidden">
                 <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
                   <h2 className="text-lg font-semibold text-gray-900">Thông tin giao hàng</h2>
@@ -151,9 +146,7 @@ const GuestOrderDetailPage = () => {
               </div>
             </div>
 
-            {/* Sidebar */}
             <div className="space-y-6">
-              {/* Order Summary */}
               <div className="bg-white border border-gray-200 overflow-hidden">
                 <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
                   <h2 className="text-lg font-semibold text-gray-900">Tổng quan đơn hàng</h2>
@@ -180,7 +173,6 @@ const GuestOrderDetailPage = () => {
                 </div>
               </div>
 
-              {/* Payment Info */}
               <div className="bg-white border border-gray-200 overflow-hidden">
                 <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
                   <h2 className="text-lg font-semibold text-gray-900">Thanh toán</h2>

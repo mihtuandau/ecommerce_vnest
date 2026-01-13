@@ -1,13 +1,6 @@
-/**
- * Guest Cart Service - Manage cart in localStorage for non-authenticated users
- */
-
 const GUEST_CART_KEY = 'guest_cart';
 
 class GuestCartService {
-  /**
-   * Get guest cart from localStorage
-   */
   getCart() {
     try {
       const cart = localStorage.getItem(GUEST_CART_KEY);
@@ -16,18 +9,12 @@ class GuestCartService {
     }
   }
 
-  /**
-   * Save cart to localStorage
-   */
   saveCart(cart) {
     try {
       localStorage.setItem(GUEST_CART_KEY, JSON.stringify(cart));
     } catch (error) {}
   }
 
-  /**
-   * Add item to guest cart
-   */
   addItem(variantId, quantity = 1, productData = {}) {
     const cart = this.getCart();
     const existingItem = cart.items.find(item => item.variantId === variantId);
@@ -38,7 +25,7 @@ class GuestCartService {
       cart.items.push({
         variantId,
         quantity,
-        productData, // Store product info for display
+        productData, 
         addedAt: new Date().toISOString(),
       });
     }
@@ -47,9 +34,6 @@ class GuestCartService {
     return cart;
   }
 
-  /**
-   * Update item quantity
-   */
   updateQuantity(variantId, quantity) {
     const cart = this.getCart();
     const item = cart.items.find(item => item.variantId === variantId);
@@ -66,9 +50,6 @@ class GuestCartService {
     return cart;
   }
 
-  /**
-   * Remove item from cart
-   */
   removeItem(variantId) {
     const cart = this.getCart();
     cart.items = cart.items.filter(item => item.variantId !== variantId);
@@ -76,25 +57,16 @@ class GuestCartService {
     return cart;
   }
 
-  /**
-   * Clear entire cart
-   */
   clearCart() {
     localStorage.removeItem(GUEST_CART_KEY);
     return { items: [] };
   }
 
-  /**
-   * Get cart item count
-   */
   getItemCount() {
     const cart = this.getCart();
     return cart.items.reduce((total, item) => total + item.quantity, 0);
   }
 
-  /**
-   * Migrate guest cart to user cart after login
-   */
   async migrateToUserCart(cartService) {
     const guestCart = this.getCart();
     
@@ -103,12 +75,10 @@ class GuestCartService {
     }
 
     try {
-      // Add each guest cart item to user's cart
       for (const item of guestCart.items) {
         await cartService.addToCart(item.variantId, item.quantity);
       }
 
-      // Clear guest cart after migration
       this.clearCart();} catch (error) {throw error;
     }
   }

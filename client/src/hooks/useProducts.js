@@ -1,16 +1,13 @@
-// src/hooks/useProducts.js
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import productService from '../services/productService';
 import { notify } from '../utils/notification';
 
-// Hook lấy danh sách products với filters & pagination
 export const useProducts = (filters = {}) => {
   return useQuery({
     queryKey: ['products', filters],
     queryFn: async () => {
       const response = await productService.getAll(filters);
       
-      // Backend trả về { data: [], page, limit, total, totalPages }
       const productsData = response?.data?.data || response?.data || [];
       const pagination = {
         total: response?.data?.total || 0,
@@ -24,12 +21,11 @@ export const useProducts = (filters = {}) => {
         pagination,
       };
     },
-    staleTime: 2 * 60 * 1000, // Cache 2 phút
-    placeholderData: (previousData) => previousData, // Giữ data cũ khi refetch
+    staleTime: 2 * 60 * 1000, 
+    placeholderData: (previousData) => previousData, 
   });
 };
 
-// Hook lấy categories
 export const useCategories = () => {
   return useQuery({
     queryKey: ['categories'],
@@ -39,11 +35,10 @@ export const useCategories = () => {
                    Array.isArray(response) ? response : [];
       return data;
     },
-    staleTime: 10 * 60 * 1000, // Cache 10 phút (categories ít thay đổi)
+    staleTime: 10 * 60 * 1000, 
   });
 };
 
-// Hook lấy brands
 export const useBrands = () => {
   return useQuery({
     queryKey: ['brands'],
@@ -53,12 +48,11 @@ export const useBrands = () => {
                    Array.isArray(response) ? response : [];
       return data;
     },
-    staleTime: 10 * 60 * 1000, // Cache 10 phút
-    retry: false, // Không retry nếu lỗi (brands có thể optional)
+    staleTime: 10 * 60 * 1000,
+    retry: false, 
   });
 };
 
-// Hook lấy chi tiết product
 export const useProduct = (productId) => {
   return useQuery({
     queryKey: ['products', productId],
@@ -68,7 +62,6 @@ export const useProduct = (productId) => {
   });
 };
 
-// Hook tạo product mới
 export const useCreateProduct = () => {
   const queryClient = useQueryClient();
   
@@ -81,7 +74,6 @@ export const useCreateProduct = () => {
   });
 };
 
-// Hook cập nhật product
 export const useUpdateProduct = () => {
   const queryClient = useQueryClient();
   
@@ -95,7 +87,6 @@ export const useUpdateProduct = () => {
   });
 };
 
-// Hook xóa product
 export const useDeleteProduct = () => {
   const queryClient = useQueryClient();
   
@@ -108,7 +99,6 @@ export const useDeleteProduct = () => {
   });
 };
 
-// Hook toggle product status (active/inactive)
 export const useToggleProductStatus = () => {
   const queryClient = useQueryClient();
   
@@ -116,12 +106,10 @@ export const useToggleProductStatus = () => {
     mutationFn: ({ id, isActive }) => 
       productService.updateStatus(id, isActive),
     onMutate: async ({ id, isActive }) => {
-      // Optimistic update
       await queryClient.cancelQueries({ queryKey: ['products'] });
       
       const previousData = queryClient.getQueryData(['products']);
-      
-      // Cập nhật cache tạm thời
+     
       queryClient.setQueriesData(['products'], (old) => {
         if (!old?.products) return old;
         return {
@@ -135,7 +123,6 @@ export const useToggleProductStatus = () => {
       return { previousData };
     },
     onError: (err, variables, context) => {
-      // Rollback nếu lỗi
       if (context?.previousData) {
         queryClient.setQueryData(['products'], context.previousData);
       }

@@ -8,19 +8,15 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        // Ignore date strings in cart items
         ignoredPaths: ['cart.items.*.addedAt'],
-        // Improve performance by reducing checks
         warnAfter: 128,
       },
-      // Enable additional checks in development
       immutableCheck: { warnAfter: 128 },
     }),
   devTools: import.meta.env.DEV && {
     name: 'E-Commerce Cart',
     trace: true,
     traceLimit: 25,
-    // Customize DevTools features
     features: {
       pause: true,
       lock: true,
@@ -36,7 +32,6 @@ export const store = configureStore({
   },
 });
 
-// Enable hot module replacement for reducers in development
 if (import.meta.env.DEV && import.meta.hot) {
   import.meta.hot.accept('./slices/cartSlice', async () => {
     const { default: newCartReducer } = await import('./slices/cartSlice');

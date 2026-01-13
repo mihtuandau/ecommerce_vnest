@@ -22,7 +22,6 @@ const FeaturedProductsPage = () => {
   const sortBy = searchParams.get('sort') || 'newest';
   const currentPage = parseInt(searchParams.get('page')) || 1;
 
-  // Load featured products (rating >= 4)
   useEffect(() => {
     const loadProducts = async () => {
       setLoading(true);
@@ -46,7 +45,6 @@ const FeaturedProductsPage = () => {
           setProducts(response || []);
         }
       } catch (error) {
-        console.error('Error loading featured products:', error);
         setProducts([]);
       } finally {
         setLoading(false);
@@ -89,7 +87,6 @@ const FeaturedProductsPage = () => {
         <div className="container mx-auto px-4 lg:px-8 py-8">
           <Breadcrumb items={breadcrumbItems} />
 
-          {/* Header */}
           <div className="mb-10">
             <PageTitle 
               subtitle="Được yêu thích"
@@ -97,7 +94,6 @@ const FeaturedProductsPage = () => {
               description="Những sản phẩm được đánh giá cao và yêu thích nhất từ khách hàng"
             />
 
-            {/* Sort & Count */}
             <div className="flex items-center justify-between border-b border-gray-100 pb-4">
               <p className="text-sm text-gray-600">
                 {loading ? '...' : `${pagination.total} sản phẩm`}
@@ -112,7 +108,6 @@ const FeaturedProductsPage = () => {
             </div>
           </div>
 
-          {/* Products */}
           {loading ? (
             <div className="flex justify-center items-center py-20">
               <Spin size="large" />

@@ -2,7 +2,6 @@ import apiService from './apiService';
 import { DASHBOARD_ENDPOINTS } from '../config/apiConstants';
 
 const dashboardService = {
-  // Get dashboard statistics
   getStats: async () => {
     try {
       const response = await apiService.get(DASHBOARD_ENDPOINTS.STATS);
@@ -12,7 +11,6 @@ const dashboardService = {
     }
   },
 
-  // Get revenue analytics
   getRevenue: async () => {
     try {
       const response = await apiService.get(DASHBOARD_ENDPOINTS.REVENUE);
@@ -22,7 +20,6 @@ const dashboardService = {
     }
   },
 
-  // Get recent orders
   getRecentOrders: async () => {
     try {
       const response = await apiService.get(DASHBOARD_ENDPOINTS.RECENT_ORDERS);
@@ -32,7 +29,6 @@ const dashboardService = {
     }
   },
 
-  // Get top products
   getTopProducts: async () => {
     try {
       const response = await apiService.get(DASHBOARD_ENDPOINTS.TOP_PRODUCTS);

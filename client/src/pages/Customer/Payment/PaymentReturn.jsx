@@ -76,7 +76,7 @@ const PaymentReturn = () => {
     }
   };
 
-  // Loading State
+  // Lo
   if (status === "loading") {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center p-4">

@@ -15,10 +15,8 @@ const Footer = () => {
 
   return (
     <footer className="bg-[#00a85a] text-white mt-12 animate-fadeIn">
-      {/* Main Footer */}
       <div className="container mx-auto px-4 lg:px-8 py-12">  
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* About */}
           <div>
             <div className="flex items-center gap-2 mb-4">
               <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
@@ -59,7 +57,6 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Quick Links */}
           <div>
             <h3 className="text-white font-bold text-lg mb-4">LIÊN KẾT</h3>
             <ul className="space-y-2">
@@ -95,7 +92,6 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Customer Support */}
           <div>
             <h3 className="text-white font-bold text-lg mb-4">HỖ TRỢ</h3>
             <ul className="space-y-2">
@@ -131,7 +127,6 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Contact Info */}
           <div>
             <h3 className="text-white font-bold text-lg mb-4">LIÊN HỆ</h3>
             <ul className="space-y-3">

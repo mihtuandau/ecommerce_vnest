@@ -86,7 +86,6 @@ const cartSlice = createSlice({
       })
       .addCase(fetchCart.fulfilled, (state, action) => {
         state.loading = false;
-        console.log('🎯 fetchCart.fulfilled - payload:', action.payload);
         // Deduplicate items by variantId
         const items = action.payload;
         const deduped = items.reduce((acc, item) => {
@@ -98,9 +97,7 @@ const cartSlice = createSlice({
           }
           return acc;
         }, []);
-        console.log('📝 Setting state.items to:', deduped);
         state.items = deduped;
-        // Don't save to localStorage when fetching from server - data is in DB
       })
       .addCase(fetchCart.rejected, (state, action) => {
         state.loading = false;
@@ -118,26 +115,20 @@ const cartSlice = createSlice({
         state.error = action.payload;
         notify.error(action.payload);
       })
-      // Update Cart Server
       .addCase(updateCartServer.fulfilled, (state, action) => {
-        // Don't update local state since fetchCart() already synced from server
       })
       .addCase(updateCartServer.rejected, (state, action) => {
         state.error = action.payload;
         notify.error(action.payload);
       })
-      // Remove from Cart Server
       .addCase(removeFromCartServer.fulfilled, (state, action) => {
-        // Don't update local state since fetchCart() already synced from server
         notify.success('Đã xóa khỏi giỏ hàng!');
       })
       .addCase(removeFromCartServer.rejected, (state, action) => {
         state.error = action.payload;
         notify.error(action.payload);
       })
-      // Clear Cart Server
       .addCase(clearCartServer.fulfilled, (state) => {
-        // Don't update local state since fetchCart() already synced from server
         notify.success('Đã xóa giỏ hàng', 2000);
       })
       .addCase(clearCartServer.rejected, (state, action) => {
@@ -147,7 +138,6 @@ const cartSlice = createSlice({
   },
 });
 
-// Export actions
 export const {
   addToCartGuest,
   updateCartItemGuest,
@@ -158,7 +148,6 @@ export const {
   setError,
 } = cartSlice.actions;
 
-// Re-export selectors and thunks for convenience
 export {
   selectCartItems,
   selectCartLoading,

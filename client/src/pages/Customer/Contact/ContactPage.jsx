@@ -205,7 +205,6 @@ const ContactPage = () => {
             </div>
           </div>
 
-          {/* Map Section */}
           <div className="border-t border-gray-200 pt-16 md:pt-20 pb-8">
             <h2 className="text-xl md:text-2xl lg:text-3xl font-light text-gray-900 mb-6 md:mb-8 tracking-tight">
               Vị Trí Của Chúng Tôi

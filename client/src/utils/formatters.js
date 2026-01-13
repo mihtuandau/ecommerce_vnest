@@ -12,8 +12,7 @@ export const formatPrice = (price) => {
 };
 
 /**
- * Format number with thousand separators
- * @param {number} number - Number to format
+ * @param {number} number 
  * @returns {string} Formatted number string
  */
 export const formatNumber = (number) => {

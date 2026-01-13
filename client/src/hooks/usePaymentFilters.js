@@ -11,7 +11,6 @@ export const usePaymentFilters = (
   const filteredPayments = useMemo(() => {
     let filtered = [...payments];
 
-    // Search filter
     if (searchTerm) {
       filtered = filtered.filter(
         (payment) =>
@@ -21,17 +20,14 @@ export const usePaymentFilters = (
       );
     }
 
-    // Status filter
     if (statusFilter) {
       filtered = filtered.filter((payment) => payment.status === statusFilter);
     }
 
-    // Method filter
     if (methodFilter) {
       filtered = filtered.filter((payment) => payment.method === methodFilter);
     }
 
-    // Sort
     filtered.sort((a, b) => {
       let aValue = a[sortField];
       let bValue = b[sortField];

@@ -22,7 +22,6 @@ const PaymentManagement = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  // TanStack Query hook
   const { 
     data: filteredPayments = [], 
     stats, 
@@ -61,7 +60,6 @@ const PaymentManagement = () => {
     }
   };
 
-  // Pagination
   const paginatedPayments = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     return filteredPayments.slice(startIndex, startIndex + itemsPerPage);
@@ -75,7 +73,6 @@ const PaymentManagement = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Quản lý thanh toán</h1>
@@ -86,10 +83,8 @@ const PaymentManagement = () => {
         </Button>
       </div>
 
-      {/* Stats Cards */}
       <PaymentStatsCards stats={stats} />
 
-      {/* Filters */}
       <PaymentFilters
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
@@ -101,7 +96,6 @@ const PaymentManagement = () => {
         totalCount={stats.total}
       />
 
-      {/* Payments Table */}
       <div>
         <PaymentTable
           payments={paginatedPayments}
@@ -123,7 +117,6 @@ const PaymentManagement = () => {
         )}
       </div>
 
-      {/* Detail Modal */}
       <PaymentDetailModal
         payment={selectedPayment}
         isOpen={showDetailModal}

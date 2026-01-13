@@ -80,7 +80,6 @@ const WishlistPage = () => {
         <div className="container mx-auto px-4 lg:px-8">
           <Breadcrumb items={[{ label: 'Sản phẩm yêu thích' }]} />
 
-          {/* Header */}
           <PageTitle
             subtitle="Danh sách"
             title="SẢN PHẨM YÊU THÍCH"
@@ -101,7 +100,6 @@ const WishlistPage = () => {
             </div>
           )}
 
-          {/* Empty State */}
           {wishlistItems.length === 0 ? (
             <div className="flex flex-col justify-center items-center min-h-[400px]">
               <HeartOutlined className="text-6xl text-gray-300 mb-4" />
@@ -113,7 +111,6 @@ const WishlistPage = () => {
               </Link>
             </div>
           ) : (
-            /* Product Grid */
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
               {wishlistItems.map((item) => {
                 const product = item.variant?.product;
@@ -128,7 +125,6 @@ const WishlistPage = () => {
                 
                 return (
                   <div key={item.id} className="group relative bg-white border border-gray-200 transition-all duration-300 overflow-hidden flex flex-col h-full">
-                    {/* Variant Badge */}
                     {(variant.color || variant.size) && (
                       <div className="absolute top-3 left-3 z-10 flex gap-1">
                         {variant.color && (
@@ -143,8 +139,6 @@ const WishlistPage = () => {
                         )}
                       </div>
                     )}
-                    
-                    {/* Remove Button */}
                     <div className="absolute top-3 right-3 z-10 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                       <button
                         onClick={(e) => {
@@ -157,7 +151,6 @@ const WishlistPage = () => {
                       </button>
                     </div>
                     
-                    {/* Product Image */}
                     <div 
                       className="block relative overflow-hidden w-full aspect-square bg-gray-50 cursor-pointer"
                       onClick={() => navigate(`/products/${productId}`)}
@@ -169,9 +162,7 @@ const WishlistPage = () => {
                       />
                     </div>
                     
-                    {/* Product Info */}
                     <div className="flex flex-col flex-grow p-3">
-                      {/* Product Name */}
                       <div 
                         className="block mb-3 cursor-pointer"
                         onClick={() => navigate(`/products/${productId}`)}
@@ -184,7 +175,6 @@ const WishlistPage = () => {
                         </h3>
                       </div>
 
-                      {/* Price */}
                       <div className="flex items-baseline gap-3 min-h-[20px]">
                         <span className="text-base font-bold text-gray-900">
                           {variant.price ? variant.price.toLocaleString('vi-VN') : '0'}₫

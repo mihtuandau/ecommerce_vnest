@@ -2,9 +2,6 @@ import apiService from "./apiService";
 import { USER_ENDPOINTS } from "../config/apiConstants";
 
 class UserService {
-  // 🔒 Dùng apiService (tự động gửi httpOnly cookie)
-  
-  // User APIs
   async getUsers(params = {}) {
     const response = await apiService.get(USER_ENDPOINTS.BASE, params);
     return response;
@@ -30,13 +27,11 @@ class UserService {
     return response;
   }
 
-  // Get current user profile
   async getProfile() {
     const response = await apiService.get(USER_ENDPOINTS.PROFILE);
     return response;
   }
 
-  // Update current user profile
   async updateProfile(data) {
     const response = await apiService.put(USER_ENDPOINTS.PROFILE, data);
     return response;

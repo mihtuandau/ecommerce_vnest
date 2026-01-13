@@ -21,24 +21,6 @@ import { formatPrice, formatDateTime } from '../../../utils/formatters';
 
 const { Title, Text } = Typography;
 
-// Custom scrollbar styles
-const scrollbarStyles = `
-  .custom-scrollbar::-webkit-scrollbar {
-    width: 6px;
-  }
-  .custom-scrollbar::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 10px;
-  }
-  .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 10px;
-  }
-  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
-  }
-`;
-
 const AdminDashboardPage = () => {
   const [stats, setStats] = useState(null);
   const [revenue, setRevenue] = useState(null);
@@ -46,7 +28,6 @@ const AdminDashboardPage = () => {
   const [topProducts, setTopProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Format helpers
   const formatCurrency = formatPrice;
 
   useEffect(() => {
@@ -62,7 +43,6 @@ const AdminDashboardPage = () => {
           dashboardService.getTopProducts(),
         ]);
 
-        // Only update state if component is still mounted
         if (isMounted) {
           setStats(statsData);
           setRevenue(revenueData);
@@ -82,13 +62,11 @@ const AdminDashboardPage = () => {
 
     loadData();
 
-    // Cleanup function to prevent state updates after unmount
     return () => {
       isMounted = false;
     };
   }, []);
 
-  // Prepare chart data
   const revenueData = {
     year: revenue?.year,
     chartData: revenue?.monthly?.map(item => ({
@@ -117,18 +95,13 @@ const AdminDashboardPage = () => {
   }
 
   return (
-    <>
-      <style>{scrollbarStyles}</style>
-      <div className="p-6">
-        {/* Header */}
+    <div className="p-6">
         <Space direction="vertical" size="small" style={{ marginBottom: 24 }}>
           <Title level={2} style={{ margin: 0 }}>Dashboard</Title>
           <Text type="secondary">Tổng quan hệ thống</Text>
         </Space>
 
-        {/* Stats Cards - Ant Design Style */}
         <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-          {/* Revenue Card */}
           <Col xs={24} sm={12} lg={6}>
             <Card 
               hoverable
@@ -162,7 +135,6 @@ const AdminDashboardPage = () => {
             </Card>
           </Col>
 
-          {/* Orders Card */}
           <Col xs={24} sm={12} lg={6}>
             <Card 
               hoverable
@@ -198,7 +170,6 @@ const AdminDashboardPage = () => {
             </Card>
           </Col>
 
-          {/* Users Card */}
           <Col xs={24} sm={12} lg={6}>
             <Card 
               hoverable
@@ -234,7 +205,6 @@ const AdminDashboardPage = () => {
             </Card>
           </Col>
 
-          {/* Products Card */}
           <Col xs={24} sm={12} lg={6}>
             <Card 
               hoverable
@@ -271,14 +241,12 @@ const AdminDashboardPage = () => {
           </Col>
         </Row>
 
-        {/* Charts Section */}
         <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
           <Col xs={24}>
             <SalesChart revenueData={revenueData} topProductsData={topProductsChartData} />
           </Col>
         </Row>
 
-        {/* Order Status & Recent Activity */}
         <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
           <Col xs={24} lg={8}>
             <OrderStatusChart orderStatusData={orderStatusData} />
@@ -288,14 +256,12 @@ const AdminDashboardPage = () => {
           </Col>
         </Row>
 
-        {/* Top Products */}
         <Row gutter={[16, 16]}>
           <Col xs={24}>
             <TopProducts products={topProducts} />
           </Col>
         </Row>
       </div>
-    </>
   );
 };
 

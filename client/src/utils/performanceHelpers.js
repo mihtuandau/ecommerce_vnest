@@ -1,4 +1,3 @@
-// Performance optimization utilities
 
 /**
  * Debounce function to limit function calls

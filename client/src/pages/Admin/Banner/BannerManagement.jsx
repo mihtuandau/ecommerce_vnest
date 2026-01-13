@@ -20,7 +20,6 @@ const BannerManagement = () => {
   const [bannerToDelete, setBannerToDelete] = useState(null);
   const [showAllBanners, setShowAllBanners] = useState(false);
 
-  // TanStack Query hooks
   const { data: banners = [], isLoading, refetch } = useBanners(!showAllBanners);
   const createMutation = useCreateBanner();
   const updateMutation = useUpdateBanner();
@@ -43,7 +42,6 @@ const BannerManagement = () => {
       setDeleteModalOpen(false);
       setBannerToDelete(null);
     } catch (error) {
-      // Error already handled in hook
     }
   };
 
@@ -78,7 +76,6 @@ const BannerManagement = () => {
 
   return (
     <div>
-      {/* Header */}
       <div className="mb-6">
         <div className="flex justify-between items-center mb-4">
           <div>
@@ -97,7 +94,6 @@ const BannerManagement = () => {
           </Button>
         </div>
 
-        {/* Filter */}
         <div className="flex gap-2">
           <Button
             onClick={() => setShowAllBanners(false)}
@@ -114,7 +110,6 @@ const BannerManagement = () => {
         </div>
       </div>
 
-      {/* Banner Table */}
       <BannerTable
         banners={banners}
         loading={isLoading}

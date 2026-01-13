@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { Spin, Empty, Select } from 'antd';
-import Layout from '../../../components/layouts/Layout';
-import Breadcrumb from '../../../components/common/Breadcrumb';
-import PageTitle from '../../../components/common/PageTitle';
-import ProductGrid from '../../../components/products/ProductGrid';
-import Pagination from '../../../components/common/Pagination';
-import { productService } from '../../../services/productService';
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
+import { Spin, Empty, Select } from "antd";
+import Layout from "../../../components/layouts/Layout";
+import Breadcrumb from "../../../components/common/Breadcrumb";
+import PageTitle from "../../../components/common/PageTitle";
+import ProductGrid from "../../../components/products/ProductGrid";
+import Pagination from "../../../components/common/Pagination";
+import { productService } from "../../../services/productService";
 
 const BestSellingProductsPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -19,10 +19,9 @@ const BestSellingProductsPage = () => {
     totalPages: 0,
   });
 
-  const sortBy = searchParams.get('sort') || 'sold';
-  const currentPage = parseInt(searchParams.get('page')) || 1;
+  const sortBy = searchParams.get("sort") || "sold";
+  const currentPage = parseInt(searchParams.get("page")) || 1;
 
-  // Load best selling products
   useEffect(() => {
     const loadProducts = async () => {
       setLoading(true);
@@ -45,7 +44,7 @@ const BestSellingProductsPage = () => {
           setProducts(response || []);
         }
       } catch (error) {
-        console.error('Error loading best selling products:', error);
+        console.error("Error loading best selling products:", error);
         setProducts([]);
       } finally {
         setLoading(false);
@@ -57,29 +56,29 @@ const BestSellingProductsPage = () => {
 
   const handleSortChange = (value) => {
     const newParams = new URLSearchParams(searchParams);
-    newParams.set('sort', value);
-    newParams.set('page', '1');
+    newParams.set("sort", value);
+    newParams.set("page", "1");
     setSearchParams(newParams);
   };
 
   const handlePageChange = (page) => {
     const newParams = new URLSearchParams(searchParams);
-    newParams.set('page', page.toString());
+    newParams.set("page", page.toString());
     setSearchParams(newParams);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const breadcrumbItems = [
-    { label: 'Trang chủ', path: '/' },
-    { label: 'Sản phẩm bán chạy' },
+    { label: "Trang chủ", path: "/" },
+    { label: "Sản phẩm bán chạy" },
   ];
 
   const sortOptions = [
-    { value: 'sold', label: 'Bán chạy nhất' },
-    { value: 'newest', label: 'Mới nhất' },
-    { value: 'price_asc', label: 'Giá tăng dần' },
-    { value: 'price_desc', label: 'Giá giảm dần' },
-    { value: 'rating', label: 'Đánh giá cao' },
+    { value: "sold", label: "Bán chạy nhất" },
+    { value: "newest", label: "Mới nhất" },
+    { value: "price_asc", label: "Giá tăng dần" },
+    { value: "price_desc", label: "Giá giảm dần" },
+    { value: "rating", label: "Đánh giá cao" },
   ];
 
   return (
@@ -88,18 +87,16 @@ const BestSellingProductsPage = () => {
         <div className="container mx-auto px-4 lg:px-8 py-8">
           <Breadcrumb items={breadcrumbItems} />
 
-          {/* Header */}
           <div className="mb-10">
-            <PageTitle 
+            <PageTitle
               subtitle="Xu hướng"
               title="SẢN PHẨM BÁN CHẠY"
               description="Những sản phẩm được khách hàng tin tưởng và mua nhiều nhất"
             />
 
-            {/* Sort & Count */}
             <div className="flex items-center justify-between border-b border-gray-100 pb-4">
               <p className="text-sm text-gray-600">
-                {loading ? '...' : `${pagination.total} sản phẩm`}
+                {loading ? "..." : `${pagination.total} sản phẩm`}
               </p>
               <Select
                 value={sortBy}
@@ -111,7 +108,6 @@ const BestSellingProductsPage = () => {
             </div>
           </div>
 
-          {/* Products */}
           {loading ? (
             <div className="flex justify-center items-center py-20">
               <Spin size="large" />

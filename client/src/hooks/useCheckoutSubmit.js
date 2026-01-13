@@ -10,9 +10,6 @@ import {
   clearGuestCart,
 } from '../utils/checkoutHelpers';
 
-/**
- * Custom hook for handling checkout submission logic
- */
 export const useCheckoutSubmit = (user) => {
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
@@ -31,8 +28,6 @@ export const useCheckoutSubmit = (user) => {
       return false;
     }
 
-
-    // Validate form
     if (!validateCheckoutForm(shippingInfo, isGuest, agreedToTerms)) {
       return false;
     }
@@ -40,7 +35,6 @@ export const useCheckoutSubmit = (user) => {
     try {
       setSubmitting(true);
 
-      // Build order data with discount and shipping
       const orderData = buildOrderData(
         cartItems,
         shippingInfo,
@@ -88,7 +82,6 @@ export const useCheckoutSubmit = (user) => {
         }
       }
 
-      // Handle guest checkout (COD)
       if (isGuest) {
         clearGuestCart();
         saveGuestOrder(orderCode, shippingInfo.email);
@@ -98,12 +91,10 @@ export const useCheckoutSubmit = (user) => {
           { duration: 5000 }
         );
 
-        // Redirect to guest order detail page
         setTimeout(() => {
           navigate(`/guest-order/${orderCode}`);
         }, 1000);
       } else {
-        // Handle logged-in user checkout (COD)
         notify.success("Đặt hàng thành công!");
         setTimeout(() => {
           navigate(`/orders/${orderId}`);

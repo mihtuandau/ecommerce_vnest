@@ -50,7 +50,6 @@ const OrderLookupPage = () => {
         navigate(`/guest-order/${response.orderCode}`);
       }, 500);
     } catch (error) {
-      console.error('❌ Error looking up guest order:', error);
       notify.error(error.response?.data?.message || 'Không tìm thấy đơn hàng');
       setOrder(null);
     } finally {
@@ -95,7 +94,6 @@ const OrderLookupPage = () => {
     <Layout>
       <div className="min-h-screen bg-white pt-21 pb-8">
         <div className="container mx-auto px-4 max-w-4xl">
-          {/* Header */}
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
               <FaSearch className="text-3xl text-[#00a85a]" />
@@ -106,7 +104,6 @@ const OrderLookupPage = () => {
             </p>
           </div>
 
-          {/* Recent Orders */}
           {recentOrders.length > 0 && !order && (
             <div className="bg-white border border-gray-200 p-6 mb-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">Đơn hàng gần đây</h2>

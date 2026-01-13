@@ -31,26 +31,21 @@ const OrdersPage = () => {
 
   useEffect(() => {
     loadOrders();
-    
-    // Auto-refresh nếu có payment success parameter
+
     const urlParams = new URLSearchParams(location.search);
     const paymentSuccess = urlParams.get('paymentSuccess');
     const refreshOrders = urlParams.get('refresh');
     
-    // Check localStorage for payment success flag
     const paymentCompleted = localStorage.getItem('paymentCompleted');
     
     if (paymentSuccess === 'true' || refreshOrders === 'true' || paymentCompleted === 'true') {
-      console.log('🔄 Auto-refreshing orders after payment success');
       setIsAutoRefreshing(true);
       
-      // Refresh sau 3 giây để đảm bảo webhook đã processed (không hiển thị notification)
       setTimeout(() => {
         loadOrders();
         setIsAutoRefreshing(false);
       }, 3000);
       
-      // Clean flags
       localStorage.removeItem('paymentCompleted');
       if (urlParams.has('paymentSuccess') || urlParams.has('refresh')) {
         navigate('/orders', { replace: true });
@@ -64,12 +59,10 @@ const OrdersPage = () => {
     }
   }, [orders]);
 
-  // Auto-refresh every 30 seconds while on this page
   useEffect(() => {
     const interval = setInterval(() => {
-      console.log('🔄 Auto-refreshing orders...');
       loadOrders();
-    }, 30000); // 30 seconds
+    }, 30000); 
 
     return () => clearInterval(interval);
   }, []);
@@ -78,24 +71,16 @@ const OrdersPage = () => {
     try {
       setLoading(true);
       const response = await orderService.getMyOrders();
-      console.log('📦 Response from getMyOrders:', response);
       
-      // apiService.get() returns response.data directly
-      // Backend returns {orders: [...], total, page, limit, totalPages}
       const ordersList = response?.orders || response?.data?.orders || [];
       
-      console.log('📦 Orders list:', ordersList);
-      
-      // Transform orderItems to items for consistency
       const transformedOrders = (Array.isArray(ordersList) ? ordersList : []).map(order => ({
         ...order,
         items: order.orderItems || []
       }));
       
-      console.log('✅ Transformed orders:', transformedOrders);
       setOrders(transformedOrders);
     } catch (error) {
-      console.error('❌ Error loading orders:', error);
       notify.error('Không thể tải đơn hàng');
     } finally {
       setLoading(false);
@@ -104,20 +89,10 @@ const OrdersPage = () => {
 
   const checkReviewedProducts = async () => {
     const reviewed = new Set();
-    console.log('🔄 Starting checkReviewedProducts, total orders:', orders.length);
     
     for (const order of orders) {
-      // Only allow review if order is DELIVERED AND payment is successful
       const canReviewOrder = order.status === 'DELIVERED' && order.payment?.status === 'SUCCESS';
-      
-      console.log('📦 Order:', {
-        id: order.id,
-        code: order.orderCode,
-        status: order.status,
-        paymentStatus: order.payment?.status,
-        canReviewOrder
-      });
-      
+    
       if (canReviewOrder && order.items) {
         for (const item of order.items) {
           const productId = item.variant?.product?.id || item.variant?.productId;
@@ -125,37 +100,20 @@ const OrdersPage = () => {
           
           if (productId) {
             try {
-              console.log('🔍 Checking product:', { orderId: order.id, productId, productName });
               const response = await reviewService.canUserReview(productId, order.id);
               const result = response.data || response;
               
-              console.log('📊 API Response:', {
-                orderId: order.id,
-                productId,
-                productName,
-                canReview: result.canReview,
-                hasReviewed: result.hasReviewed,
-                hasPurchased: result.hasPurchased,
-                reason: result.reason
-              });
-              
-              // Only add to reviewed if user has actually reviewed (not just can't review)
               if (result.hasReviewed === true) {
                 const reviewKey = `${productId}-${order.id}`;
-                console.log('✅ Adding to reviewed:', reviewKey, productName);
                 reviewed.add(reviewKey);
-                console.log('✅ Current reviewed Set:', Array.from(reviewed));
               } else {
-                console.log('❌ NOT adding to reviewed:', productId, productName, 'hasReviewed =', result.hasReviewed);
               }
             } catch (error) {
-              console.error('❌ Error checking review:', error);
             }
           }
         }
       }
     }
-    console.log('📝 Final reviewed products:', Array.from(reviewed));
     setReviewedProducts(reviewed);
   };
 
@@ -188,7 +146,6 @@ const OrdersPage = () => {
           notify.success('Hủy đơn hàng thành công!');
           loadOrders();
         } catch (error) {
-          console.error('Cancel order error:', error);
           notify.error(error.response?.data?.message || 'Không thể hủy đơn hàng');
         }
       },
@@ -197,12 +154,10 @@ const OrdersPage = () => {
 
   const safeOrders = Array.isArray(orders) ? orders : [];
   
-  // Filter orders based on status
   const filteredOrders = statusFilter === 'ALL' 
     ? safeOrders 
     : safeOrders.filter(order => order.status === statusFilter);
   
-  // Count orders by status
   const statusCounts = {
     ALL: safeOrders.length,
     PENDING: safeOrders.filter(o => o.status === 'PENDING').length,
@@ -230,7 +185,6 @@ const OrdersPage = () => {
             { label: 'Đơn hàng của tôi' }
           ]} />
 
-          {/* Header */}
           <PageTitle
             subtitle="Theo dõi"
             title="ĐƠN HÀNG CỦA TÔI"
@@ -239,7 +193,6 @@ const OrdersPage = () => {
             className="mt-6"
           />
 
-          {/* Status Filter */}
           <div className="mb-6">
             <OrderStatusFilter
               activeStatus={statusFilter}
@@ -248,7 +201,6 @@ const OrdersPage = () => {
             />
           </div>
 
-          {/* Orders List */}
           {safeOrders.length === 0 ? (
             <div className="flex justify-center items-center min-h-[400px]">
               <Empty 
@@ -283,7 +235,6 @@ const OrdersPage = () => {
         </div>
       </div>
 
-      {/* Review Modal */}
       <ReviewModal
         show={showReviewModal}
         product={selectedProduct}

@@ -15,7 +15,6 @@ const AdminChatManagement = () => {
   const [loading, setLoading] = useState(true);
   const messagesEndRef = useRef(null);
 
-  // Load rooms function
   const loadRooms = async () => {
     try {
       const data = await chatService.getRooms();setRooms(data || []);
@@ -25,7 +24,6 @@ const AdminChatManagement = () => {
     }
   };
 
-  // Load rooms on mount
   useEffect(() => {
     if (!user) return;
     loadRooms();
@@ -34,13 +32,10 @@ const AdminChatManagement = () => {
   useEffect(() => {
     if (!user) return;
     
-    // Connect socket
     chatSocketService.connect();
 
-    // Listen for new messages
     chatSocketService.onNewMessage((message) => {
       if (selectedRoom && message.roomId === selectedRoom) {
-        // Check if message already exists (from optimistic update)
         setMessages((prev) => {
           const exists = prev.some(m => 
             m.senderId === message.senderId && 
@@ -52,14 +47,12 @@ const AdminChatManagement = () => {
         });
         scrollToBottom();
       } else {
-        // Show toast for messages in other rooms from customer
         if (message.sender?.role === 'CUSTOMER') {
           const userName = message.sender.name || 'Khách hàng';
-          notify.success(`💬 ${userName} đã gửi tin nhắn mới`, {
+          notify.success(` ${userName} đã gửi tin nhắn mới`, {
             duration: 4000,
             position: 'top-right',
           });
-          // Reload rooms to update unread count
           loadRooms();
         }
       }
@@ -86,13 +79,10 @@ const AdminChatManagement = () => {
     setMessages(history);
     scrollToBottom();
     
-    // Mark messages as read
     chatSocketService.markAsRead(roomId, user.id);
     
-    // Reload rooms to update unread count in the list
     loadRooms();
     
-    // Trigger event to update sidebar badge
     window.dispatchEvent(new CustomEvent('chatMessagesRead'));
   };
 
@@ -102,7 +92,6 @@ const AdminChatManagement = () => {
     const messageText = newMessage;
     setNewMessage('');
 
-    // Optimistic update
     const tempMessage = {
       id: Date.now(),
       roomId: selectedRoom,
@@ -129,7 +118,6 @@ const AdminChatManagement = () => {
 
   return (
     <div className="h-[calc(100vh-200px)] flex gap-4">
-      {/* Rooms List */}
       <div className="w-1/3 bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
         <div className="bg-[#1890ff] text-white px-4 py-3">
           <h2 className="text-lg font-semibold flex items-center gap-2">
@@ -151,7 +139,6 @@ const AdminChatManagement = () => {
             </div>
           ) : (
             rooms.map((room) => {
-              // Get user info from room object or last message
               const userName = room.user?.name || room.lastMessage?.sender?.name || 'Khách hàng';
               const userEmail = room.user?.email || room.lastMessage?.sender?.email;
               

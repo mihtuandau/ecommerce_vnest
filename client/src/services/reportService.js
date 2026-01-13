@@ -2,7 +2,6 @@ import apiService from './apiService';
 import axiosClient from '../config/apiClient';
 
 const reportService = {
-  // Get revenue report (daily/monthly/yearly)
   getRevenueReport: async (params = {}) => {
     try {
       console.log('Calling /reports/revenue with params:', params);
@@ -15,7 +14,6 @@ const reportService = {
     }
   },
 
-  // Get orders report by status
   getOrdersReport: async (params = {}) => {
     try {
       const response = await apiService.get('/reports/orders', params);
@@ -25,7 +23,6 @@ const reportService = {
     }
   },
 
-  // Get top selling products
   getTopProducts: async (params = {}) => {
     try {
       const response = await apiService.get('/reports/top-products', params);
@@ -35,7 +32,6 @@ const reportService = {
     }
   },
 
-  // Get top selling categories
   getTopCategories: async (params = {}) => {
     try {
       const response = await apiService.get('/reports/top-categories', params);
@@ -45,7 +41,6 @@ const reportService = {
     }
   },
 
-  // Get customer statistics
   getCustomerReport: async (params = {}) => {
     try {
       const response = await apiService.get('/reports/customers', params);
@@ -55,20 +50,15 @@ const reportService = {
     }
   },
 
-  // Get comprehensive summary report
   getSummaryReport: async (params = {}) => {
     try {
-      console.log('Calling /reports/summary with params:', params);
       const response = await apiService.get('/reports/summary', params);
-      console.log('Summary report response:', response);
       return response;
     } catch (error) {
-      console.error('Summary report error:', error);
       throw error;
     }
   },
 
-  // Export report to Excel
   exportToExcel: async (params = {}) => {
     try {
       const response = await axiosClient.get('/reports/export', {
@@ -76,7 +66,6 @@ const reportService = {
         responseType: 'blob'
       });
       
-      // Create download link
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
@@ -86,7 +75,7 @@ const reportService = {
       link.click();
       link.remove();
       window.URL.revokeObjectURL(url);
-      
+
       return { success: true };
     } catch (error) {
       throw error;

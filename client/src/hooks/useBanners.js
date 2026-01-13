@@ -1,9 +1,7 @@
-// src/hooks/useBanners.js
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import bannerService from '../services/bannerService';
 import { notify } from '../utils/notification';
 
-// Hook lấy danh sách banners
 export const useBanners = (activeOnly = false) => {
   return useQuery({
     queryKey: ['banners', activeOnly],
@@ -17,6 +15,7 @@ export const useCreateBanner = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (formData) => bannerService.create(formData),
+
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['banners'] });
       notify.success('Tạo banner thành công');
@@ -27,7 +26,6 @@ export const useCreateBanner = () => {
   });
 };
 
-// Hook cập nhật banner
 export const useUpdateBanner = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -42,7 +40,6 @@ export const useUpdateBanner = () => {
   });
 };
 
-// Hook xóa banner
 export const useDeleteBanner = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -57,7 +54,6 @@ export const useDeleteBanner = () => {
   });
 };
 
-// Hook reorder banner
 export const useReorderBanner = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -70,8 +66,6 @@ export const useReorderBanner = () => {
     }
   });
 };
-
-// Hook toggle status
 export const useToggleBannerStatus = () => {
   const queryClient = useQueryClient();
   return useMutation({

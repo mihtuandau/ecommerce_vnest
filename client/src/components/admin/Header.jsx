@@ -22,7 +22,7 @@ import {
   DownOutlined,
   CloseOutlined
 } from "@ant-design/icons";
-import { useAuth } from "../../contexts/authContext";
+import { useAuth } from "../../contexts/AuthContext";
 
 const { Header } = Layout;
 const { Search } = Input;
@@ -146,7 +146,6 @@ const AdminHeader = ({ sidebarOpen, setSidebarOpen }) => {
         justifyContent: 'space-between'
       }}
     >
-      {/* Left: Menu Toggle + Logo */}
       <Space size="middle">
         <Button
           type="text"
@@ -163,7 +162,6 @@ const AdminHeader = ({ sidebarOpen, setSidebarOpen }) => {
         </Link>
       </Space>
 
-      {/* Center: Search Bar */}
       <div style={{ flex: 1, maxWidth: 600, margin: '0 24px', display: window.innerWidth >= 768 ? 'block' : 'none' }}>
         <Search
           placeholder="Search products, orders, users..."
@@ -174,9 +172,7 @@ const AdminHeader = ({ sidebarOpen, setSidebarOpen }) => {
         />
       </div>
 
-      {/* Right: Actions + User */}
       <Space size="middle">
-        {/* Mobile Search Icon */}
         <Button 
           type="text" 
           icon={<SearchOutlined />}
@@ -184,7 +180,6 @@ const AdminHeader = ({ sidebarOpen, setSidebarOpen }) => {
           style={{ display: window.innerWidth >= 768 ? 'none' : 'inline-flex' }}
         />
 
-        {/* Notifications */}
         <Dropdown
           dropdownRender={() => notificationContent}
           trigger={['click']}
@@ -199,7 +194,6 @@ const AdminHeader = ({ sidebarOpen, setSidebarOpen }) => {
           </Badge>
         </Dropdown>
 
-        {/* Settings */}
         <Link to="/admin/settings" style={{ display: window.innerWidth >= 1024 ? 'inline-flex' : 'none' }}>
           <Button 
             type="text" 
@@ -210,7 +204,6 @@ const AdminHeader = ({ sidebarOpen, setSidebarOpen }) => {
 
         <Divider type="vertical" />
 
-        {/* User Menu */}
         <Dropdown
           menu={{ items: userMenuItems }}
           trigger={['click']}

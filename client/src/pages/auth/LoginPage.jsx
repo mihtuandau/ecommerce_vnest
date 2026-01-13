@@ -109,7 +109,6 @@ const LoginPage = () => {
               {isLoading ? "Signing in..." : "Sign in"}
             </Button>
 
-            {/* Divider */}
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-gray-300"></div>
@@ -121,7 +120,6 @@ const LoginPage = () => {
               </div>
             </div>
 
-            {/* Google Login */}
             <Button
               type="button"
               onClick={handleGoogleLogin}
@@ -134,7 +132,6 @@ const LoginPage = () => {
               Sign in with Google
             </Button>
 
-            {/* Sign up link */}
             <p className="text-center text-sm text-gray-600 mt-6">
               Don't have an account?{" "}
               <Link

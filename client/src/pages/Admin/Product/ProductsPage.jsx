@@ -30,15 +30,12 @@ const ProductsPage = () => {
   const [editingVariant, setEditingVariant] = useState(null);
   
   const {
-    // States
     deleteModalOpen,
     productToDelete,
     editingProduct,
     showForm,
     managingVariantsProduct,
     showVariantManager,
-    
-    // Handlers
     handleEdit,
     handleDelete,
     handleDuplicate,
@@ -47,8 +44,6 @@ const ProductsPage = () => {
     handleBulkDelete,
     handleSaveProduct,
     confirmDelete,
-    
-    // Setters
     setDeleteModalOpen,
     setProductToDelete,
     setEditingProduct,
@@ -57,7 +52,6 @@ const ProductsPage = () => {
     setShowVariantManager
   } = useProductActions({ refetch, products });
 
-  // Selection handlers
   const handleSelectAll = (e) => {
     setSelectedProducts(e.target.checked ? products.map(p => p.id) : []);
   };
@@ -68,14 +62,12 @@ const ProductsPage = () => {
     );
   };
 
-  // Update filters helper
   const updateFilters = (newFilters) => {
     setFilters(prev => ({ ...prev, ...newFilters }));
   };
 
   return (
     <div>
-      {/* Header */}
       <PageHeader
         title="Products Management"
         subtitle="Manage your product inventory and details"
@@ -84,14 +76,12 @@ const ProductsPage = () => {
         refreshing={isLoading}
       />
 
-      {/* Stats */}
       <ProductStats 
         products={products}
         formatPrice={formatPrice}
         getTotalStock={getTotalStock}
       />
 
-      {/* Toolbar */}
       <ProductToolbar
         search={filters.search}
         setSearch={(value) => updateFilters({ search: value, page: 1 })}
@@ -106,7 +96,6 @@ const ProductsPage = () => {
         }}
       />
 
-      {/* Products Table */}
       <QueryListWrapper
         isLoading={isLoading}
         error={error}
@@ -135,7 +124,6 @@ const ProductsPage = () => {
         />
       </QueryListWrapper>
 
-      {/* Modals */}
       {showForm && (
         <ProductForm
           product={editingProduct}
@@ -149,7 +137,6 @@ const ProductsPage = () => {
         />
       )}
 
-      {/* Variant Manager Modal */}
       {showVariantManager && managingVariantsProduct && (
         <VariantManager
           product={managingVariantsProduct}
@@ -161,7 +148,6 @@ const ProductsPage = () => {
           }}
           onSave={handleSaveVariants}
           onImagesUploaded={async (variantId, images) => {
-            // Upload images for this variant
             const productService = (await import('../../../services/productService')).default;
             await productService.uploadImages(managingVariantsProduct.id, images, { variantId });
             refetch();

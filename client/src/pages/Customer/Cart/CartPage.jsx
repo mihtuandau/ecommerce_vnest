@@ -31,8 +31,6 @@ const CartPage = () => {
   } = useCart();
   
   const [selectedItems, setSelectedItems] = useState(new Set());
-  
-  // Load cart when component mounts if user is logged in
   useEffect(() => {
     if (isLoggedIn) {
       loadCart();

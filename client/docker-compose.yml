@@ -1,0 +1,22 @@
+services:
+  # React Client
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ecommerce_client
+    restart: unless-stopped
+    ports:
+      - "${CLIENT_PORT:-80}:80"
+    networks:
+      - ecommerce_network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  ecommerce_network:
+    driver: bridge

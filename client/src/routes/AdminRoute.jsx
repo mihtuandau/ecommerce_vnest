@@ -1,12 +1,11 @@
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '../contexts/authContext';
+import { useAuth } from '../contexts/AuthContext';
 
 const AdminRoute = ({ children }) => {
   const { user, loading } = useAuth();
 
-  // Don't show separate loading - let Suspense handle it
   if (loading) {
-    return null; // Or return children to avoid flash
+    return null;
   }
 
   if (!user) {

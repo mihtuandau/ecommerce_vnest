@@ -1,4 +1,3 @@
-// src/contexts/AuthContext.jsx
 import { createContext, useState, useEffect, useContext } from 'react';
 import authService from '../services/authService';
 import { notify } from '../utils/notification';
@@ -46,7 +45,6 @@ export const AuthProvider = ({ children }) => {
       const data = await authService.login(credentials);
       setUser(data.user);
       
-      // Trigger cart sync event
       window.dispatchEvent(new Event('userLoggedIn'));
       
       notify.success('Đăng nhập thành công!');

@@ -2,7 +2,6 @@ import apiService from './apiService';
 import { PAYMENT_ENDPOINTS } from '../config/apiConstants';
 
 const paymentService = {
-  // Create payment and get payment link
   createPayment: async (orderId, method = 'PAYOS') => {
     try {
       const response = await apiService.post(PAYMENT_ENDPOINTS.BASE, { orderId, method });
@@ -11,8 +10,6 @@ const paymentService = {
       throw error;
     }
   },
-
-  // Get PayOS payment info
   getPayOSPaymentInfo: async (orderCode) => {
     try {
       const response = await apiService.get(PAYMENT_ENDPOINTS.PAYOS_INFO(orderCode));
@@ -22,7 +19,6 @@ const paymentService = {
     }
   },
 
-  // Get payment with order details by PayOS order code
   getPaymentWithOrder: async (orderCode) => {
     try {
       const response = await apiService.get(PAYMENT_ENDPOINTS.PAYOS_ORDER(orderCode));
@@ -32,7 +28,6 @@ const paymentService = {
     }
   },
 
-  // Cancel PayOS payment
   cancelPayOSPayment: async (paymentId, reason) => {
     try {
       const response = await apiService.post(PAYMENT_ENDPOINTS.CANCEL(paymentId), { reason });
@@ -41,8 +36,6 @@ const paymentService = {
       throw error;
     }
   },
-
-  // Get all payments with filters
   getPayments: async (params = {}) => {
     try {
       const response = await apiService.get(PAYMENT_ENDPOINTS.BASE, params);
@@ -52,7 +45,6 @@ const paymentService = {
     }
   },
 
-  // Get payment by ID
   getPayment: async (id) => {
     try {
       const response = await apiService.get(PAYMENT_ENDPOINTS.BY_ID(id));
@@ -62,7 +54,6 @@ const paymentService = {
     }
   },
 
-  // Update payment status (Admin only)
   updatePaymentStatus: async (id, status) => {
     try {
       const response = await apiService.put(PAYMENT_ENDPOINTS.STATUS(id), { status });
@@ -72,7 +63,6 @@ const paymentService = {
     }
   },
 
-  // Sync payment status with PayOS (Admin only)
   syncPaymentStatus: async (id) => {
     try {
       const response = await apiService.post(`${PAYMENT_ENDPOINTS.BASE}/${id}/sync`);
@@ -82,7 +72,6 @@ const paymentService = {
     }
   },
 
-  // Get payment statistics
   getStats: async () => {
     try {
       const response = await apiService.get(PAYMENT_ENDPOINTS.STATS);
@@ -92,14 +81,11 @@ const paymentService = {
     }
   },
 
-  // Verify payment return (PUBLIC - no authentication needed)
   verifyPaymentReturn: async (orderCode) => {
     try {
-      // Use public webhook endpoint which doesn't require authentication
       const response = await apiService.get(`/webhooks/payments/payos/verify/${orderCode}`);
       return response;
     } catch (error) {
-      console.error('Error verifying payment return:', error);
       throw error;
     }
   },

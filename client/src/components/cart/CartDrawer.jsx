@@ -211,7 +211,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
       )}
 
       {/* Custom Styles */}
-      <style jsx>{`
+      <style>{`
         @keyframes slideInCart {
           from {
             opacity: 0;

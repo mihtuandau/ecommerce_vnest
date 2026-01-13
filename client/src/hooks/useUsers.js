@@ -3,7 +3,6 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import userService from '../services/userService';
 import { notify } from '../utils/notification';
 
-// Hook lấy danh sách users với pagination
 export const useUsers = (params = {}) => {
   return useQuery({
     queryKey: ['users', params],
@@ -11,41 +10,36 @@ export const useUsers = (params = {}) => {
       const data = await userService.getUsers(params);
       return Array.isArray(data) ? data : [];
     },
-    staleTime: 2 * 60 * 1000, // Cache 2 phút
+    staleTime: 2 * 60 * 1000, 
   });
 };
 
-// Hook lấy chi tiết user
 export const useUser = (userId) => {
   return useQuery({
     queryKey: ['users', userId],
     queryFn: () => userService.getUserById(userId),
-    enabled: !!userId, // Chỉ fetch khi có userId
+    enabled: !!userId, 
   });
 };
 
-// Hook tạo user mới
 export const useCreateUser = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
     mutationFn: (userData) => userService.createUser(userData),
     onSuccess: () => {
-      // Invalidate users list để refetch
       queryClient.invalidateQueries({ queryKey: ['users'] });
       notify.success('Tạo người dùng thành công');
     },
   });
 };
 
-// Hook cập nhật user
 export const useUpdateUser = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
     mutationFn: ({ id, data }) => userService.updateUser(id, data),
     onSuccess: (_, variables) => {
-      // Invalidate cả list và detail
       queryClient.invalidateQueries({ queryKey: ['users'] });
       queryClient.invalidateQueries({ queryKey: ['users', variables.id] });
       notify.success('Cập nhật người dùng thành công');
@@ -53,7 +47,6 @@ export const useUpdateUser = () => {
   });
 };
 
-// Hook xóa user
 export const useDeleteUser = () => {
   const queryClient = useQueryClient();
   

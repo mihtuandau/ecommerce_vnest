@@ -9,9 +9,8 @@ import FeaturedProducts from "../../../components/home/FeaturedProducts";
 import BestSellingProducts from "../../../components/home/BestSellingProducts";
 import PromoBanner from "../../../components/home/PromoBanner";
 import Loading from "../../../components/common/Loading";
-// import Features from "../../../components/home/Features";
 import { useHomeData } from "../../../hooks/useHomeData";
-import { useAuth } from "../../../contexts/authContext";
+import { useAuth } from "../../../contexts/AuthContext";
 import authService from "../../../services/authService";
 import { notify } from "../../../utils/notification";
 
