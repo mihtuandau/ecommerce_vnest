@@ -1,6 +1,5 @@
 import dayjs from 'dayjs';
 
-// Format revenue data for charts based on report type
 export const formatRevenueChartData = (revenueData) => {
   console.log('formatRevenueChartData - revenueData:', revenueData);
   if (!revenueData?.data) return [];
@@ -21,14 +20,12 @@ export const formatRevenueChartData = (revenueData) => {
     }));
   }
   
-  // Daily data
   return revenueData.data.slice(0, 30).map(item => ({
     name: dayjs(item.createdAt).format('DD/MM'),
     revenue: item._sum?.total || 0,
   }));
 };
 
-// Format orders data for pie chart
 export const formatOrdersChartData = (ordersData) => {
   console.log('formatOrdersChartData - ordersData:', ordersData);
   if (!ordersData?.data) return [];
@@ -38,7 +35,6 @@ export const formatOrdersChartData = (ordersData) => {
   }));
 };
 
-// Format top products data for table
 export const formatTopProductsTableData = (topProductsData) => {
   console.log('formatTopProductsTableData - topProductsData:', topProductsData);
   if (!topProductsData?.data) return [];

@@ -108,14 +108,12 @@ const AdminCategoriesPage = () => {
     return filtered;
   }, [categories, searchQuery, sortBy, sortDir]);
 
-  // Pagination
   const totalPages = Math.max(1, Math.ceil(filteredCategories.length / itemsPerPage));
   const paginatedCategories = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     return filteredCategories.slice(startIndex, startIndex + itemsPerPage);
   }, [filteredCategories, currentPage, itemsPerPage]);
 
-  // Reset to page 1 when search changes
   useEffect(() => {
     setCurrentPage(1);
   }, [searchQuery, sortBy, sortDir]);
@@ -128,7 +126,6 @@ const AdminCategoriesPage = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Quản lý Danh mục</h1>
@@ -138,18 +135,14 @@ const AdminCategoriesPage = () => {
           Thêm danh mục
         </Button>
       </div>
-
-      {/* Stats */}
       <CategoryStatsCards stats={stats} />
 
-      {/* Filters */}
       <CategoryFilters
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         onAddClick={() => setShowForm(true)}
       />
 
-      {/* Table */}
       <div>
         <CategoryTable
           categories={paginatedCategories}
@@ -174,7 +167,6 @@ const AdminCategoriesPage = () => {
         )}
       </div>
 
-      {/* Form Modal */}
       <CategoryFormModal
         isOpen={showForm}
         onClose={handleCloseForm}

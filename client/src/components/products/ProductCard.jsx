@@ -34,7 +34,6 @@ const ProductCard = ({ product, viewMode = 'grid-4' }) => {
   const ratingSize = isGrid4 ? 10 : isGrid3 ? 12 : isGrid2 ? 11 : 13;
   const soldTextClass = 'text-sm';
   
-  // Thêm các class cho padding dựa trên view mode
   const containerClass = isGrid4 ? 'p-3' : isGrid3 ? 'p-4' : isGrid2 ? 'p-4' : 'p-6';
   const imageAspectClass = 'aspect-square';
   const minHeightTitle = isGrid4 ? 'min-h-[2rem]' : isGrid3 ? 'min-h-[2.5rem]' : isGrid2 ? 'min-h-[3rem]' : '';
@@ -97,7 +96,6 @@ const ProductCard = ({ product, viewMode = 'grid-4' }) => {
 
   return (
     <div className={`group relative bg-white border border-gray-200 transition-all duration-300 overflow-hidden flex flex-col h-full ${isList ? 'flex-row min-h-[280px]' : ''}`}>
-      {/* Badge */}
       {(badge || discountPercent > 0) && (
         <div className={`absolute top-3 left-3 z-10 ${isList ? 'top-2 left-2' : ''}`}>
           <span className={`px-2.5 py-1 text-xs font-normal bg-[#00a85a] text-white ${isList ? 'px-2 py-0.5 text-[10px]' : ''}`}>
@@ -106,7 +104,6 @@ const ProductCard = ({ product, viewMode = 'grid-4' }) => {
         </div>
       )}
 
-      {/* Quick Actions - Ẩn trong list view */}
       {!isList && (
         <div className="absolute top-3 right-3 z-10 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           <button 
@@ -130,7 +127,6 @@ const ProductCard = ({ product, viewMode = 'grid-4' }) => {
         </div>
       )}
 
-      {/* Product Image */}
       <Link 
         to={`/products/${id}`} 
         className={`block relative overflow-hidden ${isList ? 'w-2/5' : 'w-full'} ${imageAspectClass} bg-gray-50`}
@@ -143,9 +139,7 @@ const ProductCard = ({ product, viewMode = 'grid-4' }) => {
         />
       </Link>
 
-      {/* Product Info */}
       <div className={`flex flex-col ${isList ? 'justify-center' : 'flex-grow'} ${containerClass} ${isList ? 'w-3/5' : ''}`}>
-        {/* Product Name */}
         <Link to={`/products/${id}`} className={`block ${isList ? 'mb-5' : 'mb-3'}`}>
           <h3 
             className={`${titleClass} text-gray-900 hover:text-gray-600 transition-colors ${isList ? 'line-clamp-2 leading-normal' : 'line-clamp-2'} ${minHeightTitle}`} 
@@ -155,7 +149,6 @@ const ProductCard = ({ product, viewMode = 'grid-4' }) => {
           </h3>
         </Link>
 
-        {/* Rating & Sold Count */}
         <div className={`flex items-center ${isList ? 'gap-6 mb-5' : 'justify-between gap-2 mb-3 flex-wrap'} ${minHeightRating}`}>
           <StarRating
             rating={product.averageRating || 0}
@@ -168,7 +161,6 @@ const ProductCard = ({ product, viewMode = 'grid-4' }) => {
           </span>
         </div>
 
-        {/* Price */}
         <div className={`flex items-baseline gap-3 ${isList ? 'mb-6' : 'flex-wrap'} ${minHeightPrice}`}>
           <span className={priceClass}>
             {formatPrice(productPrice)}
@@ -182,7 +174,6 @@ const ProductCard = ({ product, viewMode = 'grid-4' }) => {
           )}
         </div>
 
-        {/* Wishlist button for list view */}
         {isList && (
           <div className="pt-6 border-t border-gray-100">
             <button  

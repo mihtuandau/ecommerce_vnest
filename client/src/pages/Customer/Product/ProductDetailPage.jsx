@@ -118,7 +118,6 @@ const ProductDetailPage = () => {
     };
 
     if (buyNow) {
-      // Go directly to checkout without adding to cart
       navigate('/checkout', { state: { product: productData, quantity } });
     } else {
       addToCart(selectedVariant.id, quantity, productData);

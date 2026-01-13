@@ -60,8 +60,6 @@ const ProfilePage = () => {
           <Breadcrumb items={[
             { label: 'Thông tin tài khoản' }
           ]} />
-
-          {/* Header */}
           <PageTitle
             subtitle="Tài khoản"
             title="THÔNG TIN CÁ NHÂN"
@@ -106,7 +104,6 @@ const ProfilePage = () => {
               </Card>
             </Col>
 
-            {/* Change Password Card */}
             <Col xs={24} lg={8}>
               <Card 
                 title={
@@ -122,7 +119,6 @@ const ProfilePage = () => {
               </Card>
             </Col>
 
-            {/* Address Manager Card */}
             <Col xs={24} lg={8}>
               <Card 
                 title={

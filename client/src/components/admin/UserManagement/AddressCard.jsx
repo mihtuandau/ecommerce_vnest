@@ -12,7 +12,6 @@ const AddressCard = ({ address, userId, onSetDefault, onDelete }) => {
     try {
       await onSetDefault(userId, address.id);
     } catch (err) {
-      // Error handled by parent component
     } finally {
       setLoading(false);
     }

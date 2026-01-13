@@ -21,9 +21,7 @@ const PromotionsPage = () => {
       setLoading(true);
       const response = await discountService.getDiscounts();
       
-      console.log('API Response:', response);
       const data = response?.data || response || [];
-      console.log('Promotions data:', data);
       
       if (Array.isArray(data)) {
         const activePromotions = data
@@ -34,7 +32,6 @@ const PromotionsPage = () => {
             return item.status === 'active' && start <= now && end >= now;
           })
           .map((item, index) => {
-            console.log('Processing item:', item.code, 'image:', item.image || 'none');
             return {
               id: item.id,
               code: item.code,
@@ -50,11 +47,9 @@ const PromotionsPage = () => {
             };
           });
         
-        console.log('Active promotions:', activePromotions);
         setPromotions(activePromotions);
       }
     } catch (error) {
-      console.error('Error loading promotions:', error);
       notify.error('Không thể tải khuyến mãi');
     } finally {
       setLoading(false);
@@ -122,7 +117,6 @@ const PromotionsPage = () => {
       <div className="container mx-auto px-4 lg:px-8">
         <Breadcrumb items={breadcrumbItems} />
 
-        {/* Header */}
         <PageTitle
           subtitle="Ưu đãi"
           title="KHUYẾN MÃI"
@@ -157,34 +151,26 @@ const PromotionsPage = () => {
 );
 };
 
-// Promotion Card Component
 const PromotionCard = ({ promotion, onCopy, copiedCode, getTimeRemaining, formatDateRange }) => {
-  console.log('Rendering promotion card:', promotion.code, 'has image:', !!promotion.image, 'image URL:', promotion.image || 'none');
-  
+ 
   return (
     <div className="bg-white border border-gray-200 hover:border-[#00a85a] transition-all duration-300 overflow-hidden group hover:shadow-lg">
-      {/* Banner with Image or Gradient */}
       <div className={`relative h-48 ${promotion.image ? '' : `bg-gradient-to-br ${promotion.gradient}`}`}>
-        {/* Background Image if available */}
         {promotion.image ? (
           <img 
             src={promotion.image} 
             alt={promotion.description || promotion.code}
             className="absolute inset-0 w-full h-full object-cover"
             onError={(e) => {
-              console.error('Image load error for:', promotion.code, 'URL:', promotion.image || 'undefined');
               e.target.style.display = 'none';
             }}
-            onLoad={() => console.log('Image loaded successfully:', promotion.code)}
+            onLoad={() => {}}
           />
         ) : null}
         
-        {/* Overlay for better text visibility */}
         <div className="absolute inset-0 bg-black/30"></div>
       
-        {/* Content */}
         <div className="relative z-10 p-6 flex flex-col justify-between h-full">
-          {/* Discount Badge */}
           <div className="flex justify-end">
             <div className="bg-white px-4 py-2 shadow-lg">
               <span className="text-2xl font-bold text-red-600">
@@ -195,14 +181,12 @@ const PromotionCard = ({ promotion, onCopy, copiedCode, getTimeRemaining, format
             </div>
           </div>
 
-          {/* Title */}
           <div className="flex-1 flex items-center">
             <h3 className="text-white font-bold text-lg line-clamp-2 drop-shadow-lg">
               {promotion.description || promotion.code}
             </h3>
           </div>
 
-          {/* Time & Views */}
           <div className="flex items-center justify-between text-white text-sm">
             <div className="flex items-center gap-1 bg-black/40 px-2 py-1 backdrop-blur-sm">
               <Clock size={14} />
@@ -218,7 +202,6 @@ const PromotionCard = ({ promotion, onCopy, copiedCode, getTimeRemaining, format
         </div>
       </div>
 
-      {/* Code Section */}
       <div className="p-4">
         <div className="text-xs text-gray-500 mb-2">
           {formatDateRange(promotion.startDate, promotion.endDate)}

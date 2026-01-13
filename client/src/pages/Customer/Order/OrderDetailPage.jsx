@@ -30,24 +30,17 @@ const OrderDetailPage = () => {
     try {
       setLoading(true);
       const response = await orderService.getOrderById(id);
-      console.log('📦 Order detail response:', response);
       
-      // apiService.get() returns response.data directly
       const orderData = response || {};
-      
-      console.log('📦 Order data:', orderData);
-      
-      // Transform backend response to match frontend structure
+  
       const transformedOrder = {
         ...orderData,
-        items: orderData.orderItems || [], // Map orderItems to items
+        items: orderData.orderItems || [], 
         paymentMethod: orderData.paymentMethod || 'CASH'
       };
       
-      console.log('✅ Transformed order:', transformedOrder);
       setOrder(transformedOrder);
     } catch (error) {
-      console.error('❌ Error loading order detail:', error);
       notify.error('Không thể tải thông tin đơn hàng');
       navigate('/orders');
     } finally {
@@ -65,7 +58,6 @@ const OrderDetailPage = () => {
       notify.success('Đã hủy đơn hàng thành công!');
       loadOrderDetail();
     } catch (error) {
-      console.error('Cancel order error:', error);
       notify.error(error.response?.data?.message || 'Không thể hủy đơn hàng');
     }
   };
@@ -104,13 +96,10 @@ const OrderDetailPage = () => {
     <Layout>
       <div className="min-h-screen bg-white pt-21 pb-8">
         <div className="container mx-auto px-4 lg:px-30">
-          {/* Breadcrumb */}
           <Breadcrumb items={[
             { label: 'Đơn hàng của tôi', path: '/orders' },
             { label: 'Chi tiết đơn hàng' }
           ]} />
-
-          {/* Header */}
           <div className="mb-6">
             <div className="bg-white border border-gray-200 p-6">
               <div className="flex items-center justify-between mb-2">
@@ -129,16 +118,12 @@ const OrderDetailPage = () => {
           </div>
 
           <div className="space-y-4">
-            {/* Shipping & Payment Info */}
             <OrderShippingInfo order={order} />
 
-            {/* Order Items */}
             <OrderItemsList items={order.items} />
 
-            {/* Price Summary */}
             <OrderPriceSummary order={order} />
 
-            {/* Action Button */}
             {(order.status === 'PENDING' || order.status === 'AWAITING_PAYMENT') && (
               <div className="bg-white border border-gray-200 p-6">
                 <button

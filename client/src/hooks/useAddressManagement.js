@@ -14,7 +14,6 @@ export const useAddressManagement = () => {
     try {
       setLoading(true);
       const response = await addressService.getAddresses();
-      // Handle different response structures
       const addressList = response.addresses || response.data?.addresses || response || [];
       setAddresses(Array.isArray(addressList) ? addressList : []);
     } catch (error) {

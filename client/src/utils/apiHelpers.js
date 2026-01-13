@@ -1,8 +1,3 @@
-// src/utils/apiHelpers.js
-
-/**
- * Normalize API response structure
- */
 export const normalizeResponse = (response) => {
   // Handle different response structures
   if (Array.isArray(response?.data)) return response.data;
@@ -12,9 +7,6 @@ export const normalizeResponse = (response) => {
   return response;
 };
 
-/**
- * Extract pagination from response
- */
 export const extractPagination = (response, defaults = {}) => {
   const data = response?.data || response;
   return {
@@ -25,9 +17,6 @@ export const extractPagination = (response, defaults = {}) => {
   };
 };
 
-/**
- * Handle API errors consistently
- */
 export const handleApiError = (error) => {
   const message = 
     error?.response?.data?.message || 
@@ -40,17 +29,11 @@ export const handleApiError = (error) => {
   return { message, status, code };
 };
 
-/**
- * Check if error is authentication related
- */
 export const isAuthError = (error) => {
   const status = error?.response?.status;
   return status === 401 || status === 403;
 };
 
-/**
- * Retry function with exponential backoff
- */
 export const retryWithBackoff = async (fn, retries = 3, delay = 1000) => {
   try {
     return await fn();

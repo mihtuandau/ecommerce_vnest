@@ -1,10 +1,8 @@
-// src/hooks/useOrders.js
 import { useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import orderService from '../services/orderService';
 import { notify } from '../utils/notification';
 
-// Hook lấy danh sách orders với filtering & sorting
 export const useOrders = (params = {}, filters = {}) => {
   const { data: rawData, ...queryResult } = useQuery({
     queryKey: ['orders', params],
@@ -19,15 +17,12 @@ export const useOrders = (params = {}, filters = {}) => {
     staleTime: 1 * 60 * 1000,
   });
 
-  // Ensure orders is always an array
   const orders = Array.isArray(rawData) ? rawData : [];
 
-  // Client-side filtering & sorting
   const filtered = useMemo(() => {
     let result = [...orders];
     const { search = '', sortBy = 'createdAt', sortDir = 'desc' } = filters;
 
-    // Search filter
     if (search) {
       const searchLower = search.toLowerCase();
       result = result.filter(order => 
@@ -37,7 +32,6 @@ export const useOrders = (params = {}, filters = {}) => {
       );
     }
 
-    // Sort
     result.sort((a, b) => {
       let va = sortBy === 'total' ? (a.total || 0) : 
                sortBy === 'createdAt' ? new Date(a.createdAt).getTime() : 
@@ -51,7 +45,6 @@ export const useOrders = (params = {}, filters = {}) => {
     return result;
   }, [orders, filters]);
 
-  // Stats
   const stats = useMemo(() => ({
     total: orders.length,
     pending: orders.filter(o => o.status === 'PENDING').length,
@@ -62,7 +55,6 @@ export const useOrders = (params = {}, filters = {}) => {
   return { ...queryResult, data: filtered, orders, stats };
 };
 
-// Hook lấy chi tiết order
 export const useOrder = (orderId) => {
   return useQuery({
     queryKey: ['orders', orderId],
@@ -72,7 +64,6 @@ export const useOrder = (orderId) => {
   });
 };
 
-// Mutations
 export const useCreateOrder = () => {
   const queryClient = useQueryClient();
   return useMutation({

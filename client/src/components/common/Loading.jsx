@@ -33,7 +33,7 @@ const Loading = memo(({
           </div>
         </div>
         
-        <style jsx>{`
+        <style>{`
           @keyframes spin-dot {
             0%, 100% {
               transform: scale(0.8);

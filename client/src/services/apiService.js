@@ -1,8 +1,5 @@
 import axiosClient from "../config/apiClient";
 
-/**
- * Generic API Service với khả năng custom headers
- */
 const apiService = {
   /**
    * GET request

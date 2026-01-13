@@ -66,7 +66,6 @@ const SupportChatPage = () => {
     try {
       await chatSocketService.sendMessage(roomId, user.id, messageText);
     } catch (error) {
-      console.error("Failed to send message:", error);
     } finally {
       setIsLoading(false);
     }
@@ -139,7 +138,6 @@ const SupportChatPage = () => {
             </div>
           </div>
 
-          {/* Messages Container */}
           <div className="bg-white border-x border-gray-200 h-[500px] flex flex-col">
             {/* Messages List */}
             <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-white custom-scrollbar">
@@ -216,7 +214,6 @@ const SupportChatPage = () => {
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Input Form */}
             <div className="border-t border-gray-200 p-4 bg-white">
               <form onSubmit={handleSendMessage} className="flex gap-2">
                 <input
@@ -238,7 +235,6 @@ const SupportChatPage = () => {
             </div>
           </div>
 
-          {/* Footer Note */}
           <div className="bg-gray-100 border border-gray-200 border-t-0 p-4 text-center">
             <p className="text-xs text-gray-600">
               Trả lời nhanh trong vài phút
@@ -246,7 +242,7 @@ const SupportChatPage = () => {
           </div>
         </div>
 
-        <style jsx>{`
+        <style>{`
           @keyframes fadeIn {
             from {
               opacity: 0;

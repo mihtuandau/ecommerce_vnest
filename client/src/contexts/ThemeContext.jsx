@@ -1,4 +1,3 @@
-// src/contexts/ThemeContext.jsx
 import { createContext, useContext, useState, useEffect } from 'react';
 import { ConfigProvider, theme as antdTheme } from 'antd';
 

@@ -27,7 +27,6 @@ const CategoryPage = () => {
     totalPages: 0,
   });
 
-  // Get filters from URL
   const getFiltersFromURL = () => ({
     brandId: searchParams.get('brand') || '',
     minPrice: searchParams.get('minPrice') || '',
@@ -38,7 +37,6 @@ const CategoryPage = () => {
     page: parseInt(searchParams.get('page')) || 1,
   });
 
-  // Load category info
   useEffect(() => {
     const loadCategory = async () => {
       try {
@@ -51,8 +49,6 @@ const CategoryPage = () => {
     };
     loadCategory();
   }, [id]);
-
-  // Load brands and price range
   useEffect(() => {
     const loadBrandsAndPrice = async () => {
       try {
@@ -63,13 +59,11 @@ const CategoryPage = () => {
         setBrands(brandsRes?.data || []);
         setPriceRange(priceRangeRes?.data || { minPrice: 0, maxPrice: 10000000 });
       } catch (error) {
-        console.error('Error loading brands and price range:', error);
       }
     };
     loadBrandsAndPrice();
   }, []);
 
-  // Load products
   useEffect(() => {
     if (category) {
       loadProducts();
@@ -82,8 +76,6 @@ const CategoryPage = () => {
     try {
       setLoading(true);
       const filters = getFiltersFromURL();
-      
-      // Build API params - only include values that should filter
       const apiParams = {
         page: filters.page,
         limit: pagination.limit,
@@ -100,7 +92,6 @@ const CategoryPage = () => {
       
       const response = await productService.getAll(apiParams);
 
-      // Fix: axios response có cấu trúc { data: { data: [], page, total, totalPages } }
       const productsData = response.data?.data || response.data || [];
       const pageInfo = response.data;
 
@@ -121,7 +112,6 @@ const CategoryPage = () => {
   const handleFilterChange = (filters) => {
     const params = new URLSearchParams();
     
-    // Convert string IDs to numbers and validate
     if (filters.brandId) {
       const brandId = parseInt(filters.brandId);
       if (!isNaN(brandId)) params.set('brand', brandId);
@@ -204,7 +194,6 @@ const CategoryPage = () => {
             />
           )}
 
-          {/* Filter Bar - Sticky */}
           <div className="sticky top-16 z-10 mb-6">
             <div className="p-3">
               <ProductFilter
@@ -218,7 +207,6 @@ const CategoryPage = () => {
             </div>
           </div>
 
-          {/* Active Filters */}
           <ActiveFilters
             filters={getFiltersFromURL()}
             categories={[]}
@@ -228,13 +216,11 @@ const CategoryPage = () => {
             onClearAll={handleClearAllFilters}
           />
 
-          {/* Products Grid */}
           <div className="w-full">
             <div className="min-h-[600px]">
               <ProductGrid products={products} loading={loading} />
             </div>
 
-            {/* Pagination */}
             {!loading && products.length > 0 && (
               <div className="mt-8 flex justify-center">
                 <Pagination

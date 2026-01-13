@@ -1,10 +1,8 @@
-// src/hooks/usePayments.js
 import { useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import paymentService from '../services/paymentService';
 import { notify } from '../utils/notification';
 
-// Hook lấy danh sách payments với filtering
 export const usePayments = (filters = {}) => {
   const { data: rawData, ...queryResult } = useQuery({
     queryKey: ['payments'],
@@ -12,7 +10,6 @@ export const usePayments = (filters = {}) => {
     staleTime: 2 * 60 * 1000,
   });
 
-  // Normalize data structure
   const payments = useMemo(() => {
     if (!rawData) return [];
     if (Array.isArray(rawData)) return rawData;
@@ -21,7 +18,6 @@ export const usePayments = (filters = {}) => {
     return [];
   }, [rawData]);
 
-  // Client-side filtering & sorting
   const filtered = useMemo(() => {
     let result = [...payments];
     const { 
@@ -32,7 +28,6 @@ export const usePayments = (filters = {}) => {
       sortOrder = 'desc' 
     } = filters;
 
-    // Search filter
     if (search) {
       const searchLower = search.toLowerCase();
       result = result.filter(p => 
@@ -42,17 +37,14 @@ export const usePayments = (filters = {}) => {
       );
     }
 
-    // Status filter
     if (status) {
       result = result.filter(p => p.status === status);
     }
 
-    // Method filter
     if (method) {
       result = result.filter(p => p.method === method);
     }
 
-    // Sorting
     if (sortField) {
       result.sort((a, b) => {
         let va = sortField === 'createdAt' ? new Date(a[sortField]).getTime() : a[sortField] || 0;
@@ -64,9 +56,7 @@ export const usePayments = (filters = {}) => {
     return result;
   }, [payments, filters]);
 
-  // Stats
   const stats = useMemo(() => {
-    // Support both COMPLETED and SUCCESS status
     const isCompleted = (p) => p.status === 'COMPLETED' || p.status === 'SUCCESS';
     
     return {
@@ -88,7 +78,6 @@ export const usePayments = (filters = {}) => {
   };
 };
 
-// Hook xử lý refund
 export const useRefundPayment = () => {
   const queryClient = useQueryClient();
   return useMutation({

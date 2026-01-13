@@ -1,4 +1,3 @@
-// src/pages/Auth/ForgotPasswordPage.jsx
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Mail, ArrowLeft } from "lucide-react";
@@ -44,7 +43,6 @@ const ForgotPasswordPage = () => {
   if (sent) {
     return (
       <div className="min-h-screen flex overflow-hidden bg-white">
-        {/* Left Side - Success Message */}
         <div className="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-12 bg-white relative animate-slideInLeft lg:shadow-[8px_0_24px_-8px_rgba(0,0,0,0.12)] z-10">
           <div className="w-full max-w-md">
             <div className="text-center space-y-6">
@@ -87,7 +85,6 @@ const ForgotPasswordPage = () => {
           </div>
         </div>
 
-        {/* Right Side - Image */}
         <div className="hidden lg:block lg:w-1/2 relative overflow-hidden animate-slideInRight">
           <img 
             src="/bannerlogin.png" 
@@ -101,10 +98,8 @@ const ForgotPasswordPage = () => {
 
   return (
     <div className="min-h-screen flex overflow-hidden bg-white">
-      {/* Left Side - Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-12 bg-white relative animate-slideInLeft lg:shadow-[8px_0_24px_-8px_rgba(0,0,0,0.12)] z-10">
         <div className="w-full max-w-md">
-          {/* Logo */}
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold text-gray-900">
               Quên mật khẩu
@@ -112,7 +107,6 @@ const ForgotPasswordPage = () => {
             <p className="text-gray-600 mt-2">Nhập email để khôi phục mật khẩu</p>
           </div>
 
-          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
               <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 text-sm">
@@ -126,7 +120,6 @@ const ForgotPasswordPage = () => {
               </p>
             </div>
 
-            {/* Email Input */}
             <Input
               label="Email"
               type="email"
@@ -141,7 +134,6 @@ const ForgotPasswordPage = () => {
               required
             />
 
-            {/* Submit Button */}
             <Button
               type="submit"
               disabled={loading}
@@ -152,7 +144,6 @@ const ForgotPasswordPage = () => {
               {loading ? 'Đang gửi...' : 'Gửi link khôi phục'}
             </Button>
 
-            {/* Back to Login */}
             <div className="text-center">
               <Link
                 to="/login"
@@ -166,7 +157,6 @@ const ForgotPasswordPage = () => {
         </div>
       </div>
 
-      {/* Right Side - Image */}
       <div className="hidden lg:block lg:w-1/2 relative overflow-hidden animate-slideInRight">
         <img 
           src="/bannerlogin.png" 

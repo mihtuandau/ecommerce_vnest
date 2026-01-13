@@ -19,7 +19,6 @@ export const useProductActions = ({ refetch, products, selectedProducts = [] }) 
   const updateMutation = useUpdateProductMutation();
   const deleteMutation = useDeleteProductMutation();
 
-  // Basic actions
   const handleEdit = (product) => {
     setEditingProduct(product);
     setShowForm(true);
@@ -40,7 +39,6 @@ export const useProductActions = ({ refetch, products, selectedProducts = [] }) 
     setShowVariantManager(true);
   };
 
-  // API actions
   const handleDuplicate = async (product) => {
     try {
       await productService.create({
@@ -83,7 +81,6 @@ export const useProductActions = ({ refetch, products, selectedProducts = [] }) 
 
   const handleSaveProduct = async (productData, images) => {
     try {
-      // Use the hook's editingProduct state to determine update vs create
       if (editingProduct) {
         await updateProduct(editingProduct, productData, images);
         notify.success('Cập nhật sản phẩm thành công!');
@@ -125,15 +122,12 @@ export const useProductActions = ({ refetch, products, selectedProducts = [] }) 
   };
 
   return {
-    // States
     deleteModalOpen,
     productToDelete,
     editingProduct,
     showForm,
     managingVariantsProduct,
     showVariantManager,
-    
-    // Handlers
     handleEdit,
     handleDelete,
     handleDuplicate,
@@ -143,8 +137,6 @@ export const useProductActions = ({ refetch, products, selectedProducts = [] }) 
     handleBulkDelete,
     handleAddProduct,
     confirmDelete,
-    
-    // Setters
     setDeleteModalOpen,
     setProductToDelete,
     setEditingProduct,

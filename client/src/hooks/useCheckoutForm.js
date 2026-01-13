@@ -1,8 +1,5 @@
 import { useState } from 'react';
 
-/**
- * Custom hook for managing checkout form state and handlers
- */
 export const useCheckoutForm = (initialShippingInfo = null) => {
   const [shippingInfo, setShippingInfo] = useState(
     initialShippingInfo || {
@@ -30,7 +27,7 @@ export const useCheckoutForm = (initialShippingInfo = null) => {
   const handleSelectAddress = (addressData, currentEmail = "") => {
     setShippingInfo({
       fullName: addressData.fullName || "",
-      email: currentEmail || shippingInfo.email, // Preserve existing email
+      email: currentEmail || shippingInfo.email, 
       phone: addressData.phone || "",
       address: addressData.street || "",
       city: addressData.city || "",

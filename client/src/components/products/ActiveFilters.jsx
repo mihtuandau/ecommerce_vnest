@@ -9,7 +9,6 @@ const ActiveFilters = ({
 }) => {
   const activeFilters = [];
 
-  // Category filter
   if (filters.categoryId) {
     const category = categories.find(c => c.id == filters.categoryId);
     if (category) {
@@ -21,7 +20,6 @@ const ActiveFilters = ({
     }
   }
 
-  // Price range filter
   if (filters.minPrice || filters.maxPrice) {
     const min = filters.minPrice ? parseFloat(filters.minPrice) : priceRange.minPrice;
     const max = filters.maxPrice ? parseFloat(filters.maxPrice) : priceRange.maxPrice;
@@ -35,7 +33,6 @@ const ActiveFilters = ({
     }
   }
 
-  // Rating filter
   if (filters.minRating) {
     const ratingLabels = {
       '5': '5 sao',
@@ -49,7 +46,6 @@ const ActiveFilters = ({
     });
   }
 
-  // Stock status filter
   if (filters.stockStatus) {
     const stockLabels = {
       'inStock': 'Còn hàng',
@@ -62,7 +58,6 @@ const ActiveFilters = ({
     });
   }
 
-  // Sort filter (optional - only show if not default)
   if (filters.sortBy && filters.sortBy !== 'newest') {
     const sortLabels = {
       'price-asc': 'Giá: Thấp → Cao',

@@ -68,47 +68,25 @@ export const formatShippingAddress = (shippingInfo) => {
 };
 
 export const buildOrderData = (cartItems, shippingInfo, paymentMethod, isGuest, appliedDiscount = null, shippingFee = 0) => {
-  console.log('🔨 buildOrderData called with:', {
-    cartItemsCount: cartItems?.length,
-    paymentMethod,
-    isGuest,
-    shippingFee,
-    appliedDiscount
-  });
+  
 
   if (!cartItems || cartItems.length === 0) {
-    console.error('❌ No cart items!', cartItems);
     throw new Error('Giỏ hàng trống');
   }
 
   if (!shippingInfo) {
-    console.error('❌ No shipping info!');
     throw new Error('Thiếu thông tin giao hàng');
   }
 
   const orderData = {
     items: cartItems.map((item, index) => {
-      // Handle both cart items (variantId) and buy-now items (id)
       const variantId = parseInt(item.variantId || item.id, 10);
       const quantity = parseInt(item.quantity, 10);
       
-      console.log('📦 Processing item:', { 
-        index,
-        variantId, 
-        quantity, 
-        original: { 
-          variantId: item.variantId, 
-          id: item.id,
-          quantity: item.quantity 
-        } 
-      });
-      
       if (!Number.isInteger(variantId) || variantId <= 0) {
-        console.error(`❌ Invalid variantId at item ${index}:`, item);
         throw new Error(`Sản phẩm #${index + 1} có dữ liệu không hợp lệ (variantId: ${item.variantId || item.id})`);
       }
       if (!Number.isInteger(quantity) || quantity <= 0) {
-        console.error(`❌ Invalid quantity at item ${index}:`, item);
         throw new Error(`Sản phẩm #${index + 1} có số lượng không hợp lệ (${item.quantity})`);
       }
       
@@ -127,23 +105,17 @@ export const buildOrderData = (cartItems, shippingInfo, paymentMethod, isGuest, 
     shippingFee,
   };
 
-  // Add discount code if applied
   if (appliedDiscount?.code) {
     orderData.discountCode = appliedDiscount.code;
-    console.log('✅ Discount applied to order:', appliedDiscount.code);
   } else {
-    console.log('⚠️ No discount applied:', appliedDiscount);
   }
 
   if (isGuest) {
     orderData.guestEmail = shippingInfo.email;
     orderData.guestPhone = shippingInfo.phone;
-    console.log('👤 Guest order:', { email: orderData.guestEmail, phone: orderData.guestPhone });
   } else {
-    console.log('👥 Authenticated user order');
   }
 
-  console.log('📦 Final order data:', JSON.stringify(orderData, null, 2));
   return orderData;
 };
 
@@ -156,7 +128,6 @@ export const saveGuestOrder = (orderCode, email) => {
     date: new Date().toISOString(),
   });
 
-  // Keep only last 10 orders
   if (guestOrders.length > 10) {
     guestOrders.shift();
   }

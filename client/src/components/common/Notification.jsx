@@ -215,7 +215,7 @@ const NotificationItem = ({ notification, onClose }) => {
         </div>
       )}
 
-      <style jsx>{`
+      <style>{`
         @keyframes shrink {
           from {
             transform: scaleX(1);

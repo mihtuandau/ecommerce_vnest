@@ -23,13 +23,11 @@ const DiscountManagement = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  // Modals
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedDiscount, setSelectedDiscount] = useState(null);
 
-  // Load discounts with TanStack Query
   const { 
     data: filteredDiscounts = [], 
     stats, 
@@ -42,12 +40,10 @@ const DiscountManagement = () => {
     sortDir: sortConfig.direction
   });
 
-  // Mutations
   const createMutation = useCreateDiscount();
   const updateMutation = useUpdateDiscount();
   const deleteMutation = useDeleteDiscount();
 
-  // Pagination
   const paginatedDiscounts = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     return filteredDiscounts.slice(startIndex, startIndex + itemsPerPage);
@@ -55,7 +51,6 @@ const DiscountManagement = () => {
 
   const totalPages = Math.ceil(filteredDiscounts.length / itemsPerPage);
 
-  // Sorting
   const handleSort = (key) => {
     setSortConfig((prev) => ({
       key,
@@ -63,7 +58,6 @@ const DiscountManagement = () => {
     }));
   };
 
-  // CRUD operations
   const handleCreate = async (data) => {
     try {
       await createMutation.mutateAsync(data);
@@ -101,7 +95,6 @@ const DiscountManagement = () => {
     }
   };
 
-  // Modal handlers
   const handleView = (discount) => {
     setSelectedDiscount(discount);
     setShowDetailModal(true);
@@ -125,7 +118,6 @@ const DiscountManagement = () => {
 
   return (
     <div>
-      {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Quản lý mã giảm giá</h1>
@@ -143,10 +135,8 @@ const DiscountManagement = () => {
         </div>
       </div>
 
-      {/* Stats */}
       <DiscountStatsCards stats={stats} />
 
-      {/* Filters */}
       <DiscountFilters
         search={search}
         setSearch={setSearch}
@@ -154,7 +144,6 @@ const DiscountManagement = () => {
         setStatusFilter={setStatusFilter}
       />
 
-      {/* Table */}
       <div>
         <DiscountTable
           discounts={paginatedDiscounts}
@@ -176,7 +165,6 @@ const DiscountManagement = () => {
         )}
       </div>
 
-      {/* Modals */}
       <DiscountModal
         isOpen={showCreateModal}
         onClose={handleCloseModals}

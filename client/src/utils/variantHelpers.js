@@ -22,8 +22,6 @@ export const validateBulkVariant = (bulkData) => {
 };
 
 export const validateSingleVariant = (variant) => {
-  // Size và color đều optional - không bắt buộc
-  // Chỉ cần có giá là đủ
   if (!variant.price || variant.price <= 0) {
     notify.error('Vui lòng nhập giá sản phẩm');
     return false;

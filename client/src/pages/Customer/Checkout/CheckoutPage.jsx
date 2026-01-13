@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { Steps, Card, Divider, Button as AntButton, Modal as AntModal, Spin } from "antd";
 import { ArrowLeftOutlined, ShoppingOutlined, EnvironmentOutlined, CreditCardOutlined } from "@ant-design/icons";
 import { notify } from "../../../utils/notification";
-import { useAuth } from "../../../contexts/authContext";
+import { useAuth } from "../../../contexts/AuthContext";
 import { useCart } from "../../../hooks/useCart";
 import Loading from "../../../components/common/Loading";
 import Modal from "../../../components/common/Modal";
@@ -28,13 +28,10 @@ const CheckoutPage = () => {
 
   const allCartItems = useSelector((state) => state.cart.items);
 
-  // Handle both cases: coming from cart page (items) or product detail page (product + quantity)
   let cartItems = location.state?.items || [];
   
-  // If coming from product detail page (single product)
   if (location.state?.product && !location.state?.items) {
     const { product, quantity } = location.state;
-    // Create a cart item from the product data
     const cartItem = {
       id: product.variant.id,
       productId: product.id,
@@ -126,14 +123,12 @@ const CheckoutPage = () => {
             Quay lại giỏ hàng
           </AntButton>
           
-          {/* Header */}
           <PageTitle
             subtitle="Hoàn tất đơn hàng"
             title="THANH TOÁN"
             className="mt-4 mb-8"
           />
           
-          {/* Progress Steps */}
           <Steps
             current={1}
             items={[
@@ -153,7 +148,6 @@ const CheckoutPage = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
-            {/* Shipping Information Card */}
             <Card 
               title={
                 <div className="flex items-center gap-2">
@@ -171,7 +165,6 @@ const CheckoutPage = () => {
               />
             </Card>
 
-            {/* Payment Method Card */}
             <Card 
               title={
                 <div className="flex items-center gap-2">
@@ -212,7 +205,6 @@ const CheckoutPage = () => {
           </div>
         </div>
 
-        {/* Address Selection Modal */}
         <AntModal
           title="Chọn địa chỉ giao hàng"
           open={showAddressModal}

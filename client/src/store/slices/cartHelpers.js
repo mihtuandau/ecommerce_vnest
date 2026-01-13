@@ -11,8 +11,6 @@ export const loadCartFromStorage = () => {
     
     const parsed = JSON.parse(savedCart);
     const items = Array.isArray(parsed) ? parsed : (parsed.items || []);
-    
-    // Deduplicate by variantId - merge quantities if duplicate
     const deduped = items.reduce((acc, item) => {
       const existing = acc.find(i => i.variantId === item.variantId);
       if (existing) {

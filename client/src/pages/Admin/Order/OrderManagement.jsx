@@ -21,13 +21,11 @@ const AdminOrdersPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  // Build params object, only include status if it has a value
   const params = { limit: 1000 };
   if (statusFilter && statusFilter !== '') {
     params.status = statusFilter;
   }
 
-  // Fetch orders with filters
   const { data: filteredOrders = [], stats, isLoading, refetch } = useOrders(
     params,
     { search: searchQuery, sortBy, sortDir }
@@ -69,7 +67,6 @@ const AdminOrdersPage = () => {
     }
   };
 
-  // Pagination
   const paginatedOrders = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     return filteredOrders.slice(startIndex, startIndex + itemsPerPage);
@@ -80,7 +77,6 @@ const AdminOrdersPage = () => {
   return (
     <div className="p-6">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
             <div>
@@ -100,11 +96,9 @@ const AdminOrdersPage = () => {
             </AntButton>
           </div>
 
-          {/* Stats Cards */}
           <OrderStatsCards stats={stats} />
         </div>
 
-        {/* Filters */}
         <OrderFilters
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
@@ -112,7 +106,6 @@ const AdminOrdersPage = () => {
           setStatusFilter={setStatusFilter}
         />
 
-        {/* Orders Table */}
         {isLoading ? (
           <Loading />
         ) : (
@@ -126,7 +119,6 @@ const AdminOrdersPage = () => {
               onSyncPayment={handleSyncPayment}
             />
 
-            {/* Pagination */}
             {totalPages > 1 && (
               <Pagination
                 currentPage={currentPage}
@@ -138,7 +130,6 @@ const AdminOrdersPage = () => {
         )}
       </div>
 
-      {/* Order Detail Modal */}
       <OrderDetailModal
         isOpen={showDetailModal}
         onClose={() => setShowDetailModal(false)}

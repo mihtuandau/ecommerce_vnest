@@ -1,11 +1,9 @@
-// src/hooks/useDiscounts.js
 import { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import discountService from '../services/discountService';
 import { notify } from '../utils/notification';
 import { formatPrice } from '../utils/formatters';
 
-// Hook lấy danh sách discounts với filtering
 export const useDiscounts = (params = {}, filters = {}) => {
   const { data: discounts = [], ...queryResult } = useQuery({
     queryKey: ['discounts', params],
@@ -13,7 +11,6 @@ export const useDiscounts = (params = {}, filters = {}) => {
     staleTime: 3 * 60 * 1000,
   });
 
-  // Client-side filtering & sorting
   const filtered = useMemo(() => {
     let result = [...discounts];
     const { search = '', status = 'all', sortKey = '', sortDir = 'desc' } = filters;
@@ -48,22 +45,18 @@ export const useDiscounts = (params = {}, filters = {}) => {
       const startDate = discount.startDate ? new Date(discount.startDate) : null;
       const endDate = discount.endDate ? new Date(discount.endDate) : null;
       
-      // Check if expired by endDate
       if (endDate && endDate < now) {
         return 'EXPIRED';
       }
       
-      // Check if upcoming (not started yet)
       if (startDate && startDate > now) {
         return 'UPCOMING';
       }
       
-      // Active: within date range (started and not expired)
       if ((!startDate || startDate <= now) && (!endDate || endDate >= now)) {
         return 'ACTIVE';
       }
       
-      // Fallback to backend status
       return discount.status || 'UNKNOWN';
     };
     
@@ -79,7 +72,6 @@ export const useDiscounts = (params = {}, filters = {}) => {
   return { ...queryResult, data: filtered, discounts, stats };
 };
 
-// Hook apply discount code (checkout)
 export const useDiscountCode = () => {
   const [code, setCode] = useState('');
   const [applied, setApplied] = useState(null);
@@ -116,7 +108,6 @@ export const useDiscountCode = () => {
   };
 };
 
-// Mutations
 export const useCreateDiscount = () => {
   const queryClient = useQueryClient();
   return useMutation({

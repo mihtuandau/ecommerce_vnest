@@ -1,16 +1,13 @@
 import { createSelector } from '@reduxjs/toolkit';
 
-// Base Selectors
 export const selectCartItems = (state) => state.cart.items;
 export const selectCartLoading = (state) => state.cart.loading;
 export const selectCartError = (state) => state.cart.error;
 
-// Memoized Selectors
 export const selectCartCount = createSelector(
   [selectCartItems],
   (items) => {
     const count = items.reduce((sum, item) => sum + item.quantity, 0);
-    console.log('🔢 Cart count calculation:', { items, count });
     return count;
   }
 );
@@ -28,7 +25,6 @@ export const selectCartItemsCount = createSelector(
   (items) => items.length
 );
 
-// Parameterized Selectors
 export const selectIsInCart = (variantId) => 
   createSelector(
     [selectCartItems],
