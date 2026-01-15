@@ -50,7 +50,11 @@ async function bootstrap() {
     )
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('api', app, document, {
+    customSiteTitle: 'E-commerce API',
+    customfavIcon: '/api/favicon-32x32.png',
+    customCssUrl: '/api/swagger-ui.css',
+  });
 
   const logger = new Logger('Bootstrap');
   const port = process.env.PORT || 5000; 
