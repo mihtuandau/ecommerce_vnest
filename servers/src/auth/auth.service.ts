@@ -153,7 +153,7 @@ export class AuthService {
     res.cookie('access_token', token, {
       httpOnly: true,
       secure: false, // Set to true only when using HTTPS
-      sameSite: 'none', // Allow cross-site cookies
+      sameSite: 'lax', // Use 'lax' for HTTP, 'none' only with HTTPS + secure:true
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
   }
@@ -162,7 +162,7 @@ export class AuthService {
     res.cookie('access_token', '', {
       httpOnly: true,
       secure: false,
-      sameSite: 'none',
+      sameSite: 'lax',
       maxAge: 0,
     });
   }
