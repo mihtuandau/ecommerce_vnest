@@ -7,7 +7,8 @@ import {
   AppstoreOutlined,
   EyeOutlined,
   CloseOutlined,
-  MoreOutlined
+  MoreOutlined,
+  PlusOutlined
 } from '@ant-design/icons';
 import { formatPrice, getTotalStock, getStockStatus } from '../../../utils/formatters';
 
@@ -342,12 +343,28 @@ const ProductTable = ({
               {
                 key: '2',
                 label: `Biến thể (${selectedProduct.variants?.length || 0})`,
-                children: Array.isArray(selectedProduct.variants) && selectedProduct.variants.length > 0 ? (
-                  <Table
-                    dataSource={selectedProduct.variants}
-                    rowKey="id"
-                    pagination={false}
-                    size="small"
+                children: (
+                  <div>
+                    {/* Nút thêm biến thể */}
+                    <div style={{ marginBottom: 16, textAlign: 'right' }}>
+                      <Button
+                        type="primary"
+                        icon={<PlusOutlined />}
+                        onClick={() => {
+                          onManageVariants(selectedProduct);
+                          setDrawerVisible(false);
+                        }}
+                      >
+                        Thêm biến thể
+                      </Button>
+                    </div>
+
+                    {Array.isArray(selectedProduct.variants) && selectedProduct.variants.length > 0 ? (
+                      <Table
+                        dataSource={selectedProduct.variants}
+                        rowKey="id"
+                        pagination={false}
+                        size="small"
                     columns={[
                       {
                         title: 'Hình ảnh',
@@ -457,7 +474,16 @@ const ProductTable = ({
                     ]}
                   />
                 ) : (
-                  <Empty description="Sản phẩm không có biến thể" />
+                  <Empty 
+                    description="Sản phẩm chưa có biến thể" 
+                    image={Empty.PRESENTED_IMAGE_SIMPLE}
+                  >
+                    <p style={{ color: '#999', fontSize: 13 }}>
+                      Click nút "Thêm biến thể" ở trên để tạo biến thể mới
+                    </p>
+                  </Empty>
+                )}
+                  </div>
                 ),
               },
             ]}

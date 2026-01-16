@@ -18,6 +18,10 @@ const authService = {
 
   login: async (credentials) => {
     const response = await apiService.post(AUTH_ENDPOINTS.LOGIN, credentials);
+    // Lưu token vào localStorage nếu có
+    if (response.access_token) {
+      localStorage.setItem('access_token', response.access_token);
+    }
     return response;
   },
   
@@ -25,6 +29,7 @@ const authService = {
     try {
       await apiService.post(AUTH_ENDPOINTS.LOGOUT);
     } catch (error) {} finally {
+      localStorage.removeItem('access_token'); // Xóa token
       window.location.href = "/login";
     }
   },

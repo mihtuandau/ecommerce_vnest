@@ -6,6 +6,7 @@ import {
   FileTextOutlined,
   TagOutlined 
 } from '@ant-design/icons';
+import { Layers } from 'lucide-react';
 import ImageUploadSection from './ImageUploadSection';
 import productService from '../../../services/productService';
 import { notify } from '../../../utils/notification';

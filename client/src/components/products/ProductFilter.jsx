@@ -196,7 +196,6 @@ const ProductFilter = ({
           ))}
         </Select>
 
-        {/* Stock Status filter */}
         <Select
           placeholder="Tình trạng"
           style={{ width: 150, borderRadius: 0 }}
@@ -209,7 +208,6 @@ const ProductFilter = ({
           <Option value="outOfStock">Hết hàng</Option>
         </Select>
 
-        {/* Sort by - Right aligned */}
         <div className="ml-auto">
           <Select
             value={filters.sortBy}
@@ -228,17 +226,14 @@ const ProductFilter = ({
     );
   }
 
-  // Vertical layout - for mobile drawer
   const stockOptions = [
     { value: "", label: "Tất cả" },
     { value: "inStock", label: "Còn hàng" },
     { value: "outOfStock", label: "Hết hàng" },
   ];
 
-  // Vertical layout
   return (
     <div className="space-y-4">
-      {/* Sort */}
       <Accordion title="Sắp xếp" defaultOpen={true}>
         <div className="space-y-1">
           {sortOptions.map((opt) => (
@@ -268,7 +263,6 @@ const ProductFilter = ({
         </div>
       </Accordion>
 
-      {/* Category */}
       {!hideCategories && categories.length > 0 && (
         <Accordion
           title={`Danh mục (${categories.length})`}
@@ -316,7 +310,6 @@ const ProductFilter = ({
         </Accordion>
       )}
 
-      {/* Brand */}
       {brands.length > 0 && (
         <Accordion title="Thương hiệu" defaultOpen={true}>
           <div className="space-y-1 max-h-64 overflow-y-auto pr-1 custom-scrollbar">
@@ -361,7 +354,6 @@ const ProductFilter = ({
         </Accordion>
       )}
 
-      {/* Rating */}
       <Accordion title="Đánh giá" defaultOpen={true}>
         <div className="space-y-1">
           {ratingOptions.map((opt) => (
@@ -400,7 +392,6 @@ const ProductFilter = ({
         </div>
       </Accordion>
 
-      {/* Stock Status */}
       <Accordion title="Tình trạng" defaultOpen={true}>
         <div className="space-y-1">
           {[
@@ -408,7 +399,7 @@ const ProductFilter = ({
             { value: "inStock", label: "Còn hàng" },
             { value: "outOfStock", label: "Hết hàng" },
           ].map((opt) => (
-            <label
+            <label  
               key={opt.value}
               className="flex items-center gap-3 cursor-pointer hover:bg-gray-50 p-2.5 rounded-lg transition-all duration-200 group"
             >
@@ -434,7 +425,6 @@ const ProductFilter = ({
         </div>
       </Accordion>
 
-      {/* Price Range */}
       <Accordion title="Khoảng giá" defaultOpen={true}>
         <div className="text-sm font-medium mb-4 flex justify-between text-gray-700">
           <span>{filters.minPrice.toLocaleString("vi-VN")}₫</span>

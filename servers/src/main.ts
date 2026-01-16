@@ -7,7 +7,14 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.use(helmet());
+  app.use(
+    helmet({
+      contentSecurityPolicy: false,
+      crossOriginEmbedderPolicy: false,
+      crossOriginOpenerPolicy: false,
+      crossOriginResourcePolicy: false,
+    }),
+  );
   app.use(cookieParser());
   app.setGlobalPrefix('api');
   const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:5173,http://localhost:3000').split(',');
@@ -43,7 +50,11 @@ async function bootstrap() {
     )
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('api', app, document, {
+    customSiteTitle: 'E-commerce API',
+    customfavIcon: '/api/favicon-32x32.png',
+    customCssUrl: '/api/swagger-ui.css',
+  });
 
   const logger = new Logger('Bootstrap');
   const port = process.env.PORT || 5000; 

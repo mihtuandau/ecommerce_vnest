@@ -23,7 +23,7 @@ const categoryService = {
   },
 
   update: async (id, formData) => {
-    const response = await apiService.upload(CATEGORY_ENDPOINTS.BY_ID(id), formData, {
+    const response = await apiService.uploadPut(CATEGORY_ENDPOINTS.BY_ID(id), formData, {
       'Content-Type': 'multipart/form-data'
     });
     return response;

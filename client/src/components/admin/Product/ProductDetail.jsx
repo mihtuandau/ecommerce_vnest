@@ -38,14 +38,23 @@ const ProductDetails = ({ product, onEditVariant, onDeleteVariant }) => {
           </div>
 
           {/* Row 2: Variants Table */}
-          {product.variants && product.variants.length > 0 && (
-            <div className="bg-white p-3 rounded-lg border border-gray-100">
-              <div className="flex items-center justify-between mb-3">
-                <p className="text-xs text-gray-600 font-semibold uppercase">
-                  Biến thể ({product.variants.length})
-                </p>
-              </div>
-              
+          <div className="bg-white p-3 rounded-lg border border-gray-100">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-xs text-gray-600 font-semibold uppercase">
+                Biến thể ({product.variants?.length || 0})
+              </p>
+              {onEditVariant && (
+                <button
+                  onClick={() => onEditVariant(null)}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-violet-600 text-white hover:bg-violet-700 transition-colors"
+                >
+                  <Layers size={14} />
+                  Thêm biến thể
+                </button>
+              )}
+            </div>
+            
+            {product.variants && product.variants.length > 0 ? (
               <div className="overflow-x-auto">
                 <table className="w-full text-xs">
                   <thead className="bg-gray-50 border-b">
@@ -131,8 +140,14 @@ const ProductDetails = ({ product, onEditVariant, onDeleteVariant }) => {
                   </tbody>
                 </table>
               </div>
-            </div>
-          )}
+            ) : (
+              <div className="text-center py-8 text-gray-500 text-sm">
+                <Layers size={32} className="mx-auto mb-2 text-gray-300" />
+                <p>Chưa có biến thể nào</p>
+                <p className="text-xs mt-1">Click "Thêm biến thể" để bắt đầu</p>
+              </div>
+            )}
+          </div>
         </div>
       </td>
     </tr>
