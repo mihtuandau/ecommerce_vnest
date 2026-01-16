@@ -68,6 +68,7 @@ export class AuthController {
 
     return res.json({
       user: result.user,
+      access_token: result.access_token,
       message: 'Login successful',
     });
   }
