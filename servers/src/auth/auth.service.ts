@@ -150,19 +150,21 @@ export class AuthService {
   }
 
   setAuthCookie(res: any, token: string) {
+    const isProduction = process.env.NODE_ENV === 'production';
     res.cookie('access_token', token, {
       httpOnly: true,
-      secure: false, // Set to true only when using HTTPS
-      sameSite: 'lax', // Use 'lax' for HTTP, 'none' only with HTTPS + secure:true
+      secure: isProduction, // true khi có HTTPS
+      sameSite: isProduction ? 'none' : 'lax', // 'none' cho HTTPS cross-domain
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
   }
 
   clearAuthCookie(res: any) {
+    const isProduction = process.env.NODE_ENV === 'production';
     res.cookie('access_token', '', {
       httpOnly: true,
-      secure: false,
-      sameSite: 'lax',
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
       maxAge: 0,
     });
   }
