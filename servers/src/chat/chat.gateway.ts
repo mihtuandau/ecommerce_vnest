@@ -12,7 +12,7 @@ import { ChatService } from './chat.service';
 
 @WebSocketGateway({
   cors: {
-    origin: ['http://localhost:5173', 'http://localhost:3000'],
+    origin: process.env.ALLOWED_ORIGINS?.split(',') || ['https://dautuan.com', 'https://www.dautuan.com'],
     credentials: true,
   },
 })

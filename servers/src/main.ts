@@ -17,7 +17,7 @@ async function bootstrap() {
   );
   app.use(cookieParser());
   app.setGlobalPrefix('api');
-  const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:5173,http://localhost:3000').split(',');
+  const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'https://dautuan.com,https://www.dautuan.com').split(',');
   
   app.enableCors({
     origin: allowedOrigins, 

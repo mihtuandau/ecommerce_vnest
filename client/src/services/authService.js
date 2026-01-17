@@ -66,8 +66,9 @@ const authService = {
   },
 
   googleLogin: () => {
-    // Redirect to backend Google OAuth endpoint - API URL already correct
-    window.location.href = `http://localhost:5000/api${AUTH_ENDPOINTS.GOOGLE_LOGIN}`;
+    // Redirect to backend Google OAuth endpoint
+    const baseUrl = import.meta.env.VITE_API_URL.replace('/api', '');
+    window.location.href = `${baseUrl}/api${AUTH_ENDPOINTS.GOOGLE_LOGIN}`;
   },
 };
 

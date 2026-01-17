@@ -52,8 +52,7 @@ const RegisterPage = () => {
   };
 
   const handleGoogleLogin = () => {
-    // Add timestamp to prevent caching
-    window.location.href = `http://localhost:5000/api/auth/google?_t=${Date.now()}`;
+    window.location.href = `https://api.dautuan.com/api/auth/google?_t=${Date.now()}`;
   };
 
   return (

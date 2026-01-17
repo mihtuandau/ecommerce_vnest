@@ -95,7 +95,7 @@ export class MailService {
                 </table>
 
                 <div style="text-align: center;">
-                  <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}/order-lookup" class="button">
+                  <a href="${process.env.FRONTEND_URL || 'https://dautuan.com'}/order-lookup" class="button">
                     Tra cứu đơn hàng
                   </a>
                 </div>
