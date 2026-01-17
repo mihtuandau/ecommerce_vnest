@@ -66,8 +66,8 @@ export class PayOSService {
       apiKey,
       checksumKey,
     });
-    this.returnUrl = this.configService.get<string>('payos.returnUrl') || 'http://localhost:5173/payment/return';
-    this.cancelUrl = this.configService.get<string>('payos.cancelUrl') || 'http://localhost:5173/payment/cancel';
+    this.returnUrl = this.configService.get<string>('payos.returnUrl') || `${process.env.FRONTEND_URL || 'https://dautuan.com'}/payment/return`;
+    this.cancelUrl = this.configService.get<string>('payos.cancelUrl') || `${process.env.FRONTEND_URL || 'https://dautuan.com'}/payment/cancel`;
   }
 
   /**

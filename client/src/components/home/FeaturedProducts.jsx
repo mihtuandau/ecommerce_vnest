@@ -66,9 +66,12 @@ const FeaturedProducts = ({ products = [] }) => {
     }
 
     const variant = variants[0];
+    // Ưu tiên lấy ảnh từ variant, nếu không có thì lấy từ product
+    const variantImage = variant.image || variant.images?.[0]?.url || product.images?.[0]?.url;
+    
     addToCart(variant.id, 1, {
       name: product.name,
-      image: product.images?.[0]?.url,
+      image: variantImage,
       price: variant.price,
       size: variant.size,
       color: variant.color,

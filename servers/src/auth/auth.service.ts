@@ -109,7 +109,7 @@ export class AuthService {
 
     await this.userService.updateResetToken(user.id, resetData);
 
-    const baseUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    const baseUrl = process.env.FRONTEND_URL || 'https://dautuan.com';
     const resetUrl = `${baseUrl}/reset-password?token=${token}&email=${encodeURIComponent(email)}`;
 
     // Use MailService with beautiful template
