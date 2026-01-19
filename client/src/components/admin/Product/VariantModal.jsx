@@ -16,7 +16,9 @@ const VariantModal = ({ product, onClose, onSave, onImagesUploaded, editingVaria
   const [variants, setVariants] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedImages, setSelectedImages] = useState([]);
+  const [replaceImages, setReplaceImages] = useState(false);
   const [bulkMode, setBulkMode] = useState(false);
+  const [deletingImageId, setDeletingImageId] = useState(null);
   const [bulkData, setBulkData] = useState({
     color: '',
     sizes: '',
@@ -42,6 +44,7 @@ const VariantModal = ({ product, onClose, onSave, onImagesUploaded, editingVaria
       setVariants([{ size: '', color: '', price: product?.basePrice || '', stock: '', sku: '' }]);
     }
     setSelectedImages([]);
+    setReplaceImages(false);
   }, [product, editingVariant]);
 
   // Xử lý variants
@@ -52,6 +55,30 @@ const VariantModal = ({ product, onClose, onSave, onImagesUploaded, editingVaria
   const handleImageSelect = (e) => {
     const files = Array.from(e.target.files || []);
     setSelectedImages(files);
+  };
+
+  // Xóa ảnh ngay lập tức
+  const handleDeleteImage = async (imageId) => {
+    if (!window.confirm('Xác nhận xóa ảnh này?')) return;
+    
+    setDeletingImageId(imageId);
+    try {
+      const productService = (await import('../../../services/productService')).default;
+      await productService.deleteImage(imageId);
+      
+      // Cập nhật lại editingVariant để remove ảnh đã xóa
+      if (editingVariant?.images) {
+        editingVariant.images = editingVariant.images.filter(img => img.id !== imageId);
+        // Force re-render
+        setVariants([...variants]);
+      }
+      
+      notify.success('Đã xóa ảnh!');
+    } catch (error) {
+      notify.error('Không thể xóa ảnh: ' + (error?.message || ''));
+    } finally {
+      setDeletingImageId(null);
+    }
   };
 
   const handleSave = async () => {
@@ -83,8 +110,9 @@ const VariantModal = ({ product, onClose, onSave, onImagesUploaded, editingVaria
       
       await onSave(product.id, allVariants);
       
+      // Upload ảnh mới cho variant nếu có
       if (selectedImages.length > 0 && editingVariant?.id) {
-        await onImagesUploaded?.(editingVariant.id, selectedImages);
+        await onImagesUploaded?.(editingVariant.id, selectedImages, replaceImages);
       }
       
       onClose();
@@ -144,10 +172,14 @@ const VariantModal = ({ product, onClose, onSave, onImagesUploaded, editingVaria
             <SingleVariantForm
               variant={currentVariant}
               product={product}
-              handleVariantChange={handleVariantChange}
+              onChange={handleVariantChange}
+              onImageSelect={handleImageSelect}
               selectedImages={selectedImages}
-              handleImageSelect={handleImageSelect}
               editingVariant={editingVariant}
+              replaceImages={replaceImages}
+              setReplaceImages={setReplaceImages}
+              onDeleteImage={handleDeleteImage}
+              deletingImageId={deletingImageId}
             />
             {!editingVariant && <VariantSummary product={product} />}
           </>

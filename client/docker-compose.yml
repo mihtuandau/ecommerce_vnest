@@ -19,4 +19,5 @@ services:
 
 networks:
   ecommerce_network:
-    driver: bridge
+    external: true
+    name: servers_ecommerce_network
