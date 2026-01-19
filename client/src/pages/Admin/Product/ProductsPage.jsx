@@ -112,10 +112,29 @@ const ProductsPage = () => {
           onEdit={handleEdit}
           onDelete={handleDelete}
           onDuplicate={handleDuplicate}
-          onManageVariants={(product, variant) => {
-            setManagingVariantsProduct(product);
-            setEditingVariant(variant || null);
-            setShowVariantManager(true);
+          onManageVariants={async (product, variant) => {
+            // Fetch full product detail để có đủ images
+            try {
+              const productService = (await import('../../../services/productService')).default;
+              const fullProduct = await productService.getOne(product.id);
+              
+              // Nếu đang edit variant, gắn images vào variant
+              let variantWithImages = variant;
+              if (variant?.id && fullProduct.images) {
+                const variantImages = fullProduct.images.filter(img => img.variantId === variant.id);
+                variantWithImages = { ...variant, images: variantImages };
+              }
+              
+              setManagingVariantsProduct(fullProduct);
+              setEditingVariant(variantWithImages || null);
+              setShowVariantManager(true);
+            } catch (error) {
+              console.error('Failed to fetch product:', error);
+              // Fallback: dùng product hiện tại
+              setManagingVariantsProduct(product);
+              setEditingVariant(variant || null);
+              setShowVariantManager(true);
+            }
           }}
           onRefresh={refetch}
           selectedProducts={selectedProducts}
@@ -147,8 +166,25 @@ const ProductsPage = () => {
             setEditingVariant(null);
           }}
           onSave={handleSaveVariants}
-          onImagesUploaded={async (variantId, images) => {
+          onImagesUploaded={async (variantId, images, replaceImages = false) => {
             const productService = (await import('../../../services/productService')).default;
+            
+            // Nếu chọn thay thế, xóa ảnh cũ trước
+            if (replaceImages) {
+              // Lấy danh sách ảnh cũ của variant
+              const oldImages = managingVariantsProduct.images?.filter(img => img.variantId === variantId) || [];
+              
+              // Xóa từng ảnh cũ
+              for (const img of oldImages) {
+                try {
+                  await productService.deleteImage(managingVariantsProduct.id, img.id);
+                } catch (error) {
+                  console.error('Failed to delete old image:', error);
+                }
+              }
+            }
+            
+            // Upload ảnh mới
             await productService.uploadImages(managingVariantsProduct.id, images, { variantId });
             refetch();
           }}

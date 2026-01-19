@@ -71,6 +71,14 @@ const ProductDetails = ({ product, onEditVariant, onDeleteVariant }) => {
                   <tbody className="divide-y divide-gray-100">
                     {product.variants.map((variant) => {
                       const variantImages = product.images?.filter(img => img.variantId === variant.id) || [];
+                      console.log(`🔍 Variant ${variant.id}:`, {
+                        variantId: variant.id,
+                        productImages: product.images,
+                        filteredImages: variantImages
+                      });
+                      // Gắn images vào variant để dùng khi edit
+                      const variantWithImages = { ...variant, images: variantImages };
+                      
                       return (
                         <tr key={variant.id} className="hover:bg-gray-50">
                           <td className="px-2 py-2">
@@ -116,7 +124,7 @@ const ProductDetails = ({ product, onEditVariant, onDeleteVariant }) => {
                             <div className="flex items-center justify-center gap-1">
                               {onEditVariant && (
                                 <button
-                                  onClick={() => onEditVariant(variant)}
+                                  onClick={() => onEditVariant(variantWithImages)}
                                   className="text-[#1890ff] hover:text-[#40a9ff] hover:bg-blue-50 p-1 rounded transition-colors"
                                   title="Sửa"
                                 >
