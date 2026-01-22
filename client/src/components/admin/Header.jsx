@@ -181,7 +181,7 @@ const AdminHeader = ({ sidebarOpen, setSidebarOpen }) => {
         />
 
         <Dropdown
-          dropdownRender={() => notificationContent}
+          popupRender={() => notificationContent}
           trigger={['click']}
           placement="bottomRight"
         >
@@ -202,7 +202,7 @@ const AdminHeader = ({ sidebarOpen, setSidebarOpen }) => {
           />
         </Link>
 
-        <Divider type="vertical" />
+        <Divider orientation="vertical" />
 
         <Dropdown
           menu={{ items: userMenuItems }}

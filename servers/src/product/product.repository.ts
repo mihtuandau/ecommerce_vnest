@@ -138,10 +138,19 @@ export class ProductRepository {
   }
 
   /**
-   * Create product images
+   * Create product images (for Product only)
    */
   async createImages(images: Prisma.ProductImageCreateManyInput[]) {
     return this.prisma.productImage.createMany({
+      data: images,
+    });
+  }
+
+  /**
+   * Create variant images (for ProductVariant only)
+   */
+  async createVariantImages(images: Prisma.VariantImageCreateManyInput[]) {
+    return this.prisma.variantImage.createMany({
       data: images,
     });
   }
@@ -156,23 +165,31 @@ export class ProductRepository {
   }
 
   /**
-   * Update image thumbnail status
+   * Delete variant images
    */
-  async updateThumbnailStatus(
-    productId: number,
-    variantId: number | null,
-    isThumbnail: boolean,
-  ) {
-    const where: any = { productId };
-    if (variantId !== null) {
-      where.variantId = variantId;
-    } else {
-      where.variantId = null;
-    }
+  async deleteVariantImages(imageIds: number[]) {
+    return this.prisma.variantImage.deleteMany({
+      where: { id: { in: imageIds } },
+    });
+  }
 
+  /**
+   * Update image thumbnail status for ProductImage
+   */
+  async updateThumbnailStatus(productId: number, isThumbnail: boolean) {
     return this.prisma.productImage.updateMany({
-      where,
+      where: { productId },
       data: { isThumbnail },
+    });
+  }
+
+  /**
+   * Update primary image status for VariantImage
+   */
+  async updateVariantPrimaryStatus(variantId: number, isPrimary: boolean) {
+    return this.prisma.variantImage.updateMany({
+      where: { variantId },
+      data: { isPrimary },
     });
   }
 
@@ -244,19 +261,39 @@ export class ProductRepository {
   }
 
   /**
-   * Find images by variant ID
+   * Find images by variant ID (VariantImage only)
    */
-  async findImagesByVariant(variantId: number) {
-    return this.prisma.productImage.findMany({
+  async findVariantImages(variantId: number) {
+    return this.prisma.variantImage.findMany({
       where: { variantId },
+      orderBy: { displayOrder: 'asc' },
     });
   }
 
   /**
-   * Find image by ID
+   * Find images by product ID (ProductImage only)
+   */
+  async findProductImages(productId: number) {
+    return this.prisma.productImage.findMany({
+      where: { productId },
+      orderBy: { displayOrder: 'asc' },
+    });
+  }
+
+  /**
+   * Find ProductImage by ID
    */
   async findImageById(imageId: number) {
     return this.prisma.productImage.findUnique({
+      where: { id: imageId },
+    });
+  }
+
+  /**
+   * Find VariantImage by ID
+   */
+  async findVariantImageById(imageId: number) {
+    return this.prisma.variantImage.findUnique({
       where: { id: imageId },
     });
   }

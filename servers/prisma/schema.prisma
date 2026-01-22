@@ -8,21 +8,21 @@ datasource db {
 }
 
 model User {
-  id                   Int           @id @default(autoincrement())
-  email                String        @unique
+  id                   Int            @id @default(autoincrement())
+  email                String         @unique
   password             String
   name                 String?
-  role                 Role          @default(CUSTOMER)
+  role                 Role           @default(CUSTOMER)
   resetPasswordToken   String?
   resetPasswordExpires DateTime?
-  createdAt            DateTime      @default(now())
-  updatedAt            DateTime      @updatedAt
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
   orders               Order[]
   cart                 Cart?
   addresses            Address[]
   reviews              Review[]
   wishlistItems        WishlistItem[]
-  sentMessages         ChatMessage[] @relation("SentMessages")
+  sentMessages         ChatMessage[]  @relation("SentMessages")
 }
 
 enum Role {
@@ -36,11 +36,15 @@ model Address {
   fullName     String
   phone        String
   street       String
-  ward         String?  // Phường/Xã
-  city         String   // Tỉnh/Thành phố
-  state        String?  // Quận/Huyện
+  ward         String? // Phường/Xã
+  city         String // Tỉnh/Thành phố
+  state        String? // Quận/Huyện
+  wardCode     String? // Mã phường (từ API địa chỉ VN)
+  districtCode String? // Mã quận/huyện
+  provinceCode String? // Mã tỉnh/thành phố
   zipCode      String?
   country      String?  @default("Vietnam")
+  coordinates  String? // Lat,Lng cho delivery
   isDefault    Boolean  @default(false)
   addressType  String?  @default("home") // home, office, other
   user         User     @relation(fields: [userId], references: [id])
@@ -50,6 +54,7 @@ model Address {
 
   @@index([userId])
   @@index([userId, isDefault])
+  @@index([provinceCode, districtCode, wardCode])
 }
 
 model Brand {
@@ -73,16 +78,21 @@ model Category {
 model Product {
   id            Int              @id @default(autoincrement())
   name          String
+  slug          String?          @unique // SEO-friendly URL (optional để migrate)
   description   String?
   basePrice     Float
   categoryId    Int
   brandId       Int?
   soldCount     Int              @default(0) // Số lượng đã bán
-  averageRating Float?           // Đánh giá trung bình
+  averageRating Float? // Đánh giá trung bình
   reviewCount   Int              @default(0) // Số lượng review
+  viewCount     Int              @default(0) // Số lượt xem
+  isActive      Boolean          @default(true) // Sản phẩm còn bán không
+  metaTitle     String? // SEO title
+  metaDesc      String? // SEO description
   images        ProductImage[]
   variants      ProductVariant[]
-  reviews       Review[]         // Thêm relation với Review
+  reviews       Review[] // Thêm relation với Review
   category      Category         @relation(fields: [categoryId], references: [id])
   brand         Brand?           @relation(fields: [brandId], references: [id])
   createdAt     DateTime         @default(now())
@@ -90,38 +100,63 @@ model Product {
 
   @@index([categoryId])
   @@index([brandId])
+  @@index([averageRating])
+  @@index([soldCount])
+  @@index([createdAt])
+  @@index([categoryId, brandId])
+  @@index([isActive])
+  @@index([slug])
 }
 
 model ProductImage {
-  id          Int             @id @default(autoincrement())
-  product     Product         @relation(fields: [productId], references: [id])
-  productId   Int
-  variant     ProductVariant? @relation(fields: [variantId], references: [id])
-  variantId   Int? // mới: optional FK
-  url         String
-  altText     String?
-  isThumbnail Boolean         @default(false)
-  createdAt   DateTime        @default(now())
+  id           Int      @id @default(autoincrement())
+  productId    Int
+  url          String
+  altText      String?
+  isThumbnail  Boolean  @default(false) // Ảnh đại diện sản phẩm
+  displayOrder Int      @default(0) // Thứ tự hiển thị
+  product      Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+
+  @@index([productId])
+  @@index([productId, displayOrder])
+}
+
+model VariantImage {
+  id           Int            @id @default(autoincrement())
+  variantId    Int
+  url          String
+  altText      String?
+  isPrimary    Boolean        @default(false) // Ảnh chính của variant
+  displayOrder Int            @default(0) // Thứ tự hiển thị
+  variant      ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  createdAt    DateTime       @default(now())
+
+  @@index([variantId])
+  @@index([variantId, displayOrder])
 }
 
 model ProductVariant {
-  id            Int            @id @default(autoincrement())
-  productId     Int
-  size          String?
-  color         String?
-  stock         Int            @default(0)
-  price         Float
-  sku           String?
-  product       Product        @relation(fields: [productId], references: [id])
-  images        ProductImage[]
-  cartItems     CartItem[]
-  orderItems    OrderItem[]
-  wishlistItems WishlistItem[]
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  id                Int            @id @default(autoincrement())
+  productId         Int
+  size              String?
+  color             String?
+  stock             Int            @default(0)
+  price             Float
+  sku               String?
+  lowStockThreshold Int            @default(5) // Cảnh báo hết hàng
+  isActive          Boolean        @default(true) // Variant còn bán không
+  product           Product        @relation(fields: [productId], references: [id])
+  images            VariantImage[] // Đổi từ ProductImage sang VariantImage
+  cartItems         CartItem[]
+  orderItems        OrderItem[]
+  wishlistItems     WishlistItem[]
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
 
   @@unique([productId, size, color])
   @@index([productId])
+  @@index([isActive])
 }
 
 model Cart {
@@ -151,27 +186,38 @@ model CartItem {
 }
 
 model Discount {
-  id          Int       @id @default(autoincrement())
-  code        String    @unique
-  description String?
-  image       String?   // URL ảnh banner khuyến mãi
-  percentage  Float?
-  fixedAmount Float?
-  startDate   DateTime
-  endDate     DateTime?
-  orders      Order[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id                     Int       @id @default(autoincrement())
+  code                   String    @unique
+  description            String?
+  image                  String? // URL ảnh banner khuyến mãi
+  percentage             Float?
+  fixedAmount            Float?
+  minOrderAmount         Float?    @default(0) // Đơn hàng tối thiểu
+  maxDiscountAmount      Float? // Giảm giá tối đa
+  usageLimit             Int? // Giới hạn số lần sử dụng
+  usageCount             Int       @default(0) // Đã sử dụng bao nhiêu lần
+  isActive               Boolean   @default(true)
+  applicableToCategories Int[]     @default([]) // Áp dụng cho categories nào
+  startDate              DateTime
+  endDate                DateTime?
+  orders                 Order[]
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+
+  @@index([code])
+  @@index([isActive])
+  @@index([startDate, endDate])
 }
 
 model Review {
   id        Int      @id @default(autoincrement())
   userId    Int
   productId Int
-  orderId   Int      // Thêm orderId để gắn review với đơn hàng cụ thể
-  rating    Int      // 1-5 sao
+  orderId   Int // Thêm orderId để gắn review với đơn hàng cụ thể
+  rating    Int // 1-5 sao
   comment   String?  @db.Text
   images    String[] // Mảng URLs hình ảnh review
+  verified  Boolean  @default(false) // Admin đã xác minh chưa
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
@@ -183,6 +229,8 @@ model Review {
   @@index([productId])
   @@index([orderId])
   @@index([rating])
+  @@index([productId, rating])
+  @@index([verified])
 }
 
 model ShippingMethod {
@@ -197,26 +245,29 @@ model ShippingMethod {
 model Order {
   id               Int             @id @default(autoincrement())
   orderCode        String?         @unique // Mã đơn hàng dạng chuỗi
-  userId           Int?            // Nullable for guest checkout
+  userId           Int? // Nullable for guest checkout
   addressId        Int?
   shippingMethodId Int?
-  shippingAddress  String?         // Địa chỉ giao hàng dạng text
-  shippingInfo     Json?           // Thông tin người nhận {fullName, phone, note}
-  guestEmail       String?         // Email for guest orders
-  guestPhone       String?         // Phone for guest orders
+  shippingSnapshot Json? // Snapshot địa chỉ tại thời điểm đặt hàng {fullName, phone, street, ward, city, state, country}
+  guestEmail       String? // Email for guest orders
+  guestPhone       String? // Phone for guest orders
   paymentMethod    PaymentMethod?  @default(CASH) // Phương thức thanh toán
   total            Float
   taxAmount        Float           @default(0)
   status           OrderStatus     @default(PENDING)
+  statusHistory    Json[]          @default([]) // Lịch sử thay đổi trạng thái [{status, changedAt, changedBy, note}]
+  cancelledAt      DateTime? // Thời gian hủy đơn
+  cancelledBy      Int? // User ID hoặc Admin ID hủy đơn
+  cancelReason     String? // Lý do hủy
   discountId       Int?
   paymentId        Int?            @unique
   discount         Discount?       @relation(fields: [discountId], references: [id])
-  payment          Payment?        @relation // Fix: Chỉ @relation() – không fields/references (referencing side)
+  payment          Payment?        @relation
   address          Address?        @relation(fields: [addressId], references: [id])
   shippingMethod   ShippingMethod? @relation(fields: [shippingMethodId], references: [id])
   user             User?           @relation(fields: [userId], references: [id])
   orderItems       OrderItem[]
-  reviews          Review[]        // Thêm relation với Review
+  reviews          Review[] // Thêm relation với Review
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
 
@@ -224,6 +275,9 @@ model Order {
   @@index([guestEmail])
   @@index([addressId])
   @@index([shippingMethodId])
+  @@index([status, createdAt])
+  @@index([userId, status])
+  @@index([orderCode])
 }
 
 enum OrderStatus {
@@ -235,20 +289,26 @@ enum OrderStatus {
 }
 
 model Payment {
-  id              Int           @id @default(autoincrement())
-  orderId         Int           @unique
-  amount          Float
-  method          PaymentMethod @default(CASH)
-  status          PaymentStatus @default(PENDING)
-  transactionId   String?
-  paymentLink     String?       // URL payment link từ PayOS
-  payosOrderCode  BigInt?       @unique // Order code từ PayOS
-  order           Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  id                     Int           @id @default(autoincrement())
+  orderId                Int           @unique
+  amount                 Float
+  method                 PaymentMethod @default(CASH)
+  status                 PaymentStatus @default(PENDING)
+  transactionId          String?
+  paymentLink            String? // URL payment link từ PayOS
+  payosOrderCode         BigInt?       @unique // Order code từ PayOS
+  paymentGatewayResponse Json? // Raw response từ payment gateway
+  failureReason          String? // Lý do thanh toán thất bại
+  refundedAt             DateTime? // Thời gian hoàn tiền
+  refundAmount           Float? // Số tiền hoàn lại
+  order                  Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  createdAt              DateTime      @default(now())
+  updatedAt              DateTime      @updatedAt
 
   @@index([orderId])
   @@index([payosOrderCode])
+  @@index([status])
+  @@index([method])
 }
 
 enum PaymentMethod {
@@ -283,17 +343,17 @@ model OrderItem {
 }
 
 model Banner {
-  id          Int      @id @default(autoincrement())
-  title       String
-  subtitle    String?
-  image       String
-  video       String?
-  link        String?
-  buttonText  String?  @default("Mua ngay")
-  isActive    Boolean  @default(true)
-  order       Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id         Int      @id @default(autoincrement())
+  title      String
+  subtitle   String?
+  image      String
+  video      String?
+  link       String?
+  buttonText String?  @default("Mua ngay")
+  isActive   Boolean  @default(true)
+  order      Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
 model WishlistItem {
@@ -310,15 +370,28 @@ model WishlistItem {
 }
 
 model ChatMessage {
-  id         Int          @id @default(autoincrement())
-  roomId     String       // Unique room per user-admin conversation
-  senderId   Int
-  message    String       @db.Text
-  isRead     Boolean      @default(false)
-  sender     User         @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
-  createdAt  DateTime     @default(now())
+  id          Int         @id @default(autoincrement())
+  roomId      String // Unique room per user-admin conversation
+  senderId    Int
+  message     String      @db.Text
+  messageType MessageType @default(TEXT)
+  attachments String[]    @default([]) // URLs của file đính kèm
+  repliedToId Int? // ID tin nhắn được trả lời
+  isRead      Boolean     @default(false)
+  isDeleted   Boolean     @default(false)
+  deletedAt   DateTime?
+  sender      User        @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  createdAt   DateTime    @default(now())
 
   @@index([roomId])
   @@index([senderId])
   @@index([createdAt])
+  @@index([roomId, isDeleted])
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  FILE
+  SYSTEM // Tin nhắn hệ thống
 }

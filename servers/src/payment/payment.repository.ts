@@ -57,7 +57,7 @@ export class PaymentRepository {
             status: true,
             guestEmail: true,
             guestPhone: true,
-            shippingInfo: true,
+            shippingSnapshot: true, // Đổi từ shippingInfo
             createdAt: true,
             user: {
               select: {

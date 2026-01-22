@@ -22,10 +22,10 @@ export function generatePayOSOrderCode(): number {
 }
 
 export async function createPayOSPaymentLink(payosService: PayOSService, order: any, orderCode: number) {
-  const shippingInfo = order.shippingInfo as any;
-  const buyerName = order.user?.name || shippingInfo?.fullName || order.address?.fullName || 'Customer';
+  const shippingSnapshot = order.shippingSnapshot as any;
+  const buyerName = order.user?.name || shippingSnapshot?.fullName || order.address?.fullName || 'Customer';
   const buyerEmail = order.user?.email || order.guestEmail || '';
-  const buyerPhone = shippingInfo?.phone || order.guestPhone || order.address?.phone || '';
+  const buyerPhone = shippingSnapshot?.phone || order.guestPhone || order.address?.phone || '';
 
   // Validate order items
   if (!order.orderItems || order.orderItems.length === 0) {

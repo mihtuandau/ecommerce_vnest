@@ -47,7 +47,7 @@ export class PaymentSync {
         orderCode: order.orderCode,
         status: order.status,
         total: order.total,
-        shippingInfo: order.shippingInfo,
+        shippingSnapshot: order.shippingSnapshot,
         orderItems: order.orderItems,
       } : null,
     };

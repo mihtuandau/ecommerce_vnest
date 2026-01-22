@@ -57,6 +57,32 @@ export const productService = {
   deleteVariant: async (variantId) => {
     return await apiService.delete(`/products/variant/${variantId}`);
   },
+
+  uploadVariantImages: async (variantId, files, metadata = {}) => {
+    const formData = new FormData();
+    
+    files.forEach(file => {
+      formData.append('files', file);
+    });
+    
+    if (metadata.isPrimary !== undefined) {
+      formData.append('isPrimary', metadata.isPrimary.toString());
+    }
+    if (metadata.displayOrder !== undefined) {
+      formData.append('displayOrder', String(metadata.displayOrder));
+    }
+
+    return await apiService.upload(
+      `/products/variant/${variantId}/images`,
+      formData,
+      { "Content-Type": "multipart/form-data" }
+    );
+  },
+
+  deleteVariantImage: async (imageId) => {
+    return await apiService.delete(`/products/variant-images/${imageId}`);
+  },
+
   uploadImages: async (productId, files, metadata = {}) => {
     const formData = new FormData();
     
