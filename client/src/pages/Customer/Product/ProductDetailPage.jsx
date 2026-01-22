@@ -45,16 +45,9 @@ const ProductDetailPage = () => {
       const variantToSelect = matchingVariants.find(v => v.stock > 0) || matchingVariants[0];
       
       if (variantToSelect && (!selectedVariant || selectedVariant.id !== variantToSelect.id)) {
-       
         setSelectedVariant(variantToSelect);
-        
-        const variantImage = product.images?.find(img => img.variantId === variantToSelect.id);
-        if (variantImage) {
-          const imageIndex = product.images.findIndex(img => img.id === variantImage.id);
-          if (imageIndex !== -1) {
-            setSelectedImage(imageIndex);
-          }
-        }
+        // Reset về ảnh đầu tiên khi chọn variant mới
+        setSelectedImage(0);
       }
     }
   }, [selectedSize, selectedColor, product]);
@@ -87,10 +80,18 @@ const ProductDetailPage = () => {
   };
 
   const getVariantImage = () => {
-    const variantImage = product.images?.find(img => img.variantId === selectedVariant.id);
-    return variantImage?.url || variantImage?.imageUrl || 
-           product.images?.[0]?.url || product.images?.[0]?.imageUrl || 
-           product.image;
+    // Lấy ảnh đầu tiên của variant
+    if (selectedVariant?.images && selectedVariant.images.length > 0) {
+      return selectedVariant.images[0].url;
+    }
+    
+    // Fallback về ảnh chung của product
+    if (product.images && product.images.length > 0) {
+      return product.images[0].url;
+    }
+    
+    // Fallback cuối cùng
+    return product.image || '/placeholder-product.jpg';
   };
 
   const handleAddToCart = (buyNow = false) => {
@@ -156,7 +157,23 @@ const ProductDetailPage = () => {
     );
   }
 
-  const images = product.images || [];
+  // Lọc ảnh theo variant đang được chọn
+  const getDisplayImages = () => {
+    // Nếu có variant được chọn và variant có ảnh riêng
+    if (selectedVariant?.images && selectedVariant.images.length > 0) {
+      return selectedVariant.images;
+    }
+
+    // Fallback về ảnh chung của product
+    if (product.images && product.images.length > 0) {
+      return product.images;
+    }
+
+    // Không có ảnh nào
+    return [];
+  };
+
+  const images = getDisplayImages();
   const currentPrice = selectedVariant?.price || product.basePrice || product.price;
   const originalPrice = product.originalPrice;
 

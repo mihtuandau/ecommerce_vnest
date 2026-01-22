@@ -1,4 +1,3 @@
-// src/payment/payment.controller.ts
 import { 
   Controller, 
   Get, 
@@ -28,10 +27,9 @@ export class PaymentController {
   constructor(private paymentService: PaymentService) {}
 
   @Post()
-  @Throttle({ default: { limit: 10, ttl: 60000 } }) // 10 requests per minute
+  @Throttle({ default: { limit: 10, ttl: 60000 } }) 
   @ApiOperation({ summary: 'Tạo payment mới và lấy payment link (nếu là PayOS) - Public endpoint cho guest checkout' })
   create(@Body() createPaymentDto: CreatePaymentDto) {
-    // Public endpoint - allows guest checkout with PayOS
     return this.paymentService.create(createPaymentDto);
   }
 

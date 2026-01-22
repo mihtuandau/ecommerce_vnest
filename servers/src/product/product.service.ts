@@ -159,7 +159,33 @@ export class ProductService {
   }
 
   async update(id: number, data: UpdateProductDto): Promise<Product> {
-    const product = await this.repository.update(id, data);
+    // Transform DTO to Prisma format
+    const { categoryId, brandId, status, ...rest } = data;
+    
+    const updateData: any = {
+      ...rest,
+    };
+
+    // Handle category relation
+    if (categoryId !== undefined) {
+      updateData.category = categoryId === null 
+        ? { disconnect: true } 
+        : { connect: { id: categoryId } };
+    }
+
+    // Handle brand relation
+    if (brandId !== undefined) {
+      updateData.brand = brandId === null
+        ? { disconnect: true }
+        : { connect: { id: brandId } };
+    }
+
+    // Map status to isActive (database field)
+    if (status !== undefined) {
+      updateData.isActive = status === 'active';
+    }
+
+    const product = await this.repository.update(id, updateData);
     await this.cacheManager.del('products:all');
     await this.cacheManager.del(`product:${id}`);
     return product;
@@ -203,10 +229,11 @@ export class ProductService {
     if (!existing)
       throw new NotFoundException(`Variant #${variantId} không tồn tại`);
 
-    const images = await this.repository.findImagesByVariant(variantId);
+    // Xóa VariantImages
+    const images = await this.repository.findVariantImages(variantId);
     for (const img of images) {
       await this.deleteImageFromCloudinary(img.url);
-      await this.repository.deleteImages([img.id]);
+      await this.repository.deleteVariantImages([img.id]);
     }
 
     const deleted = await this.repository.deleteVariant(variantId);
@@ -215,10 +242,13 @@ export class ProductService {
     return deleted;
   }
 
+  /**
+   * Upload images for Product (not variant)
+   */
   async uploadProductImages(
     productId: number,
     files: Express.Multer.File[],
-    metadata: { altText?: string; isThumbnail?: boolean; variantId?: number },
+    metadata: { altText?: string; isThumbnail?: boolean; displayOrder?: number },
   ): Promise<any> {
     const product = await this.repository.findById(productId);
 
@@ -228,20 +258,17 @@ export class ProductService {
 
     const urls = await this.uploadService.uploadImages(files);
 
+    // Nếu đặt làm thumbnail, bỏ thumbnail cũ
     if (metadata.isThumbnail) {
-      await this.repository.updateThumbnailStatus(
-        productId,
-        metadata.variantId || null,
-        false,
-      );
+      await this.repository.updateThumbnailStatus(productId, false);
     }
 
     const imageData = urls.map((url, index) => ({
       productId,
-      variantId: metadata.variantId || null,
       url,
       altText: metadata.altText || `${product.name} - Ảnh ${index + 1}`,
       isThumbnail: metadata.isThumbnail && index === 0,
+      displayOrder: metadata.displayOrder !== undefined ? metadata.displayOrder + index : index,
     }));
 
     await this.repository.createImages(imageData);
@@ -250,11 +277,54 @@ export class ProductService {
     await this.cacheManager.del('products:all');
 
     return {
-      message: `Upload thành công ${urls.length} ảnh`,
+      message: `Upload thành công ${urls.length} ảnh cho sản phẩm`,
       imageCount: urls.length,
     };
   }
 
+  /**
+   * Upload images for ProductVariant
+   */
+  async uploadVariantImages(
+    variantId: number,
+    files: Express.Multer.File[],
+    metadata: { altText?: string; isPrimary?: boolean; displayOrder?: number },
+  ): Promise<any> {
+    const variant = await this.repository.findVariantById(variantId);
+
+    if (!variant) {
+      throw new NotFoundException(`Variant #${variantId} không tồn tại`);
+    }
+
+    const urls = await this.uploadService.uploadImages(files);
+
+    // Nếu đặt làm primary, bỏ primary cũ
+    if (metadata.isPrimary) {
+      await this.repository.updateVariantPrimaryStatus(variantId, false);
+    }
+
+    const imageData = urls.map((url, index) => ({
+      variantId,
+      url,
+      altText: metadata.altText || `Variant ${variant.size || ''} ${variant.color || ''} - Ảnh ${index + 1}`,
+      isPrimary: metadata.isPrimary && index === 0,
+      displayOrder: metadata.displayOrder !== undefined ? metadata.displayOrder + index : index,
+    }));
+
+    await this.repository.createVariantImages(imageData);
+
+    await this.cacheManager.del(`product:${variant.productId}`);
+    await this.cacheManager.del('products:all');
+
+    return {
+      message: `Upload thành công ${urls.length} ảnh cho variant`,
+      imageCount: urls.length,
+    };
+  }
+
+  /**
+   * Delete ProductImage
+   */
   async deleteProductImage(imageId: number): Promise<any> {
     const image = await this.repository.findImageById(imageId);
 
@@ -263,14 +333,39 @@ export class ProductService {
     }
 
     await this.deleteImageFromCloudinary(image.url);
-
     await this.repository.deleteImages([imageId]);
 
     await this.cacheManager.del(`product:${image.productId}`);
     await this.cacheManager.del('products:all');
 
     return {
-      message: 'Xóa ảnh thành công',
+      message: 'Xóa ảnh sản phẩm thành công',
+      deletedImage: image,
+    };
+  }
+
+  /**
+   * Delete VariantImage
+   */
+  async deleteVariantImage(imageId: number): Promise<any> {
+    const image = await this.repository.findVariantImageById(imageId);
+
+    if (!image) {
+      throw new NotFoundException(`Ảnh variant #${imageId} không tồn tại`);
+    }
+
+    await this.deleteImageFromCloudinary(image.url);
+    await this.repository.deleteVariantImages([imageId]);
+
+    // Lấy variant để clear cache
+    const variant = await this.repository.findVariantById(image.variantId);
+    if (variant) {
+      await this.cacheManager.del(`product:${variant.productId}`);
+      await this.cacheManager.del('products:all');
+    }
+
+    return {
+      message: 'Xóa ảnh variant thành công',
       deletedImage: image,
     };
   }

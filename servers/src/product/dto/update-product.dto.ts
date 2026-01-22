@@ -1,4 +1,4 @@
-import { IsString, IsNumber, IsPositive, IsOptional, IsInt } from 'class-validator';
+import { IsString, IsNumber, IsPositive, IsOptional, IsInt, IsEnum } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';  // Thêm import cho Swagger
 
 export class UpdateProductDto {
@@ -31,6 +31,16 @@ export class UpdateProductDto {
   basePrice?: number;
 
   @ApiProperty({ 
+    example: 250000, 
+    description: 'Giá trước khuyến mãi (VND, tùy chọn)', 
+    required: false 
+  })
+  @IsOptional()
+  @IsNumber()
+  @IsPositive()
+  originalPrice?: number;
+
+  @ApiProperty({ 
     example: 2, 
     description: 'ID category mới (phải tồn tại, tùy chọn)', 
     required: false 
@@ -38,4 +48,23 @@ export class UpdateProductDto {
   @IsOptional()
   @IsInt()
   categoryId?: number;
+
+  @ApiProperty({ 
+    example: 1, 
+    description: 'ID brand mới (tùy chọn)', 
+    required: false 
+  })
+  @IsOptional()
+  @IsInt()
+  brandId?: number;
+
+  @ApiProperty({ 
+    example: 'active', 
+    description: 'Trạng thái sản phẩm (active, draft, inactive)', 
+    required: false,
+    enum: ['active', 'draft', 'inactive']
+  })
+  @IsOptional()
+  @IsEnum(['active', 'draft', 'inactive'])
+  status?: string;
 }

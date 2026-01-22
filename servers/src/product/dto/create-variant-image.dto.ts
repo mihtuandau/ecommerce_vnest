@@ -2,19 +2,19 @@ import { IsInt, IsString, IsOptional, IsBoolean, IsPositive } from 'class-valida
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CreateImageDto {
+export class CreateVariantImageDto {
   @ApiProperty({ 
     example: 1, 
-    description: 'ID sản phẩm (phải tồn tại)', 
+    description: 'ID variant (phải tồn tại)', 
     required: true 
   })
   @Type(() => Number)
   @IsInt()
   @IsPositive()
-  productId: number;
+  variantId: number;
 
   @ApiProperty({ 
-    example: 'https://cloudinary.com/image1.jpg', 
+    example: 'https://cloudinary.com/image-variant.jpg', 
     description: 'URL ảnh từ Cloudinary', 
     required: true 
   })
@@ -22,7 +22,7 @@ export class CreateImageDto {
   url: string;
 
   @ApiProperty({ 
-    example: 'Áo thun màu đỏ', 
+    example: 'Áo thun đỏ size M', 
     description: 'Alt text cho accessibility', 
     required: false 
   })
@@ -32,12 +32,12 @@ export class CreateImageDto {
 
   @ApiProperty({ 
     example: true, 
-    description: 'Ảnh thumbnail chính?', 
+    description: 'Ảnh chính của variant?', 
     required: false 
   })
   @IsOptional()
   @IsBoolean()
-  isThumbnail?: boolean;
+  isPrimary?: boolean;
 
   @ApiProperty({ 
     example: 0, 

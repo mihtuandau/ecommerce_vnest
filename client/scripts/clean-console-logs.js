@@ -1,5 +1,4 @@
-// scripts/clean-console-logs.js
-// Script to remove console.log from production code
+
 
 import fs from 'fs';
 import path from 'path';

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useProducts, useCategories, useBrands } from '../../../hooks/useProducts';
 import { useProductActions } from '../../../hooks/useProductActions';
 import { PageHeader } from '../../../components/common/PageHeader';
@@ -7,11 +8,12 @@ import ProductStats from '../../../components/admin/Product/ProductStats';
 import ProductToolbar from '../../../components/admin/Product/ProductToolbar';
 import ProductTable from '../../../components/admin/Product/ProductTable';
 import ProductForm from '../../../components/admin/Product/ProductForm';
-import VariantManager from '../../../components/admin/Product/VariantModal';
+import VariantFormModal from '../../../components/admin/Product/VariantFormModal';
 import DeleteConfirmModal from '../../../components/common/DeleteConfirm';
 import { formatPrice, getTotalStock } from '../../../utils/formatters';
 
 const ProductsPage = () => {
+  const navigate = useNavigate();
   const [filters, setFilters] = useState({
     search: '',
     categoryId: '',
@@ -109,7 +111,7 @@ const ProductsPage = () => {
           totalPages={pagination.totalPages || 1}
           currentPage={filters.page}
           onPageChange={(page) => updateFilters({ page })}
-          onEdit={handleEdit}
+          onEdit={(product) => navigate(`/admin-products/${product.id}`)}
           onDelete={handleDelete}
           onDuplicate={handleDuplicate}
           onManageVariants={async (product, variant) => {
@@ -157,36 +159,20 @@ const ProductsPage = () => {
       )}
 
       {showVariantManager && managingVariantsProduct && (
-        <VariantManager
-          product={managingVariantsProduct}
-          editingVariant={editingVariant}
+        <VariantFormModal
+          isOpen={showVariantManager}
+          productId={managingVariantsProduct.id}
+          variant={editingVariant}
           onClose={() => {
             setShowVariantManager(false);
             setManagingVariantsProduct(null);
             setEditingVariant(null);
           }}
-          onSave={handleSaveVariants}
-          onImagesUploaded={async (variantId, images, replaceImages = false) => {
-            const productService = (await import('../../../services/productService')).default;
-            
-            // Nếu chọn thay thế, xóa ảnh cũ trước
-            if (replaceImages) {
-              // Lấy danh sách ảnh cũ của variant
-              const oldImages = managingVariantsProduct.images?.filter(img => img.variantId === variantId) || [];
-              
-              // Xóa từng ảnh cũ
-              for (const img of oldImages) {
-                try {
-                  await productService.deleteImage(managingVariantsProduct.id, img.id);
-                } catch (error) {
-                  console.error('Failed to delete old image:', error);
-                }
-              }
-            }
-            
-            // Upload ảnh mới
-            await productService.uploadImages(managingVariantsProduct.id, images, { variantId });
+          onSuccess={() => {
             refetch();
+            setShowVariantManager(false);
+            setManagingVariantsProduct(null);
+            setEditingVariant(null);
           }}
         />
       )}

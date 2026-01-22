@@ -106,18 +106,26 @@ export const useProductActions = ({ refetch, products, selectedProducts = [] }) 
       
       const { toCreate, toUpdate, toDelete } = calculateVariantChanges(existingVariants, variantsData);
       
-      await Promise.all([
+      // Thực hiện các thao tác và lưu kết quả
+      const results = await Promise.all([
         ...toDelete.map(v => productService.deleteVariant(v.id)),
         ...toCreate.map(v => createVariant(productId, v, currentProduct)),
         ...toUpdate.map(v => updateVariant(v, currentProduct))
       ]);
       
+      // Lọc ra các variants mới được tạo (bỏ qua kết quả delete)
+      const createdVariants = results.slice(toDelete.length, toDelete.length + toCreate.length);
+      
       notify.success('Đã cập nhật biến thể thành công');
       setShowVariantManager(false);
       setManagingVariantsProduct(null);
       refetch();
+      
+      // Trả về danh sách variants vừa tạo (có ID từ backend)
+      return createdVariants;
     } catch (error) {
       notify.error('Không thể lưu biến thể');
+      throw error;
     }
   };
 

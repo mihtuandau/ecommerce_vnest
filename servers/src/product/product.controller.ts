@@ -75,6 +75,9 @@ export class ProductController {
     return this.productService.deleteVariant(+variantId);
   }
 
+  /**
+   * Upload images for Product (not for variant)
+   */
   @Post(':id/images')
   @Roles('ADMIN')
   @ApiConsumes('multipart/form-data')
@@ -84,26 +87,66 @@ export class ProductController {
     @UploadedFiles() files: Express.Multer.File[],
     @Body('altText') altText?: string,
     @Body('isThumbnail') isThumbnail?: string,
-    @Body('variantId') variantId?: string
+    @Body('displayOrder') displayOrder?: string,
   ) {
     if (!files || files.length === 0) {
       throw new BadRequestException('Vui lòng chọn ít nhất 1 file ảnh');
     }
 
     const isThumbnailBool = isThumbnail === 'true';
-    const variantIdNum = variantId ? parseInt(variantId, 10) : undefined;
+    const displayOrderNum = displayOrder ? parseInt(displayOrder, 10) : 0;
 
     return this.productService.uploadProductImages(+id, files, {
       altText,
       isThumbnail: isThumbnailBool,
-      variantId: variantIdNum,
+      displayOrder: displayOrderNum,
     });
   }
 
+  /**
+   * Upload images for ProductVariant
+   */
+  @Post('variant/:variantId/images')
+  @Roles('ADMIN')
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FilesInterceptor('files', 10, multerConfig))
+  async uploadVariantImages(
+    @Param('variantId') variantId: string,
+    @UploadedFiles() files: Express.Multer.File[],
+    @Body('altText') altText?: string,
+    @Body('isPrimary') isPrimary?: string,
+    @Body('displayOrder') displayOrder?: string,
+  ) {
+    if (!files || files.length === 0) {
+      throw new BadRequestException('Vui lòng chọn ít nhất 1 file ảnh');
+    }
+
+    const isPrimaryBool = isPrimary === 'true';
+    const displayOrderNum = displayOrder ? parseInt(displayOrder, 10) : 0;
+
+    return this.productService.uploadVariantImages(+variantId, files, {
+      altText,
+      isPrimary: isPrimaryBool,
+      displayOrder: displayOrderNum,
+    });
+  }
+
+  /**
+   * Delete ProductImage
+   */
   @Delete('images/:imageId')
   @Roles('ADMIN')
   async deleteProductImage(@Param('imageId') imageId: string) {
     return this.productService.deleteProductImage(+imageId);
+  }
+
+  /**
+   * Delete VariantImage
+   */
+  @Delete('variant-images/:imageId')
+  @Roles('ADMIN')
+  async deleteVariantImage(@Param('imageId') imageId: string) {
+    return this.productService.deleteVariantImage(+imageId);
   }
 }
 
