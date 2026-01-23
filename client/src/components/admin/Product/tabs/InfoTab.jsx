@@ -1,23 +1,32 @@
 import { formatPrice } from '../../../../utils/formatters';
 
-const InfoTab = ({ product, formData, onFormChange }) => {
+const InfoTab = ({ product, formData, onFormChange, readOnly }) => {
+  const inputCls = (extra = '') =>
+    `w-full px-4 py-3 border rounded-lg transition-all ${
+      readOnly 
+        ? 'bg-gray-50 border-gray-200 cursor-not-allowed text-gray-600' 
+        : 'bg-white border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100'
+    } ${extra}`;
+
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-      <h2 className="text-lg font-semibold mb-6 text-gray-900">Thông tin cơ bản</h2>
+    <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow">
+      <h2 className="text-xl font-bold mb-6 text-gray-900">Thông tin cơ bản</h2>
       
-      <div className="space-y-6">
+      <div className="space-y-5">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Tên sản phẩm <span className="text-red-500">*</span>
+            Tên sản phẩm {!readOnly && <span className="text-red-500">*</span>}
           </label>
           <input
             type="text"
             value={formData.name || ''}
-            onChange={(e) => onFormChange('name', e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow"
+            onChange={(e) => !readOnly && onFormChange('name', e.target.value)}
+            readOnly={readOnly}
+            disabled={readOnly}
+            className={inputCls()}
             placeholder="Nhập tên sản phẩm"
           />
-          <p className="mt-1 text-xs text-gray-500">Tên sản phẩm sẽ hiển thị cho khách hàng</p>
+          <p className="mt-1.5 text-xs text-gray-500">Tên sản phẩm sẽ hiển thị cho khách hàng</p>
         </div>
 
         <div>
@@ -26,25 +35,29 @@ const InfoTab = ({ product, formData, onFormChange }) => {
           </label>
           <textarea
             value={formData.description || ''}
-            onChange={(e) => onFormChange('description', e.target.value)}
+            onChange={(e) => !readOnly && onFormChange('description', e.target.value)}
+            readOnly={readOnly}
+            disabled={readOnly}
             rows={6}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow resize-none"
+            className={inputCls('resize-none')}
             placeholder="Mô tả chi tiết về sản phẩm, tính năng, chất liệu..."
           />
-          <p className="mt-1 text-xs text-gray-500">Mô tả chi tiết giúp khách hàng hiểu rõ hơn về sản phẩm</p>
+          <p className="mt-1.5 text-xs text-gray-500">Mô tả chi tiết giúp khách hàng hiểu rõ hơn về sản phẩm</p>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Giá gốc <span className="text-red-500">*</span>
+              Giá gốc {!readOnly && <span className="text-red-500">*</span>}
             </label>
             <div className="relative">
               <input
                 type="number"
                 value={formData.basePrice || ''}
-                onChange={(e) => onFormChange('basePrice', Number(e.target.value))}
-                className="w-full px-4 py-3 pr-16 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow"
+                onChange={(e) => !readOnly && onFormChange('basePrice', Number(e.target.value))}
+                readOnly={readOnly}
+                disabled={readOnly}
+                className={inputCls('pr-16')}
                 placeholder="0"
                 min="0"
               />
@@ -61,21 +74,31 @@ const InfoTab = ({ product, formData, onFormChange }) => {
               <input
                 type="number"
                 value={formData.originalPrice || ''}
-                onChange={(e) => onFormChange('originalPrice', Number(e.target.value))}
-                className="w-full px-4 py-3 pr-16 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow"
+                onChange={(e) => {
+                  if (readOnly) return;
+                  const v = Number(e.target.value);
+                  if (v > 0 && Number(formData.basePrice) > 0 && v <= Number(formData.basePrice)) {
+                    onFormChange('originalPrice', v);
+                    return;
+                  }
+                  onFormChange('originalPrice', v);
+                }}
+                readOnly={readOnly}
+                disabled={readOnly}
+                className={inputCls('pr-16')}
                 placeholder="0"
                 min="0"
               />
               <span className="absolute right-4 top-3.5 text-gray-500 font-medium">VNĐ</span>
             </div>
-            <p className="mt-1 text-xs text-gray-500">Giá trước khuyến mãi (nếu có)</p>
+            <p className="mt-1 text-xs text-gray-500">Giá trước khuyến mãi (phải lớn hơn giá bán)</p>
           </div>
         </div>
 
         {formData.basePrice > 0 && formData.originalPrice > 0 && formData.originalPrice > formData.basePrice && (
-          <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-            <p className="text-sm text-green-800">
-              💰 Giảm giá: <span className="font-bold">{formatPrice(formData.originalPrice - formData.basePrice)}</span>
+          <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 rounded-lg">
+            <p className="text-sm font-semibold text-green-800">
+              💰 Giảm giá: <span className="font-bold text-green-900">{formatPrice(formData.originalPrice - formData.basePrice)}</span>
               {' '}({Math.round(((formData.originalPrice - formData.basePrice) / formData.originalPrice) * 100)}%)
             </p>
           </div>

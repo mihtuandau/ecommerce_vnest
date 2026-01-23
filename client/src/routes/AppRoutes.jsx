@@ -62,6 +62,9 @@ const AdminProductsPage = lazy(() =>
 const AdminProductDetailPage = lazy(() =>
   import("../pages/Admin/Product/ProductDetailPage")
 );
+const AdminProductCreatePage = lazy(() =>
+  import("../pages/Admin/Product/ProductCreatePage")
+);
 const AdminCategoriesPage = lazy(() =>
   import("../pages/Admin/Category/CategoriesPage")
 );
@@ -176,6 +179,28 @@ const AppRoutes = () => {
             <AdminRoute>
               <AdminLayout>
                 <AdminProductsPage />
+              </AdminLayout>
+            </AdminRoute>
+          }
+        />
+
+        <Route
+          path="/admin-products/create"
+          element={
+            <AdminRoute>
+              <AdminLayout>
+                <AdminProductCreatePage />
+              </AdminLayout>
+            </AdminRoute>
+          }
+        />
+
+        <Route
+          path="/admin-products/:id/edit"
+          element={
+            <AdminRoute>
+              <AdminLayout>
+                <AdminProductCreatePage />
               </AdminLayout>
             </AdminRoute>
           }

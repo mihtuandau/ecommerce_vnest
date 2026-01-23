@@ -69,6 +69,13 @@ const apiService = {
       });
       return response.data;
     } catch (error) {
+      console.error(`❌ PUT ${url} error:`, {
+        status: error.response?.status,
+        message: error.response?.data?.message,
+        error: error.response?.data?.error,
+        data: error.response?.data,
+        fullError: error.message
+      });
       throw error.response?.data || error;
     }
   },

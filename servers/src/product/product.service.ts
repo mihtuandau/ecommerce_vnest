@@ -47,6 +47,7 @@ export class ProductService {
       sortBy = 'newest',
       inStock,
       outOfStock,
+      status,
     } = query;
 
     const skip = (page - 1) * limit;
@@ -73,6 +74,12 @@ export class ProductService {
 
     if (minRating) {
       where.averageRating = { gte: minRating };
+    }
+
+    // Filter theo trạng thái (map về isActive vì schema không có field draft riêng)
+    if (status) {
+      if (status === 'active') where.isActive = true;
+      if (status === 'inactive' || status === 'draft') where.isActive = false;
     }
 
     if (inStock) {
@@ -207,8 +214,36 @@ export class ProductService {
   }
 
   async createVariant(data: CreateVariantDto): Promise<any> {
+    // productId phải có (controller đã set từ URL param)
+    if (!data.productId) {
+      throw new BadRequestException('productId is required');
+    }
+
+    const productId = data.productId;
+
+    // Default values nếu FE không truyền
+    if (data.stock === undefined || data.stock === null) {
+      (data as any).stock = 0;
+    }
+
+    if (data.price === undefined || data.price === null) {
+      const product = await this.repository.findById(productId);
+      if (!product) {
+        throw new NotFoundException(`Product #${productId} không tồn tại`);
+      }
+      (data as any).price = product.basePrice;
+    }
+
+    if ((data as any).lowStockThreshold === undefined || (data as any).lowStockThreshold === null) {
+      (data as any).lowStockThreshold = 5;
+    }
+
+    if ((data as any).isActive === undefined || (data as any).isActive === null) {
+      (data as any).isActive = true;
+    }
+
     const variant = await this.repository.createVariant(data as any);
-    await this.cacheManager.del(`product:${data.productId}`);
+    await this.cacheManager.del(`product:${productId}`);
     await this.cacheManager.del('products:all');
     return variant;
   }

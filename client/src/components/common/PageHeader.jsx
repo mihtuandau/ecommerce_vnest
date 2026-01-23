@@ -28,7 +28,7 @@ export const PageHeader = ({
   };
 
   return (
-    <div className={`mb-6 ${className}`}>
+    <div className={`mb-8 ${className}`}>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           {showBack && (
@@ -36,30 +36,32 @@ export const PageHeader = ({
               icon={<ArrowLeftOutlined />}
               onClick={handleBack}
               type="text"
+              className="hover:bg-gray-100"
             />
           )}
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            <h1 className="text-3xl font-bold text-gray-900 mb-1.5">
               {title}
             </h1>
             {subtitle && (
-              <p className="text-gray-600">{subtitle}</p>
+              <p className="text-gray-600 text-base font-medium">{subtitle}</p>
             )}
           </div>
         </div>
 
-        {/* <div className="flex gap-2">
-          {showRefresh && (
+        <div className="flex items-center gap-3 flex-shrink-0">
+          {showRefresh && onRefresh && (
             <Button
               icon={<ReloadOutlined />}
               onClick={onRefresh}
               loading={refreshing}
+              className="shadow-sm"
             >
               Làm mới
             </Button>
           )}
           {actions}
-        </div> */}
+        </div>
       </div>
     </div>
   );

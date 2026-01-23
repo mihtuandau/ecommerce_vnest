@@ -8,7 +8,10 @@ import {
 
 const ProductStats = ({ products, formatPrice, getTotalStock }) => {
   const totalProducts = products.length;
-  const totalValue = products.reduce((sum, p) => sum + (p.basePrice || 0), 0);
+  const totalValue = products.reduce((sum, p) => {
+    const stock = getTotalStock?.(p.variants) ?? 0;
+    return sum + (Number(p.basePrice) || 0) * stock;
+  }, 0);
   const lowStock = products.filter((p) => {
     const stock = getTotalStock(p.variants);
     return stock > 0 && stock < 10;
@@ -20,21 +23,22 @@ const ProductStats = ({ products, formatPrice, getTotalStock }) => {
       <Col xs={24} sm={12} lg={6}>
         <Card hoverable>
           <Statistic
-            title="Total Products"
+            title="Tổng sản phẩm"
             value={totalProducts}
             prefix={<AppstoreOutlined style={{ color: '#1890ff' }} />}
-            valueStyle={{ color: '#000', fontWeight: 600 }}
+            // antd v5+: valueStyle deprecated -> styles.content
+            styles={{ content: { color: '#000', fontWeight: 600 } }}
           />
         </Card>
       </Col>
       <Col xs={24} sm={12} lg={6}>
         <Card hoverable>
           <Statistic
-            title="Total Value"
+            title="Tổng giá trị kho"
             value={totalValue}
             prefix={<DollarOutlined style={{ color: '#52c41a' }} />}
             suffix="₫"
-            valueStyle={{ color: '#000', fontWeight: 600 }}
+            styles={{ content: { color: '#000', fontWeight: 600 } }}
             formatter={(value) => formatPrice(value).replace('₫', '')}
           />
         </Card>
@@ -45,17 +49,17 @@ const ProductStats = ({ products, formatPrice, getTotalStock }) => {
             title="Low Stock"
             value={lowStock}
             prefix={<WarningOutlined style={{ color: '#faad14' }} />}
-            valueStyle={{ color: '#000', fontWeight: 600 }}
+            styles={{ content: { color: '#000', fontWeight: 600 } }}
           />
         </Card>
       </Col>
       <Col xs={24} sm={12} lg={6}>
         <Card hoverable>
           <Statistic
-            title="Out of Stock"
+            title="Hết hàng"
             value={outOfStock}
             prefix={<CloseCircleOutlined style={{ color: '#ff4d4f' }} />}
-            valueStyle={{ color: '#000', fontWeight: 600 }}
+            styles={{ content: { color: '#000', fontWeight: 600 } }}
           />
         </Card>
       </Col>

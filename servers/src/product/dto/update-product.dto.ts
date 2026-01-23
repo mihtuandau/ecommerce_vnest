@@ -20,6 +20,15 @@ export class UpdateProductDto {
   @IsString()
   description?: string;
 
+  @ApiProperty({
+    example: 'ao-thun-nam-cap-nhat',
+    description: 'Slug sản phẩm (tùy chọn)',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  slug?: string;
+
   @ApiProperty({ 
     example: 180000, 
     description: 'Giá gốc mới (VND, tùy chọn)', 
@@ -67,4 +76,22 @@ export class UpdateProductDto {
   @IsOptional()
   @IsEnum(['active', 'draft', 'inactive'])
   status?: string;
+
+  @ApiProperty({
+    example: 'Áo thun nam - Vnest',
+    description: 'SEO meta title (tùy chọn)',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  metaTitle?: string;
+
+  @ApiProperty({
+    example: 'Áo thun nam cotton, thoáng mát...',
+    description: 'SEO meta description (tùy chọn)',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  metaDesc?: string;
 }
