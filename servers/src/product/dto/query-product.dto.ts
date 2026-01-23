@@ -1,6 +1,7 @@
 import { IsOptional, IsInt, IsPositive, IsString, IsBoolean } from 'class-validator';
 import { Type, Transform } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsEnum } from 'class-validator';
 
 export class QueryProductDto {
   @ApiProperty({ 
@@ -91,6 +92,16 @@ export class QueryProductDto {
   @IsOptional()
   @IsString()
   sortBy?: string;
+
+  @ApiProperty({
+    example: 'active',
+    description: 'Filter trạng thái: active | inactive | draft (draft map về isActive=false)',
+    required: false,
+    enum: ['active', 'inactive', 'draft'],
+  })
+  @IsOptional()
+  @IsEnum(['active', 'inactive', 'draft'])
+  status?: string;
 
   @ApiProperty({ 
     example: true, 

@@ -79,6 +79,8 @@ export const useProductActions = ({ refetch, products, selectedProducts = [] }) 
     });
   };
 
+  const deleting = deleteMutation.isPending;
+
   const handleSaveProduct = async (productData, images) => {
     try {
       if (editingProduct) {
@@ -132,6 +134,7 @@ export const useProductActions = ({ refetch, products, selectedProducts = [] }) 
   return {
     deleteModalOpen,
     productToDelete,
+    deleting,
     editingProduct,
     showForm,
     managingVariantsProduct,

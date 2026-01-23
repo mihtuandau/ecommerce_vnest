@@ -1,22 +1,26 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Button } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import { useProducts, useCategories, useBrands } from '../../../hooks/useProducts';
 import { useProductActions } from '../../../hooks/useProductActions';
 import { PageHeader } from '../../../components/common/PageHeader';
 import { QueryListWrapper } from '../../../components/common/QueryWrapper';
-import ProductStats from '../../../components/admin/Product/ProductStats';
 import ProductToolbar from '../../../components/admin/Product/ProductToolbar';
 import ProductTable from '../../../components/admin/Product/ProductTable';
-import ProductForm from '../../../components/admin/Product/ProductForm';
-import VariantFormModal from '../../../components/admin/Product/VariantFormModal';
 import DeleteConfirmModal from '../../../components/common/DeleteConfirm';
-import { formatPrice, getTotalStock } from '../../../utils/formatters';
 
 const ProductsPage = () => {
   const navigate = useNavigate();
   const [filters, setFilters] = useState({
     search: '',
     categoryId: '',
+    brandId: '',
+    status: '', // active | inactive | draft
+    minPrice: '',
+    maxPrice: '',
+    // Backend chỉ hỗ trợ 1 param sortBy: newest|oldest|price-asc|price-desc|name-asc|name-desc|sold|rating
+    sortBy: 'newest',
     page: 1,
     limit: 10
   });
@@ -29,38 +33,25 @@ const ProductsPage = () => {
   const pagination = productsData?.pagination || {};
 
   const [selectedProducts, setSelectedProducts] = useState([]);
-  const [editingVariant, setEditingVariant] = useState(null);
-  
+
   const {
     deleteModalOpen,
     productToDelete,
-    editingProduct,
-    showForm,
-    managingVariantsProduct,
-    showVariantManager,
-    handleEdit,
+    deleting,
     handleDelete,
-    handleDuplicate,
-    handleManageVariants,
-    handleSaveVariants,
     handleBulkDelete,
-    handleSaveProduct,
     confirmDelete,
     setDeleteModalOpen,
     setProductToDelete,
-    setEditingProduct,
-    setShowForm,
-    setManagingVariantsProduct,
-    setShowVariantManager
-  } = useProductActions({ refetch, products });
+  } = useProductActions({ refetch, products, selectedProducts });
 
-  const handleSelectAll = (e) => {
-    setSelectedProducts(e.target.checked ? products.map(p => p.id) : []);
+  const handleSelectAll = (checked) => {
+    setSelectedProducts(checked ? products.map((p) => p.id) : []);
   };
 
-  const handleSelectProduct = (productId) => {
-    setSelectedProducts(prev => 
-      prev.includes(productId) ? prev.filter(id => id !== productId) : [...prev, productId]
+  const handleSelectProduct = (productId, checked) => {
+    setSelectedProducts((prev) =>
+      checked ? [...prev, productId] : prev.filter((id) => id !== productId)
     );
   };
 
@@ -69,20 +60,25 @@ const ProductsPage = () => {
   };
 
   return (
-    <div>
-      <PageHeader
-        title="Products Management"
-        subtitle="Manage your product inventory and details"
-        showRefresh
-        onRefresh={refetch}
-        refreshing={isLoading}
-      />
-
-      <ProductStats 
-        products={products}
-        formatPrice={formatPrice}
-        getTotalStock={getTotalStock}
-      />
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-full w-full ">
+        <PageHeader
+          title="Quản lý sản phẩm"
+          subtitle={`Tổng số sản phẩm: ${pagination.total ?? products.length}`}
+          showRefresh
+          onRefresh={refetch}
+          refreshing={isLoading}
+          actions={
+            <Button
+              type="primary"
+              size="large"
+              icon={<PlusOutlined />}
+              onClick={() => navigate('/admin-products/create')}
+            >
+              + Thêm sản phẩm mới
+            </Button>
+          }
+        />
 
       <ProductToolbar
         search={filters.search}
@@ -90,12 +86,31 @@ const ProductsPage = () => {
         selectedCategory={filters.categoryId}
         setSelectedCategory={(value) => updateFilters({ categoryId: value, page: 1 })}
         categories={categories}
+        selectedBrand={filters.brandId}
+        setSelectedBrand={(value) => updateFilters({ brandId: value, page: 1 })}
+        brands={brands}
+        status={filters.status}
+        setStatus={(value) => updateFilters({ status: value, page: 1 })}
+        minPrice={filters.minPrice}
+        maxPrice={filters.maxPrice}
+        setPriceRange={({ minPrice, maxPrice }) => updateFilters({ minPrice, maxPrice, page: 1 })}
+        sortBy={filters.sortBy}
+        setSort={({ sortBy }) => updateFilters({ sortBy, page: 1 })}
+        onResetFilters={() =>
+          setFilters((prev) => ({
+            ...prev,
+            search: '',
+            categoryId: '',
+            brandId: '',
+            status: '',
+            minPrice: '',
+            maxPrice: '',
+            sortBy: 'newest',
+            page: 1,
+          }))
+        }
         selectedProducts={selectedProducts}
         onBulkDelete={handleBulkDelete}
-        onAddProduct={() => {
-          setEditingProduct(null);
-          setShowForm(true);
-        }}
       />
 
       <QueryListWrapper
@@ -108,80 +123,30 @@ const ProductsPage = () => {
         <ProductTable
           products={products}
           loading={false}
+          total={pagination.total ?? products.length}
           totalPages={pagination.totalPages || 1}
           currentPage={filters.page}
           onPageChange={(page) => updateFilters({ page })}
-          onEdit={(product) => navigate(`/admin-products/${product.id}`)}
+          onView={(product) => navigate(`/admin-products/${product.id}?mode=view`)}
+          onEdit={(product) => navigate(`/admin-products/${product.id}/edit`)}
           onDelete={handleDelete}
-          onDuplicate={handleDuplicate}
-          onManageVariants={async (product, variant) => {
-            // Fetch full product detail để có đủ images
-            try {
-              const productService = (await import('../../../services/productService')).default;
-              const fullProduct = await productService.getOne(product.id);
-              
-              // Nếu đang edit variant, gắn images vào variant
-              let variantWithImages = variant;
-              if (variant?.id && fullProduct.images) {
-                const variantImages = fullProduct.images.filter(img => img.variantId === variant.id);
-                variantWithImages = { ...variant, images: variantImages };
-              }
-              
-              setManagingVariantsProduct(fullProduct);
-              setEditingVariant(variantWithImages || null);
-              setShowVariantManager(true);
-            } catch (error) {
-              console.error('Failed to fetch product:', error);
-              // Fallback: dùng product hiện tại
-              setManagingVariantsProduct(product);
-              setEditingVariant(variant || null);
-              setShowVariantManager(true);
-            }
-          }}
-          onRefresh={refetch}
+          onManageVariants={(product) => navigate(`/admin-products/${product.id}/edit#variants`)}
           selectedProducts={selectedProducts}
           onSelectAll={handleSelectAll}
           onSelectProduct={handleSelectProduct}
         />
       </QueryListWrapper>
 
-      {showForm && (
-        <ProductForm
-          product={editingProduct}
-          categories={categories}
-          brands={brands}
-          onSave={handleSaveProduct}
-          onClose={() => {
-            setShowForm(false);
-            setEditingProduct(null);
-          }}
-        />
-      )}
-
-      {showVariantManager && managingVariantsProduct && (
-        <VariantFormModal
-          isOpen={showVariantManager}
-          productId={managingVariantsProduct.id}
-          variant={editingVariant}
-          onClose={() => {
-            setShowVariantManager(false);
-            setManagingVariantsProduct(null);
-            setEditingVariant(null);
-          }}
-          onSuccess={() => {
-            refetch();
-            setShowVariantManager(false);
-            setManagingVariantsProduct(null);
-            setEditingVariant(null);
-          }}
-        />
-      )}
+      </div>
 
       <DeleteConfirmModal
         isOpen={deleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}
-        productToDelete={productToDelete}
         onConfirm={confirmDelete}
+        title="Xóa sản phẩm"
+        message="Hành động này không thể hoàn tác."
+        itemName={productToDelete?.name}
+        loading={deleting}
       />
     </div>
   );

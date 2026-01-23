@@ -127,13 +127,15 @@ const ProductDetailPage = () => {
   };
 
   const handlePrevImage = () => {
-    const images = product.images || [];
-    setSelectedImage((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+    const imgs = getDisplayImages();
+    if (!imgs.length) return;
+    setSelectedImage((prev) => (prev === 0 ? imgs.length - 1 : prev - 1));
   };
 
   const handleNextImage = () => {
-    const images = product.images || [];
-    setSelectedImage((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+    const imgs = getDisplayImages();
+    if (!imgs.length) return;
+    setSelectedImage((prev) => (prev === imgs.length - 1 ? 0 : prev + 1));
   };
 
   if (loading) {
@@ -159,18 +161,22 @@ const ProductDetailPage = () => {
 
   // Lọc ảnh theo variant đang được chọn
   const getDisplayImages = () => {
-    // Nếu có variant được chọn và variant có ảnh riêng
-    if (selectedVariant?.images && selectedVariant.images.length > 0) {
-      return selectedVariant.images;
+    const productImages = Array.isArray(product?.images) ? product.images : [];
+    const variantImages = Array.isArray(selectedVariant?.images) ? selectedVariant.images : [];
+
+    // UX: hiển thị ảnh variant trước, sau đó đến ảnh sản phẩm (không trùng URL)
+    const merged = [...variantImages, ...productImages];
+    const seen = new Set();
+    const deduped = [];
+
+    for (const img of merged) {
+      const url = img?.url;
+      if (!url || seen.has(url)) continue;
+      seen.add(url);
+      deduped.push(img);
     }
 
-    // Fallback về ảnh chung của product
-    if (product.images && product.images.length > 0) {
-      return product.images;
-    }
-
-    // Không có ảnh nào
-    return [];
+    return deduped;
   };
 
   const images = getDisplayImages();

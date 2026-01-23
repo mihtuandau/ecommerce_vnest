@@ -1,4 +1,4 @@
-import { IsInt, IsString, IsOptional, IsNumber, IsPositive } from 'class-validator';
+import { IsInt, IsString, IsOptional, IsNumber, IsPositive, Min, IsBoolean } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';  // Thêm import
 
@@ -6,12 +6,13 @@ export class CreateVariantDto {
   @ApiProperty({ 
     example: 1, 
     description: 'ID sản phẩm (phải tồn tại)', 
-    required: true 
+    required: false 
   })
+  @IsOptional()
   @Type(() => Number)
   @IsInt()
   @IsPositive()
-  productId: number;
+  productId?: number;
 
   @ApiProperty({ 
     example: 'M', 
@@ -34,19 +35,24 @@ export class CreateVariantDto {
   @ApiProperty({ 
     example: 50, 
     description: 'Số lượng tồn kho', 
-    required: true 
+    required: false 
   })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
   @IsNumber()
-  @IsPositive()
   stock: number;
 
   @ApiProperty({ 
     example: 200000, 
     description: 'Giá variant (có thể override basePrice)', 
-    required: true 
+    required: false 
   })
+  @IsOptional()
+  @Type(() => Number)
   @IsNumber()
-  @IsPositive()
+  @Min(0)
   price: number;
 
   @ApiProperty({ 
@@ -57,4 +63,24 @@ export class CreateVariantDto {
   @IsOptional()
   @IsString()
   sku?: string;
+
+  @ApiProperty({
+    example: 5,
+    description: 'Ngưỡng cảnh báo hết hàng (tùy chọn, mặc định 5)',
+    required: false,
+  })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  lowStockThreshold?: number;
+
+  @ApiProperty({
+    example: true,
+    description: 'Variant còn bán không (tùy chọn, mặc định true)',
+    required: false,
+  })
+  @IsOptional()
+  @IsBoolean()
+  isActive?: boolean;
 }
