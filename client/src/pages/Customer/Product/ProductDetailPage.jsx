@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import Layout from '../../../components/layouts/Layout';
 import Loading from '../../../components/common/Loading';
@@ -66,6 +66,7 @@ const ProductDetailPage = () => {
         if (sizes.length > 0) setSelectedSize(sizes[0]);
         if (colors.length > 0) setSelectedColor(colors[0]);
         
+        // Only consider variants with stock for initial selection
         const variantsWithStock = productData.variants.filter(v => v.stock > 0);
         const variantWithStock = variantsWithStock.length > 0 
           ? variantsWithStock.sort((a, b) => b.stock - a.stock)[0]  
@@ -79,22 +80,22 @@ const ProductDetailPage = () => {
     }
   };
 
-  const getVariantImage = () => {
+  const getVariantImage = useCallback(() => {
     // Lấy ảnh đầu tiên của variant
     if (selectedVariant?.images && selectedVariant.images.length > 0) {
       return selectedVariant.images[0].url;
     }
     
     // Fallback về ảnh chung của product
-    if (product.images && product.images.length > 0) {
+    if (product?.images && product.images.length > 0) {
       return product.images[0].url;
     }
     
     // Fallback cuối cùng
-    return product.image || '/placeholder-product.jpg';
-  };
+    return product?.image || '/placeholder-product.jpg';
+  }, [selectedVariant, product]);
 
-  const handleAddToCart = (buyNow = false) => {
+  const handleAddToCart = useCallback((buyNow = false) => {
     if (!selectedVariant) {
       notify.error('Vui lòng chọn size và màu sắc');
       return;
@@ -124,19 +125,44 @@ const ProductDetailPage = () => {
       addToCart(selectedVariant.id, quantity, productData);
       notify.success('Thêm vào giỏ hàng thành công!', 2000);
     }
-  };
+  }, [selectedVariant, product, quantity, getVariantImage, navigate, addToCart]);
 
-  const handlePrevImage = () => {
+  // Lọc ảnh theo variant đang được chọn - MUST BE BEFORE early returns
+  const getDisplayImages = useCallback(() => {
+    if (!product) return [];
+    const productImages = Array.isArray(product?.images) ? product.images : [];
+    const variantImages = Array.isArray(selectedVariant?.images) ? selectedVariant.images : [];
+
+    // UX: hiển thị ảnh variant trước, sau đó đến ảnh sản phẩm (không trùng URL)
+    const merged = [...variantImages, ...productImages];
+    const seen = new Set();
+    const deduped = [];
+
+    for (const img of merged) {
+      const url = img?.url;
+      if (!url || seen.has(url)) continue;
+      seen.add(url);
+      deduped.push(img);
+    }
+
+    return deduped;
+  }, [product, selectedVariant]);
+
+  const handlePrevImage = useCallback(() => {
     const imgs = getDisplayImages();
     if (!imgs.length) return;
     setSelectedImage((prev) => (prev === 0 ? imgs.length - 1 : prev - 1));
-  };
+  }, [getDisplayImages]);
 
-  const handleNextImage = () => {
+  const handleNextImage = useCallback(() => {
     const imgs = getDisplayImages();
     if (!imgs.length) return;
     setSelectedImage((prev) => (prev === imgs.length - 1 ? 0 : prev + 1));
-  };
+  }, [getDisplayImages]);
+
+  const images = useMemo(() => getDisplayImages(), [getDisplayImages]);
+  const currentPrice = selectedVariant?.price || product?.basePrice || product?.price;
+  const originalPrice = product?.originalPrice;
 
   if (loading) {
     return (
@@ -158,30 +184,6 @@ const ProductDetailPage = () => {
       </Layout>
     );
   }
-
-  // Lọc ảnh theo variant đang được chọn
-  const getDisplayImages = () => {
-    const productImages = Array.isArray(product?.images) ? product.images : [];
-    const variantImages = Array.isArray(selectedVariant?.images) ? selectedVariant.images : [];
-
-    // UX: hiển thị ảnh variant trước, sau đó đến ảnh sản phẩm (không trùng URL)
-    const merged = [...variantImages, ...productImages];
-    const seen = new Set();
-    const deduped = [];
-
-    for (const img of merged) {
-      const url = img?.url;
-      if (!url || seen.has(url)) continue;
-      seen.add(url);
-      deduped.push(img);
-    }
-
-    return deduped;
-  };
-
-  const images = getDisplayImages();
-  const currentPrice = selectedVariant?.price || product.basePrice || product.price;
-  const originalPrice = product.originalPrice;
 
   return (
     <Layout>

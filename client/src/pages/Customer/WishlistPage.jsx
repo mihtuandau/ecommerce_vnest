@@ -68,7 +68,7 @@ const WishlistPage = () => {
     return (
       <Layout>
         <div className="min-h-screen flex items-center justify-center">
-          <Spin size="large" tip="Đang tải..." />
+          <Spin size="large" />
         </div>
       </Layout>
     );

@@ -1,4 +1,7 @@
 const StatusCard = ({ product, formData, onFormChange, readOnly }) => {
+  // Use formData if provided (edit mode), otherwise use product (view mode)
+  const data = formData || product || {};
+  
   const statusOptions = [
     { value: 'active', label: 'Đang bán', color: 'green' },
     { value: 'draft', label: 'Nháp', color: 'gray' },
@@ -17,7 +20,7 @@ const StatusCard = ({ product, formData, onFormChange, readOnly }) => {
       
       <div className="space-y-3">
         {statusOptions.map(option => {
-          const isActive = formData.status === option.value;
+          const isActive = data.status === option.value;
           const classes = colorClasses[option.color];
           
           return (
@@ -33,13 +36,13 @@ const StatusCard = ({ product, formData, onFormChange, readOnly }) => {
                 type="radio" 
                 name="status" 
                 value={option.value}
-                checked={formData.status === option.value}
-                onChange={(e) => !readOnly && onFormChange('status', e.target.value)}
+                checked={data.status === option.value}
+                onChange={(e) => !readOnly && onFormChange && onFormChange('status', e.target.value)}
                 disabled={readOnly}
                 className="w-4 h-4"
               />
               <span className={`text-sm font-medium ${
-                formData.status === option.value ? classes.text : 'text-gray-700'
+                data.status === option.value ? classes.text : 'text-gray-700'
               }`}>
                 {option.label}
               </span>
@@ -51,7 +54,7 @@ const StatusCard = ({ product, formData, onFormChange, readOnly }) => {
       <div className="mt-5 pt-4 border-t border-gray-200">
         <div className="flex items-center gap-2 text-xs text-gray-500">
           <div className="w-2 h-2 rounded-full bg-green-500"></div>
-          <span>Cập nhật: {new Date(product.updatedAt || product.createdAt).toLocaleDateString('vi-VN')}</span>
+          <span>Cập nhật: {new Date(product?.updatedAt || product?.createdAt || new Date()).toLocaleDateString('vi-VN')}</span>
         </div>
       </div>
     </div>

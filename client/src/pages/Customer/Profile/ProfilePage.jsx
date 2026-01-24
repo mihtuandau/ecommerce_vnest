@@ -37,7 +37,7 @@ const ProfilePage = () => {
     return (
       <Layout>
         <div className="flex items-center justify-center min-h-screen">
-          <Spin size="large" tip="Đang tải..." />
+          <Spin size="large" />
         </div>
       </Layout>
     );

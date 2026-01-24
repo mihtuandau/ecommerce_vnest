@@ -99,10 +99,14 @@ const ProductCreatePage = () => {
   // Scroll to #variants when navigating from "Quản lý biến thể" / "Thêm biến thể"
   useEffect(() => {
     if (location.hash !== '#variants' || loadingProduct) return;
-    const el = document.getElementById('variants');
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    // Delay để đợi DOM render xong
+    const timer = setTimeout(() => {
+      const el = document.getElementById('variants');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100);
+    return () => clearTimeout(timer);
   }, [location.hash, loadingProduct]);
 
   // Auto-generate slug when name changes
@@ -229,7 +233,7 @@ const ProductCreatePage = () => {
   const buildProductPayload = (values) => {
     const basePriceRaw = values.basePrice;
     const basePrice =
-      basePriceRaw === '' || basePriceRaw === undefined || basePriceRaw === null
+      (basePriceRaw === '' || basePriceRaw === undefined || basePriceRaw === null)
         ? undefined
         : Number(basePriceRaw);
 
@@ -246,6 +250,20 @@ const ProductCreatePage = () => {
       metaTitle: values.metaTitle?.trim() || undefined,
       metaDesc: values.metaDesc?.trim() || undefined,
     };
+  };
+
+  // Helper function: Upload variant images
+  const uploadVariantImagesHelper = async (variantId, images) => {
+    const withFile = (images || []).filter((im) => im.file);
+    if (withFile.length === 0) return;
+    
+    try {
+      const files = withFile.map((im) => im.file);
+      const prim = withFile.find((im) => im.isPrimary) || withFile[0];
+      await productService.uploadVariantImages(variantId, files, { isPrimary: prim?.isPrimary || false });
+    } catch (e) {
+      throw new Error(`Không thể upload ảnh variant: ${e.message}`);
+    }
   };
 
   const handleSubmit = async (values) => {
@@ -265,7 +283,7 @@ const ProductCreatePage = () => {
             const first = newProductImages.find((img) => img.isThumbnail) || newProductImages[0];
             await productService.uploadImages(id, files, { isThumbnail: first?.isThumbnail || false });
           } catch (e) {
-            notify.warning('Cập nhật sản phẩm xong nhưng upload ảnh mới lỗi.');
+            notify.warning('Cập nhật sản phẩm thành công nhưng upload ảnh mới lỗi.');
           }
         }
         for (const vid of variantsToDelete) {
@@ -287,11 +305,10 @@ const ProductCreatePage = () => {
               const vr = await productService.addVariant(id, payload);
               const vId = (vr?.data || vr)?.id;
               if (vId && variant.images?.length) {
-                const withFile = variant.images.filter((im) => im.file);
-                if (withFile.length) {
-                  const files = withFile.map((im) => im.file);
-                  const prim = withFile.find((im) => im.isPrimary) || withFile[0];
-                  await productService.uploadVariantImages(vId, files, { isPrimary: prim?.isPrimary || false });
+                try {
+                  await uploadVariantImagesHelper(vId, variant.images);
+                } catch (e) {
+                  notify.warning(`Tạo biến thể ${variant.size || ''} - ${variant.color || ''} thành công nhưng upload ảnh lỗi.`);
                 }
               }
             } catch (e) {
@@ -300,15 +317,12 @@ const ProductCreatePage = () => {
           } else {
             try {
               await productService.updateVariant(variant.id, payload);
-              // Upload thêm ảnh mới cho variant đã tồn tại (trước đây bị thiếu)
-              const withFile = (variant.images || []).filter((im) => im.file);
-              if (withFile.length) {
+              // Upload thêm ảnh mới cho variant đã tồn tại
+              if (variant.images?.length) {
                 try {
-                  const files = withFile.map((im) => im.file);
-                  const prim = withFile.find((im) => im.isPrimary) || withFile[0];
-                  await productService.uploadVariantImages(variant.id, files, { isPrimary: prim?.isPrimary || false });
+                  await uploadVariantImagesHelper(variant.id, variant.images);
                 } catch (e) {
-                  notify.warning(`Đã cập nhật biến thể nhưng upload ảnh lỗi: ${variant.size || ''} - ${variant.color || ''}.`);
+                  notify.warning(`Cập nhật biến thể ${variant.size || ''} - ${variant.color || ''} thành công nhưng upload ảnh lỗi.`);
                 }
               }
             } catch (e) {
@@ -351,11 +365,10 @@ const ProductCreatePage = () => {
           const vr = await productService.addVariant(pid, vPayload);
           const vId = (vr?.data || vr)?.id;
           if (vId && variant.images?.length) {
-            const vWithFile = variant.images.filter((im) => im.file);
-            if (vWithFile.length) {
-              const files = vWithFile.map((im) => im.file);
-              const prim = vWithFile.find((im) => im.isPrimary) || vWithFile[0];
-              await productService.uploadVariantImages(vId, files, { isPrimary: prim?.isPrimary || false });
+            try {
+              await uploadVariantImagesHelper(vId, variant.images);
+            } catch (e) {
+              notify.warning(`Tạo biến thể ${variant.size || ''} - ${variant.color || ''} thành công nhưng upload ảnh lỗi.`);
             }
           }
         } catch (e) {
@@ -378,33 +391,28 @@ const ProductCreatePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 ">
-      {/* Header: breadcrumb + title (giống reference) */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-10 shadow-sm">
-        <div className="max-w-6xl mx-auto px-4 py-3">
-          <div className="flex items-center gap-3">
-            <Link
-              to="/admin-products"
-              className="p-1.5 hover:bg-gray-100 rounded text-gray-600"
-              aria-label="Quay lại"
-            >
-              <ArrowLeft size={18} />
-            </Link>
-            <div>
-              <nav className="flex items-center gap-1.5 text-xs text-gray-500 mb-0.5">
-                <Link to="/admin-products" className="hover:text-gray-700">Sản phẩm</Link>
-                <span>/</span>
-                <span className="text-gray-900 font-medium">
-                  {isEdit ? 'Chỉnh sửa sản phẩm' : 'Thêm sản phẩm mới'}
-                </span>
-              </nav>
-              <h1 className="text-xl font-semibold text-gray-900">
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="mb-6">
+        <div className="flex items-center gap-3 mb-4">
+          <Link
+            to="/admin-products"
+            className="p-2 hover:bg-gray-200 rounded-lg text-gray-600 transition-colors"
+            aria-label="Quay lại"
+          >
+            <ArrowLeft size={20} />
+          </Link>
+          <div>
+            <nav className="flex items-center gap-1.5 text-sm text-gray-500 mb-1">
+              <Link to="/admin-products" className="hover:text-gray-700 transition-colors">Sản phẩm</Link>
+              <span>/</span>
+              <span className="text-gray-700 font-medium">
                 {isEdit ? 'Chỉnh sửa sản phẩm' : 'Thêm sản phẩm mới'}
-              </h1>
-              <p className="text-xs text-gray-500 mt-0.5">
-                Nhập thông tin chi tiết về sản phẩm
-              </p>
-            </div>
+              </span>
+            </nav>
+            <h1 className="text-2xl font-bold text-gray-900">
+              {isEdit ? 'Chỉnh sửa sản phẩm' : 'Thêm sản phẩm mới'}
+            </h1>
           </div>
         </div>
       </div>

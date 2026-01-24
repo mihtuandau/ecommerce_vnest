@@ -1,6 +1,9 @@
 import { formatPrice } from '../../../../utils/formatters';
 
 const InfoTab = ({ product, formData, onFormChange, readOnly }) => {
+  // Use formData if provided (edit mode), otherwise use product (view mode)
+  const data = formData || product || {};
+
   const inputCls = (extra = '') =>
     `w-full px-4 py-3 border rounded-lg transition-all ${
       readOnly 
@@ -19,8 +22,8 @@ const InfoTab = ({ product, formData, onFormChange, readOnly }) => {
           </label>
           <input
             type="text"
-            value={formData.name || ''}
-            onChange={(e) => !readOnly && onFormChange('name', e.target.value)}
+            value={data.name || ''}
+            onChange={(e) => !readOnly && onFormChange && onFormChange('name', e.target.value)}
             readOnly={readOnly}
             disabled={readOnly}
             className={inputCls()}
@@ -34,8 +37,8 @@ const InfoTab = ({ product, formData, onFormChange, readOnly }) => {
             Mô tả sản phẩm
           </label>
           <textarea
-            value={formData.description || ''}
-            onChange={(e) => !readOnly && onFormChange('description', e.target.value)}
+            value={data.description || ''}
+            onChange={(e) => !readOnly && onFormChange && onFormChange('description', e.target.value)}
             readOnly={readOnly}
             disabled={readOnly}
             rows={6}
@@ -53,8 +56,8 @@ const InfoTab = ({ product, formData, onFormChange, readOnly }) => {
             <div className="relative">
               <input
                 type="number"
-                value={formData.basePrice || ''}
-                onChange={(e) => !readOnly && onFormChange('basePrice', Number(e.target.value))}
+                value={data.basePrice || ''}
+                onChange={(e) => !readOnly && onFormChange && onFormChange('basePrice', Number(e.target.value))}
                 readOnly={readOnly}
                 disabled={readOnly}
                 className={inputCls('pr-16')}
@@ -73,11 +76,11 @@ const InfoTab = ({ product, formData, onFormChange, readOnly }) => {
             <div className="relative">
               <input
                 type="number"
-                value={formData.originalPrice || ''}
+                value={data.originalPrice || ''}
                 onChange={(e) => {
-                  if (readOnly) return;
+                  if (readOnly || !onFormChange) return;
                   const v = Number(e.target.value);
-                  if (v > 0 && Number(formData.basePrice) > 0 && v <= Number(formData.basePrice)) {
+                  if (v > 0 && Number(data.basePrice) > 0 && v <= Number(data.basePrice)) {
                     onFormChange('originalPrice', v);
                     return;
                   }
@@ -95,11 +98,11 @@ const InfoTab = ({ product, formData, onFormChange, readOnly }) => {
           </div>
         </div>
 
-        {formData.basePrice > 0 && formData.originalPrice > 0 && formData.originalPrice > formData.basePrice && (
+        {Number(data.basePrice) > 0 && Number(data.originalPrice) > 0 && Number(data.originalPrice) > Number(data.basePrice) && (
           <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 rounded-lg">
             <p className="text-sm font-semibold text-green-800">
-              💰 Giảm giá: <span className="font-bold text-green-900">{formatPrice(formData.originalPrice - formData.basePrice)}</span>
-              {' '}({Math.round(((formData.originalPrice - formData.basePrice) / formData.originalPrice) * 100)}%)
+              💰 Giảm giá: <span className="font-bold text-green-900">{formatPrice(Number(data.originalPrice) - Number(data.basePrice))}</span>
+              {' '}({Math.round(((Number(data.originalPrice) - Number(data.basePrice)) / Number(data.originalPrice)) * 100)}%)
             </p>
           </div>
         )}
@@ -109,12 +112,12 @@ const InfoTab = ({ product, formData, onFormChange, readOnly }) => {
             <input
               type="checkbox"
               id="hasVariants"
-              checked={product.variants?.length > 0}
+              checked={(product?.variants?.length || 0) > 0}
               disabled
               className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
             />
             <label htmlFor="hasVariants" className="text-sm text-gray-700">
-              Sản phẩm này có <span className="font-semibold">{product.variants?.length || 0}</span> biến thể
+              Sản phẩm này có <span className="font-semibold">{product?.variants?.length || 0}</span> biến thể
             </label>
           </div>
           <p className="mt-1 ml-7 text-xs text-gray-500">Chuyển sang tab "Biến thể" để quản lý</p>

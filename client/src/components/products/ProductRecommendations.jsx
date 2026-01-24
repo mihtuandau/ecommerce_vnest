@@ -11,13 +11,13 @@ const ProductRecommendations = ({ productId, categoryId }) => {
     loadRecommendations();
   }, [productId, categoryId]);
 
-  const loadRecommendations = async () => {
+const loadRecommendations = async () => {
     try {
       setLoading(true);
       const response = await productService.getRecommendations(productId, categoryId);
       setRecommendedProducts(response.data || response || []);
     } catch (error) {
-      console.error('Error loading recommendations:', error);
+      // Silently handle errors to avoid disrupting UX
       setRecommendedProducts([]);
     } finally {
       setLoading(false);
