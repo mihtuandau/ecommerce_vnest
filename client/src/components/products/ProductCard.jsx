@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { FaHeart, FaEye } from 'react-icons/fa';
 import { notify } from '../../utils/notification';
 import StarRating from '../common/StarRating';
@@ -42,18 +42,29 @@ const ProductCard = ({ product, viewMode = 'grid-4' }) => {
 
   const productImage = image || (images && images.length > 0 ? images[0].url : '/placeholder-product.jpg');
   
-  const getLowestPrice = () => {
+  // Get available variant with stock (useMemo for performance)
+  const availableVariant = useMemo(() => {
+    if (!product.variants || product.variants.length === 0) return null;
+    const withStock = product.variants.find(v => v.stock > 0);
+    return withStock || product.variants[0];
+  }, [product.variants]);
+  
+  const getLowestPrice = useCallback(() => {
     if (product.variants && product.variants.length > 0) {
-      const prices = product.variants.map(v => v.price).filter(p => p > 0);
-      return prices.length > 0 ? Math.min(...prices) : (basePrice || price || 0);
+      const prices = product.variants
+        .filter(v => v.stock > 0)
+        .map(v => v.price)
+        .filter(p => p > 0);
+      if (prices.length > 0) return Math.min(...prices);
     }
     return basePrice || price || 0;
-  };
+  }, [product.variants, basePrice, price]);
   
-  const productPrice = getLowestPrice();
+  const productPrice = useMemo(() => getLowestPrice(), [getLowestPrice]);
   const productOriginalPrice = originalPrice;
   const discountPercent = calculateDiscountPercent(productOriginalPrice, productPrice) || discount || 0;
-  const variantId = product.variants?.[0]?.id;
+  const variantId = availableVariant?.id || product.variants?.[0]?.id;
+  const hasStock = availableVariant && availableVariant.stock > 0;
 
   useEffect(() => {
     if (user && variantId) {
@@ -63,7 +74,7 @@ const ProductCard = ({ product, viewMode = 'grid-4' }) => {
     }
   }, [user, variantId]);
 
-  const handleWishlistToggle = async (e) => {
+  const handleWishlistToggle = useCallback(async (e) => {
     e.preventDefault();
     e.stopPropagation();
     
@@ -92,7 +103,7 @@ const ProductCard = ({ product, viewMode = 'grid-4' }) => {
     } catch (error) {
       notify.error('Có lỗi xảy ra');
     }
-  };
+  }, [user, variantId, isInWishlist]);
 
   return (
     <div className={`group relative bg-white border border-gray-200 transition-all duration-300 overflow-hidden flex flex-col h-full ${isList ? 'flex-row min-h-[280px]' : ''}`}>
@@ -108,19 +119,19 @@ const ProductCard = ({ product, viewMode = 'grid-4' }) => {
         <div className="absolute top-3 right-3 z-10 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           <button 
             onClick={handleWishlistToggle}
-            className={`p-2 border transition-colors ${
+            className={`p-2 border transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#00a85a] ${
               isInWishlist 
                 ? 'bg-[#00a85a] text-white border-[#00a85a]' 
-                : 'bg-white border-gray-300 hover:bg-[#00a85a] hover:text-white hover:border-[#00a85a]'
+                : 'bg-white border-gray-300 text-gray-700 hover:bg-[#00a85a] hover:text-white hover:border-[#00a85a]'
             } ${isGrid2 ? 'p-2' : 'p-1.5'}`}
-            aria-label="Yêu thích"
+            aria-label={isInWishlist ? 'Xóa khỏi danh sách yêu thích' : 'Thêm vào danh sách yêu thích'}
           >
             <FaHeart size={isGrid2 ? 14 : 12} />
           </button>
           <Link 
             to={`/products/${id}`}
-            className={`p-2 bg-white border border-gray-300 hover:bg-[#00a85a] hover:text-white hover:border-[#00a85a] transition-colors ${isGrid2 ? 'p-2' : 'p-1.5'}`}
-            aria-label="Xem nhanh"
+            className={`p-2 bg-white border border-gray-300 text-gray-700 hover:bg-[#00a85a] hover:text-white hover:border-[#00a85a] transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#00a85a] ${isGrid2 ? 'p-2' : 'p-1.5'}`}
+            aria-label="Xem chi tiết sản phẩm"
           >
             <FaEye size={isGrid2 ? 14 : 12} />
           </Link>
@@ -178,11 +189,12 @@ const ProductCard = ({ product, viewMode = 'grid-4' }) => {
           <div className="pt-6 border-t border-gray-100">
             <button  
               onClick={handleWishlistToggle}
-              className={`p-2 border transition-colors flex items-center gap-2.5 text-sm font-light bg-white border-gray-300 hover:bg-[#00a85a] hover:text-white hover:border-[#00a85a]${
+              className={`px-4 py-2 border transition-all duration-200 flex items-center gap-2.5 text-sm font-light focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#00a85a] ${
                 isInWishlist 
-                  ? 'text-gray-900 hover:text-gray-700' 
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'bg-[#00a85a] text-white border-[#00a85a]' 
+                  : 'bg-white text-gray-700 border-gray-300 hover:bg-[#00a85a] hover:text-white hover:border-[#00a85a]'
               }`}
+              aria-label={isInWishlist ? 'Xóa khỏi danh sách yêu thích' : 'Thêm vào danh sách yêu thích'}
             >
               <FaHeart size={14} className={isInWishlist ? 'fill-current' : ''} />
               {isInWishlist ? 'Đã yêu thích' : 'Thêm vào yêu thích'}

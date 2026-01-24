@@ -299,6 +299,7 @@ const ProductToolbar = ({
         }
         open={open}
         onClose={() => setOpen(false)}
+        size="large"
         width={420}
         destroyOnClose
         footer={

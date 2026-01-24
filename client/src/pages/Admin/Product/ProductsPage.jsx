@@ -127,7 +127,7 @@ const ProductsPage = () => {
           totalPages={pagination.totalPages || 1}
           currentPage={filters.page}
           onPageChange={(page) => updateFilters({ page })}
-          onView={(product) => navigate(`/admin-products/${product.id}?mode=view`)}
+          onView={(product) => navigate(`/admin-products/${product.id}`)}
           onEdit={(product) => navigate(`/admin-products/${product.id}/edit`)}
           onDelete={handleDelete}
           onManageVariants={(product) => navigate(`/admin-products/${product.id}/edit#variants`)}

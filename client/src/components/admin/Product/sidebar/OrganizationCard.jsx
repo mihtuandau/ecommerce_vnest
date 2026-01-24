@@ -1,4 +1,7 @@
-const OrganizationCard = ({ formData, onFormChange, categories, brands, loadingCategories, loadingBrands, readOnly }) => {
+const OrganizationCard = ({ formData, product, onFormChange, categories, brands, loadingCategories, loadingBrands, readOnly }) => {
+  // Use formData if provided (edit mode), otherwise use product (view mode)
+  const data = formData || product || {};
+  
   const selectCls = 'w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-100 disabled:bg-gray-50 disabled:cursor-not-allowed disabled:text-gray-600';
   
   return (
@@ -9,8 +12,8 @@ const OrganizationCard = ({ formData, onFormChange, categories, brands, loadingC
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Danh mục</label>
           <select 
-            value={formData.categoryId || ''}
-            onChange={(e) => !readOnly && onFormChange('categoryId', e.target.value)}
+            value={data.categoryId || ''}
+            onChange={(e) => !readOnly && onFormChange && onFormChange('categoryId', e.target.value)}
             disabled={loadingCategories || readOnly}
             className={selectCls}
           >
@@ -24,8 +27,8 @@ const OrganizationCard = ({ formData, onFormChange, categories, brands, loadingC
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Thương hiệu</label>
           <select 
-            value={formData.brandId || ''}
-            onChange={(e) => !readOnly && onFormChange('brandId', e.target.value)}
+            value={data.brandId || ''}
+            onChange={(e) => !readOnly && onFormChange && onFormChange('brandId', e.target.value)}
             disabled={loadingBrands || readOnly}
             className={selectCls}
           >
