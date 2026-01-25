@@ -343,7 +343,6 @@ const StatCard = ({ icon, label, value, subValue, color }) => {
   );
 };
 
-// TabContent
 const TabContent = ({ activeTab, product, readOnly }) => {
   switch (activeTab) {
     case 'info':

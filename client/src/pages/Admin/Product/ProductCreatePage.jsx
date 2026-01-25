@@ -237,19 +237,23 @@ const ProductCreatePage = () => {
         ? undefined
         : Number(basePriceRaw);
 
-    return {
+    const payload = {
       name: (values.name || '').trim(),
-      slug: (values.slug || '').trim() || generateSlug(values.name || ''),
       description: (values.description || '').trim() || undefined,
       // Chỉ gửi basePrice khi có giá trị hợp lệ (tránh gửi 0 làm backend 400)
       basePrice: Number.isFinite(basePrice) ? basePrice : undefined,
       categoryId: values.categoryId ? Number(values.categoryId) : undefined,
       brandId: values.brandId ? Number(values.brandId) : undefined,
-      // Backend update dùng status (active/draft/inactive) thay vì isActive
-      status: values.isActive === false ? 'inactive' : 'active',
-      metaTitle: values.metaTitle?.trim() || undefined,
-      metaDesc: values.metaDesc?.trim() || undefined,
     };
+
+    // Remove undefined values
+    Object.keys(payload).forEach(key => {
+      if (payload[key] === undefined) {
+        delete payload[key];
+      }
+    });
+
+    return payload;
   };
 
   // Helper function: Upload variant images
