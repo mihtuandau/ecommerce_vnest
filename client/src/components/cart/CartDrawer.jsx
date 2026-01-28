@@ -194,7 +194,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
                 <Link
                   to="/checkout"
                   onClick={onClose}
-                  className="flex-1 text-center bg-[#00a85a] hover:bg-[#008f4d] text-white text-sm font-semibold py-3 transition-all duration-200 cursor-pointer shadow-lg hover:shadow-xl"
+                  className="flex-1 text-center bg-[#00a85a] hover:bg-[#008f4d] text-white text-sm font-semibold py-3 transition-all duration-200 cursor-pointer shadow-lg hover:shadow-xl" 
                 >
                   Thanh Toán
                 </Link>

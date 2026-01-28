@@ -42,17 +42,6 @@ header button:hover path {
 }
 
 :root {
-  /* Modern Color Palette */
-  --color-primary: #0ea5e9;
-  --color-primary-dark: #0284c7;
-  --color-accent: #f59e0b;
-  --color-accent-dark: #d97706;
-  --color-success: #10b981;
-  --color-danger: #ef4444;
-  --color-text: #1e293b;
-  --color-text-light: #64748b;
-  --color-bg: #f8fafc;
-  --color-border: #e2e8f0;
   
   /* Shadows */
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
@@ -262,14 +251,14 @@ input[type="radio"] {
 }
 
 input[type="radio"]:hover {
-  border-color: #00a85a;
-  box-shadow: 0 0 0 3px rgba(0, 168, 90, 0.1);
+  border-color: #000000;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
 }
 
 input[type="radio"]:checked {
-  border-color: #00a85a;
-  background-color: #00a85a;
-  box-shadow: 0 0 0 3px rgba(0, 168, 90, 0.15);
+  border-color: #000000;
+  background-color: #000000;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.15);
 }
 
 input[type="radio"]:checked::after {
@@ -285,8 +274,8 @@ input[type="radio"]:checked::after {
 }
 
 input[type="radio"]:focus {
-  box-shadow: 0 0 0 3px rgba(0, 168, 90, 0.2);
-  border-color: #00a85a;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.2);
+  border-color: #000000;
 }
 
 input[type="radio"]:disabled {
@@ -311,14 +300,14 @@ input[type="checkbox"] {
 }
 
 input[type="checkbox"]:hover {
-  border-color: #00a85a;
-  box-shadow: 0 0 0 3px rgba(0, 168, 90, 0.1);
+  border-color: #000000;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
 }
 
 input[type="checkbox"]:checked {
-  border-color: #00a85a;
-  background-color: #00a85a;
-  box-shadow: 0 0 0 3px rgba(0, 168, 90, 0.15);
+  border-color: #000000;
+  background-color: #000000;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.15);
 }
 
 input[type="checkbox"]:checked::after {
@@ -334,8 +323,8 @@ input[type="checkbox"]:checked::after {
 }
 
 input[type="checkbox"]:focus {
-  box-shadow: 0 0 0 3px rgba(0, 168, 90, 0.2);
-  border-color: #00a85a;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.2);
+  border-color: #000000;
 }
 
 input[type="checkbox"]:disabled {
@@ -345,12 +334,12 @@ input[type="checkbox"]:disabled {
 
 /* Select Dropdown - Use accent-color for browser default styling */
 select {
-  accent-color: #00a85a;
+  accent-color: #000000;
 }
 
 select:focus {
-  outline-color: #00a85a;
-  border-color: #00a85a;
+  outline-color: #000000;
+  border-color: #000000;
 }
 
 /* Modal Animations */
@@ -469,6 +458,6 @@ select option:hover,
 
 select option:checked:hover,
 .custom-select option:checked:hover {
-  background: #00a85a !important;
+  background: #000000 !important;
   color: white !important;
 }
