@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Spin, Result, Button as AntButton } from "antd";
 import { ReloadOutlined, WarningOutlined } from "@ant-design/icons";
@@ -9,6 +9,7 @@ import FeaturedProducts from "../../../components/home/FeaturedProducts";
 import BestSellingProducts from "../../../components/home/BestSellingProducts";
 import PromoBanner from "../../../components/home/PromoBanner";
 import Loading from "../../../components/common/Loading";
+import WelcomeModal from "../../../components/common/WelcomeModal";
 import { useHomeData } from "../../../hooks/useHomeData";
 import { useAuth } from "../../../contexts/AuthContext";
 import authService from "../../../services/authService";
@@ -20,6 +21,12 @@ const HomePage = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { setUser } = useAuth();
+  const [showWelcomeModal, setShowWelcomeModal] = useState(true);
+
+  // Modal sẽ hiển thị mỗi lần vào trang (không lưu localStorage)
+  useEffect(() => {
+    console.log('Modal state:', showWelcomeModal);
+  }, [showWelcomeModal]);
 
   useEffect(() => {
     const oauthSuccess = searchParams.get("oauth_success");
@@ -88,15 +95,21 @@ const HomePage = () => {
   }
 
   return (
-    <Layout>
-      <HeroBanner slides={homeData.banners || []} />
-      <div className="">
-        <FeaturedCategories categories={homeData.categories || []} />
-        <BestSellingProducts products={homeData.bestSellers || []} />
-        <FeaturedProducts products={homeData.featuredProducts || []} />
-        <PromoBanner />
-      </div>
-    </Layout>
+    <>
+      <WelcomeModal 
+        isOpen={showWelcomeModal} 
+        onClose={() => setShowWelcomeModal(false)} 
+      />
+      <Layout>
+        <HeroBanner slides={homeData.banners || []} />
+        <div className="">
+          <FeaturedCategories categories={homeData.categories || []} />
+          <BestSellingProducts products={homeData.bestSellers || []} />
+          <FeaturedProducts products={homeData.featuredProducts || []} />
+          <PromoBanner />
+        </div>
+      </Layout>
+    </>
   );
 };
 
