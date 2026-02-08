@@ -17,7 +17,6 @@ export const useFireworks = () => {
     const w = typeof window !== "undefined" ? window.innerWidth : 1200;
     const scale = Math.min(1.35, Math.max(0.85, w / 1200));
 
-    // ✅ To lên xíu (nếu muốn to thêm nữa: 0.66)
     const globalScalar = 0.62;
 
     const colors = ["#FFD700", "#FF8C00", "#FF5E78", "#8A2BE2", "#00C2FF", "#00FFA8"];
@@ -41,12 +40,11 @@ export const useFireworks = () => {
       });
     };
 
-    // 1) Side cannons (ít hạt hơn)
     const sideCannons = (ms, boost = 1) => {
       t(ms, () => {
         // Left main
         shoot({
-          particleCount: Math.round(38 * scale * boost), // ↓ từ 55
+          particleCount: Math.round(38 * scale * boost), 
           angle: 75,
           spread: 50,
           startVelocity: 70 * boost,
@@ -55,9 +53,8 @@ export const useFireworks = () => {
           scalar: 1.15,
         });
 
-        // Left trail (ít hơn)
         shoot({
-          particleCount: Math.round(14 * scale * boost), // ↓ từ 28
+          particleCount: Math.round(14 * scale * boost), 
           angle: 78,
           spread: 18,
           startVelocity: 50 * boost,
@@ -68,7 +65,6 @@ export const useFireworks = () => {
           shapes: ["circle"],
         });
 
-        // Right main
         shoot({
           particleCount: Math.round(38 * scale * boost),
           angle: 105,
@@ -79,7 +75,6 @@ export const useFireworks = () => {
           scalar: 1.15,
         });
 
-        // Right trail (ít hơn)
         shoot({
           particleCount: Math.round(14 * scale * boost),
           angle: 102,
@@ -94,12 +89,10 @@ export const useFireworks = () => {
       });
     };
 
-    // 2) Burst giữa trời (ít hơn nhưng vẫn đã)
     const midBurst = (ms, x, y, power = 1) => {
       t(ms, () => {
-        // core
         shoot({
-          particleCount: Math.round(85 * scale * power), // ↓ từ 115
+          particleCount: Math.round(85 * scale * power), 
           angle: 90,
           spread: 240,
           startVelocity: 48 * power,
@@ -109,9 +102,8 @@ export const useFireworks = () => {
           shapes: ["circle"],
         });
 
-        // glitter (ít hơn)
         shoot({
-          particleCount: Math.round(55 * scale * power), // ↓ từ 120
+          particleCount: Math.round(55 * scale * power), 
           angle: 90,
           spread: 320,
           startVelocity: 34 * power,
@@ -124,11 +116,10 @@ export const useFireworks = () => {
       });
     };
 
-    // 3) Ring (giữ vừa)
     const ring = (ms, x, y, power = 1) => {
       t(ms, () => {
         shoot({
-          particleCount: Math.round(95 * scale * power), // ↓ từ 140
+          particleCount: Math.round(95 * scale * power), 
           angle: 90,
           spread: 360,
           startVelocity: 30 * power,
@@ -141,7 +132,6 @@ export const useFireworks = () => {
       });
     };
 
-    // 4) Drizzle (giảm lượng rõ)
     const drizzle = (ms, durationMs = 850) => {
       const steps = 6; // ↓ từ 10
       for (let i = 0; i < steps; i++) {
@@ -177,8 +167,6 @@ export const useFireworks = () => {
 
     drizzle(1680, 900);
 
-    // Optional cleanup
-    // t(3200, () => confetti.reset());
   }, [clearTimers]);
 
   return { triggerIntenseFireworks };
