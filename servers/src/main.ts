@@ -3,18 +3,22 @@ import { ValidationPipe, Logger } from '@nestjs/common';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as crypto from 'crypto';
 import { AppModule } from './app.module';
+import { getHelmetConfig } from './config/helmet.config';
+import { createCspNonceMiddleware } from './common/middleware/csp-nonce.middleware';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.use(
-    helmet({
-      contentSecurityPolicy: false,
-      crossOriginEmbedderPolicy: false,
-      crossOriginOpenerPolicy: false,
-      crossOriginResourcePolicy: false,
-    }),
-  );
+  
+  // Generate nonce for this server instance
+  const csrfNonce = crypto.randomBytes(16).toString('base64');
+  
+  // Apply helmet with environment-aware security config
+  app.use(helmet(getHelmetConfig(csrfNonce)));
+  
+  // CSP Nonce middleware to generate per-request nonce
+  app.use(createCspNonceMiddleware());
   app.use(cookieParser());
   app.setGlobalPrefix('api');
   const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'https://dautuan.com,https://www.dautuan.com').split(',');
@@ -36,25 +40,28 @@ async function bootstrap() {
       },
     }),
   );
-  const config = new DocumentBuilder()
-    .setTitle('E-commerce API')
-    .setDescription('API for clothing e-commerce backend')
-    .setVersion('1.0')
-    .addBearerAuth(
-      {
-        type: 'http',
-        scheme: 'bearer',
-        bearerFormat: 'JWT',
-      },
-      'Authorization',
-    )
-    .build();
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document, {
-    customSiteTitle: 'E-commerce API',
-    customfavIcon: '/api/favicon-32x32.png',
-    customCssUrl: '/api/swagger-ui.css',
-  });
+  // Only enable Swagger in development
+  if (process.env.NODE_ENV !== 'production') {
+    const config = new DocumentBuilder()
+      .setTitle('E-commerce API')
+      .setDescription('API for clothing e-commerce backend')
+      .setVersion('1.0')
+      .addBearerAuth(
+        {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        },
+        'Authorization',
+      )
+      .build();
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('api', app, document, {
+      customSiteTitle: 'E-commerce API',
+      customfavIcon: '/api/favicon-32x32.png',
+      customCssUrl: '/api/swagger-ui.css',
+    });
+  }
 
   const logger = new Logger('Bootstrap');
   const port = process.env.PORT || 5000; 

@@ -20,6 +20,8 @@ import { Throttle } from '@nestjs/throttler';
 
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from '../common/guards/auth.guard';
+import { Roles } from '../common/decorators/roles.decorator';
+import { RolesGuard } from '../common/guards/roles.guard';
 import { RegisterDto } from './dto/register-dto';
 import { RegisterAdminDto } from './dto/register-admin.dto';
 import { LoginDto } from './dto/login-dto';
@@ -28,6 +30,7 @@ import { ForgotPasswordDto, ResetPasswordDto } from './dto/forgot-password.dto';
 @ApiTags('Authentication')
 @Controller('auth')
 @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
+@UseGuards(RolesGuard)
 export class AuthController {
   constructor(
     private authService: AuthService,
@@ -47,6 +50,8 @@ export class AuthController {
   }
 
   @Post('register-admin')
+  @UseGuards(JwtAuthGuard)
+  @Roles('ADMIN')
   @Throttle({ default: { limit: 3, ttl: 60000 } }) // 3 requests per minute
   async registerAdmin(@Body() registerAdminDto: RegisterAdminDto, @Res() res: Response) {
     const result = await this.authService.registerAdmin(registerAdminDto);
@@ -120,7 +125,7 @@ export class AuthController {
 
     const token = this.jwtService.sign(payload, {
       secret: process.env.JWT_SECRET,
-      expiresIn: '7d',
+      expiresIn: '2h', // 2 hours - same as login for consistency
     });
 
     this.authService.setAuthCookie(res, token);
