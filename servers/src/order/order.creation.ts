@@ -187,7 +187,6 @@ export class OrderCreation {
     });
     
     if (emailData.customerEmail && order.orderCode) {
-      // Send email asynchronously (don't wait)
       this.mailService.sendOrderConfirmation(
         emailData.customerEmail,
         order.orderCode,
@@ -201,4 +200,4 @@ export class OrderCreation {
       this.logger.warn('⚠️ No customer email found, skipping confirmation email');
     }
   }
-}
+} 

@@ -25,7 +25,7 @@ export class AuthService {
   async register(registerDto: RegisterDto) {
     const { email, password, name } = registerDto;
     const existingUser = await this.userService.findByEmail(email);
-    if (existingUser) throw new UnauthorizedException('Email already exists');
+    if (existingUser) throw new BadRequestException('Registration failed. Please check your input and try again.');
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await this.userService.create({
@@ -43,7 +43,7 @@ export class AuthService {
   async registerAdmin(registerAdminDto: RegisterAdminDto) {
     const { email, password, name } = registerAdminDto;
     const existingUser = await this.userService.findByEmail(email);
-    if (existingUser) throw new UnauthorizedException('Email already exists');
+    if (existingUser) throw new BadRequestException('Registration failed. Please check your input and try again.');
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await this.userService.create({
@@ -64,7 +64,8 @@ export class AuthService {
       const { password: _, ...result } = user;
       return result;
     }
-    throw new UnauthorizedException('Invalid credentials');
+    // Generic message to prevent email enumeration attacks
+    throw new UnauthorizedException('Invalid email or password');
   }
 
   async login(tokenPayload: any, userInfo?: any) {
@@ -78,7 +79,7 @@ export class AuthService {
 
     const accessToken = this.jwtService.sign(payload, {
       secret: process.env.JWT_SECRET,
-      expiresIn: '7d', // 7 days
+      expiresIn: '2h', // 2 hours - shorter expiry for better security
     });
 
     const { password: _, ...safeUser } = user;
@@ -155,7 +156,7 @@ export class AuthService {
       httpOnly: true,
       secure: isProduction, // true khi có HTTPS
       sameSite: isProduction ? 'none' : 'lax', // 'none' cho HTTPS cross-domain
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      maxAge: 2 * 60 * 60 * 1000, // 2 hours - match JWT expiry
     });
   }
 

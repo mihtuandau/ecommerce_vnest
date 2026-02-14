@@ -1,4 +1,16 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards, Query, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  UseGuards,
+  Query,
+  Req,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../common/guards/auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
@@ -38,12 +50,29 @@ export class UserController {
     const userId = req.user.userId;
     const updatedUser = await this.userService.update(userId, updateUserDto);
     const { password, ...userWithoutPassword } = updatedUser;
-    return { message: 'Profile updated successfully', user: userWithoutPassword };
+    return {
+      message: 'Profile updated successfully',
+      user: userWithoutPassword,
+    };
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(+id);
+  @UseGuards(JwtAuthGuard)
+  async findOne(@Param('id', ParseIntPipe) id: number, @Req() req: any) {
+    const userId = req.user.userId;
+
+    // Only ADMIN can view other users' profiles
+    if (userId !== id && req.user.role !== 'ADMIN') {
+      throw new Error('You do not have permission to view this user');
+    }
+
+    const user = await this.userService.findOne(id);
+    if (!user) {
+      throw new Error('User not found');
+    }
+    // Never expose password
+    const { password, ...userWithoutPassword } = user;
+    return userWithoutPassword;
   }
 
   @Post()
@@ -53,17 +82,36 @@ export class UserController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto);
+  @UseGuards(JwtAuthGuard)
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateUserDto: UpdateUserDto,
+    @Req() req: any,
+  ) {
+    const userId = req.user.userId;
+
+    // Only ADMIN can update other users, users can only update themselves
+    if (userId !== id && req.user.role !== 'ADMIN') {
+      throw new Error('You can only update your own profile');
+    }
+
+    const updatedUser = await this.userService.update(id, updateUserDto);
+    const { password, ...userWithoutPassword } = updatedUser;
+    return {
+      message: 'Profile updated successfully',
+      user: userWithoutPassword,
+    };
   }
 
   @Delete(':id')
   @Roles('ADMIN')
-  remove(@Param('id') id: string, @Body() deleteUserDto: DeleteUserDto) {
+  remove(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() deleteUserDto: DeleteUserDto,
+  ) {
     if (!deleteUserDto.confirm) {
       throw new Error('Confirm deletion required');
     }
-    return this.userService.remove(+id);
+    return this.userService.remove(id);
   }
 }
-

@@ -1,33 +1,33 @@
 // src/pages/AdminUserManagement.jsx
-import React, { useState, useMemo } from 'react';
-import { Search, Plus } from 'lucide-react';
-import { 
-  useUsers, 
-  useCreateUser, 
-  useUpdateUser, 
-  useDeleteUser 
-} from '../../../hooks/useUsers';
-import userService from '../../../services/userService';
+import React, { useState, useMemo } from "react";
+import { Search, Plus } from "lucide-react";
+import {
+  useUsers,
+  useCreateUser,
+  useUpdateUser,
+  useDeleteUser,
+} from "../../../hooks/useUsers";
+import userService from "../../../services/userService";
 
 // Components
-import Input from '../../../components/common/Input';
-import Select from '../../../components/common/Select';
-import Button from '../../../components/common/Button';
-import Modal from '../../../components/common/Modal';
-import Loading from '../../../components/common/Loading';
-import Pagination from '../../../components/common/Pagination';
-import UserTable from '../../../components/admin/UserManagement/UserTable';
-import UserForm from '../../../components/admin/UserManagement/UserForm';
-import AddressList from '../../../components/admin/UserManagement/AddressList';
+import Input from "../../../components/common/Input";
+import Select from "../../../components/common/Select";
+import Button from "../../../components/common/Button";
+import Modal from "../../../components/common/Modal";
+import Loading from "../../../components/common/Loading";
+import Pagination from "../../../components/common/Pagination";
+import UserTable from "../../../components/admin/UserManagement/UserTable";
+import UserForm from "../../../components/admin/UserManagement/UserForm";
+import AddressList from "../../../components/admin/UserManagement/AddressList";
 
 const AdminUserManagement = () => {
   const { data: users = [], isLoading, error, refetch } = useUsers();
   const createMutation = useCreateUser();
   const updateMutation = useUpdateUser();
   const deleteMutation = useDeleteUser();
-  
-  const [searchQuery, setSearchQuery] = useState('');
-  const [roleFilter, setRoleFilter] = useState('');
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [roleFilter, setRoleFilter] = useState("");
   const [modalState, setModalState] = useState({ type: null, data: null });
 
   // Filter users
@@ -66,9 +66,9 @@ const AdminUserManagement = () => {
       if (formData.password) {
         updateData.password = formData.password;
       }
-      await updateMutation.mutateAsync({ 
-        id: modalState.data.id, 
-        data: updateData 
+      await updateMutation.mutateAsync({
+        id: modalState.data.id,
+        data: updateData,
       });
       closeModal();
     } catch (err) {
@@ -94,7 +94,7 @@ const AdminUserManagement = () => {
       const updatedUser = await userService.getUser(userId);
       setModalState({ ...modalState, data: updatedUser });
     } catch (err) {
-      alert('Có lỗi xảy ra: ' + err.message);
+      alert("Có lỗi xảy ra: " + err.message);
     }
   };
 
@@ -136,13 +136,13 @@ const AdminUserManagement = () => {
                 value={roleFilter}
                 onChange={(e) => setRoleFilter(e.target.value)}
                 options={[
-                  { value: '', label: 'Tất cả vai trò' },
-                  { value: 'CUSTOMER', label: 'Khách hàng' },
-                  { value: 'ADMIN', label: 'Quản trị viên' },
+                  { value: "", label: "Tất cả vai trò" },
+                  { value: "CUSTOMER", label: "Khách hàng" },
+                  { value: "ADMIN", label: "Quản trị viên" },
                 ]}
               />
             </div>
-            <Button icon={Plus} onClick={() => openModal('create')}>
+            <Button icon={Plus} onClick={() => openModal("create")}>
               Thêm người dùng
             </Button>
           </div>
@@ -155,16 +155,20 @@ const AdminUserManagement = () => {
           ) : error ? (
             <div className="p-12 text-center">
               <p className="text-red-600">Lỗi: {error}</p>
-              <Button onClick={() => refetch()} variant="secondary" className="mt-4">
+              <Button
+                onClick={() => refetch()}
+                variant="secondary"
+                className="mt-4"
+              >
                 Thử lại
               </Button>
             </div>
           ) : (
             <UserTable
               users={paginatedUsers}
-              onEdit={(user) => openModal('edit', user)}
+              onEdit={(user) => openModal("edit", user)}
               onDelete={handleDeleteUser}
-              onViewAddresses={(user) => openModal('addresses', user)}
+              onViewAddresses={(user) => openModal("addresses", user)}
             />
           )}
 
@@ -181,7 +185,7 @@ const AdminUserManagement = () => {
 
       {/* Modals */}
       <Modal
-        isOpen={modalState.type === 'create'}
+        isOpen={modalState.type === "create"}
         onClose={closeModal}
         title="Tạo người dùng mới"
       >
@@ -189,7 +193,7 @@ const AdminUserManagement = () => {
       </Modal>
 
       <Modal
-        isOpen={modalState.type === 'edit'}
+        isOpen={modalState.type === "edit"}
         onClose={closeModal}
         title="Chỉnh sửa người dùng"
       >
@@ -201,9 +205,9 @@ const AdminUserManagement = () => {
       </Modal>
 
       <Modal
-        isOpen={modalState.type === 'addresses'}
+        isOpen={modalState.type === "addresses"}
         onClose={closeModal}
-        title={`Địa chỉ của ${modalState.data?.email || ''}`}
+        title={`Địa chỉ của ${modalState.data?.email || ""}`}
       >
         <AddressList
           addresses={modalState.data?.addresses || []}

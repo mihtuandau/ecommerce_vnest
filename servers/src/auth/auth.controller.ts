@@ -20,6 +20,8 @@ import { Throttle } from '@nestjs/throttler';
 
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from '../common/guards/auth.guard';
+import { Roles } from '../common/decorators/roles.decorator';
+import { RolesGuard } from '../common/guards/roles.guard';
 import { RegisterDto } from './dto/register-dto';
 import { RegisterAdminDto } from './dto/register-admin.dto';
 import { LoginDto } from './dto/login-dto';
@@ -28,6 +30,7 @@ import { ForgotPasswordDto, ResetPasswordDto } from './dto/forgot-password.dto';
 @ApiTags('Authentication')
 @Controller('auth')
 @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
+@UseGuards(RolesGuard)
 export class AuthController {
   constructor(
     private authService: AuthService,
@@ -47,8 +50,13 @@ export class AuthController {
   }
 
   @Post('register-admin')
+  @UseGuards(JwtAuthGuard)
+  @Roles('ADMIN')
   @Throttle({ default: { limit: 3, ttl: 60000 } }) // 3 requests per minute
-  async registerAdmin(@Body() registerAdminDto: RegisterAdminDto, @Res() res: Response) {
+  async registerAdmin(
+    @Body() registerAdminDto: RegisterAdminDto,
+    @Res() res: Response,
+  ) {
     const result = await this.authService.registerAdmin(registerAdminDto);
     this.authService.setAuthCookie(res, result.access_token);
 
@@ -61,7 +69,10 @@ export class AuthController {
   @Post('login')
   @Throttle({ default: { limit: 5, ttl: 60000 } }) // 5 requests per minute
   async login(@Body() loginDto: LoginDto, @Res() res: Response) {
-    const user = await this.authService.validateUser(loginDto.email, loginDto.password);
+    const user = await this.authService.validateUser(
+      loginDto.email,
+      loginDto.password,
+    );
     const result = await this.authService.login({ sub: user.id }, user);
 
     this.authService.setAuthCookie(res, result.access_token);
@@ -90,8 +101,7 @@ export class AuthController {
     @Param('token') token: string,
     @Query('email') email: string,
     @Res() res: Response,
-  ) {
-  }
+  ) {}
 
   @Post('reset-password')
   @Throttle({ default: { limit: 3, ttl: 3600000 } }) // 3 requests per hour
@@ -120,7 +130,7 @@ export class AuthController {
 
     const token = this.jwtService.sign(payload, {
       secret: process.env.JWT_SECRET,
-      expiresIn: '7d',
+      expiresIn: '2h', // 2 hours - same as login for consistency
     });
 
     this.authService.setAuthCookie(res, token);
@@ -133,8 +143,7 @@ export class AuthController {
       }),
     ).toString('base64');
 
-    const frontendUrl =
-      process.env.FRONTEND_URL ;
+    const frontendUrl = process.env.FRONTEND_URL;
 
     return res.redirect(
       `${frontendUrl}/?oauth_success=true&user_data=${encodedUser}`,

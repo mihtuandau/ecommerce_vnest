@@ -34,12 +34,16 @@ export class ReviewController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   async canUserReview(
-    @Param('productId') productId: string, 
+    @Param('productId') productId: string,
     @Query('orderId') orderId: string,
-    @Req() req: any
+    @Req() req: any,
   ) {
     const userId = req.user.userId;
-    const result = await this.reviewService.canUserReview(userId, +productId, +orderId);
+    const result = await this.reviewService.canUserReview(
+      userId,
+      +productId,
+      +orderId,
+    );
     return result;
   }
 
@@ -47,12 +51,16 @@ export class ReviewController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   async getMyReview(
-    @Param('productId') productId: string, 
+    @Param('productId') productId: string,
     @Query('orderId') orderId: string,
-    @Req() req: any
+    @Req() req: any,
   ) {
     const userId = req.user.userId;
-    const review = await this.reviewService.getUserProductReview(userId, +productId, +orderId);
+    const review = await this.reviewService.getUserProductReview(
+      userId,
+      +productId,
+      +orderId,
+    );
     return review;
   }
 
@@ -105,5 +113,3 @@ export class ReviewController {
     );
   }
 }
-
-
