@@ -55,7 +55,7 @@ export class OrderController {
       ...query,
       userId: req.user.userId,
       page: 1,
-      limit: 1000
+      limit: 1000,
     };
     return this.orderService.findAll(mergedQuery);
   }
@@ -123,6 +123,3 @@ export class OrderController {
     return this.orderService.remove(+id);
   }
 }
-
-
-
