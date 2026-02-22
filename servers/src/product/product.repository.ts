@@ -26,7 +26,8 @@ export class ProductRepository {
   }
 
   /**
-   * Find all products with filters
+   * Find all products with filters (list view - lightweight)
+   * Chỉ lấy data cần thiết cho danh sách, không lấy reviews/full variants
    */
   async findAll(
     where: Prisma.ProductWhereInput,
@@ -39,11 +40,26 @@ export class ProductRepository {
       skip,
       take,
       orderBy,
-      include: {
-        category: true,
-        brand: true,
-        variants: true,
-        images: true,
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        basePrice: true,
+        soldCount: true,
+        averageRating: true,
+        reviewCount: true,
+        isActive: true,
+        createdAt: true,
+        category: { select: { id: true, name: true } },
+        brand: { select: { id: true, name: true } },
+        images: {
+          orderBy: [{ isThumbnail: 'desc' }, { displayOrder: 'asc' }],
+          take: 1,
+          select: { id: true, url: true, altText: true, isThumbnail: true },
+        },
+        variants: {
+          select: { id: true, price: true, stock: true, size: true, color: true, isActive: true },
+        },
       },
     });
   }
@@ -56,24 +72,27 @@ export class ProductRepository {
   }
 
   /**
-   * Find product by ID
+   * Find product by ID (detail view - full data)
    */
   async findById(id: number) {
     return this.prisma.product.findUnique({
       where: { id },
       include: {
-        category: true,
-        brand: true,
+        category: { select: { id: true, name: true } },
+        brand: { select: { id: true, name: true, logo: true } },
         variants: {
+          where: { isActive: true },
           include: {
-            images: true,
+            images: { orderBy: { displayOrder: 'asc' } },
           },
         },
-        images: true,
+        images: { orderBy: { displayOrder: 'asc' } },
         reviews: {
+          orderBy: { createdAt: 'desc' },
+          take: 20, // Giới hạn reviews, phần còn lại load lazy
           include: {
             user: {
-              select: { id: true, name: true, email: true },
+              select: { id: true, name: true },
             },
           },
         },
@@ -194,11 +213,12 @@ export class ProductRepository {
   }
 
   /**
-   * Search products
+   * Search products (lightweight - list view)
    */
   async search(searchTerm: string, skip: number, take: number) {
     return this.prisma.product.findMany({
       where: {
+        isActive: true, // Chỉ tìm sản phẩm đang bán
         OR: [
           { name: { contains: searchTerm, mode: 'insensitive' } },
           { description: { contains: searchTerm, mode: 'insensitive' } },
@@ -206,30 +226,56 @@ export class ProductRepository {
       },
       skip,
       take,
-      include: {
-        category: true,
-        brand: true,
-        variants: true,
-        images: true,
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        basePrice: true,
+        averageRating: true,
+        soldCount: true,
+        isActive: true,
+        category: { select: { id: true, name: true } },
+        brand: { select: { id: true, name: true } },
+        images: {
+          orderBy: [{ isThumbnail: 'desc' }, { displayOrder: 'asc' }],
+          take: 1,
+          select: { id: true, url: true, altText: true, isThumbnail: true },
+        },
+        variants: {
+          select: { id: true, price: true, stock: true },
+        },
       },
     });
   }
 
   /**
-   * Get related products
+   * Get related products (lightweight - card view)
    */
   async findRelatedProducts(categoryId: number, excludeId: number, limit: number) {
     return this.prisma.product.findMany({
       where: {
         categoryId,
         id: { not: excludeId },
+        isActive: true, // Chỉ hiện sản phẩm đang bán
       },
       take: limit,
-      include: {
-        category: true,
-        brand: true,
-        variants: true,
-        images: true,
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        basePrice: true,
+        averageRating: true,
+        soldCount: true,
+        category: { select: { id: true, name: true } },
+        brand: { select: { id: true, name: true } },
+        variants: {
+          select: { id: true, price: true, stock: true },
+        },
+        images: {
+          orderBy: [{ isThumbnail: 'desc' }, { displayOrder: 'asc' }],
+          take: 1,
+          select: { id: true, url: true, altText: true, isThumbnail: true },
+        },
       },
     });
   }

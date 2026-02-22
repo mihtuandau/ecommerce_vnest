@@ -2,6 +2,7 @@
 import { Injectable, Inject, Logger } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
+import { buildCacheKey } from '../common/utils/cache-key.util';
 
 @Injectable()
 export class OrderCache {
@@ -37,7 +38,7 @@ export class OrderCache {
    * Get orders list from cache
    */
   async getOrdersList(query: any) {
-    const cacheKey = `orders:${JSON.stringify(query)}`;
+    const cacheKey = buildCacheKey('orders', query);
     return this.cacheManager.get(cacheKey);
   }
 
@@ -45,7 +46,7 @@ export class OrderCache {
    * Set orders list cache
    */
   async setOrdersList(query: any, data: any, ttl = 3600) {
-    const cacheKey = `orders:${JSON.stringify(query)}`;
+    const cacheKey = buildCacheKey('orders', query);
     await this.cacheManager.set(cacheKey, data, ttl);
   }
 

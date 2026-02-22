@@ -2,6 +2,7 @@
 import { Injectable, Inject, Logger } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
+import { buildCacheKey } from '../common/utils/cache-key.util';
 
 @Injectable()
 export class PaymentCache {
@@ -29,7 +30,7 @@ export class PaymentCache {
   }
 
   async getPaymentsList(query: any) {
-    const cacheKey = `payments:${JSON.stringify(query)}`;
+    const cacheKey = buildCacheKey('payments', query);
     const cached = await this.cacheManager.get(cacheKey);
     if (cached) {
       this.logger.log(`Cache hit for payments: ${cacheKey}`);
@@ -38,7 +39,7 @@ export class PaymentCache {
   }
 
   async setPaymentsList(query: any, data: any, ttl = 3600) {
-    const cacheKey = `payments:${JSON.stringify(query)}`;
+    const cacheKey = buildCacheKey('payments', query);
     await this.cacheManager.set(cacheKey, data, ttl);
     this.logger.log(`Cache set for payments: ${cacheKey}`);
   }

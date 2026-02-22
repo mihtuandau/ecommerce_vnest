@@ -14,6 +14,7 @@ import { QueryProductDto } from './dto/query-product.dto';
 import { CreateVariantDto } from './dto/create-variant.dto';
 import { UploadService } from '../upload/upload.service';
 import { v2 as cloudinary } from 'cloudinary';
+import { buildCacheKey } from '../common/utils/cache-key.util';
 
 @Injectable()
 export class ProductService {
@@ -30,7 +31,7 @@ export class ProductService {
   }
 
   async findAll(query: QueryProductDto): Promise<any> {
-    const cacheKey = `products:${JSON.stringify(query)}`;
+    const cacheKey = buildCacheKey('products', query as any);
     let cached = await this.cacheManager.get<any>(cacheKey);
     if (cached) {
       return cached;
@@ -193,23 +194,28 @@ export class ProductService {
     }
 
     const product = await this.repository.update(id, updateData);
-    await this.cacheManager.del('products:all');
-    await this.cacheManager.del(`product:${id}`);
+    await Promise.all([
+      this.cacheManager.del('products:all'),
+      this.cacheManager.del(`product:${id}`),
+    ]);
     return product;
   }
 
   async remove(id: number): Promise<Product> {
     const product = await this.repository.findById(id);
 
-    if (product?.images) {
-      for (const image of product.images) {
-        await this.deleteImageFromCloudinary(image.url);
-      }
+    // Xóa ảnh trên Cloudinary song song (batch)
+    if (product?.images?.length) {
+      await Promise.all(
+        product.images.map((image) => this.deleteImageFromCloudinary(image.url)),
+      );
     }
 
     const deletedProduct = await this.repository.delete(id);
-    await this.cacheManager.del('products:all');
-    await this.cacheManager.del(`product:${id}`);
+    await Promise.all([
+      this.cacheManager.del('products:all'),
+      this.cacheManager.del(`product:${id}`),
+    ]);
     return deletedProduct;
   }
 
@@ -243,8 +249,10 @@ export class ProductService {
     }
 
     const variant = await this.repository.createVariant(data as any);
-    await this.cacheManager.del(`product:${productId}`);
-    await this.cacheManager.del('products:all');
+    await Promise.all([
+      this.cacheManager.del(`product:${productId}`),
+      this.cacheManager.del('products:all'),
+    ]);
     return variant;
   }
 
@@ -254,8 +262,10 @@ export class ProductService {
       throw new NotFoundException(`Variant #${variantId} không tồn tại`);
 
     const updated = await this.repository.updateVariant(variantId, data);
-    await this.cacheManager.del(`product:${updated.productId}`);
-    await this.cacheManager.del('products:all');
+    await Promise.all([
+      this.cacheManager.del(`product:${updated.productId}`),
+      this.cacheManager.del('products:all'),
+    ]);
     return updated;
   }
 
@@ -264,16 +274,20 @@ export class ProductService {
     if (!existing)
       throw new NotFoundException(`Variant #${variantId} không tồn tại`);
 
-    // Xóa VariantImages
+    // X\u00f3a VariantImages song song (batch)
     const images = await this.repository.findVariantImages(variantId);
-    for (const img of images) {
-      await this.deleteImageFromCloudinary(img.url);
-      await this.repository.deleteVariantImages([img.id]);
+    if (images.length) {
+      await Promise.all([
+        ...images.map((img) => this.deleteImageFromCloudinary(img.url)),
+        this.repository.deleteVariantImages(images.map((img) => img.id)),
+      ]);
     }
 
     const deleted = await this.repository.deleteVariant(variantId);
-    await this.cacheManager.del(`product:${deleted.productId}`);
-    await this.cacheManager.del('products:all');
+    await Promise.all([
+      this.cacheManager.del(`product:${deleted.productId}`),
+      this.cacheManager.del('products:all'),
+    ]);
     return deleted;
   }
 
@@ -308,8 +322,10 @@ export class ProductService {
 
     await this.repository.createImages(imageData);
 
-    await this.cacheManager.del(`product:${productId}`);
-    await this.cacheManager.del('products:all');
+    await Promise.all([
+      this.cacheManager.del(`product:${productId}`),
+      this.cacheManager.del('products:all'),
+    ]);
 
     return {
       message: `Upload thành công ${urls.length} ảnh cho sản phẩm`,
@@ -348,8 +364,10 @@ export class ProductService {
 
     await this.repository.createVariantImages(imageData);
 
-    await this.cacheManager.del(`product:${variant.productId}`);
-    await this.cacheManager.del('products:all');
+    await Promise.all([
+      this.cacheManager.del(`product:${variant.productId}`),
+      this.cacheManager.del('products:all'),
+    ]);
 
     return {
       message: `Upload thành công ${urls.length} ảnh cho variant`,
@@ -370,8 +388,10 @@ export class ProductService {
     await this.deleteImageFromCloudinary(image.url);
     await this.repository.deleteImages([imageId]);
 
-    await this.cacheManager.del(`product:${image.productId}`);
-    await this.cacheManager.del('products:all');
+    await Promise.all([
+      this.cacheManager.del(`product:${image.productId}`),
+      this.cacheManager.del('products:all'),
+    ]);
 
     return {
       message: 'Xóa ảnh sản phẩm thành công',
@@ -395,8 +415,10 @@ export class ProductService {
     // Lấy variant để clear cache
     const variant = await this.repository.findVariantById(image.variantId);
     if (variant) {
-      await this.cacheManager.del(`product:${variant.productId}`);
-      await this.cacheManager.del('products:all');
+      await Promise.all([
+        this.cacheManager.del(`product:${variant.productId}`),
+        this.cacheManager.del('products:all'),
+      ]);
     }
 
     return {
