@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe, Logger } from '@nestjs/common';
 import helmet from 'helmet';
+import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as crypto from 'crypto';
@@ -16,6 +17,17 @@ async function bootstrap() {
   
   // Apply helmet with environment-aware security config
   app.use(helmet(getHelmetConfig(csrfNonce)));
+  
+  // Gzip/Brotli compression - giảm ~60% response size
+  app.use(compression({
+    threshold: 1024, // Chỉ nén responses > 1KB
+    level: 6,        // Compression level (1-9, 6 = balance speed/size)
+    filter: (req, res) => {
+      // Không nén nếu header yêu cầu no-compression  
+      if (req.headers['x-no-compression']) return false;
+      return compression.filter(req, res);
+    },
+  }));
   
   // CSP Nonce middleware to generate per-request nonce
   app.use(createCspNonceMiddleware());
