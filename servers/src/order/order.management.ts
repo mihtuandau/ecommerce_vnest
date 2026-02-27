@@ -44,6 +44,13 @@ export class OrderManagement {
     // Handle delivered status changes - MUST pass oldOrder (before update)
     await this.handleDeliveredStatus(dto, oldOrder);
 
+    // Restore stock when admin cancels an order
+    // Note: oldOrder.status !== 'CANCELLED' is already guaranteed by the guard above
+    if (dto.status === 'CANCELLED') {
+      await this.repository.restoreOrderStock(id);
+      this.logger.log(`📦 Stock restored for cancelled order ${id}`);
+    }
+
     // Clear caches after update
     await this.cacheService.clearRelatedCaches(id, order.userId || undefined);
 
@@ -71,6 +78,9 @@ export class OrderManagement {
 
     const cancelled = await this.repository.update(orderId, { status: 'CANCELLED' });
 
+    // Restore stock when user cancels order
+    await this.repository.restoreOrderStock(orderId);
+
     await this.cacheService.clearRelatedCaches(orderId, userId);
 
     return {
@@ -92,6 +102,9 @@ export class OrderManagement {
     }
 
     const cancelled = await this.repository.update(order.id, { status: 'CANCELLED' });
+
+    // Restore stock when guest cancels order
+    await this.repository.restoreOrderStock(order.id);
 
     await this.cacheService.clearRelatedCaches(order.id, order.userId || undefined);
 

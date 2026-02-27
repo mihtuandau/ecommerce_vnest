@@ -252,26 +252,81 @@ export class OrderRepository {
    * Increment product sold count - with safety check
    */
   async incrementProductSoldCount(productId: number, quantity: number) {
-    // Log before increment
-    const currentProduct = await this.prisma.product.findUnique({
+    return await this.prisma.product.update({
       where: { id: productId },
-      select: { soldCount: true, name: true },
-    });
-    
-    console.log(`📊 Before increment - Product ${productId} (${currentProduct?.name}): soldCount = ${currentProduct?.soldCount}, incrementing by ${quantity}`);
-    
-    const updated = await this.prisma.product.update({
-      where: { id: productId },
-      data: {
-        soldCount: {
-          increment: quantity,
-        },
-      },
+      data: { soldCount: { increment: quantity } },
       select: { id: true, name: true, soldCount: true },
     });
-    
-    console.log(`✅ After increment - Product ${productId}: soldCount = ${updated.soldCount}`);
-    
-    return updated;
+  }
+
+  /**
+   * Create order with atomic stock check + decrement (prevents overselling)
+   */
+  async createOrderTransactional(
+    orderData: Prisma.OrderCreateInput,
+    items: Array<{ variantId: number; quantity: number }>,
+  ) {
+    return this.prisma.$transaction(async (tx) => {
+      // 1. Check stock for all items atomically inside transaction
+      for (const item of items) {
+        const variant = await tx.productVariant.findUnique({
+          where: { id: item.variantId },
+          select: { id: true, stock: true, isActive: true },
+        });
+        if (!variant || !variant.isActive) {
+          throw new Error(
+            `Sản phẩm ID ${item.variantId} không tồn tại hoặc đã ngừng kinh doanh`,
+          );
+        }
+        if (variant.stock < item.quantity) {
+          throw new Error(
+            `Sản phẩm ID ${item.variantId} không đủ hàng (còn ${variant.stock}, cần ${item.quantity})`,
+          );
+        }
+      }
+
+      // 2. Decrement stock for all items (reserve inventory)
+      await Promise.all(
+        items.map((item) =>
+          tx.productVariant.update({
+            where: { id: item.variantId },
+            data: { stock: { decrement: item.quantity } },
+          }),
+        ),
+      );
+
+      // 3. Create order
+      return tx.order.create({
+        data: orderData,
+        include: {
+          orderItems: {
+            include: {
+              variant: { include: { product: true, images: true } },
+            },
+          },
+          payment: true,
+          user: { select: { id: true, email: true, name: true } },
+        },
+      });
+    });
+  }
+
+  /**
+   * Restore stock when order is cancelled
+   */
+  async restoreOrderStock(orderId: number): Promise<void> {
+    const order = await this.prisma.order.findUnique({
+      where: { id: orderId },
+      select: { orderItems: { select: { variantId: true, quantity: true } } },
+    });
+    if (!order || !order.orderItems.length) return;
+    await this.prisma.$transaction(
+      order.orderItems.map((item) =>
+        this.prisma.productVariant.update({
+          where: { id: item.variantId },
+          data: { stock: { increment: item.quantity } },
+        }),
+      ),
+    );
   }
 }

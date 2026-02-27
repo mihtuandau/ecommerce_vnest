@@ -54,8 +54,8 @@ export class OrderCreation {
       discount
     );
 
-    // Create order
-    const order = await this.repository.create(orderData) as any;
+    // Create order with atomic stock check + decrement (prevents overselling)
+    const order = await this.repository.createOrderTransactional(orderData, itemsToOrder) as any;
     this.logger.log('✅ Order created with ID:', order.id);
     this.logger.log('📧 Guest email for order:', order.guestEmail);
     this.logger.log('👤 User email for order:', order.user?.email);

@@ -12,11 +12,11 @@ export class RegisterDto {
 
   @ApiProperty({ 
     example: 'password123', 
-    description: 'Mật khẩu (tối thiểu 6 ký tự)', 
+    description: 'Mật khẩu (tối thiểu 8 ký tự)', 
     required: true 
   })
   @IsString()
-  @MinLength(6)
+  @MinLength(8)
   password: string;
 
   @ApiProperty({ 
