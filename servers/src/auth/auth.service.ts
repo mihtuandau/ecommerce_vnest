@@ -82,12 +82,36 @@ export class AuthService {
       expiresIn: '2h', // 2 hours - shorter expiry for better security
     });
 
+    const refreshToken = this.jwtService.sign(
+      { sub: tokenPayload.sub },
+      { secret: process.env.JWT_REFRESH_SECRET, expiresIn: '7d' },
+    );
+
     const { password: _, ...safeUser } = user;
 
     return {
       access_token: accessToken,
+      refresh_token: refreshToken,
       user: safeUser,
     };
+  }
+
+  async refreshAccessToken(refreshToken: string): Promise<{ access_token: string }> {
+    try {
+      const payload = this.jwtService.verify(refreshToken, {
+        secret: process.env.JWT_REFRESH_SECRET,
+      });
+      const user = await this.userService.findOne(payload.sub);
+      if (!user) throw new UnauthorizedException('User not found');
+      const newPayload = { sub: user.id, email: user.email, role: user.role };
+      const access_token = this.jwtService.sign(newPayload, {
+        secret: process.env.JWT_SECRET,
+        expiresIn: '2h',
+      });
+      return { access_token };
+    } catch {
+      throw new UnauthorizedException('Invalid or expired refresh token');
+    }
   }
 
   async forgotPassword(
@@ -160,14 +184,26 @@ export class AuthService {
     });
   }
 
+  setRefreshTokenCookie(res: any, token: string) {
+    const isProduction = process.env.NODE_ENV === 'production';
+    res.cookie('refresh_token', token, {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days - match JWT refresh expiry
+    });
+  }
+
   clearAuthCookie(res: any) {
     const isProduction = process.env.NODE_ENV === 'production';
-    res.cookie('access_token', '', {
+    const cookieOptions = {
       httpOnly: true,
       secure: isProduction,
       sameSite: isProduction ? 'none' : 'lax',
       maxAge: 0,
-    });
+    };
+    res.cookie('access_token', '', cookieOptions);
+    res.cookie('refresh_token', '', cookieOptions);
   }
 
   async getUserInfo(userId: number) {

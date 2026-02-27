@@ -110,13 +110,8 @@ export class PaymentRepository {
             data: { paymentId },
           });
         }
-
-        for (const item of orderItems) {
-          await prisma.productVariant.update({
-            where: { id: item.variantId },
-            data: { stock: { decrement: item.quantity } },
-          });
-        }
+        // NOTE: Stock is reserved at order creation (createOrderTransactional).
+        // No need to decrement stock here again.
       }
 
       return paymentUpdated;

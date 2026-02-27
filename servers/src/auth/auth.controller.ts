@@ -38,10 +38,11 @@ export class AuthController {
   ) {}
 
   @Post('register')
-  @Throttle({ default: { limit: 5, ttl: 60000 } }) // 5 requests per minute
+  @Throttle({ default: { limit: 5, ttl: 300000 } }) // 5 requests per 5 minutes
   async register(@Body() registerDto: RegisterDto, @Res() res: Response) {
     const result = await this.authService.register(registerDto);
     this.authService.setAuthCookie(res, result.access_token);
+    this.authService.setRefreshTokenCookie(res, result.refresh_token);
 
     return res.status(HttpStatus.CREATED).json({
       user: result.user,
@@ -67,7 +68,7 @@ export class AuthController {
   }
 
   @Post('login')
-  @Throttle({ default: { limit: 5, ttl: 60000 } }) // 5 requests per minute
+  @Throttle({ default: { limit: 5, ttl: 300000 } }) // 5 requests per 5 minutes (brute-force protection)
   async login(@Body() loginDto: LoginDto, @Res() res: Response) {
     const user = await this.authService.validateUser(
       loginDto.email,
@@ -76,6 +77,7 @@ export class AuthController {
     const result = await this.authService.login({ sub: user.id }, user);
 
     this.authService.setAuthCookie(res, result.access_token);
+    this.authService.setRefreshTokenCookie(res, result.refresh_token);
 
     return res.json({
       user: result.user,
@@ -88,6 +90,20 @@ export class AuthController {
   async logout(@Res() res: Response) {
     this.authService.clearAuthCookie(res);
     return res.json({ message: 'Logout successful' });
+  }
+
+  @Post('refresh')
+  @Throttle({ default: { limit: 10, ttl: 60000 } }) // 10 requests per minute
+  async refreshToken(@Req() req: any, @Res() res: Response) {
+    const token = req.cookies?.refresh_token;
+    if (!token) {
+      return res
+        .status(HttpStatus.UNAUTHORIZED)
+        .json({ message: 'No refresh token provided' });
+    }
+    const result = await this.authService.refreshAccessToken(token);
+    this.authService.setAuthCookie(res, result.access_token);
+    return res.json({ access_token: result.access_token, message: 'Token refreshed' });
   }
 
   @Post('forgot-password')
