@@ -1,4 +1,11 @@
-import { FaStar } from "react-icons/fa";
+import { FaStar, FaEye } from "react-icons/fa";
+
+const formatViewCount = (n) => {
+  if (!n) return '0';
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
+  return String(n);
+};
 
 const ProductInfo = ({ product }) => {
   return (
@@ -62,6 +69,11 @@ const ProductInfo = ({ product }) => {
         <span className="w-px h-4 bg-gray-200"></span>
         <span className="text-xs text-gray-500">
           Đã bán <span className="text-gray-900 font-medium">{product.soldCount || 0}</span>
+        </span>
+        <span className="w-px h-4 bg-gray-200"></span>
+        <span className="flex items-center gap-1.5 text-xs text-gray-500">
+          <FaEye className="text-gray-400" size={13} />
+          <span className="text-gray-900 font-medium">{formatViewCount(product.viewCount)}</span> lượt xem
         </span>
       </div>
     </div>

@@ -65,11 +65,23 @@ const FeaturedCategories = ({ categories = [], isLoading = false }) => {
     return matchedKey ? iconMap[matchedKey] : ShoppingBag;
   };
 
+  // Fallback ảnh đẹp cho từng danh mục khi chưa có ảnh từ API
+  const fallbackImages = [
+    'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=500&auto=format',
+    'https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=500&auto=format',
+    'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=500&auto=format',
+    'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=500&auto=format',
+    'https://images.unsplash.com/photo-1490114538077-0a7f8cb49891?w=500&auto=format',
+    'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&auto=format',
+    'https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=500&auto=format',
+    'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=500&auto=format',
+  ];
+
   // Map categories từ API
   const displayCategories = categories.map((cat, index) => ({
     id: cat.id,
     name: cat.name,
-    image: cat.image || `https://images.unsplash.com/photo-${1490114538077 + index * 100000}?w=500`,
+    image: cat.image || fallbackImages[index % fallbackImages.length],
     productCount: cat._count?.products || 0,
     tag: tags[index % tags.length],
     desc: cat.description || 'Khám phá ngay',

@@ -166,6 +166,50 @@ export class ProductService {
     return product;
   }
 
+  /** Tăng viewCount mỗi khi user mở trang chi tiết sản phẩm
+   *  - Check Redis key (viewed:product:{id}:{userId/ip}) để tránh fake view
+   *  - Nếu chưa view hôm nay → tăng viewCount + set Redis key TTL 24h
+   *  - Nếu đã view hôm nay → bỏ qua
+   */
+  async incrementViewCount(id: number, identifier: string): Promise<void> {
+    const viewKey = `viewed:product:${id}:${identifier}`;
+    const viewed = await this.cacheManager.get(viewKey);
+    
+    // Nếu đã xem hôm nay → bỏ qua
+    if (viewed) {
+      return;
+    }
+    
+    // Không xem hôm nay → tăng viewCount + ghi Redis (TTL 24h = 86400 giây)
+    await this.repository.incrementViewCount(id);
+    await this.cacheManager.set(viewKey, true, 86400 * 1000); // ms
+    
+    // Xoá cache product để lần sau fetch lại số liệu mới nhất
+    try {
+      await this.cacheManager.del(`product:${id}`);
+    } catch (_) {
+      // Redis không khả dụng — bỏ qua, DB đã được cập nhật
+    }
+  }
+
+  /** Lấy sản phẩm liên quan (cùng category, loại trừ chính nó) */
+  async getRelatedProducts(id: number, limit = 8): Promise<any[]> {
+    const cacheKey = `product:related:${id}:${limit}`;
+    const cached = await this.cacheManager.get<any[]>(cacheKey);
+    if (cached) return cached;
+
+    const product = await this.repository.findById(id);
+    if (!product) throw new NotFoundException(`Product #${id} không tồn tại`);
+
+    const related = await this.repository.findRelated(
+      id,
+      product.categoryId,
+      limit,
+    );
+    await this.cacheManager.set(cacheKey, related, 600); // cache 10 phút
+    return related;
+  }
+
   async update(id: number, data: UpdateProductDto): Promise<Product> {
     // Transform DTO to Prisma format
     const { categoryId, brandId, status, ...rest } = data;

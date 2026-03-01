@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import Layout from '../../../components/layouts/Layout';
 import Loading from '../../../components/common/Loading';
@@ -23,10 +23,15 @@ const ProductDetailPage = () => {
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
-  const [activeTab, setActiveTab] = useState('description'); 
+  const [activeTab, setActiveTab] = useState('description');
+
+  // Guard chống React StrictMode double-invoke: chỉ tăng viewCount 1 lần mỗi id
+  const viewedIdRef = useRef(null);
 
   useEffect(() => {
     loadProduct();
+    // Reset khi đổi sản phẩm
+    viewedIdRef.current = null;
   }, [id]);
 
   useEffect(() => {
@@ -59,6 +64,12 @@ const ProductDetailPage = () => {
       const productData = response.data || response;
       setProduct(productData);
       
+      // Tăng lượt xem âm thầm — không cập nhật UI ngay (người xem tiếp theo mới thấy số mới)
+      if (viewedIdRef.current !== id) {
+        viewedIdRef.current = id;
+        productService.incrementView(id).catch(() => {});
+      }
+
       if (productData.variants && productData.variants.length > 0) {
         const sizes = [...new Set(productData.variants.map(v => v.size).filter(Boolean))];
         const colors = [...new Set(productData.variants.map(v => v.color).filter(Boolean))];

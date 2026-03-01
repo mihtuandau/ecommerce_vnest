@@ -25,6 +25,15 @@ export const AuthProvider = ({ children }) => {
     };
 
     initAuth();
+
+    // Lắng nghe sự kiện token hết hạn (từ axios interceptor)
+    const handleAuthExpired = () => {
+      setUser(null);
+      localStorage.removeItem('access_token');
+      notify.error('Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại');
+    };
+    window.addEventListener('auth:expired', handleAuthExpired);
+    return () => window.removeEventListener('auth:expired', handleAuthExpired);
   }, []);
 
   const register = async (userData) => {

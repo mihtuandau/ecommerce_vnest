@@ -39,6 +39,12 @@ export class WishlistController {
     );
   }
 
+  @Get('count')
+  async getCount(@Request() req) {
+    const count = await this.wishlistService.getCount(req.user.userId);
+    return { count };
+  }
+
   @Get('check/:variantId')
   async checkWishlist(@Request() req, @Param('variantId') variantId: string) {
     const isInWishlist = await this.wishlistService.isInWishlist(

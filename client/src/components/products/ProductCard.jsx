@@ -1,6 +1,13 @@
 import { Link } from 'react-router-dom';
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { FaHeart, FaEye } from 'react-icons/fa';
+
+const formatViewCount = (n) => {
+  if (!n) return '0';
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
+  return String(n);
+};
 import { notify } from '../../utils/notification';
 import StarRating from '../common/StarRating';
 import { formatPrice, calculateDiscountPercent } from '../../utils/formatters';
@@ -148,6 +155,12 @@ const ProductCard = ({ product, viewMode = 'grid-4' }) => {
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           loading="lazy"
         />
+        {product.viewCount > 0 && (
+          <div className="absolute bottom-2 left-2 flex items-center gap-1 bg-black/50 backdrop-blur-sm text-white text-[10px] px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            <FaEye size={9} />
+            <span>{formatViewCount(product.viewCount)} lượt xem</span>
+          </div>
+        )}
       </Link>
 
       <div className={`flex flex-col ${isList ? 'justify-center' : 'flex-grow'} ${containerClass} ${isList ? 'w-3/5' : ''}`}>
@@ -170,6 +183,12 @@ const ProductCard = ({ product, viewMode = 'grid-4' }) => {
           <span className={`${soldTextClass} font-light text-gray-500`}>
             Đã bán {product.soldCount || product.sold || 0}
           </span>
+          {!isList && (
+            <span className="flex items-center gap-1 text-xs text-gray-400 ml-auto">
+              <FaEye size={11} />
+              {formatViewCount(product.viewCount)}
+            </span>
+          )}
         </div>
 
         <div className={`flex items-baseline gap-3 ${isList ? 'mb-6' : 'flex-wrap'} ${minHeightPrice}`}>
@@ -186,7 +205,7 @@ const ProductCard = ({ product, viewMode = 'grid-4' }) => {
         </div>
 
         {isList && (
-          <div className="pt-6 border-t border-gray-100">
+          <div className="pt-6 border-t border-gray-100 flex items-center gap-4">
             <button  
               onClick={handleWishlistToggle}
               className={`px-4 py-2 border transition-all duration-200 flex items-center gap-2.5 text-sm font-light focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#00a85a] ${
@@ -199,6 +218,12 @@ const ProductCard = ({ product, viewMode = 'grid-4' }) => {
               <FaHeart size={14} className={isInWishlist ? 'fill-current' : ''} />
               {isInWishlist ? 'Đã yêu thích' : 'Thêm vào yêu thích'}
             </button>
+            {product.viewCount > 0 && (
+              <span className="flex items-center gap-1.5 text-xs text-gray-400">
+                <FaEye size={12} />
+                {formatViewCount(product.viewCount)} lượt xem
+              </span>
+            )}
           </div>
         )}
       </div>

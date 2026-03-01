@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../hooks/useAuth';
-import { useNavigate } from 'react-router-dom';
-import { Card, Avatar, Tag, Spin, Empty, Divider, Row, Col } from 'antd';
-import { UserOutlined, LockOutlined, EnvironmentOutlined, IdcardOutlined } from '@ant-design/icons';
+import { useNavigate, Link } from 'react-router-dom';
+import { Card, Avatar, Tag, Spin, Empty, Divider, Row, Col, Tabs, Rate } from 'antd';
+import { UserOutlined, LockOutlined, EnvironmentOutlined, StarOutlined } from '@ant-design/icons';
 import authService from '../../../services/authService';
 import userService from '../../../services/userService';
+import reviewService from '../../../services/reviewService';
 import Layout from '../../../components/layouts/Layout';
 import Loading from '../../../components/common/Loading';
 import Breadcrumb from '../../../components/common/Breadcrumb';
@@ -17,6 +18,20 @@ import { notify } from '../../../utils/notification';
 const ProfilePage = () => {
   const { user: currentUser, loading: authLoading, refreshUser } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [myReviews, setMyReviews] = useState([]);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
+
+  const fetchMyReviews = async () => {
+    setReviewsLoading(true);
+    try {
+      const res = await reviewService.getMyReviews();
+      setMyReviews(res.data || res || []);
+    } catch {
+      setMyReviews([]);
+    } finally {
+      setReviewsLoading(false);
+    }
+  };
 
   const handleUpdateProfile = async (formData) => {
     setLoading(true);
@@ -84,56 +99,84 @@ const ProfilePage = () => {
             </div>
           </Card>
 
-          <Row gutter={[32, 32]} className="mt-6">
-            <Col xs={24} lg={8}>
-              <Card 
-                title={
-                  <div className="flex items-center gap-2">
-                    <UserOutlined />
-                    <span>Thông Tin Cá Nhân</span>
-                  </div>
-                }
-                bordered={false}
-                className="shadow-sm h-full"
-              >
-                <PersonalInfoForm
-                  currentUser={currentUser}
-                  onSubmit={handleUpdateProfile}
-                  loading={loading}
-                />
-              </Card>
-            </Col>
-
-            <Col xs={24} lg={8}>
-              <Card 
-                title={
-                  <div className="flex items-center gap-2">
-                    <LockOutlined />
-                    <span>Đổi Mật Khẩu</span>
-                  </div>
-                }
-                bordered={false}
-                className="shadow-sm h-full"
-              >
-                <ChangePasswordForm />
-              </Card>
-            </Col>
-
-            <Col xs={24} lg={8}>
-              <Card 
-                title={
-                  <div className="flex items-center gap-2">
-                    <EnvironmentOutlined />
-                    <span>Địa Chỉ Giao Hàng</span>
-                  </div>
-                }
-                bordered={false}
-                className="shadow-sm h-full"
-              >
-                <AddressManager />
-              </Card>
-            </Col>
-          </Row>
+          <Tabs
+            defaultActiveKey="info"
+            className="mt-6"
+            onChange={(key) => { if (key === 'reviews') fetchMyReviews(); }}
+            items={[
+              {
+                key: 'info',
+                label: <span><UserOutlined className="mr-1" />Thông Tin</span>,
+                children: (
+                  <Row gutter={[32, 32]}>
+                    <Col xs={24} lg={12}>
+                      <Card title={<span><UserOutlined className="mr-2" />Thông Tin Cá Nhân</span>} bordered={false} className="shadow-sm">
+                        <PersonalInfoForm currentUser={currentUser} onSubmit={handleUpdateProfile} loading={loading} />
+                      </Card>
+                    </Col>
+                    <Col xs={24} lg={12}>
+                      <Card title={<span><LockOutlined className="mr-2" />Đổi Mật Khẩu</span>} bordered={false} className="shadow-sm">
+                        <ChangePasswordForm />
+                      </Card>
+                    </Col>
+                  </Row>
+                ),
+              },
+              {
+                key: 'address',
+                label: <span><EnvironmentOutlined className="mr-1" />Địa Chỉ</span>,
+                children: (
+                  <Card title={<span><EnvironmentOutlined className="mr-2" />Địa Chỉ Giao Hàng</span>} bordered={false} className="shadow-sm">
+                    <AddressManager />
+                  </Card>
+                ),
+              },
+              {
+                key: 'reviews',
+                label: <span><StarOutlined className="mr-1" />Đánh Giá Của Tôi</span>,
+                children: (
+                  <Card bordered={false} className="shadow-sm">
+                    {reviewsLoading ? (
+                      <div className="flex justify-center py-10"><Spin /></div>
+                    ) : myReviews.length === 0 ? (
+                      <Empty description="Bạn chưa có đánh giá nào" />
+                    ) : (
+                      <div className="space-y-4">
+                        {myReviews.map((review) => (
+                          <div key={review.id} className="border border-gray-100 p-4 hover:border-gray-200 transition-colors">
+                            <div className="flex items-start justify-between gap-4">
+                              <div className="flex-1 min-w-0">
+                                <Link
+                                  to={`/products/${review.productId}`}
+                                  className="text-sm font-medium text-gray-900 hover:text-[#00a85a] transition-colors line-clamp-1"
+                                >
+                                  {review.product?.name || `Sản phẩm #${review.productId}`}
+                                </Link>
+                                <Rate disabled value={review.rating} className="text-xs mt-1" />
+                                {review.comment && (
+                                  <p className="text-sm text-gray-600 mt-2 leading-relaxed">{review.comment}</p>
+                                )}
+                                <p className="text-xs text-gray-400 mt-2">
+                                  {new Date(review.createdAt).toLocaleDateString('vi-VN')}
+                                </p>
+                              </div>
+                              {review.product?.images?.[0]?.url && (
+                                <img
+                                  src={review.product.images[0].url}
+                                  alt={review.product.name}
+                                  className="w-16 h-16 object-cover flex-shrink-0 border border-gray-100"
+                                />
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </Card>
+                ),
+              },
+            ]}
+          />
         </div>
       </div>
     </Layout>
