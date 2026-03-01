@@ -33,6 +33,8 @@ export const PRODUCT_ENDPOINTS = {
   BASE: '/products',
   PRICE_RANGE: '/products/price-range',
   BY_ID: (id) => `/products/${id}`,
+  RELATED: (id) => `/products/${id}/related`,
+  VIEW: (id) => `/products/${id}/view`,
   BULK_DELETE: '/products/bulk-delete',
   UPLOAD_IMAGE: '/products/upload-image',
 };
@@ -112,6 +114,7 @@ export const BANNER_ENDPOINTS = {
 // ============================================
 export const DISCOUNT_ENDPOINTS = {
   BASE: '/discounts',
+  PUBLIC: '/discounts/public',
   BY_ID: (id) => `/discounts/${id}`,
   VALIDATE: '/discounts/validate',
   STATS: '/discounts/stats',
@@ -122,6 +125,7 @@ export const DISCOUNT_ENDPOINTS = {
 // ============================================
 export const WISHLIST_ENDPOINTS = {
   BASE: '/wishlist',
+  COUNT: '/wishlist/count',
   BY_VARIANT: (variantId) => `/wishlist/${variantId}`,
   CHECK: (variantId) => `/wishlist/check/${variantId}`,
 };

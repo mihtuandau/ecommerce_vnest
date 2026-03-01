@@ -46,6 +46,7 @@ export class ProductRepository {
         slug: true,
         basePrice: true,
         soldCount: true,
+        viewCount: true,
         averageRating: true,
         reviewCount: true,
         isActive: true,
@@ -95,6 +96,51 @@ export class ProductRepository {
               select: { id: true, name: true },
             },
           },
+        },
+      },
+    });
+  }
+
+  /**
+   * Increment viewCount khi user xem sản phẩm
+   */
+  async incrementViewCount(id: number): Promise<void> {
+    await this.prisma.product.update({
+      where: { id },
+      data: { viewCount: { increment: 1 } },
+    });
+  }
+
+  /**
+   * Tìm sản phẩm liên quan (cùng category, loại trừ chính nó)
+   */
+  async findRelated(excludeId: number, categoryId: number, limit: number) {
+    return this.prisma.product.findMany({
+      where: {
+        id: { not: excludeId },
+        categoryId,
+        isActive: true,
+      },
+      orderBy: { soldCount: 'desc' },
+      take: limit,
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        basePrice: true,
+        soldCount: true,
+        averageRating: true,
+        reviewCount: true,
+        category: { select: { id: true, name: true } },
+        brand: { select: { id: true, name: true } },
+        images: {
+          orderBy: [{ isThumbnail: 'desc' }, { displayOrder: 'asc' }],
+          take: 1,
+          select: { id: true, url: true, altText: true },
+        },
+        variants: {
+          where: { isActive: true },
+          select: { id: true, price: true, stock: true, size: true, color: true },
         },
       },
     });

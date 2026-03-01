@@ -88,6 +88,11 @@ export class DiscountService {
     };
   }
 
+  /** Danh sách khuyến mãi đang hoạt động cho trang public */
+  async getPublicDiscounts() {
+    return this.repository.findPublicActive();
+  }
+
   async validateDiscount(code: string) {
     const discount = await this.repository.findByCode(code);
 

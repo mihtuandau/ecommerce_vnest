@@ -62,6 +62,30 @@ export class DiscountRepository {
     return this.prisma.discount.count();
   }
 
+  async findPublicActive() {
+    const now = new Date();
+    return this.prisma.discount.findMany({
+      where: {
+        isActive: true,
+        startDate: { lte: now },
+        OR: [{ endDate: null }, { endDate: { gte: now } }],
+      },
+      select: {
+        id: true,
+        code: true,
+        description: true,
+        image: true,
+        percentage: true,
+        fixedAmount: true,
+        minOrderAmount: true,
+        maxDiscountAmount: true,
+        endDate: true,
+        applicableToCategories: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
   async countWithFilter(where: Prisma.DiscountWhereInput): Promise<number> {
     return this.prisma.discount.count({ where });
   }

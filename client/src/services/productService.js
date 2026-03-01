@@ -121,19 +121,20 @@ export const productService = {
 
   getRecommendations: async (productId, categoryId) => {
     try {
-      const params = {
-        page: 1,
-        limit: 10,
-        categoryId: categoryId || undefined,
-      };
-      const response = await apiService.get(PRODUCT_ENDPOINTS.BASE, params);
-      const products = response.data || response || [];
-      
-      return products.filter(p => p.id !== productId).slice(0, 5);
+      // Dùng endpoint chuyên biệt thay vì lọc client-side
+      const response = await apiService.get(PRODUCT_ENDPOINTS.RELATED(productId), { limit: 8 });
+      return response.data || response || [];
     } catch (error) {
-      console.error('Error fetching recommendations:', error);
-      return [];
+      // Fallback: lọc theo category nếu endpoint mới chưa có
+      const params = { page: 1, limit: 12, categoryId: categoryId || undefined };
+      const res = await apiService.get(PRODUCT_ENDPOINTS.BASE, params);
+      const products = res.data || res || [];
+      return products.filter((p) => p.id !== productId).slice(0, 8);
     }
+  },
+
+  incrementView: async (productId) => {
+    await apiService.post(PRODUCT_ENDPOINTS.VIEW(productId));
   },
 };
 

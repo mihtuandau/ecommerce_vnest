@@ -195,6 +195,11 @@ export const ProductDetails = ({
   const totalStock =
     product?.variants?.reduce((sum, v) => sum + (v.stock || 0), 0) || 0;
 
+  // Ngưỡng cảnh báo sắp hết hàng (dùng lowStockThreshold nếu có, mặc định 5)
+  const lowStockThreshold = product?.variants?.[0]?.lowStockThreshold ?? 5;
+  const isLowStock = totalStock > 0 && totalStock <= lowStockThreshold;
+  const isOutOfStock = totalStock === 0;
+
   return (
     <div className="max-w-2xl">
       <ProductInfo product={product} />
@@ -212,6 +217,20 @@ export const ProductDetails = ({
         onSizeSelect={onSizeSelect}
         onColorSelect={onColorSelect}
       />
+
+      {/* Cảnh báo tồn kho */}
+      {isOutOfStock && (
+        <div className="flex items-center gap-2 px-4 py-2.5 bg-red-50 border border-red-200 text-red-700 text-sm mb-4">
+          <span className="w-2 h-2 rounded-full bg-red-500 flex-shrink-0" />
+          Sản phẩm tạm hết hàng
+        </div>
+      )}
+      {isLowStock && !isOutOfStock && (
+        <div className="flex items-center gap-2 px-4 py-2.5 bg-amber-50 border border-amber-200 text-amber-700 text-sm mb-4">
+          <span className="w-2 h-2 rounded-full bg-amber-400 flex-shrink-0 animate-pulse" />
+          Chỉ còn <span className="font-semibold">{totalStock}</span> sản phẩm — đặt hàng sớm!
+        </div>
+      )}
 
       <ProductQuantity
         quantity={quantity}

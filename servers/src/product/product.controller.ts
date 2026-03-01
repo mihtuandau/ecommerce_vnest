@@ -1,6 +1,6 @@
 import { 
-  Controller, Get, Post, Put, Delete, Body, Param, Query, 
-  UseGuards, UseInterceptors, UploadedFiles, BadRequestException 
+  Controller, Get, Post, Put, Delete, Body, Param, Query, Request,
+  UseGuards, UseInterceptors, UploadedFiles, BadRequestException, HttpCode, HttpStatus
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
@@ -33,6 +33,22 @@ export class ProductController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.productService.findOne(+id);
+  }
+
+  @Get(':id/related')
+  getRelated(
+    @Param('id') id: string,
+    @Query('limit') limit?: string,
+  ) {
+    return this.productService.getRelatedProducts(+id, limit ? +limit : 8);
+  }
+
+  @Post(':id/view')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  incrementView(@Param('id') id: string, @Request() req: any) {
+    // Lấy userId nếu đã đăng nhập, nếu không dùng IP
+    const identifier = req.user?.userId || req.ip || req.connection.remoteAddress || 'anonymous';
+    return this.productService.incrementViewCount(+id, identifier);
   }
 
   @Post()

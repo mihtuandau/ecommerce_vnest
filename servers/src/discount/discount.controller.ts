@@ -32,6 +32,11 @@ export class DiscountController {
     return this.discountService.create(createDiscountDto);
   }
 
+  @Get('public')
+  getPublic() {
+    return this.discountService.getPublicDiscounts();
+  }
+
   @Get()
   findAll(@Query() query: QueryDiscountDto) {
     return this.discountService.findAll(query);

@@ -12,6 +12,11 @@ const reviewService = {
     return response;
   },
 
+  async getMyReviews(page = 1, limit = 10) {
+    const response = await apiService.get(REVIEW_ENDPOINTS.MY_REVIEWS, { page, limit });
+    return response;
+  },
+
   async createReview(productId, orderId, rating, comment, images = []) {
     const response = await apiService.post(
       REVIEW_ENDPOINTS.BASE,

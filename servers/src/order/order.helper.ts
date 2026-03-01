@@ -63,7 +63,7 @@ export function calculateOrderTotal(
   const totalItems = items.reduce((sum, item) => sum + item.quantity * item.price, 0);
   const taxAmount = 0; // Remove VAT tax
   const total = totalItems + shippingFee; // Items + shipping
-  
+                                                             
   // Apply discount to total (items + shipping)
   let discountedTotal = total;
   if (discount) {

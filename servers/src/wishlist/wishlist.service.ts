@@ -103,4 +103,8 @@ export class WishlistService {
       where: { userId },
     });
   }
+
+  async getCount(userId: number): Promise<number> {
+    return this.prisma.wishlistItem.count({ where: { userId } });
+  }
 }
