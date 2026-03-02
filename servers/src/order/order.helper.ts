@@ -54,30 +54,41 @@ export async function generateOrderCode(checkExistsFn: (code: string) => Promise
 
 /**
  * Calculate order totals with discount
+ * - Discount chỉ áp trên subtotal (items), không giảm phí ship
+ * - Có cap bởi maxDiscountAmount nếu được set
  */
 export function calculateOrderTotal(
   items: Array<{quantity: number, price: number}>,
   shippingFee: number = 0,
-  discount?: {percentage?: number, fixedAmount?: number}
+  discount?: {percentage?: number, fixedAmount?: number, maxDiscountAmount?: number}
 ) {
   const totalItems = items.reduce((sum, item) => sum + item.quantity * item.price, 0);
-  const taxAmount = 0; // Remove VAT tax
-  const total = totalItems + shippingFee; // Items + shipping
-                                                             
-  // Apply discount to total (items + shipping)
-  let discountedTotal = total;
+  const taxAmount = 0;
+
+  // Tính số tiền được giảm (chỉ áp trên subtotal, không bao gồm ship)
+  let discountAmount = 0;
   if (discount) {
     if (discount.percentage) {
-      discountedTotal *= 1 - discount.percentage / 100;
+      discountAmount = Math.round(totalItems * discount.percentage / 100);
     } else if (discount.fixedAmount) {
-      discountedTotal -= discount.fixedAmount;
+      discountAmount = discount.fixedAmount;
     }
+    // Cap bởi maxDiscountAmount (nếu có)
+    if (discount.maxDiscountAmount && discountAmount > discount.maxDiscountAmount) {
+      discountAmount = discount.maxDiscountAmount;
+    }
+    // Không được giảm nhiều hơn chính subtotal
+    discountAmount = Math.min(discountAmount, totalItems);
   }
-  
+
+  const total = totalItems + shippingFee;
+  const discountedTotal = total - discountAmount;
+
   return {
     totalItems,
     shippingFee,
     taxAmount,
+    discountAmount,
     total,
     discountedTotal,
   };
@@ -85,16 +96,36 @@ export function calculateOrderTotal(
 
 /**
  * Validate discount code
+ * @param discount - discount record from DB
+ * @param subtotal - optional items subtotal (không bao gồm phí ship) để check minOrderAmount
  */
-export function validateDiscount(discount: any) {
+export function validateDiscount(discount: any, subtotal?: number) {
   if (!discount) {
     throw new BadRequestException('Mã giảm giá không tồn tại');
   }
-  
-  if (discount.endDate && discount.endDate < new Date()) {
+
+  if (!discount.isActive) {
+    throw new BadRequestException('Mã giảm giá đã bị vô hiệu hóa');
+  }
+
+  const now = new Date();
+
+  if (discount.startDate && discount.startDate > now) {
+    throw new BadRequestException(
+      `Mã giảm giá chưa có hiệu lực (từ ${new Date(discount.startDate).toLocaleDateString('vi-VN')})`,
+    );
+  }
+
+  if (discount.endDate && discount.endDate < now) {
     throw new BadRequestException('Mã giảm giá đã hết hạn');
   }
-  
+
+  if (subtotal !== undefined && discount.minOrderAmount && subtotal < discount.minOrderAmount) {
+    throw new BadRequestException(
+      `Đơn hàng tối thiểu ${discount.minOrderAmount.toLocaleString('vi-VN')}đ để sử dụng mã này`,
+    );
+  }
+
   return true;
 }
 

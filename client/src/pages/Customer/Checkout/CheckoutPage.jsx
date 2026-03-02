@@ -106,8 +106,35 @@ const CheckoutPage = () => {
     }, 0);
   }, [cartItems, discountMap]);
 
+  // Subtotal gốc (cần cho best-wins comparison)
+  const originalSubtotal = useMemo(() => {
+    return cartItems.reduce((sum, item) => {
+      const price = item.product?.variant?.price || item.price || 0;
+      return sum + price * item.quantity;
+    }, 0);
+  }, [cartItems]);
+
+  // Tiết kiệm từ manual code (tính trên giá gốc)
+  const manualCodeSaving = useMemo(() => {
+    if (!appliedDiscount) return 0;
+    let saving = 0;
+    if (appliedDiscount.discountType === 'PERCENTAGE') {
+      saving = Math.round(originalSubtotal * appliedDiscount.discountValue / 100);
+      if (appliedDiscount.maxDiscountAmount) saving = Math.min(saving, appliedDiscount.maxDiscountAmount);
+    } else if (appliedDiscount.discountType === 'FIXED') {
+      saving = appliedDiscount.discountValue;
+    }
+    return Math.min(saving, originalSubtotal);
+  }, [appliedDiscount, originalSubtotal]);
+
+  // Best-wins: chọn cái giảm nhiều hơn, không stack
+  const autoApplyWins = flashSaleDiscount >= manualCodeSaving;
+  const effectiveCartItems = autoApplyWins ? adjustedCartItems : cartItems;
+  const effectiveDiscount = autoApplyWins ? null : appliedDiscount;
+  const effectiveFlashSaving = autoApplyWins ? flashSaleDiscount : 0;
+
   const { subtotal, shipping, discount, total, itemCount } =
-    useCheckoutCalculations(adjustedCartItems, appliedDiscount);
+    useCheckoutCalculations(effectiveCartItems, effectiveDiscount);
 
   const { submitting, handleSubmitOrder: submitOrder } = useCheckoutSubmit(user);
 
@@ -136,7 +163,7 @@ const CheckoutPage = () => {
   };
 
   const onSubmitOrder = () => {
-    submitOrder(cartItems, shippingInfo, paymentMethod, agreedToTerms, appliedDiscount, shipping);
+    submitOrder(cartItems, shippingInfo, paymentMethod, agreedToTerms, effectiveDiscount, shipping);
   };
 
   if (cartItems.length === 0) {
@@ -220,9 +247,9 @@ const CheckoutPage = () => {
           <div className="lg:col-span-1">
             <div className="sticky top-24">
               <OrderSummary
-                cartItems={adjustedCartItems}
+                cartItems={effectiveCartItems}
                 originalCartItems={cartItems}
-                flashSaleDiscount={flashSaleDiscount}
+                flashSaleDiscount={effectiveFlashSaving}
                 subtotal={subtotal}
                 shipping={shipping}
                 discount={discount}

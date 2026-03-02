@@ -180,14 +180,17 @@ export class DiscountRepository {
     return { ...flashSale, products: orderedProducts };
   }
 
-  /** Tìm discount đang active áp dụng cho 1 sản phẩm cụ thể (flash hoặc thường) */
+  /** Tìm discount tốt nhất đang active áp dụng cho 1 sản phẩm cụ thể (flash hoặc thường) */
   async findDiscountForProduct(productId: number) {
     const now = new Date();
-    const discount = await this.prisma.discount.findFirst({
+    // Lấy TẤT CẢ discount active, lọc theo product ngay trong WHERE
+    // rồi lấy cái tốt nhất theo thứ tự ưu tiên: flash sale → % cao nhất → fixedAmount cao nhất
+    const discounts = await this.prisma.discount.findMany({
       where: {
         isActive: true,
         startDate: { lte: now },
         OR: [{ endDate: null }, { endDate: { gte: now } }],
+        applicableToProducts: { has: productId },
       },
       select: {
         id: true,
@@ -200,19 +203,13 @@ export class DiscountRepository {
         applicableToProducts: true,
       },
       orderBy: [
-        { isFlashSale: 'desc' }, // ưu tiên flash sale trước
-        { percentage: 'desc' },  // rồi % giảm cao nhất
+        { percentage: 'desc' },   // % giảm cao nhất ưu tiên trước
+        { fixedAmount: 'desc' },  // rồi đến giảm tiền cố định cao nhất
+        { isFlashSale: 'desc' },  // flash sale làm tiebreaker nếu ngang nhau
       ],
     });
 
-    if (!discount) return null;
-
-    // Chỉ tự áp dụng khi sản phẩm được chọn rõ ràng
-    if (!discount.applicableToProducts.includes(productId)) {
-      return null;
-    }
-
-    return discount;
+    return discounts[0] ?? null;
   }
 
   /** Tất cả discount active có danh sách sản phẩm cụ thể (dùng cho bulk map) */
@@ -234,8 +231,9 @@ export class DiscountRepository {
         applicableToProducts: true,
       },
       orderBy: [
-        { isFlashSale: 'desc' },
-        { percentage: 'desc' },
+        { percentage: 'desc' },   // % giảm cao nhất ưu tiên trước
+        { fixedAmount: 'desc' },  // rồi đến giảm tiền cố định cao nhất
+        { isFlashSale: 'desc' },  // flash sale làm tiebreaker nếu ngang nhau
       ],
     });
   }
