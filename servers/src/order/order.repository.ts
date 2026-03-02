@@ -187,6 +187,71 @@ export class OrderRepository {
   }
 
   /**
+   * Tính giá sau auto-apply discount (flash sale / per-product) cho từng variantId.
+   * Trả về Map<variantId, giá đã giảm> — chỉ chứa những variant CÓ discount.
+   */
+  async findAutoApplyPricesForVariants(variantIds: number[]): Promise<Map<number, number>> {
+    const now = new Date();
+
+    // Lấy productId + price cho từng variant
+    const variants = await this.prisma.productVariant.findMany({
+      where: { id: { in: variantIds } },
+      select: { id: true, productId: true, price: true },
+    });
+
+    const productIds = [...new Set(variants.map((v) => v.productId))];
+
+    // Lấy tất cả discount active có applicableToProducts
+    const discounts = await this.prisma.discount.findMany({
+      where: {
+        isActive: true,
+        startDate: { lte: now },
+        OR: [{ endDate: null }, { endDate: { gte: now } }],
+      },
+      select: {
+        percentage: true,
+        fixedAmount: true,
+        isFlashSale: true,
+        applicableToProducts: true,
+      },
+      orderBy: [
+        { percentage: 'desc' },   // % giảm cao nhất ưu tiên trước
+        { fixedAmount: 'desc' },  // rồi đến giảm tiền cố định cao nhất
+        { isFlashSale: 'desc' },  // flash sale làm tiebreaker nếu ngang nhau
+      ],
+    });
+
+    // productId → discount tốt nhất (first-win do đã sort)
+    const productDiscountMap = new Map<number, { percentage: number | null; fixedAmount: number | null }>();
+    for (const d of discounts) {
+      for (const pid of d.applicableToProducts) {
+        if (productIds.includes(pid) && !productDiscountMap.has(pid)) {
+          productDiscountMap.set(pid, {
+            percentage: d.percentage,
+            fixedAmount: d.fixedAmount,
+          });
+        }
+      }
+    }
+
+    // variantId → giá sau giảm
+    const result = new Map<number, number>();
+    for (const v of variants) {
+      const d = productDiscountMap.get(v.productId);
+      if (!d) continue;
+      let discountedPrice = v.price;
+      if (d.percentage) {
+        discountedPrice = Math.round(v.price * (1 - d.percentage / 100));
+      } else if (d.fixedAmount) {
+        discountedPrice = Math.max(0, v.price - d.fixedAmount);
+      }
+      result.set(v.id, discountedPrice);
+    }
+
+    return result;
+  }
+
+  /**
    * Find discount by code
    */
   async findDiscountByCode(code: string) {

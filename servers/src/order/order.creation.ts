@@ -27,15 +27,52 @@ export class OrderCreation {
     const itemsToOrder = await this.getItemsToOrder(userId, dto);
     this.logger.log('✅ Items to order prepared', itemsToOrder);
 
-    // Validate and get discount
-    const discount = await this.validateDiscount(dto.discountCode);
+    // Apply per-item auto-apply discounts (flash sale / product-specific)
+    const variantIds = itemsToOrder.map((i) => i.variantId);
+    const autoDiscountPriceMap = await this.repository.findAutoApplyPricesForVariants(variantIds);
+    const itemsWithDiscounts = itemsToOrder.map((item) => ({
+      ...item,
+      price: autoDiscountPriceMap.get(item.variantId) ?? item.price,
+    }));
+    if (autoDiscountPriceMap.size > 0) {
+      this.logger.log('💡 Auto-apply discounts applied to items:', Object.fromEntries(autoDiscountPriceMap));
+    }
+
+    // So sánh auto-apply saving vs manual code saving — chọn cái mang lại lợi ích cao hơn (không stack)
+    const originalSubtotal = itemsToOrder.reduce((sum, i) => sum + i.price * i.quantity, 0);
+    const autoApplySubtotal = itemsWithDiscounts.reduce((sum, i) => sum + i.price * i.quantity, 0);
+    const autoApplySaving = originalSubtotal - autoApplySubtotal;
+
+    // Validate manual code dựa trên giá gốc (minOrderAmount so với original subtotal)
+    const discount = await this.validateDiscount(dto.discountCode, originalSubtotal);
+
+    // Tính tiết kiệm từ manual code áp lên original subtotal
+    let manualCodeSaving = 0;
+    if (discount) {
+      if (discount.percentage) {
+        manualCodeSaving = Math.round(originalSubtotal * discount.percentage / 100);
+      } else if (discount.fixedAmount) {
+        manualCodeSaving = discount.fixedAmount;
+      }
+      if (discount.maxDiscountAmount && manualCodeSaving > discount.maxDiscountAmount) {
+        manualCodeSaving = discount.maxDiscountAmount;
+      }
+      manualCodeSaving = Math.min(manualCodeSaving, originalSubtotal);
+    }
+
+    // Best-wins: dùng auto-apply nếu tiết kiệm nhiều hơn hoặc bằng manual code
+    const useAutoApply = autoApplySaving >= manualCodeSaving;
+    const finalItems = useAutoApply ? itemsWithDiscounts : itemsToOrder;
+    const finalDiscount = useAutoApply ? null : discount;
+    this.logger.log(`💡 Discount decision: autoApply=${autoApplySaving}, manualCode=${manualCodeSaving}, using=${useAutoApply ? 'AUTO-APPLY' : 'MANUAL-CODE'}`);
 
     // Calculate totals
-    const discountData = discount ? {
-      percentage: discount.percentage || undefined,
-      fixedAmount: discount.fixedAmount || undefined
+    const discountData = finalDiscount ? {
+      percentage: finalDiscount.percentage || undefined,
+      fixedAmount: finalDiscount.fixedAmount || undefined,
+      maxDiscountAmount: finalDiscount.maxDiscountAmount || undefined,
     } : undefined;
-    const totals = OrderHelper.calculateOrderTotal(itemsToOrder, dto.shippingFee, discountData);
+    const totals = OrderHelper.calculateOrderTotal(finalItems, dto.shippingFee, discountData);
     this.logger.log('💰 Order totals calculated', totals);
 
     // Generate order code
@@ -49,13 +86,13 @@ export class OrderCreation {
       orderCode, 
       userId, 
       dto, 
-      itemsToOrder, 
+      finalItems, 
       totals.discountedTotal, 
-      discount
+      finalDiscount
     );
 
     // Create order with atomic stock check + decrement (prevents overselling)
-    const order = await this.repository.createOrderTransactional(orderData, itemsToOrder) as any;
+    const order = await this.repository.createOrderTransactional(orderData, finalItems) as any;
     this.logger.log('✅ Order created with ID:', order.id);
     this.logger.log('📧 Guest email for order:', order.guestEmail);
     this.logger.log('👤 User email for order:', order.user?.email);
@@ -132,7 +169,7 @@ export class OrderCreation {
     }));
   }
 
-  private async validateDiscount(discountCode?: string) {
+  private async validateDiscount(discountCode?: string, subtotal?: number) {
     if (!discountCode) {
       this.logger.log('⚠️ No discount code provided');
       return null;
@@ -140,14 +177,24 @@ export class OrderCreation {
 
     this.logger.log('🏷️ Validating discount code:', discountCode);
     const discount = await this.repository.findDiscountByCode(discountCode);
-    
+
     if (!discount) {
       throw new BadRequestException('Mã giảm giá không tồn tại');
     }
-    
-    OrderHelper.validateDiscount(discount);
-    this.logger.log('✅ Discount valid:', { percentage: discount.percentage, fixedAmount: discount.fixedAmount });
-    
+
+    // Flash sale chỉ áp tự động theo product, không dùng qua mã thủ công
+    if (discount.isFlashSale) {
+      throw new BadRequestException('Mã Flash Sale đã được áp dụng tự động, không cần nhập thêm');
+    }
+
+    // Validate đầy đủ: isActive, startDate, endDate, minOrderAmount
+    OrderHelper.validateDiscount(discount, subtotal);
+    this.logger.log('✅ Discount valid:', {
+      percentage: discount.percentage,
+      fixedAmount: discount.fixedAmount,
+      maxDiscountAmount: discount.maxDiscountAmount,
+    });
+
     return discount;
   }
 

@@ -121,7 +121,7 @@ export class DiscountService {
   /** Map productId → discount tốt nhất (dùng cho card sản phẩm) */
   async getAutoApplyMap() {
     const discounts = await this.repository.findAllAutoApply();
-    // Mỗi productId chỉ giữ 1 discount tốt nhất (flash ưu tiên, sau đó % cao hơn)
+    // Mỗi productId chỉ giữ 1 discount tốt nhất (% cao nhất ưu tiên, flash sale làm tiebreaker)
     const map: Record<number, object> = {};
     for (const d of discounts) {
       for (const pid of d.applicableToProducts) {
@@ -231,6 +231,8 @@ export class DiscountService {
         description: discount.description,
         discountType: discount.percentage ? 'PERCENTAGE' : 'FIXED',
         discountValue: discount.percentage || discount.fixedAmount,
+        minOrderAmount: discount.minOrderAmount,
+        maxDiscountAmount: discount.maxDiscountAmount,
       },
     };
   }
