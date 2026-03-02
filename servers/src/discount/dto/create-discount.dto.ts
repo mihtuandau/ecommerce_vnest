@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsNumber, IsDateString, Min, Max } from 'class-validator';
+import { IsString, IsOptional, IsNumber, IsArray, IsDateString, IsBoolean, Min, Max } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateDiscountDto {
@@ -15,6 +15,17 @@ export class CreateDiscountDto {
   @IsOptional()
   @IsString()
   image?: string;
+
+  @ApiProperty({ example: false, description: 'Đây có phải Flash Sale không', required: false })
+  @IsOptional()
+  @IsBoolean()
+  isFlashSale?: boolean;
+
+  @ApiProperty({ example: [1, 2, 3], description: 'Danh sách ID sản phẩm gán vào Flash Sale', required: false })
+  @IsOptional()
+  @IsArray()
+  @IsNumber({}, { each: true })
+  applicableToProducts?: number[];
 
   @ApiProperty({ example: 10, description: 'Phần trăm giảm giá (0-100)', required: false })
   @IsOptional()

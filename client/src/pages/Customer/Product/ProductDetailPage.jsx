@@ -6,6 +6,7 @@ import Breadcrumb from '../../../components/common/Breadcrumb';
 import { ProductImageGallery, ProductDetails } from '../../../components/products/ProductDetail';
 import { ProductTabs } from '../../../components/productdetail';
 import { productService } from '../../../services/productService';
+import apiService from '../../../services/apiService';
 import { useCart } from '../../../hooks/useCart';
 import { useAuth } from '../../../hooks/useAuth';
 import ProductRecommendations from '../../../components/products/ProductRecommendations';
@@ -24,6 +25,7 @@ const ProductDetailPage = () => {
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
   const [activeTab, setActiveTab] = useState('description');
+  const [flashSale, setFlashSale] = useState(null);
 
   // Guard chống React StrictMode double-invoke: chỉ tăng viewCount 1 lần mỗi id
   const viewedIdRef = useRef(null);
@@ -32,6 +34,14 @@ const ProductDetailPage = () => {
     loadProduct();
     // Reset khi đổi sản phẩm
     viewedIdRef.current = null;
+    setFlashSale(null);
+  }, [id]);
+
+  useEffect(() => {
+    if (!id) return;
+    apiService.get(`/discounts/product/${id}`)
+      .then((res) => setFlashSale(res?.data ?? res ?? null))
+      .catch(() => {});
   }, [id]);
 
   useEffect(() => {
@@ -175,6 +185,15 @@ const ProductDetailPage = () => {
   const currentPrice = selectedVariant?.price || product?.basePrice || product?.price;
   const originalPrice = product?.originalPrice;
 
+  // Nếu có flash sale áp dụng cho sản phẩm này → tính giá sau giảm
+  const flashPrice = flashSale
+    ? flashSale.percentage
+      ? Math.round(currentPrice * (1 - flashSale.percentage / 100))
+      : flashSale.fixedAmount
+        ? Math.max(0, currentPrice - flashSale.fixedAmount)
+        : null
+    : null;
+
   if (loading) {
     return (
       <Layout>
@@ -218,8 +237,9 @@ const ProductDetailPage = () => {
 
               <ProductDetails
                 product={product}
-                currentPrice={currentPrice}
-                originalPrice={originalPrice}
+                currentPrice={flashPrice ?? currentPrice}
+                originalPrice={flashPrice ? currentPrice : originalPrice}
+                flashSale={flashSale}
                 selectedSize={selectedSize}
                 selectedColor={selectedColor}
                 selectedVariant={selectedVariant}

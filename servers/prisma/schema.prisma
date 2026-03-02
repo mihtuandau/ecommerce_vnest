@@ -197,7 +197,9 @@ model Discount {
   usageLimit             Int? // Giới hạn số lần sử dụng
   usageCount             Int       @default(0) // Đã sử dụng bao nhiêu lần
   isActive               Boolean   @default(true)
+  isFlashSale            Boolean   @default(false) // Đây có phải flash sale không
   applicableToCategories Int[]     @default([]) // Áp dụng cho categories nào
+  applicableToProducts   Int[]     @default([]) // Gán sản phẩm cụ thể vào flash sale
   startDate              DateTime
   endDate                DateTime?
   orders                 Order[]
@@ -206,6 +208,7 @@ model Discount {
 
   @@index([code])
   @@index([isActive])
+  @@index([isFlashSale])
   @@index([startDate, endDate])
 }
 

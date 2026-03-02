@@ -1,5 +1,5 @@
 import { Table, Tag, Button, Space, Tooltip, Typography } from 'antd';
-import { EditOutlined, DeleteOutlined, EyeOutlined, TagOutlined } from '@ant-design/icons';
+import { EditOutlined, DeleteOutlined, EyeOutlined, TagOutlined, ThunderboltOutlined } from '@ant-design/icons';
 import {
   formatDateShort,
   getStatusVariant,
@@ -70,6 +70,28 @@ const DiscountTable = ({ discounts, loading, onSort, onView, onEdit, onDelete })
       key: 'usageCount',
       sorter: true,
       render: (usageCount) => usageCount || 0,
+    },
+    {
+      title: 'Flash Sale',
+      key: 'isFlashSale',
+      width: 120,
+      align: 'center',
+      render: (_, record) =>
+        record.isFlashSale ? (
+          <Tooltip
+            title={
+              record.applicableToProducts?.length > 0
+                ? `${record.applicableToProducts.length} sản phẩm được gán`
+                : record.applicableToCategories?.length > 0
+                ? `${record.applicableToCategories.length} danh mục`
+                : 'Hiển thị sản phẩm bán chạy'
+            }
+          >
+            <Tag icon={<ThunderboltOutlined />} color="volcano">
+              LIVE{record.applicableToProducts?.length > 0 ? ` · ${record.applicableToProducts.length} SP` : ''}
+            </Tag>
+          </Tooltip>
+        ) : null,
     },
     {
       title: 'Trạng thái',

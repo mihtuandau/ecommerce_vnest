@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { FaHeart, FaEye } from 'react-icons/fa';
+import { Zap } from 'lucide-react';
 
 const formatViewCount = (n) => {
   if (!n) return '0';
@@ -13,9 +14,11 @@ import StarRating from '../common/StarRating';
 import { formatPrice, calculateDiscountPercent } from '../../utils/formatters';
 import wishlistService from '../../services/wishlistService';
 import { useAuth } from '../../hooks/useAuth';
+import { useAutoApplyDiscounts } from '../../hooks/useFlashSale';
 
 const ProductCard = ({ product, viewMode = 'grid-4' }) => {
   const { user } = useAuth();
+  const { discountMap } = useAutoApplyDiscounts();
   const [isInWishlist, setIsInWishlist] = useState(false);
   const {
     id,
@@ -70,6 +73,25 @@ const ProductCard = ({ product, viewMode = 'grid-4' }) => {
   const productPrice = useMemo(() => getLowestPrice(), [getLowestPrice]);
   const productOriginalPrice = originalPrice;
   const discountPercent = calculateDiscountPercent(productOriginalPrice, productPrice) || discount || 0;
+
+  // Auto-apply discount check từ map (cả flash sale và discount thường)
+  const productDiscount = discountMap[Number(id)] || null;
+  const isInFlashSale = Boolean(productDiscount);
+  const flashSalePercent = productDiscount?.percentage || null;
+
+  const flashSalePrice = useMemo(() => {
+    if (!productDiscount) return null;
+    if (productDiscount.percentage) {
+      return Math.round(productPrice * (1 - productDiscount.percentage / 100));
+    }
+    if (productDiscount.fixedAmount) {
+      return Math.max(0, productPrice - productDiscount.fixedAmount);
+    }
+    return null;
+  }, [productDiscount, productPrice]);
+
+  const displayPrice = flashSalePrice ?? productPrice;
+  const displayOriginalPrice = flashSalePrice ? productPrice : productOriginalPrice;
   const variantId = availableVariant?.id || product.variants?.[0]?.id;
   const hasStock = availableVariant && availableVariant.stock > 0;
 
@@ -114,7 +136,14 @@ const ProductCard = ({ product, viewMode = 'grid-4' }) => {
 
   return (
     <div className={`group relative bg-white border border-gray-200 transition-all duration-300 overflow-hidden flex flex-col h-full ${isList ? 'flex-row min-h-[280px]' : ''}`}>
-      {(badge || discountPercent > 0) && (
+      {isInFlashSale ? (
+        <div className={`absolute top-3 left-3 z-10 ${isList ? 'top-2 left-2' : ''}`}>
+          <span className={`flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-white ${productDiscount?.isFlashSale ? 'bg-red-500' : 'bg-[#00a85a]'} ${isList ? 'px-2 py-0.5 text-[10px]' : ''}`}>
+            <Zap size={10} className="fill-white" />
+            {productDiscount?.isFlashSale ? 'FLASH SALE' : 'KM'}{flashSalePercent ? ` -${flashSalePercent}%` : ''}
+          </span>
+        </div>
+      ) : (badge || discountPercent > 0) && (
         <div className={`absolute top-3 left-3 z-10 ${isList ? 'top-2 left-2' : ''}`}>
           <span className={`px-2.5 py-1 text-xs font-normal bg-[#00a85a] text-white ${isList ? 'px-2 py-0.5 text-[10px]' : ''}`}>
             {badge || `-${discountPercent}%`}
@@ -192,12 +221,12 @@ const ProductCard = ({ product, viewMode = 'grid-4' }) => {
         </div>
 
         <div className={`flex items-baseline gap-3 ${isList ? 'mb-6' : 'flex-wrap'} ${minHeightPrice}`}>
-          <span className={priceClass}>
-            {formatPrice(productPrice)}
+          <span className={`${priceClass} ${isInFlashSale ? 'text-red-500' : ''}`}>
+            {formatPrice(displayPrice)}
           </span>
-          {productOriginalPrice && productOriginalPrice > productPrice ? (
+          {displayOriginalPrice && displayOriginalPrice > displayPrice ? (
             <span className={`${originalPriceClass} font-light text-gray-400 line-through`}>
-              {formatPrice(productOriginalPrice)}
+              {formatPrice(displayOriginalPrice)}
             </span>
           ) : (
             !isList && <span className={`${originalPriceClass} invisible`}>000.000 ₫</span>

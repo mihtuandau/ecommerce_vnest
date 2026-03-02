@@ -11,8 +11,9 @@ import CartItemsList from '../../../components/cart/CartItemsList';
 import CartSummary from '../../../components/cart/CartSummary';
 import { useAuth } from '../../../hooks/useAuth';
 import { useCart } from '../../../hooks/useCart';
+import { useAutoApplyDiscounts } from '../../../hooks/useFlashSale';
 import { notify } from '../../../utils/notification';
-import { formatPrice } from '../../../utils/formatters';
+import { formatPrice, computeDiscountFromMap } from '../../../utils/formatters';
 
 const { confirm } = Modal;
 
@@ -29,6 +30,7 @@ const CartPage = () => {
     removeFromCart,
     clearCart 
   } = useCart();
+  const { discountMap } = useAutoApplyDiscounts();
   
   const [selectedItems, setSelectedItems] = useState(new Set());
   useEffect(() => {
@@ -41,10 +43,11 @@ const CartPage = () => {
     return cartItems
       .filter(item => selectedItems.has(item.variantId))
       .reduce((sum, item) => {
-        const price = item.product?.variant?.price || 0;
+        const originalPrice = item.product?.variant?.price || 0;
+        const price = computeDiscountFromMap(item.product?.id, originalPrice, discountMap);
         return sum + (price * item.quantity);
       }, 0);
-  }, [cartItems, selectedItems]);
+  }, [cartItems, selectedItems, discountMap]);
   
   const selectedCount = selectedItems.size;
 
@@ -176,6 +179,7 @@ const CartPage = () => {
                 onRemove={handleRemoveItem}
                 onClearAll={handleClearCart}
                 formatPrice={formatPrice}
+                discountMap={discountMap}
               />
 
               <Divider />

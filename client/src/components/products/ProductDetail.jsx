@@ -184,6 +184,7 @@ export const ProductDetails = ({
   product,
   currentPrice,
   originalPrice,
+  flashSale,
   selectedSize,
   selectedColor,
   quantity,
@@ -207,7 +208,8 @@ export const ProductDetails = ({
       <ProductPrice 
         currentPrice={currentPrice} 
         originalPrice={originalPrice} 
-        product={product} 
+        product={product}
+        flashSale={flashSale}
       />
 
       <ProductOptions

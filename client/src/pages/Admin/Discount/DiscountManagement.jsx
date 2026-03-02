@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Plus, RefreshCw } from 'lucide-react';
 import { notify } from '../../../utils/notification';
 import Button from '../../../components/common/Button';
@@ -6,25 +7,21 @@ import Pagination from '../../../components/common/Pagination';
 import DiscountStatsCards from '../../../components/admin/Discount/DiscountStatsCards';
 import DiscountFilters from '../../../components/admin/Discount/DiscountFilters';
 import DiscountTable from '../../../components/admin/Discount/DiscountTable';
-import DiscountModal from '../../../components/admin/Discount/DiscountModal';
 import DiscountDetailModal from '../../../components/admin/Discount/DiscountDetailModal';
 import { 
   useDiscounts, 
-  useCreateDiscount, 
-  useUpdateDiscount, 
   useDeleteDiscount 
 } from '../../../hooks/useDiscounts';
 import Loading from '../../../components/common/Loading';
 
 const DiscountManagement = () => {
+  const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedDiscount, setSelectedDiscount] = useState(null);
 
@@ -40,8 +37,6 @@ const DiscountManagement = () => {
     sortDir: sortConfig.direction
   });
 
-  const createMutation = useCreateDiscount();
-  const updateMutation = useUpdateDiscount();
   const deleteMutation = useDeleteDiscount();
 
   const paginatedDiscounts = useMemo(() => {
@@ -56,26 +51,6 @@ const DiscountManagement = () => {
       key,
       direction: prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc',
     }));
-  };
-
-  const handleCreate = async (data) => {
-    try {
-      await createMutation.mutateAsync(data);
-      handleCloseModals();
-    } catch (error) {
-      notify.error(error.response?.data?.message || 'Không thể tạo mã giảm giá');
-      throw error;
-    }
-  };
-
-  const handleUpdate = async (data) => {
-    try {
-      await updateMutation.mutateAsync({ id: selectedDiscount.id, data });
-      handleCloseModals();
-    } catch (error) {
-      notify.error(error.response?.data?.message || 'Không thể cập nhật mã giảm giá');
-      throw error;
-    }
   };
 
   const handleDelete = async (discount) => {
@@ -101,13 +76,10 @@ const DiscountManagement = () => {
   };
 
   const handleEdit = (discount) => {
-    setSelectedDiscount(discount);
-    setShowEditModal(true);
+    navigate(`/admin-discounts/edit/${discount.id}`, { state: { discount } });
   };
 
   const handleCloseModals = () => {
-    setShowCreateModal(false);
-    setShowEditModal(false);
     setShowDetailModal(false);
     setSelectedDiscount(null);
   };
@@ -128,7 +100,7 @@ const DiscountManagement = () => {
             <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
             Làm mới
           </Button>
-          <Button onClick={() => setShowCreateModal(true)}>
+          <Button onClick={() => navigate('/admin-discounts/new')}>
             <Plus className="h-4 w-4 mr-2" />
             Tạo mã mới
           </Button>
@@ -164,19 +136,6 @@ const DiscountManagement = () => {
           />
         )}
       </div>
-
-      <DiscountModal
-        isOpen={showCreateModal}
-        onClose={handleCloseModals}
-        onSubmit={handleCreate}
-      />
-
-      <DiscountModal
-        isOpen={showEditModal}
-        onClose={handleCloseModals}
-        discount={selectedDiscount}
-        onSubmit={handleUpdate}
-      />
 
       <DiscountDetailModal
         isOpen={showDetailModal}
