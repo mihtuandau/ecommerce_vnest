@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom';
 import { FaTrash, FaMinus, FaPlus, FaTimes } from 'react-icons/fa';
+import { Zap } from 'lucide-react';
 import { useRef, useEffect } from 'react';
 
 const CartItem = ({ groupedProduct, selectedItems, onToggleItem, onUpdateQuantity, onRemove, onRemoveAll, formatPrice }) => {
-  const { productId, productName, productImage, variants, totalQuantity, totalPrice } = groupedProduct;
+  const { productId, productName, productImage, variants, totalQuantity, totalPrice, hasFlashSale } = groupedProduct;
   
   // Refs cho checkbox
   const checkboxRef = useRef(null);
@@ -78,7 +79,7 @@ const CartItem = ({ groupedProduct, selectedItems, onToggleItem, onUpdateQuantit
         
         <Link
           to={`/products/${productId}`}
-          className="flex-shrink-0 w-20 h-20 bg-gray-100 overflow-hidden"
+          className="flex-shrink-0 w-20 h-20 bg-gray-100 overflow-hidden relative"
           aria-label={`Xem chi tiết ${productName}`}
         >
           <img
@@ -91,6 +92,11 @@ const CartItem = ({ groupedProduct, selectedItems, onToggleItem, onUpdateQuantit
             }}
             loading="lazy"
           />
+          {hasFlashSale && (
+            <span className="absolute top-0 left-0 bg-red-500 text-white text-[9px] font-semibold px-1 py-0.5 flex items-center gap-0.5">
+              <Zap size={8} className="fill-white" /> SALE
+            </span>
+          )}
         </Link>
 
         <div className="flex-1 min-w-0">
@@ -191,13 +197,26 @@ const CartItem = ({ groupedProduct, selectedItems, onToggleItem, onUpdateQuantit
 
                     {/* Price */}
                     <div className="text-right flex-1">
-                      <span className="text-base font-bold text-gray-900 block">
-                        {formatPrice(variant.price * variant.quantity)}
-                      </span>
-                      {variant.quantity > 1 && (
-                        <span className="text-xs text-gray-500">
-                          {formatPrice(variant.price)} × {variant.quantity}
-                        </span>
+                      {variant.flashPrice ? (
+                        <>
+                          <span className="text-base font-bold text-red-500 block">
+                            {formatPrice(variant.flashPrice * variant.quantity)}
+                          </span>
+                          <span className="text-xs text-gray-400 line-through">
+                            {formatPrice(variant.price * variant.quantity)}
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <span className="text-base font-bold text-gray-900 block">
+                            {formatPrice(variant.price * variant.quantity)}
+                          </span>
+                          {variant.quantity > 1 && (
+                            <span className="text-xs text-gray-500">
+                              {formatPrice(variant.price)} × {variant.quantity}
+                            </span>
+                          )}
+                        </>
                       )}
                     </div>
 

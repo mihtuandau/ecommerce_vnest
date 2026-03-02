@@ -7,7 +7,7 @@ import {
   getStatusText,
   getDiscountTypeText,
 } from '../../../utils/discountHelpers';
-import { Calendar, Tag, TrendingUp, Clock } from 'lucide-react';
+import { Calendar, Tag, TrendingUp, Clock, Zap, Package } from 'lucide-react';
 
 const DiscountDetailModal = ({ isOpen, onClose, discount }) => {
   if (!discount) return null;
@@ -82,6 +82,32 @@ const DiscountDetailModal = ({ isOpen, onClose, discount }) => {
             </div>
           </div>
         </div>
+
+        {/* Flash Sale info */}
+        {discount.isFlashSale && (
+          <div className="bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200 rounded-xl p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-7 h-7 bg-orange-400 rounded-lg flex items-center justify-center">
+                <Zap size={14} className="text-white fill-white" />
+              </div>
+              <span className="text-sm font-semibold text-orange-700">Flash Sale đang cài đặt</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <Package size={14} className="text-orange-500" />
+              {discount.applicableToProducts?.length > 0 ? (
+                <span>
+                  Gán <strong className="text-orange-700">{discount.applicableToProducts.length}</strong> sản phẩm cụ thể
+                </span>
+              ) : discount.applicableToCategories?.length > 0 ? (
+                <span>
+                  Áp dụng theo <strong className="text-orange-700">{discount.applicableToCategories.length}</strong> danh mục
+                </span>
+              ) : (
+                <span>Hiển thị sản phẩm bán chạy nhất</span>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Metadata */}
         <div className="pt-4 border-t text-xs text-gray-500 space-y-1">

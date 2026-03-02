@@ -11,6 +11,17 @@ const discountService = {
     const response = await apiService.get(DISCOUNT_ENDPOINTS.BY_ID(id));
     return response;
   },
+
+  getFlashSale: async () => {
+    const response = await apiService.get(DISCOUNT_ENDPOINTS.FLASH_SALE);
+    return response;
+  },
+
+  getAutoApply: async () => {
+    const response = await apiService.get(DISCOUNT_ENDPOINTS.AUTO_APPLY);
+    return response;
+  },
+
   createDiscount: async (data) => {
     const response = await apiService.post(DISCOUNT_ENDPOINTS.BASE, data);
     return response;

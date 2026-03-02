@@ -8,6 +8,8 @@ import Input from '../common/Input';
 
 const OrderSummary = ({
   cartItems,
+  originalCartItems,
+  flashSaleDiscount,
   subtotal,
   shipping,
   discount,
@@ -33,7 +35,7 @@ const OrderSummary = ({
         <h2 className="text-lg font-normal text-gray-900">Đơn Hàng</h2>
       </div>
 
-      <CartItemsList cartItems={cartItems} />
+      <CartItemsList cartItems={cartItems} originalCartItems={originalCartItems} />
 
       <DiscountCodeSection
         discountCode={discountCode}
@@ -49,6 +51,7 @@ const OrderSummary = ({
         subtotal={subtotal}
         shipping={shipping}
         discount={discount}
+        flashSaleDiscount={flashSaleDiscount}
         total={total}
       />
 

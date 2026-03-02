@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import CartItem from './CartItem';
+import { computeDiscountFromMap } from '../../utils/formatters';
 
 const getProductImage = (item) => {
   return item.product?.image || 
@@ -18,7 +19,7 @@ const createVariant = (item) => ({
 
 const ITEMS_PER_PAGE = 5;
 
-const CartItemsList = ({ items, count, selectedItems, onToggleItem, onToggleAll, onUpdateQuantity, onRemove, onClearAll, formatPrice }) => {
+const CartItemsList = ({ items, count, selectedItems, onToggleItem, onToggleAll, onUpdateQuantity, onRemove, onClearAll, formatPrice, discountMap }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const allSelected = items.length > 0 && selectedItems.size === items.length;
   
@@ -36,18 +37,34 @@ const CartItemsList = ({ items, count, selectedItems, onToggleItem, onToggleAll,
           productImage: getProductImage(item),
           variants: [],
           totalQuantity: 0,
-          totalPrice: 0
+          totalPrice: 0,
+          hasFlashSale: false,
         };
       }
       
-      const variant = createVariant(item);
+      const originalPrice = item.product?.variant?.price || 0;
+      const flashPrice = computeDiscountFromMap(productId, originalPrice, discountMap);
+      const hasFlash = flashPrice !== originalPrice;
+      const productDiscount = discountMap?.[Number(productId)] || null;
+
+      const variant = {
+        variantId: item.variantId,
+        size: item.product?.variant?.size,
+        color: item.product?.variant?.color,
+        price: originalPrice,
+        flashPrice: hasFlash ? flashPrice : null,
+        isFlashSaleType: productDiscount?.isFlashSale || false,
+        stock: item.product?.variant?.stock || 999,
+        quantity: item.quantity,
+      };
       groups[productId].variants.push(variant);
       groups[productId].totalQuantity += item.quantity;
-      groups[productId].totalPrice += (variant.price * item.quantity);
+      groups[productId].totalPrice += ((hasFlash ? flashPrice : originalPrice) * item.quantity);
+      if (hasFlash) groups[productId].hasFlashSale = true;
     });
     
     return Object.values(groups);
-  }, [items]);
+  }, [items, discountMap]);
 
   const totalPages = Math.ceil(groupedProducts.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;

@@ -37,6 +37,21 @@ export class DiscountController {
     return this.discountService.getPublicDiscounts();
   }
 
+  @Get('flash-sale')
+  getFlashSale() {
+    return this.discountService.getFlashSale();
+  }
+
+  @Get('auto-apply')
+  getAutoApplyMap() {
+    return this.discountService.getAutoApplyMap();
+  }
+
+  @Get('product/:productId')
+  getProductDiscount(@Param('productId') productId: string) {
+    return this.discountService.getProductDiscount(+productId);
+  }
+
   @Get()
   findAll(@Query() query: QueryDiscountDto) {
     return this.discountService.findAll(query);

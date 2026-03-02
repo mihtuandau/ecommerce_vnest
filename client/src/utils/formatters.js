@@ -106,3 +106,32 @@ export const getStockStatus = (stock) => {
     color: 'text-[#00a85a] bg-green-50 border-green-200'
   };
 };
+
+/**
+ * Tính giá sau khi áp dụng discount tự động từ map { productId: {percentage, fixedAmount} }.
+ * @param {number|string} productId
+ * @param {number} originalPrice
+ * @param {object} discountMap  - object từ useAutoApplyDiscounts()
+ * @returns {number}
+ */
+export const computeDiscountFromMap = (productId, originalPrice, discountMap) => {
+  if (!discountMap || !productId) return originalPrice;
+  const d = discountMap[Number(productId)];
+  if (!d) return originalPrice;
+  if (d.percentage) return Math.round(originalPrice * (1 - d.percentage / 100));
+  if (d.fixedAmount) return Math.max(0, originalPrice - d.fixedAmount);
+  return originalPrice;
+};
+
+/**
+ * Tính giá sau khi áp dụng flash sale cho một sản phẩm.
+ * @deprecated Dùng computeDiscountFromMap thay thế
+ */
+export const computeFlashPrice = (productId, originalPrice, flashSale) => {
+  if (!flashSale || !productId) return originalPrice;
+  const list = flashSale.applicableToProducts;
+  if (!list?.length || !list.includes(Number(productId))) return originalPrice;
+  if (flashSale.percentage) return Math.round(originalPrice * (1 - flashSale.percentage / 100));
+  if (flashSale.fixedAmount) return Math.max(0, originalPrice - flashSale.fixedAmount);
+  return originalPrice;
+};

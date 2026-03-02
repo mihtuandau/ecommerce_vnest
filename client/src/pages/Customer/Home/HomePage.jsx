@@ -7,6 +7,7 @@ import HeroBanner from "../../../components/home/HeroBanner";
 import FeaturedCategories from "../../../components/home/FeaturedCategories";
 import FeaturedProducts from "../../../components/home/FeaturedProducts";
 import BestSellingProducts from "../../../components/home/BestSellingProducts";
+import FlashSale from "../../../components/home/FlashSale";
 import PromoBanner from "../../../components/home/PromoBanner";
 import Loading from "../../../components/common/Loading";
 import WelcomeModal from "../../../components/common/WelcomeModal";
@@ -104,6 +105,7 @@ const HomePage = () => {
         <HeroBanner slides={homeData.banners || []} />
         <div className="">
           <FeaturedCategories categories={homeData.categories || []} />
+          <FlashSale />
           <BestSellingProducts products={homeData.bestSellers || []} />
           <FeaturedProducts products={homeData.featuredProducts || []} />
           <PromoBanner />

@@ -22,6 +22,16 @@ export class DiscountService {
       throw new BadRequestException('Mã giảm giá đã tồn tại');
     }
 
+    // Kiểm tra flash sale trùng lấp
+    if (createDiscountDto.isFlashSale) {
+      const activeFlash = await this.repository.findActiveFlashSale();
+      if (activeFlash) {
+        throw new BadRequestException(
+          `Đã có flash sale đang chạy: "${activeFlash.code}". Vô hiệu hóa hoặc xóa cái cũ trước rồi mới tạo mới.`,
+        );
+      }
+    }
+
     return this.repository.create({
       ...createDiscountDto,
       code: createDiscountDto.code.toUpperCase(),
@@ -93,6 +103,84 @@ export class DiscountService {
     return this.repository.findPublicActive();
   }
 
+  /** Discount (flash hoặc thường) áp dụng cho 1 sản phẩm cụ thể */
+  async getProductDiscount(productId: number) {
+    const discount = await this.repository.findDiscountForProduct(productId);
+    if (!discount) return null;
+    return {
+      id: discount.id,
+      code: discount.code,
+      percentage: discount.percentage,
+      fixedAmount: discount.fixedAmount,
+      endDate: discount.endDate,
+      description: discount.description,
+      isFlashSale: discount.isFlashSale,
+    };
+  }
+
+  /** Map productId → discount tốt nhất (dùng cho card sản phẩm) */
+  async getAutoApplyMap() {
+    const discounts = await this.repository.findAllAutoApply();
+    // Mỗi productId chỉ giữ 1 discount tốt nhất (flash ưu tiên, sau đó % cao hơn)
+    const map: Record<number, object> = {};
+    for (const d of discounts) {
+      for (const pid of d.applicableToProducts) {
+        if (!map[pid]) {
+          map[pid] = {
+            percentage: d.percentage,
+            fixedAmount: d.fixedAmount,
+            isFlashSale: d.isFlashSale,
+            endDate: d.endDate,
+          };
+        }
+      }
+    }
+    return map;
+  }
+
+  /** Flash Sale đang diễn ra */
+  async getFlashSale() {
+    const flashSale = await this.repository.findFlashSale();
+    if (!flashSale) return null;
+
+    // Format products giống với ProductService trả về
+    const formattedProducts = flashSale.products.map((p: any) => {
+      const thumbnail = p.images?.[0]?.url || null;
+      const lowestVariant = p.variants?.[0] || null;
+      const variantImage = lowestVariant?.images?.[0]?.url || null;
+
+      return {
+        id: p.id,
+        name: p.name,
+        slug: p.slug,
+        basePrice: p.basePrice,
+        originalPrice: p.basePrice,
+        price: lowestVariant?.price || p.basePrice,
+        image: variantImage || thumbnail,
+        soldCount: p.soldCount,
+        averageRating: p.averageRating,
+        reviewCount: p.reviewCount,
+        viewCount: p.viewCount,
+        variants: p.variants,
+      };
+    });
+
+    return {
+      id: flashSale.id,
+      code: flashSale.code,
+      description: flashSale.description,
+      image: flashSale.image,
+      percentage: flashSale.percentage,
+      fixedAmount: flashSale.fixedAmount,
+      minOrderAmount: flashSale.minOrderAmount,
+      maxDiscountAmount: flashSale.maxDiscountAmount,
+      startDate: flashSale.startDate,
+      endDate: flashSale.endDate,
+      applicableToProducts: flashSale.applicableToProducts,
+      products: formattedProducts,
+    };
+  }
+
   async validateDiscount(code: string) {
     const discount = await this.repository.findByCode(code);
 
@@ -100,6 +188,21 @@ export class DiscountService {
       return {
         isValid: false,
         message: 'Mã giảm giá không tồn tại',
+      };
+    }
+
+    // Flash sale được áp dụng tự động — không cho phép nhập mã thủ công
+    if (discount.isFlashSale) {
+      return {
+        isValid: false,
+        message: 'Mã này là Flash Sale và đã được áp dụng tự động vào sản phẩm, không cần nhập thêm.',
+      };
+    }
+
+    if (!discount.isActive) {
+      return {
+        isValid: false,
+        message: 'Mã giảm giá đã bị vô hiệu hóa.',
       };
     }
 
@@ -149,6 +252,19 @@ export class DiscountService {
     }
 
     const data: any = { ...updateDiscountDto };
+
+    // Kiểm tra flash sale trùng lấp khi bật isFlashSale
+    const becomingFlash =
+      updateDiscountDto.isFlashSale === true && !current.isFlashSale;
+    if (becomingFlash) {
+      const activeFlash = await this.repository.findActiveFlashSale(id);
+      if (activeFlash) {
+        throw new BadRequestException(
+          `Đã có flash sale đang chạy: "${activeFlash.code}". Vô hiệu hóa hoặc xóa cái cũ trước rồi mới chỉnh sửa.`,
+        );
+      }
+    }
+
     if (updateDiscountDto.code) {
       data.code = updateDiscountDto.code.toUpperCase();
     }

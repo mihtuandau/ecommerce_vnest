@@ -1,11 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Steps, Card, Divider, Button as AntButton, Modal as AntModal, Spin } from "antd";
 import { ArrowLeftOutlined, ShoppingOutlined, EnvironmentOutlined, CreditCardOutlined } from "@ant-design/icons";
 import { notify } from "../../../utils/notification";
+import { computeDiscountFromMap } from "../../../utils/formatters";
 import { useAuth } from "../../../contexts/AuthContext";
 import { useCart } from "../../../hooks/useCart";
+import { useAutoApplyDiscounts } from "../../../hooks/useFlashSale";
 import Loading from "../../../components/common/Loading";
 import Modal from "../../../components/common/Modal";
 import PageTitle from "../../../components/common/PageTitle";
@@ -25,6 +27,7 @@ const CheckoutPage = () => {
   const location = useLocation();
   const { user } = useAuth();
   const { addToCart } = useCart();
+  const { discountMap } = useAutoApplyDiscounts();
 
   const allCartItems = useSelector((state) => state.cart.items);
 
@@ -70,8 +73,41 @@ const CheckoutPage = () => {
     remove: handleRemoveDiscount,
   } = useDiscountCode();
 
+  // Áp dụng auto-apply discount vào giá từng item trước khi tính toán
+  const adjustedCartItems = useMemo(() => {
+    if (!discountMap || Object.keys(discountMap).length === 0) return cartItems;
+    return cartItems.map(item => {
+      const productId = item.product?.id || item.productId;
+      const originalPrice = item.product?.variant?.price || item.price || 0;
+      const flashPrice = computeDiscountFromMap(productId, originalPrice, discountMap);
+      if (flashPrice === originalPrice) return item;
+      return {
+        ...item,
+        product: {
+          ...item.product,
+          variant: {
+            ...(item.product?.variant || {}),
+            price: flashPrice,
+            originalPrice,
+          },
+        },
+      };
+    });
+  }, [cartItems, discountMap]);
+
+  // Tiết kiệm từ auto-apply discount
+  const flashSaleDiscount = useMemo(() => {
+    if (!discountMap || Object.keys(discountMap).length === 0) return 0;
+    return cartItems.reduce((sum, item) => {
+      const productId = item.product?.id || item.productId;
+      const originalPrice = item.product?.variant?.price || item.price || 0;
+      const flashPrice = computeDiscountFromMap(productId, originalPrice, discountMap);
+      return sum + ((originalPrice - flashPrice) * item.quantity);
+    }, 0);
+  }, [cartItems, discountMap]);
+
   const { subtotal, shipping, discount, total, itemCount } =
-    useCheckoutCalculations(cartItems, appliedDiscount);
+    useCheckoutCalculations(adjustedCartItems, appliedDiscount);
 
   const { submitting, handleSubmitOrder: submitOrder } = useCheckoutSubmit(user);
 
@@ -155,7 +191,7 @@ const CheckoutPage = () => {
                   <span>Thông tin giao hàng</span>
                 </div>
               }
-              bordered={false}
+              variant="borderless"
             >
               <ShippingForm
                 shippingInfo={shippingInfo}
@@ -172,7 +208,7 @@ const CheckoutPage = () => {
                   <span>Phương thức thanh toán</span>
                 </div>
               }
-              bordered={false}
+              variant="borderless"
             >
               <PaymentMethodSelector
                 paymentMethod={paymentMethod}
@@ -184,7 +220,9 @@ const CheckoutPage = () => {
           <div className="lg:col-span-1">
             <div className="sticky top-24">
               <OrderSummary
-                cartItems={cartItems}
+                cartItems={adjustedCartItems}
+                originalCartItems={cartItems}
+                flashSaleDiscount={flashSaleDiscount}
                 subtotal={subtotal}
                 shipping={shipping}
                 discount={discount}

@@ -81,6 +81,7 @@ export class DiscountRepository {
         maxDiscountAmount: true,
         endDate: true,
         applicableToCategories: true,
+        applicableToProducts: true,
       },
       orderBy: { createdAt: 'desc' },
     });
@@ -88,5 +89,154 @@ export class DiscountRepository {
 
   async countWithFilter(where: Prisma.DiscountWhereInput): Promise<number> {
     return this.prisma.discount.count({ where });
+  }
+
+  /** Kiểm tra xem đã có flash sale nào đang active chưa (dùng để validate) */
+  async findActiveFlashSale(excludeId?: number) {
+    const now = new Date();
+    return this.prisma.discount.findFirst({
+      where: {
+        isFlashSale: true,
+        isActive: true,
+        startDate: { lte: now },
+        OR: [{ endDate: null }, { endDate: { gte: now } }],
+        ...(excludeId ? { id: { not: excludeId } } : {}),
+      },
+      select: { id: true, code: true },
+    });
+  }
+
+  async findFlashSale() {
+    const now = new Date();
+    const flashSale = await this.prisma.discount.findFirst({
+      where: {
+        isFlashSale: true,
+        isActive: true,
+        startDate: { lte: now },
+        OR: [{ endDate: null }, { endDate: { gte: now } }],
+      },
+      orderBy: { endDate: 'asc' },
+      select: {
+        id: true,
+        code: true,
+        description: true,
+        image: true,
+        percentage: true,
+        fixedAmount: true,
+        minOrderAmount: true,
+        maxDiscountAmount: true,
+        startDate: true,
+        endDate: true,
+        applicableToCategories: true,
+        applicableToProducts: true,
+      },
+    });
+
+    if (!flashSale) return null;
+
+    // Ưu tiên 1: sản phẩm được gán trực tiếp
+    // Ưu tiên 2: sản phẩm theo category
+    // Ưu tiên 3: bán chạy nhất toàn site
+    const productWhere: any = { isActive: true };
+    if (flashSale.applicableToProducts.length > 0) {
+      productWhere.id = { in: flashSale.applicableToProducts };
+    } else if (flashSale.applicableToCategories.length > 0) {
+      productWhere.categoryId = { in: flashSale.applicableToCategories };
+    }
+
+    const products = await this.prisma.product.findMany({
+      where: productWhere,
+      take: 8,
+      // Giữ thứ tự như admin đã chọn nếu có specificProducts, ngược lại sắp bán chạy
+      orderBy: flashSale.applicableToProducts.length > 0
+        ? { id: 'asc' }
+        : { soldCount: 'desc' },
+      include: {
+        images: {
+          orderBy: { isThumbnail: 'desc' },  // thumbnail trước, nếu không có thì lấy ảnh đầu tiên
+          take: 1,
+        },
+        variants: {
+          where: { isActive: true },
+          orderBy: { price: 'asc' },
+          take: 3,
+          include: {
+            images: {
+              orderBy: { isPrimary: 'desc' }, // primary trước, nếu không có thì lấy ảnh đầu tiên
+              take: 1,
+            },
+          },
+        },
+      },
+    });
+
+    // Nếu có specificProducts thì sắp lại theo thứ tự admin đã chọn
+    const orderedProducts = flashSale.applicableToProducts.length > 0
+      ? flashSale.applicableToProducts
+          .map((id) => products.find((p) => p.id === id))
+          .filter(Boolean)
+      : products;
+
+    return { ...flashSale, products: orderedProducts };
+  }
+
+  /** Tìm discount đang active áp dụng cho 1 sản phẩm cụ thể (flash hoặc thường) */
+  async findDiscountForProduct(productId: number) {
+    const now = new Date();
+    const discount = await this.prisma.discount.findFirst({
+      where: {
+        isActive: true,
+        startDate: { lte: now },
+        OR: [{ endDate: null }, { endDate: { gte: now } }],
+      },
+      select: {
+        id: true,
+        code: true,
+        percentage: true,
+        fixedAmount: true,
+        endDate: true,
+        description: true,
+        isFlashSale: true,
+        applicableToProducts: true,
+      },
+      orderBy: [
+        { isFlashSale: 'desc' }, // ưu tiên flash sale trước
+        { percentage: 'desc' },  // rồi % giảm cao nhất
+      ],
+    });
+
+    if (!discount) return null;
+
+    // Chỉ tự áp dụng khi sản phẩm được chọn rõ ràng
+    if (!discount.applicableToProducts.includes(productId)) {
+      return null;
+    }
+
+    return discount;
+  }
+
+  /** Tất cả discount active có danh sách sản phẩm cụ thể (dùng cho bulk map) */
+  async findAllAutoApply() {
+    const now = new Date();
+    return this.prisma.discount.findMany({
+      where: {
+        isActive: true,
+        startDate: { lte: now },
+        OR: [{ endDate: null }, { endDate: { gte: now } }],
+      },
+      select: {
+        id: true,
+        code: true,
+        percentage: true,
+        fixedAmount: true,
+        endDate: true,
+        isFlashSale: true,
+        applicableToProducts: true,
+      },
+      orderBy: [
+        { isFlashSale: 'desc' },
+        { percentage: 'desc' },
+      ],
+    });
   }
 }

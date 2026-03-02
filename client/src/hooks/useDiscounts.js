@@ -108,6 +108,16 @@ export const useDiscountCode = () => {
   };
 };
 
+export const useDiscount = (id) => {
+  return useQuery({
+    queryKey: ['discount', id],
+    queryFn: () => discountService.getById(id),
+    enabled: Boolean(id),
+    staleTime: 2 * 60 * 1000,
+    select: (res) => res?.data || res,
+  });
+};
+
 export const useCreateDiscount = () => {
   const queryClient = useQueryClient();
   return useMutation({

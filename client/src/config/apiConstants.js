@@ -115,6 +115,8 @@ export const BANNER_ENDPOINTS = {
 export const DISCOUNT_ENDPOINTS = {
   BASE: '/discounts',
   PUBLIC: '/discounts/public',
+  FLASH_SALE: '/discounts/flash-sale',
+  AUTO_APPLY: '/discounts/auto-apply',
   BY_ID: (id) => `/discounts/${id}`,
   VALIDATE: '/discounts/validate',
   STATS: '/discounts/stats',
