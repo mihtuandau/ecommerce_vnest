@@ -2,8 +2,9 @@ import { Link } from 'react-router-dom';
 import { FaTrash, FaMinus, FaPlus, FaTimes } from 'react-icons/fa';
 import { Zap } from 'lucide-react';
 import { useRef, useEffect } from 'react';
+import { computeDiscountFromMap } from '../../utils/formatters';
 
-const CartItem = ({ groupedProduct, selectedItems, onToggleItem, onUpdateQuantity, onRemove, onRemoveAll, formatPrice }) => {
+const CartItem = ({ groupedProduct, selectedItems, onToggleItem, onUpdateQuantity, onRemove, onRemoveAll, formatPrice, discountMap }) => {
   const { productId, productName, productImage, variants, totalQuantity, totalPrice, hasFlashSale } = groupedProduct;
   
   // Refs cho checkbox
@@ -20,14 +21,12 @@ const CartItem = ({ groupedProduct, selectedItems, onToggleItem, onUpdateQuantit
   
   const handleToggleAllVariants = () => {
     if (allVariantsSelected) {
-      // Bỏ chọn tất cả variant đang được chọn
       variants.forEach(v => {
         if (selectedItems.has(v.variantId)) {
           onToggleItem(v.variantId);
         }
       });
     } else {
-      // Chọn tất cả variant chưa được chọn
       variants.forEach(v => {
         if (!selectedItems.has(v.variantId)) {
           onToggleItem(v.variantId);
@@ -164,7 +163,6 @@ const CartItem = ({ groupedProduct, selectedItems, onToggleItem, onUpdateQuantit
                   </div>
 
                   <div className="flex items-center justify-between gap-4">
-                    {/* Quantity Controls */}
                     <div className="flex items-center border border-gray-300 overflow-hidden">
                       <button
                         onClick={() => onUpdateQuantity(variant.variantId, variant.quantity, -1)}
@@ -195,32 +193,42 @@ const CartItem = ({ groupedProduct, selectedItems, onToggleItem, onUpdateQuantit
                       </button>
                     </div>
 
-                    {/* Price */}
                     <div className="text-right flex-1">
-                      {variant.flashPrice ? (
-                        <>
-                          <span className="text-base font-bold text-red-500 block">
-                            {formatPrice(variant.flashPrice * variant.quantity)}
-                          </span>
-                          <span className="text-xs text-gray-400 line-through">
-                            {formatPrice(variant.price * variant.quantity)}
-                          </span>
-                        </>
-                      ) : (
-                        <>
-                          <span className="text-base font-bold text-gray-900 block">
-                            {formatPrice(variant.price * variant.quantity)}
-                          </span>
-                          {variant.quantity > 1 && (
-                            <span className="text-xs text-gray-500">
-                              {formatPrice(variant.price)} × {variant.quantity}
-                            </span>
-                          )}
-                        </>
-                      )}
+                      {(() => {
+                        const originalPrice = variant.price;
+                        const flashPrice = computeDiscountFromMap(productId, originalPrice, discountMap);
+                        const hasDiscount = flashPrice !== originalPrice;
+                        
+                        console.log(`Product ${productId}: original=${originalPrice}, flash=${flashPrice}, discountMap=`, discountMap?.[Number(productId)]);
+                        
+                        if (hasDiscount) {
+                          return (
+                            <>
+                              <span className="text-base font-bold text-red-500 block">
+                                {formatPrice(flashPrice * variant.quantity)}
+                              </span>
+                              <span className="text-xs text-gray-400 line-through">
+                                {formatPrice(originalPrice * variant.quantity)}
+                              </span>
+                            </>
+                          );
+                        } else {
+                          return (
+                            <>
+                              <span className="text-base font-bold text-gray-900 block">
+                                {formatPrice(originalPrice * variant.quantity)}
+                              </span>
+                              {variant.quantity > 1 && (
+                                <span className="text-xs text-gray-500">
+                                  {formatPrice(originalPrice)} × {variant.quantity}
+                                </span>
+                              )}
+                            </>
+                          );
+                        }
+                      })()}
                     </div>
 
-                    {/* Remove Button */}
                     <button
                       onClick={() => {
                         if (window.confirm('Bạn có chắc muốn xóa sản phẩm này?')) {

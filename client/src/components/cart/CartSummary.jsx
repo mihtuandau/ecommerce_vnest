@@ -1,7 +1,9 @@
 import Button from '../common/Button';
 import { FaCheckCircle, FaExclamationCircle } from 'react-icons/fa';
 
-const CartSummary = ({ total, selectedCount, totalCount, formatPrice, onCheckout }) => {
+const CartSummary = ({ total, selectedCount, totalCount, formatPrice, onCheckout, discount = 0, promotionTitle = 'Khuyến mãi' }) => {
+  const totalBeforeDiscount = total + discount;
+  
   return (
     <div className="bg-white border border-gray-200 sticky top-8 shadow-lg">
       <div className="p-8">
@@ -24,7 +26,7 @@ const CartSummary = ({ total, selectedCount, totalCount, formatPrice, onCheckout
           <div className="flex justify-between text-sm">
             <span className="text-gray-600">Tạm tính</span>
             <span className="text-gray-900 font-medium">
-              {formatPrice(total)}
+              {formatPrice(totalBeforeDiscount)}
             </span>
           </div>
           <div className="flex justify-between text-sm">
@@ -33,6 +35,15 @@ const CartSummary = ({ total, selectedCount, totalCount, formatPrice, onCheckout
               Miễn phí
             </span>
           </div>
+          
+          {/* Discount Display */}
+          {discount > 0 && (
+            <div className="flex justify-between text-sm">
+              <span className="text-red-600 font-medium">⚡ {promotionTitle}</span>
+              <span className="text-red-600 font-medium">-{formatPrice(discount)}</span>
+            </div>
+          )}
+          
           <div className="border-t border-gray-300 pt-6 mt-6">
             <div className="flex justify-between items-baseline">
               <span className="text-base font-bold text-gray-900">

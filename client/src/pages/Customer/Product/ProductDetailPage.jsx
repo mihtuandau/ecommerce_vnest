@@ -12,6 +12,8 @@ import { useAuth } from '../../../hooks/useAuth';
 import ProductRecommendations from '../../../components/products/ProductRecommendations';
 import { notify } from '../../../utils/notification';
 
+const DEFAULT_TITLE = 'MINH TUAN STORE';
+
 const ProductDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -43,6 +45,16 @@ const ProductDetailPage = () => {
       .then((res) => setFlashSale(res?.data ?? res ?? null))
       .catch(() => {});
   }, [id]);
+
+  useEffect(() => {
+    if (!product?.name) return;
+
+    document.title = `${product.name} | ${DEFAULT_TITLE}`;
+
+    return () => {
+      document.title = DEFAULT_TITLE;
+    };
+  }, [product?.name]);
 
   useEffect(() => {
     if (product?.variants && product.variants.length > 0) {

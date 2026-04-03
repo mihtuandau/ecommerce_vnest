@@ -38,6 +38,21 @@ const CartPage = () => {
       loadCart();
     }
   }, [isLoggedIn, loadCart]);
+
+  // Debug: Log discountMap
+  useEffect(() => {
+    console.log('📊 discountMap loaded:', discountMap);
+  }, [discountMap]);
+  
+  // Tính toán original subtotal (giá gốc trước discount)
+  const originalSubtotal = useMemo(() => {
+    return cartItems
+      .filter(item => selectedItems.has(item.variantId))
+      .reduce((sum, item) => {
+        const originalPrice = item.product?.variant?.price || 0;
+        return sum + (originalPrice * item.quantity);
+      }, 0);
+  }, [cartItems, selectedItems]);
   
   const selectedTotal = useMemo(() => {
     return cartItems
@@ -48,6 +63,11 @@ const CartPage = () => {
         return sum + (price * item.quantity);
       }, 0);
   }, [cartItems, selectedItems, discountMap]);
+  
+  // Tính discount từ flash sale
+  const selectedDiscount = useMemo(() => {
+    return originalSubtotal - selectedTotal;
+  }, [originalSubtotal, selectedTotal]);
   
   const selectedCount = selectedItems.size;
 
@@ -201,6 +221,8 @@ const CartPage = () => {
                   totalCount={cartCount}
                   formatPrice={formatPrice}
                   onCheckout={handleCheckout}
+                  discount={selectedDiscount}
+                  promotionTitle="Flash Sale"
                 />
               </div>
             </div>
