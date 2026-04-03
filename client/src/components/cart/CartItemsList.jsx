@@ -43,8 +43,6 @@ const CartItemsList = ({ items, count, selectedItems, onToggleItem, onToggleAll,
       }
       
       const originalPrice = item.product?.variant?.price || 0;
-      const flashPrice = computeDiscountFromMap(productId, originalPrice, discountMap);
-      const hasFlash = flashPrice !== originalPrice;
       const productDiscount = discountMap?.[Number(productId)] || null;
 
       const variant = {
@@ -52,15 +50,16 @@ const CartItemsList = ({ items, count, selectedItems, onToggleItem, onToggleAll,
         size: item.product?.variant?.size,
         color: item.product?.variant?.color,
         price: originalPrice,
-        flashPrice: hasFlash ? flashPrice : null,
         isFlashSaleType: productDiscount?.isFlashSale || false,
         stock: item.product?.variant?.stock || 999,
         quantity: item.quantity,
       };
       groups[productId].variants.push(variant);
       groups[productId].totalQuantity += item.quantity;
-      groups[productId].totalPrice += ((hasFlash ? flashPrice : originalPrice) * item.quantity);
-      if (hasFlash) groups[productId].hasFlashSale = true;
+      // Tính totalPrice dựa trên discountMap
+      const discountedPrice = computeDiscountFromMap(productId, originalPrice, discountMap);
+      groups[productId].totalPrice += (discountedPrice * item.quantity);
+      if (discountedPrice !== originalPrice) groups[productId].hasFlashSale = true;
     });
     
     return Object.values(groups);
@@ -120,6 +119,7 @@ const CartItemsList = ({ items, count, selectedItems, onToggleItem, onToggleAll,
             onRemove={onRemove}
             onRemoveAll={handleRemoveAll}
             formatPrice={formatPrice}
+            discountMap={discountMap}
           />
         ))}
       </div>

@@ -1,6 +1,6 @@
 // src/routes/AppRoutes.jsx
 import React, { Suspense, lazy } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Loading from "../components/common/Loading";
 import AdminRoute from "./AdminRoute";
 // import ProtectedRoute from './ProtectedRoute';
@@ -103,8 +103,66 @@ const PromotionsPage = lazy(() =>
   import("../pages/Customer/Promotions/PromotionsPage")
 );
 
+const DEFAULT_TITLE = "MINH TUAN STORE";
+
+const getRouteTitle = (pathname) => {
+  const routeMap = [
+    [/^\/$/, "Trang chủ"],
+    [/^\/login$/, "Đăng nhập"],
+    [/^\/register$/, "Đăng ký"],
+    [/^\/forgot-password$/, "Quên mật khẩu"],
+    [/^\/reset-password$/, "Đặt lại mật khẩu"],
+    [/^\/products$/, "Tất cả sản phẩm"],
+    [/^\/products\/featured$/, "Sản phẩm nổi bật"],
+    [/^\/products\/bestselling$/, "Sản phẩm bán chạy"],
+    [/^\/products\/category\/\d+$/, "Danh mục sản phẩm"],
+    [/^\/category\/\d+$/, "Danh mục sản phẩm"],
+    [/^\/products\/\d+$/, "Chi tiết sản phẩm"],
+    [/^\/cart$/, "Giỏ hàng"],
+    [/^\/wishlist$/, "Yeu thich"],
+    [/^\/checkout$/, "Thanh toán"],
+    [/^\/orders$/, "Don hang cua toi"],
+    [/^\/orders\/\d+$/, "Chi tiết đơn hàng"],
+    [/^\/order-lookup$/, "Tra cứu đơn hàng"],
+    [/^\/guest-order\/.+$/, "Chi tiết đơn hàng"],
+    [/^\/payment\/return$/, "Kết quả thanh toán"],
+    [/^\/payment\/cancel$/, "Hủy thanh toán"],
+    [/^\/about$/, "Giới thiệu"],
+    [/^\/contact$/, "Liên hệ"],
+    [/^\/support$/, "Hỗ trợ"],
+    [/^\/(promotions|deals)$/, "Khuyến mãi"],
+    [/^\/(profile|account)$/, "Tài khoản"],
+    [/^\/admin-dashboard$/, "Admin Dashboard"],
+    [/^\/admin-products$/, "Admin Products"],
+    [/^\/admin-products\/create$/, "Create Product"],
+    [/^\/admin-products\/\d+\/edit$/, "Edit Product"],
+    [/^\/admin-products\/\d+$/, "Product Detail"],
+    [/^\/admin-categories$/, "Admin Categories"],
+    [/^\/admin-users$/, "Admin Users"],
+    [/^\/admin-orders$/, "Admin Orders"],
+    [/^\/admin-payments$/, "Admin Payments"],
+    [/^\/admin-discounts$/, "Admin Discounts"],
+    [/^\/admin-discounts\/new$/, "Create Discount"],
+    [/^\/admin-discounts\/edit\/\d+$/, "Edit Discount"],
+    [/^\/admin-banners$/, "Admin Banners"],
+    [/^\/admin-chat$/, "Admin Chat"],
+    [/^\/admin-reports$/, "Admin Reports"],
+    [/^\/admin\/profile$/, "Admin Profile"],
+  ];
+
+  const match = routeMap.find(([pattern]) => pattern.test(pathname));
+  if (!match) return DEFAULT_TITLE;
+
+  return `${match[1]} | ${DEFAULT_TITLE}`;
+};
+
 const AppRoutes = () => {
-  const isAdminRoute = window.location.pathname.startsWith("/admin");
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith("/admin");
+
+  React.useEffect(() => {
+    document.title = getRouteTitle(location.pathname);
+  }, [location.pathname]);
 
   return (
     <Suspense

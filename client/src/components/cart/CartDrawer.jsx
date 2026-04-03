@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FaTimes, FaShoppingBag, FaTrash, FaTag, FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import { useCart } from "../../hooks/useCart";
-import { formatPrice } from "../../utils/formatters";
+import { useAutoApplyDiscounts } from "../../hooks/useFlashSale";
+import { formatPrice, computeDiscountFromMap } from "../../utils/formatters";
 import discountService from "../../services/discountService";
 
   
@@ -11,6 +12,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
   const cartData = useCart();
   const cartItems = cartData?.items || [];
   const cartTotal = cartData?.total || 0;
+  const { discountMap } = useAutoApplyDiscounts();
 
   const [couponCode, setCouponCode] = useState("");
   const [couponLoading, setCouponLoading] = useState(false);
@@ -183,11 +185,36 @@ const CartDrawer = ({ isOpen, onClose }) => {
                         <span className="inline-flex items-center justify-center px-3 py-1 text-xs font-semibold bg-[#00a85a] text-white">
                           x{item.quantity}
                         </span>
-                        <span className="text-base font-bold text-gray-900">
-                          {formatPrice(
-                            (item.product?.variant?.price || 0) * item.quantity
-                          )}
-                        </span>
+                        <div className="text-right">
+                          {(() => {
+                            const originalPrice = item.product?.variant?.price || 0;
+                            const discountedPrice = computeDiscountFromMap(
+                              item.product?.id,
+                              originalPrice,
+                              discountMap
+                            );
+                            const hasDiscount = discountedPrice !== originalPrice;
+                            
+                            if (hasDiscount) {
+                              return (
+                                <>
+                                  <span className="text-base font-bold text-red-500 block">
+                                    {formatPrice(discountedPrice * item.quantity)}
+                                  </span>
+                                  <span className="text-xs text-gray-400 line-through">
+                                    {formatPrice(originalPrice * item.quantity)}
+                                  </span>
+                                </>
+                              );
+                            } else {
+                              return (
+                                <span className="text-base font-bold text-gray-900">
+                                  {formatPrice(originalPrice * item.quantity)}
+                                </span>
+                              );
+                            }
+                          })()}
+                        </div>
                       </div>
                     </div>
                   </div>
