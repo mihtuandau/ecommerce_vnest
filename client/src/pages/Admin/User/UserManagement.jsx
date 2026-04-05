@@ -15,7 +15,6 @@ import Select from "../../../components/common/Select";
 import Button from "../../../components/common/Button";
 import Modal from "../../../components/common/Modal";
 import Loading from "../../../components/common/Loading";
-import Pagination from "../../../components/common/Pagination";
 import UserTable from "../../../components/admin/UserManagement/UserTable";
 import UserForm from "../../../components/admin/UserManagement/UserForm";
 import AddressList from "../../../components/admin/UserManagement/AddressList";
@@ -98,15 +97,6 @@ const AdminUserManagement = () => {
     }
   };
 
-  // Client-side pagination
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
-  const paginatedUsers = useMemo(() => {
-    const start = (currentPage - 1) * itemsPerPage;
-    return filteredUsers.slice(start, start + itemsPerPage);
-  }, [filteredUsers, currentPage]);
-  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
-
   return (
     <div className="p-6">
       <div className="max-w-7xl mx-auto">
@@ -165,19 +155,10 @@ const AdminUserManagement = () => {
             </div>
           ) : (
             <UserTable
-              users={paginatedUsers}
+              users={filteredUsers}
               onEdit={(user) => openModal("edit", user)}
               onDelete={handleDeleteUser}
               onViewAddresses={(user) => openModal("addresses", user)}
-            />
-          )}
-
-          {/* Pagination */}
-          {!isLoading && !error && filteredUsers.length > 0 && (
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
             />
           )}
         </div>

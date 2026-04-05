@@ -14,6 +14,32 @@ import { notify } from '../../../utils/notification';
 
 const DEFAULT_TITLE = 'MINH TUAN STORE';
 
+const normalizeColor = (value) =>
+  String(value || '').trim().toLowerCase();
+
+const normalizeOption = (value) =>
+  String(value || '').trim().toLowerCase();
+
+const sortVariantImages = (images) =>
+  [...images]
+    .filter((img) => img?.url)
+    .sort((a, b) => {
+      if ((b?.isPrimary ? 1 : 0) !== (a?.isPrimary ? 1 : 0)) {
+        return (b?.isPrimary ? 1 : 0) - (a?.isPrimary ? 1 : 0);
+      }
+      return (a?.displayOrder ?? 0) - (b?.displayOrder ?? 0);
+    });
+
+const sortProductImages = (images) =>
+  [...images]
+    .filter((img) => img?.url)
+    .sort((a, b) => {
+      if ((b?.isThumbnail ? 1 : 0) !== (a?.isThumbnail ? 1 : 0)) {
+        return (b?.isThumbnail ? 1 : 0) - (a?.isThumbnail ? 1 : 0);
+      }
+      return (a?.displayOrder ?? 0) - (b?.displayOrder ?? 0);
+    });
+
 const ProductDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -37,6 +63,10 @@ const ProductDetailPage = () => {
     // Reset khi đổi sản phẩm
     viewedIdRef.current = null;
     setFlashSale(null);
+    setSelectedSize(null);
+    setSelectedColor(null);
+    setSelectedVariant(null);
+    setSelectedImage(0);
   }, [id]);
 
   useEffect(() => {
@@ -57,27 +87,54 @@ const ProductDetailPage = () => {
   }, [product?.name]);
 
   useEffect(() => {
-    if (product?.variants && product.variants.length > 0) {
-      let matchingVariants = product.variants.filter(
-        v => (
-          (!selectedSize || v.size === selectedSize) &&
-          (!selectedColor || v.color === selectedColor)
-        )
-      );
-      
-      if (matchingVariants.length === 0) {
-        matchingVariants = product.variants;
-      }
-      
-      const variantToSelect = matchingVariants.find(v => v.stock > 0) || matchingVariants[0];
-      
-      if (variantToSelect && (!selectedVariant || selectedVariant.id !== variantToSelect.id)) {
-        setSelectedVariant(variantToSelect);
-        // Reset về ảnh đầu tiên khi chọn variant mới
+    if (!product?.variants?.length) {
+      setSelectedVariant(null);
+      return;
+    }
+
+    const variants = product.variants;
+    const hasSizeOptions = variants.some((v) => Boolean(v.size));
+    const hasColorOptions = variants.some((v) => Boolean(v.color));
+
+    // Không tự chọn khi còn thiếu lựa chọn bắt buộc
+    if ((hasSizeOptions && !selectedSize) || (hasColorOptions && !selectedColor)) {
+      if (selectedVariant !== null) setSelectedVariant(null);
+      return;
+    }
+
+    // Nếu sản phẩm không có size/color thì tự chọn variant mặc định duy nhất để vẫn mua được
+    if (!hasSizeOptions && !hasColorOptions) {
+      const fallbackVariant =
+        variants.find((v) => v.stock > 0) || variants[0] || null;
+      if (fallbackVariant && selectedVariant?.id !== fallbackVariant.id) {
+        setSelectedVariant(fallbackVariant);
         setSelectedImage(0);
       }
+      return;
     }
-  }, [selectedSize, selectedColor, product]);
+
+    const selectedSizeNormalized = normalizeOption(selectedSize);
+    const selectedColorNormalized = normalizeOption(selectedColor);
+
+    const matchedVariant =
+      variants.find(
+        (v) =>
+          (!hasSizeOptions || normalizeOption(v.size) === selectedSizeNormalized) &&
+          (!hasColorOptions || normalizeOption(v.color) === selectedColorNormalized) &&
+          (v.stock || 0) > 0,
+      ) ||
+      variants.find(
+        (v) =>
+          (!hasSizeOptions || normalizeOption(v.size) === selectedSizeNormalized) &&
+          (!hasColorOptions || normalizeOption(v.color) === selectedColorNormalized),
+      ) ||
+      null;
+
+    if (matchedVariant?.id !== selectedVariant?.id) {
+      setSelectedVariant(matchedVariant);
+      setSelectedImage(0);
+    }
+  }, [selectedSize, selectedColor, product, selectedVariant]);
 
   const loadProduct = async () => {
     try {
@@ -93,18 +150,9 @@ const ProductDetailPage = () => {
       }
 
       if (productData.variants && productData.variants.length > 0) {
-        const sizes = [...new Set(productData.variants.map(v => v.size).filter(Boolean))];
-        const colors = [...new Set(productData.variants.map(v => v.color).filter(Boolean))];
-        
-        if (sizes.length > 0) setSelectedSize(sizes[0]);
-        if (colors.length > 0) setSelectedColor(colors[0]);
-        
-        // Only consider variants with stock for initial selection
-        const variantsWithStock = productData.variants.filter(v => v.stock > 0);
-        const variantWithStock = variantsWithStock.length > 0 
-          ? variantsWithStock.sort((a, b) => b.stock - a.stock)[0]  
-          : productData.variants[0]; 
-        setSelectedVariant(variantWithStock);
+        setSelectedSize(null);
+        setSelectedColor(null);
+        setSelectedVariant(null);
       }
     } catch (error) {
       notify.error('Không tìm thấy sản phẩm');
@@ -113,24 +161,60 @@ const ProductDetailPage = () => {
     }
   };
 
-  const getVariantImage = useCallback(() => {
-    // Lấy ảnh đầu tiên của variant
-    if (selectedVariant?.images && selectedVariant.images.length > 0) {
-      return selectedVariant.images[0].url;
-    }
-    
-    // Fallback về ảnh chung của product
-    if (product?.images && product.images.length > 0) {
-      return product.images[0].url;
-    }
-    
-    // Fallback cuối cùng
-    return product?.image || '/placeholder-product.jpg';
-  }, [selectedVariant, product]);
+  const sortedProductImages = useMemo(() => {
+    if (!Array.isArray(product?.images)) return [];
+    return sortProductImages(product.images);
+  }, [product?.images]);
+
+  const sortedSelectedVariantImages = useMemo(() => {
+    if (!Array.isArray(selectedVariant?.images)) return [];
+    return sortVariantImages(selectedVariant.images);
+  }, [selectedVariant?.images]);
+
+  const sortedSameColorImages = useMemo(() => {
+    if (!Array.isArray(product?.variants)) return [];
+
+    const colorSource = selectedVariant?.color || selectedColor;
+    if (!colorSource) return [];
+    const currentVariantId = selectedVariant?.id;
+
+    const selectedColorNormalized = normalizeColor(colorSource);
+    const sameColorVariant = product.variants.find(
+      (v) =>
+        v?.id !== currentVariantId &&
+        normalizeColor(v?.color) === selectedColorNormalized &&
+        Array.isArray(v?.images) &&
+        v.images.length > 0,
+    );
+
+    if (!sameColorVariant?.images?.length) return [];
+    return sortVariantImages(sameColorVariant.images);
+  }, [product?.variants, selectedVariant?.id, selectedVariant?.color, selectedColor]);
+
+  const images = useMemo(() => {
+    if (sortedSelectedVariantImages.length) return sortedSelectedVariantImages;
+    if (sortedSameColorImages.length) return sortedSameColorImages;
+    return sortedProductImages;
+  }, [sortedSelectedVariantImages, sortedSameColorImages, sortedProductImages]);
+
+  const selectedImageUrl = useMemo(() => {
+    return images[0]?.url || product?.image || '/placeholder-product.jpg';
+  }, [images, product?.image]);
 
   const handleAddToCart = useCallback((buyNow = false) => {
     if (!selectedVariant) {
-      notify.error('Vui lòng chọn size và màu sắc');
+      const hasSizeOptions = product?.variants?.some((v) => Boolean(v.size));
+      const hasColorOptions = product?.variants?.some((v) => Boolean(v.color));
+
+      if (hasSizeOptions && hasColorOptions) {
+        notify.error('Vui lòng chọn size và màu sắc');
+      } else if (hasSizeOptions) {
+        notify.error('Vui lòng chọn size');
+      } else if (hasColorOptions) {
+        notify.error('Vui lòng chọn màu sắc');
+      } else {
+        notify.error('Không tìm thấy biến thể phù hợp');
+      }
       return;
     }
 
@@ -142,7 +226,7 @@ const ProductDetailPage = () => {
     const productData = {
       id: product.id,
       name: product.name,
-      image: getVariantImage(),
+      image: selectedImageUrl,
       variant: {
         id: selectedVariant.id,
         price: selectedVariant.price,
@@ -158,42 +242,29 @@ const ProductDetailPage = () => {
       addToCart(selectedVariant.id, quantity, productData);
       notify.success('Thêm vào giỏ hàng thành công!', 2000);
     }
-  }, [selectedVariant, product, quantity, getVariantImage, navigate, addToCart]);
-
-  // Lọc ảnh theo variant đang được chọn - MUST BE BEFORE early returns
-  const getDisplayImages = useCallback(() => {
-    if (!product) return [];
-    const productImages = Array.isArray(product?.images) ? product.images : [];
-    const variantImages = Array.isArray(selectedVariant?.images) ? selectedVariant.images : [];
-
-    // UX: hiển thị ảnh variant trước, sau đó đến ảnh sản phẩm (không trùng URL)
-    const merged = [...variantImages, ...productImages];
-    const seen = new Set();
-    const deduped = [];
-
-    for (const img of merged) {
-      const url = img?.url;
-      if (!url || seen.has(url)) continue;
-      seen.add(url);
-      deduped.push(img);
-    }
-
-    return deduped;
-  }, [product, selectedVariant]);
+  }, [selectedVariant, product, quantity, selectedImageUrl, navigate, addToCart]);
 
   const handlePrevImage = useCallback(() => {
-    const imgs = getDisplayImages();
-    if (!imgs.length) return;
-    setSelectedImage((prev) => (prev === 0 ? imgs.length - 1 : prev - 1));
-  }, [getDisplayImages]);
+    if (!images.length) return;
+    setSelectedImage((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+  }, [images]);
 
   const handleNextImage = useCallback(() => {
-    const imgs = getDisplayImages();
-    if (!imgs.length) return;
-    setSelectedImage((prev) => (prev === imgs.length - 1 ? 0 : prev + 1));
-  }, [getDisplayImages]);
+    if (!images.length) return;
+    setSelectedImage((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+  }, [images]);
 
-  const images = useMemo(() => getDisplayImages(), [getDisplayImages]);
+  useEffect(() => {
+    if (!images.length) {
+      if (selectedImage !== 0) setSelectedImage(0);
+      return;
+    }
+
+    if (selectedImage > images.length - 1) {
+      setSelectedImage(0);
+    }
+  }, [images, selectedImage]);
+
   const currentPrice = selectedVariant?.price || product?.basePrice || product?.price;
   const originalPrice = product?.originalPrice;
 

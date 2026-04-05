@@ -19,6 +19,10 @@ import {
   CloseOutlined,
 } from '@ant-design/icons';
 
+const ACCENT_BADGE_COLOR = '#37A76B';
+const ACTIVE_FILTER_TAG_CLASS = 'px-3 py-1 text-sm bg-[#F3FBF6] border-[#CDEBD9] text-[#2E7D55] rounded-full';
+const BULK_SELECTED_CLASS = 'mt-4 p-3 bg-[#F3FBF6] border border-[#CDEBD9] rounded-lg flex items-center justify-between gap-3 flex-wrap';
+
 const { Option } = Select;
 
 const ProductToolbar = ({
@@ -244,7 +248,7 @@ const ProductToolbar = ({
               key={f.key}
               closable
               onClose={f.onClose}
-              className="px-3 py-1 text-sm bg-blue-50 border-blue-200 text-blue-700 rounded-full"
+              className={ACTIVE_FILTER_TAG_CLASS}
               closeIcon={<CloseOutlined className="text-xs" />}
             >
               {f.label}
@@ -271,8 +275,8 @@ const ProductToolbar = ({
 
       {/* Selected products bulk action */}
       {selectedProducts.length > 0 && (
-        <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center justify-between gap-3 flex-wrap">
-          <span className="font-medium text-blue-800">
+        <div className={BULK_SELECTED_CLASS}>
+          <span className="font-medium text-[#2E7D55]">
             Đã chọn <strong>{selectedProducts.length}</strong> sản phẩm
           </span>
           <Button
@@ -293,7 +297,7 @@ const ProductToolbar = ({
           <div className="flex items-center justify-between pr-8">
             <span className="text-lg font-medium">Bộ lọc & sắp xếp</span>
             {activeFilters.length > 0 && (
-              <Badge count={activeFilters.length} color="#1890ff" />
+              <Badge count={activeFilters.length} color={ACCENT_BADGE_COLOR} />
             )}
           </div>
         }

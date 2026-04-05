@@ -4,7 +4,10 @@ import {
   EyeOutlined, 
   SyncOutlined, 
   DollarOutlined,
-  CreditCardOutlined 
+  CreditCardOutlined,
+  CheckCircleOutlined,
+  ClockCircleOutlined,
+  CloseCircleOutlined
 } from '@ant-design/icons';
 import Badge from '../../common/Badge';
 import { formatCurrency, formatDate, statusVariants, statusLabels } from '../../../utils/orderHelpers';
@@ -124,18 +127,13 @@ const OrderTable = ({
           );
         }
         
-        const paymentIcons = {
-          CASH: '💵',
-          PAYOS: '💳',
-          VNPAY: '💳',
-          MOMO: '💳'
-        };
+        const paymentIcon = record.payment.method === 'CASH' ? <DollarOutlined /> : <CreditCardOutlined />;
 
         return (
           <Space direction="vertical" size={2}>
             <Space size={4}>
+              <span className="text-gray-500">{paymentIcon}</span>
               <Text style={{ fontSize: 11, fontWeight: 500 }}>
-                {paymentIcons[record.payment.method]} {' '}
                 {record.payment.method === 'CASH' ? 'COD' : record.payment.method}
               </Text>
               {record.payment.status === 'PENDING' && 
@@ -155,10 +153,10 @@ const OrderTable = ({
               color={getPaymentStatusColor(record.payment.status)} 
               style={{ fontSize: 10, margin: 0 }}
             >
-              {record.payment.status === 'SUCCESS' && '✓ Đã TT'}
-              {record.payment.status === 'PENDING' && '⏳ Chờ'}
-              {record.payment.status === 'FAILED' && '✗ Lỗi'}
-              {record.payment.status === 'CANCELLED' && '✗ Hủy'}
+              {record.payment.status === 'SUCCESS' && <span><CheckCircleOutlined /> Đã TT</span>}
+              {record.payment.status === 'PENDING' && <span><ClockCircleOutlined /> Chờ</span>}
+              {record.payment.status === 'FAILED' && <span><CloseCircleOutlined /> Lỗi</span>}
+              {record.payment.status === 'CANCELLED' && <span><CloseCircleOutlined /> Hủy</span>}
             </Tag>
           </Space>
         );

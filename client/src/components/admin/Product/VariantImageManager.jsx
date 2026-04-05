@@ -21,9 +21,12 @@ const VariantImageManager = ({
 
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 mb-2">
-        Ảnh biến thể (Tối đa 5 ảnh)
+      <label className="block text-sm font-medium text-gray-700 mb-1">
+        Ảnh biến thể (không bắt buộc, tối đa 5 ảnh)
       </label>
+      <p className="text-xs text-gray-500 mb-2">
+        Không upload ảnh riêng thì hệ thống sẽ dùng ảnh sản phẩm mặc định.
+      </p>
       
       {/* Existing Images */}
       {existingImages.length > 0 && (

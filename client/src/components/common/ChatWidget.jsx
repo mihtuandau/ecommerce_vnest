@@ -7,7 +7,7 @@ const ChatWidget = () => {
   const [messages, setMessages] = useState([
     {
       id: 1,
-      text: 'Xin chào! Tôi là trợ lý AI. Bạn có thể hỏi tôi bất kỳ điều gì! 😊',
+      text: 'Xin chào! Tôi là trợ lý AI. Bạn có thể hỏi tôi bất kỳ điều gì!',
       sender: 'bot',
       timestamp: new Date(),
     },

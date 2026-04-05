@@ -17,7 +17,7 @@ const apiService = {
       });
       return response.data;
     } catch (error) {
-      console.error(`❌ GET ${url} error:`, {
+      console.error(`[ERROR] GET ${url} error:`, {
         status: error.response?.status,
         message: error.response?.data?.message,
         error: error.response?.data?.error,
@@ -43,7 +43,7 @@ const apiService = {
       });
       return response.data;
     } catch (error) {
-      console.error(`❌ POST ${url} error:`, {
+      console.error(`[ERROR] POST ${url} error:`, {
         status: error.response?.status,
         message: error.response?.data?.message,
         error: error.response?.data?.error,
@@ -69,7 +69,7 @@ const apiService = {
       });
       return response.data;
     } catch (error) {
-      console.error(`❌ PUT ${url} error:`, {
+      console.error(`[ERROR] PUT ${url} error:`, {
         status: error.response?.status,
         message: error.response?.data?.message,
         error: error.response?.data?.error,

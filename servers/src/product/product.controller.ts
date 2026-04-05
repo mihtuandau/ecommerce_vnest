@@ -52,19 +52,25 @@ export class ProductController {
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
+  @ApiBearerAuth('Authorization')
   create(@Body() createProductDto: CreateProductDto) {
     return this.productService.create(createProductDto);
   }
 
   @Put(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
+  @ApiBearerAuth('Authorization')
   update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
     return this.productService.update(+id, updateProductDto);
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
+  @ApiBearerAuth('Authorization')
   remove(@Param('id') id: string, @Body() deleteProductDto: DeleteProductDto) {
     if (!deleteProductDto.confirm) {
       throw new Error('Confirm deletion required');
@@ -73,20 +79,26 @@ export class ProductController {
   }
 
   @Post(':id/variant')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
+  @ApiBearerAuth('Authorization')
   createVariant(@Param('id') id: string, @Body() createVariantDto: CreateVariantDto) {
     createVariantDto.productId = +id;
     return this.productService.createVariant(createVariantDto);
   }
 
   @Put('variant/:variantId')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
+  @ApiBearerAuth('Authorization')
   updateVariant(@Param('variantId') variantId: string, @Body() body: any) {
     return this.productService.updateVariant(+variantId, body);
   }
 
   @Delete('variant/:variantId')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
+  @ApiBearerAuth('Authorization')
   removeVariant(@Param('variantId') variantId: string) {
     return this.productService.deleteVariant(+variantId);
   }
@@ -95,12 +107,14 @@ export class ProductController {
    * Upload images for Product (not for variant)
    */
   @Post(':id/images')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
+  @ApiBearerAuth('Authorization')
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FilesInterceptor('files', 10, multerConfig))
   async uploadProductImages(
     @Param('id') id: string,
-    @UploadedFiles() files: Express.Multer.File[],
+    @UploadedFiles() files: any[],
     @Body('altText') altText?: string,
     @Body('isThumbnail') isThumbnail?: string,
     @Body('displayOrder') displayOrder?: string,
@@ -123,12 +137,14 @@ export class ProductController {
    * Upload images for ProductVariant
    */
   @Post('variant/:variantId/images')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
+  @ApiBearerAuth('Authorization')
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FilesInterceptor('files', 10, multerConfig))
   async uploadVariantImages(
     @Param('variantId') variantId: string,
-    @UploadedFiles() files: Express.Multer.File[],
+    @UploadedFiles() files: any[],
     @Body('altText') altText?: string,
     @Body('isPrimary') isPrimary?: string,
     @Body('displayOrder') displayOrder?: string,
@@ -151,7 +167,9 @@ export class ProductController {
    * Delete ProductImage
    */
   @Delete('images/:imageId')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
+  @ApiBearerAuth('Authorization')
   async deleteProductImage(@Param('imageId') imageId: string) {
     return this.productService.deleteProductImage(+imageId);
   }
@@ -160,7 +178,9 @@ export class ProductController {
    * Delete VariantImage
    */
   @Delete('variant-images/:imageId')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
+  @ApiBearerAuth('Authorization')
   async deleteVariantImage(@Param('imageId') imageId: string) {
     return this.productService.deleteVariantImage(+imageId);
   }

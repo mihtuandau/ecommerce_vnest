@@ -3,7 +3,6 @@ import { RefreshCw } from 'lucide-react';
 import paymentService from '../../../services/paymentService';
 import { notify } from '../../../utils/notification';
 import Button from '../../../components/common/Button';
-import Pagination from '../../../components/common/Pagination';
 import PaymentStatsCards from '../../../components/admin/Payment/PaymentStatsCards';
 import PaymentFilters from '../../../components/admin/Payment/PaymentFilters';
 import PaymentTable from '../../../components/admin/Payment/PaymentTable';
@@ -19,8 +18,6 @@ const PaymentManagement = () => {
   const [sortOrder, setSortOrder] = useState('desc');
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
 
   const { 
     data: filteredPayments = [], 
@@ -60,13 +57,6 @@ const PaymentManagement = () => {
     }
   };
 
-  const paginatedPayments = useMemo(() => {
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    return filteredPayments.slice(startIndex, startIndex + itemsPerPage);
-  }, [filteredPayments, currentPage]);
-
-  const totalPages = Math.ceil(filteredPayments.length / itemsPerPage);
-
   if (isLoading) {
     return <Loading fullScreen text="Đang tải dữ liệu..." variant="admin" />;
   }
@@ -98,23 +88,13 @@ const PaymentManagement = () => {
 
       <div>
         <PaymentTable
-          payments={paginatedPayments}
+          payments={filteredPayments}
           loading={isLoading}
           sortField={sortField}
           sortOrder={sortOrder}
           onSort={toggleSort}
           onViewDetail={handleViewDetail}
         />
-        
-        {!isLoading && filteredPayments.length > 0 && (
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-            itemsCount={paginatedPayments.length}
-            totalItems={filteredPayments.length}
-          />
-        )}
       </div>
 
       <PaymentDetailModal

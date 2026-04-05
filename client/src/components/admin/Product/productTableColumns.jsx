@@ -9,6 +9,9 @@ import {
 } from '@ant-design/icons';
 import { formatPrice } from '../../../utils/formatters';
 
+const ACCENT_TEXT_CLASS = 'text-[#37A76B] hover:text-[#2E955F]';
+const CATEGORY_TAG_CLASS = 'text-xs bg-[#F3FBF6] border-[#CDEBD9] text-[#2E7D55]';
+
 const getTotalStock = (record) => {
   if (Array.isArray(record.variants) && record.variants.length > 0) {
     return record.variants.reduce((sum, v) => sum + (v.stock || 0), 0);
@@ -80,7 +83,7 @@ export const getProductTableColumns = ({
             <button
               type="button"
               onClick={() => onView?.(record)}
-              className="text-left font-medium text-gray-900 hover:text-blue-600 hover:underline focus:outline-none block w-full truncate text-sm transition-colors"
+              className="text-left font-medium text-gray-900 hover:text-[#2E955F] hover:underline focus:outline-none block w-full truncate text-sm transition-colors"
               title={record.name}
             >
               {record.name}
@@ -106,7 +109,7 @@ export const getProductTableColumns = ({
     key: 'category',
     width: 100,
     render: (category) => (
-      <Tag color="blue" className="text-xs">{category?.name || 'N/A'}</Tag>
+      <Tag className={CATEGORY_TAG_CLASS}>{category?.name || 'N/A'}</Tag>
     ),
   },
   {
@@ -177,7 +180,7 @@ export const getProductTableColumns = ({
             type="link"
             icon={<AppstoreOutlined />}
             onClick={() => onManageVariants(record)}
-            className="p-0 text-xs text-blue-600 hover:text-blue-700"
+            className={`p-0 text-xs ${ACCENT_TEXT_CLASS}`}
             size="small"
           >
             {variantCount > 0 ? variantCount : 'Thêm'}

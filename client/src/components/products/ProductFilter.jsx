@@ -100,9 +100,9 @@ const ProductFilter = ({
 
   const ratingOptions = [
     { value: "", label: "Tất cả", stars: "" },
-    { value: "5", label: "5 sao", stars: "★★★★★" },
-    { value: "4", label: "4 sao trở lên", stars: "★★★★" },
-    { value: "3", label: "3 sao trở lên", stars: "★★★" },
+    { value: "5", label: "5 sao", stars: "⭐⭐⭐⭐⭐" },
+    { value: "4", label: "4 sao trở lên", stars: "⭐⭐⭐⭐" },
+    { value: "3", label: "3 sao trở lên", stars: "⭐⭐⭐" },
   ];
 
   // Horizontal layout

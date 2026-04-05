@@ -46,9 +46,9 @@ const ReportFilters = ({
               onChange={onReportTypeChange}
               className="w-full"
             >
-              <Option value="daily">📅 Theo ngày (Chi tiết từng ngày)</Option>
-              <Option value="monthly">📊 Theo tháng (Tổng hợp theo tháng)</Option>
-              <Option value="yearly">📈 Theo năm (Tổng hợp theo năm)</Option>
+              <Option value="daily">Theo ngày (Chi tiết từng ngày)</Option>
+              <Option value="monthly">Theo tháng (Tổng hợp theo tháng)</Option>
+              <Option value="yearly">Theo năm (Tổng hợp theo năm)</Option>
             </Select>
             <div className="text-xs text-gray-500 mt-1">
               {reportType === 'daily' && 'Hiển thị dữ liệu chi tiết theo từng ngày'}

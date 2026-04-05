@@ -1,4 +1,5 @@
 import { formatPrice } from '../../utils/formatters';
+import { Zap } from 'lucide-react';
 
 const PriceSummary = ({ itemCount, subtotal, shipping, discount, flashSaleDiscount, total }) => {
   return (
@@ -18,7 +19,8 @@ const PriceSummary = ({ itemCount, subtotal, shipping, discount, flashSaleDiscou
       {flashSaleDiscount > 0 && (
         <div className="flex justify-between text-sm">
           <span className="text-red-600 flex items-center gap-1">
-            ⚡ Flash Sale
+            <Zap size={16} className="text-red-600" />
+            Flash Sale
           </span>
           <span className="text-red-600 font-medium">-{formatPrice(flashSaleDiscount)}</span>
         </div>

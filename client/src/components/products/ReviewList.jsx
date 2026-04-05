@@ -99,7 +99,6 @@ const ReviewList = ({ productId }) => {
           >
             Trước
           </button>
-          <span className="px-4 py-2 text-gray-700">Trang {page} / {totalPages}</span>
           <button 
             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}

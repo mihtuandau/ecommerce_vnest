@@ -1,5 +1,6 @@
 import Button from '../common/Button';
 import { FaCheckCircle, FaExclamationCircle } from 'react-icons/fa';
+import { Zap } from 'lucide-react';
 
 const CartSummary = ({ total, selectedCount, totalCount, formatPrice, onCheckout, discount = 0, promotionTitle = 'Khuyến mãi' }) => {
   const totalBeforeDiscount = total + discount;
@@ -39,7 +40,10 @@ const CartSummary = ({ total, selectedCount, totalCount, formatPrice, onCheckout
           {/* Discount Display */}
           {discount > 0 && (
             <div className="flex justify-between text-sm">
-              <span className="text-red-600 font-medium">⚡ {promotionTitle}</span>
+              <span className="flex items-center gap-1 text-red-600 font-medium">
+                <Zap size={16} className="text-red-600" />
+                {promotionTitle}
+              </span>
               <span className="text-red-600 font-medium">-{formatPrice(discount)}</span>
             </div>
           )}

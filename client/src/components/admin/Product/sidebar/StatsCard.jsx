@@ -1,3 +1,5 @@
+import { Eye, DollarSign, Package, Palette, Image as ImageIcon, Calendar, RefreshCcw } from 'lucide-react';
+
 const StatsCard = ({ product }) => {
   const totalStock = product.variants?.reduce((sum, v) => sum + (v.stock || 0), 0) || 0;
   const totalVariants = product.variants?.length || 0;
@@ -9,11 +11,11 @@ const StatsCard = ({ product }) => {
     product.soldCount ?? product.sold ?? product.totalSold ?? product.statistics?.sold ?? null;
 
   const stats = [
-    { label: 'Lượt xem', value: views ?? '—', icon: '👁️', color: 'text-blue-600', bg: 'bg-blue-50' },
-    { label: 'Đã bán', value: sold ?? '—', icon: '💰', color: 'text-green-600', bg: 'bg-green-50' },
-    { label: 'Tồn kho', value: totalStock, icon: '📦', color: 'text-orange-600', bg: 'bg-orange-50' },
-    { label: 'Biến thể', value: totalVariants, icon: '🎨', color: 'text-purple-600', bg: 'bg-purple-50' },
-    { label: 'Hình ảnh', value: totalImages, icon: '📷', color: 'text-pink-600', bg: 'bg-pink-50' },
+    { label: 'Lượt xem', value: views ?? '—', icon: Eye, color: 'text-blue-600', bg: 'bg-blue-50' },
+    { label: 'Đã bán', value: sold ?? '—', icon: DollarSign, color: 'text-green-600', bg: 'bg-green-50' },
+    { label: 'Tồn kho', value: totalStock, icon: Package, color: 'text-orange-600', bg: 'bg-orange-50' },
+    { label: 'Biến thể', value: totalVariants, icon: Palette, color: 'text-purple-600', bg: 'bg-purple-50' },
+    { label: 'Hình ảnh', value: totalImages, icon: ImageIcon, color: 'text-pink-600', bg: 'bg-pink-50' },
   ];
 
   return (
@@ -24,7 +26,7 @@ const StatsCard = ({ product }) => {
         {stats.map((stat, idx) => (
           <div key={idx} className={`flex items-center justify-between p-3 ${stat.bg} rounded-lg hover:shadow-sm transition-all border border-gray-200`}>
             <div className="flex items-center gap-3">
-              <span className="text-xl">{stat.icon}</span>
+              <stat.icon size={18} className={stat.color} />
               <span className="text-sm font-medium text-gray-700">{stat.label}</span>
             </div>
             <span className={`font-bold text-lg ${stat.color}`}>{stat.value}</span>
@@ -35,11 +37,11 @@ const StatsCard = ({ product }) => {
       <div className="mt-5 pt-4 border-t border-gray-200">
         <div className="text-xs text-gray-500 space-y-1.5">
           <p className="flex items-center gap-2">
-            <span>📅</span>
+            <Calendar size={14} className="text-gray-500" />
             <span>Tạo: {new Date(product.createdAt).toLocaleDateString('vi-VN')}</span>
           </p>
           <p className="flex items-center gap-2">
-            <span>♻️</span>
+            <RefreshCcw size={14} className="text-gray-500" />
             <span>Cập nhật: {new Date(product.updatedAt || product.createdAt).toLocaleDateString('vi-VN')}</span>
           </p>
         </div>

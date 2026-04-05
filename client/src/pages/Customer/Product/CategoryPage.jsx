@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
+import { Pagination as AntPagination } from 'antd';
 import Layout from '../../../components/layouts/Layout';
 import Breadcrumb from '../../../components/common/Breadcrumb';
 import PageTitle from '../../../components/common/PageTitle';
 import ProductGrid from '../../../components/products/ProductGrid';
 import ProductFilter from '../../../components/products/ProductFilter';
 import ActiveFilters from '../../../components/products/ActiveFilters';
-import Pagination from '../../../components/common/Pagination';
 import { productService } from '../../../services/productService';
 import categoryService from '../../../services/categoryService';
 import { notify } from '../../../utils/notification';
@@ -223,10 +223,13 @@ const CategoryPage = () => {
 
             {!loading && products.length > 0 && (
               <div className="mt-8 flex justify-center">
-                <Pagination
-                  currentPage={pagination.page}
-                  totalPages={pagination.totalPages}
-                  onPageChange={handlePageChange}
+                <AntPagination
+                  current={pagination.page}
+                  total={pagination.total || pagination.totalPages * pagination.limit}
+                  pageSize={pagination.limit || 12}
+                  onChange={handlePageChange}
+                  showSizeChanger={false}
+                  showTotal={(total) => `Tổng ${total} sản phẩm`}
                 />
               </div>
             )}

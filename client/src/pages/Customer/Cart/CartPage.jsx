@@ -41,7 +41,7 @@ const CartPage = () => {
 
   // Debug: Log discountMap
   useEffect(() => {
-    console.log('📊 discountMap loaded:', discountMap);
+    console.log('[DEBUG] discountMap loaded:', discountMap);
   }, [discountMap]);
   
   // Tính toán original subtotal (giá gốc trước discount)

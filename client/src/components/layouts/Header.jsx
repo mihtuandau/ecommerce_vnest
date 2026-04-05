@@ -290,7 +290,7 @@ const Header = () => {
                       selectedLanguage === 'vi' ? 'text-[#00a85a] bg-green-50' : 'text-gray-700'
                     }`}
                   >
-                    <span className="text-lg">🇻🇳</span>
+                    <span className="text-lg">VN</span>
                     Tiếng Việt
                   </button>
                   <button
@@ -302,7 +302,7 @@ const Header = () => {
                       selectedLanguage === 'en' ? 'text-[#00a85a] bg-green-50' : 'text-gray-700'
                     }`}
                   >
-                    <span className="text-lg">🇬🇧</span>
+                    <span className="text-lg">EN</span>
                     English
                   </button>
                 </div>

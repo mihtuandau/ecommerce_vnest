@@ -1,6 +1,7 @@
 import {
   Injectable,
   Inject,
+  Logger,
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
@@ -18,6 +19,8 @@ import { buildCacheKey } from '../common/utils/cache-key.util';
 
 @Injectable()
 export class ProductService {
+  private readonly logger = new Logger(ProductService.name);
+
   constructor(
     private repository: ProductRepository,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
@@ -248,10 +251,17 @@ export class ProductService {
   async remove(id: number): Promise<Product> {
     const product = await this.repository.findById(id);
 
-    // Xóa ảnh trên Cloudinary song song (batch)
-    if (product?.images?.length) {
+    // Xóa toàn bộ ảnh của product và variants trên Cloudinary trước khi xóa DB
+    const productImageUrls = product?.images?.map((image) => image.url) || [];
+    const variantImageUrls =
+      product?.variants?.flatMap((variant) =>
+        (variant.images || []).map((image) => image.url),
+      ) || [];
+    const allImageUrls = [...productImageUrls, ...variantImageUrls];
+
+    if (allImageUrls.length) {
       await Promise.all(
-        product.images.map((image) => this.deleteImageFromCloudinary(image.url)),
+        allImageUrls.map((url) => this.deleteImageFromCloudinary(url)),
       );
     }
 
@@ -473,14 +483,37 @@ export class ProductService {
 
   private async deleteImageFromCloudinary(imageUrl: string): Promise<void> {
     try {
-      const parts = imageUrl.split('/');
-      const uploadIndex = parts.indexOf('upload');
+      const cleanUrl = decodeURIComponent(imageUrl.split('?')[0]);
+      const pathMatch = cleanUrl.match(
+        /\/(image|video|raw)\/upload\/(?:v\d+\/)?(.+)$/,
+      );
 
-      if (uploadIndex === -1) return;
+      if (!pathMatch) {
+        return;
+      }
 
-      const pathParts = parts.slice(uploadIndex + 2);
-      const publicId = pathParts.join('/').replace(/\.[^/.]+$/, '');
-    } catch (error) {}
+      const resourceType = pathMatch[1] as 'image' | 'video' | 'raw';
+      const publicId = pathMatch[2].replace(/\.[^/.]+$/, '');
+
+      await new Promise<void>((resolve, reject) => {
+        cloudinary.uploader.destroy(
+          publicId,
+          { resource_type: resourceType },
+          (error) => {
+            if (error) {
+              reject(error);
+              return;
+            }
+
+            resolve();
+          },
+        );
+      });
+    } catch (error) {
+      this.logger.warn(
+        `Failed to delete Cloudinary image for URL ${imageUrl}: ${error?.message || error}`,
+      );
+    }
   }
 
   async incrementSoldCount(productId: number, quantity: number) {

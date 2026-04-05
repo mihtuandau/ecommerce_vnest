@@ -136,7 +136,7 @@ const SupportChat = ({ scrolled, isOpen: externalIsOpen, onClose }) => {
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
               <MessageSquare size={32} className="text-gray-400" />
             </div>
-            <p className="font-medium text-gray-700">Xin chào! 👋</p>
+            <p className="font-medium text-gray-700">Xin chào!</p>
             <p className="text-xs mt-1">Chúng tôi có thể giúp gì cho bạn?</p>
           </div>
         ) : (

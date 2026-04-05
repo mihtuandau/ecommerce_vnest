@@ -1,5 +1,7 @@
 import { useMemo } from 'react';
 
+const normalizeOption = (value) => String(value || '').trim().toLowerCase();
+
 const ProductOptions = ({
   product,
   selectedSize,
@@ -9,12 +11,14 @@ const ProductOptions = ({
 }) => {
   const getSizes = () => {
     if (!product?.variants) return [];
-    return [...new Set(product.variants.map((v) => v.size).filter(Boolean))];
+    const variantsWithStock = product.variants.filter((v) => (v?.stock || 0) > 0);
+    return [...new Set(variantsWithStock.map((v) => v.size).filter(Boolean))];
   };
 
   const getColors = () => {
     if (!product?.variants) return [];
-    return [...new Set(product.variants.map((v) => v.color).filter(Boolean))];
+    const variantsWithStock = product.variants.filter((v) => (v?.stock || 0) > 0);
+    return [...new Set(variantsWithStock.map((v) => v.color).filter(Boolean))];
   };
 
   const sizes = useMemo(() => getSizes(), [product?.variants]);
@@ -23,15 +27,27 @@ const ProductOptions = ({
   // Get available sizes/colors with stock for the selected color/size
   const getAvailableSizes = () => {
     if (!selectedColor || !product?.variants) return sizes;
+    const selectedColorNormalized = normalizeOption(selectedColor);
     return sizes.filter(size =>
-      product.variants.some(v => v.size === size && v.color === selectedColor && v.stock > 0)
+      product.variants.some(
+        (v) =>
+          normalizeOption(v.size) === normalizeOption(size) &&
+          normalizeOption(v.color) === selectedColorNormalized &&
+          (v.stock || 0) > 0,
+      )
     );
   };
 
   const getAvailableColors = () => {
     if (!selectedSize || !product?.variants) return colors;
+    const selectedSizeNormalized = normalizeOption(selectedSize);
     return colors.filter(color =>
-      product.variants.some(v => v.color === color && v.size === selectedSize && v.stock > 0)
+      product.variants.some(
+        (v) =>
+          normalizeOption(v.color) === normalizeOption(color) &&
+          normalizeOption(v.size) === selectedSizeNormalized &&
+          (v.stock || 0) > 0,
+      )
     );
   };
 

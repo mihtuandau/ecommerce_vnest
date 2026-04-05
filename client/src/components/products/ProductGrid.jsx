@@ -4,6 +4,7 @@ import { FaEye } from "react-icons/fa";
 import Button from "../common/Button";
 import { formatPrice } from "../../utils/formatters";
 import StarRating from "../common/StarRating";
+import { Package } from "lucide-react";
 
 const ProductGrid = ({
   products = [],
@@ -69,7 +70,9 @@ const ProductGrid = ({
   if (!products || products.length === 0) {
     return (
       <div className="text-center py-20 border border-gray-200 rounded-lg bg-white">
-        <div className="text-6xl text-gray-300 mb-4">📦</div>
+        <div className="flex justify-center mb-4">
+          <Package size={48} className="text-gray-300" />
+        </div>
         <h3 className="text-xl font-light text-gray-900 mb-2">
           Không tìm thấy sản phẩm
         </h3>

@@ -61,7 +61,7 @@ const ProductsPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-full w-full ">
+      <div className="w-full max-w-7xl mx-auto px-4 lg:px-6 py-6">
         <PageHeader
           title="Quản lý sản phẩm"
           subtitle={`Tổng số sản phẩm: ${pagination.total ?? products.length}`}

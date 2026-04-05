@@ -5,7 +5,6 @@ import { useOrders, useUpdateOrderStatus } from '../../../hooks/useOrders';
 import paymentService from '../../../services/paymentService';
 import { notify } from '../../../utils/notification';
 import Loading from '../../../components/common/Loading';
-import Pagination from '../../../components/common/Pagination';
 import OrderStatsCards from '../../../components/admin/Order/OrderStatsCards';
 import OrderFilters from '../../../components/admin/Order/OrderFilters';
 import OrderTable from '../../../components/admin/Order/OrderTable';
@@ -18,8 +17,6 @@ const AdminOrdersPage = () => {
   const [sortDir, setSortDir] = useState('desc');
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
 
   const params = { limit: 1000 };
   if (statusFilter && statusFilter !== '') {
@@ -67,13 +64,6 @@ const AdminOrdersPage = () => {
     }
   };
 
-  const paginatedOrders = useMemo(() => {
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    return filteredOrders.slice(startIndex, startIndex + itemsPerPage);
-  }, [filteredOrders, currentPage]);
-
-  const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
-
   return (
     <div className="p-6">
       <div className="max-w-7xl mx-auto">
@@ -111,21 +101,13 @@ const AdminOrdersPage = () => {
         ) : (
           <>
             <OrderTable
-              orders={paginatedOrders}
+              orders={filteredOrders}
               sortBy={sortBy}
               sortDir={sortDir}
               onSort={toggleSort}
               onViewDetails={handleViewDetails}
               onSyncPayment={handleSyncPayment}
             />
-
-            {totalPages > 1 && (
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={setCurrentPage}
-              />
-            )}
           </>
         )}
       </div>

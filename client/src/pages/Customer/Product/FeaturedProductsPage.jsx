@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Spin, Empty, Select } from 'antd';
+import { Spin, Empty, Select, Pagination as AntPagination } from 'antd';
 import Layout from '../../../components/layouts/Layout';
 import Breadcrumb from '../../../components/common/Breadcrumb';
 import PageTitle from '../../../components/common/PageTitle';
 import ProductGrid from '../../../components/products/ProductGrid';
-import Pagination from '../../../components/common/Pagination';
 import { productService } from '../../../services/productService';
 
 const FeaturedProductsPage = () => {
@@ -123,10 +122,13 @@ const FeaturedProductsPage = () => {
 
               {pagination.totalPages > 1 && (
                 <div className="mt-12">
-                  <Pagination
-                    currentPage={pagination.page}
-                    totalPages={pagination.totalPages}
-                    onPageChange={handlePageChange}
+                  <AntPagination
+                    current={pagination.page}
+                    total={pagination.total || pagination.totalPages * pagination.limit}
+                    pageSize={pagination.limit || 12}
+                    onChange={handlePageChange}
+                    showSizeChanger={false}
+                    showTotal={(total) => `Tổng ${total} sản phẩm`}
                   />
                 </div>
               )}

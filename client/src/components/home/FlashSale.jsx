@@ -141,8 +141,15 @@ function FlashProductCard({ product, discountPercent }) {
               style={{ width: `${soldPercent}%` }}
             />
           </div>
-          <p className="text-[10px] text-gray-400 mt-1">
-            {soldPercent >= 80 ? '🔥 Sắp hết' : `Đã bán ${soldCount}`}
+          <p className="text-[10px] text-gray-400 mt-1 flex items-center gap-1">
+            {soldPercent >= 80 ? (
+              <>
+                <Flame size={12} className="text-red-500" />
+                Sắp hết
+              </>
+            ) : (
+              `Đã bán ${soldCount}`
+            )}
           </p>
         </div>
       </div>

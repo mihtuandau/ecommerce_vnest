@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
+import { Pagination as AntPagination } from 'antd';
 import categoryService from '../../../services/categoryService';
 import { notify } from '../../../utils/notification';
 import Button from '../../../components/common/Button';
-import Pagination from '../../../components/common/Pagination';
 import CategoryStatsCards from '../../../components/admin/Category/CategoryStatsCards';
 import CategoryFilters from '../../../components/admin/Category/CategoryFilters';
 import CategoryFormModal from '../../../components/admin/Category/CategoryFormModal';
@@ -157,13 +157,16 @@ const AdminCategoriesPage = () => {
         />
 
         {!loading && filteredCategories.length > 0 && (
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-            itemsCount={paginatedCategories.length}
-            totalItems={filteredCategories.length}
-          />
+          <div className="mt-4 flex justify-end">
+            <AntPagination
+              current={currentPage}
+              total={filteredCategories.length}
+              pageSize={itemsPerPage}
+              onChange={(page) => setCurrentPage(page)}
+              showSizeChanger={false}
+              showTotal={(total) => `Tổng ${total} danh mục`}
+            />
+          </div>
         )}
       </div>
 

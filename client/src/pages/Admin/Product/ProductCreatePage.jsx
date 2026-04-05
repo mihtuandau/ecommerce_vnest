@@ -6,7 +6,9 @@ import { useCategories, useBrands } from '../../../hooks/useProducts';
 import productService from '../../../services/productService';
 import { notify } from '../../../utils/notification';
 import Loading from '../../../components/common/Loading';
-import ProductFormUnified from '../../../components/admin/Product/ProductFormUnified';
+import ProductForm from '../../../components/admin/Product/ProductForm';
+
+const normalizeOption = (value) => String(value || '').trim().toLowerCase();
 
 const generateSlug = (name) => {
   return (name || '')
@@ -37,6 +39,7 @@ const ProductCreatePage = () => {
 
   const [variants, setVariants] = useState([]);
   const [variantsToDelete, setVariantsToDelete] = useState([]);
+  const [variantImagesToDelete, setVariantImagesToDelete] = useState([]);
   const [nextVariantId, setNextVariantId] = useState(1);
 
   const { data: categories = [] } = useCategories();
@@ -83,6 +86,7 @@ const ProductCreatePage = () => {
         }));
         setVariants(vList);
         setNextVariantId(vList.length + 1);
+        setVariantImagesToDelete([]);
       })
       .catch((err) => {
         if (!cancelled) {
@@ -164,6 +168,82 @@ const ProductCreatePage = () => {
     setNextVariantId((prev) => prev + 1);
   }, [nextVariantId, form]);
 
+  const addVariantsBulk = useCallback((sizesInput, colorsInput, options = {}) => {
+    const parseList = (text) =>
+      String(text || '')
+        .split(',')
+        .map((x) => x.trim())
+        .filter(Boolean);
+
+    const sanitizeForSku = (v) =>
+      String(v || '')
+        .trim()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/đ/g, 'd')
+        .replace(/Đ/g, 'D')
+        .replace(/[^a-zA-Z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .toUpperCase();
+
+    const buildSku = (prefix, size, color) => {
+      const p = sanitizeForSku(prefix);
+      if (!p) return '';
+      const s = sanitizeForSku(size);
+      const c = sanitizeForSku(color);
+      return [p, s, c].filter(Boolean).join('-');
+    };
+
+    const sizes = parseList(sizesInput);
+    const colors = parseList(colorsInput);
+
+    const normalizedSizes = sizes.length ? sizes : [''];
+    const normalizedColors = colors.length ? colors : [''];
+
+    const existingKeys = new Set(
+      variants.map((v) => `${(v.size || '').trim().toLowerCase()}|${(v.color || '').trim().toLowerCase()}`),
+    );
+
+    const basePrice = Number(form.getFieldValue('basePrice') || 0);
+    const inputPrice = Number(options.defaultPrice);
+    const inputStock = Number(options.defaultStock);
+    const priceToUse = Number.isFinite(inputPrice) && inputPrice >= 0 ? inputPrice : basePrice;
+    const stockToUse = Number.isFinite(inputStock) && inputStock >= 0 ? inputStock : 0;
+    const skuPrefix = options.skuPrefix || '';
+
+    const toAdd = [];
+    let localId = nextVariantId;
+
+    for (const size of normalizedSizes) {
+      for (const color of normalizedColors) {
+        const key = `${String(size).trim().toLowerCase()}|${String(color).trim().toLowerCase()}`;
+        if (existingKeys.has(key)) continue;
+
+        existingKeys.add(key);
+        toAdd.push({
+          id: `temp-${localId++}`,
+          size: size || '',
+          color: color || '',
+          price: priceToUse,
+          stock: stockToUse,
+          sku: buildSku(skuPrefix, size, color),
+          lowStockThreshold: 5,
+          isActive: true,
+          images: [],
+        });
+      }
+    }
+
+    if (!toAdd.length) {
+      notify.warning('Không có biến thể mới để thêm (có thể đã tồn tại).');
+      return;
+    }
+
+    setVariants((prev) => [...prev, ...toAdd]);
+    setNextVariantId(localId);
+    notify.success(`Đã thêm nhanh ${toAdd.length} biến thể.`);
+  }, [form, nextVariantId, variants]);
+
   const removeVariant = useCallback((variantId) => {
     setVariants((prev) => {
       const v = prev.find((x) => x.id === variantId);
@@ -207,6 +287,10 @@ const ProductCreatePage = () => {
     setVariants((prev) =>
       prev.map((v) => {
         if (v.id !== variantId) return v;
+        const imgToRemove = (v.images || []).find((img) => img.tempId === tempId);
+        if (imgToRemove?.id) {
+          setVariantImagesToDelete((ids) => [...new Set([...ids, imgToRemove.id])]);
+        }
         const filtered = (v.images || []).filter((img) => img.tempId !== tempId);
         return {
           ...v,
@@ -228,6 +312,65 @@ const ProductCreatePage = () => {
         };
       })
     );
+  }, []);
+
+  const clearVariantImages = useCallback((variantId) => {
+    setVariants((prev) =>
+      prev.map((v) => {
+        if (v.id !== variantId) return v;
+
+        const existingImageIds = (v.images || [])
+          .filter((img) => img?.id)
+          .map((img) => img.id);
+
+        if (existingImageIds.length) {
+          setVariantImagesToDelete((ids) => [...new Set([...ids, ...existingImageIds])]);
+        }
+
+        return {
+          ...v,
+          images: [],
+        };
+      }),
+    );
+  }, []);
+
+  const setColorImageSource = useCallback((sourceVariantId) => {
+    setVariants((prev) => {
+      const sourceVariant = prev.find((v) => v.id === sourceVariantId);
+      const sourceColor = sourceVariant?.color;
+      const sourceColorKey = normalizeOption(sourceColor);
+
+      if (!sourceColorKey || !Array.isArray(sourceVariant?.images) || sourceVariant.images.length === 0) {
+        notify.warning('Biến thể nguồn cần có màu và ít nhất 1 ảnh.');
+        return prev;
+      }
+
+      const imageIdsToDelete = [];
+
+      const nextVariants = prev.map((v) => {
+        const sameColor = normalizeOption(v.color) === sourceColorKey;
+        if (!sameColor || v.id === sourceVariantId) return v;
+
+        const existingIds = (v.images || [])
+          .filter((img) => img?.id)
+          .map((img) => img.id);
+
+        if (existingIds.length) imageIdsToDelete.push(...existingIds);
+
+        return {
+          ...v,
+          images: [],
+        };
+      });
+
+      if (imageIdsToDelete.length) {
+        setVariantImagesToDelete((ids) => [...new Set([...ids, ...imageIdsToDelete])]);
+      }
+
+      notify.success(`Đã đặt ảnh theo màu "${sourceColor}". Các size cùng màu sẽ kế thừa ảnh này.`);
+      return nextVariants;
+    });
   }, []);
 
   const buildProductPayload = (values) => {
@@ -279,6 +422,9 @@ const ProductCreatePage = () => {
         await productService.update(id, productPayload);
         for (const imageId of productImagesToDelete) {
           try { await productService.deleteImage(imageId); } catch (e) { /* ignore */ }
+        }
+        for (const imageId of variantImagesToDelete) {
+          try { await productService.deleteVariantImage(imageId); } catch (e) { /* ignore */ }
         }
         const newProductImages = productImages.filter((img) => img.file);
         if (newProductImages.length > 0) {
@@ -397,7 +543,7 @@ const ProductCreatePage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="mb-6">
+      <div className="w-full max-w-[1600px] mx-auto px-3 lg:px-4 pt-4 lg:pt-6 pb-2 lg:pb-4 mb-4">
         <div className="flex items-center gap-3 mb-4">
           <Link
             to="/admin-products"
@@ -424,29 +570,34 @@ const ProductCreatePage = () => {
       {loadingProduct ? (
         <Loading fullScreen text="Đang tải sản phẩm..." variant="admin" />
       ) : (
-        <ProductFormUnified
-          form={form}
-          productImages={productImages}
-          setProductImages={setProductImages}
-          removeProductImage={removeProductImage}
-          updateProductImage={updateProductImage}
-          handleProductImageSelect={handleProductImageSelect}
-          variants={variants}
-          addVariant={addVariant}
-          removeVariant={removeVariant}
-          updateVariant={updateVariant}
-          handleVariantImageSelect={handleVariantImageSelect}
-          removeVariantImage={removeVariantImage}
-          updateVariantImage={updateVariantImage}
-          categories={categories}
-          brands={brands}
-          loading={loading}
-          isEdit={isEdit}
-          submitLabel={isEdit ? 'Lưu thay đổi' : 'Thêm sản phẩm'}
-          onCancel={handleCancel}
-          onNameChange={handleNameChange}
-          onSubmit={handleSubmit}
-        />
+        <div className="w-full max-w-[1600px] mx-auto px-3 lg:px-4 pb-12">
+          <ProductForm
+            form={form}
+            productImages={productImages}
+            setProductImages={setProductImages}
+            removeProductImage={removeProductImage}
+            updateProductImage={updateProductImage}
+            handleProductImageSelect={handleProductImageSelect}
+            variants={variants}
+            addVariant={addVariant}
+            addVariantsBulk={addVariantsBulk}
+            removeVariant={removeVariant}
+            updateVariant={updateVariant}
+            handleVariantImageSelect={handleVariantImageSelect}
+            removeVariantImage={removeVariantImage}
+            updateVariantImage={updateVariantImage}
+            clearVariantImages={clearVariantImages}
+            setColorImageSource={setColorImageSource}
+            categories={categories}
+            brands={brands}
+            loading={loading}
+            isEdit={isEdit}
+            submitLabel={isEdit ? 'Lưu thay đổi' : 'Thêm sản phẩm'}
+            onCancel={handleCancel}
+            onNameChange={handleNameChange}
+            onSubmit={handleSubmit}
+          />
+        </div>
       )}
     </div>
   );

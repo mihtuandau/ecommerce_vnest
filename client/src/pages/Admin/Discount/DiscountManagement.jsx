@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { Plus, RefreshCw } from 'lucide-react';
 import { notify } from '../../../utils/notification';
 import Button from '../../../components/common/Button';
-import Pagination from '../../../components/common/Pagination';
 import DiscountStatsCards from '../../../components/admin/Discount/DiscountStatsCards';
 import DiscountFilters from '../../../components/admin/Discount/DiscountFilters';
 import DiscountTable from '../../../components/admin/Discount/DiscountTable';
@@ -19,8 +18,6 @@ const DiscountManagement = () => {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
 
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedDiscount, setSelectedDiscount] = useState(null);
@@ -38,13 +35,6 @@ const DiscountManagement = () => {
   });
 
   const deleteMutation = useDeleteDiscount();
-
-  const paginatedDiscounts = useMemo(() => {
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    return filteredDiscounts.slice(startIndex, startIndex + itemsPerPage);
-  }, [filteredDiscounts, currentPage]);
-
-  const totalPages = Math.ceil(filteredDiscounts.length / itemsPerPage);
 
   const handleSort = (key) => {
     setSortConfig((prev) => ({
@@ -118,23 +108,13 @@ const DiscountManagement = () => {
 
       <div>
         <DiscountTable
-          discounts={paginatedDiscounts}
+          discounts={filteredDiscounts}
           loading={isLoading}
           onSort={handleSort}
           onView={handleView}
           onEdit={handleEdit}
           onDelete={handleDelete}
         />
-        
-        {!isLoading && filteredDiscounts.length > 0 && (
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-            itemsCount={paginatedDiscounts.length}
-            totalItems={filteredDiscounts.length}
-          />
-        )}
       </div>
 
       <DiscountDetailModal

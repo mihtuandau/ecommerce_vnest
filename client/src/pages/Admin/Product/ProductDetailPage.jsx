@@ -209,7 +209,7 @@ const ProductDetailPage = () => {
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-4 gap-4 mb-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             <StatCard 
               icon={<Package size={18} />}
               label="Tồn kho"
@@ -245,7 +245,7 @@ const ProductDetailPage = () => {
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center gap-2 px-4 py-2.5 font-medium text-sm transition-colors ${
                   activeTab === tab.id 
-                    ? 'text-blue-600 border-b-2 border-blue-600' 
+                    ? 'text-[#37A76B] border-b-2 border-[#37A76B]' 
                     : 'text-gray-600 hover:text-gray-900'
                 }`}
               >
@@ -254,7 +254,7 @@ const ProductDetailPage = () => {
                 {tab.badge != null && (
                   <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${
                     activeTab === tab.id 
-                      ? 'bg-blue-100 text-blue-700' 
+                      ? 'bg-green-100 text-[#37A76B]' 
                       : 'bg-gray-100 text-gray-600'
                   }`}>
                     {tab.badge}
@@ -267,37 +267,37 @@ const ProductDetailPage = () => {
       </div>
 
       {/* Content */}
-      <div className="max-w-7xl mx-auto py-6 px-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main Content */}
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-lg border border-gray-200">
+      <div className="bg-gray-50 min-h-screen py-6">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Main Content */}
+            <div className="lg:col-span-2">
               <TabContent activeTab={activeTab} product={product} readOnly />
             </div>
-          </div>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
-            <div className="bg-white rounded-lg border border-gray-200 p-5">
-              <h3 className="text-base font-semibold text-gray-900 mb-4">Trạng thái</h3>
-              <StatusCard product={product} readOnly />
-            </div>
-            
-            <div className="bg-white rounded-lg border border-gray-200 p-5">
-              <h3 className="text-base font-semibold text-gray-900 mb-4">Phân loại</h3>
-              <OrganizationCard 
-                product={product}
-                categories={categories} 
-                brands={brands} 
-                loadingCategories={loadingCategories} 
-                loadingBrands={loadingBrands} 
-                readOnly 
-              />
-            </div>
-            
-            <div className="bg-white rounded-lg border border-gray-200 p-5">
-              <h3 className="text-base font-semibold text-gray-900 mb-4">Thống kê</h3>
-              <StatsCard product={product} />
+            {/* Sidebar */}
+            <div className="space-y-6">
+              <div className="bg-white rounded-lg border border-[#E6E8EC] p-6">
+                <h3 className="text-base font-semibold text-gray-900 mb-5">Trạng thái</h3>
+                <StatusCard product={product} readOnly />
+              </div>
+              
+              <div className="bg-white rounded-lg border border-[#E6E8EC] p-6">
+                <h3 className="text-base font-semibold text-gray-900 mb-5">Phân loại</h3>
+                <OrganizationCard 
+                  product={product}
+                  categories={categories} 
+                  brands={brands} 
+                  loadingCategories={loadingCategories} 
+                  loadingBrands={loadingBrands} 
+                  readOnly 
+                />
+              </div>
+              
+              <div className="bg-white rounded-lg border border-[#E6E8EC] p-6">
+                <h3 className="text-base font-semibold text-gray-900 mb-5">Thống kê</h3>
+                <StatsCard product={product} />
+              </div>
             </div>
           </div>
         </div>

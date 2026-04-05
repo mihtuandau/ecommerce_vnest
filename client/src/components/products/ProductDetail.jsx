@@ -187,6 +187,7 @@ export const ProductDetails = ({
   flashSale,
   selectedSize,
   selectedColor,
+  selectedVariant,
   quantity,
   onSizeSelect,
   onColorSelect,
@@ -195,6 +196,8 @@ export const ProductDetails = ({
 }) => {
   const totalStock =
     product?.variants?.reduce((sum, v) => sum + (v.stock || 0), 0) || 0;
+  const hasVariantOptions = (product?.variants?.length || 0) > 0;
+  const needsVariantSelection = hasVariantOptions && !selectedVariant;
 
   // Ngưỡng cảnh báo sắp hết hàng (dùng lowStockThreshold nếu có, mặc định 5)
   const lowStockThreshold = product?.variants?.[0]?.lowStockThreshold ?? 5;
@@ -220,6 +223,13 @@ export const ProductDetails = ({
         onColorSelect={onColorSelect}
       />
 
+      {needsVariantSelection && (
+        <div className="flex items-center gap-2 px-4 py-2.5 bg-blue-50 border border-blue-200 text-blue-700 text-sm mb-4">
+          <span className="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0" />
+          Vui lòng chọn biến thể (size/màu) để tiếp tục.
+        </div>
+      )}
+
       {/* Cảnh báo tồn kho */}
       {isOutOfStock && (
         <div className="flex items-center gap-2 px-4 py-2.5 bg-red-50 border border-red-200 text-red-700 text-sm mb-4">
@@ -243,6 +253,8 @@ export const ProductDetails = ({
       <ProductActions
         onAddToCart={onAddToCart}
         totalStock={totalStock}
+        canPurchase={!needsVariantSelection}
+        disabledReason="Vui lòng chọn biến thể"
       />
 
       <ProductAccordion product={product} />
