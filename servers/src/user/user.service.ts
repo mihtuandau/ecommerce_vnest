@@ -35,6 +35,7 @@ export class UserService {
     
     if (data.name) updateData.name = data.name;
     if (data.email) updateData.email = data.email;
+    if (data.role) updateData.role = data.role;
     if (data.password) {
       updateData.password = await bcrypt.hash(data.password, 10);
     }

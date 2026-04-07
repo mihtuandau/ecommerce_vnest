@@ -1,6 +1,7 @@
 // src/pages/AdminUserManagement.jsx
 import React, { useState, useMemo } from "react";
 import { Search, Plus } from "lucide-react";
+import { Modal as AntModal } from "antd";
 import {
   useUsers,
   useCreateUser,
@@ -8,17 +9,15 @@ import {
   useDeleteUser,
 } from "../../../hooks/useUsers";
 import userService from "../../../services/userService";
-
-// Components
-import Input from "../../../components/common/Input";
-import Select from "../../../components/common/Select";
-import Button from "../../../components/common/Button";
 import Modal from "../../../components/common/Modal";
 import Loading from "../../../components/common/Loading";
 import Pagination from "../../../components/common/Pagination";
 import UserTable from "../../../components/admin/UserManagement/UserTable";
 import UserForm from "../../../components/admin/UserManagement/UserForm";
 import AddressList from "../../../components/admin/UserManagement/AddressList";
+import Input from "../../../components/common/Input";
+import Select from "../../../components/common/Select";
+import Button from "../../../components/common/Button";
 
 const AdminUserManagement = () => {
   const { data: users = [], isLoading, error, refetch } = useUsers();
@@ -62,10 +61,20 @@ const AdminUserManagement = () => {
 
   const handleUpdateUser = async (formData) => {
     try {
-      const updateData = { name: formData.name };
-      if (formData.password) {
-        updateData.password = formData.password;
+      const updateData = {};
+
+      if (typeof formData.name === 'string' && formData.name.trim() !== '') {
+        updateData.name = formData.name.trim();
       }
+
+      if (['CUSTOMER', 'ADMIN'].includes(formData.role)) {
+        updateData.role = formData.role;
+      }
+
+      if (typeof formData.password === 'string' && formData.password.trim() !== '') {
+        updateData.password = formData.password.trim();
+      }
+
       await updateMutation.mutateAsync({
         id: modalState.data.id,
         data: updateData,
@@ -76,14 +85,21 @@ const AdminUserManagement = () => {
     }
   };
 
-  const handleDeleteUser = async (user) => {
-    if (window.confirm(`Xác nhận xóa người dùng "${user.email}"?`)) {
-      try {
-        await deleteMutation.mutateAsync(user.id);
-      } catch (err) {
-        // Error already handled by mutation
-      }
-    }
+  const handleDeleteUser = (user) => {
+    AntModal.confirm({
+      title: `Xác nhận xóa người dùng?`,
+      content: `Bạn có chắc chắn muốn xóa người dùng "${user.email}"? Hành động này không thể hoàn tác.`,
+      okText: "Xác nhận",
+      cancelText: "Hủy",
+      onOk: async () => {
+        try {
+          await deleteMutation.mutateAsync(user.id);
+          // Optional: Show success notification
+        } catch (err) {
+          // Error is handled by the mutation, but you could show a notification here too
+        }
+      },
+    });
   };
 
   // Address handlers

@@ -17,11 +17,11 @@ export function generateTransactionId(method: string): string {
   return `TXN_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 }
 
-export function generatePayOSOrderCode(): number {
-  return Date.now();
+export function generatePayOSOrderCode(): string {
+  return Date.now().toString();
 }
 
-export async function createPayOSPaymentLink(payosService: PayOSService, order: any, orderCode: number) {
+export async function createPayOSPaymentLink(payosService: PayOSService, order: any, orderCode: string) {
   const shippingSnapshot = order.shippingSnapshot as any;
   const buyerName = order.user?.name || shippingSnapshot?.fullName || order.address?.fullName || 'Customer';
   const buyerEmail = order.user?.email || order.guestEmail || '';
@@ -34,7 +34,7 @@ export async function createPayOSPaymentLink(payosService: PayOSService, order: 
 
   try {
     const payosResponse = await payosService.createPaymentLink({
-      orderCode,
+      orderCode: Number(orderCode),
       amount: order.total,
       description: `Thanh toán đơn hàng #${order.id}`,
       buyerName,

@@ -48,7 +48,7 @@ export class PaymentWebhookController {
   async verifyPaymentReturn(@Param('orderCode') orderCode: string) {
     console.log('🔍 Verifying payment for orderCode:', orderCode);
     try {
-      const result = await this.paymentService.findByPayosOrderCode(+orderCode);
+      const result = await this.paymentService.findByPayosOrderCode(orderCode);
       console.log('✅ Payment verification successful:', result);
       return { success: true, data: result };
     } catch (error) {

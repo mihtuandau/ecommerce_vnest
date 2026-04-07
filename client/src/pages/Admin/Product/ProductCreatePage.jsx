@@ -6,7 +6,7 @@ import { useCategories, useBrands } from '../../../hooks/useProducts';
 import productService from '../../../services/productService';
 import { notify } from '../../../utils/notification';
 import Loading from '../../../components/common/Loading';
-import ProductFormUnified from '../../../components/admin/Product/ProductFormUnified';
+import ProductFormWithTabs from '../../../components/admin/Product/ProductFormWithTabs';
 
 const generateSlug = (name) => {
   return (name || '')
@@ -424,7 +424,7 @@ const ProductCreatePage = () => {
       {loadingProduct ? (
         <Loading fullScreen text="Đang tải sản phẩm..." variant="admin" />
       ) : (
-        <ProductFormUnified
+        <ProductFormWithTabs
           form={form}
           productImages={productImages}
           setProductImages={setProductImages}

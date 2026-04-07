@@ -173,7 +173,7 @@ export class DiscountRepository {
     // Nếu có specificProducts thì sắp lại theo thứ tự admin đã chọn
     const orderedProducts = flashSale.applicableToProducts.length > 0
       ? flashSale.applicableToProducts
-          .map((id) => products.find((p) => p.id === id))
+          .map((dp) => products.find((p) => p.id === dp.productId))
           .filter(Boolean)
       : products;
 
@@ -183,14 +183,17 @@ export class DiscountRepository {
   /** Tìm discount tốt nhất đang active áp dụng cho 1 sản phẩm cụ thể (flash hoặc thường) */
   async findDiscountForProduct(productId: number) {
     const now = new Date();
-    // Lấy TẤT CẢ discount active, lọc theo product ngay trong WHERE
-    // rồi lấy cái tốt nhất theo thứ tự ưu tiên: flash sale → % cao nhất → fixedAmount cao nhất
+    // Lấy TẤT CẢ discount active, lọc theo product trong WHERE
     const discounts = await this.prisma.discount.findMany({
       where: {
         isActive: true,
         startDate: { lte: now },
         OR: [{ endDate: null }, { endDate: { gte: now } }],
-        applicableToProducts: { has: productId },
+        applicableToProducts: {
+          some: {
+            productId,
+          },
+        },
       },
       select: {
         id: true,
@@ -200,7 +203,6 @@ export class DiscountRepository {
         endDate: true,
         description: true,
         isFlashSale: true,
-        applicableToProducts: true,
       },
       orderBy: [
         { percentage: 'desc' },   // % giảm cao nhất ưu tiên trước

@@ -1,5 +1,7 @@
 import { Upload, X, Plus, Trash2, Save, AlertCircle } from 'lucide-react';
 import { Form, Input, InputNumber, Select, Button, Card, Switch, Checkbox, Tag, Tooltip } from 'antd';
+import RichTextEditor from './RichTextEditor';
+import DiscountTypeSelector from './DiscountTypeSelector';
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -74,12 +76,11 @@ const ProductFormUnified = ({
                   name="description" 
                   label={<span className="text-sm font-medium text-gray-700">Mô tả sản phẩm</span>}
                 >
-                  <TextArea
-                    rows={5}
+                  <RichTextEditor
                     placeholder="Nhập mô tả chi tiết về sản phẩm..."
-                    className="rounded-lg"
-                    showCount
-                    maxLength={2000}
+                    onChange={(html) => {
+                      form.setFieldValue('description', html);
+                    }}
                   />
                 </Form.Item>
 
@@ -189,6 +190,19 @@ const ProductFormUnified = ({
                   />
                 </Form.Item>
               </div>
+            </Card>
+
+            {/* Giá & Chiết khấu */}
+            <Card 
+              title={
+                <div className="flex items-center gap-2">
+                  <div className="w-1 h-5 bg-red-500 rounded-full"></div>
+                  <span className="text-lg font-semibold text-gray-900">Giá & Chiết khấu</span>
+                </div>
+              }
+              className="shadow-sm hover:shadow-md transition-all duration-200 border-0 rounded-xl overflow-hidden"
+            >
+              <DiscountTypeSelector form={form} prefix="discount" />
             </Card>
 
             {/* Biến thể */}

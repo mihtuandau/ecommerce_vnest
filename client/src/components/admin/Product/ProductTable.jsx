@@ -16,6 +16,7 @@ const ProductTable = ({
   onSelectAll,
   onSelectProduct,
   onPageChange,
+  visibleColumns = [],
 }) => {
   const columns = getProductTableColumns({
     selectedProducts,
@@ -26,7 +27,7 @@ const ProductTable = ({
     onEdit,
     onDelete,
     onManageVariants,
-  });
+  }).filter(col => visibleColumns.length === 0 || visibleColumns.includes(col.key));
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">

@@ -30,7 +30,7 @@ export class PaymentWebhook {
       this.logger.log('🔍 Looking for payment with PayOS orderCode:', orderCode);
 
       // Tìm payment theo payosOrderCode
-      const payment = await this.repository.findByPayosOrderCode(orderCode);
+      const payment = await this.repository.findByPayosOrderCode(orderCode.toString());
       if (!payment) {
         this.logger.error('❌ Payment not found for orderCode:', orderCode);
         throw new NotFoundException(`Payment not found for order code: ${orderCode}`);

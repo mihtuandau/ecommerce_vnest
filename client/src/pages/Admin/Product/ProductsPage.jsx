@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from 'antd';
+import { Button, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useProducts, useCategories, useBrands } from '../../../hooks/useProducts';
 import { useProductActions } from '../../../hooks/useProductActions';
@@ -9,6 +9,10 @@ import { QueryListWrapper } from '../../../components/common/QueryWrapper';
 import ProductToolbar from '../../../components/admin/Product/ProductToolbar';
 import ProductTable from '../../../components/admin/Product/ProductTable';
 import DeleteConfirmModal from '../../../components/common/DeleteConfirm';
+import BulkActionsBar from '../../../components/admin/Product/BulkActionsBar';
+import ColumnCustomizer from '../../../components/admin/Product/ColumnCustomizer';
+import { exportSelectedProductsToCSV } from '../../../utils/exportUtils';
+import productService from '../../../services/productService';
 
 const ProductsPage = () => {
   const navigate = useNavigate();
@@ -33,6 +37,22 @@ const ProductsPage = () => {
   const pagination = productsData?.pagination || {};
 
   const [selectedProducts, setSelectedProducts] = useState([]);
+
+  const [visibleColumns, setVisibleColumns] = useState([
+    'select',
+    'product',
+    'sku',
+    'category',
+    'price',
+    'stock',
+    'sold',
+    'rating',
+    'status',
+    'variants',
+    'actions',
+  ]);
+
+  const [bulkStatusLoading, setBulkStatusLoading] = useState(false);
 
   const {
     deleteModalOpen,
@@ -59,6 +79,57 @@ const ProductsPage = () => {
     setFilters(prev => ({ ...prev, ...newFilters }));
   };
 
+  const handleBulkStatusChange = async (newStatus) => {
+    if (selectedProducts.length === 0) return;
+
+    setBulkStatusLoading(true);
+    try {
+      const isActive = newStatus === 'active';
+      
+      // Gọi API để update status của tất cả sản phẩm được chọn
+      await Promise.all(
+        selectedProducts.map(id =>
+          productService.update(id, { isActive })
+        )
+      );
+
+      message.success(`Đã cập nhật trạng thái cho ${selectedProducts.length} sản phẩm`);
+      setSelectedProducts([]);
+      refetch();
+    } catch (err) {
+      message.error(err?.message || 'Có lỗi xảy ra khi cập nhật trạng thái');
+    } finally {
+      setBulkStatusLoading(false);
+    }
+  };
+
+  const handleBulkActionDelete = async () => {
+    if (selectedProducts.length === 0) return;
+    await handleBulkDelete();
+    setSelectedProducts([]);
+  };
+
+  const handleExport = () => {
+    if (selectedProducts.length === 0) {
+      message.warning('Vui lòng chọn ít nhất một sản phẩm để xuất');
+      return;
+    }
+    try {
+      exportSelectedProductsToCSV(
+        selectedProducts,
+        products,
+        `products-${new Date().getTime()}.csv`
+      );
+      message.success('Đang tải file...');
+    } catch (err) {
+      message.error('Có lỗi xảy ra khi xuất dữ liệu');
+    }
+  };
+
+  const handleClearSelection = () => {
+    setSelectedProducts([]);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-full w-full ">
@@ -69,16 +140,31 @@ const ProductsPage = () => {
           onRefresh={refetch}
           refreshing={isLoading}
           actions={
-            <Button
-              type="primary"
-              size="large"
-              icon={<PlusOutlined />}
-              onClick={() => navigate('/admin-products/create')}
-            >
-              + Thêm sản phẩm mới
-            </Button>
+            <div className="flex gap-2">
+              <ColumnCustomizer
+                visibleColumns={visibleColumns}
+                onColumnsChange={setVisibleColumns}
+              />
+              <Button
+                type="primary"
+                size="large"
+                icon={<PlusOutlined />}
+                onClick={() => navigate('/admin-products/create')}
+              >
+                + Thêm sản phẩm mới
+              </Button>
+            </div>
           }
         />
+
+      <BulkActionsBar
+        selectedCount={selectedProducts.length}
+        onBulkDelete={handleBulkActionDelete}
+        onBulkStatusChange={handleBulkStatusChange}
+        onExport={handleExport}
+        onClearSelection={handleClearSelection}
+        deleting={deleting}
+      />
 
       <ProductToolbar
         search={filters.search}
@@ -132,6 +218,7 @@ const ProductsPage = () => {
           onDelete={handleDelete}
           onManageVariants={(product) => navigate(`/admin-products/${product.id}/edit#variants`)}
           selectedProducts={selectedProducts}
+          visibleColumns={visibleColumns}
           onSelectAll={handleSelectAll}
           onSelectProduct={handleSelectProduct}
         />

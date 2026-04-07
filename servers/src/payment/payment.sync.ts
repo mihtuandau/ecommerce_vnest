@@ -15,7 +15,7 @@ export class PaymentSync {
     private cacheService: PaymentCache,
   ) {}
 
-  async findByPayosOrderCodeWithSync(orderCode: number) {
+  async findByPayosOrderCodeWithSync(orderCode: string) {
     const payment = await this.repository.findByPayosOrderCode(orderCode);
     
     if (!payment) {
@@ -25,7 +25,7 @@ export class PaymentSync {
     if (payment.status === 'PENDING') {
       try {
         this.logger.log(`🔄 Payment ${payment.id} is PENDING, syncing with PayOS...`);
-        const payosInfo = await this.payosService.getPaymentInfo(orderCode);
+        const payosInfo = await this.payosService.getPaymentInfo(parseInt(orderCode, 10));
         this.logger.log('📡 PayOS info:', { status: payosInfo.status });
         if (payosInfo.status === 'PAID') {
           const updatedPayment = await this.updatePaymentToSuccess(payment);
@@ -75,7 +75,7 @@ export class PaymentSync {
     try {
       this.logger.log(`🔄 Manually syncing payment ${paymentId} with PayOS orderCode ${payment.payosOrderCode}...`);
       
-      const payosInfo = await this.payosService.getPaymentInfo(Number(payment.payosOrderCode));
+      const payosInfo = await this.payosService.getPaymentInfo(parseInt(payment.payosOrderCode, 10));
       this.logger.log(`📡 PayOS info:`, { status: payosInfo.status });
       
       if (payosInfo.status === 'PAID') {

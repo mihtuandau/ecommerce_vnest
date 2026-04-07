@@ -41,7 +41,7 @@ const UserForm = ({ user, onSubmit, onCancel }) => {
       {alert && (
         <Alert
           type={alert.type}
-          message={alert.message}
+          title={alert.message}
           closable
           onClose={() => setAlert(null)}
           style={{ marginBottom: 16 }}
@@ -116,6 +116,8 @@ const UserForm = ({ user, onSubmit, onCancel }) => {
             size="large"
             value={formData.role}
             onChange={(value) => handleChange("role", value)}
+            getPopupContainer={(trigger) => trigger.parentElement}
+            popupStyle={{ zIndex: 10001 }}
           >
             <Option value="CUSTOMER">Khách hàng</Option>
             <Option value="ADMIN">Quản trị viên</Option>

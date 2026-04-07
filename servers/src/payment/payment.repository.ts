@@ -101,13 +101,7 @@ export class PaymentRepository {
             where: { id: orderId },
             data: {
               status: 'PROCESSING',
-              paymentId,
             },
-          });
-        } else if (currentOrder) {
-          await prisma.order.update({
-            where: { id: orderId },
-            data: { paymentId },
           });
         }
         // NOTE: Stock is reserved at order creation (createOrderTransactional).
@@ -140,7 +134,7 @@ export class PaymentRepository {
     });
   }
 
-  async findByPayosOrderCode(orderCode: number) {
+  async findByPayosOrderCode(orderCode: string) {
     return this.prisma.payment.findFirst({
       where: { payosOrderCode: orderCode },
       include: {

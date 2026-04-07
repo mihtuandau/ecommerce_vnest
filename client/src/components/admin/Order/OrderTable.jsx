@@ -155,10 +155,10 @@ const OrderTable = ({
               color={getPaymentStatusColor(record.payment.status)} 
               style={{ fontSize: 10, margin: 0 }}
             >
-              {record.payment.status === 'SUCCESS' && '✓ Đã TT'}
-              {record.payment.status === 'PENDING' && '⏳ Chờ'}
-              {record.payment.status === 'FAILED' && '✗ Lỗi'}
-              {record.payment.status === 'CANCELLED' && '✗ Hủy'}
+              {record.payment.status === 'SUCCESS' && ' Đã TT'}
+              {record.payment.status === 'PENDING' && ' Chờ'}
+              {record.payment.status === 'FAILED' && ' Lỗi'}
+              {record.payment.status === 'CANCELLED' && ' Hủy'}
             </Tag>
           </Space>
         );

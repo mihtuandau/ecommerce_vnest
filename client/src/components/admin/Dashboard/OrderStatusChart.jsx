@@ -1,75 +1,62 @@
 import React from 'react';
-import { Card, Space, Typography, List } from 'antd';
-import { PieChartOutlined } from '@ant-design/icons';
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-
-const { Text } = Typography;
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 
 const OrderStatusChart = ({ orderStatusData }) => {
   const totalOrders = orderStatusData.reduce((sum, item) => sum + item.value, 0);
 
   return (
-    <Card
-      title={
-        <Space>
-          <PieChartOutlined style={{ color: '#722ed1', fontSize: 18 }} />
-          <Text strong style={{ fontSize: 16 }}>Trạng thái đơn hàng</Text>
-        </Space>
-      }
-      style={{ height: '100%' }}
-    >
-      <ResponsiveContainer width="100%" height={250}>
-        <PieChart>
-          <Pie
-            data={orderStatusData}
-            cx="50%"
-            cy="50%"
-            labelLine={false}
-            label={({ name, percent }) => `${(percent * 100).toFixed(0)}%`}
-            outerRadius={80}
-            fill="#8884d8"
-            dataKey="value"
-          >
-            {orderStatusData.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={entry.color} />
-            ))}
-          </Pie>
-          <Tooltip 
-            contentStyle={{ 
-              backgroundColor: '#fff', 
-              border: '1px solid #e5e7eb',
-              borderRadius: '8px',
-              boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
-            }}
-          />
-        </PieChart>
-      </ResponsiveContainer>
-      
-      {/* Legend with counts */}
-      <List
-        size="small"
-        dataSource={orderStatusData}
-        style={{ marginTop: 16 }}
-        renderItem={(item) => (
-          <List.Item style={{ padding: '8px 0', borderBottom: 'none' }}>
-            <Space style={{ width: '100%', justifyContent: 'space-between' }}>
-              <Space>
-                <div 
-                  style={{ 
-                    width: 12, 
-                    height: 12, 
-                    backgroundColor: item.color, 
-                    borderRadius: 2 
-                  }} 
-                />
-                <Text style={{ fontSize: 13 }}>{item.name}</Text>
-              </Space>
-              <Text strong>{item.value}</Text>
-            </Space>
-          </List.Item>
+    <div className="bg-white rounded-2xl p-6 shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-gray-100 flex flex-col h-full hover:shadow-[0_4px_24px_rgba(0,0,0,0.06)] transition-all duration-300">
+      <h3 className="text-xl font-bold text-gray-800 tracking-tight mb-6 mt-1">Đơn hàng theo trạng thái</h3>
+      <div className="flex-grow w-full h-[280px]">
+        {orderStatusData && orderStatusData.length > 0 ? (
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                data={orderStatusData}
+                cx="50%"
+                cy="45%"
+                innerRadius={70}
+                outerRadius={100}
+                paddingAngle={5}
+                dataKey="value"
+                stroke="none"
+                cornerRadius={8}
+              >
+                {orderStatusData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
+              </Pie>
+              <Tooltip 
+                contentStyle={{ 
+                  backgroundColor: '#fff', 
+                  border: 'none',
+                  borderRadius: '12px',
+                  boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1)',
+                  padding: '12px'
+                }}
+                itemStyle={{ color: '#1F2937', fontWeight: 600 }}
+              />
+            </PieChart>
+          </ResponsiveContainer>
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-gray-500">
+            Không có dữ liệu
+          </div>
         )}
-      />
-    </Card>
+      </div>
+
+      <div className="mt-4 flex flex-col gap-3">
+        {orderStatusData.map((item, index) => (
+          <div key={index} className="flex justify-between items-center text-sm">
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color }}></span>
+              <span className="text-gray-600">{item.name}</span>
+            </div>
+            <span className="font-bold text-gray-800">{item.value}</span>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 };
 

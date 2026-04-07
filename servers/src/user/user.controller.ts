@@ -10,6 +10,7 @@ import {
   Query,
   Req,
   ParseIntPipe,
+  ForbiddenException,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../common/guards/auth.guard';
@@ -93,6 +94,11 @@ export class UserController {
     // Only ADMIN can update other users, users can only update themselves
     if (userId !== id && req.user.role !== 'ADMIN') {
       throw new Error('You can only update your own profile');
+    }
+
+    // Prevent privilege escalation: only ADMIN can update role
+    if (updateUserDto.role && req.user.role !== 'ADMIN') {
+      throw new ForbiddenException('Only admin can change user role');
     }
 
     const updatedUser = await this.userService.update(id, updateUserDto);
