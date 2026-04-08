@@ -92,21 +92,21 @@ const OrderLookupPage = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-white pt-21 pb-8">
+      <div className="min-h-screen bg-white pb-8 pt-21">
         <div className="container mx-auto px-4 max-w-4xl">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
-              <FaSearch className="text-3xl text-[#00a85a]" />
+          <div className="mb-6 text-center">
+            <div className="mb-3 inline-flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
+              <FaSearch className="text-2xl text-[#00a85a]" />
             </div>
-            <h1 className="text-3xl font-bold text-gray-900 pt-4 pb-4 ">TRA CỨU ĐƠN HÀNG</h1>
+            <h1 className="pb-2 pt-2 text-2xl font-bold text-gray-900">TRA CỨU ĐƠN HÀNG</h1>
             <p className="text-gray-600">
               Nhập mã đơn hàng và email/số điện thoại để tra cứu
             </p>
           </div>
 
           {recentOrders.length > 0 && !order && (
-            <div className="bg-white border border-gray-200 p-6 mb-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Đơn hàng gần đây</h2>
+            <div className="mb-5 border border-gray-200 bg-white p-4 sm:p-5">
+              <h2 className="mb-3 text-base font-semibold text-gray-900">Đơn hàng gần đây</h2>
               <div className="space-y-2">
                 {recentOrders.map((recentOrder, index) => (
                   <button
@@ -115,7 +115,7 @@ const OrderLookupPage = () => {
                       setOrderCode(recentOrder.orderCode);
                       setContact(recentOrder.contact);
                     }}
-                    className="w-full text-left p-3 border border-gray-200 hover:bg-gray-50 hover:border-[#00a85a] transition-colors"
+                    className="w-full border border-gray-200 p-2.5 text-left transition-colors hover:border-[#00a85a] hover:bg-gray-50"
                   >
                     <div className="flex items-center justify-between">
                       <div>
@@ -132,7 +132,7 @@ const OrderLookupPage = () => {
             </div>
           )}
 
-          <div className="bg-white border border-gray-200 p-6 mb-8">
+          <div className="mb-6 border border-gray-200 bg-white p-4 sm:p-5">
             <form onSubmit={handleSearch} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -143,7 +143,7 @@ const OrderLookupPage = () => {
                   value={orderCode}
                   onChange={(e) => setOrderCode(e.target.value)}
                   placeholder="Ví dụ: ORD-A1B2C3"
-                  className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:border-gray-900"
+                  className="w-full border border-gray-300 px-3.5 py-2.5 focus:border-gray-900 focus:outline-none"
                 />
               </div>
 
@@ -156,7 +156,7 @@ const OrderLookupPage = () => {
                   value={contact}
                   onChange={(e) => setContact(e.target.value)}
                   placeholder="example@email.com hoặc 0901234567"
-                  className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:border-gray-900"
+                  className="w-full border border-gray-300 px-3.5 py-2.5 focus:border-gray-900 focus:outline-none"
                 />
               </div>
 

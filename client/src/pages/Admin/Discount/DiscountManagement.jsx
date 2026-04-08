@@ -89,59 +89,61 @@ const DiscountManagement = () => {
   }
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Quản lý mã giảm giá</h1>
-          <p className="text-gray-600 mt-1">Quản lý các mã giảm giá và khuyến mãi</p>
+    <div className="p-6">
+      <div className="mx-auto w-full max-w-[1600px]">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Quản lý mã giảm giá</h1>
+            <p className="text-gray-600 mt-1">Quản lý các mã giảm giá và khuyến mãi</p>
+          </div>
+          <div className="flex gap-3">
+            <Button variant="secondary" onClick={() => refetch()} disabled={isLoading}>
+              <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
+              Làm mới
+            </Button>
+            <Button onClick={() => navigate('/admin-discounts/new')}>
+              <Plus className="h-4 w-4 mr-2" />
+              Tạo mã mới
+            </Button>
+          </div>
         </div>
-        <div className="flex gap-3">
-          <Button variant="secondary" onClick={() => refetch()} disabled={isLoading}>
-            <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
-            Làm mới
-          </Button>
-          <Button onClick={() => navigate('/admin-discounts/new')}>
-            <Plus className="h-4 w-4 mr-2" />
-            Tạo mã mới
-          </Button>
-        </div>
-      </div>
 
-      <DiscountStatsCards stats={stats} />
+        <DiscountStatsCards stats={stats} />
 
-      <DiscountFilters
-        search={search}
-        setSearch={setSearch}
-        statusFilter={statusFilter}
-        setStatusFilter={setStatusFilter}
-      />
-
-      <div>
-        <DiscountTable
-          discounts={paginatedDiscounts}
-          loading={isLoading}
-          onSort={handleSort}
-          onView={handleView}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
+        <DiscountFilters
+          search={search}
+          setSearch={setSearch}
+          statusFilter={statusFilter}
+          setStatusFilter={setStatusFilter}
         />
-        
-        {!isLoading && filteredDiscounts.length > 0 && (
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-            itemsCount={paginatedDiscounts.length}
-            totalItems={filteredDiscounts.length}
-          />
-        )}
-      </div>
 
-      <DiscountDetailModal
-        isOpen={showDetailModal}
-        onClose={handleCloseModals}
-        discount={selectedDiscount}
-      />
+        <div>
+          <DiscountTable
+            discounts={paginatedDiscounts}
+            loading={isLoading}
+            onSort={handleSort}
+            onView={handleView}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
+          
+          {!isLoading && filteredDiscounts.length > 0 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+              itemsCount={paginatedDiscounts.length}
+              totalItems={filteredDiscounts.length}
+            />
+          )}
+        </div>
+
+        <DiscountDetailModal
+          isOpen={showDetailModal}
+          onClose={handleCloseModals}
+          discount={selectedDiscount}
+        />
+      </div>
     </div>
   );
 };

@@ -1,33 +1,28 @@
-// ProductDetailPage.jsx - Tối ưu và tinh gọn
+// ProductDetailPage.jsx
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { Dropdown, Button } from 'antd';
-import { EditOutlined, CopyOutlined, EyeOutlined, DeleteOutlined, EllipsisOutlined } from '@ant-design/icons';
-import { ArrowLeft, AlertCircle, Package, TrendingUp, Star, Eye, Image as ImageIcon, Tag, Layers, Hash } from 'lucide-react';
+import { Button } from 'antd';
+import { EditOutlined, CheckCircleOutlined } from '@ant-design/icons';
+import { ArrowLeft, AlertCircle, Eye, ShoppingCart, Star, Box, BarChart2, MessageSquare, Layers, Info } from 'lucide-react';
 import { useCategories, useBrands } from '../../../hooks/useProducts';
 import { notify } from '../../../utils/notification';
 import productService from '../../../services/productService';
+import dayjs from 'dayjs';
 
 import Loading from '../../../components/common/Loading';
 import DeleteConfirmModal from '../../../components/common/DeleteConfirm';
-import InfoTab from '../../../components/admin/Product/tabs/InfoTab';
-import VariantsTab from '../../../components/admin/Product/tabs/VariantsTab';
-import ImagesTab from '../../../components/admin/Product/tabs/ImagesTab';
-import StatusCard from '../../../components/admin/Product/sidebar/StatusCard';
-import OrganizationCard from '../../../components/admin/Product/sidebar/OrganizationCard';
-import StatsCard from '../../../components/admin/Product/sidebar/StatsCard';
 
 const ProductDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('info');
+  const [activeTab, setActiveTab] = useState('overview');
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
-  const { data: categories = [], isLoading: loadingCategories } = useCategories();
-  const { data: brands = [], isLoading: loadingBrands } = useBrands();
+  const { data: categories = [] } = useCategories();
+  const { data: brands = [] } = useBrands();
 
   useEffect(() => {
     loadProduct();
@@ -36,13 +31,9 @@ const ProductDetailPage = () => {
   const loadProduct = async () => {
     try {
       setLoading(true);
-      const response = await productService.getOne(id);
+      const response = await productService.getOne(id, { allVariants: 'true' });
       const productData = response?.data || response;
-      
-      if (!productData || !productData.id) {
-        throw new Error('Invalid product data received');
-      }
-      
+      if (!productData || !productData.id) throw new Error('Invalid product data received');
       setProduct(productData);
     } catch (error) {
       console.error('Load product error:', error);
@@ -67,29 +58,7 @@ const ProductDetailPage = () => {
     }
   };
 
-  const handleDuplicate = async () => {
-    try {
-      const payload = {
-        name: `${(product.name || '').trim()} (Copy)`,
-        description: product.description || undefined,
-        basePrice: product.basePrice || 0,
-        categoryId: product.categoryId || undefined,
-        brandId: product.brandId || undefined,
-      };
-      const response = await productService.create(payload);
-      const created = response?.data || response;
-      const newId = created?.id;
-      notify.success('Đã nhân bản sản phẩm');
-      if (newId) navigate(`/admin-products/${newId}`);
-      else navigate('/admin-products');
-    } catch (error) {
-      notify.error(error?.response?.data?.message || error?.message || 'Nhân bản thất bại');
-    }
-  };
-
-  if (loading) {
-    return <Loading fullScreen text="Đang tải sản phẩm..." variant="admin" />;
-  }
+  if (loading) return <Loading fullScreen text="Đang tải sản phẩm..." variant="admin" />;
 
   if (!product) {
     return (
@@ -100,10 +69,7 @@ const ProductDetailPage = () => {
           </div>
           <h2 className="text-xl font-semibold text-gray-900 mb-2">Không tìm thấy sản phẩm</h2>
           <p className="text-gray-600 mb-6">Sản phẩm không tồn tại hoặc đã bị xóa.</p>
-          <Link
-            to="/admin-products"
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors"
-          >
+          <Link to="/admin-products" className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">
             <ArrowLeft size={18} /> Quay lại danh sách
           </Link>
         </div>
@@ -111,196 +77,333 @@ const ProductDetailPage = () => {
     );
   }
 
-  const sku = product.sku || product.variants?.[0]?.sku || '—';
-  const totalStock = product.variants?.reduce((s, v) => s + (v.stock || 0), 0) ?? 0;
+  const totalStock = product.variants?.reduce((s, v) => s + (v.stock || 0), 0) ?? product.stock ?? 0;
   const sold = product.soldCount ?? product.sold ?? 0;
   const rating = product.averageRating ?? 0;
   const reviewCount = product.reviewCount ?? 0;
   const views = product.viewCount ?? product.views ?? 0;
-  const thumbnail = product.images?.[0]?.url || product.variants?.[0]?.images?.[0]?.url;
+  const thumbnail = product.images?.[0]?.url || product.variants?.[0]?.images?.[0]?.url || 'https://placehold.co/400x400/f8fafc/94a3b8?text=No+Image';
 
-  const tabs = [
-    { id: 'info', label: 'Thông tin', icon: <Tag size={16} /> },
-    { id: 'variants', label: 'Biến thể', icon: <Layers size={16} />, badge: product.variants?.length },
-    { id: 'images', label: 'Hình ảnh', icon: <ImageIcon size={16} /> },
-  ];
+  const categoryName = categories.find(c => c.id === product.categoryId)?.name || 'Chưa phân loại';
+  const brandName = brands.find(b => b.id === product.brandId)?.name || 'N/A';
+  
+  // Format prices
+  const formatPrice = (price) => `${price?.toLocaleString('vi-VN')} ₫`;
+  const basePriceFormatted = formatPrice(product.basePrice || 0);
+
+  let priceRange = basePriceFormatted;
+  if (product.variants && product.variants.length > 0) {
+    const prices = product.variants.map(v => v.price).filter(Boolean);
+    if (prices.length > 0) {
+      const minPrice = Math.min(...prices);
+      const maxPrice = Math.max(...prices);
+      priceRange = minPrice === maxPrice ? formatPrice(minPrice) : `${formatPrice(minPrice)} - ${formatPrice(maxPrice)}`;
+    }
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-6 py-6">
-          {/* Top Bar */}
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-4">
-              <button 
-                onClick={() => navigate('/admin-products')} 
-                className="p-2.5 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <ArrowLeft size={20} className="text-gray-600" />
-              </button>
+    <div className="min-h-screen bg-gray-50/50 pb-12 text-gray-900">
+      {/* Top Header */}
+      <div className="bg-white px-6 py-4 border-b border-gray-200 flex items-center justify-between sticky top-0 z-30">
+        <div className="flex items-center gap-4">
+          <button onClick={() => navigate('/admin-products')} className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 rounded-lg text-gray-600 transition-colors border border-transparent hover:border-gray-200">
+            <ArrowLeft size={18} />
+          </button>
+          <div>
+            <div className="flex items-center gap-2 text-sm font-medium text-gray-400 mb-0.5">
+              <span>#{product.id || id}</span>
+              <span className="w-1 h-1 rounded-full bg-gray-300"></span>
+              <span>Sản phẩm</span>
+            </div>
+            <h1 className="text-xl font-bold text-gray-900 tracking-tight">{product.name}</h1>
+          </div>
+        </div>
 
-              {/* Product Info */}
-              <div className="flex items-center gap-3">
-                {thumbnail ? (
-                  <img 
-                    src={thumbnail} 
-                    alt={product.name}
-                    className="w-14 h-14 object-cover rounded-lg border border-gray-200"
-                  />
-                ) : (
-                  <div className="w-14 h-14 bg-gray-100 rounded-lg flex items-center justify-center">
-                    <ImageIcon size={24} className="text-gray-400" />
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5 bg-emerald-50 text-emerald-600 px-3 py-1.5 rounded-full border border-emerald-100 text-sm font-bold shadow-sm">
+            <CheckCircleOutlined className="text-xs" />
+            <span>Đang bán</span>
+          </div>
+          <Button type="primary" icon={<EditOutlined />} onClick={() => navigate(`/admin-products/${id}/edit`)} className="rounded-full h-9 font-bold px-5 shadow-md shadow-blue-500/20">
+            Chỉnh sửa
+          </Button>
+        </div>
+      </div>
+
+      <div className="max-w-[1600px] mx-auto px-6 py-8 flex flex-col lg:flex-row gap-6">
+        
+        {/* Left Sidebar */}
+        <div className="w-full lg:w-[320px] xl:w-[340px] flex-shrink-0 space-y-6">
+          {/* Cover Image */}
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden aspect-square">
+            <img src={thumbnail} alt={product.name} className="w-full h-full object-cover" />
+          </div>
+
+          {/* Performance Summary (Hiệu suất) */}
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="px-5 py-4 flex items-center gap-2 bg-white">
+              <h3 className="font-bold text-gray-900 text-sm">Hiệu suất</h3>
+            </div>
+            <div className="divide-y divide-gray-50">
+              <div className="p-4 flex gap-4 items-center">
+                <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center flex-shrink-0"><Eye size={18}/></div>
+                <div className="flex-1 flex flex-col justify-center">
+                  <div className="text-xs font-medium text-gray-400 mb-0.5">Lượt xem</div>
+                  <div className="font-bold text-gray-900 text-base">{views.toLocaleString()}</div>
+                </div>
+              </div>
+              <div className="p-4 flex gap-4 items-center">
+                <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center flex-shrink-0"><ShoppingCart size={18}/></div>
+                <div className="flex-1 flex flex-col justify-center">
+                  <div className="text-xs font-medium text-gray-400 mb-0.5">Đã bán</div>
+                  <div className="font-bold text-gray-900 text-base">{sold.toLocaleString()} sản phẩm</div>
+                </div>
+              </div>
+              <div className="p-4 flex gap-4 items-center">
+                <div className="w-10 h-10 rounded-full bg-yellow-50 text-orange-400 flex items-center justify-center flex-shrink-0"><Star size={18}/></div>
+                <div className="flex-1 flex flex-col justify-center">
+                  <div className="text-xs font-medium text-gray-400 mb-0.5">Đánh giá</div>
+                  <div className="font-bold text-gray-900 text-base flex items-baseline gap-1">
+                    {Number(rating).toFixed(1)} / 5 <span className="text-xs font-medium text-gray-400">({reviewCount})</span>
                   </div>
-                )}
-                
-                <div>
-                  <div className="flex items-center gap-2 text-sm text-gray-500 mb-1">
-                    <Link to="/admin-products" className="hover:text-blue-600 transition-colors">
-                      Sản phẩm
-                    </Link>
-                    <span>/</span>
-                    <span className="text-gray-900">{product.name}</span>
-                  </div>
-                  <h1 className="text-xl font-bold text-gray-900">{product.name}</h1>
-                  <div className="flex items-center gap-2 mt-1">
-                    <span className="text-xs text-gray-500">SKU:</span>
-                    <code className="text-xs font-mono text-gray-700 bg-gray-100 px-2 py-0.5 rounded">{sku}</code>
+                </div>
+              </div>
+              <div className="p-4 flex gap-4 items-center">
+                <div className="w-10 h-10 rounded-full bg-purple-50 text-purple-500 flex items-center justify-center flex-shrink-0"><Box size={18}/></div>
+                <div className="flex-1 flex flex-col justify-center">
+                  <div className="text-xs font-medium text-gray-400 mb-0.5">Tồn kho</div>
+                  <div className="font-bold text-gray-900 text-base">
+                    {totalStock.toLocaleString()} <span className="text-xs font-medium text-gray-400">· {product.variants?.length || 0} biến thể</span>
                   </div>
                 </div>
               </div>
             </div>
+          </div>
 
-            {/* Actions */}
-            <div className="flex items-center gap-2">
-              <Button 
-                icon={<EyeOutlined />} 
-                onClick={() => window.open(`/products/${product.id}`, '_blank')}
-              >
-                Xem
-              </Button>
-              <Button 
-                type="primary" 
-                icon={<EditOutlined />} 
-                onClick={() => navigate(`/admin-products/${id}/edit`)}
-              >
-                Chỉnh sửa
-              </Button>
-              <Dropdown
-                trigger={['click']}
-                menu={{
-                  items: [
-                    { key: 'duplicate', icon: <CopyOutlined />, label: 'Nhân bản', onClick: handleDuplicate },
-                    { type: 'divider' },
-                    { 
-                      key: 'delete', 
-                      icon: <DeleteOutlined />, 
-                      label: 'Xóa', 
-                      danger: true,
-                      onClick: () => setDeleteModalOpen(true) 
-                    },
-                  ],
-                }}
-                placement="bottomRight"
-              >
-                <Button icon={<EllipsisOutlined />} />
-              </Dropdown>
+          {/* Detailed Info */}
+          {/* Detailed Info */}
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="px-5 py-4 flex items-center gap-2 bg-white">
+              <h3 className="font-bold text-gray-900 text-sm">Thông tin sản phẩm</h3>
+            </div>
+            <div className="p-5 space-y-4 text-sm">
+              <div className="flex justify-between items-center pb-3 border-b border-gray-50 border-dashed">
+                <span className="text-gray-500 font-medium flex items-center gap-2">Danh mục</span>
+                <span className="font-medium bg-gray-50 text-gray-800 px-2.5 py-1 rounded-md">{categoryName}</span>
+              </div>
+              <div className="flex justify-between items-center pb-3 border-b border-gray-50 border-dashed">
+                <span className="text-gray-500 font-medium flex items-center gap-2">Thương hiệu</span>
+                <span className="font-medium text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md">{brandName}</span>
+              </div>
+              <div className="flex justify-between items-center pb-3 border-b border-gray-50 border-dashed">
+                <span className="text-gray-500 font-medium flex items-center gap-2">Giá cơ bản</span>
+                <span className="font-bold text-gray-900">{basePriceFormatted}</span>
+              </div>
+              <div className="flex justify-between items-center pb-3 border-b border-gray-50 border-dashed">
+                <span className="text-gray-500 font-medium flex items-center gap-2">Khoảng giá</span>
+                <span className="font-bold text-gray-700">{priceRange}</span>
+              </div>
+              <div className="flex justify-between items-center pb-3 border-b border-gray-50 border-dashed">
+                <span className="text-gray-500 font-medium flex items-center gap-2">Slug</span>
+                <span className="font-medium text-blue-500 bg-blue-50 px-2 py-0.5 rounded-md truncate max-w-[150px]">
+                  /{product.slug || (product.name ? product.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-').replace(/-+/g, '-') : 'N/A')}
+                </span>
+              </div>
+              <div className="flex justify-between items-center pt-1">
+                <span className="text-gray-400 font-medium">Ngày tạo</span>
+                <span className="text-gray-500 font-medium">{dayjs(product.createdAt).format('DD/MM/YYYY')}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-400 font-medium">Cập nhật</span>
+                <span className="text-gray-500 font-medium">{dayjs(product.updatedAt).format('HH:mm DD/MM/YYYY')}</span>
+              </div>
             </div>
           </div>
+        </div>
 
-          {/* Stats */}
-          <div className="grid grid-cols-4 gap-4 mb-6">
-            <StatCard 
-              icon={<Package size={18} />}
-              label="Tồn kho"
-              value={totalStock.toLocaleString()}
-              color="blue"
-            />
-            <StatCard 
-              icon={<TrendingUp size={18} />}
-              label="Đã bán"
-              value={sold.toLocaleString()}
-              color="green"
-            />
-            <StatCard 
-              icon={<Star size={18} />}
-              label="Đánh giá"
-              value={Number(rating).toFixed(1)}
-              subValue={reviewCount > 0 ? `${reviewCount} đánh giá` : null}
-              color="yellow"
-            />
-            <StatCard 
-              icon={<Eye size={18} />}
-              label="Lượt xem"
-              value={views.toLocaleString()}
-              color="purple"
-            />
-          </div>
-
+        {/* Right Content */}
+        <div className="flex-1 flex flex-col">
           {/* Tabs */}
-          <div className="flex gap-1 border-b border-gray-200 -mb-px">
-            {tabs.map(tab => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-4 py-2.5 font-medium text-sm transition-colors ${
-                  activeTab === tab.id 
-                    ? 'text-blue-600 border-b-2 border-blue-600' 
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                {tab.icon}
-                {tab.label}
-                {tab.badge != null && (
-                  <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${
-                    activeTab === tab.id 
-                      ? 'bg-blue-100 text-blue-700' 
-                      : 'bg-gray-100 text-gray-600'
-                  }`}>
-                    {tab.badge}
-                  </span>
+          <div className="flex gap-6 border-b border-gray-100 mb-6 bg-white px-2 pt-2 rounded-t-xl">
+            <button 
+              onClick={() => setActiveTab('overview')}
+              className={`py-3 px-2 font-medium flex items-center justify-center gap-2 text-sm border-b-2 transition-all ${activeTab === 'overview' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+            >
+              <BarChart2 size={16} /> 
+              Tổng quan
+            </button>
+            <button 
+              onClick={() => setActiveTab('variants')}
+              className={`py-3 px-2 font-medium flex items-center justify-center gap-2 text-sm border-b-2 transition-all ${activeTab === 'variants' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+            >
+              <Layers size={16} /> 
+              Biến thể 
+              <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${activeTab === 'variants' ? 'bg-blue-50 text-blue-600' : 'bg-gray-100 text-gray-500'}`}>{product.variants?.length || 0}</span>
+            </button>
+            <button 
+              onClick={() => setActiveTab('reviews')}
+              className={`py-3 px-2 font-medium flex items-center justify-center gap-2 text-sm border-b-2 transition-all ${activeTab === 'reviews' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+            >
+              <MessageSquare size={16} /> 
+              Đánh giá 
+              <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${activeTab === 'reviews' ? 'bg-blue-50 text-blue-600' : 'bg-gray-100 text-gray-500'}`}>{reviewCount}</span>
+            </button>
+          </div>
+
+          {/* Tab Content */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 flex-1">
+            {activeTab === 'overview' && (
+              <div className="space-y-8 animate-fade-in text-gray-900">
+                {/* Description */}
+                <div>
+                  <h3 className="font-bold text-sm mb-4">Mô tả sản phẩm</h3>
+                  <div className="bg-[#f8f9fa] rounded-2xl p-5 text-sm leading-relaxed border border-transparent min-h-[80px]">
+                    {product.description ? (
+                      <div dangerouslySetInnerHTML={{ __html: product.description }} className="prose prose-sm max-w-none text-gray-600" />
+                    ) : (
+                      <div className="text-gray-400 font-medium">Bạn chưa viết mô tả cho sản phẩm.</div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Quick Info Grid */}
+                <div>
+                  <h3 className="font-bold text-sm mb-4">Thông tin nhanh</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="bg-[#f8f9fa] rounded-2xl p-5 border border-transparent">
+                      <div className="text-xs font-semibold text-gray-500 mb-1">Tổng tồn kho</div>
+                      <div className="text-2xl font-bold text-gray-800 mb-1">{totalStock.toLocaleString()}</div>
+                      <div className="text-xs font-medium text-gray-500">sản phẩm</div>
+                    </div>
+                    <div className="bg-[#f8f9fa] rounded-2xl p-5 border border-transparent">
+                      <div className="text-xs font-semibold text-gray-500 mb-1">Biến thể hoạt động</div>
+                      <div className="text-2xl font-bold text-gray-800 mb-1">{product.variants?.filter(v => v.isActive !== false)?.length || 0}<span className="text-lg text-gray-400">/{product.variants?.length || 0}</span></div>
+                      <div className="text-xs font-medium text-gray-500">biến thể</div>
+                    </div>
+                    <div className="bg-[#f8f9fa] rounded-2xl p-5 border border-transparent">
+                      <div className="text-xs font-semibold text-gray-500 mb-1">Đã bán</div>
+                      <div className="text-2xl font-bold text-gray-800 mb-1">{sold.toLocaleString()}</div>
+                      <div className="text-xs font-medium text-gray-500">lượt</div>
+                    </div>
+                    <div className="bg-[#f8f9fa] rounded-2xl p-5 border border-transparent">
+                      <div className="text-xs font-semibold text-gray-500 mb-1">Lượt xem</div>
+                      <div className="text-2xl font-bold text-gray-800 mb-1">{views.toLocaleString()}</div>
+                      <div className="text-xs font-medium text-gray-500">lượt</div>
+                    </div>
+                    <div className="bg-[#f8f9fa] rounded-2xl p-5 border border-transparent">
+                      <div className="text-xs font-semibold text-gray-500 mb-1">Đánh giá TB</div>
+                      <div className="text-2xl font-bold text-gray-800 mb-1">{Number(rating).toFixed(1)}</div>
+                      <div className="text-xs font-medium text-gray-500">/ 5 sao</div>
+                    </div>
+                    <div className="bg-[#f8f9fa] rounded-2xl p-5 border border-transparent">
+                      <div className="text-xs font-semibold text-gray-500 mb-1">Số đánh giá</div>
+                      <div className="text-2xl font-bold text-gray-800 mb-1">{reviewCount.toLocaleString()}</div>
+                      <div className="text-xs font-medium text-gray-500">lượt</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'variants' && (
+              <div className="animate-fade-in">
+                <div className="flex items-center justify-between mb-8">
+                  <div>
+                    <h3 className="font-bold text-gray-900 text-base">{product.variants?.length || 0} biến thể</h3>
+                    <p className="text-sm text-gray-500 mt-0.5">Tổng tồn kho: {totalStock.toLocaleString()} · {product.variants?.filter(v => v.isActive !== false)?.length || 0} đang hoạt động</p>
+                  </div>
+                  <Button type="default" icon={<EditOutlined />} onClick={() => navigate(`/admin-products/${id}/edit`)} className="rounded-full h-8 px-4 text-blue-600 bg-blue-50 border-transparent font-semibold shadow-none hover:bg-blue-100">
+                    Quản lý biến thể
+                  </Button>
+                </div>
+
+                {product.variants?.length > 0 ? (
+                  <div className="border border-gray-100 rounded-2xl overflow-hidden">
+                    <table className="w-full text-left text-sm whitespace-nowrap">
+                      <thead className="bg-[#f9fafb] border-b border-gray-100 uppercase text-[11px] font-bold text-gray-400 tracking-wider">
+                        <tr>
+                          <th className="px-6 py-4">Size</th>
+                          <th className="px-6 py-4">Màu sắc</th>
+                          <th className="px-6 py-4">SKU</th>
+                          <th className="px-6 py-4">Giá bán</th>
+                          <th className="px-6 py-4">Tồn kho</th>
+                          <th className="px-6 py-4">Ngưỡng</th>
+                          <th className="px-6 py-4">Trạng thái</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-50 bg-white">
+                        {product.variants.map((v, i) => (
+                          <tr key={v.id || i} className="hover:bg-gray-50/50 transition-colors group">
+                            <td className="px-6 py-4">
+                              <span className="font-medium text-gray-900 block min-w-[30px]">{v.size || '—'}</span>
+                            </td>
+                            <td className="px-6 py-4">
+                              {v.color ? (
+                                <div className="flex items-center gap-2">
+                                  {v.color.startsWith('#') ? (
+                                    <span className="w-4 h-4 rounded-full border border-gray-200 shadow-sm" style={{ backgroundColor: v.color }}></span>
+                                  ) : (
+                                    <span className="w-4 h-4 rounded-full border border-gray-200 shadow-sm bg-gray-200"></span>
+                                  )}
+                                  <span className="text-gray-600 text-sm">{v.color}</span>
+                                </div>
+                              ) : <span className="text-gray-400">—</span>}
+                            </td>
+                            <td className="px-6 py-4 font-mono text-sm text-gray-500">{v.sku || 'N/A'}</td>
+                            <td className="px-6 py-4 font-bold text-gray-900">{formatPrice(v.price)}</td>
+                            <td className="px-6 py-4">
+                              <div className="flex flex-col gap-1.5 w-24">
+                                <span className={`font-bold text-[13px] ${v.stock < (v.lowStockThreshold || 5) ? 'text-red-500' : 'text-emerald-500'}`}>
+                                  {v.stock}
+                                </span>
+                                <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
+                                  <div className={`h-full rounded-full ${v.stock < (v.lowStockThreshold || 5) ? 'bg-red-500' : 'bg-emerald-400'}`} style={{ width: `${Math.min((v.stock / 100) * 100, 100)}%` }}></div>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 text-gray-500 text-[13px]">{v.lowStockThreshold || 5}</td>
+                            <td className="px-6 py-4">
+                              {v.isActive !== false ? (
+                                <span className="inline-flex flex-shrink-0 items-center gap-1 bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-full text-[11px] font-bold">
+                                  <CheckCircleOutlined className="text-[10px]" /> Đang bán
+                                </span>
+                              ) : (
+                                <span className="inline-flex text-center items-center gap-1 bg-gray-50 text-gray-500 px-2.5 py-1 rounded-full text-[11px] font-bold">
+                                  Tạm ẩn
+                                </span>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div className="text-center p-12 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+                    <Layers size={32} className="mx-auto text-gray-300 mb-3" />
+                    <h4 className="text-sm font-bold text-gray-700 mb-1">Chưa có biến thể</h4>
+                    <p className="text-[13px] text-gray-500 max-w-sm mx-auto">Sản phẩm này hiện tại chưa có thiết lập biến thể màu sắc hoặc kích thước.</p>
+                  </div>
                 )}
-              </button>
-            ))}
+              </div>
+            )}
+            
+            {activeTab === 'reviews' && (
+              <div className="animate-fade-in">
+                <h3 className="font-bold text-gray-900 mb-4 text-sm flex items-center gap-2">
+                  <div className="w-1.5 h-4 bg-gray-400 rounded-sm"></div>
+                  PHẢN HỒI KHÁCH HÀNG
+                </h3>
+                <div className="text-center p-12 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                  <MessageSquare size={32} className="mx-auto text-gray-300 mb-3" />
+                  <h4 className="text-sm font-bold text-gray-700 mb-1">Chưa có đánh giá</h4>
+                  <p className="text-xs text-gray-500 max-w-sm mx-auto">Chưa có khách hàng nào để lại đánh giá cho sản phẩm này.</p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
-      </div>
 
-      {/* Content */}
-      <div className="max-w-7xl mx-auto py-6 px-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main Content */}
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-lg border border-gray-200">
-              <TabContent activeTab={activeTab} product={product} readOnly />
-            </div>
-          </div>
-
-          {/* Sidebar */}
-          <div className="space-y-6">
-            <div className="bg-white rounded-lg border border-gray-200 p-5">
-              <h3 className="text-base font-semibold text-gray-900 mb-4">Trạng thái</h3>
-              <StatusCard product={product} readOnly />
-            </div>
-            
-            <div className="bg-white rounded-lg border border-gray-200 p-5">
-              <h3 className="text-base font-semibold text-gray-900 mb-4">Phân loại</h3>
-              <OrganizationCard 
-                product={product}
-                categories={categories} 
-                brands={brands} 
-                loadingCategories={loadingCategories} 
-                loadingBrands={loadingBrands} 
-                readOnly 
-              />
-            </div>
-            
-            <div className="bg-white rounded-lg border border-gray-200 p-5">
-              <h3 className="text-base font-semibold text-gray-900 mb-4">Thống kê</h3>
-              <StatsCard product={product} />
-            </div>
-          </div>
-        </div>
       </div>
 
       <DeleteConfirmModal
@@ -314,46 +417,6 @@ const ProductDetailPage = () => {
       />
     </div>
   );
-};
-
-// StatCard - Đơn giản và gọn
-const StatCard = ({ icon, label, value, subValue, color }) => {
-  const colorClasses = {
-    blue: 'bg-blue-50 text-blue-600',
-    green: 'bg-green-50 text-green-600',
-    yellow: 'bg-yellow-50 text-yellow-600',
-    purple: 'bg-purple-50 text-purple-600',
-  };
-
-  return (
-    <div className="bg-white rounded-lg border border-gray-200 p-4 hover:border-gray-300 transition-colors">
-      <div className="flex items-center gap-3 mb-2">
-        <div className={`p-2 rounded-lg ${colorClasses[color]}`}>
-          {icon}
-        </div>
-        <span className="text-sm text-gray-600 font-medium">{label}</span>
-      </div>
-      <div className="ml-11">
-        <p className="text-2xl font-bold text-gray-900">{value}</p>
-        {subValue && (
-          <p className="text-xs text-gray-500 mt-0.5">{subValue}</p>
-        )}
-      </div>
-    </div>
-  );
-};
-
-const TabContent = ({ activeTab, product, readOnly }) => {
-  switch (activeTab) {
-    case 'info':
-      return <InfoTab product={product} readOnly={readOnly} />;
-    case 'variants':
-      return <VariantsTab product={product} readOnly={readOnly} />;
-    case 'images':
-      return <ImagesTab product={product} />;
-    default:
-      return null;
-  }
 };
 
 export default ProductDetailPage;

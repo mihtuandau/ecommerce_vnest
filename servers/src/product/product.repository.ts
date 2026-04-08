@@ -73,20 +73,29 @@ export class ProductRepository {
   }
 
   /**
-   * Find product by ID (detail view - full data)
+   * Find product by ID or Slug (detail view - full data)
    */
-  async findById(id: number) {
-    return this.prisma.product.findUnique({
-      where: { id },
+  async findByIdOrSlug(idOrSlug: number | string, includeAllVariants: boolean = false) {
+    const isNumeric = typeof idOrSlug === 'number' || (typeof idOrSlug === 'string' && !isNaN(Number(idOrSlug)));
+    
+    // Create the OR condition
+    const whereCondition = isNumeric 
+      ? { id: Number(idOrSlug) } 
+      : { slug: idOrSlug as string };
+
+    const variantQuery: any = includeAllVariants
+      ? { include: { images: { orderBy: { displayOrder: 'asc' } } } }
+      : {
+          where: { isActive: true },
+          include: { images: { orderBy: { displayOrder: 'asc' } } },
+        };
+
+    return this.prisma.product.findFirst({
+      where: whereCondition,
       include: {
         category: { select: { id: true, name: true } },
         brand: { select: { id: true, name: true, logo: true } },
-        variants: {
-          where: { isActive: true },
-          include: {
-            images: { orderBy: { displayOrder: 'asc' } },
-          },
-        },
+        variants: variantQuery,
         images: { orderBy: { displayOrder: 'asc' } },
         reviews: {
           orderBy: { createdAt: 'desc' },
@@ -99,6 +108,13 @@ export class ProductRepository {
         },
       },
     });
+  }
+
+  /**
+   * Find product by ID (compatibility for other internal methods)
+   */
+  async findById(id: number) {
+    return this.findByIdOrSlug(id);
   }
 
   /**

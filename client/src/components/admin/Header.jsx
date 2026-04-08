@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { 
   Layout, 
   Input, 
@@ -28,9 +28,48 @@ const { Header } = Layout;
 const { Search } = Input;
 const { Text } = Typography;
 
+const getAdminPageTitle = (pathname) => {
+  const routeMap = [
+    [/^\/admin-dashboard$/, 'Dashboard'],
+    [/^\/admin-products$/, 'Sản phẩm'],
+    [/^\/admin-products\/create$/, 'Thêm sản phẩm'],
+    [/^\/admin-products\/\d+\/edit$/, 'Chỉnh sửa sản phẩm'],
+    [/^\/admin-products\/\d+$/, 'Chi tiết sản phẩm'],
+    [/^\/admin-categories$/, 'Danh mục'],
+    [/^\/admin-users$/, 'Khách hàng'],
+    [/^\/admin-users\/\d+$/, 'Chi tiết khách hàng'],
+    [/^\/admin-addresses$/, 'Địa chỉ khách hàng'],
+    [/^\/admin-orders$/, 'Đơn hàng'],
+    [/^\/admin-orders\/\d+$/, 'Chi tiết đơn hàng'],
+    [/^\/admin-payments$/, 'Thanh toán'],
+    [/^\/admin-discounts$/, 'Mã giảm giá'],
+    [/^\/admin-discounts\/new$/, 'Tạo mã giảm giá'],
+    [/^\/admin-discounts\/edit\/\d+$/, 'Chỉnh sửa mã giảm giá'],
+    [/^\/admin-banners$/, 'Banner'],
+    [/^\/admin-chat$/, 'Chat hỗ trợ'],
+    [/^\/admin-reports$/, 'Báo cáo'],
+    [/^\/admin\/profile$/, 'Tài khoản'],
+  ];
+
+  const match = routeMap.find(([pattern]) => pattern.test(pathname));
+  return match ? match[1] : 'Dashboard';
+};
+
 const AdminHeader = ({ sidebarOpen, setSidebarOpen }) => {
+  const location = useLocation();
   const { user, logout } = useAuth();
-  const [notificationOpen, setNotificationOpen] = useState(false);
+  const [viewportWidth, setViewportWidth] = useState(() => window.innerWidth);
+
+  useEffect(() => {
+    const onResize = () => setViewportWidth(window.innerWidth);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  const isMdUp = viewportWidth >= 768;
+  const isLgUp = viewportWidth >= 1024;
+  const sidebarWidth = sidebarOpen ? 256 : 80;
+  const pageTitle = getAdminPageTitle(location.pathname);
 
   const notifications = [
     {
@@ -134,16 +173,18 @@ const AdminHeader = ({ sidebarOpen, setSidebarOpen }) => {
       style={{ 
         position: 'fixed', 
         top: 0, 
-        left: 0, 
-        right: 0, 
+        left: isMdUp ? sidebarWidth : 0,
+        right: 0,
+        width: isMdUp ? `calc(100% - ${sidebarWidth}px)` : '100%',
         zIndex: 30, 
         height: 64,
-        padding: '0 24px',
+        padding: isMdUp ? '0 18px' : '0 12px',
         background: '#fff',
         borderBottom: '1px solid #f0f0f0',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        transition: 'left 0.3s ease, width 0.3s ease, padding 0.3s ease',
       }}
     >
       <Space size="middle">
@@ -154,19 +195,18 @@ const AdminHeader = ({ sidebarOpen, setSidebarOpen }) => {
           style={{ fontSize: 18 }}
         />
         
-        <Link to="/admin-dashboard" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-     
-          <Text strong style={{ fontSize: 18, color: 'rgb(24, 144, 255)', display: window.innerWidth >= 640 ? 'block' : 'none' }}>
-            ADMIN PANEL
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <Text strong style={{ fontSize: 24, color: '#0f172a', display: viewportWidth >= 640 ? 'block' : 'none', lineHeight: '24px' }}>
+            {pageTitle}
           </Text>
-        </Link>
+        </div>
       </Space>
 
-      <div style={{ flex: 1, maxWidth: 600, margin: '0 24px', display: window.innerWidth >= 768 ? 'block' : 'none' }}>
+      <div style={{ flex: 1, maxWidth: 520, margin: '0 16px', display: isMdUp ? 'block' : 'none' }}>
         <Search
           placeholder="Search products, orders, users..."
           prefix={<SearchOutlined />}
-          size="large"
+          size="middle"
           allowClear
           style={{ width: '100%' }}
         />
@@ -176,8 +216,8 @@ const AdminHeader = ({ sidebarOpen, setSidebarOpen }) => {
         <Button 
           type="text" 
           icon={<SearchOutlined />}
-          size="large"
-          style={{ display: window.innerWidth >= 768 ? 'none' : 'inline-flex' }}
+          size="middle"
+          style={{ display: isMdUp ? 'none' : 'inline-flex' }}
         />
 
         <Dropdown
@@ -194,11 +234,11 @@ const AdminHeader = ({ sidebarOpen, setSidebarOpen }) => {
           </Badge>
         </Dropdown>
 
-        <Link to="/admin/settings" style={{ display: window.innerWidth >= 1024 ? 'inline-flex' : 'none' }}>
+        <Link to="/admin/settings" style={{ display: isLgUp ? 'inline-flex' : 'none' }}>
           <Button 
             type="text" 
             icon={<SettingOutlined />}
-            size="large"
+            size="middle"
           />
         </Link>
 
@@ -212,11 +252,11 @@ const AdminHeader = ({ sidebarOpen, setSidebarOpen }) => {
           <Space style={{ cursor: 'pointer' }}>
             <Avatar 
               style={{ backgroundColor: '#1890ff' }}
-              size="large"
+              size={36}
             >
               {user?.name?.charAt(0)?.toUpperCase() || "A"}
             </Avatar>
-            <div style={{ display: window.innerWidth >= 1024 ? 'block' : 'none', textAlign: 'left' }}>
+            <div style={{ display: isLgUp ? 'block' : 'none', textAlign: 'left' }}>
               <Text strong style={{ display: 'block', fontSize: 14, lineHeight: '20px' }}>
                 {user?.name || "Admin"}
               </Text>
@@ -224,7 +264,7 @@ const AdminHeader = ({ sidebarOpen, setSidebarOpen }) => {
                 {user?.role || "Administrator"}
               </Text>
             </div>
-            <DownOutlined style={{ fontSize: 12, display: window.innerWidth >= 1024 ? 'block' : 'none' }} />
+            <DownOutlined style={{ fontSize: 12, display: isLgUp ? 'block' : 'none' }} />
           </Space>
         </Dropdown>
       </Space>

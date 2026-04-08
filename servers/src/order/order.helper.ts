@@ -85,12 +85,12 @@ export function calculateOrderTotal(
   const discountedTotal = total - discountAmount;
 
   return {
-    totalItems,
+    totalItems, // subtotal
     shippingFee,
     taxAmount,
     discountAmount,
-    total,
-    discountedTotal,
+    total, // original total including shipping
+    discountedTotal, // final total after discount
   };
 }
 
@@ -136,35 +136,48 @@ export function prepareOrderData(
   orderCode: string,
   userId: number | null,
   dto: any,
-  items: Array<{variantId: number, quantity: number, price: number}>,
-  total: number,
+  items: Array<{variantId: number, quantity: number, price: number, productName?: string}>,
+  totals: { subtotal: number, discountAmount: number, total: number },
   discount: any
 ) {
   const orderData: any = {
     orderCode,
-    addressId: dto.addressId || null,
-    shippingMethodId: dto.shippingMethodId || null,
-    shippingAddress: dto.shippingAddress || null,
-    shippingInfo: dto.shippingInfo || null,
+    shippingSnapshot: {
+      addressString: dto.shippingAddress || null,
+      ...(dto.shippingInfo || {}),
+    },
     guestEmail: dto.guestEmail || null,
     guestPhone: dto.guestPhone || null,
-    paymentMethod: (dto.paymentMethod as any) || 'CASH',
-    total,
+    subtotal: totals.subtotal,
+    discountAmount: totals.discountAmount,
+    total: totals.total,
     taxAmount: 0,
-    discountId: discount ? discount.id : null,
     status: 'PENDING',
     orderItems: {
       create: items.map((item) => ({
         variantId: item.variantId,
         quantity: item.quantity,
         price: item.price,
+        productName: item.productName || 'Sản phẩm',
       })),
     },
   };
 
-  // Only add userId if user is logged in
+  // Connect relations instead of direct IDs
   if (userId) {
-    orderData.userId = userId;
+    orderData.user = { connect: { id: userId } };
+  }
+
+  if (dto.addressId) {
+    orderData.address = { connect: { id: dto.addressId } };
+  }
+
+  if (dto.shippingMethodId) {
+    orderData.shippingMethod = { connect: { id: dto.shippingMethodId } };
+  }
+
+  if (discount) {
+    orderData.discount = { connect: { id: discount.id } };
   }
 
   return orderData;
@@ -175,7 +188,8 @@ export function prepareOrderData(
  */
 export function prepareOrderEmailDetails(order: any) {
   const customerEmail = order.guestEmail || order.user?.email;
-  const customerName = order.shippingInfo?.['fullName'] || order.user?.name || 'Khách hàng';
+  const shipping = order.shippingSnapshot as any;
+  const customerName = shipping?.fullName || order.user?.name || 'Khách hàng';
   
   return {
     customerEmail,
@@ -190,7 +204,7 @@ export function prepareOrderEmailDetails(order: any) {
         price: item.price,
       })),
       total: order.total,
-      shippingAddress: order.shippingAddress || 'N/A',
+      shippingAddress: shipping?.addressString || 'N/A',
     }
   };
 }

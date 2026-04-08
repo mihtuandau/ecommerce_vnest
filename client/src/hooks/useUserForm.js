@@ -5,7 +5,6 @@ export const useUserForm = (initialData = null) => {
     email: '',
     password: '',
     name: '',
-    role: 'CUSTOMER',
   });
 
   const [errors, setErrors] = useState({});
@@ -41,7 +40,6 @@ export const useUserForm = (initialData = null) => {
       email: '',
       password: '',
       name: '',
-      role: 'CUSTOMER',
     });
     setErrors({});
   };

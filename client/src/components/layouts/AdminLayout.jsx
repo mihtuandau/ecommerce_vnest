@@ -8,6 +8,21 @@ const AdminLayout = memo(({ children }) => {
     return saved !== null ? JSON.parse(saved) : true;
   });
 
+  useEffect(() => {
+    localStorage.setItem('sidebarOpen', JSON.stringify(sidebarOpen));
+  }, [sidebarOpen]);
+
+  useEffect(() => {
+    const onToggleSidebar = () => {
+      setSidebarOpen((prev) => !prev);
+    };
+
+    window.addEventListener('admin:toggle-sidebar', onToggleSidebar);
+    return () => {
+      window.removeEventListener('admin:toggle-sidebar', onToggleSidebar);
+    };
+  }, []);
+
   
 
   return (
@@ -18,11 +33,11 @@ const AdminLayout = memo(({ children }) => {
 
       <main
         className={`
-          pt-16 transition-all duration-300 min-h-screen
+          min-h-screen pt-16 transition-all duration-300
           ${sidebarOpen ? 'ml-0 md:ml-64' : 'ml-0 md:ml-20'}
         `}
       >
-        <div className="p-4 md:p-6 lg:p-8 animate-fadeIn">
+        <div className="mx-auto w-full max-w-[1440px] animate-fadeIn px-2 py-2.5 md:px-3 md:py-3.5 lg:px-4 lg:py-4.5">
           {children}
         </div>
       </main>

@@ -7,6 +7,7 @@ import { PaymentService } from '../payment/payment.service';
 import { MailService } from '../mail/mail.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import * as OrderHelper from './order.helper';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class OrderCreation {
@@ -18,6 +19,7 @@ export class OrderCreation {
     private cartService: CartService,
     private paymentService: PaymentService,
     private mailService: MailService,
+    private prisma: PrismaService,
   ) {}
 
   async create(userId: number | null, dto: CreateOrderDto): Promise<any> {
@@ -87,7 +89,11 @@ export class OrderCreation {
       userId, 
       dto, 
       finalItems, 
-      totals.discountedTotal, 
+      { 
+        subtotal: totals.totalItems, 
+        discountAmount: totals.discountAmount, 
+        total: totals.discountedTotal 
+      }, 
       finalDiscount
     );
 
@@ -131,25 +137,29 @@ export class OrderCreation {
 
   private async prepareItemsFromDto(items: Array<{variantId: number, quantity: number}>) {
     const variantIds = items.map(item => item.variantId);
-    const variants = await this.repository.findVariantsByIds(variantIds);
+    const variants = await this.prisma.productVariant.findMany({
+      where: { id: { in: variantIds } },
+      include: { product: { select: { name: true } } }
+    });
     
     if (!variants || variants.length === 0) {
       throw new BadRequestException('Không tìm thấy sản phẩm');
     }
     
-    this.logger.log('✅ Found variants:', variants.map(v => ({ id: v.id, price: v.price })));
+    this.logger.log('✅ Found variants:', variants.map(v => ({ id: v.id, price: v.price, name: v.product?.name })));
     
-    const variantPriceMap = new Map(variants.map(v => [v.id, v.price]));
+    const variantMap = new Map(variants.map(v => [v.id, v]));
     
     return items.map(item => {
-      const price = variantPriceMap.get(item.variantId);
-      if (!price && price !== 0) {
+      const variant = variantMap.get(item.variantId);
+      if (!variant) {
         throw new BadRequestException(`Sản phẩm ID ${item.variantId} không tồn tại`);
       }
       return {
         variantId: item.variantId,
         quantity: item.quantity,
-        price
+        price: variant.price,
+        productName: variant.product?.name || 'Sản phẩm'
       };
     });
   }
@@ -165,7 +175,8 @@ export class OrderCreation {
     return cart.cartItems.map(item => ({
       variantId: item.variantId,
       quantity: item.quantity,
-      price: item.variant?.price || 0
+      price: item.variant?.price || 0,
+      productName: item.variant?.product?.name || 'Sản phẩm'
     }));
   }
 

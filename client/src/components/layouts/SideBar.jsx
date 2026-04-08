@@ -8,6 +8,7 @@ import {
   ShoppingCart,
   CreditCard,
   Users,
+  MapPin,
   Percent,
   MessageSquare,
   BarChart2,
@@ -26,13 +27,13 @@ const checkGroupActive = (pathname, paths) => paths.some(p => pathname.startsWit
 // ── Atomic nav link ───────────────────────────────────────────────────────────
 const NavItem = ({ to, icon: Icon, label, badge, isOpen, pathname }) => {
   const active = checkActive(pathname, to);
-  const activeStyle = { backgroundColor: '#eff6ff', color: '#2563eb', fontWeight: 600 };
-  const inactiveStyle = { color: '#4b5563' };
+  const activeStyle = { backgroundColor: '#1d4ed8', color: '#eff6ff', fontWeight: 600 };
+  const inactiveStyle = { color: '#cbd5e1' };
 
   return (
     <Link
       to={to}
-      className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 mx-2 relative hover:bg-gray-100"
+      className="relative mx-2 flex items-center gap-3 rounded-xl px-3 py-2.5 transition-all duration-200 hover:bg-slate-800"
       style={active ? activeStyle : inactiveStyle}
       title={!isOpen ? label : undefined}
     >
@@ -61,13 +62,13 @@ const NavItem = ({ to, icon: Icon, label, badge, isOpen, pathname }) => {
 // ── Sub nav link ─────────────────────────────────────────────────────────────
 const SubNavItem = ({ to, icon: Icon, label, badge, pathname }) => {
   const active = pathname === to || pathname.startsWith(to + '/');
-  const activeStyle = { color: '#2563eb', backgroundColor: '#eff6ff', fontWeight: 600 };
-  const inactiveStyle = { color: '#6b7280' };
+  const activeStyle = { color: '#bfdbfe', backgroundColor: '#1e3a8a', fontWeight: 600 };
+  const inactiveStyle = { color: '#94a3b8' };
 
   return (
     <Link
       to={to}
-      className="flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-150 mx-2 hover:bg-gray-100"
+      className="mx-2 flex items-center gap-3 rounded-lg px-3 py-2 transition-all duration-150 hover:bg-slate-800"
       style={active ? activeStyle : inactiveStyle}
     >
       <Icon size={15} style={{ color: 'inherit', flexShrink: 0 }} />
@@ -87,7 +88,7 @@ const SubNavItem = ({ to, icon: Icon, label, badge, pathname }) => {
 const NavGroup = ({ groupKey, icon: Icon, label, children, isOpen, expanded, onToggle, pathname, paths = [] }) => {
   const active = checkGroupActive(pathname, paths);
   const btnStyle = {
-    color: active ? '#2563eb' : '#374151',
+    color: active ? '#bfdbfe' : '#cbd5e1',
     background: 'none',
     border: 'none',
     cursor: 'pointer',
@@ -98,7 +99,7 @@ const NavGroup = ({ groupKey, icon: Icon, label, children, isOpen, expanded, onT
     <div>
       <button
         onClick={() => onToggle(groupKey)}
-        className="w-[calc(100%-16px)] flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 mx-2 hover:bg-gray-100"
+        className="mx-2 flex w-[calc(100%-16px)] items-center gap-3 rounded-xl px-3 py-2.5 transition-all duration-200 hover:bg-slate-800"
         style={btnStyle}
         title={!isOpen ? label : undefined}
       >
@@ -108,10 +109,7 @@ const NavGroup = ({ groupKey, icon: Icon, label, children, isOpen, expanded, onT
             <span style={{ fontSize: 13.5, fontWeight: 'inherit', flex: 1, textAlign: 'left', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {label}
             </span>
-            {expanded
-              ? <ChevronDown size={14} style={{ color: '#9ca3af' }} />
-              : <ChevronRight size={14} style={{ color: '#9ca3af' }} />
-            }
+            {expanded ? <ChevronDown size={14} style={{ color: '#64748b' }} /> : <ChevronRight size={14} style={{ color: '#64748b' }} />}
           </>
         )}
       </button>
@@ -127,7 +125,7 @@ const NavGroup = ({ groupKey, icon: Icon, label, children, isOpen, expanded, onT
 // ── Section label ─────────────────────────────────────────────────────────────
 const SectionLabel = ({ label, isOpen }) =>
   isOpen ? (
-    <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9ca3af', padding: '20px 16px 6px', fontFamily: 'Inter, system-ui, sans-serif' }}>
+    <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#64748b', padding: '16px 16px 6px', fontFamily: 'Inter, system-ui, sans-serif' }}>
       {label}
     </p>
   ) : null;
@@ -142,6 +140,7 @@ const AdminSidebar = ({ isOpen }) => {
   const [openGroups, setOpenGroups] = useState({
     catalogue: true,
     sales: true,
+    customers: true,
     marketing: false,
   });
 
@@ -152,17 +151,36 @@ const AdminSidebar = ({ isOpen }) => {
 
   return (
     <aside
-      className={`fixed left-0 top-16 bottom-0 z-20 flex flex-col overflow-hidden transition-all duration-300
+      className={`fixed bottom-0 left-0 top-0 z-40 flex flex-col overflow-hidden transition-all duration-300
         ${isOpen ? 'w-64' : 'w-20'}`}
       style={{
-        backgroundColor: '#ffffff',
-        borderRight: '1px solid #e5e7eb',
-        boxShadow: '4px 0 12px rgba(0,0,0,0.05)',
-        color: '#374151',
+        backgroundColor: '#0f172a',
+        borderRight: '1px solid #1e293b',
+        boxShadow: '8px 0 24px rgba(2,6,23,0.3)',
+        color: '#cbd5e1',
         fontFamily: 'Inter, system-ui, sans-serif',
       }}
     >
-      <nav className="flex-1 overflow-y-auto py-3" style={{ color: 'inherit' }}>
+      <div className="flex h-16 items-center border-b border-slate-800 px-4">
+        <Link
+          to="/admin-dashboard"
+          className="flex items-center gap-3"
+          style={{ color: 'inherit', textDecoration: 'none', width: '100%' }}
+          title={!isOpen ? 'Admin Panel' : undefined}
+        >
+          <div className="grid h-8 w-8 place-items-center rounded-lg bg-blue-600 text-white">
+            <Package size={16} />
+          </div>
+          {isOpen && (
+            <div style={{ minWidth: 0 }}>
+              <p style={{ margin: 0, color: '#f8fafc', fontSize: 24, fontWeight: 700, lineHeight: '22px' }}>ShopAdmin</p>
+              <p style={{ margin: 0, color: '#94a3b8', fontSize: 16, lineHeight: '18px' }}>Quản trị hệ thống</p>
+            </div>
+          )}
+        </Link>
+      </div>
+
+      <nav className="dark-scrollbar flex-1 overflow-y-auto py-3" style={{ color: 'inherit' }}>
 
         {/* Dashboard */}
         <div className="mb-1">
@@ -200,7 +218,18 @@ const AdminSidebar = ({ isOpen }) => {
           <SubNavItem to="/admin-orders" icon={ShoppingCart} label="Tất cả đơn hàng" pathname={pathname} />
         </NavGroup>
 
-        <NavItem to="/admin-users" icon={Users} label="Khách hàng" {...sharedProps} />
+        <NavGroup
+          groupKey="customers"
+          icon={Users}
+          label="Khách hàng"
+          paths={['/admin-users', '/admin-addresses']}
+          expanded={openGroups.customers}
+          onToggle={toggleGroup}
+          {...sharedProps}
+        >
+          <SubNavItem to="/admin-users" icon={Users} label="Danh sách khách hàng" pathname={pathname} />
+          <SubNavItem to="/admin-addresses" icon={MapPin} label="Địa chỉ" pathname={pathname} />
+        </NavGroup>
         <NavItem to="/admin-payments" icon={CreditCard} label="Thanh toán" {...sharedProps} />
 
         {/* MARKETING */}
@@ -231,17 +260,17 @@ const AdminSidebar = ({ isOpen }) => {
 
       {/* User footer */}
       {user && (
-        <div style={{ borderTop: '1px solid #f3f4f6', padding: isOpen ? 16 : 12 }}>
+        <div style={{ borderTop: '1px solid #1e293b', padding: isOpen ? 16 : 12 }}>
           {isOpen ? (
             <Link to="/admin/profile" className="flex items-center gap-3" style={{ color: 'inherit', textDecoration: 'none' }}>
               <div className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
                 {user.name ? user.name.charAt(0).toUpperCase() : 'A'}
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <p style={{ fontSize: 13, fontWeight: 600, color: '#111827', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <p style={{ fontSize: 13, fontWeight: 600, color: '#f8fafc', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {user.name || 'Admin'}
                 </p>
-                <p style={{ fontSize: 11, color: '#9ca3af', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <p style={{ fontSize: 11, color: '#94a3b8', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {user.email}
                 </p>
               </div>

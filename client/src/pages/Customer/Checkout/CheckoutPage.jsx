@@ -1,15 +1,13 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { Steps, Card, Divider, Button as AntButton, Modal as AntModal, Spin } from "antd";
-import { ArrowLeftOutlined, ShoppingOutlined, EnvironmentOutlined, CreditCardOutlined } from "@ant-design/icons";
+import { Steps, Card, Button as AntButton, Modal as AntModal, Spin } from "antd";
+import { ArrowLeftOutlined, EnvironmentOutlined, CreditCardOutlined } from "@ant-design/icons";
 import { notify } from "../../../utils/notification";
 import { computeDiscountFromMap } from "../../../utils/formatters";
 import { useAuth } from "../../../contexts/AuthContext";
 import { useCart } from "../../../hooks/useCart";
 import { useAutoApplyDiscounts } from "../../../hooks/useFlashSale";
-import Loading from "../../../components/common/Loading";
-import Modal from "../../../components/common/Modal";
 import PageTitle from "../../../components/common/PageTitle";
 import AddressSelector from "../../../components/profile/AddressSelector";
 import ShippingForm from "../../../components/checkout/ShippingForm";
@@ -26,30 +24,31 @@ const CheckoutPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
-  const { addToCart } = useCart();
+  useCart(); // Initialize cart hook if needed but we get items from redux
   const { discountMap } = useAutoApplyDiscounts();
 
   const allCartItems = useSelector((state) => state.cart.items);
 
-  let cartItems = location.state?.items || [];
-  
-  if (location.state?.product && !location.state?.items) {
-    const { product, quantity } = location.state;
-    const cartItem = {
-      id: product.variant.id,
-      productId: product.id,
-      name: product.name,
-      image: product.image,
-      price: product.variant.price,
-      quantity: quantity,
-      size: product.variant.size,
-      color: product.variant.color,
-      stock: product.variant.stock,
-    };
-    cartItems = [cartItem];
-  } else {
-    cartItems = location.state?.items || allCartItems;
-  }
+  const cartItems = useMemo(() => {
+    let items = location.state?.items || [];
+    
+    if (location.state?.product && !location.state?.items) {
+      const { product, quantity } = location.state;
+      return [{
+        id: product.variant.id,
+        productId: product.id,
+        name: product.name,
+        image: product.image,
+        price: product.variant.price,
+        quantity: quantity,
+        size: product.variant.size,
+        color: product.variant.color,
+        stock: product.variant.stock,
+      }];
+    }
+    
+    return items.length > 0 ? items : allCartItems;
+  }, [location.state, allCartItems]);
 
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
@@ -133,10 +132,19 @@ const CheckoutPage = () => {
   const effectiveDiscount = autoApplyWins ? null : appliedDiscount;
   const effectiveFlashSaving = autoApplyWins ? flashSaleDiscount : 0;
 
-  const { subtotal, shipping, discount, total, itemCount } =
+  const { shipping, discount, total, itemCount } =
     useCheckoutCalculations(effectiveCartItems, effectiveDiscount);
 
   const { submitting, handleSubmitOrder: submitOrder } = useCheckoutSubmit(user);
+
+  const loadUserProfile = useCallback(async () => {
+    try {
+      const response = await userService.getProfile();
+      setCurrentUser(response.user);
+    } catch (error) {
+      console.error("Failed to load user profile:", error);
+    }
+  }, []);
 
   useEffect(() => {
     if (cartItems.length === 0) {
@@ -148,14 +156,7 @@ const CheckoutPage = () => {
     if (user && !currentUser) {
       loadUserProfile();
     }
-  }, [user, cartItems.length, navigate, currentUser]);
-
-  const loadUserProfile = async () => {
-    try {
-      const response = await userService.getProfile();
-      setCurrentUser(response.user);
-    } catch (error) {}
-  };
+  }, [user, cartItems.length, navigate, currentUser, loadUserProfile]);
 
   const onSelectAddress = (addressData) => {
     handleSelectAddress(addressData, shippingInfo.email);
@@ -250,7 +251,7 @@ const CheckoutPage = () => {
                 cartItems={effectiveCartItems}
                 originalCartItems={cartItems}
                 flashSaleDiscount={effectiveFlashSaving}
-                subtotal={subtotal}
+                subtotal={originalSubtotal}
                 shipping={shipping}
                 discount={discount}
                 total={total}

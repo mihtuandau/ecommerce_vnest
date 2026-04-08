@@ -13,6 +13,10 @@ import BulkActionsBar from '../../../components/admin/Product/BulkActionsBar';
 import ColumnCustomizer from '../../../components/admin/Product/ColumnCustomizer';
 import { exportSelectedProductsToCSV } from '../../../utils/exportUtils';
 import productService from '../../../services/productService';
+import ProductStats from '../../../components/admin/Product/ProductStats';
+import { Filter } from 'lucide-react';
+import { Input } from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
 
 const ProductsPage = () => {
   const navigate = useNavigate();
@@ -48,6 +52,7 @@ const ProductsPage = () => {
     'sold',
     'rating',
     'status',
+    'createdAt',
     'variants',
     'actions',
   ]);
@@ -131,73 +136,90 @@ const ProductsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-full w-full ">
-        <PageHeader
-          title="Quản lý sản phẩm"
-          subtitle={`Tổng số sản phẩm: ${pagination.total ?? products.length}`}
-          showRefresh
-          onRefresh={refetch}
-          refreshing={isLoading}
-          actions={
-            <div className="flex gap-2">
-              <ColumnCustomizer
-                visibleColumns={visibleColumns}
-                onColumnsChange={setVisibleColumns}
-              />
-              <Button
-                type="primary"
-                size="large"
-                icon={<PlusOutlined />}
-                onClick={() => navigate('/admin-products/create')}
-              >
-                + Thêm sản phẩm mới
-              </Button>
-            </div>
-          }
+    <div className="min-h-screen bg-gray-50/50 p-6">
+      <div className="max-w-[1600px] mx-auto w-full">
+        {/* Header Setup */}
+        <div className="flex justify-between items-start mb-6">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 mb-1">Quản lý sản phẩm</h1>
+            <p className="text-gray-500 text-sm">Quản lý toàn bộ sản phẩm trong cửa hàng</p>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              type="primary"
+              size="large"
+              className="bg-blue-600 hover:bg-blue-700 font-medium rounded-lg px-5 h-10 flex items-center"
+              icon={<PlusOutlined />}
+              onClick={() => navigate('/admin-products/create')}
+            >
+              Thêm sản phẩm
+            </Button>
+          </div>
+        </div>
+
+        {/* Stats Row */}
+        <ProductStats 
+          products={productsData?.products || []} 
+          getTotalStock={(p) => p.variants ? p.variants.reduce((sum, v) => sum + (v.stock || 0), 0) : (p.stock || 0)} 
         />
 
-      <BulkActionsBar
-        selectedCount={selectedProducts.length}
-        onBulkDelete={handleBulkActionDelete}
-        onBulkStatusChange={handleBulkStatusChange}
-        onExport={handleExport}
-        onClearSelection={handleClearSelection}
-        deleting={deleting}
-      />
+        <BulkActionsBar
+          selectedCount={selectedProducts.length}
+          onBulkDelete={handleBulkActionDelete}
+          onBulkStatusChange={handleBulkStatusChange}
+          onExport={handleExport}
+          onClearSelection={handleClearSelection}
+          deleting={deleting}
+        />
 
-      <ProductToolbar
-        search={filters.search}
-        setSearch={(value) => updateFilters({ search: value, page: 1 })}
-        selectedCategory={filters.categoryId}
-        setSelectedCategory={(value) => updateFilters({ categoryId: value, page: 1 })}
-        categories={categories}
-        selectedBrand={filters.brandId}
-        setSelectedBrand={(value) => updateFilters({ brandId: value, page: 1 })}
-        brands={brands}
-        status={filters.status}
-        setStatus={(value) => updateFilters({ status: value, page: 1 })}
-        minPrice={filters.minPrice}
-        maxPrice={filters.maxPrice}
-        setPriceRange={({ minPrice, maxPrice }) => updateFilters({ minPrice, maxPrice, page: 1 })}
-        sortBy={filters.sortBy}
-        setSort={({ sortBy }) => updateFilters({ sortBy, page: 1 })}
-        onResetFilters={() =>
-          setFilters((prev) => ({
-            ...prev,
-            search: '',
-            categoryId: '',
-            brandId: '',
-            status: '',
-            minPrice: '',
-            maxPrice: '',
-            sortBy: 'newest',
-            page: 1,
-          }))
-        }
-        selectedProducts={selectedProducts}
-        onBulkDelete={handleBulkDelete}
-      />
+        {/* Content Box */}
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+          {/* Custom Tabs & Search */}
+          <div className="px-6 py-4 border-b border-gray-100">
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center gap-6 text-sm font-medium border-b border-gray-100 pb-2">
+                {[
+                  { key: '', label: 'Tất cả', count: products.length },
+                  { key: 'active', label: 'Đang bán', count: products.filter(p => p.isActive !== false).length },
+                  { key: 'inactive', label: 'Đã ẩn', count: products.filter(p => p.isActive === false).length },
+                  { key: 'low-stock', label: 'Sắp hết', count: products.filter(p => { const stock = p.variants ? p.variants.reduce((sum, v) => sum + (v.stock || 0), 0) : (p.stock || 0); return stock > 0 && stock < 50; }).length },
+                  { key: 'out-of-stock', label: 'Hết hàng', count: products.filter(p => { const stock = p.variants ? p.variants.reduce((sum, v) => sum + (v.stock || 0), 0) : (p.stock || 0); return stock === 0; }).length },
+                ].map(tab => (
+                  <button
+                    key={tab.key}
+                    onClick={() => updateFilters({ status: tab.key, page: 1 })}
+                    className={`pb-3 border-b-2 transition-colors relative top-[9px] -mb-[9px] ${
+                      (filters.status || '') === tab.key
+                        ? 'border-blue-600 text-blue-600'
+                        : 'border-transparent text-gray-500 hover:text-gray-700'
+                    }`}
+                  >
+                    {tab.label} <span className="ml-1 bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded-md text-xs font-semibold">{tab.count}</span>
+                  </button>
+                ))}
+                
+                <div className="ml-auto">
+                  <Button 
+                    className="flex items-center gap-2 rounded-lg border-gray-200 text-gray-600 font-medium"
+                    icon={<Filter size={16} />}
+                  >
+                    Lọc nâng cao
+                  </Button>
+                </div>
+              </div>
+
+              <div className="mt-2">
+                <Input
+                  prefix={<SearchOutlined className="text-gray-400" />}
+                  placeholder="Tìm theo tên hoặc slug sản phẩm..."
+                  value={filters.search}
+                  onChange={e => updateFilters({ search: e.target.value, page: 1 })}
+                  className="rounded-lg h-10 border-gray-200 text-sm hover:border-blue-400 focus:border-blue-500 w-full"
+                />
+              </div>
+            </div>
+          </div>
+
 
       <QueryListWrapper
         isLoading={isLoading}
@@ -224,6 +246,7 @@ const ProductsPage = () => {
         />
       </QueryListWrapper>
 
+        </div>
       </div>
 
       <DeleteConfirmModal

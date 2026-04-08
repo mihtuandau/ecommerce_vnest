@@ -1,69 +1,62 @@
-import { Card, Row, Col, Statistic } from 'antd';
-import { 
-  AppstoreOutlined, 
-  DollarOutlined, 
-  WarningOutlined, 
-  CloseCircleOutlined 
-} from '@ant-design/icons';
+import { useMemo } from 'react';
+import { Package, TrendingUp, AlertTriangle, BarChart2 } from 'lucide-react';
 
-const ProductStats = ({ products, formatPrice, getTotalStock }) => {
-  const totalProducts = products.length;
-  const totalValue = products.reduce((sum, p) => {
-    const stock = getTotalStock?.(p.variants) ?? 0;
-    return sum + (Number(p.basePrice) || 0) * stock;
-  }, 0);
-  const lowStock = products.filter((p) => {
-    const stock = getTotalStock(p.variants);
-    return stock > 0 && stock < 10;
-  }).length;
-  const outOfStock = products.filter((p) => getTotalStock(p.variants) === 0).length;
+const ProductStats = ({ products = [], getTotalStock }) => {
+  const stats = useMemo(() => {
+    const total = products.length;
+    const active = products.filter(p => p.isActive !== false).length;
+    
+    let lowStockCount = 0;
+    let outOfStockCount = 0;
+
+    products.forEach(p => {
+      const stock = getTotalStock ? getTotalStock(p) : (p.stock || 0);
+      if (stock === 0) outOfStockCount++;
+      else if (stock < 50) lowStockCount++; // Giả sử < 50 là sắp hết hàng giống ảnh
+    });
+
+    return [
+      {
+        title: 'Tổng sản phẩm',
+        value: total,
+        icon: <Package size={20} className="text-blue-600" />,
+        bgIcon: 'bg-blue-50',
+      },
+      {
+        title: 'Đang bán',
+        value: active,
+        icon: <TrendingUp size={20} className="text-emerald-600" />,
+        bgIcon: 'bg-emerald-50',
+      },
+      {
+        title: 'Sắp hết hàng',
+        value: lowStockCount,
+        icon: <AlertTriangle size={20} className="text-amber-500" />,
+        bgIcon: 'bg-amber-50',
+      },
+      {
+        title: 'Hết hàng',
+        value: outOfStockCount,
+        icon: <BarChart2 size={20} className="text-red-500" />,
+        bgIcon: 'bg-red-50',
+      }
+    ];
+  }, [products, getTotalStock]);
 
   return (
-    <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-      <Col xs={24} sm={12} lg={6}>
-        <Card hoverable>
-          <Statistic
-            title="Tổng sản phẩm"
-            value={totalProducts}
-            prefix={<AppstoreOutlined style={{ color: '#1890ff' }} />}
-            // antd v5+: valueStyle deprecated -> styles.content
-            styles={{ content: { color: '#000', fontWeight: 600 } }}
-          />
-        </Card>
-      </Col>
-      <Col xs={24} sm={12} lg={6}>
-        <Card hoverable>
-          <Statistic
-            title="Tổng giá trị kho"
-            value={totalValue}
-            prefix={<DollarOutlined style={{ color: '#52c41a' }} />}
-            suffix="₫"
-            styles={{ content: { color: '#000', fontWeight: 600 } }}
-            formatter={(value) => formatPrice(value).replace('₫', '')}
-          />
-        </Card>
-      </Col>
-      <Col xs={24} sm={12} lg={6}>
-        <Card hoverable>
-          <Statistic
-            title="Low Stock"
-            value={lowStock}
-            prefix={<WarningOutlined style={{ color: '#faad14' }} />}
-            styles={{ content: { color: '#000', fontWeight: 600 } }}
-          />
-        </Card>
-      </Col>
-      <Col xs={24} sm={12} lg={6}>
-        <Card hoverable>
-          <Statistic
-            title="Hết hàng"
-            value={outOfStock}
-            prefix={<CloseCircleOutlined style={{ color: '#ff4d4f' }} />}
-            styles={{ content: { color: '#000', fontWeight: 600 } }}
-          />
-        </Card>
-      </Col>
-    </Row>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      {stats.map((stat, index) => (
+        <div key={index} className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm flex items-center gap-4 transition-all hover:shadow-md">
+          <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${stat.bgIcon}`}>
+            {stat.icon}
+          </div>
+          <div>
+            <div className="text-sm font-medium text-gray-500 mb-1">{stat.title}</div>
+            <div className="text-2xl font-bold text-gray-900">{stat.value}</div>
+          </div>
+        </div>
+      ))}
+    </div>
   );
 };
 

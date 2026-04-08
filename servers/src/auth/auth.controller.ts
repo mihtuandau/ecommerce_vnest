@@ -37,7 +37,7 @@ export class AuthController {
   ) {}
 
   @Post('register')
-  @Throttle({ default: { limit: 5, ttl: 300000 } }) // 5 requests per 5 minutes
+  @Throttle({ default: { limit: 50, ttl: 300000 } }) // Increased for dev (was 5 per 5 mins)
   async register(@Body() registerDto: RegisterDto, @Res() res: Response) {
     const result = await this.authService.register(registerDto);
     this.authService.setAuthCookie(res, result.access_token);
@@ -85,7 +85,7 @@ export class AuthController {
   }
 
   @Post('login')
-  @Throttle({ default: { limit: 5, ttl: 300000 } }) // 5 requests per 5 minutes (brute-force protection)
+  @Throttle({ default: { limit: 100, ttl: 300000 } }) // Increased for dev (was 5 per 5 mins)
   async login(@Body() loginDto: LoginDto, @Res() res: Response) {
     const user = await this.authService.validateUser(
       loginDto.email,

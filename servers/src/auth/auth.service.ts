@@ -27,10 +27,9 @@ export class AuthService {
     const existingUser = await this.userService.findByEmail(email);
     if (existingUser) throw new BadRequestException('Registration failed. Please check your input and try again.');
 
-    const hashedPassword = await bcrypt.hash(password, 10);
     const user = await this.userService.create({
       email,
-      password: hashedPassword,
+      password,
       name,
       role: 'CUSTOMER',
     });
@@ -45,10 +44,9 @@ export class AuthService {
     const existingUser = await this.userService.findByEmail(email);
     if (existingUser) throw new BadRequestException('Registration failed. Please check your input and try again.');
 
-    const hashedPassword = await bcrypt.hash(password, 10);
     const user = await this.userService.create({
       email,
-      password: hashedPassword,
+      password,
       name,
       role: 'ADMIN',
     });
@@ -71,10 +69,9 @@ export class AuthService {
     const existingUser = await this.userService.findByEmail(email);
     if (existingUser) throw new BadRequestException('Registration failed. Please check your input and try again.');
 
-    const hashedPassword = await bcrypt.hash(password, 10);
     const user = await this.userService.create({
       email,
-      password: hashedPassword,
+      password,
       name,
       role: 'ADMIN',
     });

@@ -125,54 +125,56 @@ const AdminCategoriesPage = () => {
   }), [categories, filteredCategories]);
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Quản lý Danh mục</h1>
-          <p className="text-gray-600 mt-1">Quản lý các danh mục sản phẩm trong hệ thống</p>
+    <div className="p-6">
+      <div className="mx-auto w-full max-w-[1600px] space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Quản lý Danh mục</h1>
+            <p className="text-gray-600 mt-1">Quản lý các danh mục sản phẩm trong hệ thống</p>
+          </div>
+          <Button onClick={() => setShowForm(true)} icon={Plus}>
+            Thêm danh mục
+          </Button>
         </div>
-        <Button onClick={() => setShowForm(true)} icon={Plus}>
-          Thêm danh mục
-        </Button>
-      </div>
-      <CategoryStatsCards stats={stats} />
+        <CategoryStatsCards stats={stats} />
 
-      <CategoryFilters
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        onAddClick={() => setShowForm(true)}
-      />
-
-      <div>
-        <CategoryTable
-          categories={paginatedCategories}
-          loading={loading}
-          sortBy={sortBy}
-          sortDir={sortDir}
-          onSort={toggleSort}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          currentPage={currentPage}
-          itemsPerPage={itemsPerPage}
+        <CategoryFilters
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          onAddClick={() => setShowForm(true)}
         />
 
-        {!loading && filteredCategories.length > 0 && (
-          <Pagination
+        <div>
+          <CategoryTable
+            categories={paginatedCategories}
+            loading={loading}
+            sortBy={sortBy}
+            sortDir={sortDir}
+            onSort={toggleSort}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
             currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-            itemsCount={paginatedCategories.length}
-            totalItems={filteredCategories.length}
+            itemsPerPage={itemsPerPage}
           />
-        )}
-      </div>
 
-      <CategoryFormModal
-        isOpen={showForm}
-        onClose={handleCloseForm}
-        onSubmit={handleSubmit}
-        category={editingCategory}
-      />
+          {!loading && filteredCategories.length > 0 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+              itemsCount={paginatedCategories.length}
+              totalItems={filteredCategories.length}
+            />
+          )}
+        </div>
+
+        <CategoryFormModal
+          isOpen={showForm}
+          onClose={handleCloseForm}
+          onSubmit={handleSubmit}
+          category={editingCategory}
+        />
+      </div>
     </div>
   );
 };

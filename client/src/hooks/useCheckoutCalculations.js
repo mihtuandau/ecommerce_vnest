@@ -3,8 +3,8 @@ import { useMemo } from 'react';
 export const useCheckoutCalculations = (cartItems, appliedDiscount) => {
   return useMemo(() => {
     const subtotal = cartItems.reduce((sum, item) => {
-      const price = item.product?.variant?.price || 0;
-      return sum + (price * item.quantity);
+      const price = item.product?.variant?.price || item.variant?.price || item.price || 0;
+      return sum + (Number(price) * item.quantity);
     }, 0);
     
     const shipping = subtotal > 500000 ? 0 : 30000;

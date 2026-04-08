@@ -19,8 +19,8 @@ export const productService = {
     return await apiService.get(PRODUCT_ENDPOINTS.BASE, cleanParams);
   },
 
-  getOne: async (id) => {
-    return await apiService.get(PRODUCT_ENDPOINTS.BY_ID(id));
+  getOne: async (id, params = {}) => {
+    return await apiService.get(PRODUCT_ENDPOINTS.BY_ID(id), params);
   },
 
   create: async (productData) => {

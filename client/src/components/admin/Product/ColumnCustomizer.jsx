@@ -15,6 +15,7 @@ const ColumnCustomizer = ({ visibleColumns, onColumnsChange }) => {
     { key: 'sold', label: 'Đã bán' },
     { key: 'rating', label: 'Đánh giá' },
     { key: 'status', label: 'Trạng thái' },
+    { key: 'createdAt', label: 'Ngày tạo' },
     { key: 'variants', label: 'Biến thể' },
     { key: 'actions', label: 'Thao tác' },
   ];
@@ -41,6 +42,7 @@ const ColumnCustomizer = ({ visibleColumns, onColumnsChange }) => {
       'sold',
       'rating',
       'status',
+      'createdAt',
       'variants',
       'actions',
     ]);

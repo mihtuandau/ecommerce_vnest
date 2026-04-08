@@ -39,6 +39,29 @@ export class UserRepository {
     return this.prisma.user.delete({ where: { id } });
   }
 
+  async countOrdersByUser(userId: number): Promise<number> {
+    return this.prisma.order.count({ where: { userId } });
+  }
+
+  async suspendUser(id: number): Promise<User> {
+    return this.prisma.user.update({
+      where: { id },
+      data: {
+        status: 'SUSPENDED' as any,
+      } as any,
+    });
+  }
+
+  async softDeleteUser(id: number): Promise<User> {
+    return this.prisma.user.update({
+      where: { id },
+      data: {
+        status: 'SUSPENDED' as any,
+        deletedAt: new Date(),
+      } as any,
+    });
+  }
+
   async findAddressesByUser(userId: number): Promise<Address[]> {
     return this.prisma.address.findMany({
       where: { userId },

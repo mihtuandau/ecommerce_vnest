@@ -101,37 +101,39 @@ const ReportPage = () => {
     summaryLoading || revenueLoading || ordersLoading || customerLoading;
 
   return (
-    <div className="report-page">
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-gray-900 mb-2">
-          Báo Cáo Thống Kê
-        </h1>
-        <p className="text-gray-600">
-          Theo dõi và phân tích dữ liệu kinh doanh
-        </p>
-      </div>
+    <div className="p-6">
+      <div className="mx-auto w-full max-w-[1600px] report-page">
+        <div className="mb-6">
+          <h1 className="text-2xl font-semibold text-gray-900 mb-2">
+            Báo Cáo Thống Kê
+          </h1>
+          <p className="text-gray-600">
+            Theo dõi và phân tích dữ liệu kinh doanh
+          </p>
+        </div>
 
-      <ReportFilters
-        dateRange={dateRange}
-        reportType={reportType}
-        loading={loading}
-        exportLoading={exportLoading}
-        onDateChange={handleDateChange}
-        onReportTypeChange={handleReportTypeChange}
-        onFetchReports={handleFetchReports}
-        onExport={handleExport}
-      />
-      <ReportStats summaryData={summaryData} loading={summaryLoading}  />
-
-      <Spin spinning={loading}>
-        <ReportCharts
-          revenueChartData={revenueChartData}
-          ordersChartData={ordersChartData}
+        <ReportFilters
+          dateRange={dateRange}
+          reportType={reportType}
+          loading={loading}
+          exportLoading={exportLoading}
+          onDateChange={handleDateChange}
+          onReportTypeChange={handleReportTypeChange}
+          onFetchReports={handleFetchReports}
+          onExport={handleExport}
         />
+        <ReportStats summaryData={summaryData} loading={summaryLoading}  />
 
-        {/* Top Products Table */}
-        <ReportTable productTableData={productTableData} />
-      </Spin>
+        <Spin spinning={loading}>
+          <ReportCharts
+            revenueChartData={revenueChartData}
+            ordersChartData={ordersChartData}
+          />
+
+          {/* Top Products Table */}
+          <ReportTable productTableData={productTableData} />
+        </Spin>
+      </div>
     </div>
   );
 };

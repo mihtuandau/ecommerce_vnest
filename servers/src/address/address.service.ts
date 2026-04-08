@@ -39,7 +39,7 @@ export class AddressService {
       state: data.state,
       zipCode: data.zipCode,
       country: data.country || 'Vietnam',
-      addressType: (data.addressType || 'HOME') as AddressType,
+      addressType: (data.addressType?.toUpperCase() || 'HOME') as AddressType,
       isDefault,
     });
   }
@@ -63,7 +63,7 @@ export class AddressService {
     if (data.state !== undefined) updateData.state = data.state;
     if (data.zipCode !== undefined) updateData.zipCode = data.zipCode;
     if (data.country !== undefined) updateData.country = data.country;
-    if (data.addressType !== undefined) updateData.addressType = data.addressType as AddressType;
+    if (data.addressType !== undefined) updateData.addressType = data.addressType.toUpperCase() as AddressType;
     if (data.isDefault !== undefined) updateData.isDefault = data.isDefault;
 
     return this.repository.update(id, updateData);

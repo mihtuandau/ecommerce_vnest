@@ -31,8 +31,8 @@ export class ProductController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.productService.findOne(+id);
+  findOne(@Param('id') id: string, @Query('allVariants') allVariants?: string) {
+    return this.productService.findOne(id, allVariants === 'true');
   }
 
   @Get(':id/related')

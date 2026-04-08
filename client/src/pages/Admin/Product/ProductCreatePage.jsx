@@ -1,12 +1,13 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useNavigate, useParams, useLocation, Link } from 'react-router-dom';
-import { ArrowLeft, Plus } from 'lucide-react';
+import { ArrowLeft, Eye } from 'lucide-react';
+import { Button } from 'antd';
 import { Form } from 'antd';
 import { useCategories, useBrands } from '../../../hooks/useProducts';
 import productService from '../../../services/productService';
 import { notify } from '../../../utils/notification';
 import Loading from '../../../components/common/Loading';
-import ProductFormWithTabs from '../../../components/admin/Product/ProductFormWithTabs';
+import ProductFormWizard from '../../../components/admin/Product/ProductFormWizard';
 
 const generateSlug = (name) => {
   return (name || '')
@@ -396,27 +397,47 @@ const ProductCreatePage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="mb-6">
-        <div className="flex items-center gap-3 mb-4">
-          <Link
-            to="/admin-products"
-            className="p-2 hover:bg-gray-200 rounded-lg text-gray-600 transition-colors"
-            aria-label="Quay lại"
-          >
-            <ArrowLeft size={20} />
-          </Link>
-          <div>
-            <nav className="flex items-center gap-1.5 text-sm text-gray-500 mb-1">
-              <Link to="/admin-products" className="hover:text-gray-700 transition-colors">Sản phẩm</Link>
-              <span>/</span>
-              <span className="text-gray-700 font-medium">
+      <div className="mb-6 border-b border-gray-200 bg-white px-4 py-3 sm:px-6">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={handleCancel}
+              className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-gray-500 transition hover:bg-gray-100 hover:text-gray-700"
+              aria-label="Quay lại"
+            >
+              <ArrowLeft size={20} />
+            </button>
+            <div>
+              <nav className="flex items-center gap-1.5 text-sm text-gray-500 mb-1">
+                <Link to="/admin-products" className="hover:text-gray-700 transition-colors">Sản phẩm</Link>
+                <span>›</span>
+                <span className="text-gray-700 font-medium">{isEdit ? 'Chỉnh sửa' : 'Thêm mới'}</span>
+              </nav>
+              <h1 className="text-4xl font-bold tracking-tight text-gray-900">
                 {isEdit ? 'Chỉnh sửa sản phẩm' : 'Thêm sản phẩm mới'}
-              </span>
-            </nav>
-            <h1 className="text-2xl font-bold text-gray-900">
-              {isEdit ? 'Chỉnh sửa sản phẩm' : 'Thêm sản phẩm mới'}
-            </h1>
+              </h1>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+            <span className="inline-flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-lg font-semibold text-emerald-700">
+              <Eye size={18} /> Đang hiển thị
+            </span>
+            <Button
+              onClick={handleCancel}
+              className="h-12 rounded-xl border-gray-200 px-5 text-lg font-semibold text-gray-700 shadow-none"
+            >
+              Hủy
+            </Button>
+            <Button
+              type="primary"
+              onClick={() => form.submit()}
+              loading={loading}
+              className="h-12 rounded-xl bg-blue-600 px-6 text-lg font-semibold shadow-md shadow-blue-200 hover:bg-blue-700"
+            >
+              {isEdit ? 'Lưu thay đổi' : 'Tạo sản phẩm'}
+            </Button>
           </div>
         </div>
       </div>
@@ -424,7 +445,7 @@ const ProductCreatePage = () => {
       {loadingProduct ? (
         <Loading fullScreen text="Đang tải sản phẩm..." variant="admin" />
       ) : (
-        <ProductFormWithTabs
+        <ProductFormWizard
           form={form}
           productImages={productImages}
           setProductImages={setProductImages}

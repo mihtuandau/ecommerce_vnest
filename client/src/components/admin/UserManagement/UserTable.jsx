@@ -1,8 +1,20 @@
 import React from 'react';
 import { Table, Avatar, Tag, Button, Space, Tooltip, Empty } from 'antd';
-import { EditOutlined, DeleteOutlined, EnvironmentOutlined } from '@ant-design/icons';
+import { EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
 
-const UserTable = ({ users, onEdit, onDelete, onViewAddresses }) => {
+const UserTable = ({ users, currentUserId, onEdit, onDelete, onViewAddresses }) => {
+  const getStatusMeta = (record) => {
+    if (record.deletedAt) {
+      return { color: 'default', label: 'Đã xóa mềm' };
+    }
+
+    if (record.status === 'SUSPENDED') {
+      return { color: 'orange', label: 'Tạm khóa' };
+    }
+
+    return { color: 'green', label: 'Đang hoạt động' };
+  };
+
   const columns = [
     {
       title: 'STT',
@@ -44,19 +56,34 @@ const UserTable = ({ users, onEdit, onDelete, onViewAddresses }) => {
       ),
     },
     {
-      title: 'Địa chỉ',
+      title: 'Trạng thái',
+      key: 'status',
+      width: 160,
+      align: 'center',
+      render: (_, record) => {
+        const statusMeta = getStatusMeta(record);
+        return <Tag color={statusMeta.color}>{statusMeta.label}</Tag>;
+      },
+    },
+    {
+      title: (
+        <Tooltip title="Xem chi tiết">
+          <EyeOutlined />
+        </Tooltip>
+      ),
       key: 'addresses',
       width: 120,
       align: 'center',
       sorter: (a, b) => (a.addresses?.length || 0) - (b.addresses?.length || 0),
       render: (_, record) => (
-        <Button
-          type="text"
-          icon={<EnvironmentOutlined />}
-          onClick={() => onViewAddresses(record)}
-        >
-          {record.addresses?.length || 0}
-        </Button>
+        <Tooltip title={`Xem chi tiết (${record.addresses?.length || 0} địa chỉ)`}>
+          <Button
+            type="text"
+            icon={<EyeOutlined />}
+            onClick={() => onViewAddresses(record)}
+            aria-label={`Xem chi tiết ${record.name || record.email || 'người dùng'}`}
+          />
+        </Tooltip>
       ),
     },
     {
@@ -73,11 +100,12 @@ const UserTable = ({ users, onEdit, onDelete, onViewAddresses }) => {
               onClick={() => onEdit(record)}
             />
           </Tooltip>
-          <Tooltip title="Xóa">
+          <Tooltip title={Number(currentUserId) === Number(record.id) ? 'Không thể tự xóa chính mình' : 'Vô hiệu hóa / Xóa mềm'}>
             <Button
               type="text"
               danger
               icon={<DeleteOutlined />}
+              disabled={Number(currentUserId) === Number(record.id)}
               onClick={() => onDelete(record)}
             />
           </Tooltip>

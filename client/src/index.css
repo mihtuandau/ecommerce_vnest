@@ -22,7 +22,7 @@
 
 /* Dark scrollbar for sidebar */
 .dark-scrollbar::-webkit-scrollbar {
-  width: 4px;
+  width: 8px;
 }
 
 .dark-scrollbar::-webkit-scrollbar-track {
@@ -30,12 +30,12 @@
 }
 
 .dark-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255,0.08);
+  background: rgba(71, 85, 105, 0.75);
   border-radius: 10px;
 }
 
 .dark-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(255,255,255,0.15);
+  background: rgba(100, 116, 139, 0.85);
 }
 
 /* Header Icons - Force consistent colors for all icons including nested */
@@ -166,6 +166,29 @@ h1, h2, h3, h4, h5, h6 {
 
 .admin-layout .btn-ghost {
   color: #1890ff !important;
+}
+
+/* Admin compact density: reduce oversized UI across all admin pages */
+.admin-layout {
+  --admin-density: 0.94;
+}
+
+.admin-layout .p-6 { padding: 1.1rem !important; }
+.admin-layout .p-8 { padding: 1.4rem !important; }
+.admin-layout .px-6 { padding-left: 1.1rem !important; padding-right: 1.1rem !important; }
+.admin-layout .py-5 { padding-top: 0.9rem !important; padding-bottom: 0.9rem !important; }
+.admin-layout .gap-6 { gap: 1rem !important; }
+.admin-layout .mb-8 { margin-bottom: 1.25rem !important; }
+
+.admin-layout .rounded-3xl { border-radius: 1rem !important; }
+
+.admin-layout .text-4xl { font-size: 2rem !important; line-height: 2.25rem !important; }
+.admin-layout .text-3xl { font-size: 1.65rem !important; line-height: 2rem !important; }
+.admin-layout .text-2xl { font-size: 1.35rem !important; line-height: 1.8rem !important; }
+
+@media (max-width: 1280px) {
+  .admin-layout .p-6 { padding: 1rem !important; }
+  .admin-layout .px-6 { padding-left: 1rem !important; padding-right: 1rem !important; }
 }
 
 /* Admin Loading Spinner Override */

@@ -13,6 +13,7 @@ model User {
   password             String
   name                 String?
   role                 Role           @default(CUSTOMER)
+  status               UserStatus     @default(ACTIVE)
   resetPasswordToken   String?
   resetPasswordExpires DateTime?
   deletedAt            DateTime? // Soft delete: null = active, có giá trị = soft deleted
@@ -27,11 +28,17 @@ model User {
   cancelledOrders      Order[]        @relation("CancelledBy") // Orders cancelled by this user/admin
 
   @@index([deletedAt])
+  @@index([status])
 }
 
 enum Role {
   CUSTOMER
   ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
 }
 
 enum AddressType {

@@ -6,6 +6,7 @@ export const formatDate = formatDateTime;
 
 export const statusVariants = {
   PENDING: 'warning',
+  AWAITING_PAYMENT: 'warning',
   PROCESSING: 'default',
   SHIPPED: 'default',
   DELIVERED: 'success',
@@ -14,6 +15,7 @@ export const statusVariants = {
 
 export const statusLabels = {
   PENDING: 'Chờ xử lý',
+  AWAITING_PAYMENT: 'Chờ thanh toán',
   PROCESSING: 'Đang xử lý',
   SHIPPED: 'Đang giao',
   DELIVERED: 'Đã giao',

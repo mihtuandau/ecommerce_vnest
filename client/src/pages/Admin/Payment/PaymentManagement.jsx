@@ -72,57 +72,59 @@ const PaymentManagement = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Quản lý thanh toán</h1>
-          <p className="text-gray-600 mt-1">Theo dõi và quản lý các giao dịch thanh toán</p>
+    <div className="p-6">
+      <div className="mx-auto w-full max-w-[1600px] space-y-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Quản lý thanh toán</h1>
+            <p className="text-gray-600 mt-1">Theo dõi và quản lý các giao dịch thanh toán</p>
+          </div>
+          <Button onClick={() => refetch()} icon={RefreshCw} disabled={isLoading}>
+            Làm mới
+          </Button>
         </div>
-        <Button onClick={() => refetch()} icon={RefreshCw} disabled={isLoading}>
-          Làm mới
-        </Button>
-      </div>
 
-      <PaymentStatsCards stats={stats} />
+        <PaymentStatsCards stats={stats} />
 
-      <PaymentFilters
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-        statusFilter={statusFilter}
-        setStatusFilter={setStatusFilter}
-        methodFilter={methodFilter}
-        setMethodFilter={setMethodFilter}
-        filteredCount={filteredPayments.length}
-        totalCount={stats.total}
-      />
-
-      <div>
-        <PaymentTable
-          payments={paginatedPayments}
-          loading={isLoading}
-          sortField={sortField}
-          sortOrder={sortOrder}
-          onSort={toggleSort}
-          onViewDetail={handleViewDetail}
+        <PaymentFilters
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          statusFilter={statusFilter}
+          setStatusFilter={setStatusFilter}
+          methodFilter={methodFilter}
+          setMethodFilter={setMethodFilter}
+          filteredCount={filteredPayments.length}
+          totalCount={stats.total}
         />
-        
-        {!isLoading && filteredPayments.length > 0 && (
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-            itemsCount={paginatedPayments.length}
-            totalItems={filteredPayments.length}
-          />
-        )}
-      </div>
 
-      <PaymentDetailModal
-        payment={selectedPayment}
-        isOpen={showDetailModal}
-        onClose={() => setShowDetailModal(false)}
-        onUpdateStatus={handleUpdateStatus}
-      />
+        <div>
+          <PaymentTable
+            payments={paginatedPayments}
+            loading={isLoading}
+            sortField={sortField}
+            sortOrder={sortOrder}
+            onSort={toggleSort}
+            onViewDetail={handleViewDetail}
+          />
+          
+          {!isLoading && filteredPayments.length > 0 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+              itemsCount={paginatedPayments.length}
+              totalItems={filteredPayments.length}
+            />
+          )}
+        </div>
+
+        <PaymentDetailModal
+          payment={selectedPayment}
+          isOpen={showDetailModal}
+          onClose={() => setShowDetailModal(false)}
+          onUpdateStatus={handleUpdateStatus}
+        />
+      </div>
     </div>
   );
 };

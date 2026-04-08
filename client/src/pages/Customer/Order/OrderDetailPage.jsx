@@ -73,7 +73,7 @@ const OrderDetailPage = () => {
   if (!order) {
     return (
       <Layout>
-        <div className="min-h-screen bg-white pt-21 pb-8">
+        <div className="min-h-screen bg-white pb-8 pt-21">
           <div className="container mx-auto px-4 lg:px-30">
             <div className="text-center py-16">
               <h3 className="text-xl font-semibold text-gray-900 mb-4">
@@ -94,14 +94,14 @@ const OrderDetailPage = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-white pt-21 pb-8">
-        <div className="container mx-auto px-4 lg:px-30">
+      <div className="min-h-screen bg-white pb-8 pt-21">
+        <div className="container mx-auto px-4 lg:px-20">
           <Breadcrumb items={[
             { label: 'Đơn hàng của tôi', path: '/orders' },
             { label: 'Chi tiết đơn hàng' }
           ]} />
-          <div className="mb-6">
-            <div className="bg-white border border-gray-200 p-6">
+          <div className="mb-4">
+            <div className="border border-gray-200 bg-white p-4 sm:p-5">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-4 flex-wrap">
                   <h1 className="text-xl font-bold text-gray-900">
@@ -117,7 +117,7 @@ const OrderDetailPage = () => {
             </div>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-3.5">
             <OrderShippingInfo order={order} />
 
             <OrderItemsList items={order.items} />
@@ -125,10 +125,10 @@ const OrderDetailPage = () => {
             <OrderPriceSummary order={order} />
 
             {(order.status === 'PENDING' || order.status === 'AWAITING_PAYMENT') && (
-              <div className="bg-white border border-gray-200 p-6">
+              <div className="border border-gray-200 bg-white p-4 sm:p-5">
                 <button
                   onClick={handleCancelOrder}
-                  className="w-full px-4 py-3 bg-red-600 hover:bg-red-700 text-white font-medium transition-colors"
+                  className="w-full bg-red-600 px-4 py-2.5 font-medium text-white transition-colors hover:bg-red-700"
                 >
                   Hủy đơn hàng
                 </button>
