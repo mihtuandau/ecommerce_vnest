@@ -20,6 +20,24 @@
   background: #94a3b8;
 }
 
+/* Dark scrollbar for sidebar */
+.dark-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.dark-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dark-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(71, 85, 105, 0.75);
+  border-radius: 10px;
+}
+
+.dark-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.85);
+}
+
 /* Header Icons - Force consistent colors for all icons including nested */
 header a,
 header a svg,
@@ -65,7 +83,30 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--color-text);
 }
 
-/* Admin Theme Override - Blue Color */
+/* Admin Theme Override - Font */
+.admin-layout,
+.admin-layout *,
+.admin-layout h1,
+.admin-layout h2,
+.admin-layout h3,
+.admin-layout h4,
+.admin-layout h5,
+.admin-layout h6,
+.admin-layout p,
+.admin-layout span,
+.admin-layout a,
+.admin-layout button,
+.admin-layout input,
+.admin-layout select,
+.admin-layout textarea,
+.admin-layout td,
+.admin-layout th,
+.admin-layout label {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+  letter-spacing: -0.01em;
+}
+
+
 .admin-layout .ant-btn-primary {
   background-color: #1890ff !important;
   border-color: #1890ff !important;
@@ -125,6 +166,29 @@ h1, h2, h3, h4, h5, h6 {
 
 .admin-layout .btn-ghost {
   color: #1890ff !important;
+}
+
+/* Admin compact density: reduce oversized UI across all admin pages */
+.admin-layout {
+  --admin-density: 0.94;
+}
+
+.admin-layout .p-6 { padding: 1.1rem !important; }
+.admin-layout .p-8 { padding: 1.4rem !important; }
+.admin-layout .px-6 { padding-left: 1.1rem !important; padding-right: 1.1rem !important; }
+.admin-layout .py-5 { padding-top: 0.9rem !important; padding-bottom: 0.9rem !important; }
+.admin-layout .gap-6 { gap: 1rem !important; }
+.admin-layout .mb-8 { margin-bottom: 1.25rem !important; }
+
+.admin-layout .rounded-3xl { border-radius: 1rem !important; }
+
+.admin-layout .text-4xl { font-size: 2rem !important; line-height: 2.25rem !important; }
+.admin-layout .text-3xl { font-size: 1.65rem !important; line-height: 2rem !important; }
+.admin-layout .text-2xl { font-size: 1.35rem !important; line-height: 1.8rem !important; }
+
+@media (max-width: 1280px) {
+  .admin-layout .p-6 { padding: 1rem !important; }
+  .admin-layout .px-6 { padding-left: 1rem !important; padding-right: 1rem !important; }
 }
 
 /* Admin Loading Spinner Override */
@@ -200,6 +264,36 @@ h1, h2, h3, h4, h5, h6 {
 
 .admin-sidebar .ant-badge {
   font-size: 10px;
+}
+
+/* Admin Sidebar - isolation from global styles */
+aside[style*="0f1117"],
+aside[style*="0f1117"] * {
+  box-sizing: border-box;
+}
+
+aside[style*="0f1117"] a {
+  color: inherit !important;
+  text-decoration: none !important;
+}
+
+aside[style*="0f1117"] button {
+  color: inherit !important;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+aside[style*="0f1117"] p,
+aside[style*="0f1117"] span,
+aside[style*="0f1117"] h1,
+aside[style*="0f1117"] h2,
+aside[style*="0f1117"] h3,
+aside[style*="0f1117"] h4,
+aside[style*="0f1117"] h5,
+aside[style*="0f1117"] h6 {
+  font-family: 'Inter', system-ui, sans-serif !important;
+  letter-spacing: normal;
 }
 
 

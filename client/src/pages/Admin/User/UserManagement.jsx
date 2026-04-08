@@ -1,6 +1,8 @@
 // src/pages/AdminUserManagement.jsx
 import React, { useState, useMemo } from "react";
+import { useNavigate } from 'react-router-dom';
 import { Search, Plus } from "lucide-react";
+import { Modal as AntModal } from "antd";
 import {
   useUsers,
   useCreateUser,
@@ -8,19 +10,19 @@ import {
   useDeleteUser,
 } from "../../../hooks/useUsers";
 import userService from "../../../services/userService";
-
-// Components
-import Input from "../../../components/common/Input";
-import Select from "../../../components/common/Select";
-import Button from "../../../components/common/Button";
 import Modal from "../../../components/common/Modal";
 import Loading from "../../../components/common/Loading";
 import Pagination from "../../../components/common/Pagination";
 import UserTable from "../../../components/admin/UserManagement/UserTable";
 import UserForm from "../../../components/admin/UserManagement/UserForm";
-import AddressList from "../../../components/admin/UserManagement/AddressList";
+import Input from "../../../components/common/Input";
+import Select from "../../../components/common/Select";
+import Button from "../../../components/common/Button";
+import { useAuth } from '../../../contexts/AuthContext';
 
 const AdminUserManagement = () => {
+  const navigate = useNavigate();
+  const { user: currentUser } = useAuth();
   const { data: users = [], isLoading, error, refetch } = useUsers();
   const createMutation = useCreateUser();
   const updateMutation = useUpdateUser();
@@ -62,10 +64,16 @@ const AdminUserManagement = () => {
 
   const handleUpdateUser = async (formData) => {
     try {
-      const updateData = { name: formData.name };
-      if (formData.password) {
-        updateData.password = formData.password;
+      const updateData = {};
+
+      if (typeof formData.name === 'string' && formData.name.trim() !== '') {
+        updateData.name = formData.name.trim();
       }
+
+      if (typeof formData.password === 'string' && formData.password.trim() !== '') {
+        updateData.password = formData.password.trim();
+      }
+
       await updateMutation.mutateAsync({
         id: modalState.data.id,
         data: updateData,
@@ -76,26 +84,21 @@ const AdminUserManagement = () => {
     }
   };
 
-  const handleDeleteUser = async (user) => {
-    if (window.confirm(`Xác nhận xóa người dùng "${user.email}"?`)) {
-      try {
-        await deleteMutation.mutateAsync(user.id);
-      } catch (err) {
-        // Error already handled by mutation
-      }
-    }
-  };
-
-  // Address handlers
-  const handleSetDefaultAddress = async (userId, addressId) => {
-    try {
-      await userService.updateAddress(userId, addressId, { isDefault: true });
-      // Refresh user data
-      const updatedUser = await userService.getUser(userId);
-      setModalState({ ...modalState, data: updatedUser });
-    } catch (err) {
-      alert("Có lỗi xảy ra: " + err.message);
-    }
+  const handleDeleteUser = (user) => {
+    AntModal.confirm({
+      title: `Vô hiệu hóa / Xóa mềm tài khoản?`,
+      content: `Nếu tài khoản "${user.email}" đã có đơn hàng thì hệ thống sẽ vô hiệu hóa thay vì xóa.`,
+      okText: "Xác nhận",
+      cancelText: "Hủy",
+      onOk: async () => {
+        try {
+          await deleteMutation.mutateAsync(user.id);
+          // Optional: Show success notification
+        } catch (err) {
+          // Error is handled by the mutation, but you could show a notification here too
+        }
+      },
+    });
   };
 
   // Client-side pagination
@@ -109,7 +112,7 @@ const AdminUserManagement = () => {
 
   return (
     <div className="p-6">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-[1600px] mx-auto w-full">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
@@ -166,9 +169,10 @@ const AdminUserManagement = () => {
           ) : (
             <UserTable
               users={paginatedUsers}
+              currentUserId={currentUser?.id}
               onEdit={(user) => openModal("edit", user)}
               onDelete={handleDeleteUser}
-              onViewAddresses={(user) => openModal("addresses", user)}
+              onViewAddresses={(user) => navigate(`/admin-users/${user.id}`)}
             />
           )}
 
@@ -201,18 +205,6 @@ const AdminUserManagement = () => {
           user={modalState.data}
           onSubmit={handleUpdateUser}
           onCancel={closeModal}
-        />
-      </Modal>
-
-      <Modal
-        isOpen={modalState.type === "addresses"}
-        onClose={closeModal}
-        title={`Địa chỉ của ${modalState.data?.email || ""}`}
-      >
-        <AddressList
-          addresses={modalState.data?.addresses || []}
-          userId={modalState.data?.id}
-          onSetDefault={handleSetDefaultAddress}
         />
       </Modal>
     </div>

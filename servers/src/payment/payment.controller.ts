@@ -57,7 +57,7 @@ export class PaymentController {
   @Get('payos/order/:orderCode')
   @ApiOperation({ summary: 'Lấy payment và thông tin đơn hàng theo PayOS order code' })
   async getPaymentByOrderCode(@Param('orderCode') orderCode: string) {
-    return this.paymentService.findByPayosOrderCode(+orderCode);
+    return this.paymentService.findByPayosOrderCode(orderCode);
   }
 
   @Get(':id')

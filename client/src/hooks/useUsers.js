@@ -52,9 +52,13 @@ export const useDeleteUser = () => {
   
   return useMutation({
     mutationFn: (userId) => userService.deleteUser(userId),
-    onSuccess: () => {
+    onSuccess: (response) => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
-      notify.success('Xóa người dùng thành công');
+      if (response?.action === 'DEACTIVATED') {
+        notify.success('Tài khoản đã được vô hiệu hóa');
+      } else {
+        notify.success('Tài khoản đã được xóa mềm');
+      }
     },
   });
 };

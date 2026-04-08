@@ -165,7 +165,7 @@ const ProductCard = ({ product, viewMode = 'grid-4' }) => {
             <FaHeart size={isGrid2 ? 14 : 12} />
           </button>
           <Link 
-            to={`/products/${id}`}
+            to={`/products/${product.slug || id}`}
             className={`p-2 bg-white border border-gray-300 text-gray-700 hover:bg-[#00a85a] hover:text-white hover:border-[#00a85a] transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#00a85a] ${isGrid2 ? 'p-2' : 'p-1.5'}`}
             aria-label="Xem chi tiết sản phẩm"
           >
@@ -175,7 +175,7 @@ const ProductCard = ({ product, viewMode = 'grid-4' }) => {
       )}
 
       <Link 
-        to={`/products/${id}`} 
+        to={`/products/${product.slug || id}`} 
         className={`block relative overflow-hidden ${isList ? 'w-2/5' : 'w-full'} ${imageAspectClass} bg-gray-50`}
       >
         <img
@@ -193,7 +193,7 @@ const ProductCard = ({ product, viewMode = 'grid-4' }) => {
       </Link>
 
       <div className={`flex flex-col ${isList ? 'justify-center' : 'flex-grow'} ${containerClass} ${isList ? 'w-3/5' : ''}`}>
-        <Link to={`/products/${id}`} className={`block ${isList ? 'mb-5' : 'mb-3'}`}>
+        <Link to={`/products/${product.slug || id}`} className={`block ${isList ? 'mb-5' : 'mb-3'}`}>
           <h3 
             className={`${titleClass} text-gray-900 hover:text-gray-600 transition-colors ${isList ? 'line-clamp-2 leading-normal' : 'line-clamp-2'} ${minHeightTitle}`} 
             title={name}

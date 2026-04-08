@@ -32,12 +32,29 @@ export class DiscountService {
       }
     }
 
-    return this.repository.create({
-      ...createDiscountDto,
+    // Transform applicableToProducts array to nested create structure for junction table
+    const createData: any = {
       code: createDiscountDto.code.toUpperCase(),
+      description: createDiscountDto.description,
+      image: createDiscountDto.image,
+      isFlashSale: createDiscountDto.isFlashSale,
+      percentage: createDiscountDto.percentage,
+      fixedAmount: createDiscountDto.fixedAmount,
       startDate: new Date(createDiscountDto.startDate),
       endDate: createDiscountDto.endDate ? new Date(createDiscountDto.endDate) : null,
-    });
+      isActive: true,
+    };
+
+    // Handle applicableToProducts junction table
+    if (createDiscountDto.applicableToProducts && createDiscountDto.applicableToProducts.length > 0) {
+      createData.applicableToProducts = {
+        create: createDiscountDto.applicableToProducts.map(productId => ({
+          productId,
+        })),
+      };
+    }
+
+    return this.repository.create(createData);
   }
 
   async findAll(query: QueryDiscountDto) {
@@ -124,7 +141,9 @@ export class DiscountService {
     // Mỗi productId chỉ giữ 1 discount tốt nhất (% cao nhất ưu tiên, flash sale làm tiebreaker)
     const map: Record<number, object> = {};
     for (const d of discounts) {
-      for (const pid of d.applicableToProducts) {
+      // applicableToProducts is now an array of DiscountProduct objects, extract productId
+      for (const discountProduct of d.applicableToProducts) {
+        const pid = discountProduct.productId;
         if (!map[pid]) {
           map[pid] = {
             percentage: d.percentage,

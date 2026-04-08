@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FaComments, FaPaperPlane, FaUser, FaCircle } from 'react-icons/fa';
+import { FaComments, FaPaperPlane, FaCircle, FaSearch, FaBars, FaBell, FaChevronDown } from 'react-icons/fa';
 import chatSocketService from '../../../services/chatSocketService';
 import chatService from '../../../services/chatService';
 import { useAuth } from '../../../hooks/useAuth';
@@ -11,6 +11,7 @@ const AdminChatManagement = () => {
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
+  const [searchText, setSearchText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [loading, setLoading] = useState(true);
   const messagesEndRef = useRef(null);
@@ -72,6 +73,44 @@ const AdminChatManagement = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, isTyping]);
+
+  const formatTime = (value) => {
+    if (!value) return '--:--';
+    return new Date(value).toLocaleTimeString('vi-VN', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
+  const getDisplayName = (room) => {
+    return room?.user?.name || room?.lastMessage?.sender?.name || 'Khách hàng';
+  };
+
+  const getDisplayEmail = (room) => {
+    return room?.user?.email || room?.lastMessage?.sender?.email || '';
+  };
+
+  const filteredRooms = rooms.filter((room) => {
+    const text = searchText.trim().toLowerCase();
+    if (!text) return true;
+    const name = getDisplayName(room).toLowerCase();
+    const email = getDisplayEmail(room).toLowerCase();
+    const lastMessage = (room?.lastMessage?.message || '').toLowerCase();
+    return name.includes(text) || email.includes(text) || lastMessage.includes(text);
+  });
+
+  const activeRoom = rooms.find((room) => room.roomId === selectedRoom);
+  const activeCustomerName = activeRoom ? getDisplayName(activeRoom) : 'Khách hàng';
+  const activeCustomerEmail = activeRoom ? getDisplayEmail(activeRoom) : '';
+  const totalUnread = rooms.reduce((sum, room) => sum + Number(room?.unreadCount || 0), 0);
+
+  const handleToggleSidebar = () => {
+    window.dispatchEvent(new CustomEvent('admin:toggle-sidebar'));
+  };
+
   const handleRoomSelect = async (roomId) => {
     if (!user) return;
     setSelectedRoom(roomId);
@@ -117,163 +156,185 @@ const AdminChatManagement = () => {
   };
 
   return (
-    <div className="h-[calc(100vh-200px)] flex gap-4">
-      <div className="w-1/3 bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        <div className="bg-[#1890ff] text-white px-4 py-3">
-          <h2 className="text-lg font-semibold flex items-center gap-2">
-            <FaComments />
-            Cuộc trò chuyện
-          </h2>
-        </div>
-        
-        <div className="overflow-y-auto h-full">
-          {loading ? (
-            <div className="p-8 text-center text-gray-500">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-3"></div>
-              <p>Đang tải...</p>
-            </div>
-          ) : rooms.length === 0 ? (
-            <div className="p-8 text-center text-gray-500">
-              <FaComments className="mx-auto mb-3 text-gray-300" size={48} />
-              <p>Chưa có cuộc trò chuyện nào</p>
-            </div>
-          ) : (
-            rooms.map((room) => {
-              const userName = room.user?.name || room.lastMessage?.sender?.name || 'Khách hàng';
-              const userEmail = room.user?.email || room.lastMessage?.sender?.email;
-              
-              return (
-                <button
-                  key={room.roomId}
-                  onClick={() => handleRoomSelect(room.roomId)}
-                  className={`w-full p-4 border-b hover:bg-gray-50 transition-colors text-left ${
-                    selectedRoom === room.roomId ? 'bg-gray-50 border-l-4 border-l-gray-900' : ''
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
-                        <FaUser className="text-gray-900" size={18} />
-                      </div>
-                      <div>
-                        <p className="font-semibold text-gray-900">{userName}</p>
-                        {userEmail && <p className="text-xs text-gray-500">{userEmail}</p>}
-                      </div>
-                    </div>
-                    {room.unreadCount > 0 && (
-                      <span className="px-2 py-1 bg-red-500 text-white text-xs rounded-full">
-                        {room.unreadCount}
-                      </span>
-                    )}
-                  </div>
-                  {room.lastMessage && (
-                    <p className="text-sm text-gray-600 line-clamp-1 ml-12">
-                      {room.lastMessage.message}
-                    </p>
-                  )}
-                </button>
-              );
-            })
-          )}
-        </div>
-      </div>
+    <div className="space-y-3">
+      
 
-      {/* Chat Window */}
-      <div className="flex-1 bg-white rounded-lg shadow-sm border border-gray-200 flex flex-col">
-        {selectedRoom ? (
-          <>
-            <div className="bg-[#1890ff] text-white px-4 py-3 rounded-t-lg">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
-                  <FaUser size={18} />
-                </div>
-                <div>
-                  <h3 className="font-semibold">
-                    {messages.find(m => m.sender?.role === 'CUSTOMER')?.sender?.name || 'Khách hàng'}
-                  </h3>
-                  <p className="text-xs text-gray-100 flex items-center gap-1">
-                    <FaCircle size={8} className="text-green-400" />
-                    Online
-                  </p>
-                </div>
+      <div className="h-[calc(100vh-180px)] overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+        <div className="grid h-full grid-cols-1 lg:grid-cols-[320px_1fr]">
+          <aside className="border-r border-slate-200 bg-[#fafafa]">
+            <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
+              <h2 className="text-[28px] font-bold leading-none text-slate-900">Chat hỗ trợ</h2>
+              {totalUnread > 0 && (
+                <span className="inline-flex h-6 min-w-[24px] items-center justify-center rounded-full bg-red-500 px-1.5 text-xs font-bold text-white">
+                  {totalUnread}
+                </span>
+              )}
+            </div>
+
+            <div className="border-b border-slate-200 p-3">
+              <div className="relative">
+                <FaSearch className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-slate-400" />
+                <input
+                  type="text"
+                  value={searchText}
+                  onChange={(e) => setSearchText(e.target.value)}
+                  placeholder="Tìm cuộc trò chuyện..."
+                  className="w-full rounded-lg border border-slate-200 bg-white py-2 pl-9 pr-3 text-sm text-slate-700 outline-none transition focus:border-blue-400"
+                />
               </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
-              {messages.map((msg) => {
-                const isAdmin = msg.sender.role === 'ADMIN';
-                return (
-                  <div
-                    key={msg.id}
-                    className={`flex ${isAdmin ? 'justify-end' : 'justify-start'}`}
-                  >
-                    <div
-                      className={`max-w-[75%] px-4 py-2 rounded-lg ${
-                        isAdmin
-                          ? 'bg-[#1890ff] text-white'
-                          : 'bg-white border border-gray-200'
-                      }`}
+            <div className="h-[calc(100%-114px)] overflow-y-auto">
+              {loading ? (
+                <div className="p-8 text-center text-slate-500">
+                  <div className="mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-b-2 border-slate-500"></div>
+                  <p className="text-sm">Đang tải...</p>
+                </div>
+              ) : filteredRooms.length === 0 ? (
+                <div className="p-8 text-center text-slate-500">
+                  <FaComments className="mx-auto mb-3 text-slate-300" size={40} />
+                  <p className="text-sm">Không có cuộc trò chuyện phù hợp</p>
+                </div>
+              ) : (
+                filteredRooms.map((room) => {
+                  const userName = getDisplayName(room);
+                  const userEmail = getDisplayEmail(room);
+                  const selected = selectedRoom === room.roomId;
+
+                  return (
+                    <button
+                      key={room.roomId}
+                      onClick={() => handleRoomSelect(room.roomId)}
+                      className={`w-full border-b border-slate-100 px-3.5 py-3 text-left transition ${selected ? 'border-r-2 border-r-blue-500 bg-[#edf4ff]' : 'hover:bg-slate-50'}`}
                     >
-                      <p className="text-sm whitespace-pre-wrap break-words">{msg.message}</p>
-                      <p className={`text-xs mt-1 ${isAdmin ? 'text-gray-100' : 'text-gray-400'}`}>
-                        {new Date(msg.createdAt).toLocaleTimeString('vi-VN', {
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        })}
+                      <div className="mb-1.5 flex items-start justify-between gap-2">
+                        <div className="flex min-w-0 items-center gap-2.5">
+                          <div className="relative grid h-9 w-9 flex-shrink-0 place-items-center rounded-full bg-blue-100 text-sm font-semibold text-blue-700">
+                            {(userName || 'K').charAt(0).toUpperCase()}
+                            <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-emerald-500" />
+                          </div>
+                          <div className="min-w-0">
+                            <p className="truncate text-[17px] font-semibold leading-5 text-slate-900">{userName}</p>
+                            {userEmail && (
+                              <p className="truncate text-xs text-slate-500">{userEmail}</p>
+                            )}
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-xs text-slate-400">{formatTime(room?.lastMessage?.createdAt)}</p>
+                          {room.unreadCount > 0 && (
+                            <span className="mt-1 inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-500 px-1 text-[11px] font-semibold text-white">
+                              {room.unreadCount}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <p className="line-clamp-1 pl-11 text-sm text-slate-600">
+                        {room?.lastMessage?.message || 'Chưa có tin nhắn'}
+                      </p>
+                    </button>
+                  );
+                })
+              )}
+            </div>
+          </aside>
+
+          <section className="flex h-full flex-col bg-[#f8fafc]">
+            {selectedRoom ? (
+              <>
+                <div className="flex items-center justify-between border-b border-slate-200 bg-white px-4 py-3">
+                  <div className="flex items-center gap-2.5">
+                    <div className="relative grid h-9 w-9 place-items-center rounded-full bg-blue-100 font-semibold text-blue-700">
+                      {activeCustomerName.charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <h3 className="text-base font-semibold text-slate-900">{activeCustomerName}</h3>
+                      <p className="flex items-center gap-1 text-sm text-slate-500">
+                        {activeCustomerEmail || 'Khách hàng'}
+                        <span className="text-slate-300">·</span>
+                        <FaCircle size={8} className="text-emerald-500" />
+                        <span>Đang online</span>
                       </p>
                     </div>
                   </div>
-                );
-              })}
-              
-              {isTyping && (
-                <div className="flex justify-start">
-                  <div className="bg-white px-4 py-2 rounded-lg border border-gray-200">
-                    <div className="flex gap-1">
-                      <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></span>
-                      <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></span>
-                      <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></span>
-                    </div>
+                </div>
+
+                <div className="flex-1 overflow-y-auto px-4 py-3">
+                  <div className="space-y-3">
+                    {messages.map((msg) => {
+                      const isAdmin = msg?.sender?.role === 'ADMIN';
+                      return (
+                        <div key={msg.id} className={`flex items-end gap-2 ${isAdmin ? 'justify-end' : 'justify-start'}`}>
+                          {!isAdmin && (
+                            <div className="grid h-7 w-7 place-items-center rounded-full bg-blue-100 text-xs font-semibold text-blue-700">
+                              {(msg?.sender?.name || activeCustomerName || 'K').charAt(0).toUpperCase()}
+                            </div>
+                          )}
+                          <div className={`max-w-[78%] rounded-2xl px-4 py-2.5 text-sm shadow-sm ${isAdmin ? 'bg-blue-600 text-white rounded-br-md' : 'border border-slate-200 bg-white text-slate-800 rounded-bl-md'}`}>
+                            <p className="whitespace-pre-wrap break-words">{msg.message}</p>
+                            <p className={`mt-1 text-[11px] ${isAdmin ? 'text-blue-100' : 'text-slate-400'}`}>
+                              {formatTime(msg.createdAt)}
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })}
+
+                    {isTyping && (
+                      <div className="flex items-center gap-2">
+                        <div className="grid h-7 w-7 place-items-center rounded-full bg-blue-100 text-xs font-semibold text-blue-700">
+                          {activeCustomerName.charAt(0).toUpperCase()}
+                        </div>
+                        <div className="rounded-xl border border-slate-200 bg-white px-3 py-2">
+                          <div className="flex gap-1">
+                            <span className="h-2 w-2 animate-bounce rounded-full bg-slate-400"></span>
+                            <span className="h-2 w-2 animate-bounce rounded-full bg-slate-400" style={{ animationDelay: '0.15s' }}></span>
+                            <span className="h-2 w-2 animate-bounce rounded-full bg-slate-400" style={{ animationDelay: '0.3s' }}></span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    <div ref={messagesEndRef} />
                   </div>
                 </div>
-              )}
-              
-              <div ref={messagesEndRef} />
-            </div>
 
-            <div className="p-3 bg-white border-t rounded-b-lg">
-              <div className="flex gap-2">
-                <textarea
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault();
-                      handleSend();
-                    }
-                  }}
-                  placeholder="Nhập tin nhắn..."
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                  rows="2"
-                />
-                <button
-                  onClick={handleSend}
-                  disabled={!newMessage.trim()}
-                  className="px-4 bg-[#1890ff] text-white rounded-lg hover:bg-[#40a9ff] disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <FaPaperPlane size={18} />
-                </button>
+                <div className="border-t border-slate-200 bg-white p-3">
+                  <div className="flex items-end gap-2">
+                    <textarea
+                      value={newMessage}
+                      onChange={(e) => setNewMessage(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault();
+                          handleSend();
+                        }
+                      }}
+                      placeholder="Nhập tin nhắn... (Enter để gửi)"
+                      className="min-h-[44px] flex-1 resize-none rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-blue-400"
+                      rows="1"
+                    />
+                    <button
+                      onClick={handleSend}
+                      disabled={!newMessage.trim()}
+                      className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-blue-600 text-white transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
+                      aria-label="Gửi tin nhắn"
+                    >
+                      <FaPaperPlane size={16} />
+                    </button>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="grid flex-1 place-items-center text-slate-500">
+                <div className="text-center">
+                  <FaComments className="mx-auto mb-3 text-slate-300" size={52} />
+                  <p className="text-base font-medium text-slate-700">Chọn một cuộc trò chuyện để bắt đầu</p>
+                  <p className="mt-1 text-sm text-slate-500">Danh sách hội thoại ở khung bên trái</p>
+                </div>
               </div>
-            </div>
-          </>
-        ) : (
-          <div className="flex-1 flex items-center justify-center text-gray-500">
-            <div className="text-center">
-              <FaComments className="mx-auto mb-3 text-gray-300" size={64} />
-              <p>Chọn một cuộc trò chuyện để bắt đầu</p>
-            </div>
-          </div>
-        )}
+            )}
+          </section>
+        </div>
       </div>
     </div>
   );

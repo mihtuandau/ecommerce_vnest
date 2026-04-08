@@ -30,7 +30,6 @@ import { ForgotPasswordDto, ResetPasswordDto } from './dto/forgot-password.dto';
 @ApiTags('Authentication')
 @Controller('auth')
 @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
-@UseGuards(RolesGuard)
 export class AuthController {
   constructor(
     private authService: AuthService,
@@ -38,7 +37,7 @@ export class AuthController {
   ) {}
 
   @Post('register')
-  @Throttle({ default: { limit: 5, ttl: 300000 } }) // 5 requests per 5 minutes
+  @Throttle({ default: { limit: 50, ttl: 300000 } }) // Increased for dev (was 5 per 5 mins)
   async register(@Body() registerDto: RegisterDto, @Res() res: Response) {
     const result = await this.authService.register(registerDto);
     this.authService.setAuthCookie(res, result.access_token);
@@ -50,8 +49,25 @@ export class AuthController {
     });
   }
 
+  @Post('register-admin/initial')
+  @Throttle({ default: { limit: 3, ttl: 60000 } }) // 3 requests per minute
+  async registerInitialAdmin(
+    @Body() registerAdminDto: RegisterAdminDto,
+    @Res() res: Response,
+  ) {
+    // Private endpoint - only works if no admin exists yet
+    const result = await this.authService.registerInitialAdmin(registerAdminDto);
+    this.authService.setAuthCookie(res, result.access_token);
+    this.authService.setRefreshTokenCookie(res, result.refresh_token);
+
+    return res.status(HttpStatus.CREATED).json({
+      user: result.user,
+      message: 'Initial admin registered successfully',
+    });
+  }
+
   @Post('register-admin')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   @Throttle({ default: { limit: 3, ttl: 60000 } }) // 3 requests per minute
   async registerAdmin(
@@ -60,6 +76,7 @@ export class AuthController {
   ) {
     const result = await this.authService.registerAdmin(registerAdminDto);
     this.authService.setAuthCookie(res, result.access_token);
+    this.authService.setRefreshTokenCookie(res, result.refresh_token);
 
     return res.status(HttpStatus.CREATED).json({
       user: result.user,
@@ -68,7 +85,7 @@ export class AuthController {
   }
 
   @Post('login')
-  @Throttle({ default: { limit: 5, ttl: 300000 } }) // 5 requests per 5 minutes (brute-force protection)
+  @Throttle({ default: { limit: 100, ttl: 300000 } }) // Increased for dev (was 5 per 5 mins)
   async login(@Body() loginDto: LoginDto, @Res() res: Response) {
     const user = await this.authService.validateUser(
       loginDto.email,

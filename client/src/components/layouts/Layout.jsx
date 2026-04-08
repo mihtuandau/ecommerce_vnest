@@ -15,7 +15,7 @@ const Layout = ({ children, showSidebar = false }) => {
       <div className="min-h-screen flex flex-col bg-white">
         <div className="flex flex-1">
           <Sidebar />
-          <main className="flex-1 p-6">
+          <main className="flex-1 px-3 py-4 md:px-4 md:py-5">
             {children || <Outlet />}
           </main>
         </div>

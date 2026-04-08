@@ -12,7 +12,7 @@ export const useAddressForm = (initialData = null) => {
     ward: '',
     zipCode: '',
     isDefault: false,
-    addressType: 'home'
+    addressType: 'HOME'
   });
 
   const [provinces, setProvinces] = useState([]);
@@ -149,7 +149,7 @@ export const useAddressForm = (initialData = null) => {
       ward: '',
       zipCode: '',
       isDefault: false,
-      addressType: 'home'
+      addressType: 'HOME'
     });
     setDistricts([]);
     setWards([]);

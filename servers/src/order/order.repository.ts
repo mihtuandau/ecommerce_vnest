@@ -224,7 +224,9 @@ export class OrderRepository {
     // productId → discount tốt nhất (first-win do đã sort)
     const productDiscountMap = new Map<number, { percentage: number | null; fixedAmount: number | null }>();
     for (const d of discounts) {
-      for (const pid of d.applicableToProducts) {
+      // applicableToProducts is now an array of DiscountProduct objects, extract productId
+      for (const discountProduct of d.applicableToProducts) {
+        const pid = discountProduct.productId;
         if (productIds.includes(pid) && !productDiscountMap.has(pid)) {
           productDiscountMap.set(pid, {
             percentage: d.percentage,

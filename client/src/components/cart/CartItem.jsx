@@ -77,7 +77,7 @@ const CartItem = ({ groupedProduct, selectedItems, onToggleItem, onUpdateQuantit
         </div>
         
         <Link
-          to={`/products/${productId}`}
+          to={`/products/${groupedProduct.slug || productId}`}
           className="flex-shrink-0 w-20 h-20 bg-gray-100 overflow-hidden relative"
           aria-label={`Xem chi tiết ${productName}`}
         >
@@ -101,7 +101,7 @@ const CartItem = ({ groupedProduct, selectedItems, onToggleItem, onUpdateQuantit
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between mb-3 cursor-pointer">
             <Link
-              to={`/products/${productId}`}
+              to={`/products/${groupedProduct.slug || productId}`}
               className="font-medium text-sm text-gray-900 hover:text-red-600 transition-colors line-clamp-2 flex-1 mr-3 cur"
             >
               {productName}

@@ -69,8 +69,17 @@ const AdminCategoriesPage = lazy(() =>
   import("../pages/Admin/Category/CategoriesPage")
 );
 const AdminUsersPage = lazy(() => import("../pages/Admin/User/UserManagement"));
+const AdminUserDetailPage = lazy(() =>
+  import("../pages/Admin/User/UserDetailPage")
+);
+const AdminAddressesPage = lazy(() =>
+  import("../pages/Admin/User/AddressManagementPage")
+);
 const AdminOrdersPage = lazy(() =>
   import("../pages/Admin/Order/OrderManagement")
+);
+const AdminOrderDetailPage = lazy(() =>
+  import("../pages/Admin/Order/OrderDetailPage")
 );
 const AdminPaymentsPage = lazy(() =>
   import("../pages/Admin/Payment/PaymentManagement")
@@ -139,7 +148,10 @@ const getRouteTitle = (pathname) => {
     [/^\/admin-products\/\d+$/, "Product Detail"],
     [/^\/admin-categories$/, "Admin Categories"],
     [/^\/admin-users$/, "Admin Users"],
+    [/^\/admin-users\/\d+$/, "Chi tiết khách hàng"],
+    [/^\/admin-addresses$/, "Địa chỉ khách hàng"],
     [/^\/admin-orders$/, "Admin Orders"],
+    [/^\/admin-orders\/\d+$/, "Chi tiết đơn hàng"],
     [/^\/admin-payments$/, "Admin Payments"],
     [/^\/admin-discounts$/, "Admin Discounts"],
     [/^\/admin-discounts\/new$/, "Create Discount"],
@@ -300,11 +312,44 @@ const AppRoutes = () => {
         />
 
         <Route
+          path="/admin-users/:id"
+          element={
+            <AdminRoute>
+              <AdminLayout>
+                <AdminUserDetailPage />
+              </AdminLayout>
+            </AdminRoute>
+          }
+        />
+
+        <Route
+          path="/admin-addresses"
+          element={
+            <AdminRoute>
+              <AdminLayout>
+                <AdminAddressesPage />
+              </AdminLayout>
+            </AdminRoute>
+          }
+        />
+
+        <Route
           path="/admin-orders"
           element={
             <AdminRoute>
               <AdminLayout>
                 <AdminOrdersPage />
+              </AdminLayout>
+            </AdminRoute>
+          }
+        />
+
+        <Route
+          path="/admin-orders/:id"
+          element={
+            <AdminRoute>
+              <AdminLayout>
+                <AdminOrderDetailPage />
               </AdminLayout>
             </AdminRoute>
           }

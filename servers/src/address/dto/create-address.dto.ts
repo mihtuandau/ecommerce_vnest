@@ -51,7 +51,7 @@ export class CreateAddressDto {
   @IsString()
   country?: string;
 
-  @ApiPropertyOptional({ description: 'Loại địa chỉ (home, office, other)', default: 'home' })
+  @ApiPropertyOptional({ description: 'Loại địa chỉ (HOME, OFFICE, OTHER)', default: 'HOME' })
   @IsOptional()
   @IsString()
   @MaxLength(100, { message: 'Loại địa chỉ không được quá 100 ký tự' })

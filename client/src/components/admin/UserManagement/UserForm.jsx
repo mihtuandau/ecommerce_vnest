@@ -1,9 +1,7 @@
 import React, { useState } from "react";
-import { Form, Input, Select, Button, Space, Alert } from "antd";
+import { Form, Input, Button, Space, Alert } from "antd";
 import { UserOutlined, LockOutlined, MailOutlined } from "@ant-design/icons";
 import { useUserForm } from "../../../hooks/useUserForm";
-
-const { Option } = Select;
 
 const UserForm = ({ user, onSubmit, onCancel }) => {
   const { formData, errors, validate, handleChange } = useUserForm(user);
@@ -41,7 +39,7 @@ const UserForm = ({ user, onSubmit, onCancel }) => {
       {alert && (
         <Alert
           type={alert.type}
-          message={alert.message}
+          title={alert.message}
           closable
           onClose={() => setAlert(null)}
           style={{ marginBottom: 16 }}
@@ -55,7 +53,6 @@ const UserForm = ({ user, onSubmit, onCancel }) => {
         initialValues={{
           email: formData.email,
           name: formData.name,
-          role: formData.role,
         }}
       >
         <Form.Item
@@ -104,22 +101,6 @@ const UserForm = ({ user, onSubmit, onCancel }) => {
             value={formData.name}
             onChange={(e) => handleChange("name", e.target.value)}
           />
-        </Form.Item>
-
-        <Form.Item
-          label="Vai trò"
-          name="role"
-          rules={[{ required: true, message: "Vui lòng chọn vai trò" }]}
-        >
-          <Select
-            placeholder="Chọn vai trò"
-            size="large"
-            value={formData.role}
-            onChange={(value) => handleChange("role", value)}
-          >
-            <Option value="CUSTOMER">Khách hàng</Option>
-            <Option value="ADMIN">Quản trị viên</Option>
-          </Select>
         </Form.Item>
 
         <Form.Item style={{ marginTop: 24, marginBottom: 0 }}>

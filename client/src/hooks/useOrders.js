@@ -21,7 +21,13 @@ export const useOrders = (params = {}, filters = {}) => {
 
   const filtered = useMemo(() => {
     let result = [...orders];
-    const { search = '', sortBy = 'createdAt', sortDir = 'desc' } = filters;
+    const {
+      search = '',
+      status = '',
+      paymentMethod = '',
+      sortBy = 'createdAt',
+      sortDir = 'desc',
+    } = filters;
 
     if (search) {
       const searchLower = search.toLowerCase();
@@ -30,6 +36,14 @@ export const useOrders = (params = {}, filters = {}) => {
         order.user?.email?.toLowerCase().includes(searchLower) ||
         order.user?.name?.toLowerCase().includes(searchLower)
       );
+    }
+
+    if (status) {
+      result = result.filter(order => order.status === status);
+    }
+
+    if (paymentMethod) {
+      result = result.filter(order => order.paymentMethod === paymentMethod || order.payment?.method === paymentMethod);
     }
 
     result.sort((a, b) => {
@@ -48,8 +62,12 @@ export const useOrders = (params = {}, filters = {}) => {
   const stats = useMemo(() => ({
     total: orders.length,
     pending: orders.filter(o => o.status === 'PENDING').length,
+    awaitingPayment: orders.filter(o => o.status === 'AWAITING_PAYMENT').length,
+    processing: orders.filter(o => o.status === 'PROCESSING').length,
+    shipped: orders.filter(o => o.status === 'SHIPPED').length,
     delivered: orders.filter(o => o.status === 'DELIVERED').length,
-    revenue: orders.filter(o => o.status === 'DELIVERED').reduce((sum, o) => sum + (o.total || 0), 0)
+    cancelled: orders.filter(o => o.status === 'CANCELLED').length,
+    revenue: orders.filter(o => o.status === 'DELIVERED').reduce((sum, o) => sum + (o.total || 0), 0),
   }), [orders]);
 
   return { ...queryResult, data: filtered, orders, stats };

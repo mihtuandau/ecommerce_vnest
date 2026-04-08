@@ -150,17 +150,25 @@ export class ProductService {
     return result;
   }
 
-  async findOne(id: number): Promise<any | null> {
-    const cacheKey = `product:${id}`;
-    let product = await this.cacheManager.get(cacheKey);
+  async findOne(idOrSlug: string | number, includeAllVariants: boolean = false): Promise<any | null> {
+    if (includeAllVariants) {
+      return this.repository.findByIdOrSlug(idOrSlug, true);
+    }
+
+    const cacheKey = `product:${idOrSlug}`;
+    let product: any = await this.cacheManager.get(cacheKey);
     if (product) {
       return product;
     }
 
-    product = await this.repository.findById(id);
+    product = await this.repository.findByIdOrSlug(idOrSlug, false);
 
     if (product) {
-      await this.cacheManager.set(cacheKey, product, 1800);
+      // Create cache entries for BOTH id and slug so lookup by either uses the same object
+      await this.cacheManager.set(`product:${product.id}`, product, 1800);
+      if (product.slug) {
+        await this.cacheManager.set(`product:${product.slug}`, product, 1800);
+      }
     }
 
     return product;

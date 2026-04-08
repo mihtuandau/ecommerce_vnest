@@ -9,12 +9,14 @@ datasource db {
 
 model User {
   id                   Int            @id @default(autoincrement())
-  email                String         @unique
+  email                String         @unique // @unique tự tạo index, không cần @@index
   password             String
   name                 String?
   role                 Role           @default(CUSTOMER)
+  status               UserStatus     @default(ACTIVE)
   resetPasswordToken   String?
   resetPasswordExpires DateTime?
+  deletedAt            DateTime? // Soft delete: null = active, có giá trị = soft deleted
   createdAt            DateTime       @default(now())
   updatedAt            DateTime       @updatedAt
   orders               Order[]
@@ -23,11 +25,26 @@ model User {
   reviews              Review[]
   wishlistItems        WishlistItem[]
   sentMessages         ChatMessage[]  @relation("SentMessages")
+  cancelledOrders      Order[]        @relation("CancelledBy") // Orders cancelled by this user/admin
+
+  @@index([deletedAt])
+  @@index([status])
 }
 
 enum Role {
   CUSTOMER
   ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+enum AddressType {
+  HOME
+  OFFICE
+  OTHER
 }
 
 model Address {
@@ -43,11 +60,12 @@ model Address {
   districtCode String? // Mã quận/huyện
   provinceCode String? // Mã tỉnh/thành phố
   zipCode      String?
-  country      String?  @default("Vietnam")
-  coordinates  String? // Lat,Lng cho delivery
-  isDefault    Boolean  @default(false)
-  addressType  String?  @default("home") // home, office, other
-  user         User     @relation(fields: [userId], references: [id])
+  country      String?      @default("Vietnam")
+  latitude     Float?       // Tọa độ giao hàng
+  longitude    Float?       // Tọa độ giao hàng
+  isDefault    Boolean      @default(false)
+  addressType  AddressType? @default(HOME) // home, office, other
+  user         User         @relation(fields: [userId], references: [id])
   orders       Order[]
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -67,36 +85,41 @@ model Brand {
 }
 
 model Category {
-  id        Int       @id @default(autoincrement())
-  name      String    @unique
+  id        Int                 @id @default(autoincrement())
+  name      String              @unique
   image     String?
   products  Product[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  discountCategories DiscountCategory[] // Discount liên kết qua junction table
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @updatedAt
 }
 
 model Product {
-  id            Int              @id @default(autoincrement())
+  id            Int                 @id @default(autoincrement())
   name          String
-  slug          String?          @unique // SEO-friendly URL (optional để migrate)
+  slug          String?             @unique // SEO-friendly URL (optional để migrate)
   description   String?
   basePrice     Float
   categoryId    Int
   brandId       Int?
-  soldCount     Int              @default(0) // Số lượng đã bán
-  averageRating Float? // Đánh giá trung bình
-  reviewCount   Int              @default(0) // Số lượng review
-  viewCount     Int              @default(0) // Số lượt xem
-  isActive      Boolean          @default(true) // Sản phẩm còn bán không
+  // COMPUTED FIELDS - Phải update trong transaction khi Review/OrderItem thay đổi
+  // Hoặc dùng database trigger để tự động sync
+  soldCount     Int                 @default(0) // Số lượng đã bán - update khi OrderItem tạo/xóa
+  averageRating Float? // Đánh giá trung bình - update khi Review tạo/xóa/sửa
+  reviewCount   Int                 @default(0) // Số lượng review - update khi Review tạo/xóa
+  viewCount     Int                 @default(0) // Số lượt xem - update khi xem product
+  isActive      Boolean             @default(true) // Sản phẩm còn bán không
+  deletedAt     DateTime? // Soft delete: null = active, có giá trị = soft deleted
   metaTitle     String? // SEO title
   metaDesc      String? // SEO description
   images        ProductImage[]
   variants      ProductVariant[]
   reviews       Review[] // Thêm relation với Review
-  category      Category         @relation(fields: [categoryId], references: [id])
-  brand         Brand?           @relation(fields: [brandId], references: [id])
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @updatedAt
+  discountProducts DiscountProduct[] // Discount liên kết qua junction table
+  category      Category            @relation(fields: [categoryId], references: [id])
+  brand         Brand?              @relation(fields: [brandId], references: [id])
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
 
   @@index([categoryId])
   @@index([brandId])
@@ -106,6 +129,7 @@ model Product {
   @@index([categoryId, brandId])
   @@index([isActive])
   @@index([slug])
+  @@index([deletedAt])
 }
 
 model ProductImage {
@@ -143,9 +167,10 @@ model ProductVariant {
   color             String?
   stock             Int            @default(0)
   price             Float
-  sku               String?
+  sku               String?        @unique // SKU phải unique theo định nghĩa
   lowStockThreshold Int            @default(5) // Cảnh báo hết hàng
   isActive          Boolean        @default(true) // Variant còn bán không
+  deletedAt         DateTime? // Soft delete: đồng bộ với Product.deletedAt để lọc logic không phức tạp
   product           Product        @relation(fields: [productId], references: [id])
   images            VariantImage[] // Đổi từ ProductImage sang VariantImage
   cartItems         CartItem[]
@@ -157,18 +182,33 @@ model ProductVariant {
   @@unique([productId, size, color])
   @@index([productId])
   @@index([isActive])
+  @@index([deletedAt])
 }
 
 model Cart {
   id        Int        @id @default(autoincrement())
-  userId    Int        @unique
-  user      User       @relation(fields: [userId], references: [id])
+  // userId @unique: 1 cart per logged-in user (userId NOT NULL)
+  // IMPORTANT: Guest cart nguyên lý không dùng Cart model vì @unique([userId]) sẽ fail với NULL
+  // Guest cart nên handle riêng (session-based) hoặc dùng sessionId @unique thay vì userId
+  userId    Int?       @unique
+  user      User?      @relation(fields: [userId], references: [id])
   cartItems CartItem[]
+  expiresAt DateTime?  // null = không expire (logged-in user); có giá trị = cart expired
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
 
-  @@index([userId])
+  // @unique tự tạo index, không cần @@index
+  @@index([expiresAt])
 }
+
+// NOTE: Nếu cần hỗ trợ guest cart với Database cart, thêm sessionId:
+// model GuestCart {
+//   id        Int        @id @default(autoincrement())
+//   sessionId String     @unique // session token hoặc UUID
+//   cartItems CartItem[] // tái sử dụng hoặc tạo GuestCartItem model riêng
+//   expiresAt DateTime
+//   createdAt DateTime   @default(now())
+// }
 
 model CartItem {
   id        Int            @id @default(autoincrement())
@@ -195,14 +235,17 @@ model Discount {
   minOrderAmount         Float?    @default(0) // Đơn hàng tối thiểu
   maxDiscountAmount      Float? // Giảm giá tối đa
   usageLimit             Int? // Giới hạn số lần sử dụng
-  usageCount             Int       @default(0) // Đã sử dụng bao nhiêu lần
+  // usageCount: để tránh race condition, nên tính COUNT(orders.discountId = this.id) thay vì lưu field
+  // Nếu phải lưu, dùng Prisma increment atomic: await prisma.discount.update({ where: {id}, data: { usageCount: { increment: 1 } } })
+  usageCount             Int       @default(0) // Được update bằng atomic increment
   isActive               Boolean   @default(true)
   isFlashSale            Boolean   @default(false) // Đây có phải flash sale không
-  applicableToCategories Int[]     @default([]) // Áp dụng cho categories nào
-  applicableToProducts   Int[]     @default([]) // Gán sản phẩm cụ thể vào flash sale
   startDate              DateTime
   endDate                DateTime?
   orders                 Order[]
+  // Relations thay thế Int[] arrays - có referential integrity + queryable
+  applicableToCategories DiscountCategory[] // Sử dụng junction table
+  applicableToProducts   DiscountProduct[] // Sử dụng junction table
   createdAt              DateTime  @default(now())
   updatedAt              DateTime  @updatedAt
 
@@ -212,14 +255,38 @@ model Discount {
   @@index([startDate, endDate])
 }
 
+model DiscountCategory {
+  discountId Int
+  categoryId Int
+  discount   Discount @relation(fields: [discountId], references: [id], onDelete: Cascade)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@id([discountId, categoryId])
+  @@index([discountId])
+  @@index([categoryId])
+}
+
+model DiscountProduct {
+  discountId Int
+  productId  Int
+  discount   Discount @relation(fields: [discountId], references: [id], onDelete: Cascade)
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@id([discountId, productId])
+  @@index([discountId])
+  @@index([productId])
+}
+
 model Review {
   id        Int      @id @default(autoincrement())
   userId    Int
   productId Int
-  orderId   Int // Thêm orderId để gắn review với đơn hàng cụ thể
+  orderId   Int // Gắn review với đơn hàng cụ thể
   rating    Int // 1-5 sao
   comment   String?  @db.Text
-  images    String[] // Mảng URLs hình ảnh review
+  images    String[] // Mảng URLs hình ảnh review - cân nhắc tách thành ReviewImage model nếu cần metadata
   verified  Boolean  @default(false) // Admin đã xác minh chưa
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
@@ -227,6 +294,8 @@ model Review {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // NOTE: Application MUST validate orderId thực sự chứa productId này
+  // Schema không thể enforce constraint này - cần business logic validation
   @@unique([userId, productId, orderId]) // 1 user chỉ review 1 product 1 lần trong 1 đơn hàng
   @@index([userId])
   @@index([productId])
@@ -241,8 +310,12 @@ model ShippingMethod {
   name          String
   price         Float
   estimatedDays Int
+  isActive      Boolean  @default(true) // Cho phép deactivate mà không xóa
   orders        Order[]
   createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([isActive])
 }
 
 model Order {
@@ -254,21 +327,28 @@ model Order {
   shippingSnapshot Json? // Snapshot địa chỉ tại thời điểm đặt hàng {fullName, phone, street, ward, city, state, country}
   guestEmail       String? // Email for guest orders
   guestPhone       String? // Phone for guest orders
-  paymentMethod    PaymentMethod?  @default(CASH) // Phương thức thanh toán
-  total            Float
-  taxAmount        Float           @default(0)
+  // Pricing audit trail: total = subtotal - discountAmount + taxAmount
+  subtotal         Float           // Tổng giá trước discount và tax
+  discountAmount   Float           @default(0) // Số tiền discount (tính từ Discount hay manual)
+  taxAmount        Float           @default(0) // Số tiền thuế
+  total            Float           // Final formula: subtotal - discountAmount + taxAmount
+  // NOTE: paymentMethod được lưu ở Payment.method - không nên lưu ở Order để tránh inconsistency
+  // Query: SELECT payment.method FROM order LEFT JOIN payment ON order.paymentId = payment.id
   status           OrderStatus     @default(PENDING)
   statusHistory    Json[]          @default([]) // Lịch sử thay đổi trạng thái [{status, changedAt, changedBy, note}]
   cancelledAt      DateTime? // Thời gian hủy đơn
-  cancelledBy      Int? // User ID hoặc Admin ID hủy đơn
+  cancelledBy      Int? // User ID hoặc Admin ID hủy đơn - must be valid userId
   cancelReason     String? // Lý do hủy
+  deletedAt        DateTime? // Soft delete: null = active, có giá trị = soft deleted
   discountId       Int?
-  paymentId        Int?            @unique
+  // NOTE: Payment.orderId là đủ - không cần Order.paymentId (tránh circular reference)
+  // Prisma tự generate order.payment relation từ Payment side
   discount         Discount?       @relation(fields: [discountId], references: [id])
-  payment          Payment?        @relation
+  payment          Payment?        @relation("OrderPayment")
   address          Address?        @relation(fields: [addressId], references: [id])
   shippingMethod   ShippingMethod? @relation(fields: [shippingMethodId], references: [id])
   user             User?           @relation(fields: [userId], references: [id])
+  cancelledByUser  User?           @relation("CancelledBy", fields: [cancelledBy], references: [id])
   orderItems       OrderItem[]
   reviews          Review[] // Thêm relation với Review
   createdAt        DateTime        @default(now())
@@ -281,6 +361,8 @@ model Order {
   @@index([status, createdAt])
   @@index([userId, status])
   @@index([orderCode])
+  @@index([deletedAt])
+  @@index([cancelledBy])
 }
 
 enum OrderStatus {
@@ -299,12 +381,12 @@ model Payment {
   status                 PaymentStatus @default(PENDING)
   transactionId          String?
   paymentLink            String? // URL payment link từ PayOS
-  payosOrderCode         BigInt?       @unique // Order code từ PayOS
+  payosOrderCode         String?       @unique // Order code từ PayOS - String để tránh JSON serialization error với BigInt
   paymentGatewayResponse Json? // Raw response từ payment gateway
   failureReason          String? // Lý do thanh toán thất bại
   refundedAt             DateTime? // Thời gian hoàn tiền
   refundAmount           Float? // Số tiền hoàn lại
-  order                  Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order                  Order         @relation("OrderPayment", fields: [orderId], references: [id], onDelete: Cascade)
   createdAt              DateTime      @default(now())
   updatedAt              DateTime      @updatedAt
 
@@ -331,32 +413,39 @@ enum PaymentStatus {
 }
 
 model OrderItem {
-  id        Int            @id @default(autoincrement())
-  orderId   Int
-  variantId Int
-  quantity  Int
-  price     Float
-  order     Order          @relation(fields: [orderId], references: [id])
-  variant   ProductVariant @relation(fields: [variantId], references: [id])
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt
+  id               Int            @id @default(autoincrement())
+  orderId          Int
+  variantId        Int
+  quantity         Int
+  price            Float           // Snapshot giá tại thời điểm order (đã tính)
+  // Snapshot thông tin sản phẩm tại thời điểm mua - tránh mất dữ liệu nếu variant/product bị xóa hoặc đổi
+  productName      String          // Tên sản phẩm tại thời điểm mua (VD: "iPhone 15 Pro")
+  variantSnapshot  Json?           // {size, color, sku, image} - thông tin variant tại thời điểm mua
+  order            Order           @relation(fields: [orderId], references: [id])
+  variant          ProductVariant  @relation(fields: [variantId], references: [id])
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
 
   @@index([orderId])
   @@index([variantId])
 }
 
 model Banner {
-  id         Int      @id @default(autoincrement())
-  title      String
-  subtitle   String?
-  image      String
-  video      String?
-  link       String?
-  buttonText String?  @default("Mua ngay")
-  isActive   Boolean  @default(true)
-  order      Int      @default(0)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id        Int      @id @default(autoincrement())
+  title     String
+  subtitle  String?
+  image     String
+  video     String?
+  link      String?
+  buttonText String? @default("Mua ngay")
+  isActive  Boolean @default(true)
+  order     Int     @default(0)
+  deletedAt DateTime? // Soft delete nếu cần audit trail
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isActive])
+  @@index([deletedAt])
 }
 
 model WishlistItem {
@@ -373,23 +462,26 @@ model WishlistItem {
 }
 
 model ChatMessage {
-  id          Int         @id @default(autoincrement())
+  id          Int            @id @default(autoincrement())
   roomId      String // Unique room per user-admin conversation
   senderId    Int
-  message     String      @db.Text
-  messageType MessageType @default(TEXT)
-  attachments String[]    @default([]) // URLs của file đính kèm
-  repliedToId Int? // ID tin nhắn được trả lời
-  isRead      Boolean     @default(false)
-  isDeleted   Boolean     @default(false)
+  message     String         @db.Text
+  messageType MessageType    @default(TEXT)
+  attachments String[]       @default([]) // URLs của file đính kèm
+  repliedToId Int? // ID tin nhắn được trả lời - Self-relation
+  isRead      Boolean        @default(false)
+  // NOTE: dùng deletedAt để soft delete - deletedAt IS NOT NULL tương đương isDeleted = true
   deletedAt   DateTime?
-  sender      User        @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
-  createdAt   DateTime    @default(now())
+  sender      User           @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  repliedTo   ChatMessage?   @relation("Replies", fields: [repliedToId], references: [id]) // Tin nhắn được trả lời
+  replies     ChatMessage[]  @relation("Replies") // Các tin nhắn reply to this message
+  createdAt   DateTime       @default(now())
 
   @@index([roomId])
   @@index([senderId])
   @@index([createdAt])
-  @@index([roomId, isDeleted])
+  @@index([roomId, deletedAt]) // isDeleted đã xóa, dùng deletedAt thay vì
+  @@index([repliedToId])
 }
 
 enum MessageType {

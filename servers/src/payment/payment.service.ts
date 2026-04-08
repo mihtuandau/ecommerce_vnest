@@ -61,7 +61,7 @@ export class PaymentService {
       // Generate new payment data
       let transactionId: string | null = null;
       let paymentLink: string | null = null;
-      let payosOrderCode: number | null = null;
+      let payosOrderCode: string | null = null;
 
       if (data.method === 'PAYOS') {
         payosOrderCode = PaymentHelper.generatePayOSOrderCode();
@@ -79,7 +79,7 @@ export class PaymentService {
         amount: order.total,
         transactionId,
         paymentLink,
-        payosOrderCode,
+        payosOrderCode: payosOrderCode?.toString(),
       });
 
       // Clear caches
@@ -96,7 +96,7 @@ export class PaymentService {
     // Generate transaction data for different payment methods
     let transactionId: string | null = null;
     let paymentLink: string | null = null;
-    let payosOrderCode: number | null = null;
+    let payosOrderCode: string | null = null;
 
     if (data.method === 'PAYOS') {
       payosOrderCode = PaymentHelper.generatePayOSOrderCode();
@@ -249,7 +249,7 @@ export class PaymentService {
   }
 
   // Delegate sync operations to SyncService
-  async findByPayosOrderCode(orderCode: number) {
+  async findByPayosOrderCode(orderCode: string) {
     return this.syncService.findByPayosOrderCodeWithSync(orderCode);
   }
 

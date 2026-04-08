@@ -25,6 +25,21 @@ function pad(n) {
 }
 
 /* ---------- Countdown component ---------- */
+const TimeBlock = ({ value, label }) => (
+  <div className="flex flex-col items-center">
+    <div className="w-12 h-12 bg-black/30 backdrop-blur-sm border border-white/20 flex items-center justify-center rounded-xl">
+      <span className="text-xl font-black text-yellow-300 tabular-nums leading-none">
+        {pad(value)}
+      </span>
+    </div>
+    <span className="text-[9px] uppercase tracking-widest text-white/60 mt-1">{label}</span>
+  </div>
+);
+
+const Colon = () => (
+  <span className="text-yellow-300 text-lg font-black pb-4 select-none animate-pulse">:</span>
+);
+
 function CountdownTimer({ endDate }) {
   const [time, setTime] = useState(() => getTimeLeft(endDate));
 
@@ -38,21 +53,6 @@ function CountdownTimer({ endDate }) {
   if (!time || time.expired) {
     return <span className="text-sm font-light text-red-200">Đã kết thúc</span>;
   }
-
-  const TimeBlock = ({ value, label }) => (
-    <div className="flex flex-col items-center">
-      <div className="w-12 h-12 bg-black/30 backdrop-blur-sm border border-white/20 flex items-center justify-center rounded-xl">
-        <span className="text-xl font-black text-yellow-300 tabular-nums leading-none">
-          {pad(value)}
-        </span>
-      </div>
-      <span className="text-[9px] uppercase tracking-widest text-white/60 mt-1">{label}</span>
-    </div>
-  );
-
-  const Colon = () => (
-    <span className="text-yellow-300 text-lg font-black pb-4 select-none animate-pulse">:</span>
-  );
 
   return (
     <div className="flex items-end gap-1.5">
@@ -88,7 +88,7 @@ function FlashProductCard({ product, discountPercent }) {
 
   return (
     <Link
-      to={`/products/${product.id}`}
+      to={`/products/${product.slug || product.id}`}
       className="group relative bg-white rounded-2xl overflow-hidden flex flex-col h-full shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-white/60"
     >
       {/* Discount ribbon */}

@@ -1,8 +1,10 @@
 import { useState } from 'react';
+import { Clock, RefreshCw, Truck, CheckCircle } from 'lucide-react';
 import Modal from '../../common/Modal';
 import Select from '../../common/Select';
 import paymentService from '../../../services/paymentService';
 import { notify } from '../../../utils/notification';
+import { statusLabels } from '../../../utils/orderHelpers';
 
 const OrderDetailModal = ({ 
   isOpen, 
@@ -74,164 +76,173 @@ const OrderDetailModal = ({
   const paymentStatusBadge = getPaymentStatusBadge(order.payment?.status);
   const subtotal = order.total - (order.taxAmount || 0) - (order.shippingFee || 0);
 
+  const steps = [
+    { key: 'PENDING', label: 'Chờ xác nhận', icon: Clock },
+    { key: 'PROCESSING', label: 'Đang xử lý', icon: RefreshCw },
+    { key: 'SHIPPED', label: 'Đang giao', icon: Truck },
+    { key: 'DELIVERED', label: 'Đã giao', icon: CheckCircle },
+  ];
+
+  const currentStepIndex = steps.findIndex((step) => step.key === order.status);
+
+  const nextStatus = {
+    PENDING: 'PROCESSING',
+    PROCESSING: 'SHIPPED',
+    SHIPPED: 'DELIVERED',
+  };
+
+  const nextButtonLabel = {
+    PENDING: 'Xác nhận đơn',
+    PROCESSING: 'Giao hàng',
+    SHIPPED: 'Hoàn tất',
+  };
+
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={`Đơn hàng ${order.orderCode || `#${order.id}`}`}
-      size="lg"
+      title={null}
+      size="xl"
       variant="admin"
     >
-      <div className="grid grid-cols-2 gap-8">
-        
-        {/* LEFT COLUMN */}
-        <div className="space-y-6">
-
-          {/* Customer */}
+      <div className="space-y-4">
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h4 className="text-xs font-bold text-gray-900 uppercase tracking-wider mb-4">Khách hàng</h4>
-            <div className="bg-gray-50 p-4 border border-gray-200">
-              <div className="space-y-3">
-                <div>
-                  <p className="text-xs text-gray-600 font-medium mb-1">Tên</p>
-                  <p className="text-sm font-semibold text-gray-900">
-                    {order.user?.name || order.shippingInfo?.fullName || 'Khách vãng lai'}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-600 font-medium mb-1">Email / SĐT</p>
-                  <p className="text-sm font-semibold text-gray-900">
-                    {order.user?.email || order.guestEmail || order.guestPhone || 'N/A'}
-                  </p>
-                </div>
-                {order.address && (
-                  <div>
-                    <p className="text-xs text-gray-600 font-medium mb-1">Địa chỉ</p>
-                    <p className="text-sm font-semibold text-gray-900">
-                      {order.address.street}, {order.address.city}
-                    </p>
-                  </div>
-                )}
-              </div>
+            <div className="flex flex-wrap items-center gap-2.5">
+              <h2 className="text-xl font-bold text-slate-900">{order.orderCode || `#${order.id}`}</h2>
+              <span className="px-3 py-1.5 bg-slate-100 text-slate-700 text-xs font-semibold rounded-full">
+                {order.status === 'CANCELLED' ? 'Đã hủy' : order.status === 'DELIVERED' ? 'Đã giao' : statusLabels[order.status] || order.status}
+              </span>
             </div>
+            <p className="text-sm text-slate-500 mt-2">{new Date(order.createdAt).toLocaleString('vi-VN')}</p>
           </div>
 
-          {/* Items */}
-          <div>
-            <h4 className="text-xs font-bold text-gray-900 uppercase tracking-wider mb-4">
-              Sản phẩm ({order.orderItems?.length || 0})
-            </h4>
-            <div className="bg-white border border-gray-200">
-              <div className="max-h-48 overflow-y-auto">
-                {order.orderItems?.map((item, idx) => (
-                  <div 
-                    key={item.id} 
-                    className="p-4 border-b border-gray-200 last:border-0"
-                  >
-                    <div className="flex justify-between mb-2">
-                      <p className="text-sm font-semibold text-gray-900">
-                        {item.variant?.product?.name || 'N/A'}
-                      </p>
-                      <p className="text-sm font-bold text-gray-900">
-                        {formatCurrency(item.price * item.quantity)}
-                      </p>
+          <div className="flex flex-wrap gap-2.5">
+            {order.status !== 'CANCELLED' && order.status !== 'DELIVERED' && (
+              <button
+                onClick={() => onUpdateStatus(order.id, nextStatus[order.status])}
+                disabled={updatingStatus}
+                className="inline-flex items-center justify-center rounded-xl bg-sky-600 px-3.5 py-2 text-sm font-semibold text-white shadow-lg hover:bg-sky-500 transition"
+              >
+                {nextButtonLabel[order.status] || 'Cập nhật'}</button>
+            )}
+            {order.status !== 'CANCELLED' && (
+              <button
+                onClick={() => onUpdateStatus(order.id, 'CANCELLED')}
+                disabled={updatingStatus}
+                className="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
+              >
+                Hủy đơn
+              </button>
+            )}
+          </div>
+        </div>
+
+        <div className="rounded-2xl bg-slate-100 p-4">
+          <div className="grid grid-cols-1 items-center gap-4 md:grid-cols-4">
+            {steps.map((step, index) => {
+              const Icon = step.icon;
+              const active = index <= currentStepIndex;
+              return (
+                <div key={step.key} className="flex items-center gap-2.5">
+                  <div className={`grid h-10 w-10 place-items-center rounded-full border-2 transition ${active ? 'border-sky-600 bg-sky-600 text-white shadow-lg' : 'border-slate-300 bg-white text-slate-400'}`}>
+                    <Icon size={16} />
+                  </div>
+                  <div>
+                    <p className={`text-sm font-semibold ${active ? 'text-slate-900' : 'text-slate-500'}`}>{step.label}</p>
+                    {index < steps.length - 1 && <div className={`mt-1.5 h-0.5 w-full ${active ? 'bg-sky-600' : 'bg-slate-300'}`} />}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.7fr_1fr]">
+          <div className="space-y-4">
+            <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+              <h3 className="mb-3 text-base font-semibold text-slate-900">Sản phẩm đặt hàng</h3>
+              <div className="space-y-4">
+                {order.orderItems?.map((item) => (
+                  <div key={item.id} className="flex items-center gap-3 rounded-2xl border border-slate-200 p-3">
+                    <div className="grid h-14 w-14 place-items-center rounded-xl bg-slate-100 text-slate-400">
+                      📦
                     </div>
-                    <p className="text-xs text-gray-600">Số lượng: {item.quantity}</p>
+                    <div className="flex-1">
+                      <p className="font-semibold text-slate-900">{item.variant?.product?.name || 'N/A'}</p>
+                      <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-slate-500">
+                        <span className="px-2 py-1 bg-slate-100 rounded-full">Size: {item.variant?.options?.find((o) => o.name.toLowerCase().includes('size'))?.value || 'M'}</span>
+                        <span className="px-2 py-1 bg-slate-100 rounded-full">Số lượng: {item.quantity}</span>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-semibold text-slate-900">{formatCurrency(item.price * item.quantity)}</p>
+                      <p className="text-xs text-slate-500">{formatCurrency(item.price)} / 1</p>
+                    </div>
                   </div>
                 ))}
               </div>
-            </div>
-          </div>
-
-        </div>
-
-        {/* RIGHT COLUMN */}
-        <div className="space-y-6">
-
-          {/* Total */}
-          <div className="bg-[#1890ff] text-white p-6 border border-black">
-            <p className="text-xs font-medium text-gray-400 mb-2">TỔNG ĐƠN HÀNG</p>
-            <p className="text-3xl font-bold mb-6">{formatCurrency(order.total)}</p>
-            
-            <div className="space-y-3 pt-4 border-t border-gray-700">
-              <div className="flex justify-between text-xs text-gray-300">
-                <span>Tạm tính</span>
-                <span className="font-semibold">{formatCurrency(subtotal)}</span>
-              </div>
-              {order.shippingFee > 0 && (
-                <div className="flex justify-between text-xs text-gray-300">
-                  <span>Vận chuyển</span>
-                  <span className="font-semibold">{formatCurrency(order.shippingFee)}</span>
+              <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-3.5">
+                <div className="flex justify-between text-sm text-slate-500 mb-2">
+                  <span>Tạm tính</span>
+                  <span>{formatCurrency(subtotal)}</span>
                 </div>
-              )}
-              {order.taxAmount > 0 && (
-                <div className="flex justify-between text-xs text-gray-300">
-                  <span>Thuế</span>
-                  <span className="font-semibold">{formatCurrency(order.taxAmount)}</span>
+                <div className="flex justify-between text-sm text-slate-500 mb-2">
+                  <span>Phí vận chuyển</span>
+                  <span>{formatCurrency(order.shippingFee)}</span>
                 </div>
-              )}
-            </div>
-          </div>
-
-          {/* Payment */}
-          {order.payment && (
-            <div className="bg-gray-50 border border-gray-200 p-4">
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <p className="text-xs font-bold text-gray-600 uppercase tracking-wider mb-1">Thanh toán</p>
-                  <p className="text-sm font-semibold text-gray-900">
-                    {getPaymentMethodText(order.payment.method)}
-                  </p>
-                </div>
-                <span className={`text-xs font-semibold px-3 py-1.5 ${paymentStatusBadge.styles}`}>
-                  {paymentStatusBadge.label}
-                </span>
-              </div>
-
-              <div className="space-y-3 pt-4 border-t border-gray-200">
-                <div className="flex justify-between">
-                  <span className="text-xs text-gray-600 font-medium">Số tiền</span>
-                  <span className="text-sm font-bold text-gray-900">{formatCurrency(order.payment.amount)}</span>
-                </div>
-
-                {order.payment.paidAt && (
-                  <div className="flex justify-between">
-                    <span className="text-xs text-gray-600 font-medium">Thời gian</span>
-                    <span className="text-xs text-gray-700">
-                      {new Date(order.payment.paidAt).toLocaleString('vi-VN')}
-                    </span>
+                {order.taxAmount > 0 && (
+                  <div className="flex justify-between text-sm text-slate-500 mb-2">
+                    <span>Thuế</span>
+                    <span>{formatCurrency(order.taxAmount)}</span>
                   </div>
                 )}
-
-                {order.payment.status === 'PENDING' && order.payment.method === 'PAYOS' && (
-                  <button
-                    onClick={handleSyncPayment}
-                    disabled={syncingPayment}
-                    className="w-full mt-3 bg-[#1890ff] hover:bg-[#40a9ff] disabled:bg-gray-600 text-white py-2.5 px-4 text-sm font-semibold transition-all disabled:cursor-not-allowed border border-black"
-                  >
-                    {syncingPayment ? 'Đang kiểm tra...' : 'Kiểm tra thanh toán'}
-                  </button>
-                )}
+                <div className="mt-4 flex justify-between items-center text-base font-semibold text-slate-900">
+                  <span>Tổng cộng</span>
+                  <span>{formatCurrency(order.total)}</span>
+                </div>
               </div>
             </div>
-          )}
+          </div>
 
-          {/* Status */}
-          {order.status !== 'CANCELLED' && (
-            <div className="bg-gray-50 border border-gray-200 p-4">
-              <p className="text-xs font-bold text-gray-600 uppercase tracking-wider mb-3">
-                Cập nhật trạng thái
-              </p>
-              <Select
-                value={order.status}
-                onChange={(e) => onUpdateStatus(order.id, e.target.value)}
-                options={statusOptions}
-                disabled={updatingStatus}
-                className="w-full text-sm font-medium"
-              />
+          <div className="space-y-4">
+            <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+              <h3 className="mb-3 text-base font-semibold text-slate-900">Khách hàng</h3>
+              <p className="text-sm font-semibold text-slate-900">{order.shippingSnapshot?.fullName || order.user?.name || 'Khách vãng lai'}</p>
+              <p className="text-sm text-slate-500">{order.user?.email || order.guestEmail || 'N/A'}</p>
+              {(order.user?.phone || order.guestPhone) && (
+                <p className="text-sm text-slate-500">{order.user?.phone || order.guestPhone}</p>
+              )}
+              <a href="#" className="text-sky-600 text-sm font-semibold hover:underline">Xem hồ sơ khách hàng →</a>
             </div>
-          )}
 
+            <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+              <h3 className="mb-3 text-base font-semibold text-slate-900">Địa chỉ giao hàng</h3>
+              <p className="text-sm text-slate-500">
+                {order.shippingSnapshot?.addressString || (order.address ? `${order.address.street}, ${order.address.city}` : 'N/A')}
+              </p>
+              <p className="mt-4 text-sm font-semibold text-slate-900">{order.shippingSnapshot?.fullName || order.user?.name || 'Khách vãng lai'}</p>
+            </div>
+
+            <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+              <h3 className="mb-3 text-base font-semibold text-slate-900">Thanh toán</h3>
+              <p className="text-sm text-slate-500 mb-2">Phương thức</p>
+              <p className="font-semibold text-slate-900 mb-4">{getPaymentMethodText(order.payment?.method)}</p>
+              <p className="text-sm text-slate-500 mb-2">Trạng thái</p>
+              <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${paymentStatusBadge.styles}`}>
+                {paymentStatusBadge.label}
+              </span>
+              {order.payment?.status === 'PENDING' && order.payment?.method === 'PAYOS' && (
+                <button
+                  onClick={handleSyncPayment}
+                  disabled={syncingPayment}
+                  className="mt-4 w-full rounded-xl bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-500 transition"
+                >
+                  {syncingPayment ? 'Đang kiểm tra...' : 'Kiểm tra thanh toán'}
+                </button>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </Modal>

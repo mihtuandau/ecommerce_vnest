@@ -1,5 +1,3 @@
-import React from 'react';
-
 const OrderShippingInfo = ({ order }) => {
   const getPaymentMethodText = (method) => {
     const methods = {
@@ -13,43 +11,45 @@ const OrderShippingInfo = ({ order }) => {
   };
 
   return (
-    <div className="bg-white border border-gray-200 p-6">
-      <h2 className="text-lg font-normal text-gray-900 mb-6 pb-4 border-b border-gray-200">
-        Thông Tin Giao Hàng
-      </h2>
-      
-      <div className="space-y-4 text-sm">
+    <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <div className="border-b border-slate-200 px-5 py-4">
+        <h2 className="text-lg font-semibold text-slate-900">Địa chỉ giao hàng</h2>
+      </div>
+
+      <div className="space-y-3 px-5 py-4 text-sm">
         <div className="flex gap-3">
-          <span className="text-gray-600 w-32 flex-shrink-0">Người nhận</span>
-          <span className="text-gray-900">
-            {order.shippingInfo?.fullName || 'Chưa cập nhật'}
+          <span className="w-32 flex-shrink-0 text-slate-500">Người nhận</span>
+          <span className="text-slate-900">
+            {order.shippingSnapshot?.fullName || order.shippingInfo?.fullName || 'Chưa cập nhật'}
           </span>
         </div>
         
         <div className="flex gap-3">
-          <span className="text-gray-600 w-32 flex-shrink-0">Số điện thoại</span>
-          <span className="text-gray-900">
-            {order.shippingInfo?.phone || 'Chưa cập nhật'}
+          <span className="w-32 flex-shrink-0 text-slate-500">Số điện thoại</span>
+          <span className="text-slate-900">
+            {order.shippingSnapshot?.phone || order.shippingInfo?.phone || 'Chưa cập nhật'}
           </span>
         </div>
         
         <div className="flex gap-3">
-          <span className="text-gray-600 w-32 flex-shrink-0">Địa chỉ</span>
-          <span className="text-gray-900 flex-1">
-            {order.shippingAddress || 'Chưa cập nhật'}
+          <span className="w-32 flex-shrink-0 text-slate-500">Địa chỉ</span>
+          <span className="flex-1 text-slate-900">
+            {order.shippingSnapshot?.addressString || order.shippingAddress || 'Chưa cập nhật'}
           </span>
         </div>
 
-        {order.shippingInfo?.note && (
-          <div className="flex gap-3 pt-4 border-t border-gray-200">
-            <span className="text-gray-600 w-32 flex-shrink-0">Ghi chú</span>
-            <span className="text-gray-900 flex-1">{order.shippingInfo.note}</span>
+        {(order.shippingSnapshot?.note || order.shippingInfo?.note) && (
+          <div className="flex gap-3 border-t border-slate-200 pt-3">
+            <span className="w-32 flex-shrink-0 text-slate-500">Ghi chú</span>
+            <span className="flex-1 text-slate-900">
+              {order.shippingSnapshot?.note || order.shippingInfo?.note}
+            </span>
           </div>
         )}
 
-        <div className="flex gap-3 pt-4 border-t border-gray-200">
-          <span className="text-gray-600 w-32 flex-shrink-0">Thanh toán</span>
-          <span className="text-gray-900">
+        <div className="flex gap-3 border-t border-slate-200 pt-3">
+          <span className="w-32 flex-shrink-0 text-slate-500">Thanh toán</span>
+          <span className="text-slate-900">
             {getPaymentMethodText(order.paymentMethod)}
           </span>
         </div>

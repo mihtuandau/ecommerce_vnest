@@ -1,4 +1,3 @@
-import React from 'react';
 import { FaStar } from 'react-icons/fa';
 import { formatPrice } from '../../utils/formatters';
 
@@ -14,22 +13,22 @@ const OrderItem = ({
                    '/placeholder-product.jpg';
 
   return (
-    <div className="flex gap-4 items-start">
+    <div className="flex gap-4 items-start rounded-2xl bg-slate-50 p-4">
       <img
         src={imageUrl}
         alt={item.variant?.product?.name}
-        className="w-20 h-20 object-cover border border-gray-200 flex-shrink-0"
+        className="h-14 w-14 flex-shrink-0 rounded-xl border border-slate-200 bg-white object-cover"
       />
       <div className="flex-1 min-w-0">
-        <h3 className="text-sm font-normal text-gray-900 line-clamp-2">
+        <h3 className="text-sm font-semibold text-slate-900 line-clamp-2">
           {item.variant?.product?.name}
         </h3>
-        <div className="flex items-center gap-3 mt-2 text-xs text-gray-600">
-          {item.variant?.size && <span>{item.variant.size}</span>}
-          {item.variant?.color && <span>{item.variant.color}</span>}
-          <span>× {item.quantity}</span>
+        <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-slate-500">
+          {item.variant?.size && <span className="rounded-full bg-white px-2 py-0.5 ring-1 ring-slate-200">Size: {item.variant.size}</span>}
+          {item.variant?.color && <span className="rounded-full bg-white px-2 py-0.5 ring-1 ring-slate-200">Màu: {item.variant.color}</span>}
+          <span className="rounded-full bg-white px-2 py-0.5 ring-1 ring-slate-200">× {item.quantity}</span>
         </div>
-        <p className="text-sm text-gray-900 mt-2">
+        <p className="mt-3 text-sm font-semibold text-slate-900">
           {formatPrice(item.price * item.quantity)}
         </p>
       </div>
@@ -40,14 +39,14 @@ const OrderItem = ({
           {canReview && !isReviewed && (
             <button
               onClick={onReview}
-              className="px-3 py-2 text-xs bg-[#00a85a] hover:bg-[#008f4d] text-white transition-colors flex items-center gap-1.5 whitespace-nowrap flex-shrink-0"
+              className="inline-flex flex-shrink-0 items-center gap-1.5 whitespace-nowrap rounded-xl bg-emerald-600 px-3 py-2 text-xs text-white transition-colors hover:bg-emerald-500"
             >
               <FaStar size={11} />
               Đánh giá
             </button>
           )}
           {isReviewed && (
-            <span className="text-xs text-gray-600 border border-gray-300 px-3 py-2 whitespace-nowrap flex-shrink-0">
+            <span className="flex-shrink-0 whitespace-nowrap rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-500">
               Đã đánh giá
             </span>
           )}

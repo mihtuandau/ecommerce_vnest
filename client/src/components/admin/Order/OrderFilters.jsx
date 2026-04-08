@@ -1,28 +1,40 @@
 import { Search } from 'lucide-react';
 import Select from '../../common/Select';
-import { statusOptions } from '../../../utils/orderHelpers';
 
-const OrderFilters = ({ searchQuery, setSearchQuery, statusFilter, setStatusFilter }) => {
+const paymentOptions = [
+  { value: '', label: 'Tất cả thanh toán' },
+  { value: 'CASH', label: 'Tiền mặt (COD)' },
+  { value: 'PAYOS', label: 'PayOS' },
+  { value: 'VNPAY', label: 'VNPay' },
+  { value: 'MOMO', label: 'MoMo' },
+];
+
+const OrderFilters = ({
+  searchQuery,
+  setSearchQuery,
+  paymentFilter,
+  setPaymentFilter,
+}) => {
   return (
-    <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
-      <div className="flex flex-col md:flex-row md:items-center gap-4">
-        <div className="flex-1 relative">
-          <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
-          <input
-            type="text"
-            placeholder="Tìm kiếm theo mã đơn, email, tên khách hàng..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-          />
-        </div>
-        <div className="w-full md:w-48">
-          <Select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            options={statusOptions}
-          />
-        </div>
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.5fr_0.6fr] items-center">
+      <div className="relative w-full">
+        <Search className="w-4 h-4 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2" />
+        <input
+          type="text"
+          placeholder="Tìm mã đơn, tên khách, email..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent bg-slate-50"
+        />
+      </div>
+
+      <div>
+        <Select
+          value={paymentFilter}
+          onChange={(e) => setPaymentFilter(e.target.value)}
+          options={paymentOptions}
+          className="rounded-2xl"
+        />
       </div>
     </div>
   );

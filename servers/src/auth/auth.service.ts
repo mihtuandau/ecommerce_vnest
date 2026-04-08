@@ -27,10 +27,9 @@ export class AuthService {
     const existingUser = await this.userService.findByEmail(email);
     if (existingUser) throw new BadRequestException('Registration failed. Please check your input and try again.');
 
-    const hashedPassword = await bcrypt.hash(password, 10);
     const user = await this.userService.create({
       email,
-      password: hashedPassword,
+      password,
       name,
       role: 'CUSTOMER',
     });
@@ -45,10 +44,34 @@ export class AuthService {
     const existingUser = await this.userService.findByEmail(email);
     if (existingUser) throw new BadRequestException('Registration failed. Please check your input and try again.');
 
-    const hashedPassword = await bcrypt.hash(password, 10);
     const user = await this.userService.create({
       email,
-      password: hashedPassword,
+      password,
+      name,
+      role: 'ADMIN',
+    });
+
+    const { password: _, ...result } = user;
+    const tokenPayload = { sub: result.id };
+    return this.login(tokenPayload, result);
+  }
+
+  async registerInitialAdmin(registerAdminDto: RegisterAdminDto) {
+    // Check if any admin exists in the database
+    const existingAdmins = await this.userService.findAll({ role: 'ADMIN' });
+    if (existingAdmins && existingAdmins.length > 0) {
+      throw new BadRequestException(
+        'Admin users already exist. Use /auth/register-admin endpoint with admin authentication instead.',
+      );
+    }
+
+    const { email, password, name } = registerAdminDto;
+    const existingUser = await this.userService.findByEmail(email);
+    if (existingUser) throw new BadRequestException('Registration failed. Please check your input and try again.');
+
+    const user = await this.userService.create({
+      email,
+      password,
       name,
       role: 'ADMIN',
     });

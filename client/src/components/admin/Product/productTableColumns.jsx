@@ -1,13 +1,7 @@
-import { Tag, Checkbox, Tooltip, Button, Image, Dropdown } from 'antd';
-import {
-  EyeOutlined,
-  EditOutlined,
-  DeleteOutlined,
-  AppstoreOutlined,
-  MoreOutlined,
-  StarFilled,
-} from '@ant-design/icons';
-import { formatPrice } from '../../../utils/formatters';
+import { Checkbox, Dropdown, Button } from 'antd';
+import { MoreOutlined } from '@ant-design/icons';
+import { formatPrice, formatDate } from '../../../utils/formatters';
+import { Star, AlertTriangle } from 'lucide-react';
 
 const getTotalStock = (record) => {
   if (Array.isArray(record.variants) && record.variants.length > 0) {
@@ -50,177 +44,156 @@ export const getProductTableColumns = ({
     ),
   },
   {
-    title: 'Sản phẩm',
+    title: <span className="text-gray-500 font-semibold text-xs tracking-wider uppercase">Sản phẩm</span>,
     key: 'product',
-    width: 280,
-    ellipsis: true,
+    width: 320,
     render: (_, record) => {
       const mainImages = record.images?.filter((img) => !img.variantId) || [];
       const firstImage = mainImages[0];
-      const brandName = record.brand?.name || '—';
+      const variantCount = record.variants?.length || 0;
+      
       return (
-        <div className="flex items-center gap-2 py-1 max-w-full">
-          <div className="flex-shrink-0 w-10 h-10 rounded overflow-hidden border border-gray-200 bg-gray-100">
+        <div className="flex items-center gap-3 py-2">
+          <div className="w-12 h-12 rounded-lg bg-gray-50 border border-gray-100 flex items-center justify-center overflow-hidden flex-shrink-0">
             {firstImage?.url ? (
-              <Image
-                width={40}
-                height={40}
-                src={firstImage.url}
-                alt=""
-                style={{ objectFit: 'cover' }}
-                preview={false}
-              />
+              <img src={firstImage.url} alt="" className="w-full h-full object-cover" />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-gray-400 text-[10px]">
-                N/A
-              </div>
+              <span className="text-gray-400 text-xs">N/A</span>
             )}
           </div>
-          <div className="min-w-0 flex-1 overflow-hidden">
-            <button
-              type="button"
-              onClick={() => onView?.(record)}
-              className="text-left font-medium text-gray-900 hover:text-blue-600 hover:underline focus:outline-none block w-full truncate text-sm transition-colors"
-              title={record.name}
-            >
+          <div className="flex flex-col min-w-0">
+            <span className="font-semibold text-sm text-gray-900 truncate" title={record.name}>
               {record.name}
-            </button>
-            <div className="text-[11px] text-gray-500 truncate w-full" title={brandName}>{brandName}</div>
+            </span>
+            <div className="text-xs text-gray-500 truncate mt-0.5">
+              {variantCount > 0 ? `${variantCount} biến thể • ` : ''}
+              {getProductSku(record)}
+            </div>
           </div>
         </div>
       );
     },
   },
   {
-    title: 'SKU',
-    dataIndex: 'sku',
-    key: 'sku',
-    width: 100,
-    render: (_, record) => (
-      <span className="text-gray-600 font-mono text-xs">{getProductSku(record)}</span>
-    ),
-  },
-  {
-    title: 'Danh mục',
-    dataIndex: 'category',
+    title: <span className="text-gray-500 font-semibold text-xs tracking-wider uppercase">Danh mục / Thương hiệu</span>,
     key: 'category',
-    width: 100,
-    render: (category) => (
-      <Tag color="blue" className="text-xs">{category?.name || 'N/A'}</Tag>
+    width: 180,
+    render: (_, record) => (
+      <div className="flex flex-col items-start gap-1">
+        <span className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-[11px] font-medium">
+          {record.category?.name || 'N/A'}
+        </span>
+        <span className="text-[11px] font-medium text-blue-600 px-2">
+          {record.brand?.name || '—'}
+        </span>
+      </div>
     ),
   },
   {
-    title: 'Giá',
+    title: <span className="text-gray-500 font-semibold text-xs tracking-wider uppercase">Giá</span>,
     dataIndex: 'basePrice',
     key: 'price',
-    width: 100,
+    width: 140,
     render: (basePrice, record) => (
-      <span className="font-semibold text-emerald-600 text-sm">
+      <span className="font-bold text-gray-900 text-sm">
         {formatPrice(basePrice || record.price || 0)}
       </span>
     ),
   },
   {
-    title: 'Tồn kho',
+    title: <span className="text-gray-500 font-semibold text-xs tracking-wider uppercase">Tồn kho</span>,
     key: 'stock',
-    width: 90,
+    width: 120,
     render: (_, record) => {
       const total = getTotalStock(record);
+      if (total === 0) {
+        return (
+          <div className="flex items-center gap-1.5 text-red-500 font-semibold text-sm">
+            <div className="w-2 h-2 rounded-full bg-red-500"></div>
+            <span>0</span>
+          </div>
+        );
+      }
+      if (total < 50) {
+        return (
+          <div className="inline-flex items-center gap-1 bg-amber-50 text-amber-600 px-2 py-1 rounded-full text-xs font-semibold">
+            <AlertTriangle size={12} strokeWidth={3} />
+            <span>{total} (thấp)</span>
+          </div>
+        );
+      }
       return (
-        <Tag color={total > 0 ? 'success' : 'error'} className="text-xs">
-          {total}
-        </Tag>
+        <div className="flex items-center gap-1.5 text-emerald-500 font-semibold text-sm px-2">
+          <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
+          <span>{total}</span>
+        </div>
       );
     },
   },
   {
-    title: 'Đã bán',
+    title: <span className="text-gray-500 font-semibold text-xs tracking-wider uppercase">Đã bán</span>,
     dataIndex: 'soldCount',
     key: 'sold',
-    width: 70,
-    render: (v) => <span className="text-gray-700 text-sm">{v ?? 0}</span>,
+    width: 100,
+    render: (v) => <span className="font-bold text-gray-900 text-sm">{v ?? 0}</span>,
   },
   {
-    title: 'Đánh giá',
+    title: <span className="text-gray-500 font-semibold text-xs tracking-wider uppercase">Rating</span>,
     key: 'rating',
-    width: 90,
+    width: 120,
     render: (_, record) => {
       const rating = record.averageRating ?? 0;
       const count = record.reviewCount ?? 0;
       return (
-        <span className="text-gray-700 text-xs">
-          <StarFilled style={{ color: '#faad14', marginRight: 2, fontSize: 12 }} />
-          {Number(rating).toFixed(1)} {count > 0 && <span className="text-gray-500">({count})</span>}
-        </span>
+        <div className="flex items-center gap-1">
+          <Star className="text-amber-400 fill-amber-400" size={14} />
+          <span className="font-bold text-gray-900 text-sm">{Number(rating).toFixed(1)}</span>
+          {count > 0 && <span className="text-gray-500 text-xs">({count})</span>}
+        </div>
       );
     },
   },
   {
-    title: 'Trạng thái',
+    title: <span className="text-gray-500 font-semibold text-xs tracking-wider uppercase">Trạng thái</span>,
     key: 'status',
-    width: 90,
+    width: 120,
     render: (_, record) => (
-      <Tag color={record.isActive !== false ? 'success' : 'default'} className="text-xs">
+      <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium ${record.isActive !== false ? 'bg-emerald-50 text-emerald-600' : 'bg-gray-100 text-gray-600'}`}>
+        <div className={`w-1.5 h-1.5 rounded-full ${record.isActive !== false ? 'bg-emerald-500' : 'bg-gray-400'}`}></div>
         {record.isActive !== false ? 'Đang bán' : 'Ngừng bán'}
-      </Tag>
+      </span>
     ),
   },
   {
-    title: 'Biến thể',
-    key: 'variants',
-    width: 70,
-    render: (_, record) => {
-      const variantCount = record.variants?.length || 0;
-      return (
-        <Tooltip title="Quản lý biến thể">
-          <Button
-            type="link"
-            icon={<AppstoreOutlined />}
-            onClick={() => onManageVariants(record)}
-            className="p-0 text-xs text-blue-600 hover:text-blue-700"
-            size="small"
-          >
-            {variantCount > 0 ? variantCount : 'Thêm'}
-          </Button>
-        </Tooltip>
-      );
-    },
+    title: <span className="text-gray-500 font-semibold text-xs tracking-wider uppercase">Ngày tạo</span>,
+    key: 'createdAt',
+    width: 120,
+    render: (_, record) => (
+      <span className="text-gray-500 text-xs">
+        {formatDate(record.createdAt)}
+      </span>
+    ),
   },
   {
-    title: 'Thao tác',
+    title: '',
     key: 'actions',
-    width: 60,
+    width: 50,
     fixed: 'right',
     render: (_, record) => (
       <Dropdown
-        trigger={['click']}
         menu={{
           items: [
-            {
-              key: 'view',
-              icon: <EyeOutlined />,
-              label: 'Xem chi tiết',
-              onClick: () => onView(record),
-            },
-            {
-              key: 'edit',
-              icon: <EditOutlined />,
-              label: 'Chỉnh sửa',
-              onClick: () => onEdit(record),
-            },
+            { key: 'view', label: 'Xem chi tiết', onClick: () => onView(record) },
+            { key: 'edit', label: 'Chỉnh sửa', onClick: () => onEdit(record) },
+            { key: 'variants', label: 'Quản lý biến thể', onClick: () => onManageVariants(record) },
             { type: 'divider' },
-            {
-              key: 'delete',
-              icon: <DeleteOutlined />,
-              label: 'Xóa',
-              danger: true,
-              onClick: () => onDelete(record),
-            },
+            { key: 'delete', label: 'Xóa', danger: true, onClick: () => onDelete(record) },
           ],
         }}
+        trigger={['click']}
         placement="bottomRight"
       >
-        <Button type="text" icon={<MoreOutlined />} className="p-0" size="small" />
+        <Button type="text" icon={<MoreOutlined rotate={90} className="text-gray-400" />} />
       </Dropdown>
     ),
   },

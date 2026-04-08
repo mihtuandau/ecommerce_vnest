@@ -24,7 +24,7 @@ const DiscountFormPage = () => {
   }
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="max-w-[1600px] mx-auto w-full">
       <DiscountFormHeader
         isEdit={isEdit}
         discountCode={discount?.code}

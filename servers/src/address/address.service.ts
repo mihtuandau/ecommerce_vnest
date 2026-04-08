@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Prisma, AddressType } from '@prisma/client';
 import { AddressRepository } from './address.repository';
 import { CreateAddressDto } from './dto/create-address.dto';
 import { UpdateAddressDto } from './dto/update-address.dto';
@@ -39,7 +39,7 @@ export class AddressService {
       state: data.state,
       zipCode: data.zipCode,
       country: data.country || 'Vietnam',
-      addressType: data.addressType || 'home',
+      addressType: (data.addressType?.toUpperCase() || 'HOME') as AddressType,
       isDefault,
     });
   }
@@ -63,7 +63,7 @@ export class AddressService {
     if (data.state !== undefined) updateData.state = data.state;
     if (data.zipCode !== undefined) updateData.zipCode = data.zipCode;
     if (data.country !== undefined) updateData.country = data.country;
-    if (data.addressType !== undefined) updateData.addressType = data.addressType;
+    if (data.addressType !== undefined) updateData.addressType = data.addressType.toUpperCase() as AddressType;
     if (data.isDefault !== undefined) updateData.isDefault = data.isDefault;
 
     return this.repository.update(id, updateData);

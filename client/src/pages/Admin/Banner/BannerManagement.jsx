@@ -75,69 +75,71 @@ const BannerManagement = () => {
   };
 
   return (
-    <div>
-      <div className="mb-6">
-        <div className="flex justify-between items-center mb-4">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Banner Management</h1>
-            <p className="text-gray-600">Quản lý banner hiển thị trên trang chủ</p>
+    <div className="p-6">
+      <div className="mx-auto w-full max-w-[1600px]">
+        <div className="mb-6">
+          <div className="flex justify-between items-center mb-4">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">Banner Management</h1>
+              <p className="text-gray-600">Quản lý banner hiển thị trên trang chủ</p>
+            </div>
+            <Button
+              onClick={() => {
+                setEditingBanner(null);
+                setShowForm(true);
+              }}
+              variant="primary"
+              leftIcon={<Plus className="w-4 h-4" />}
+            >
+              Thêm Banner
+            </Button>
           </div>
-          <Button
-            onClick={() => {
-              setEditingBanner(null);
-              setShowForm(true);
-            }}
-            variant="primary"
-            leftIcon={<Plus className="w-4 h-4" />}
-          >
-            Thêm Banner
-          </Button>
+
+          <div className="flex gap-2">
+            <Button
+              onClick={() => setShowAllBanners(false)}
+              variant={!showAllBanners ? 'primary' : 'outline'}
+            >
+              Banner Active
+            </Button>
+            <Button
+              onClick={() => setShowAllBanners(true)}
+              variant={showAllBanners ? 'primary' : 'outline'}
+            >
+              Tất cả Banner
+            </Button>
+          </div>
         </div>
 
-        <div className="flex gap-2">
-          <Button
-            onClick={() => setShowAllBanners(false)}
-            variant={!showAllBanners ? 'primary' : 'outline'}
-          >
-            Banner Active
-          </Button>
-          <Button
-            onClick={() => setShowAllBanners(true)}
-            variant={showAllBanners ? 'primary' : 'outline'}
-          >
-            Tất cả Banner
-          </Button>
-        </div>
-      </div>
-
-      <BannerTable
-        banners={banners}
-        loading={isLoading}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        onReorder={handleReorder}
-      />
-
-      {/* Banner Form Modal */}
-      {showForm && (
-        <BannerFormModal
-          banner={editingBanner}
-          onSave={handleSave}
-          onClose={handleCloseForm}
+        <BannerTable
+          banners={banners}
+          loading={isLoading}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          onReorder={handleReorder}
         />
-      )}
 
-      {/* Delete Confirmation Modal */}
-      <DeleteConfirmModal
-        isOpen={deleteModalOpen}
-        onClose={() => {
-          setDeleteModalOpen(false);
-          setBannerToDelete(null);
-        }}
-        onConfirm={confirmDelete}
-        title="Xóa Banner"
-        message={`Bạn có chắc chắn muốn xóa banner "${bannerToDelete?.title}"?`}
-      />
+        {/* Banner Form Modal */}
+        {showForm && (
+          <BannerFormModal
+            banner={editingBanner}
+            onSave={handleSave}
+            onClose={handleCloseForm}
+          />
+        )}
+
+        {/* Delete Confirmation Modal */}
+        <DeleteConfirmModal
+          isOpen={deleteModalOpen}
+          onClose={() => {
+            setDeleteModalOpen(false);
+            setBannerToDelete(null);
+          }}
+          onConfirm={confirmDelete}
+          title="Xóa Banner"
+          message={`Bạn có chắc chắn muốn xóa banner "${bannerToDelete?.title}"?`}
+        />
+      </div>
     </div>
   );
 };

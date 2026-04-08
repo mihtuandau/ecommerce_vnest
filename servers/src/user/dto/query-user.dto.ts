@@ -18,4 +18,8 @@ export class QueryUserDto {
   @IsOptional()
   @IsEnum(['CUSTOMER', 'ADMIN'])
   role?: Role;
+
+  @IsOptional()
+  @IsEnum(['ACTIVE', 'SUSPENDED'])
+  status?: 'ACTIVE' | 'SUSPENDED';
 }

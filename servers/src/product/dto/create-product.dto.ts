@@ -44,4 +44,31 @@ export class CreateProductDto {
   @IsOptional()
   @IsInt()
   brandId?: number;
+
+  @ApiProperty({
+    example: 'ao-thun-nam',
+    description: 'Slug sản phẩm (tùy chọn)',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  slug?: string;
+
+  @ApiProperty({
+    example: 'Áo thun nam - Vnest',
+    description: 'SEO meta title (tùy chọn)',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  metaTitle?: string;
+
+  @ApiProperty({
+    example: 'Áo thun nam cotton, thoáng mát...',
+    description: 'SEO meta description (tùy chọn)',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  metaDesc?: string;
 }
