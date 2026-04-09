@@ -4,6 +4,10 @@ import { EditOutlined, DeleteOutlined, ArrowUpOutlined, ArrowDownOutlined, Pictu
 const BannerTable = ({
   banners,
   loading,
+  currentPage = 1,
+  itemsPerPage = 10,
+  total = 0,
+  onPageChange,
   onEdit,
   onDelete,
   onReorder,
@@ -13,7 +17,7 @@ const BannerTable = ({
       title: 'STT',
       key: 'index',
       width: 60,
-      render: (_, __, index) => index + 1,
+      render: (_, __, index) => (currentPage - 1) * itemsPerPage + index + 1,
     },
     {
       title: 'Hình ảnh',
@@ -81,7 +85,6 @@ const BannerTable = ({
                 size="small"
                 icon={<ArrowUpOutlined />}
                 onClick={() => onReorder(record.id, 'up')}
-                disabled={index === 0}
               />
             </Tooltip>
             <Tooltip title="Di chuyển xuống">
@@ -90,7 +93,6 @@ const BannerTable = ({
                 size="small"
                 icon={<ArrowDownOutlined />}
                 onClick={() => onReorder(record.id, 'down')}
-                disabled={index === banners.length - 1}
               />
             </Tooltip>
           </Space>
@@ -140,9 +142,16 @@ const BannerTable = ({
       dataSource={banners}
       loading={loading}
       rowKey="id"
+      size="small"
       pagination={{
-        pageSize: 10,
-        showTotal: (total) => `Tổng ${total} banners`,
+        current: currentPage,
+        total: total || banners.length,
+        pageSize: itemsPerPage,
+        showSizeChanger: true,
+        showTotal: (count) => `Hiển thị ${count} banner`,
+        onChange: onPageChange,
+        size: 'small',
+        position: ['bottomRight'],
       }}
       locale={{
         emptyText: (
@@ -153,6 +162,7 @@ const BannerTable = ({
           </div>
         ),
       }}
+        className="[&_.ant-table-thead>tr>th]:bg-gray-50 [&_.ant-table-thead>tr>th]:font-medium [&_.ant-table-thead>tr>th]:text-gray-700 [&_.ant-table-thead>tr>th]:border-b [&_.ant-table-thead>tr>th]:border-gray-200 [&_.ant-table-thead>tr>th]:px-2 [&_.ant-table-thead>tr>th]:py-2 [&_.ant-table-tbody>tr>td]:px-2 [&_.ant-table-tbody>tr>td]:py-2"
     />
   );
 };

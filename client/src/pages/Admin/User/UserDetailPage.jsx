@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, ShoppingCart, Package2, Star, MapPin } from 'lucide-react';
+import { Pagination as AntdPagination } from 'antd';
 import userService from '../../../services/userService';
 import orderService from '../../../services/orderService';
 import Loading from '../../../components/common/Loading';
@@ -15,6 +16,8 @@ const UserDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
   const [orders, setOrders] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     const loadData = async () => {
@@ -55,6 +58,19 @@ const UserDetailPage = () => {
     const addressCount = user?.addresses?.length || 0;
     return { totalOrders, totalSpent, reviewCount, addressCount };
   }, [orders, user]);
+
+  const paginatedOrders = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return orders.slice(start, start + itemsPerPage);
+  }, [orders, currentPage]);
+
+  const totalPages = Math.max(1, Math.ceil(orders.length / itemsPerPage));
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
 
   if (loading) {
     return <Loading text="Đang tải thông tin khách hàng..." variant="admin" />;
@@ -153,32 +169,51 @@ const UserDetailPage = () => {
               </div>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[700px] text-left text-sm">
-                <thead className="bg-slate-50 text-slate-500">
-                  <tr>
-                    <th className="px-4 py-3">Mã đơn</th>
-                    <th className="px-4 py-3">Ngày đặt</th>
-                    <th className="px-4 py-3">Tổng tiền</th>
-                    <th className="px-4 py-3">Trạng thái</th>
-                    <th className="px-4 py-3 text-right">Chi tiết</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {orders.map((order) => (
-                    <tr key={order.id} className="border-t border-slate-100">
-                      <td className="px-4 py-3 font-semibold text-slate-800">{order.orderCode || `#${order.id}`}</td>
-                      <td className="px-4 py-3 text-slate-600">{formatDateTime(order.createdAt)}</td>
-                      <td className="px-4 py-3 font-semibold text-slate-900">{formatCurrency(order.total)}</td>
-                      <td className="px-4 py-3 text-slate-600">{order.status}</td>
-                      <td className="px-4 py-3 text-right">
-                        <Link to={`/admin-orders/${order.id}`} className="font-semibold text-blue-600 hover:text-blue-500">Xem đơn</Link>
-                      </td>
+            <>
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[700px] text-left text-sm">
+                  <thead className="bg-slate-50 text-slate-500">
+                    <tr>
+                      <th className="px-4 py-3">Mã đơn</th>
+                      <th className="px-4 py-3">Ngày đặt</th>
+                      <th className="px-4 py-3">Tổng tiền</th>
+                      <th className="px-4 py-3">Trạng thái</th>
+                      <th className="px-4 py-3 text-right">Chi tiết</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {paginatedOrders.map((order) => (
+                      <tr key={order.id} className="border-t border-slate-100">
+                        <td className="px-4 py-3 font-semibold text-slate-800">{order.orderCode || `#${order.id}`}</td>
+                        <td className="px-4 py-3 text-slate-600">{formatDateTime(order.createdAt)}</td>
+                        <td className="px-4 py-3 font-semibold text-slate-900">{formatCurrency(order.total)}</td>
+                        <td className="px-4 py-3 text-slate-600">{order.status}</td>
+                        <td className="px-4 py-3 text-right">
+                          <Link to={`/admin-orders/${order.id}`} className="font-semibold text-blue-600 hover:text-blue-500">Xem đơn</Link>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {orders.length > 0 && (
+                <div className="flex items-center justify-between gap-4 border-t border-gray-100 p-4">
+                  <div className="text-sm text-gray-500">
+                    {orders.length === 1
+                      ? 'Hiển thị 1 đơn hàng'
+                      : `Hiển thị ${(currentPage - 1) * itemsPerPage + 1}-${Math.min(currentPage * itemsPerPage, orders.length)} / ${orders.length} đơn hàng`}
+                  </div>
+                  <AntdPagination
+                    current={currentPage}
+                    pageSize={itemsPerPage}
+                    total={orders.length}
+                    onChange={(page) => setCurrentPage(page)}
+                    showSizeChanger
+                  />
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>

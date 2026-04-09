@@ -3,6 +3,82 @@ import { EyeOutlined, SyncOutlined, SortAscendingOutlined, SortDescendingOutline
 import { Empty, Button } from 'antd';
 import { formatCurrency, formatDate, statusLabels } from '../../../utils/orderHelpers';
 
+const ORDER_STATUS_STYLES = {
+  AWAITING_PAYMENT: 'bg-orange-100 text-orange-700 border-orange-200',
+  PENDING: 'bg-amber-100 text-amber-700 border-amber-200',
+  PROCESSING: 'bg-blue-100 text-blue-700 border-blue-200',
+  SHIPPED: 'bg-violet-100 text-violet-700 border-violet-200',
+  DELIVERED: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+  CANCELLED: 'bg-gray-100 text-gray-700 border-gray-200',
+};
+
+const PAYMENT_STATUS_STYLES = {
+  SUCCESS: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+  PENDING: 'bg-amber-100 text-amber-700 border-amber-200',
+  CANCELLED: 'bg-gray-100 text-gray-700 border-gray-200',
+  FAILED: 'bg-rose-100 text-rose-700 border-rose-200',
+};
+
+const PAYMENT_STATUS_LABELS = {
+  SUCCESS: 'Đã TT',
+  PENDING: 'Chờ TT',
+  FAILED: 'Lỗi',
+  CANCELLED: 'Đã hủy',
+};
+
+const GRID_CLASS = 'grid grid-cols-[minmax(150px,1.05fr)_minmax(170px,1fr)_minmax(110px,0.82fr)_minmax(110px,0.7fr)_minmax(110px,0.82fr)_minmax(110px,0.7fr)_minmax(120px,0.72fr)_56px] items-center gap-3';
+
+const SortLabel = ({ label, field, sortBy, sortDir, onSort, align = 'left' }) => {
+  const active = sortBy === field;
+  const Icon = active && sortDir === 'desc' ? SortDescendingOutlined : SortAscendingOutlined;
+
+  return (
+    <button
+      type="button"
+      onClick={() => onSort?.(field)}
+      className={`inline-flex items-center gap-1 text-[13px] font-semibold text-gray-500 transition hover:text-gray-700 ${align === 'right' ? 'ml-auto justify-end' : ''} ${align === 'center' ? 'mx-auto justify-center' : ''}`}
+    >
+      <span>{label}</span>
+      <Icon className={`text-[10px] ${active ? 'text-gray-700' : 'text-gray-300'}`} />
+    </button>
+  );
+};
+
+const getOrderStatusStyle = (status) => ORDER_STATUS_STYLES[status] || 'bg-gray-100 text-gray-700 border-gray-200';
+const getPaymentBadgeStyle = (status) => PAYMENT_STATUS_STYLES[status] || 'bg-gray-100 text-gray-700 border-gray-200';
+
+const getCustomerDisplay = (order) => {
+  const name = order.user?.name || order.shippingInfo?.fullName || order.guestEmail || 'Khách vãng lai';
+  const contact = order.user?.email || order.guestEmail || order.guestPhone || 'N/A';
+  return { name, contact };
+};
+
+const getProductDisplay = (order) => ({
+  itemCount: order.orderItems?.length || 0,
+  firstProduct: order.orderItems?.[0]?.variant?.product?.name || 'N/A',
+});
+
+const renderStatusBadge = (status) => (
+  <span className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold ${getOrderStatusStyle(status)}`}>
+    {statusLabels[status] || status}
+  </span>
+);
+
+const renderPaymentBadge = (payment) => {
+  if (!payment) return <span className="text-sm text-gray-500">Chưa có</span>;
+
+  return (
+    <div className="flex flex-col gap-1">
+      <span className={`inline-flex w-fit items-center rounded-full border px-2.5 py-1 text-[11px] font-semibold ${getPaymentBadgeStyle(payment.status)}`}>
+        {PAYMENT_STATUS_LABELS[payment.status] || payment.status}
+      </span>
+      <div className="text-xs uppercase tracking-wide text-gray-400">
+        {payment.method === 'CASH' ? 'COD' : payment.method}
+      </div>
+    </div>
+  );
+};
+
 const OrderTable = ({
   orders = [],
   loading,
@@ -26,119 +102,53 @@ const OrderTable = ({
     }
   };
 
-  const getOrderStatusStyle = (status) => {
-    const styles = {
-      AWAITING_PAYMENT: 'bg-orange-100 text-orange-700 border-orange-200',
-      PENDING: 'bg-amber-100 text-amber-700 border-amber-200',
-      PROCESSING: 'bg-sky-100 text-sky-700 border-sky-200',
-      SHIPPED: 'bg-violet-100 text-violet-700 border-violet-200',
-      DELIVERED: 'bg-emerald-100 text-emerald-700 border-emerald-200',
-      CANCELLED: 'bg-red-100 text-red-700 border-red-200',
-    };
-    return styles[status] || 'bg-slate-100 text-slate-700 border-slate-200';
-  };
-
-  const getPaymentBadgeStyle = (status) => {
-    const styles = {
-      SUCCESS: 'bg-emerald-100 text-emerald-700 border-emerald-200',
-      PENDING: 'bg-amber-100 text-amber-700 border-amber-200',
-      CANCELLED: 'bg-slate-100 text-slate-700 border-slate-200',
-      FAILED: 'bg-rose-100 text-rose-700 border-rose-200',
-    };
-    return styles[status] || 'bg-slate-100 text-slate-700 border-slate-200';
-  };
-
-  const renderStatusBadge = (status) => (
-    <span className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold ${getOrderStatusStyle(status)}`}>
-      {statusLabels[status] || status}
-    </span>
-  );
-
-  const renderPaymentBadge = (payment) => {
-    if (!payment) return <span className="text-sm text-slate-500">Chưa có</span>;
-
-    return (
-      <div className="flex flex-col gap-1">
-        <span className={`inline-flex w-fit items-center rounded-full border px-2.5 py-1 text-[11px] font-semibold ${getPaymentBadgeStyle(payment.status)}`}>
-          {payment.status === 'SUCCESS' && 'Đã TT'}
-          {payment.status === 'PENDING' && 'Chờ TT'}
-          {payment.status === 'FAILED' && 'Lỗi'}
-          {payment.status === 'CANCELLED' && 'Đã hủy'}
-        </span>
-        <div className="text-xs uppercase tracking-wide text-slate-400">
-          {payment.method === 'CASH' ? 'COD' : payment.method}
-        </div>
-      </div>
-    );
-  };
-
-  const SortLabel = ({ label, field, align = 'left' }) => {
-    const active = sortBy === field;
-    const Icon = active && sortDir === 'desc' ? SortDescendingOutlined : SortAscendingOutlined;
-
-    return (
-      <button
-        type="button"
-        onClick={() => onSort?.(field)}
-        className={`inline-flex items-center gap-1 text-[13px] font-semibold text-slate-500 transition hover:text-slate-700 ${align === 'right' ? 'ml-auto justify-end' : ''} ${align === 'center' ? 'mx-auto justify-center' : ''}`}
-      >
-        <span>{label}</span>
-        <Icon className={`text-[10px] ${active ? 'text-slate-700' : 'text-slate-300'}`} />
-      </button>
-    );
-  };
-
   return (
     <div className={`${loading ? 'opacity-80' : ''}`}>
-      <div className="grid grid-cols-[minmax(150px,1.05fr)_minmax(170px,1fr)_minmax(110px,0.82fr)_minmax(110px,0.7fr)_minmax(110px,0.82fr)_minmax(110px,0.7fr)_minmax(120px,0.72fr)_56px] items-center gap-3 border-b border-slate-200 bg-slate-50 px-5 py-4 text-slate-400">
-        <div className="text-[12px] font-semibold text-slate-400">Mã đơn hàng</div>
-        <div className="text-[12px] font-semibold uppercase tracking-[0.08em] text-slate-400">Khách hàng</div>
-        <div className="text-[12px] font-semibold uppercase tracking-[0.08em] text-slate-400">Sản phẩm</div>
-        <SortLabel label="Tổng tiền" field="total" />
-        <div className="text-[12px] font-semibold uppercase tracking-[0.08em] text-slate-400">Thanh toán</div>
-        <div className="text-[12px] font-semibold uppercase tracking-[0.08em] text-slate-400">Trạng thái</div>
-        <SortLabel label="Ngày đặt" field="createdAt" />
+      <div className={`${GRID_CLASS} border-b border-gray-100 bg-gray-50 px-5 py-4 text-gray-400`}>
+        <div className="text-[12px] font-semibold text-gray-400">Mã đơn hàng</div>
+        <div className="text-[12px] font-semibold uppercase tracking-[0.08em] text-gray-400">Khách hàng</div>
+        <div className="text-[12px] font-semibold uppercase tracking-[0.08em] text-gray-400">Sản phẩm</div>
+        <SortLabel label="Tổng tiền" field="total" sortBy={sortBy} sortDir={sortDir} onSort={onSort} />
+        <div className="text-[12px] font-semibold uppercase tracking-[0.08em] text-gray-400">Thanh toán</div>
+        <div className="text-[12px] font-semibold uppercase tracking-[0.08em] text-gray-400">Trạng thái</div>
+        <SortLabel label="Ngày đặt" field="createdAt" sortBy={sortBy} sortDir={sortDir} onSort={onSort} />
         <div />
       </div>
 
       {orders.length === 0 ? (
-        <div className="p-12 text-center text-slate-500">
+        <div className="p-12 text-center text-gray-500">
           <Empty description="Không tìm thấy đơn hàng phù hợp" />
         </div>
       ) : (
         orders.map((order) => {
-          const itemCount = order.orderItems?.length || 0;
-          const firstProduct = order.orderItems?.[0]?.variant?.product?.name || 'N/A';
+          const { name, contact } = getCustomerDisplay(order);
+          const { itemCount, firstProduct } = getProductDisplay(order);
           const discountText = order.discount ? `-${formatCurrency(order.discount)}` : '';
 
           return (
             <div
               key={order.id}
-              className="grid grid-cols-[minmax(150px,1.05fr)_minmax(170px,1fr)_minmax(110px,0.82fr)_minmax(110px,0.7fr)_minmax(110px,0.82fr)_minmax(110px,0.7fr)_minmax(120px,0.72fr)_56px] items-center gap-3 border-b border-slate-200 px-5 py-4 transition-colors last:border-b-0 hover:bg-slate-50/70"
+              className={`${GRID_CLASS} border-b border-gray-100 px-5 py-4 transition-colors last:border-b-0 hover:bg-gray-50`}
             >
               <button
                 onClick={() => onViewDetails(order)}
-                className="text-left text-[13px] font-semibold text-sky-600 hover:underline"
+                className="text-left text-[13px] font-semibold text-blue-600 hover:underline"
               >
                 {order.orderCode || `#${order.id}`}
               </button>
 
               <div className="min-w-0">
-                <div className="text-[13px] font-semibold text-slate-900">
-                  {order.user?.name || order.shippingInfo?.fullName || order.guestEmail || 'Khách vãng lai'}
-                </div>
-                <div className="mt-1 text-[12px] text-slate-500">
-                  {order.user?.email || order.guestEmail || order.guestPhone || 'N/A'}
-                </div>
+                <div className="text-[13px] font-semibold text-gray-900">{name}</div>
+                <div className="mt-1 text-[12px] text-gray-500">{contact}</div>
               </div>
 
               <div className="min-w-0">
-                <div className="text-[13px] font-medium text-slate-700">{itemCount} sản phẩm</div>
-                <div className="mt-1 truncate text-[12px] text-slate-400">{firstProduct}</div>
+                <div className="text-[13px] font-medium text-gray-700">{itemCount} sản phẩm</div>
+                <div className="mt-1 truncate text-[12px] text-gray-400">{firstProduct}</div>
               </div>
 
               <div className="justify-self-start text-left">
-                <div className="text-[13px] font-semibold text-slate-900">{formatCurrency(order.total)}</div>
+                <div className="text-[13px] font-semibold text-gray-900">{formatCurrency(order.total)}</div>
                 {discountText && <div className="mt-1 text-[12px] font-medium text-emerald-600">{discountText}</div>}
               </div>
 
@@ -153,19 +163,19 @@ const OrderTable = ({
                     icon={<SyncOutlined spin={syncingPaymentId === order.payment.id} />}
                     onClick={(e) => handleSyncPayment(e, order.payment.id)}
                     disabled={syncingPaymentId === order.payment.id}
-                    className="h-8 p-0 text-slate-500 hover:text-slate-700"
+                    className="h-8 p-0 text-gray-500 hover:text-gray-700"
                   />
                 )}
               </div>
 
               <div className="min-w-0">{renderStatusBadge(order.status)}</div>
 
-              <div className="justify-self-start text-left text-[13px] text-slate-500">{formatDate(order.createdAt)}</div>
+              <div className="justify-self-start text-left text-[13px] text-gray-500">{formatDate(order.createdAt)}</div>
 
               <div className="flex justify-center">
                 <button
                   onClick={() => onViewDetails(order)}
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-500 transition hover:border-slate-300 hover:text-slate-700"
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 text-gray-500 transition hover:border-gray-300 hover:text-gray-700"
                   aria-label="Xem chi tiết"
                 >
                   <EyeOutlined />

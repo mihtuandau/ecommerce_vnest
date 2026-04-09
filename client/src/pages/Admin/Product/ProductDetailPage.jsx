@@ -1,7 +1,8 @@
 // ProductDetailPage.jsx
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Button } from 'antd';
+import { Pagination as AntdPagination } from 'antd';
 import { EditOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import { ArrowLeft, AlertCircle, Eye, ShoppingCart, Star, Box, BarChart2, MessageSquare, Layers, Info } from 'lucide-react';
 import { useCategories, useBrands } from '../../../hooks/useProducts';
@@ -20,6 +21,8 @@ const ProductDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [variantsPage, setVariantsPage] = useState(1);
+  const variantsPerPage = 10;
 
   const { data: categories = [] } = useCategories();
   const { data: brands = [] } = useBrands();
@@ -57,6 +60,25 @@ const ProductDetailPage = () => {
       setDeleting(false);
     }
   };
+
+  const allVariants = product?.variants || [];
+  const totalVariantPages = Math.max(1, Math.ceil(allVariants.length / variantsPerPage));
+  const paginatedVariants = useMemo(() => {
+    const start = (variantsPage - 1) * variantsPerPage;
+    return allVariants.slice(start, start + variantsPerPage);
+  }, [allVariants, variantsPage]);
+
+  useEffect(() => {
+    if (activeTab !== 'variants') {
+      setVariantsPage(1);
+    }
+  }, [activeTab]);
+
+  useEffect(() => {
+    if (variantsPage > totalVariantPages) {
+      setVariantsPage(totalVariantPages);
+    }
+  }, [variantsPage, totalVariantPages]);
 
   if (loading) return <Loading fullScreen text="Đang tải sản phẩm..." variant="admin" />;
 
@@ -332,7 +354,7 @@ const ProductDetailPage = () => {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-50 bg-white">
-                        {product.variants.map((v, i) => (
+                        {paginatedVariants.map((v, i) => (
                           <tr key={v.id || i} className="hover:bg-gray-50/50 transition-colors group">
                             <td className="px-6 py-4">
                               <span className="font-medium text-gray-900 block min-w-[30px]">{v.size || '—'}</span>
@@ -377,6 +399,23 @@ const ProductDetailPage = () => {
                         ))}
                       </tbody>
                     </table>
+
+                    {allVariants.length > 0 && (
+                      <div className="flex items-center justify-between gap-4 border-t border-gray-100 p-4">
+                        <div className="text-sm text-gray-500">
+                          {allVariants.length === 1
+                            ? 'Hiển thị 1 biến thể'
+                            : `Hiển thị ${(variantsPage - 1) * variantsPerPage + 1}-${Math.min(variantsPage * variantsPerPage, allVariants.length)} / ${allVariants.length} biến thể`}
+                        </div>
+                        <AntdPagination
+                          current={variantsPage}
+                          pageSize={variantsPerPage}
+                          total={allVariants.length}
+                          onChange={(page) => setVariantsPage(page)}
+                          showSizeChanger
+                        />
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <div className="text-center p-12 bg-gray-50 rounded-2xl border border-dashed border-gray-200">

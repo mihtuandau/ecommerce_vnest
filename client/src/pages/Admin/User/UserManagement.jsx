@@ -1,6 +1,6 @@
-// src/pages/AdminUserManagement.jsx
-import React, { useState, useMemo } from "react";
-import { useNavigate } from 'react-router-dom';
+﻿// src/pages/AdminUserManagement.jsx
+import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Search, Plus } from "lucide-react";
 import { Modal as AntModal } from "antd";
 import {
@@ -9,16 +9,14 @@ import {
   useUpdateUser,
   useDeleteUser,
 } from "../../../hooks/useUsers";
-import userService from "../../../services/userService";
 import Modal from "../../../components/common/Modal";
 import Loading from "../../../components/common/Loading";
-import Pagination from "../../../components/common/Pagination";
 import UserTable from "../../../components/admin/UserManagement/UserTable";
 import UserForm from "../../../components/admin/UserManagement/UserForm";
 import Input from "../../../components/common/Input";
 import Select from "../../../components/common/Select";
 import Button from "../../../components/common/Button";
-import { useAuth } from '../../../contexts/AuthContext';
+import { useAuth } from "../../../contexts/AuthContext";
 
 const AdminUserManagement = () => {
   const navigate = useNavigate();
@@ -31,8 +29,9 @@ const AdminUserManagement = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
   const [modalState, setModalState] = useState({ type: null, data: null });
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
-  // Filter users
   const filteredUsers = useMemo(() => {
     return users.filter((user) => {
       const matchSearch =
@@ -43,7 +42,15 @@ const AdminUserManagement = () => {
     });
   }, [users, searchQuery, roleFilter]);
 
-  // Modal handlers
+  const paginatedUsers = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return filteredUsers.slice(start, start + itemsPerPage);
+  }, [filteredUsers, currentPage]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, roleFilter]);
+
   const openModal = (type, data = null) => {
     setModalState({ type, data });
   };
@@ -52,13 +59,12 @@ const AdminUserManagement = () => {
     setModalState({ type: null, data: null });
   };
 
-  // User CRUD handlers
   const handleCreateUser = async (formData) => {
     try {
       await createMutation.mutateAsync(formData);
       closeModal();
     } catch (err) {
-      // Error already handled by mutation
+      // Error handled by mutation
     }
   };
 
@@ -66,11 +72,11 @@ const AdminUserManagement = () => {
     try {
       const updateData = {};
 
-      if (typeof formData.name === 'string' && formData.name.trim() !== '') {
+      if (typeof formData.name === "string" && formData.name.trim() !== "") {
         updateData.name = formData.name.trim();
       }
 
-      if (typeof formData.password === 'string' && formData.password.trim() !== '') {
+      if (typeof formData.password === "string" && formData.password.trim() !== "") {
         updateData.password = formData.password.trim();
       }
 
@@ -80,52 +86,36 @@ const AdminUserManagement = () => {
       });
       closeModal();
     } catch (err) {
-      // Error already handled by mutation
+      // Error handled by mutation
     }
   };
 
   const handleDeleteUser = (user) => {
     AntModal.confirm({
-      title: `Vô hiệu hóa / Xóa mềm tài khoản?`,
+      title: "Vô hiệu hóa / Xóa mềm tài khoản?",
       content: `Nếu tài khoản "${user.email}" đã có đơn hàng thì hệ thống sẽ vô hiệu hóa thay vì xóa.`,
       okText: "Xác nhận",
       cancelText: "Hủy",
       onOk: async () => {
         try {
           await deleteMutation.mutateAsync(user.id);
-          // Optional: Show success notification
         } catch (err) {
-          // Error is handled by the mutation, but you could show a notification here too
+          // Error handled by mutation
         }
       },
     });
   };
 
-  // Client-side pagination
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
-  const paginatedUsers = useMemo(() => {
-    const start = (currentPage - 1) * itemsPerPage;
-    return filteredUsers.slice(start, start + itemsPerPage);
-  }, [filteredUsers, currentPage]);
-  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
-
   return (
-    <div className="p-6">
+    <div className="min-h-screen bg-gray-50/50 p-6">
       <div className="max-w-[1600px] mx-auto w-full">
-        {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Quản lý người dùng
-          </h1>
-          <p className="text-gray-600">
-            Quản lý tài khoản và thông tin người dùng trong hệ thống
-          </p>
+          <h1 className="mb-1 text-2xl font-bold text-gray-900">Quản lý người dùng</h1>
+          <p className="text-sm text-gray-500">Quản lý tài khoản và thông tin người dùng trong hệ thống</p>
         </div>
 
-        {/* Filters & Actions */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <div className="flex flex-col md:flex-row gap-4">
+        <div className="mb-6 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+          <div className="flex flex-col gap-4 md:flex-row">
             <div className="flex-1">
               <Input
                 placeholder="Tìm kiếm theo tên hoặc email..."
@@ -151,18 +141,13 @@ const AdminUserManagement = () => {
           </div>
         </div>
 
-        {/* Table */}
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+        <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
           {isLoading ? (
             <Loading text="Đang tải dữ liệu..." variant="admin" />
           ) : error ? (
             <div className="p-12 text-center">
-              <p className="text-red-600">Lỗi: {error}</p>
-              <Button
-                onClick={() => refetch()}
-                variant="secondary"
-                className="mt-4"
-              >
+              <p className="text-red-600">Lỗi: {String(error)}</p>
+              <Button onClick={() => refetch()} variant="secondary" className="mt-4">
                 Thử lại
               </Button>
             </div>
@@ -170,42 +155,24 @@ const AdminUserManagement = () => {
             <UserTable
               users={paginatedUsers}
               currentUserId={currentUser?.id}
+              currentPage={currentPage}
+              itemsPerPage={itemsPerPage}
+              total={filteredUsers.length}
+              onPageChange={(page) => setCurrentPage(page)}
               onEdit={(user) => openModal("edit", user)}
               onDelete={handleDeleteUser}
               onViewAddresses={(user) => navigate(`/admin-users/${user.id}`)}
             />
           )}
-
-          {/* Pagination */}
-          {!isLoading && !error && filteredUsers.length > 0 && (
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-            />
-          )}
         </div>
       </div>
 
-      {/* Modals */}
-      <Modal
-        isOpen={modalState.type === "create"}
-        onClose={closeModal}
-        title="Tạo người dùng mới"
-      >
+      <Modal isOpen={modalState.type === "create"} onClose={closeModal} title="Tạo người dùng mới">
         <UserForm onSubmit={handleCreateUser} onCancel={closeModal} />
       </Modal>
 
-      <Modal
-        isOpen={modalState.type === "edit"}
-        onClose={closeModal}
-        title="Chỉnh sửa người dùng"
-      >
-        <UserForm
-          user={modalState.data}
-          onSubmit={handleUpdateUser}
-          onCancel={closeModal}
-        />
+      <Modal isOpen={modalState.type === "edit"} onClose={closeModal} title="Chỉnh sửa người dùng">
+        <UserForm user={modalState.data} onSubmit={handleUpdateUser} onCancel={closeModal} />
       </Modal>
     </div>
   );

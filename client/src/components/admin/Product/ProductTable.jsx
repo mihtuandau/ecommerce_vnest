@@ -44,6 +44,7 @@ const ProductTable = ({
           showTotal: (t) => `Hiển thị ${t} sản phẩm`,
           onChange: onPageChange,
           size: 'small',
+          position: ['bottomRight'],
         }}
         locale={{
           emptyText: <Empty description="Không có sản phẩm nào" />,

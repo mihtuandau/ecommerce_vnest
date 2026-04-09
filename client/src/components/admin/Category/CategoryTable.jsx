@@ -13,6 +13,8 @@ const CategoryTable = ({
   onDelete,
   currentPage = 1,
   itemsPerPage = 10,
+  total = 0,
+  onPageChange,
 }) => {
   const columns = [
     {
@@ -119,12 +121,16 @@ const CategoryTable = ({
       dataSource={categories}
       rowKey="id"
       loading={loading}
+      size="small"
       pagination={{
         current: currentPage,
+        total: total || categories.length,
         pageSize: itemsPerPage,
         showSizeChanger: true,
-        showTotal: (total) => `Tổng ${total} danh mục`,
-        pageSizeOptions: ['10', '20', '50']
+        showTotal: (count) => `Hiển thị ${count} danh mục`,
+        onChange: onPageChange,
+        size: 'small',
+        position: ['bottomRight'],
       }}
       locale={{
         emptyText: <Empty description="Không tìm thấy danh mục nào" />
@@ -135,6 +141,7 @@ const CategoryTable = ({
           onSort(sorter.field);
         }
       }}
+      className="[&_.ant-table-thead>tr>th]:bg-gray-50 [&_.ant-table-thead>tr>th]:font-medium [&_.ant-table-thead>tr>th]:text-gray-700 [&_.ant-table-thead>tr>th]:border-b [&_.ant-table-thead>tr>th]:border-gray-200 [&_.ant-table-thead>tr>th]:px-2 [&_.ant-table-thead>tr>th]:py-2 [&_.ant-table-tbody>tr>td]:px-2 [&_.ant-table-tbody>tr>td]:py-2"
     />
   );
 };

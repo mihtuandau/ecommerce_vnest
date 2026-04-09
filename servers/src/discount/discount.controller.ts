@@ -53,6 +53,8 @@ export class DiscountController {
   }
 
   @Get()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
   findAll(@Query() query: QueryDiscountDto) {
     return this.discountService.findAll(query);
   }
@@ -71,6 +73,8 @@ export class DiscountController {
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
   findOne(@Param('id') id: string) {
     return this.discountService.findOne(+id);
   }

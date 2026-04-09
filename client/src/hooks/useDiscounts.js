@@ -13,7 +13,21 @@ export const useDiscounts = (params = {}, filters = {}) => {
 
   const filtered = useMemo(() => {
     let result = [...discounts];
-    const { search = '', status = 'all', sortKey = '', sortDir = 'desc' } = filters;
+    const {
+      search = '',
+      status = 'all',
+      sortKey = '',
+      sortDir = 'desc',
+      kind = 'all',
+    } = filters;
+
+    if (kind === 'flash') {
+      result = result.filter((d) => Boolean(d.isFlashSale));
+    }
+
+    if (kind === 'regular') {
+      result = result.filter((d) => !d.isFlashSale);
+    }
 
     if (search) {
       const searchLower = search.toLowerCase();

@@ -40,9 +40,36 @@ export class DiscountRepository {
   }
 
   async update(id: number, data: Prisma.DiscountUpdateInput): Promise<Discount> {
+    const normalizedData: any = { ...data };
+
+    // Defensive normalization: nếu caller truyền mảng thô thì convert về nested update input.
+    if (Array.isArray(normalizedData.applicableToProducts)) {
+      const productIds = normalizedData.applicableToProducts.filter(
+        (id: unknown) => typeof id === 'number' && Number.isFinite(id),
+      );
+      normalizedData.applicableToProducts = productIds.length > 0
+        ? {
+            deleteMany: {},
+            create: productIds.map((productId: number) => ({ productId })),
+          }
+        : { deleteMany: {} };
+    }
+
+    if (Array.isArray(normalizedData.applicableToCategories)) {
+      const categoryIds = normalizedData.applicableToCategories.filter(
+        (id: unknown) => typeof id === 'number' && Number.isFinite(id),
+      );
+      normalizedData.applicableToCategories = categoryIds.length > 0
+        ? {
+            deleteMany: {},
+            create: categoryIds.map((categoryId: number) => ({ categoryId })),
+          }
+        : { deleteMany: {} };
+    }
+
     return this.prisma.discount.update({
       where: { id },
-      data,
+      data: normalizedData,
     });
   }
 
@@ -55,6 +82,15 @@ export class DiscountRepository {
   async countOrdersUsingDiscount(discountId: number): Promise<number> {
     return this.prisma.order.count({
       where: { discountId },
+    });
+  }
+
+  async countEffectiveOrdersUsingDiscount(discountId: number): Promise<number> {
+    return this.prisma.order.count({
+      where: {
+        discountId,
+        status: { not: 'CANCELLED' as any },
+      },
     });
   }
 
@@ -139,9 +175,13 @@ export class DiscountRepository {
     // Ưu tiên 3: bán chạy nhất toàn site
     const productWhere: any = { isActive: true };
     if (flashSale.applicableToProducts.length > 0) {
-      productWhere.id = { in: flashSale.applicableToProducts };
+      productWhere.id = {
+        in: flashSale.applicableToProducts.map((dp) => dp.productId),
+      };
     } else if (flashSale.applicableToCategories.length > 0) {
-      productWhere.categoryId = { in: flashSale.applicableToCategories };
+      productWhere.categoryId = {
+        in: flashSale.applicableToCategories.map((dc) => dc.categoryId),
+      };
     }
 
     const products = await this.prisma.product.findMany({

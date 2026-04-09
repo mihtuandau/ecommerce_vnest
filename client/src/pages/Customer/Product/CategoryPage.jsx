@@ -6,7 +6,7 @@ import PageTitle from '../../../components/common/PageTitle';
 import ProductGrid from '../../../components/products/ProductGrid';
 import ProductFilter from '../../../components/products/ProductFilter';
 import ActiveFilters from '../../../components/products/ActiveFilters';
-import Pagination from '../../../components/common/Pagination';
+import { Pagination as AntdPagination } from 'antd';
 import { productService } from '../../../services/productService';
 import categoryService from '../../../services/categoryService';
 import { notify } from '../../../utils/notification';
@@ -223,10 +223,14 @@ const CategoryPage = () => {
 
             {!loading && products.length > 0 && (
               <div className="mt-8 flex justify-center">
-                <Pagination
-                  currentPage={pagination.page}
-                  totalPages={pagination.totalPages}
-                  onPageChange={handlePageChange}
+                <AntdPagination
+                  current={pagination.page}
+                  pageSize={pagination.limit}
+                  total={pagination.total}
+                  onChange={(page) => handlePageChange(page)}
+                  showSizeChanger={false}
+                  showTotal={(total, range) => `Hiển thị ${range[0]}-${range[1]} / ${total} sản phẩm`}
+                  align="end"
                 />
               </div>
             )}

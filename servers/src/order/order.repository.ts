@@ -258,7 +258,16 @@ export class OrderRepository {
    */
   async findDiscountByCode(code: string) {
     return this.prisma.discount.findUnique({
-      where: { code },
+      where: { code: code.toUpperCase() },
+    });
+  }
+
+  async countOrdersUsingDiscount(discountId: number): Promise<number> {
+    return this.prisma.order.count({
+      where: {
+        discountId,
+        status: { not: 'CANCELLED' as any },
+      },
     });
   }
 
