@@ -91,8 +91,12 @@ export class OrderService {
     return this.orderManagement.cancelGuestOrder(orderCode, contact);
   }
 
-  async applyDiscount(orderId: number, dto: ApplyDiscountDto): Promise<any> {
-    return this.orderManagement.applyDiscount(orderId, dto);
+  async applyDiscount(
+    orderId: number,
+    dto: ApplyDiscountDto,
+    requester: { userId: number; role?: string },
+  ): Promise<any> {
+    return this.orderManagement.applyDiscount(orderId, dto, requester);
   }
 
   async lookupGuestOrder(orderCode: string, contact: string): Promise<any> {

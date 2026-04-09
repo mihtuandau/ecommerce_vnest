@@ -198,8 +198,10 @@ export class OrderCreation {
       throw new BadRequestException('Mã Flash Sale đã được áp dụng tự động, không cần nhập thêm');
     }
 
+    const usageCount = await this.repository.countOrdersUsingDiscount(discount.id);
+
     // Validate đầy đủ: isActive, startDate, endDate, minOrderAmount
-    OrderHelper.validateDiscount(discount, subtotal);
+    OrderHelper.validateDiscount(discount, subtotal, usageCount);
     this.logger.log('✅ Discount valid:', {
       percentage: discount.percentage,
       fixedAmount: discount.fixedAmount,

@@ -120,17 +120,52 @@ export class OrderManagement {
     return cancellableStatuses.includes(status);
   }
 
-  async applyDiscount(orderId: number, dto: ApplyDiscountDto): Promise<any> {
+  async applyDiscount(
+    orderId: number,
+    dto: ApplyDiscountDto,
+    requester: { userId: number; role?: string },
+  ): Promise<any> {
     const order = await this.repository.findById(orderId);
     if (!order) throw new NotFoundException('Order not found');
+
+    const isAdmin = requester.role === 'ADMIN';
+    if (!isAdmin && order.userId !== requester.userId) {
+      throw new BadRequestException('Not your order');
+    }
+
+    if (!['PENDING', 'AWAITING_PAYMENT'].includes(order.status)) {
+      throw new BadRequestException('Chỉ có thể áp mã cho đơn chưa xác nhận thanh toán');
+    }
     
     const discount = await this.repository.findDiscountByCode(dto.code);
     if (!discount) throw new BadRequestException('Invalid discount');
-    
-    const newTotal = order.total * (1 - (discount.percentage || 0) / 100) - (discount.fixedAmount || 0);
+
+    if (discount.isFlashSale) {
+      throw new BadRequestException('Mã Flash Sale đã được áp dụng tự động, không cần nhập thêm');
+    }
+
+    const subtotal = order.orderItems.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0,
+    );
+
+    const usageCount = await this.repository.countOrdersUsingDiscount(discount.id);
+    OrderHelper.validateDiscount(discount, subtotal, usageCount);
+
+    const totals = OrderHelper.calculateOrderTotal(
+      order.orderItems.map((item) => ({ quantity: item.quantity, price: item.price })),
+      order.total - order.subtotal,
+      {
+        percentage: discount.percentage || undefined,
+        fixedAmount: discount.fixedAmount || undefined,
+        maxDiscountAmount: discount.maxDiscountAmount || undefined,
+      },
+    );
     
     const updatedOrder = await this.repository.update(orderId, {
-      total: newTotal,
+      subtotal: totals.totalItems,
+      discountAmount: totals.discountAmount,
+      total: totals.discountedTotal,
       discount: { connect: { id: discount.id } },
     });
     

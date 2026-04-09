@@ -2,8 +2,7 @@ import { Search, Filter } from 'lucide-react';
 
 const DiscountFilters = ({ search, setSearch, statusFilter, setStatusFilter }) => {
   return (
-    <div className="bg-white rounded-lg shadow p-4 mb-6">
-      <div className="flex flex-col md:flex-row gap-4">
+      <div className="flex flex-col gap-4 md:flex-row">
         {/* Search */}
         <div className="flex-1">
           <div className="relative">
@@ -13,7 +12,7 @@ const DiscountFilters = ({ search, setSearch, statusFilter, setStatusFilter }) =
               placeholder="Tìm kiếm theo mã hoặc mô tả..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full rounded-xl border border-gray-200 py-2.5 pl-10 pr-4 text-sm focus:border-gray-900 focus:outline-none"
             />
           </div>
         </div>
@@ -25,7 +24,7 @@ const DiscountFilters = ({ search, setSearch, statusFilter, setStatusFilter }) =
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
+              className="w-full appearance-none rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm focus:border-gray-900 focus:outline-none"
             >
               <option value="all">Tất cả trạng thái</option>
               <option value="active">Đang hoạt động</option>
@@ -35,7 +34,6 @@ const DiscountFilters = ({ search, setSearch, statusFilter, setStatusFilter }) =
           </div>
         </div>
       </div>
-    </div>
   );
 };
 

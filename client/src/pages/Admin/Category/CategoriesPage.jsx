@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo } from 'react';
 import categoryService from '../../../services/categoryService';
 import { notify } from '../../../utils/notification';
 import Button from '../../../components/common/Button';
-import Pagination from '../../../components/common/Pagination';
 import CategoryStatsCards from '../../../components/admin/Category/CategoryStatsCards';
 import CategoryFilters from '../../../components/admin/Category/CategoryFilters';
 import CategoryFormModal from '../../../components/admin/Category/CategoryFormModal';
@@ -125,12 +124,12 @@ const AdminCategoriesPage = () => {
   }), [categories, filteredCategories]);
 
   return (
-    <div className="p-6">
+    <div className="min-h-screen bg-gray-50/50 p-6">
       <div className="mx-auto w-full max-w-[1600px] space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Quản lý Danh mục</h1>
-            <p className="text-gray-600 mt-1">Quản lý các danh mục sản phẩm trong hệ thống</p>
+            <h1 className="text-2xl font-bold text-gray-900">Quản lý Danh mục</h1>
+            <p className="mt-1 text-sm text-gray-500">Quản lý các danh mục sản phẩm trong hệ thống</p>
           </div>
           <Button onClick={() => setShowForm(true)} icon={Plus}>
             Thêm danh mục
@@ -144,7 +143,7 @@ const AdminCategoriesPage = () => {
           onAddClick={() => setShowForm(true)}
         />
 
-        <div>
+        <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
           <CategoryTable
             categories={paginatedCategories}
             loading={loading}
@@ -155,17 +154,9 @@ const AdminCategoriesPage = () => {
             onDelete={handleDelete}
             currentPage={currentPage}
             itemsPerPage={itemsPerPage}
+            total={filteredCategories.length}
+            onPageChange={(page) => setCurrentPage(page)}
           />
-
-          {!loading && filteredCategories.length > 0 && (
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-              itemsCount={paginatedCategories.length}
-              totalItems={filteredCategories.length}
-            />
-          )}
         </div>
 
         <CategoryFormModal

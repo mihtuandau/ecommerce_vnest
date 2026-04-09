@@ -59,17 +59,17 @@ const ProductFormWizard = ({
   };
 
   return (
-      <Form
-        form={form}
+    <Form
+      form={form}
       layout="vertical"
       onFinish={onSubmit}
       initialValues={{ isActive: true }}
-      className="flex overflow-hidden min-h-[700px]"
+      className="flex min-h-[620px] overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm"
     >
       {/* Left Sidebar Steps */}
-      <div className="w-[280px] bg-gray-50 border-r border-gray-200 p-6 flex flex-col justify-between">
+      <div className="hidden w-[240px] shrink-0 border-r border-gray-200 bg-gray-50 p-4 lg:flex lg:flex-col lg:justify-between">
         <div>
-          <div className="text-xs font-bold text-gray-400 mb-4 tracking-wider uppercase">CÁC BƯỚC</div>
+          <div className="mb-3 text-[11px] font-bold uppercase tracking-wider text-gray-400">CÁC BƯỚC</div>
           <div className="space-y-2">
             {steps.map((step, idx) => {
               const isActive = currentStep === idx;
@@ -79,20 +79,20 @@ const ProductFormWizard = ({
                   key={step.id}
                   type="button"
                   onClick={() => setCurrentStep(idx)}
-                  className={`w-full flex items-center gap-3 p-3 text-left rounded-xl transition-all ${
+                  className={`relative flex w-full items-center gap-2.5 rounded-lg border p-2.5 text-left transition-all ${
                     isActive 
-                      ? 'bg-blue-50/80 border border-blue-100 shadow-sm relative' 
-                      : 'hover:bg-gray-100 border border-transparent'
+                      ? 'border-blue-100 bg-blue-50/80 shadow-sm' 
+                      : 'border-transparent hover:bg-gray-100'
                   }`}
                 >
-                  {isActive && <div className="absolute right-2 top-0 bottom-0 w-1 bg-blue-600 rounded-full my-3"></div>}
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
+                  {isActive && <div className="absolute bottom-1.5 right-1.5 top-1.5 w-1 rounded-full bg-blue-600"></div>}
+                  <div className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full ${
                     isActive ? 'bg-blue-100 text-blue-600' : isPast ? 'bg-emerald-50 text-emerald-500' : 'bg-gray-100 text-gray-500'
                   }`}>
-                    <step.icon size={18} strokeWidth={isActive ? 2.5 : 2} />
+                    <step.icon size={15} strokeWidth={isActive ? 2.5 : 2} />
                   </div>
                   <div>
-                    <div className={`font-semibold text-sm ${isActive ? 'text-blue-900' : 'text-gray-700'}`}>
+                    <div className={`text-sm font-semibold ${isActive ? 'text-blue-900' : 'text-gray-700'}`}>
                       {step.title}
                     </div>
                     <div className="text-[11px] text-gray-500">{step.desc}</div>
@@ -104,19 +104,19 @@ const ProductFormWizard = ({
         </div>
 
         {/* Summary Card */}
-        <div className="mt-8">
-          <div className="text-xs font-bold text-gray-400 mb-3 tracking-wider uppercase">TÓM TẮT</div>
-          <div className="bg-white rounded-xl border border-gray-100 p-4 space-y-3 shadow-sm">
-            <div className="flex justify-between items-center text-sm">
-              <span className="flex items-center gap-2 text-gray-600"><ImageIcon size={14}/> Hình ảnh</span>
+        <div className="mt-6">
+          <div className="mb-2.5 text-[11px] font-bold uppercase tracking-wider text-gray-400">TÓM TẮT</div>
+          <div className="space-y-2.5 rounded-lg border border-gray-100 bg-white p-3 shadow-sm">
+            <div className="flex items-center justify-between text-xs">
+              <span className="flex items-center gap-2 text-gray-600"><ImageIcon size={13}/> Hình ảnh</span>
               <span className="font-semibold text-gray-900">{productImages.length} ảnh</span>
             </div>
-            <div className="flex justify-between items-center text-sm">
-              <span className="flex items-center gap-2 text-gray-600"><Layers size={14}/> Biến thể</span>
+            <div className="flex items-center justify-between text-xs">
+              <span className="flex items-center gap-2 text-gray-600"><Layers size={13}/> Biến thể</span>
               <span className="font-semibold text-gray-900">{variants.length}</span>
             </div>
-            <div className="flex justify-between items-center text-sm">
-              <span className="flex items-center gap-2 text-gray-600"><Info size={14}/> Tồn kho</span>
+            <div className="flex items-center justify-between text-xs">
+              <span className="flex items-center gap-2 text-gray-600"><Info size={13}/> Tồn kho</span>
               <span className="font-semibold text-gray-900">{totalStock}</span>
             </div>
           </div>
@@ -125,26 +125,48 @@ const ProductFormWizard = ({
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col bg-white">
+        {/* Mobile Step Pills */}
+        <div className="border-b border-gray-100 px-4 py-3 lg:hidden">
+          <div className="grid grid-cols-2 gap-2">
+            {steps.map((step, idx) => {
+              const isActive = currentStep === idx;
+              return (
+                <button
+                  key={step.id}
+                  type="button"
+                  onClick={() => setCurrentStep(idx)}
+                  className={`flex items-center gap-2 rounded-lg border px-2.5 py-2 text-left ${
+                    isActive ? 'border-blue-200 bg-blue-50 text-blue-700' : 'border-gray-200 bg-white text-gray-600'
+                  }`}
+                >
+                  <step.icon size={14} />
+                  <span className="text-xs font-semibold">{step.title}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
         {/* Step Header */}
-        <div className="px-10 py-6 border-b border-gray-100 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0">
+        <div className="flex items-center gap-3 border-b border-gray-100 px-4 py-4 sm:px-6 sm:py-5 lg:px-8">
+          <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-600 sm:h-10 sm:w-10">
             {(() => {
               const Icon = steps[currentStep].icon;
-              return <Icon size={20} strokeWidth={2.5} />;
+              return <Icon size={18} strokeWidth={2.5} />;
             })()}
           </div>
           <div>
-            <h2 className="text-xl font-bold text-gray-900">{steps[currentStep].title}</h2>
-            <p className="text-sm text-gray-500">{steps[currentStep].desc}</p>
+            <h2 className="text-lg font-bold text-gray-900 sm:text-xl">{steps[currentStep].title}</h2>
+            <p className="text-xs text-gray-500 sm:text-sm">{steps[currentStep].desc}</p>
           </div>
         </div>
 
         {/* Step Content */}
-        <div className="flex-1 overflow-y-auto px-10 py-8">
+        <div className="flex-1 overflow-y-auto px-4 py-4 sm:px-6 sm:py-5 lg:px-8 lg:py-6">
           
           {/* STEP 0: THÔNG TIN CƠ BẢN */}
           <div className={currentStep === 0 ? 'block' : 'hidden'}>
-            <div className="rounded-2xl border border-gray-200 bg-white p-6 space-y-6">
+            <div className="space-y-5 rounded-xl border border-gray-200 bg-white p-4 sm:p-5 lg:p-6">
                 <Form.Item
                   name="name"
                   label={<span className="text-sm font-semibold text-gray-700">Tên sản phẩm <span className="text-red-500">*</span></span>}
@@ -152,12 +174,12 @@ const ProductFormWizard = ({
                 >
                   <Input 
                     placeholder="VD: Nike Air Max 270" 
-                    size="large" 
+                    size="middle" 
                     onChange={(e) => {
                       form.setFieldValue('name', e.target.value);
                       if (onNameChange) onNameChange(e);
                     }} 
-                    className="rounded-lg h-12" 
+                    className="h-10 rounded-lg" 
                   />
                 </Form.Item>
 
@@ -166,7 +188,7 @@ const ProductFormWizard = ({
                   label={<span className="text-sm font-semibold text-gray-700">Đường dẫn (Slug)</span>}
                   extra={<span className="text-[11px] text-gray-500 block mt-1">URL sẽ là: yourshop.com/products/duong-dan-san-pham</span>}
                 >
-                  <Input addonBefore="/products/" placeholder="duong-dan-san-pham" size="large" className="rounded-lg" />
+                  <Input addonBefore="/products/" placeholder="duong-dan-san-pham" size="middle" className="rounded-lg" />
                 </Form.Item>
 
                 <Form.Item 
@@ -180,7 +202,7 @@ const ProductFormWizard = ({
                   />
                 </Form.Item>
 
-              <div className="rounded-2xl border border-gray-200 bg-gray-50 p-6">
+              <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 sm:p-5">
                 <div className="flex items-center gap-2 mb-5">
                   <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center font-bold">$</div>
                   <div>
@@ -200,8 +222,8 @@ const ProductFormWizard = ({
                       min={0}
                       placeholder="0"
                       style={{ width: '100%' }}
-                      size="large"
-                      className="rounded-lg h-12"
+                      size="middle"
+                      className="h-10 rounded-lg"
                       formatter={(v) => `${v}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                       parser={(v) => (v || '').replace(/\$\s?|(,*)/g, '')}
                       addonAfter="VNĐ"
@@ -214,7 +236,7 @@ const ProductFormWizard = ({
                     rules={[{ required: true, message: 'Vui lòng chọn danh mục' }]}
                     className="mb-0"
                   >
-                    <Select placeholder="-- Chọn danh mục --" size="large" className="rounded-lg h-12" showSearch optionFilterProp="children">
+                    <Select placeholder="-- Chọn danh mục --" size="middle" className="rounded-lg h-10" showSearch optionFilterProp="children">
                       {categories.map((c) => (
                         <Option key={c.id} value={c.id}>{c.name}</Option>
                       ))}
@@ -227,7 +249,7 @@ const ProductFormWizard = ({
                   label={<span className="text-sm font-semibold text-gray-700">Thương hiệu</span>}
                   className="mt-6 mb-0"
                 >
-                  <Select placeholder="-- Không có thương hiệu --" size="large" className="rounded-lg h-12" allowClear showSearch optionFilterProp="children">
+                  <Select placeholder="-- Không có thương hiệu --" size="middle" className="rounded-lg h-10" allowClear showSearch optionFilterProp="children">
                     {brands.map((b) => (
                       <Option key={b.id} value={b.id}>{b.name}</Option>
                     ))}
@@ -239,7 +261,7 @@ const ProductFormWizard = ({
 
           {/* STEP 1: HÌNH ẢNH */}
           <div className={currentStep === 1 ? 'block' : 'hidden'}>
-            <div className="rounded-2xl border border-gray-200 bg-white p-6">
+            <div className="rounded-xl border border-gray-200 bg-white p-4 sm:p-5 lg:p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-bold text-gray-900 border-l-4 border-pink-500 pl-3">Tải lên hình ảnh</h3>
                 <div className="bg-pink-50 text-pink-600 px-3 py-1 rounded-full text-xs font-semibold uppercase">
@@ -247,7 +269,7 @@ const ProductFormWizard = ({
                 </div>
               </div>
               
-              <div className="border-2 border-dashed border-gray-300 rounded-xl p-10 text-center hover:border-blue-400 hover:bg-blue-50 transition-all cursor-pointer">
+              <div className="cursor-pointer rounded-xl border-2 border-dashed border-gray-300 p-6 text-center transition-all hover:border-blue-400 hover:bg-blue-50 sm:p-8">
                 <input
                   type="file"
                   id="product-image-upload"
@@ -261,10 +283,10 @@ const ProductFormWizard = ({
                   htmlFor="product-image-upload"
                   className={`cursor-pointer block ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
-                  <div className="w-16 h-16 bg-white border border-gray-100 shadow-sm rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <ImageIcon className="text-gray-400" size={32} />
+                  <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl border border-gray-100 bg-white shadow-sm">
+                    <ImageIcon className="text-gray-400" size={28} />
                   </div>
-                  <p className="text-base text-gray-900 font-bold mb-1">Click hoặc kéo thả để tải ảnh sản phẩm</p>
+                  <p className="mb-1 text-sm font-bold text-gray-900 sm:text-base">Click hoặc kéo thả để tải ảnh sản phẩm</p>
                   <p className="text-xs text-gray-500">PNG, JPG, WEBP • Tối đa 5MB mỗi ảnh</p>
                 </label>
               </div>
@@ -306,7 +328,7 @@ const ProductFormWizard = ({
 
           {/* STEP 2: BIẾN THỂ */}
           <div className={currentStep === 2 ? 'block' : 'hidden'}>
-            <div className="rounded-2xl border border-gray-200 bg-white p-6 min-h-[400px]">
+            <div className="min-h-[360px] rounded-xl border border-gray-200 bg-white p-4 sm:p-5 lg:p-6">
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h3 className="text-base font-bold text-gray-900">Quản lý biến thể</h3>
@@ -320,7 +342,7 @@ const ProductFormWizard = ({
               </div>
 
               {variants.length === 0 ? (
-                <div className="border border-dashed border-gray-300 rounded-xl p-12 text-center bg-gray-50">
+                <div className="rounded-xl border border-dashed border-gray-300 bg-gray-50 p-8 text-center sm:p-10">
                   <div className="w-16 h-16 bg-white border border-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm">
                     <Layers className="text-gray-400" size={32} />
                   </div>
@@ -334,13 +356,13 @@ const ProductFormWizard = ({
                 <div className="space-y-4">
                   {/* Inline list of variants for simple wizard style or you can use the same map code from Unified form here */}
                   {variants.map((v, idx) => (
-                    <div key={v.id || idx} className="border border-gray-200 rounded-xl p-5 bg-white hover:border-blue-300 transition-colors">
-                      <div className="flex items-center justify-between mb-4 border-b border-gray-100 pb-3">
+                    <div key={v.id || idx} className="rounded-xl border border-gray-200 bg-white p-4 transition-colors hover:border-blue-300 sm:p-5">
+                      <div className="mb-4 flex flex-col gap-2 border-b border-gray-100 pb-3 sm:flex-row sm:items-center sm:justify-between">
                         <div className="font-bold text-gray-900 flex items-center gap-2">
                           <div className="w-6 h-6 rounded bg-blue-100 text-blue-600 flex items-center justify-center text-xs">#{idx + 1}</div>
                           Biến thể {idx + 1}
                         </div>
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2 sm:gap-4">
                           <div className="flex items-center gap-2 text-sm text-gray-600">
                             Trạng thái: 
                             <Switch 
@@ -360,7 +382,7 @@ const ProductFormWizard = ({
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
+                      <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
                         <div>
                           <label className="block text-xs font-medium text-gray-700 mb-1.5">Kích thước</label>
                           <Input value={v.size} onChange={(e) => updateVariant(v.id, { size: e.target.value })} placeholder="VD: S, M, L..." className="rounded-lg" />
@@ -451,7 +473,7 @@ const ProductFormWizard = ({
 
           {/* STEP 3: SEO */}
           <div className={currentStep === 3 ? 'block' : 'hidden'}>
-            <div className="rounded-2xl border border-gray-200 bg-white overflow-hidden">
+            <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
               <div className="p-6 border-b border-gray-100 flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-blue-50 flex flex-shrink-0 items-center justify-center text-blue-500">
                   <Search size={20} />
@@ -511,21 +533,21 @@ const ProductFormWizard = ({
         </div>
 
         {/* Footer Navigation */}
-        <div className="border-t border-gray-100 px-10 py-5 bg-white flex justify-between items-center z-10 sticky bottom-0">
+        <div className="sticky bottom-0 z-10 flex items-center justify-between border-t border-gray-100 bg-white px-4 py-3 sm:px-6 lg:px-8">
           <div>
             {currentStep > 0 && (
-              <Button size="large" onClick={handlePrev} icon={<ChevronLeft size={16}/>} className="rounded-xl flex items-center font-medium bg-gray-50 border-0 hover:bg-gray-100">
+              <Button size="middle" onClick={handlePrev} icon={<ChevronLeft size={16}/>} className="flex items-center rounded-lg border-0 bg-gray-50 font-medium hover:bg-gray-100">
                 Quay lại
               </Button>
             )}
           </div>
           <div className="flex gap-3">
             {currentStep < steps.length - 1 ? (
-              <Button type="primary" size="large" onClick={handleNext} className="rounded-xl flex items-center font-bold px-6 bg-blue-600 shadow-sm hover:shadow-md">
+              <Button type="primary" size="middle" onClick={handleNext} className="flex items-center rounded-lg bg-blue-600 px-4 font-bold shadow-sm hover:shadow-md sm:px-6">
                 Tiếp theo: {steps[currentStep + 1].title} <ChevronRight size={16} className="ml-1" />
               </Button>
             ) : (
-              <Button type="primary" size="large" htmlType="submit" loading={loading} icon={<Save size={18}/>} className="rounded-xl flex items-center font-bold px-8 bg-emerald-600 hover:bg-emerald-700 shadow-sm hover:shadow-md border-0">
+              <Button type="primary" size="middle" htmlType="submit" loading={loading} icon={<Save size={18}/>} className="flex items-center rounded-lg border-0 bg-emerald-600 px-5 font-bold shadow-sm hover:bg-emerald-700 hover:shadow-md sm:px-8">
                 {submitLabel}
               </Button>
             )}

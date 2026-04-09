@@ -2,7 +2,7 @@ import React from 'react';
 import { Table, Avatar, Tag, Button, Space, Tooltip, Empty } from 'antd';
 import { EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
 
-const UserTable = ({ users, currentUserId, onEdit, onDelete, onViewAddresses }) => {
+const UserTable = ({ users, currentUserId, currentPage = 1, itemsPerPage = 10, total = 0, onPageChange, onEdit, onDelete, onViewAddresses }) => {
   const getStatusMeta = (record) => {
     if (record.deletedAt) {
       return { color: 'default', label: 'Đã xóa mềm' };
@@ -21,7 +21,7 @@ const UserTable = ({ users, currentUserId, onEdit, onDelete, onViewAddresses }) 
       key: 'index',
       width: 70,
       align: 'center',
-      render: (_, __, index) => index + 1,
+      render: (_, __, index) => (currentPage - 1) * itemsPerPage + index + 1,
     },
     {
       title: 'Người dùng',
@@ -66,15 +66,10 @@ const UserTable = ({ users, currentUserId, onEdit, onDelete, onViewAddresses }) 
       },
     },
     {
-      title: (
-        <Tooltip title="Xem chi tiết">
-          <EyeOutlined />
-        </Tooltip>
-      ),
+      title: 'Chi tiết',
       key: 'addresses',
       width: 120,
       align: 'center',
-      sorter: (a, b) => (a.addresses?.length || 0) - (b.addresses?.length || 0),
       render: (_, record) => (
         <Tooltip title={`Xem chi tiết (${record.addresses?.length || 0} địa chỉ)`}>
           <Button
@@ -120,15 +115,21 @@ const UserTable = ({ users, currentUserId, onEdit, onDelete, onViewAddresses }) 
       dataSource={users}
       rowKey="id"
       pagination={{
-        pageSize: 10,
+        current: currentPage,
+        total: total || users.length,
+        pageSize: itemsPerPage,
         showSizeChanger: true,
-        showTotal: (total) => `Tổng ${total} người dùng`,
-        pageSizeOptions: ['10', '20', '50', '100'],
+        showTotal: (count) => `Hiển thị ${count} người dùng`,
+        onChange: onPageChange,
+        size: 'small',
+        position: ['bottomRight'],
       }}
+      size="small"
       locale={{
         emptyText: <Empty description="Không tìm thấy người dùng" />,
       }}
       scroll={{ x: 800 }}
+      className="[&_.ant-table-thead>tr>th]:bg-gray-50 [&_.ant-table-thead>tr>th]:font-medium [&_.ant-table-thead>tr>th]:text-gray-700 [&_.ant-table-thead>tr>th]:border-b [&_.ant-table-thead>tr>th]:border-gray-200 [&_.ant-table-thead>tr>th]:px-2 [&_.ant-table-thead>tr>th]:py-2 [&_.ant-table-tbody>tr>td]:px-2 [&_.ant-table-tbody>tr>td]:py-2"
     />
   );
 };

@@ -3,7 +3,6 @@ import { RefreshCw } from 'lucide-react';
 import paymentService from '../../../services/paymentService';
 import { notify } from '../../../utils/notification';
 import Button from '../../../components/common/Button';
-import Pagination from '../../../components/common/Pagination';
 import PaymentStatsCards from '../../../components/admin/Payment/PaymentStatsCards';
 import PaymentFilters from '../../../components/admin/Payment/PaymentFilters';
 import PaymentTable from '../../../components/admin/Payment/PaymentTable';
@@ -72,12 +71,12 @@ const PaymentManagement = () => {
   }
 
   return (
-    <div className="p-6">
+    <div className="min-h-screen bg-gray-50/50 p-6">
       <div className="mx-auto w-full max-w-[1600px] space-y-6">
-        <div className="flex justify-between items-center">
+        <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Quản lý thanh toán</h1>
-            <p className="text-gray-600 mt-1">Theo dõi và quản lý các giao dịch thanh toán</p>
+            <h1 className="mb-1 text-2xl font-bold text-gray-900">Quản lý thanh toán</h1>
+            <p className="text-sm text-gray-500">Theo dõi và quản lý các giao dịch thanh toán</p>
           </div>
           <Button onClick={() => refetch()} icon={RefreshCw} disabled={isLoading}>
             Làm mới
@@ -97,7 +96,7 @@ const PaymentManagement = () => {
           totalCount={stats.total}
         />
 
-        <div>
+        <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
           <PaymentTable
             payments={paginatedPayments}
             loading={isLoading}
@@ -105,17 +104,11 @@ const PaymentManagement = () => {
             sortOrder={sortOrder}
             onSort={toggleSort}
             onViewDetail={handleViewDetail}
+            currentPage={currentPage}
+            itemsPerPage={itemsPerPage}
+            total={filteredPayments.length}
+            onPageChange={(page) => setCurrentPage(page)}
           />
-          
-          {!isLoading && filteredPayments.length > 0 && (
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-              itemsCount={paginatedPayments.length}
-              totalItems={filteredPayments.length}
-            />
-          )}
         </div>
 
         <PaymentDetailModal

@@ -10,6 +10,7 @@ import {
   Users,
   MapPin,
   Percent,
+  Zap,
   MessageSquare,
   BarChart2,
   Settings,
@@ -238,13 +239,13 @@ const AdminSidebar = ({ isOpen }) => {
           groupKey="marketing"
           icon={Percent}
           label="Khuyến mãi"
-          paths={['/admin-discounts']}
+          paths={['/admin-discounts', '/admin-discounts/new', '/admin-discounts/new-flash-sale', '/admin-flash-sales']}
           expanded={openGroups.marketing}
           onToggle={toggleGroup}
           {...sharedProps}
         >
           <SubNavItem to="/admin-discounts" icon={Percent} label="Mã giảm giá" pathname={pathname} />
-          <SubNavItem to="/admin-discounts/new" icon={PlusCircle} label="Tạo mã mới" pathname={pathname} />
+          <SubNavItem to="/admin-flash-sales" icon={Zap} label="Flash Sale" pathname={pathname} />
         </NavGroup>
 
         {/* VẬN HÀNH */}

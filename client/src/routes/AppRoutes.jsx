@@ -154,7 +154,9 @@ const getRouteTitle = (pathname) => {
     [/^\/admin-orders\/\d+$/, "Chi tiết đơn hàng"],
     [/^\/admin-payments$/, "Admin Payments"],
     [/^\/admin-discounts$/, "Admin Discounts"],
+    [/^\/admin-flash-sales$/, "Flash Sales"],
     [/^\/admin-discounts\/new$/, "Create Discount"],
+    [/^\/admin-discounts\/new-flash-sale$/, "Create Flash Sale"],
     [/^\/admin-discounts\/edit\/\d+$/, "Edit Discount"],
     [/^\/admin-banners$/, "Admin Banners"],
     [/^\/admin-chat$/, "Admin Chat"],
@@ -378,7 +380,29 @@ const AppRoutes = () => {
         />
 
         <Route
+          path="/admin-flash-sales"
+          element={
+            <AdminRoute>
+              <AdminLayout>
+                <AdminDiscountsPage />
+              </AdminLayout>
+            </AdminRoute>
+          }
+        />
+
+        <Route
           path="/admin-discounts/new"
+          element={
+            <AdminRoute>
+              <AdminLayout>
+                <AdminDiscountFormPage />
+              </AdminLayout>
+            </AdminRoute>
+          }
+        />
+
+        <Route
+          path="/admin-discounts/new-flash-sale"
           element={
             <AdminRoute>
               <AdminLayout>

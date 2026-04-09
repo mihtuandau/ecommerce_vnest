@@ -47,6 +47,10 @@ const PaymentTable = ({
   sortOrder,
   onSort,
   onViewDetail,
+  currentPage = 1,
+  itemsPerPage = 10,
+  total = 0,
+  onPageChange,
 }) => {
   const columns = [
     {
@@ -168,9 +172,16 @@ const PaymentTable = ({
       loading={loading}
       rowKey="id"
       onChange={handleTableChange}
+      size="small"
       pagination={{
-        pageSize: 10,
-        showTotal: (total) => `Tổng ${total} giao dịch`,
+        current: currentPage,
+        total: total || payments.length,
+        pageSize: itemsPerPage,
+        showSizeChanger: true,
+        showTotal: (count) => `Hiển thị ${count} giao dịch`,
+        onChange: onPageChange,
+        size: 'small',
+        position: ['bottomRight'],
       }}
       locale={{
         emptyText: (
@@ -180,6 +191,7 @@ const PaymentTable = ({
           </div>
         ),
       }}
+      className="[&_.ant-table-thead>tr>th]:bg-gray-50 [&_.ant-table-thead>tr>th]:font-medium [&_.ant-table-thead>tr>th]:text-gray-700 [&_.ant-table-thead>tr>th]:border-b [&_.ant-table-thead>tr>th]:border-gray-200 [&_.ant-table-thead>tr>th]:px-2 [&_.ant-table-thead>tr>th]:py-2 [&_.ant-table-tbody>tr>td]:px-2 [&_.ant-table-tbody>tr>td]:py-2"
     />
   );
 };

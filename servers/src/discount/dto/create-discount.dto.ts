@@ -21,6 +21,11 @@ export class CreateDiscountDto {
   @IsBoolean()
   isFlashSale?: boolean;
 
+  @ApiProperty({ example: true, description: 'Mã giảm giá có đang bật hay không', required: false })
+  @IsOptional()
+  @IsBoolean()
+  isActive?: boolean;
+
   @ApiProperty({ example: [1, 2, 3], description: 'Danh sách ID sản phẩm gán vào Flash Sale', required: false })
   @IsOptional()
   @IsArray()
@@ -39,6 +44,24 @@ export class CreateDiscountDto {
   @IsNumber()
   @Min(0)
   fixedAmount?: number;
+
+  @ApiProperty({ example: 100000, description: 'Đơn hàng tối thiểu để áp dụng', required: false })
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  minOrderAmount?: number;
+
+  @ApiProperty({ example: 200000, description: 'Số tiền giảm tối đa', required: false })
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  maxDiscountAmount?: number;
+
+  @ApiProperty({ example: 100, description: 'Giới hạn số lần sử dụng', required: false })
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  usageLimit?: number;
 
   @ApiProperty({ example: '2024-06-01T00:00:00Z', description: 'Ngày bắt đầu' })
   @IsDateString()

@@ -99,7 +99,7 @@ export function calculateOrderTotal(
  * @param discount - discount record from DB
  * @param subtotal - optional items subtotal (không bao gồm phí ship) để check minOrderAmount
  */
-export function validateDiscount(discount: any, subtotal?: number) {
+export function validateDiscount(discount: any, subtotal?: number, currentUsageCount?: number) {
   if (!discount) {
     throw new BadRequestException('Mã giảm giá không tồn tại');
   }
@@ -124,6 +124,14 @@ export function validateDiscount(discount: any, subtotal?: number) {
     throw new BadRequestException(
       `Đơn hàng tối thiểu ${discount.minOrderAmount.toLocaleString('vi-VN')}đ để sử dụng mã này`,
     );
+  }
+
+  if (
+    discount.usageLimit &&
+    currentUsageCount !== undefined &&
+    currentUsageCount >= discount.usageLimit
+  ) {
+    throw new BadRequestException('Mã giảm giá đã đạt giới hạn số lần sử dụng');
   }
 
   return true;

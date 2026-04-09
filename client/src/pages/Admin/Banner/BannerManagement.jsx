@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Plus, Image as ImageIcon } from 'lucide-react';
 import { notify } from '../../../utils/notification';
 import Button from '../../../components/common/Button';
@@ -19,6 +19,8 @@ const BannerManagement = () => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [bannerToDelete, setBannerToDelete] = useState(null);
   const [showAllBanners, setShowAllBanners] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   const { data: banners = [], isLoading, refetch } = useBanners(!showAllBanners);
   const createMutation = useCreateBanner();
@@ -74,14 +76,27 @@ const BannerManagement = () => {
     }
   };
 
+  const paginatedBanners = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return banners.slice(start, start + itemsPerPage);
+  }, [banners, currentPage]);
+
+  const totalPages = Math.max(1, Math.ceil(banners.length / itemsPerPage));
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
+
   return (
-    <div className="p-6">
+    <div className="min-h-screen bg-gray-50/50 p-6">
       <div className="mx-auto w-full max-w-[1600px]">
         <div className="mb-6">
-          <div className="flex justify-between items-center mb-4">
+          <div className="mb-4 flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Banner Management</h1>
-              <p className="text-gray-600">Quản lý banner hiển thị trên trang chủ</p>
+              <h1 className="mb-1 text-2xl font-bold text-gray-900">Quản lý Banner</h1>
+              <p className="text-sm text-gray-500">Quản lý banner hiển thị trên trang chủ</p>
             </div>
             <Button
               onClick={() => {
@@ -111,13 +126,19 @@ const BannerManagement = () => {
           </div>
         </div>
 
-        <BannerTable
-          banners={banners}
-          loading={isLoading}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          onReorder={handleReorder}
-        />
+        <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
+          <BannerTable
+            banners={paginatedBanners}
+            loading={isLoading}
+            currentPage={currentPage}
+            itemsPerPage={itemsPerPage}
+            total={banners.length}
+            onPageChange={(page) => setCurrentPage(page)}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onReorder={handleReorder}
+          />
+        </div>
 
         {/* Banner Form Modal */}
         {showForm && (

@@ -40,9 +40,12 @@ export class DiscountService {
       isFlashSale: createDiscountDto.isFlashSale,
       percentage: createDiscountDto.percentage,
       fixedAmount: createDiscountDto.fixedAmount,
+      minOrderAmount: createDiscountDto.minOrderAmount,
+      maxDiscountAmount: createDiscountDto.maxDiscountAmount,
+      usageLimit: createDiscountDto.usageLimit,
       startDate: new Date(createDiscountDto.startDate),
       endDate: createDiscountDto.endDate ? new Date(createDiscountDto.endDate) : null,
-      isActive: true,
+      isActive: createDiscountDto.isActive ?? true,
     };
 
     // Handle applicableToProducts junction table
@@ -71,11 +74,14 @@ export class DiscountService {
     }
 
     if (status === 'active') {
+      where.isActive = true;
       where.startDate = { lte: now };
       where.OR = [{ endDate: null }, { endDate: { gte: now } }];
     } else if (status === 'expired') {
+      where.isActive = true;
       where.endDate = { lt: now };
     } else if (status === 'upcoming') {
+      where.isActive = true;
       where.startDate = { gt: now };
     }
 
@@ -83,7 +89,7 @@ export class DiscountService {
 
     return discounts.map((discount) => ({
       ...discount,
-      status: this.getDiscountStatus(discount.startDate, discount.endDate),
+      status: this.getDiscountStatus(discount.startDate, discount.endDate, discount.isActive),
       usageCount: discount._count.orders,
     }));
   }
@@ -97,7 +103,7 @@ export class DiscountService {
 
     return {
       ...discount,
-      status: this.getDiscountStatus(discount.startDate, discount.endDate),
+      status: this.getDiscountStatus(discount.startDate, discount.endDate, discount.isActive),
       usageCount: discount._count.orders,
     };
   }
@@ -111,7 +117,7 @@ export class DiscountService {
 
     return {
       ...discount,
-      status: this.getDiscountStatus(discount.startDate, discount.endDate),
+      status: this.getDiscountStatus(discount.startDate, discount.endDate, discount.isActive),
     };
   }
 
@@ -241,6 +247,16 @@ export class DiscountService {
       };
     }
 
+    if (discount.usageLimit) {
+      const usageCount = await this.repository.countEffectiveOrdersUsingDiscount(discount.id);
+      if (usageCount >= discount.usageLimit) {
+        return {
+          isValid: false,
+          message: 'Mã giảm giá đã đạt giới hạn số lần sử dụng',
+        };
+      }
+    }
+
     return {
       isValid: true,
       message: 'Mã giảm giá hợp lệ',
@@ -296,6 +312,18 @@ export class DiscountService {
       data.endDate = new Date(updateDiscountDto.endDate);
     }
 
+    if (updateDiscountDto.applicableToProducts !== undefined) {
+      const productIds = (updateDiscountDto.applicableToProducts || []).filter(
+        (id): id is number => typeof id === 'number' && Number.isFinite(id),
+      );
+      data.applicableToProducts = productIds.length > 0
+        ? {
+            deleteMany: {},
+            create: productIds.map((productId) => ({ productId })),
+          }
+        : { deleteMany: {} };
+    }
+
     return this.repository.update(id, data);
   }
 
@@ -315,17 +343,23 @@ export class DiscountService {
   async getStats() {
     const now = new Date();
 
-    const [total, active, expired, upcoming] = await Promise.all([
+    const [total, active, expired, upcoming, inactive] = await Promise.all([
       this.repository.count(),
       this.repository.countWithFilter({
+        isActive: true,
         startDate: { lte: now },
         OR: [{ endDate: null }, { endDate: { gte: now } }],
       }),
       this.repository.countWithFilter({
+        isActive: true,
         endDate: { lt: now },
       }),
       this.repository.countWithFilter({
+        isActive: true,
         startDate: { gt: now },
+      }),
+      this.repository.countWithFilter({
+        isActive: false,
       }),
     ]);
 
@@ -334,11 +368,16 @@ export class DiscountService {
       active,
       expired,
       upcoming,
+      inactive,
     };
   }
 
-  private getDiscountStatus(startDate: Date, endDate: Date | null): string {
+  private getDiscountStatus(startDate: Date, endDate: Date | null, isActive?: boolean): string {
     const now = new Date();
+
+    if (isActive === false) {
+      return 'inactive';
+    }
 
     if (startDate > now) {
       return 'upcoming';

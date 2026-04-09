@@ -108,8 +108,11 @@ export class OrderController {
   @Post(':id/discount')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('Authorization')
-  applyDiscount(@Param('id') id: string, @Body() body: ApplyDiscountDto) {
-    return this.orderService.applyDiscount(+id, body);
+  applyDiscount(@Param('id') id: string, @Body() body: ApplyDiscountDto, @Req() req: any) {
+    return this.orderService.applyDiscount(+id, body, {
+      userId: req.user.userId,
+      role: req.user.role,
+    });
   }
 
   @Delete(':id')

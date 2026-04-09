@@ -1,6 +1,7 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { MapPin, House, Briefcase, Search } from 'lucide-react';
+import { Pagination as AntdPagination } from 'antd';
 import { useUsers } from '../../../hooks/useUsers';
 import Loading from '../../../components/common/Loading';
 
@@ -11,7 +12,7 @@ const getTypeMeta = (type) => {
     return { label: 'Văn phòng', className: 'bg-purple-100 text-purple-700', icon: '🏢' };
   }
   if (type === 'OTHER') {
-    return { label: 'Khác', className: 'bg-slate-100 text-slate-600', icon: '📍' };
+    return { label: 'Khác', className: 'bg-gray-100 text-gray-600', icon: '📍' };
   }
   return { label: 'Nhà riêng', className: 'bg-blue-100 text-blue-700', icon: '🏠' };
 };
@@ -25,6 +26,8 @@ const AddressManagementPage = () => {
   const { data: users = [], isLoading } = useUsers({ page: 1, limit: 1000 });
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   const allAddresses = useMemo(() => {
     return users.flatMap((user) => {
@@ -54,70 +57,82 @@ const AddressManagementPage = () => {
     return { total, defaults, offices };
   }, [allAddresses]);
 
+  const paginatedAddresses = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return filteredAddresses.slice(start, start + itemsPerPage);
+  }, [filteredAddresses, currentPage]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredAddresses.length / itemsPerPage));
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, typeFilter]);
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
+
   if (isLoading) {
     return <Loading text="Đang tải danh sách địa chỉ..." variant="admin" />;
   }
 
   return (
-    <div className="space-y-5">
-      <div className="flex items-center gap-2 text-sm text-slate-400">
-        <span>Dashboard</span>
-        <span>/</span>
-        <span className="font-semibold text-slate-800">Địa chỉ</span>
-      </div>
-
+    <div className="min-h-screen bg-gray-50/50 p-6">
+      <div className="mx-auto w-full max-w-[1600px] space-y-6">
       <div>
-        <h1 className="text-4xl font-bold tracking-tight text-slate-900">Địa chỉ khách hàng</h1>
-        <p className="mt-1 text-lg text-slate-500">{stats.total} địa chỉ đã lưu</p>
+        <h1 className="text-2xl font-bold text-gray-900">Địa chỉ khách hàng</h1>
+        <p className="mt-1 text-sm text-gray-500">{stats.total} địa chỉ đã lưu</p>
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
           <div className="flex items-center gap-3">
             <div className="rounded-xl bg-blue-100 p-3 text-blue-600"><MapPin size={20} /></div>
             <div>
-              <p className="text-sm text-slate-500">Tổng địa chỉ</p>
-              <p className="text-4xl font-bold text-slate-900">{stats.total}</p>
+              <p className="text-sm text-gray-500">Tổng địa chỉ</p>
+              <p className="text-4xl font-bold text-gray-900">{stats.total}</p>
             </div>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
           <div className="flex items-center gap-3">
             <div className="rounded-xl bg-amber-100 p-3 text-amber-600"><House size={20} /></div>
             <div>
-              <p className="text-sm text-slate-500">Địa chỉ mặc định</p>
-              <p className="text-4xl font-bold text-slate-900">{stats.defaults}</p>
+              <p className="text-sm text-gray-500">Địa chỉ mặc định</p>
+              <p className="text-4xl font-bold text-gray-900">{stats.defaults}</p>
             </div>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
           <div className="flex items-center gap-3">
             <div className="rounded-xl bg-purple-100 p-3 text-purple-600"><Briefcase size={20} /></div>
             <div>
-              <p className="text-sm text-slate-500">Văn phòng</p>
-              <p className="text-4xl font-bold text-slate-900">{stats.offices}</p>
+              <p className="text-sm text-gray-500">Văn phòng</p>
+              <p className="text-4xl font-bold text-gray-900">{stats.offices}</p>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-        <div className="flex flex-col gap-3 border-b border-slate-200 p-4 lg:flex-row">
+      <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
+        <div className="flex flex-col gap-3 border-b border-gray-100 p-4 lg:flex-row">
           <div className="relative flex-1">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Tìm theo tên khách, địa chỉ..."
-              className="h-11 w-full rounded-xl border border-slate-200 pl-10 pr-3 text-sm outline-none focus:border-blue-400"
+              className="h-11 w-full rounded-xl border border-gray-200 pl-10 pr-3 text-sm outline-none focus:border-gray-900"
             />
           </div>
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
-            className="h-11 rounded-xl border border-slate-200 px-3 text-sm outline-none focus:border-blue-400"
+            className="h-11 rounded-xl border border-gray-200 px-3 text-sm outline-none focus:border-gray-900"
           >
             <option value="">Tất cả loại</option>
             <option value="HOME">Nhà riêng</option>
@@ -128,7 +143,7 @@ const AddressManagementPage = () => {
 
         <div className="overflow-x-auto">
           <table className="w-full min-w-[1100px] text-left">
-            <thead className="bg-slate-50 text-sm uppercase tracking-wide text-slate-500">
+            <thead className="bg-gray-50 text-xs uppercase tracking-wide text-gray-500">
               <tr>
                 <th className="px-5 py-3">Khách hàng</th>
                 <th className="px-5 py-3">Loại</th>
@@ -138,16 +153,16 @@ const AddressManagementPage = () => {
                 <th className="px-5 py-3 text-right">Chi tiết</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 text-sm">
+            <tbody className="divide-y divide-gray-100 text-sm">
               {filteredAddresses.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-5 py-12 text-center text-slate-500">Không có địa chỉ nào phù hợp</td>
+                  <td colSpan={6} className="px-5 py-12 text-center text-gray-500">Không có địa chỉ nào phù hợp</td>
                 </tr>
               ) : (
-                filteredAddresses.map((address) => {
+                paginatedAddresses.map((address) => {
                   const type = getTypeMeta(address.addressType);
                   return (
-                    <tr key={`${address.userId}-${address.id}`} className="hover:bg-slate-50">
+                    <tr key={`${address.userId}-${address.id}`} className="hover:bg-gray-50">
                       <td className="px-5 py-4">
                         <button
                           type="button"
@@ -163,13 +178,13 @@ const AddressManagementPage = () => {
                           {type.label}
                         </span>
                       </td>
-                      <td className="px-5 py-4 text-slate-700">{buildAddressString(address)}</td>
-                      <td className="px-5 py-4 text-slate-600">{address.phone || '--'}</td>
+                      <td className="px-5 py-4 text-gray-700">{buildAddressString(address)}</td>
+                      <td className="px-5 py-4 text-gray-600">{address.phone || '--'}</td>
                       <td className="px-5 py-4">
                         {address.isDefault ? (
                           <span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">Mặc định</span>
                         ) : (
-                          <span className="text-slate-300">—</span>
+                          <span className="text-gray-300">—</span>
                         )}
                       </td>
                       <td className="px-5 py-4 text-right">
@@ -182,6 +197,24 @@ const AddressManagementPage = () => {
             </tbody>
           </table>
         </div>
+
+        {filteredAddresses.length > 0 && (
+          <div className="flex items-center justify-between gap-4 border-t border-gray-100 p-4">
+            <div className="text-sm text-gray-500">
+              {filteredAddresses.length === 1
+                ? 'Hiển thị 1 địa chỉ'
+                : `Hiển thị ${(currentPage - 1) * itemsPerPage + 1}-${Math.min(currentPage * itemsPerPage, filteredAddresses.length)} / ${filteredAddresses.length} địa chỉ`}
+            </div>
+            <AntdPagination
+              current={currentPage}
+              pageSize={itemsPerPage}
+              total={filteredAddresses.length}
+              onChange={(page) => setCurrentPage(page)}
+              showSizeChanger
+            />
+          </div>
+        )}
+      </div>
       </div>
     </div>
   );
