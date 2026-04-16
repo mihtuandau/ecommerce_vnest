@@ -339,7 +339,10 @@ const Header = () => {
 
     useEffect(() => {
       const handleClick = (e) => {
-        if (catDropdownRef.current && !catDropdownRef.current.contains(e.target)) {
+        if (
+          catDropdownRef.current &&
+          !catDropdownRef.current.contains(e.target)
+        ) {
           setCatDropdownOpen(false);
         }
       };
@@ -380,10 +383,13 @@ const Header = () => {
                 <div className="relative" ref={catDropdownRef}>
                   <button
                     onClick={() => setCatDropdownOpen(!catDropdownOpen)}
-                    className={`flex items-center gap-1.5 px-4 py-2 text-sm uppercase tracking-wider whitespace-nowrap transition-all duration-300 relative group rounded-full font-semibold text-gray-600 hover:text-black hover:bg-gray-50 ${catDropdownOpen ? 'bg-gray-100 text-black' : ''}`}
+                    className={`flex items-center gap-1.5 px-4 py-2 text-sm uppercase tracking-wider whitespace-nowrap transition-all duration-300 relative group rounded-full font-semibold text-gray-600 hover:text-black hover:bg-gray-50 ${catDropdownOpen ? "bg-gray-100 text-black" : ""}`}
                   >
                     <span className="text-sm">DANH MỤC</span>
-                    <FaChevronDown size={7} className={`transition-transform duration-300 ${catDropdownOpen ? 'rotate-180' : ''}`} />
+                    <FaChevronDown
+                      size={7}
+                      className={`transition-transform duration-300 ${catDropdownOpen ? "rotate-180" : ""}`}
+                    />
                   </button>
 
                   <AnimatePresence>
@@ -641,7 +647,7 @@ const Header = () => {
               {/* Wishlist */}
               <Link
                 to="/wishlist"
-                className="flex flex-col items-center gap-1 group relative transition-colors"
+                className="flex items-center group relative transition-colors"
                 title="Yêu thích"
               >
                 <div className="relative p-2 rounded-full group-hover:bg-red-50 transition-all">
@@ -651,15 +657,12 @@ const Header = () => {
                   />
                   <Badge count={wishlistCount} />
                 </div>
-                <span className="text-[10px] font-bold text-gray-500 group-hover:text-red-500 uppercase tracking-tighter">
-                  Yêu thích
-                </span>
               </Link>
 
               {/* Cart */}
               <button
                 onClick={() => setCartDrawerOpen(true)}
-                className="flex flex-col items-center gap-1 group relative transition-colors"
+                className="flex items-center group relative transition-colors"
                 title="Giỏ hàng"
               >
                 <div className="relative p-2 rounded-full group-hover:bg-gray-100 transition-all">
@@ -669,9 +672,6 @@ const Header = () => {
                   />
                   <Badge count={cartCount} />
                 </div>
-                <span className="text-[10px] font-bold text-gray-500 group-hover:text-black uppercase tracking-tighter">
-                  Giỏ hàng
-                </span>
               </button>
 
               {/* User / Login */}
@@ -680,7 +680,7 @@ const Header = () => {
                   <div className="relative">
                     <button
                       onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                      className="flex flex-col items-center gap-1 group relative transition-colors"
+                      className="flex items-center gap-1.5 group relative transition-colors"
                     >
                       <div className="relative p-2 rounded-full group-hover:bg-blue-50 transition-all">
                         <FaUser
@@ -689,16 +689,18 @@ const Header = () => {
                         />
                         <div className="absolute bottom-0 right-0 w-3 h-3 bg-black border-2 border-white rounded-full" />
                       </div>
-
-                      <div className="flex items-center gap-0.5">
-                        <span className="text-[10px] font-bold text-gray-500 group-hover:text-blue-600 uppercase tracking-tighter truncate max-w-[60px]">
-                          {user.name?.split(" ")[0] || "Tài khoản"}
+                      <div className="flex flex-col items-start leading-none">
+                        <span className="text-[10px] text-gray-400 font-medium">
+                          Xin chào,
                         </span>
-                        <FaChevronDown
-                          size={8}
-                          className={`transition-transform duration-300 text-gray-400 group-hover:text-blue-600 ${userDropdownOpen ? "rotate-180" : ""}`}
-                        />
+                        <span className="text-[12px] font-bold text-gray-800 group-hover:text-blue-600 transition-colors truncate max-w-[72px]">
+                          {user.name?.split(" ").slice(-1)[0] || "Bạn"}
+                        </span>
                       </div>
+                      <FaChevronDown
+                        size={8}
+                        className={`text-gray-400 group-hover:text-blue-600 transition-transform duration-300 ${userDropdownOpen ? "rotate-180" : ""}`}
+                      />
                     </button>
                     <AnimatePresence>
                       {userDropdownOpen && (
@@ -708,14 +710,6 @@ const Header = () => {
                           exit={{ opacity: 0, y: 10 }}
                           className="absolute right-0 mt-3 w-56 bg-white rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.12)] border border-gray-100 z-[9999] overflow-hidden"
                         >
-                          <div className="px-4 py-3 bg-gray-50/50 border-b border-gray-100">
-                            <p className="text-xs text-gray-500 font-medium">
-                              Xin chào,
-                            </p>
-                            <p className="text-sm font-bold text-gray-800 truncate">
-                              {user.name}
-                            </p>
-                          </div>
                           <UserMenuItems
                             onClick={() => setUserDropdownOpen(false)}
                           />
@@ -726,7 +720,7 @@ const Header = () => {
                 ) : (
                   <Link
                     to="/login"
-                    className="flex flex-col items-center gap-1 group relative transition-colors"
+                    className="flex items-center group relative transition-colors"
                     title="Đăng nhập"
                   >
                     <div className="relative p-2 rounded-full group-hover:bg-gray-100 transition-all">
@@ -735,9 +729,6 @@ const Header = () => {
                         className="text-gray-600 group-hover:text-black transition-colors"
                       />
                     </div>
-                    <span className="text-[10px] font-bold text-gray-500 group-hover:text-black uppercase tracking-tighter">
-                      Đăng nhập
-                    </span>
                   </Link>
                 )}
               </div>
@@ -750,7 +741,7 @@ const Header = () => {
           <nav className="flex items-center gap-0 py-1.5 h-12">
             {/* Main navigation - Fixed (standing still) */}
             <div className="flex items-center gap-1 flex-shrink-0">
-               <NavItems categories={categories} />
+              <NavItems categories={categories} />
             </div>
 
             {/* Separator - Fixed */}
@@ -758,13 +749,14 @@ const Header = () => {
 
             {/* Categories - Scrollable (Showing top 5) */}
             <div className="flex-1 overflow-hidden h-full ml-4">
-              <div 
+              <div
                 id="header-categories-scroll"
                 className="w-full h-full flex items-center overflow-x-auto overflow-y-hidden slim-scrollbar scroll-smooth pb-0.5"
               >
                 <div className="flex items-center gap-1 flex-nowrap pr-4">
                   {categories.slice(0, 5).map((cat) => {
-                    const isActive = location.pathname === `/category/${cat.id}`;
+                    const isActive =
+                      location.pathname === `/category/${cat.id}`;
                     return (
                       <Link
                         key={cat.id}

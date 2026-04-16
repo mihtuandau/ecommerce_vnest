@@ -2,24 +2,8 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Zap, Clock, ChevronRight, Flame, Heart, Eye } from "lucide-react";
 import { useFlashSale } from "../../hooks/useFlashSale";
-import { formatPrice } from "../../utils/formatters";
+import { formatPrice, getTimeLeft } from "../../utils/formatters";
 import StarRating from "../common/StarRating";
-
-/* ---------- Countdown helpers ---------- */
-function getTimeLeft(endDate) {
-  if (!endDate) return null;
-  const diff = new Date(endDate).getTime() - Date.now();
-  if (diff <= 0)
-    return { days: 0, hours: 0, minutes: 0, seconds: 0, expired: true };
-  const totalSeconds = Math.floor(diff / 1000);
-  return {
-    days: Math.floor(totalSeconds / 86400),
-    hours: Math.floor((totalSeconds % 86400) / 3600),
-    minutes: Math.floor((totalSeconds % 3600) / 60),
-    seconds: totalSeconds % 60,
-    expired: false,
-  };
-}
 
 function pad(n) {
   return String(n).padStart(2, "0");

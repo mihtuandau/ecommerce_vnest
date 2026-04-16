@@ -134,13 +134,18 @@ const WishlistPage = () => {
                 if (!product || !variant) return null;
 
                 const productId = product.id;
-                const thumbnail =
-                  variant?.images?.find((img) => img.isThumbnail) ||
+                const thumbnail = variant?.images?.find(
+                  (img) => img.isThumbnail,
+                ) ||
                   variant?.images?.[0] || { url: product?.category?.image };
 
                 // Tính toán giá và discount KM
                 const originalPrice = variant.price || 0;
-                const finalPrice = computeDiscountFromMap(productId, originalPrice, discountMap);
+                const finalPrice = computeDiscountFromMap(
+                  productId,
+                  originalPrice,
+                  discountMap,
+                );
                 const isDiscounted = finalPrice < originalPrice;
                 const discountInfo = discountMap[productId];
 
@@ -151,9 +156,11 @@ const WishlistPage = () => {
                   >
                     {isDiscounted && (
                       <div className="absolute top-2.5 left-2.5 z-10">
-                        <span className={`flex items-center gap-1 px-2 py-0.5 text-[9px] font-black text-white rounded italic ${discountInfo?.isFlashSale ? 'bg-red-600' : 'bg-black'}`}>
-                          <Zap size={8} className="fill-white" />
-                          -{discountInfo?.percentage}%
+                        <span
+                          className={`flex items-center gap-1 px-2 py-0.5 text-[9px] font-black text-white rounded italic ${discountInfo?.isFlashSale ? "bg-red-600" : "bg-black"}`}
+                        >
+                          <Zap size={8} className="fill-white" />-
+                          {discountInfo?.percentage}%
                         </span>
                       </div>
                     )}
@@ -204,14 +211,22 @@ const WishlistPage = () => {
                         </h3>
 
                         <div className="flex items-center gap-1 mb-2">
-                           <StarRating rating={product.averageRating || 0} size={9} showNumber={false} />
-                           <span className="text-[9px] text-gray-400">({product.reviewCount || 0})</span>
+                          <StarRating
+                            rating={product.averageRating || 0}
+                            size={9}
+                            showNumber={false}
+                          />
+                          <span className="text-[9px] text-gray-400">
+                            ({product.reviewCount || 0})
+                          </span>
                         </div>
                       </div>
 
                       <div className="mt-auto pt-2 border-t border-gray-50">
                         <div className="flex items-baseline gap-1.5 mb-1.5">
-                          <span className={`text-[15px] font-black tracking-tighter ${isDiscounted ? 'text-red-600' : 'text-gray-900'}`}>
+                          <span
+                            className={`text-[15px] font-black tracking-tighter ${isDiscounted ? "text-red-600" : "text-gray-900"}`}
+                          >
                             {formatPrice(finalPrice)}
                           </span>
                           {isDiscounted && (
@@ -222,10 +237,10 @@ const WishlistPage = () => {
                         </div>
                         <div className="flex items-center justify-between">
                           <span className="text-[9px] uppercase font-bold text-gray-400">
-                             Đã bán {product.soldCount || 0}
+                            Đã bán {product.soldCount || 0}
                           </span>
                           <span className="flex items-center gap-1 text-[9px] text-gray-400 font-bold">
-                             <FaEye size={10} /> {product.viewCount || 0}
+                            <FaEye size={10} /> {product.viewCount || 0}
                           </span>
                         </div>
                       </div>

@@ -147,7 +147,7 @@ const ProductCard = ({ product, viewMode = 'grid-4' }) => {
         </div>
       ) : (badge || discountPercent > 0) && (
         <div className={`absolute top-3 left-3 z-10 ${isList ? 'top-2 left-2' : ''}`}>
-          <span className={`px-2.5 py-1 text-xs font-normal bg-black text-white ${isList ? 'px-2 py-0.5 text-[10px]' : ''}`}>
+          <span className={`px-2.5 py-1 text-xs font-black bg-red-600 text-white shadow-lg shadow-red-100 ${isList ? 'px-2 py-0.5 text-[10px]' : ''}`}>
             {badge || `-${discountPercent}%`}
           </span>
         </div>
@@ -229,7 +229,7 @@ const ProductCard = ({ product, viewMode = 'grid-4' }) => {
 
         <div className="mt-auto pt-2">
           <div className="flex items-baseline gap-2 mb-2 h-6">
-            <span className={`text-xl font-heading font-black tracking-tight leading-none ${isInFlashSale || productDiscount ? 'text-red-500' : 'text-gray-900'}`}>
+            <span className={`text-xl font-heading font-black tracking-tight leading-none ${displayOriginalPrice > displayPrice ? 'text-red-500' : 'text-gray-900'}`}>
               {formatPrice(displayPrice)}
             </span>
             {displayOriginalPrice && displayOriginalPrice > displayPrice && (
