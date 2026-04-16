@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { FaComments, FaPaperPlane, FaCircle, FaSearch, FaBars, FaBell, FaChevronDown } from 'react-icons/fa';
 import chatSocketService from '../../../services/chatSocketService';
 import chatService from '../../../services/chatService';
