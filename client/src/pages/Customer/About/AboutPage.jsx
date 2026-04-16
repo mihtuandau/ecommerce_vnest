@@ -7,8 +7,8 @@ import PageTitle from "../../../components/common/PageTitle";
 const AboutPage = () => {
   return (
     <Layout >
-      <div className="min-h-screen bg-white pt-21 pb-8">
-        <div className="container mx-auto px-4 lg:px-8">
+      <div className="min-h-screen bg-white pb-8">
+        <div className="max-w-7xl mx-auto px-4">
           <Breadcrumb items={[{ label: "Về chúng tôi" }]} />
           <PageTitle
             subtitle="Câu chuyện"

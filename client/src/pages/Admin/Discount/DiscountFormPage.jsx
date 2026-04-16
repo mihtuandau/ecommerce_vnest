@@ -11,7 +11,7 @@ const DiscountFormPage = () => {
     isEdit, isFlashSaleCreate, discount, fetchLoading,
     formData, loading, isSubmitting, handleFieldChange, handleSubmit,
     realtimeValidation, realtimeStatus, previewData,
-    uploading,
+    imagePreview, uploading, handleImageUpload, handleImageRemove,
     productOptions, productSearching, productSearch, productFilters, categories,
     handleFilterChange, handleProductSearchChange,
     handleClearSearch, toggleProduct, clearAllProducts,
@@ -49,6 +49,10 @@ const DiscountFormPage = () => {
                   realtimeStatus={realtimeStatus}
                   previewData={previewData}
                   isSubmitting={isSubmitting}
+                  imagePreview={imagePreview}
+                  uploading={uploading}
+                  onImageUpload={handleImageUpload}
+                  onImageRemove={handleImageRemove}
                 />
               </div>
 

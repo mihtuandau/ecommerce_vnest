@@ -52,7 +52,7 @@ const ProductPrice = ({ currentPrice, originalPrice, product, flashSale }) => {
 
       {/* ── Discount banner (Flash Sale hoặc KM thường) ── */}
       {flashSale && (
-        <div className={`flex items-center gap-2 mb-3 px-3 py-1.5 text-white text-xs font-medium w-fit rounded-sm ${flashSale.isFlashSale ? 'bg-red-500' : 'bg-[#00a85a]'}`}>
+        <div className={`flex items-center gap-2 mb-3 px-3 py-1.5 text-white text-xs font-medium w-fit rounded-sm ${flashSale.isFlashSale ? 'bg-red-500' : 'bg-black'}`}>
           <Zap size={11} className="fill-white" />
           <span className="uppercase tracking-wide">
             {flashSale.isFlashSale ? 'Flash Sale' : 'Khuyến Mãi'}
@@ -62,6 +62,8 @@ const ProductPrice = ({ currentPrice, originalPrice, product, flashSale }) => {
           )}
         </div>
       )}
+
+
 
       {/* ── Giá ── */}
       <div className="flex items-baseline gap-4 mb-1">
@@ -119,15 +121,16 @@ const ProductPrice = ({ currentPrice, originalPrice, product, flashSale }) => {
                   { value: timeLeft.seconds, label: 'Giây' },
                 ]
             ).map((item, idx) => (
-              <div key={idx} className="flex flex-col items-center bg-gray-50 px-4 py-3 min-w-[60px]">
-                <span className="text-lg font-light text-gray-900 tabular-nums">
+              <div key={idx} className="flex flex-col items-center bg-gray-50 px-4 py-3 min-w-[60px] border border-gray-100">
+                <span className="text-lg font-black text-black tabular-nums">
                   {String(item.value).padStart(2, '0')}
                 </span>
-                <span className="text-[10px] text-gray-400 uppercase tracking-wide mt-1">
+                <span className="text-[10px] text-gray-500 uppercase tracking-widest mt-1">
                   {item.label}
                 </span>
               </div>
             ))}
+
           </div>
         </div>
       )}

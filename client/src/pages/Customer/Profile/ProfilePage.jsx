@@ -70,8 +70,8 @@ const ProfilePage = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-white pt-21 pb-8">
-        <div className="container mx-auto px-4 lg:px-8">
+      <div className="min-h-screen bg-white pb-8">
+        <div className="max-w-7xl mx-auto px-4">
           <Breadcrumb items={[
             { label: 'Thông tin tài khoản' }
           ]} />
@@ -86,7 +86,7 @@ const ProfilePage = () => {
               <Avatar 
                 size={80} 
                 icon={<UserOutlined />}
-                style={{ backgroundColor: '#00a85a' }}
+                style={{ backgroundColor: '#000000' }}
               >
                 {currentUser.name?.charAt(0)?.toUpperCase() || currentUser.email?.charAt(0)?.toUpperCase()}
               </Avatar>
@@ -148,7 +148,7 @@ const ProfilePage = () => {
                               <div className="flex-1 min-w-0">
                                 <Link
                                   to={`/products/${review.productId}`}
-                                  className="text-sm font-medium text-gray-900 hover:text-[#00a85a] transition-colors line-clamp-1"
+                                  className="text-sm font-medium text-gray-900 hover:text-black transition-colors line-clamp-1"
                                 >
                                   {review.product?.name || `Sản phẩm #${review.productId}`}
                                 </Link>

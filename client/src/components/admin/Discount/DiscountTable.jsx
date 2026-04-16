@@ -268,7 +268,7 @@ const DiscountTable = ({ discounts, loading, mode = 'regular', currentPage = 1, 
         showTotal: (count) => mode === 'flash' ? `Hiển thị ${count} Flash Sale` : `Hiển thị ${count} mã giảm giá`,
         onChange: onPageChange,
         size: 'small',
-        position: ['bottomRight'],
+        placement: 'bottomRight',
       }}
       locale={{
         emptyText: (

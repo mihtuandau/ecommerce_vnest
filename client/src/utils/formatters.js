@@ -103,9 +103,10 @@ export const getStockStatus = (stock) => {
   }
   return {
     text: 'Còn hàng',
-    color: 'text-[#00a85a] bg-green-50 border-green-200'
+    color: 'text-black bg-gray-50 border-gray-200'
   };
 };
+
 
 /**
  * Tính giá sau khi áp dụng discount tự động từ map { productId: {percentage, fixedAmount} }.

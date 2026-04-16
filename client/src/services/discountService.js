@@ -41,6 +41,10 @@ const discountService = {
     const response = await apiService.post(DISCOUNT_ENDPOINTS.VALIDATE, { code });
     return response;
   },
+  getPublicDiscounts: async () => {
+    const response = await apiService.get(DISCOUNT_ENDPOINTS.PUBLIC);
+    return response;
+  },
   getStats: async () => {
     const response = await apiService.get(DISCOUNT_ENDPOINTS.STATS);
     return response;

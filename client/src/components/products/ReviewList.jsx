@@ -35,7 +35,7 @@ const ReviewList = ({ productId }) => {
   if (loading) {
     return (
       <div className="flex justify-center py-12">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#00a85a]"></div>
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-black"></div>
       </div>
     );
   }
@@ -56,7 +56,7 @@ const ReviewList = ({ productId }) => {
         <div key={review.id} className="bg-white p-6 border border-gray-200">
           {/* User avatar - square */}
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 bg-[#00a85a] flex items-center justify-center text-white">
+            <div className="w-10 h-10 bg-black flex items-center justify-center text-white">>
               <User size={18} />
             </div>
             <div>

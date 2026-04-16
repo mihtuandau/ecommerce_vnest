@@ -158,18 +158,37 @@ const ProductsPage = () => {
     setSearchParams(params);
   };
 
+  const filters = getFiltersFromURL();
+  
+  let pageTitle = "TẤT CẢ SẢN PHẨM";
+  let breadcrumbLabel = "Sản Phẩm";
+  let subtitle = "Bộ sưu tập";
+
+  if (searchParams.get('sort') === 'sold') {
+    pageTitle = "SẢN PHẨM BÁN CHẠY";
+    breadcrumbLabel = "Bán chạy nhất";
+    subtitle = "Trending Now";
+  } else if (searchParams.get('minRating') === '4' || searchParams.get('rating') === '4') {
+    pageTitle = "SẢN PHẨM ĐÁNH GIÁ CAO";
+    breadcrumbLabel = "Top Đánh Giá";
+    subtitle = "Customer Favorites";
+  } else if (searchParams.get('sort') === 'newest') {
+    pageTitle = "HÀNG MỚI VỀ";
+    breadcrumbLabel = "Sản Phẩm Mới";
+    subtitle = "Just In";
+  }
+
   return (
     <Layout>
-      <div className="bg-white min-h-screen pt-21 pb-8">
-        <div className="container mx-auto px-4 lg:px-8">
+      <div className="bg-white min-h-screen pb-8">
+        <div className="max-w-7xl mx-auto px-4">
           <Breadcrumb items={[
-            { label: 'Sản Phẩm', path: '/products' }
-            
+            { label: breadcrumbLabel, path: window.location.pathname + window.location.search }
           ]} />
 
           <PageTitle 
-            subtitle="Bộ sưu tập"
-            title="TẤT CẢ SẢN PHẨM"
+            subtitle={subtitle}
+            title={pageTitle}
           />
 
           <button 

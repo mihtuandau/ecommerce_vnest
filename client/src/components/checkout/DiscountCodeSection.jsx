@@ -19,7 +19,7 @@ const DiscountCodeSection = ({
       </div>
       
       {appliedDiscount ? (
-        <div className="flex items-center justify-between border border-[#00a85a] p-3">
+        <div className="flex items-center justify-between border border-black p-3">
           <div className="flex items-center gap-2">
             <FaCheck className="text-gray-900 text-sm" />
             <div>
@@ -45,13 +45,13 @@ const DiscountCodeSection = ({
             value={discountCode}
             onChange={(e) => setDiscountCode(e.target.value.toUpperCase())}
             placeholder="Nhập mã giảm giá"
-            className="flex-1 px-3 py-2 border border-gray-300 focus:outline-none focus:border-[#00a85a] text-sm transition-colors"
+            className="flex-1 px-3 py-2 border border-gray-300 focus:outline-none focus:border-black text-sm transition-colors"
             onKeyPress={(e) => e.key === 'Enter' && onApplyDiscount()}
           />
           <button
             onClick={onApplyDiscount}
             disabled={checkingDiscount}
-            className="px-4 py-2 bg-[#00a85a] hover:bg-[#008f4d] text-white text-sm transition-colors disabled:opacity-50"
+            className="px-4 py-2 bg-black hover:bg-neutral-800 text-white text-sm transition-colors disabled:opacity-50"
           >
             {checkingDiscount ? 'Kiểm tra...' : 'Áp dụng'}
           </button>

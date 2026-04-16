@@ -78,8 +78,8 @@ export class OrderController {
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('Authorization')
-  findOne(@Param('id') id: string) {
-    return this.orderService.findOne(+id);
+  findOne(@Param('id') id: string, @Req() req: any) {
+    return this.orderService.findOne(+id, req.user);
   }
 
   @Put(':id')

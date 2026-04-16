@@ -252,7 +252,7 @@ const ProductFilter = ({
               <span
                 className={`text-sm ${
                   filters.sortBy === opt.value
-                    ? "text-[#00a85a] font-medium"
+                    ? "text-black font-medium"
                     : "text-gray-700 font-normal"
                 }`}
               >
@@ -298,7 +298,7 @@ const ProductFilter = ({
                 <span
                   className={`text-sm ${
                     filters.categoryId == cat.id
-                      ? "text-[#00a85a] font-medium"
+                      ? "text-black font-medium"
                       : "text-gray-700 font-normal"
                   }`}
                 >
@@ -342,7 +342,7 @@ const ProductFilter = ({
                 <span
                   className={`text-sm ${
                     filters.brandId == brand.id
-                      ? "text-[#00a85a] font-medium"
+                      ? "text-black font-medium"
                       : "text-gray-700 font-normal"
                   }`}
                 >
@@ -375,7 +375,7 @@ const ProductFilter = ({
                   <span
                     className={`text-sm ${
                       filters.minRating === opt.value
-                        ? "text-[#00a85a] font-medium"
+                        ? "text-black font-medium"
                         : "text-gray-700 font-normal"
                     }`}
                   >
@@ -414,7 +414,7 @@ const ProductFilter = ({
               <span
                 className={`text-sm ${
                   filters.stockStatus === opt.value
-                    ? "text-[#00a85a] font-medium"
+                    ? "text-black font-medium"
                     : "text-gray-700 font-normal"
                 }`}
               >
@@ -449,7 +449,7 @@ const ProductFilter = ({
               }}
               onMouseUp={applyPriceFilter}
               onTouchEnd={applyPriceFilter}
-              className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#00a85a] transition-all duration-300"
+              className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-black transition-all duration-300"
             />
           </div>
 
@@ -470,7 +470,7 @@ const ProductFilter = ({
               }}
               onMouseUp={applyPriceFilter}
               onTouchEnd={applyPriceFilter}
-              className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#00a85a] transition-all duration-300"
+              className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-black transition-all duration-300"
             />
           </div>
         </div>

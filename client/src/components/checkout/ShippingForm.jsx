@@ -1,9 +1,14 @@
-import { useState, useEffect } from 'react';
-import { FaMapMarkerAlt, FaAddressBook } from 'react-icons/fa';
-import Button from '../common/Button';
-import locationService from '../../services/locationService';
+import { useState, useEffect } from "react";
+import { FaMapMarkerAlt, FaAddressBook } from "react-icons/fa";
+import Button from "../common/Button";
+import locationService from "../../services/locationService";
 
-const ShippingForm = ({ shippingInfo, onInputChange, onSelectAddressClick, isGuest = false }) => {
+const ShippingForm = ({
+  shippingInfo,
+  onInputChange,
+  onSelectAddressClick,
+  isGuest = false,
+}) => {
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
@@ -35,7 +40,8 @@ const ShippingForm = ({ shippingInfo, onInputChange, onSelectAddressClick, isGue
       setLoading(true);
       const data = await locationService.getAllProvinces();
       setProvinces(data);
-    } catch (error) {} finally {
+    } catch (error) {
+    } finally {
       setLoading(false);
     }
   };
@@ -55,50 +61,50 @@ const ShippingForm = ({ shippingInfo, onInputChange, onSelectAddressClick, isGue
   };
 
   const handleProvinceChange = (e) => {
-    const selectedProvince = provinces.find(p => p.id === e.target.value);
+    const selectedProvince = provinces.find((p) => p.id === e.target.value);
     if (selectedProvince) {
-      onInputChange('cityCode', selectedProvince.id);
-      onInputChange('city', selectedProvince.name);
-      onInputChange('districtCode', '');
-      onInputChange('district', '');
-      onInputChange('wardCode', '');
-      onInputChange('ward', '');
+      onInputChange("cityCode", selectedProvince.id);
+      onInputChange("city", selectedProvince.name);
+      onInputChange("districtCode", "");
+      onInputChange("district", "");
+      onInputChange("wardCode", "");
+      onInputChange("ward", "");
     }
   };
 
   const handleDistrictChange = (e) => {
-    const selectedDistrict = districts.find(d => d.id === e.target.value);
+    const selectedDistrict = districts.find((d) => d.id === e.target.value);
     if (selectedDistrict) {
-      onInputChange('districtCode', selectedDistrict.id);
-      onInputChange('district', selectedDistrict.name);
-      onInputChange('wardCode', '');
-      onInputChange('ward', '');
+      onInputChange("districtCode", selectedDistrict.id);
+      onInputChange("district", selectedDistrict.name);
+      onInputChange("wardCode", "");
+      onInputChange("ward", "");
     }
   };
 
   const handleWardChange = (e) => {
-    const selectedWard = wards.find(w => w.id === e.target.value);
+    const selectedWard = wards.find((w) => w.id === e.target.value);
     if (selectedWard) {
-      onInputChange('wardCode', selectedWard.id);
-      onInputChange('ward', selectedWard.name);
+      onInputChange("wardCode", selectedWard.id);
+      onInputChange("ward", selectedWard.name);
     }
   };
 
   const handleTextInputChange = (field, value) => {
     // Khi người dùng nhập tay, xóa code tương ứng để tránh inconsistency
     onInputChange(field, value);
-    if (field === 'city') {
-      onInputChange('cityCode', '');
-      onInputChange('districtCode', '');
-      onInputChange('district', '');
-      onInputChange('wardCode', '');
-      onInputChange('ward', '');
-    } else if (field === 'district') {
-      onInputChange('districtCode', '');
-      onInputChange('wardCode', '');
-      onInputChange('ward', '');
-    } else if (field === 'ward') {
-      onInputChange('wardCode', '');
+    if (field === "city") {
+      onInputChange("cityCode", "");
+      onInputChange("districtCode", "");
+      onInputChange("district", "");
+      onInputChange("wardCode", "");
+      onInputChange("ward", "");
+    } else if (field === "district") {
+      onInputChange("districtCode", "");
+      onInputChange("wardCode", "");
+      onInputChange("ward", "");
+    } else if (field === "ward") {
+      onInputChange("wardCode", "");
     }
   };
 
@@ -106,10 +112,12 @@ const ShippingForm = ({ shippingInfo, onInputChange, onSelectAddressClick, isGue
     <div className="bg-white border border-gray-200 p-6">
       <div className="flex items-center justify-between mb-8 pb-6 border-b border-gray-200">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 border border-[#00a85a] flex items-center justify-center">
+          <div className="w-10 h-10 border border-black flex items-center justify-center">
             <FaMapMarkerAlt className="text-gray-900 text-sm" />
           </div>
-          <h2 className="text-lg font-normal text-gray-900">Thông Tin Giao Hàng</h2>
+          <h2 className="text-lg font-normal text-gray-900">
+            Thông Tin Giao Hàng
+          </h2>
         </div>
         {!isGuest && (
           <button
@@ -131,7 +139,7 @@ const ShippingForm = ({ shippingInfo, onInputChange, onSelectAddressClick, isGue
             <input
               type="text"
               value={shippingInfo.fullName}
-              onChange={(e) => onInputChange('fullName', e.target.value)}
+              onChange={(e) => onInputChange("fullName", e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:border-gray-900 transition-colors"
               placeholder="Nguyễn Văn A"
             />
@@ -144,7 +152,7 @@ const ShippingForm = ({ shippingInfo, onInputChange, onSelectAddressClick, isGue
             <input
               type="tel"
               value={shippingInfo.phone}
-              onChange={(e) => onInputChange('phone', e.target.value)}
+              onChange={(e) => onInputChange("phone", e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:border-gray-900 transition-colors"
               placeholder="0123456789"
               maxLength={10}
@@ -159,12 +167,14 @@ const ShippingForm = ({ shippingInfo, onInputChange, onSelectAddressClick, isGue
             </label>
             <input
               type="email"
-              value={shippingInfo.email || ''}
-              onChange={(e) => onInputChange('email', e.target.value)}
+              value={shippingInfo.email || ""}
+              onChange={(e) => onInputChange("email", e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:border-gray-900 transition-colors"
               placeholder="example@email.com"
             />
-            <p className="text-xs text-gray-500 mt-2">Email để nhận thông tin đơn hàng</p>
+            <p className="text-xs text-gray-500 mt-2">
+              Email để nhận thông tin đơn hàng
+            </p>
           </div>
         )}
 
@@ -175,7 +185,7 @@ const ShippingForm = ({ shippingInfo, onInputChange, onSelectAddressClick, isGue
           <input
             type="text"
             value={shippingInfo.address}
-            onChange={(e) => onInputChange('address', e.target.value)}
+            onChange={(e) => onInputChange("address", e.target.value)}
             className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:border-gray-900 transition-colors"
             placeholder="Số nhà, tên đường"
           />
@@ -190,19 +200,19 @@ const ShippingForm = ({ shippingInfo, onInputChange, onSelectAddressClick, isGue
               <input
                 type="text"
                 value={shippingInfo.city}
-                onChange={(e) => handleTextInputChange('city', e.target.value)}
+                onChange={(e) => handleTextInputChange("city", e.target.value)}
                 className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:border-gray-900 transition-colors"
                 placeholder="Tỉnh/Thành phố"
               />
             ) : (
               <select
-                value={shippingInfo.cityCode || ''}
+                value={shippingInfo.cityCode || ""}
                 onChange={handleProvinceChange}
                 disabled={loading}
                 className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:border-gray-900 transition-colors disabled:bg-gray-100 disabled:text-gray-500"
               >
                 <option value="">Chọn tỉnh/thành phố</option>
-                {provinces.map(province => (
+                {provinces.map((province) => (
                   <option key={province.id} value={province.id}>
                     {province.name}
                   </option>
@@ -219,19 +229,21 @@ const ShippingForm = ({ shippingInfo, onInputChange, onSelectAddressClick, isGue
               <input
                 type="text"
                 value={shippingInfo.district}
-                onChange={(e) => handleTextInputChange('district', e.target.value)}
+                onChange={(e) =>
+                  handleTextInputChange("district", e.target.value)
+                }
                 className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:border-gray-900 transition-colors"
                 placeholder="Quận/Huyện"
               />
             ) : (
               <select
-                value={shippingInfo.districtCode || ''}
+                value={shippingInfo.districtCode || ""}
                 onChange={handleDistrictChange}
                 disabled={!shippingInfo.cityCode || districts.length === 0}
                 className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:border-gray-900 transition-colors disabled:bg-gray-100 disabled:text-gray-500"
               >
                 <option value="">Chọn quận/huyện</option>
-                {districts.map(district => (
+                {districts.map((district) => (
                   <option key={district.id} value={district.id}>
                     {district.name}
                   </option>
@@ -248,19 +260,19 @@ const ShippingForm = ({ shippingInfo, onInputChange, onSelectAddressClick, isGue
               <input
                 type="text"
                 value={shippingInfo.ward}
-                onChange={(e) => handleTextInputChange('ward', e.target.value)}
+                onChange={(e) => handleTextInputChange("ward", e.target.value)}
                 className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:border-gray-900 transition-colors"
                 placeholder="Phường/Xã"
               />
             ) : (
               <select
-                value={shippingInfo.wardCode || ''}
+                value={shippingInfo.wardCode || ""}
                 onChange={handleWardChange}
                 disabled={!shippingInfo.districtCode || wards.length === 0}
                 className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:border-gray-900 transition-colors disabled:bg-gray-100 disabled:text-gray-500"
               >
                 <option value="">Chọn phường/xã</option>
-                {wards.map(ward => (
+                {wards.map((ward) => (
                   <option key={ward.id} value={ward.id}>
                     {ward.name}
                   </option>
@@ -276,7 +288,7 @@ const ShippingForm = ({ shippingInfo, onInputChange, onSelectAddressClick, isGue
           </label>
           <textarea
             value={shippingInfo.note}
-            onChange={(e) => onInputChange('note', e.target.value)}
+            onChange={(e) => onInputChange("note", e.target.value)}
             rows={4}
             className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:border-gray-900 transition-colors resize-none"
             placeholder="Ghi chú cho người bán..."

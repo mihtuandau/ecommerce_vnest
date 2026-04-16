@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Order, OrderStatus, Prisma } from '@prisma/client';
 
 @Injectable()
 export class OrderRepository {
+  private readonly logger = new Logger(OrderRepository.name);
   constructor(private prisma: PrismaService) {}
 
   async create(data: Prisma.OrderCreateInput): Promise<Order> {
@@ -67,6 +68,7 @@ export class OrderRepository {
         },
         payment: true,
         address: true,
+        shippingMethod: true,
       },
     });
   }
@@ -103,6 +105,7 @@ export class OrderRepository {
         user: true,
         payment: true,
         address: true,
+        shippingMethod: true,
       },
     });
   }
@@ -192,62 +195,85 @@ export class OrderRepository {
    */
   async findAutoApplyPricesForVariants(variantIds: number[]): Promise<Map<number, number>> {
     const now = new Date();
+    this.logger.log(`🏷️ Recalculating auto-apply discounts for: ${variantIds.join(',')}`);
 
-    // Lấy productId + price cho từng variant
+    // Fetch variants with product and category info
     const variants = await this.prisma.productVariant.findMany({
       where: { id: { in: variantIds } },
-      select: { id: true, productId: true, price: true },
+      include: {
+        product: {
+          select: { id: true, categoryId: true, basePrice: true }
+        }
+      }
     });
 
-    const productIds = [...new Set(variants.map((v) => v.productId))];
+    const productInfo = variants.map(v => ({
+      variantId: v.id,
+      productId: v.productId,
+      categoryId: v.product.categoryId,
+      basePrice: v.price // using variant price as base
+    }));
 
-    // Lấy tất cả discount active có applicableToProducts
+    // Fetch all active discounts that could apply automatically
     const discounts = await this.prisma.discount.findMany({
       where: {
         isActive: true,
         startDate: { lte: now },
-        OR: [{ endDate: null }, { endDate: { gte: now } }],
+        AND: [
+           { OR: [{ endDate: null }, { endDate: { gte: now } }] },
+           { OR: [{ code: "" }, { isFlashSale: true }] }
+        ]
       },
-      select: {
-        percentage: true,
-        fixedAmount: true,
-        isFlashSale: true,
+      include: {
         applicableToProducts: true,
+        applicableToCategories: true,
       },
       orderBy: [
-        { percentage: 'desc' },   // % giảm cao nhất ưu tiên trước
-        { fixedAmount: 'desc' },  // rồi đến giảm tiền cố định cao nhất
-        { isFlashSale: 'desc' },  // flash sale làm tiebreaker nếu ngang nhau
+        { percentage: 'desc' },
+        { fixedAmount: 'desc' },
+        { isFlashSale: 'desc' },
       ],
     });
 
-    // productId → discount tốt nhất (first-win do đã sort)
-    const productDiscountMap = new Map<number, { percentage: number | null; fixedAmount: number | null }>();
-    for (const d of discounts) {
-      // applicableToProducts is now an array of DiscountProduct objects, extract productId
-      for (const discountProduct of d.applicableToProducts) {
-        const pid = discountProduct.productId;
-        if (productIds.includes(pid) && !productDiscountMap.has(pid)) {
-          productDiscountMap.set(pid, {
-            percentage: d.percentage,
-            fixedAmount: d.fixedAmount,
-          });
+    this.logger.log(`🏷️ Found ${discounts.length} potential auto-apply discounts`);
+
+    const result = new Map<number, number>();
+
+    for (const info of productInfo) {
+      // Find the first (best) discount that applies to this product
+      const bestDiscount = discounts.find(d => {
+        const hasProductRestriction = d.applicableToProducts.length > 0;
+        const hasCategoryRestriction = d.applicableToCategories.length > 0;
+
+        // If no restrictions, it applies to everything
+        if (!hasProductRestriction && !hasCategoryRestriction) return true;
+
+        // Check product restriction
+        if (hasProductRestriction && d.applicableToProducts.some(ap => ap.productId === info.productId)) {
+          return true;
+        }
+
+        // Check category restriction
+        if (hasCategoryRestriction && d.applicableToCategories.some(ac => ac.categoryId === info.categoryId)) {
+          return true;
+        }
+
+        return false;
+      });
+
+      if (bestDiscount) {
+        let discountedPrice = info.basePrice;
+        if (bestDiscount.percentage) {
+          discountedPrice = Math.round(info.basePrice * (1 - bestDiscount.percentage / 100));
+        } else if (bestDiscount.fixedAmount) {
+          discountedPrice = Math.max(0, info.basePrice - bestDiscount.fixedAmount);
+        }
+        
+        if (discountedPrice < info.basePrice) {
+          this.logger.log(`✅ Applied ${bestDiscount.code || 'Auto-Discount'} to Variant ${info.variantId}: ${info.basePrice} -> ${discountedPrice}`);
+          result.set(info.variantId, discountedPrice);
         }
       }
-    }
-
-    // variantId → giá sau giảm
-    const result = new Map<number, number>();
-    for (const v of variants) {
-      const d = productDiscountMap.get(v.productId);
-      if (!d) continue;
-      let discountedPrice = v.price;
-      if (d.percentage) {
-        discountedPrice = Math.round(v.price * (1 - d.percentage / 100));
-      } else if (d.fixedAmount) {
-        discountedPrice = Math.max(0, v.price - d.fixedAmount);
-      }
-      result.set(v.id, discountedPrice);
     }
 
     return result;

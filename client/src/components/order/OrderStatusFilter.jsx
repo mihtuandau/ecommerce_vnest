@@ -1,13 +1,17 @@
-import React from 'react';
+import React from "react";
 
-const OrderStatusFilter = ({ activeStatus, onStatusChange, statusCounts = {} }) => {
+const OrderStatusFilter = ({
+  activeStatus,
+  onStatusChange,
+  statusCounts = {},
+}) => {
   const filters = [
-    { value: 'ALL', label: 'Tất cả' },
-    { value: 'PENDING', label: 'Chờ xác nhận' },
-    { value: 'PROCESSING', label: 'Đang xử lý' },
-    { value: 'SHIPPED', label: 'Đang giao' },
-    { value: 'DELIVERED', label: 'Đã giao' },
-    { value: 'CANCELLED', label: 'Đã hủy' },
+    { value: "ALL", label: "Tất cả" },
+    { value: "PENDING", label: "Chờ xác nhận" },
+    { value: "PROCESSING", label: "Đang xử lý" },
+    { value: "SHIPPED", label: "Đang giao" },
+    { value: "DELIVERED", label: "Đã giao" },
+    { value: "CANCELLED", label: "Đã hủy" },
   ];
 
   return (
@@ -22,9 +26,10 @@ const OrderStatusFilter = ({ activeStatus, onStatusChange, statusCounts = {} }) 
             onClick={() => onStatusChange(filter.value)}
             className={`
               px-4 py-2 text-sm font-normal transition-colors
-              ${isActive 
-                ? 'bg-[#00a85a] text-white' 
-                : 'border border-gray-300 text-gray-900 hover:border-[#00a85a]'
+              ${
+                isActive
+                  ? "bg-black text-white"
+                  : "border border-gray-300 text-gray-900 hover:border-black"
               }
             `}
           >

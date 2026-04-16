@@ -25,12 +25,6 @@ const ProductDetailPage = lazy(() =>
 const CategoryPage = lazy(() =>
   import("../pages/Customer/Product/CategoryPage")
 );
-const FeaturedProductsPage = lazy(() =>
-  import("../pages/Customer/Product/FeaturedProductsPage")
-);
-const BestSellingProductsPage = lazy(() =>
-  import("../pages/Customer/Product/BestSellingProductsPage")
-);
 const CartPage = lazy(() => import("../pages/Customer/Cart/CartPage"));
 const WishlistPage = lazy(() => import("../pages/Customer/WishlistPage"));
 const CheckoutPage = lazy(() =>
@@ -111,6 +105,9 @@ const SupportChatPage = lazy(() =>
 const PromotionsPage = lazy(() =>
   import("../pages/Customer/Promotions/PromotionsPage")
 );
+const FlashSalePage = lazy(() =>
+  import("../pages/Customer/FlashSale/FlashSalePage")
+);
 
 const DEFAULT_TITLE = "MINH TUAN STORE";
 
@@ -122,8 +119,7 @@ const getRouteTitle = (pathname) => {
     [/^\/forgot-password$/, "Quên mật khẩu"],
     [/^\/reset-password$/, "Đặt lại mật khẩu"],
     [/^\/products$/, "Tất cả sản phẩm"],
-    [/^\/products\/featured$/, "Sản phẩm nổi bật"],
-    [/^\/products\/bestselling$/, "Sản phẩm bán chạy"],
+    [/^\/flash-sale$/, "Flash Sale"],
     [/^\/products\/category\/\d+$/, "Danh mục sản phẩm"],
     [/^\/category\/\d+$/, "Danh mục sản phẩm"],
     [/^\/products\/\d+$/, "Chi tiết sản phẩm"],
@@ -199,6 +195,7 @@ const AppRoutes = () => {
         <Route path="/profile" element={<CustomerProfilePage />} />
         <Route path="/account" element={<CustomerProfilePage />} />
         <Route path="/" element={<HomePage />} />
+        <Route path="/flash-sale" element={<FlashSalePage />} />
 
         {/* About & Contact Routes */}
         <Route path="/about" element={<AboutPage />} />
@@ -209,11 +206,6 @@ const AppRoutes = () => {
 
         {/* Product Routes */}
         <Route path="/products" element={<ProductsPage />} />
-        <Route path="/products/featured" element={<FeaturedProductsPage />} />
-        <Route
-          path="/products/bestselling"
-          element={<BestSellingProductsPage />}
-        />
         <Route path="/products/:id" element={<ProductDetailPage />} />
         <Route path="/products/category/:id" element={<CategoryPage />} />
         <Route path="/category/:id" element={<CategoryPage />} />

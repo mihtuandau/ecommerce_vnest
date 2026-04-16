@@ -25,16 +25,34 @@ export const ThemeProvider = ({ children }) => {
         theme={{
           algorithm: isDark ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm,
           token: {
-            colorPrimary: '#00a85a',
-            colorLink: '#00a85a',
-            colorLinkHover: '#008f4d',
-            borderRadius: 6,
+            colorPrimary: '#000000',
+            colorLink: '#000000',
+            colorLinkHover: '#333333',
+            borderRadius: 2,
+            fontFamily: "'Inter', sans-serif",
           },
+          components: {
+            Button: {
+              borderRadius: 0,
+              controlHeight: 40,
+              colorPrimary: '#000000',
+              colorPrimaryHover: '#333333',
+            },
+            Input: {
+              borderRadius: 0,
+              controlHeight: 40,
+            },
+            Select: {
+              borderRadius: 0,
+              controlHeight: 40,
+            }
+          }
         }}
       >
         {children}
       </ConfigProvider>
     </ThemeContext.Provider>
+
   );
 };
 

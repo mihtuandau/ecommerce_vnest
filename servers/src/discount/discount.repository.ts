@@ -103,6 +103,7 @@ export class DiscountRepository {
     return this.prisma.discount.findMany({
       where: {
         isActive: true,
+        isFlashSale: false, // Chỉ lấy Voucher thường, không lấy chương trình Flash Sale tự động
         startDate: { lte: now },
         OR: [{ endDate: null }, { endDate: { gte: now } }],
       },
@@ -115,7 +116,12 @@ export class DiscountRepository {
         fixedAmount: true,
         minOrderAmount: true,
         maxDiscountAmount: true,
+        usageLimit: true,
+        _count: {
+          select: { orders: true }
+        },
         endDate: true,
+        isFlashSale: true,
         applicableToCategories: true,
         applicableToProducts: true,
       },
@@ -191,23 +197,24 @@ export class DiscountRepository {
       orderBy: flashSale.applicableToProducts.length > 0
         ? { id: 'asc' }
         : { soldCount: 'desc' },
-      include: {
-        images: {
-          orderBy: { isThumbnail: 'desc' },  // thumbnail trước, nếu không có thì lấy ảnh đầu tiên
-          take: 1,
-        },
-        variants: {
-          where: { isActive: true },
-          orderBy: { price: 'asc' },
-          take: 3,
-          include: {
-            images: {
-              orderBy: { isPrimary: 'desc' }, // primary trước, nếu không có thì lấy ảnh đầu tiên
-              take: 1,
+        include: {
+          category: true, // Thêm category vào include
+          images: {
+            orderBy: { isThumbnail: 'desc' },  // thumbnail trước, nếu không có thì lấy ảnh đầu tiên
+            take: 1,
+          },
+          variants: {
+            where: { isActive: true },
+            orderBy: { price: 'asc' },
+            take: 3,
+            include: {
+              images: {
+                orderBy: { isPrimary: 'desc' }, // primary trước, nếu không có thì lấy ảnh đầu tiên
+                take: 1,
+              },
             },
           },
         },
-      },
     });
 
     // Nếu có specificProducts thì sắp lại theo thứ tự admin đã chọn
