@@ -70,6 +70,18 @@ const authService = {
     const baseUrl = import.meta.env.VITE_API_URL.replace('/api', '');
     window.location.href = `${baseUrl}/api${AUTH_ENDPOINTS.GOOGLE_LOGIN}`;
   },
+
+  getAllPermissions: async () => {
+    return apiService.get(`${AUTH_ENDPOINTS.BASE}/permissions`);
+  },
+
+  getRolesWithPermissions: async () => {
+    return apiService.get(`${AUTH_ENDPOINTS.BASE}/roles-permissions`);
+  },
+
+  updateRolePermissions: async (data) => {
+    return apiService.post(`${AUTH_ENDPOINTS.BASE}/roles-permissions`, data);
+  },
 };
 
 export default authService;

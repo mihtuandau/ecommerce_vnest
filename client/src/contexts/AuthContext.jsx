@@ -113,6 +113,11 @@ export const AuthProvider = ({ children }) => {
 
   const isAdmin = () => user?.role === 'ADMIN';
 
+  const hasPermission = (permissionName) => {
+    if (isAdmin()) return true; // Admin mặc định có tất cả quyền
+    return user?.permissions?.includes(permissionName) || false;
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -127,6 +132,7 @@ export const AuthProvider = ({ children }) => {
         refreshUser,
         changePassword,
         isAdmin,
+        hasPermission,
         isAuthenticated: !!user
       }}
     >

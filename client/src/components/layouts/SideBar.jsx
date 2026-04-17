@@ -17,6 +17,7 @@ import {
   ChevronDown,
   ChevronRight,
   PlusCircle,
+  ShieldCheck,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useChatNotifications } from '../../hooks/useChatNotifications';
@@ -134,7 +135,7 @@ const SectionLabel = ({ label, isOpen }) =>
 // ── Sidebar ───────────────────────────────────────────────────────────────────
 const AdminSidebar = ({ isOpen }) => {
   const location = useLocation();
-  const { user } = useAuth();
+  const { user, hasPermission } = useAuth();
   const unreadChatCount = useChatNotifications(user);
   const pathname = location.pathname;
 
@@ -189,72 +190,108 @@ const AdminSidebar = ({ isOpen }) => {
         </div>
 
         {/* CATALOGUE */}
-        <SectionLabel label="Catalogue" isOpen={isOpen} />
-        <NavGroup
-          groupKey="catalogue"
-          icon={Package}
-          label="Catalogue"
-          paths={['/admin-products', '/admin-categories', '/admin-banners']}
-          expanded={openGroups.catalogue}
-          onToggle={toggleGroup}
-          {...sharedProps}
-        >
-          <SubNavItem to="/admin-products" icon={Package} label="Sản phẩm" pathname={pathname} />
-          <SubNavItem to="/admin-products/create" icon={PlusCircle} label="Thêm sản phẩm" pathname={pathname} />
-          <SubNavItem to="/admin-categories" icon={Tag} label="Danh mục" pathname={pathname} />
-          <SubNavItem to="/admin-banners" icon={Image} label="Banner" pathname={pathname} />
-        </NavGroup>
+        {(hasPermission('product.manage') || hasPermission('category.manage')) && (
+          <>
+            <SectionLabel label="Catalogue" isOpen={isOpen} />
+            <NavGroup
+              groupKey="catalogue"
+              icon={Package}
+              label="Catalogue"
+              paths={['/admin-products', '/admin-categories', '/admin-banners']}
+              expanded={openGroups.catalogue}
+              onToggle={toggleGroup}
+              {...sharedProps}
+            >
+              {hasPermission('product.manage') && (
+                <>
+                  <SubNavItem to="/admin-products" icon={Package} label="Sản phẩm" pathname={pathname} />
+                  <SubNavItem to="/admin-products/create" icon={PlusCircle} label="Thêm sản phẩm" pathname={pathname} />
+                </>
+              )}
+              {hasPermission('category.manage') && (
+                <SubNavItem to="/admin-categories" icon={Tag} label="Danh mục" pathname={pathname} />
+              )}
+              {hasPermission('banner.manage') && (
+                <SubNavItem to="/admin-banners" icon={Image} label="Banner" pathname={pathname} />
+              )}
+            </NavGroup>
+          </>
+        )}
 
         {/* BÁN HÀNG */}
-        <SectionLabel label="Bán hàng" isOpen={isOpen} />
-        <NavGroup
-          groupKey="sales"
-          icon={ShoppingCart}
-          label="Đơn hàng"
-          paths={['/admin-orders']}
-          expanded={openGroups.sales}
-          onToggle={toggleGroup}
-          {...sharedProps}
-        >
-          <SubNavItem to="/admin-orders" icon={ShoppingCart} label="Tất cả đơn hàng" pathname={pathname} />
-        </NavGroup>
+        {hasPermission('order.view') && (
+          <>
+            <SectionLabel label="Bán hàng" isOpen={isOpen} />
+            <NavGroup
+              groupKey="sales"
+              icon={ShoppingCart}
+              label="Đơn hàng"
+              paths={['/admin-orders']}
+              expanded={openGroups.sales}
+              onToggle={toggleGroup}
+              {...sharedProps}
+            >
+              <SubNavItem to="/admin-orders" icon={ShoppingCart} label="Tất cả đơn hàng" pathname={pathname} />
+            </NavGroup>
+          </>
+        )}
 
-        <NavGroup
-          groupKey="customers"
-          icon={Users}
-          label="Khách hàng"
-          paths={['/admin-users', '/admin-addresses']}
-          expanded={openGroups.customers}
-          onToggle={toggleGroup}
-          {...sharedProps}
-        >
-          <SubNavItem to="/admin-users" icon={Users} label="Danh sách khách hàng" pathname={pathname} />
-          <SubNavItem to="/admin-addresses" icon={MapPin} label="Địa chỉ" pathname={pathname} />
-        </NavGroup>
-        <NavItem to="/admin-payments" icon={CreditCard} label="Thanh toán" {...sharedProps} />
+        {(hasPermission('user.view') || hasPermission('user.manage')) && (
+          <NavGroup
+            groupKey="customers"
+            icon={Users}
+            label="Khách hàng"
+            paths={['/admin-users', '/admin-addresses']}
+            expanded={openGroups.customers}
+            onToggle={toggleGroup}
+            {...sharedProps}
+          >
+            <SubNavItem to="/admin-users" icon={Users} label="Danh sách khách hàng" pathname={pathname} />
+            <SubNavItem to="/admin-addresses" icon={MapPin} label="Địa chỉ" pathname={pathname} />
+          </NavGroup>
+        )}
+        
+        {hasPermission('report.view') && (
+          <NavItem to="/admin-payments" icon={CreditCard} label="Thanh toán" {...sharedProps} />
+        )}
 
         {/* MARKETING */}
-        <SectionLabel label="Marketing" isOpen={isOpen} />
-        <NavGroup
-          groupKey="marketing"
-          icon={Percent}
-          label="Khuyến mãi"
-          paths={['/admin-discounts', '/admin-discounts/new', '/admin-discounts/new-flash-sale', '/admin-flash-sales']}
-          expanded={openGroups.marketing}
-          onToggle={toggleGroup}
-          {...sharedProps}
-        >
-          <SubNavItem to="/admin-discounts" icon={Percent} label="Mã giảm giá" pathname={pathname} />
-          <SubNavItem to="/admin-flash-sales" icon={Zap} label="Flash Sale" pathname={pathname} />
-        </NavGroup>
+        {hasPermission('discount.manage') && (
+          <>
+            <SectionLabel label="Marketing" isOpen={isOpen} />
+            <NavGroup
+              groupKey="marketing"
+              icon={Percent}
+              label="Khuyến mãi"
+              paths={['/admin-discounts', '/admin-discounts/new', '/admin-discounts/new-flash-sale', '/admin-flash-sales']}
+              expanded={openGroups.marketing}
+              onToggle={toggleGroup}
+              {...sharedProps}
+            >
+              <SubNavItem to="/admin-discounts" icon={Percent} label="Mã giảm giá" pathname={pathname} />
+              <SubNavItem to="/admin-flash-sales" icon={Zap} label="Flash Sale" pathname={pathname} />
+            </NavGroup>
+          </>
+        )}
 
         {/* VẬN HÀNH */}
-        <SectionLabel label="Vận hành" isOpen={isOpen} />
-        <NavItem to="/admin-reports" icon={BarChart2} label="Báo cáo" {...sharedProps} />
-        <NavItem to="/admin-chat" icon={MessageSquare} label="Chat hỗ trợ" badge={unreadChatCount} {...sharedProps} />
+        {(hasPermission('report.view') || hasPermission('chat.support')) && (
+          <>
+            <SectionLabel label="Vận hành" isOpen={isOpen} />
+            {hasPermission('report.view') && (
+              <NavItem to="/admin-reports" icon={BarChart2} label="Báo cáo" {...sharedProps} />
+            )}
+            {hasPermission('chat.support') && (
+              <NavItem to="/admin-chat" icon={MessageSquare} label="Chat hỗ trợ" badge={unreadChatCount} {...sharedProps} />
+            )}
+          </>
+        )}
 
         {/* HỆ THỐNG */}
         <SectionLabel label="Hệ thống" isOpen={isOpen} />
+        {hasPermission('user.manage') && (
+          <NavItem to="/admin-role-permissions" icon={ShieldCheck} label="Phân quyền vai trò" {...sharedProps} />
+        )}
         <NavItem to="/admin/profile" icon={Settings} label="Tài khoản" {...sharedProps} />
 
       </nav>

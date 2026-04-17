@@ -125,4 +125,52 @@ export class UserRepository {
       },
     });
   }
+
+  async getPermissionsByRole(role: any): Promise<string[]> {
+    const rolePermissions = await this.prisma.permissionRole.findMany({
+      where: { role },
+      include: {
+        permission: true,
+      },
+    });
+
+    return rolePermissions.map((rp) => rp.permission.name);
+  }
+
+  async getAllPermissions() {
+    return this.prisma.permission.findMany({
+      orderBy: { name: 'asc' },
+    });
+  }
+
+  async getRolesWithPermissions() {
+    // Trả về danh sách mapping hiện tại
+    return this.prisma.permissionRole.findMany({
+      include: {
+        permission: true,
+      },
+    });
+  }
+
+  async updateRolePermissions(role: any, permissionIds: number[]) {
+    // Sử dụng transaction để đảm bảo tính nhất quán (Xóa cũ - Thêm mới)
+    return this.prisma.$transaction(async (tx) => {
+      // 1. Xóa tất cả quyền cũ của role này
+      await tx.permissionRole.deleteMany({
+        where: { role },
+      });
+
+      // 2. Thêm các quyền mới
+      const newPermissions = permissionIds.map((pId) => ({
+        role,
+        permissionId: pId,
+      }));
+
+      await tx.permissionRole.createMany({
+        data: newPermissions,
+      });
+
+      return { success: true };
+    });
+  }
 }

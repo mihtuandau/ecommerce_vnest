@@ -241,14 +241,14 @@ const Header = () => {
   // User dropdown menu items dùng chung
   const UserMenuItems = ({ onClick }) => (
     <>
-      {user.role?.toUpperCase() === 'ADMIN' && (
+      {['ADMIN', 'KHO', 'BAN_HANG'].includes(user.role?.toUpperCase()) && (
         <>
           <Link
             to="/admin-dashboard"
             onClick={onClick}
             className="flex items-center gap-3 px-4 py-2.5 hover:bg-blue-50 hover:text-blue-600 text-gray-700 text-sm font-medium transition-all hover:translate-x-1"
           >
-            <FaUserShield size={16} /> <span>Quản lý</span>
+            <FaUserShield size={16} /> <span>Trang Quản Trị</span>
           </Link>
           <div className="border-t border-gray-100" />
         </>

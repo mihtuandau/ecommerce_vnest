@@ -2,7 +2,7 @@ import React from 'react';
 import { Table, Avatar, Tag, Button, Space, Tooltip, Empty } from 'antd';
 import { EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
 
-const UserTable = ({ users, currentUserId, currentPage = 1, itemsPerPage = 10, total = 0, onPageChange, onEdit, onDelete, onViewAddresses }) => {
+const UserTable = ({ users, currentUserId, hasPermission, currentPage = 1, itemsPerPage = 10, total = 0, onPageChange, onEdit, onDelete, onViewAddresses }) => {
   const getStatusMeta = (record) => {
     if (record.deletedAt) {
       return { color: 'default', label: 'Đã xóa mềm' };
@@ -49,11 +49,19 @@ const UserTable = ({ users, currentUserId, currentPage = 1, itemsPerPage = 10, t
       key: 'role',
       width: 120,
       sorter: (a, b) => (a.role || '').localeCompare(b.role || ''),
-      render: (role) => (
-        <Tag color={role === 'ADMIN' ? 'red' : 'blue'}>
-          {role === 'ADMIN' ? 'Admin' : 'Khách hàng'}
-        </Tag>
-      ),
+      render: (role) => {
+        let color = 'blue';
+        let label = 'Khách hàng';
+        
+        switch(role) {
+          case 'ADMIN': color = 'red'; label = 'Admin'; break;
+          case 'KHO': color = 'emerald'; label = 'Thủ kho'; break;
+          case 'BAN_HANG': color = 'orange'; label = 'Bán hàng'; break;
+          default: color = 'blue'; label = 'Khách hàng';
+        }
+
+        return <Tag color={color}>{label}</Tag>;
+      },
     },
     {
       title: 'Trạng thái',
@@ -107,7 +115,7 @@ const UserTable = ({ users, currentUserId, currentPage = 1, itemsPerPage = 10, t
         </Space>
       ),
     },
-  ];
+  ].filter(col => col.key !== 'actions' || hasPermission?.('user.manage'));
 
   return (
     <Table

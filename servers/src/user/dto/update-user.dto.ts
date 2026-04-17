@@ -33,11 +33,11 @@ export class UpdateUserDto {
 
   @ApiProperty({
     example: 'ADMIN',
-    description: 'Vai trò mới (ADMIN hoặc CUSTOMER, chỉ ADMIN được phép đổi)',
+    description: 'Vai trò mới (ADMIN, KHO, BAN_HANG, CUSTOMER)',
     required: false,
-    enum: ['CUSTOMER', 'ADMIN'],
+    enum: Role,
   })
   @IsOptional()
-  @IsEnum(['CUSTOMER', 'ADMIN'])
+  @IsEnum(Role)
   role?: Role;
 }

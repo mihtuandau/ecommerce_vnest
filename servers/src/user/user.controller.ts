@@ -22,6 +22,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { DeleteUserDto } from './dto/delete-user.dto';
 import { AuditLogService } from '../common/services/audit-log.service';
+import { Permissions } from '../common/decorators/permissions.decorator';
 
 @ApiTags('Users')
 @ApiBearerAuth()
@@ -34,7 +35,7 @@ export class UserController {
   ) {}
 
   @Get()
-  @Roles('ADMIN')
+  @Permissions('user.view')
   findAll(@Query() query: QueryUserDto) {
     return this.userService.findAll(query);
   }
@@ -65,10 +66,14 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   async findOne(@Param('id', ParseIntPipe) id: number, @Req() req: any) {
     const userId = req.user.userId;
+    const userRole = req.user.role;
+    const permissions = req.user.permissions || [];
 
-    // Only ADMIN can view other users' profiles
-    if (userId !== id && req.user.role !== 'ADMIN') {
-      throw new Error('You do not have permission to view this user');
+    // Cho phép xem nếu là chính mình HOẶC là ADMIN HOẶC có quyền user.view
+    const canView = userId === id || userRole === 'ADMIN' || permissions.includes('user.view');
+
+    if (!canView) {
+      throw new ForbiddenException('You do not have permission to view this user');
     }
 
     const user = await this.userService.findOne(id);
@@ -81,12 +86,8 @@ export class UserController {
   }
 
   @Post()
-  @Roles('ADMIN')
+  @Permissions('user.manage')
   async create(@Body() createUserDto: CreateUserDto, @Req() req: any) {
-    if (createUserDto.role && createUserDto.role !== 'CUSTOMER') {
-      throw new ForbiddenException('Không thể gán role ADMIN trong màn quản trị thường');
-    }
-
     const created = await this.userService.create(createUserDto);
     await this.auditLogService.write({
       action: 'USER_CREATE',
@@ -105,17 +106,17 @@ export class UserController {
     @Req() req: any,
   ) {
     const userId = req.user.userId;
+    const userRole = req.user.role;
+    const permissions = req.user.permissions || [];
 
-    // Only ADMIN can update other users, users can only update themselves
-    if (userId !== id && req.user.role !== 'ADMIN') {
-      throw new Error('You can only update your own profile');
+    // Cho phép cập nhật nếu là chính mình HOẶC là ADMIN HOẶC có quyền user.manage
+    const canUpdate = userId === id || userRole === 'ADMIN' || permissions.includes('user.manage');
+
+    if (!canUpdate) {
+      throw new ForbiddenException('You can only update your own profile');
     }
 
-    // Block role change on regular admin user management screen
-    if (updateUserDto.role) {
-      throw new ForbiddenException('Đổi role không được phép ở màn quản trị thường');
-    }
-
+    // Cho phép cập nhật role
     const updatedUser = await this.userService.update(id, updateUserDto);
     await this.auditLogService.write({
       action: 'USER_UPDATE',
@@ -133,7 +134,7 @@ export class UserController {
   }
 
   @Delete(':id')
-  @Roles('ADMIN')
+  @Permissions('user.manage')
   async remove(
     @Param('id', ParseIntPipe) id: number,
     @Body() deleteUserDto: DeleteUserDto,

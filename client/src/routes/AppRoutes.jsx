@@ -75,6 +75,9 @@ const AdminUserDetailPage = lazy(() =>
 const AdminAddressesPage = lazy(() =>
   import("../pages/Admin/User/AddressManagementPage")
 );
+const AdminRoleManagementPage = lazy(() =>
+  import("../pages/Admin/User/RoleManagement")
+);
 const AdminOrdersPage = lazy(() =>
   import("../pages/Admin/Order/OrderManagement")
 );
@@ -162,6 +165,7 @@ const getRouteTitle = (pathname) => {
     [/^\/admin-chat$/, "Admin Chat"],
     [/^\/admin-reports$/, "Admin Reports"],
     [/^\/admin\/profile$/, "Admin Profile"],
+    [/^\/admin-role-permissions$/, "Quản lý quyền hạn"],
   ];
 
   const match = routeMap.find(([pattern]) => pattern.test(pathname));
@@ -330,6 +334,17 @@ const AppRoutes = () => {
             <AdminRoute>
               <AdminLayout>
                 <AdminAddressesPage />
+              </AdminLayout>
+            </AdminRoute>
+          }
+        />
+
+        <Route
+          path="/admin-role-permissions"
+          element={
+            <AdminRoute>
+              <AdminLayout>
+                <AdminRoleManagementPage />
               </AdminLayout>
             </AdminRoute>
           }

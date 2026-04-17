@@ -12,7 +12,7 @@ export const useAuth = () => {
     const from = location.state?.from || null;
     if (from) {
       navigate(from, { replace: true });
-    } else if (role === 'ADMIN') {
+    } else if (['ADMIN', 'KHO', 'BAN_HANG'].includes(role?.toUpperCase())) {
       navigate('/admin-dashboard');
     } else {
       navigate('/'); 

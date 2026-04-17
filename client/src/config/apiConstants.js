@@ -7,6 +7,7 @@
 // AUTH ENDPOINTS
 // ============================================
 export const AUTH_ENDPOINTS = {
+  BASE: '/auth',
   ME: '/auth/me',
   REGISTER: '/auth/register',
   LOGIN: '/auth/login',

@@ -33,7 +33,11 @@ export class UserService {
       ...(role ? { role } : {}),
       ...(status ? ({ status } as any) : {}),
     };
-    return this.repository.findAll(where, skip, limit);
+    const users = await this.repository.findAll(where, skip, limit);
+    return users.map(user => {
+      const { password, ...userWithoutPassword } = user;
+      return userWithoutPassword as User;
+    });
   }
 
   async findOne(id: number): Promise<User | null> {
@@ -41,7 +45,8 @@ export class UserService {
     if (!user || user.deletedAt) {
       return null;
     }
-    return user;
+    const { password, ...userWithoutPassword } = user;
+    return userWithoutPassword as any;
   }
   
   async update(id: number, data: UpdateUserDto): Promise<User> {
@@ -88,5 +93,24 @@ export class UserService {
       resetPasswordToken: null,
       resetPasswordExpires: null,
     });
+  }
+
+  /**
+   * Lấy danh sách tên các quyền hạn (permissions) của một Role cụ thể
+   */
+  async getPermissionsByRole(role: string): Promise<string[]> {
+    return this.repository.getPermissionsByRole(role as any);
+  }
+
+  async getAllPermissions() {
+    return this.repository.getAllPermissions();
+  }
+
+  async getRolesWithPermissions() {
+    return this.repository.getRolesWithPermissions();
+  }
+
+  async updateRolePermissions(role: string, permissionIds: number[]) {
+    return this.repository.updateRolePermissions(role as any, permissionIds);
   }
 }

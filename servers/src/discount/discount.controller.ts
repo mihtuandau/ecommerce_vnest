@@ -18,6 +18,7 @@ import { ValidateDiscountDto } from './dto/validate-discount.dto';
 import { JwtAuthGuard } from '../common/guards/auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
+import { Permissions } from '../common/decorators/permissions.decorator';
 
 @ApiTags('Discounts')
 @ApiBearerAuth('Authorization')
@@ -27,7 +28,7 @@ export class DiscountController {
 
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('ADMIN')
+  @Permissions('discount.manage')
   create(@Body() createDiscountDto: CreateDiscountDto) {
     return this.discountService.create(createDiscountDto);
   }
@@ -54,14 +55,14 @@ export class DiscountController {
 
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('ADMIN')
+  @Permissions('discount.manage')
   findAll(@Query() query: QueryDiscountDto) {
     return this.discountService.findAll(query);
   }
 
   @Get('stats')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('ADMIN')
+  @Permissions('discount.manage')
   getStats() {
     return this.discountService.getStats();
   }
@@ -74,21 +75,21 @@ export class DiscountController {
 
   @Get(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('ADMIN')
+  @Permissions('discount.manage')
   findOne(@Param('id') id: string) {
     return this.discountService.findOne(+id);
   }
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('ADMIN')
+  @Permissions('discount.manage')
   update(@Param('id') id: string, @Body() updateDiscountDto: UpdateDiscountDto) {
     return this.discountService.update(+id, updateDiscountDto);
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('ADMIN')
+  @Permissions('discount.manage')
   remove(@Param('id') id: string) {
     return this.discountService.remove(+id);
   }
