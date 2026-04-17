@@ -8,16 +8,28 @@ async function main() {
 
   // 1. Định nghĩa danh sách các Permission
   const permissions = [
-    { name: 'user.manage', description: 'Toàn quyền quản lý người dùng và phân quyền' },
+    {
+      name: 'user.manage',
+      description: 'Toàn quyền quản lý người dùng và phân quyền',
+    },
     { name: 'user.view', description: 'Xem danh sách khách hàng' },
-    { name: 'product.manage', description: 'Quản lý sản phẩm (thêm, sửa, xóa)' },
+    {
+      name: 'product.manage',
+      description: 'Quản lý sản phẩm (thêm, sửa, xóa)',
+    },
     { name: 'category.manage', description: 'Quản lý danh mục sản phẩm' },
     { name: 'order.manage', description: 'Quản lý và xử lý đơn hàng' },
     { name: 'order.view', description: 'Xem danh sách đơn hàng' },
-    { name: 'inventory.manage', description: 'Quản lý kho hàng, nhập xuất tồn' },
+    {
+      name: 'inventory.manage',
+      description: 'Quản lý kho hàng, nhập xuất tồn',
+    },
     { name: 'report.view', description: 'Xem báo cáo doanh thu và kinh doanh' },
     { name: 'chat.support', description: 'Quản lý chat hỗ trợ khách hàng' },
-    { name: 'discount.manage', description: 'Quản lý mã giảm giá và flash sale' },
+    {
+      name: 'discount.manage',
+      description: 'Quản lý mã giảm giá và flash sale',
+    },
     { name: 'banner.manage', description: 'Quản lý banner và giao diện' },
   ];
 
@@ -29,39 +41,41 @@ async function main() {
       create: p,
     });
   }
-  
+
   const allPermissions = await prisma.permission.findMany();
 
   // 2. Gán quyền cho các Role
   console.log('--- Linking Permissions to Roles ---');
-  
+
   // Clear cũ để tránh trùng lặp khi chạy lại seed
   await prisma.permissionRole.deleteMany({});
 
   const rolePermissionsMap: Record<string, string[]> = {
-    [Role.ADMIN]: allPermissions.map(p => p.name), // Admin có tất cả quyền
+    [Role.ADMIN]: allPermissions.map((p) => p.name), // Admin có tất cả quyền
     [Role.KHO]: [
       'product.manage',
       'category.manage',
       'inventory.manage',
-      'order.view'
+      'order.view',
+      'report.view'
     ],
     [Role.BAN_HANG]: [
       'order.manage',
       'order.view',
       'user.view',
       'chat.support',
-      'discount.manage'
+      'discount.manage',
+      'report.view'
     ],
-    [Role.CUSTOMER]: [] // Khách hàng không có quyền truy cập trang quản trị
+    [Role.CUSTOMER]: [], // Khách hàng không có quyền truy cập trang quản trị
   };
 
   for (const role of Object.keys(rolePermissionsMap)) {
     const roleName = role as Role;
     const permsForRole = rolePermissionsMap[roleName];
-    
+
     for (const permName of permsForRole) {
-      const permission = allPermissions.find(p => p.name === permName);
+      const permission = allPermissions.find((p) => p.name === permName);
       if (permission) {
         await prisma.permissionRole.create({
           data: {
@@ -73,27 +87,11 @@ async function main() {
     }
   }
 
-  // 3. Tạo tài khoản Admin mặc định để test
-  console.log('--- Creating Initial Admin ---');
-  const adminPassword = await bcrypt.hash('admin123', 10);
-  await prisma.user.upsert({
-    where: { email: 'admin@vnest.com' },
-    update: {},
-    create: {
-      email: 'admin@vnest.com',
-      name: 'System Admin',
-      password: adminPassword,
-      role: Role.ADMIN,
-      status: 'ACTIVE',
-    },
-  });
 
-  console.log('✨ Seed completed successfully!');
 }
 
 main()
   .catch((e) => {
-    console.error('❌ Seed failed:', e);
     process.exit(1);
   })
   .finally(async () => {

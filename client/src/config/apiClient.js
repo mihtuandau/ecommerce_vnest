@@ -43,11 +43,16 @@ axiosClient.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // Chỉ xử lý 401, bỏ qua các request login/refresh để tránh vòng lặp vô tận
+    // Chỉ xử lý 401 nếu có Token (tức là đã đăng nhập)
+    // Bỏ qua các request login/refresh/logout để tránh vòng lặp
+    const hasToken = !!localStorage.getItem('access_token');
+
     if (
       error.response?.status === 401 &&
+      hasToken &&
       !originalRequest._retry &&
       !originalRequest.url?.includes('/auth/login') &&
+      !originalRequest.url?.includes('/auth/logout') &&
       !originalRequest.url?.includes('/auth/refresh')
     ) {
       if (isRefreshing) {
@@ -76,8 +81,8 @@ axiosClient.interceptors.response.use(
       } catch (refreshError) {
         processQueue(refreshError, null);
         localStorage.removeItem('access_token');
-        // Redirect về login nếu refresh thất bại
-        if (typeof window !== 'undefined') {
+        // Redirect về login nếu refresh thất bại (trừ trường hợp đang logout)
+        if (typeof window !== 'undefined' && !originalRequest.url?.includes('/auth/logout')) {
           window.dispatchEvent(new CustomEvent('auth:expired'));
         }
         return Promise.reject(refreshError);

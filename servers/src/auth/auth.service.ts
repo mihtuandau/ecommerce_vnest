@@ -1,4 +1,5 @@
 // src/auth/auth.service.ts
+import { UserStatus } from '@prisma/client';
 import {
   Injectable,
   UnauthorizedException,
@@ -25,18 +26,85 @@ export class AuthService {
   async register(registerDto: RegisterDto) {
     const { email, password, name } = registerDto;
     const existingUser = await this.userService.findByEmail(email);
-    if (existingUser) throw new BadRequestException('Registration failed. Please check your input and try again.');
+    
+    // Chỉ báo lỗi nếu user đã tồn tại, đang ACTIVE và chưa bị xóa mềm
+    if (existingUser && existingUser.status === UserStatus.ACTIVE && !existingUser.deletedAt) {
+       throw new BadRequestException('Email đã được đăng ký và đang hoạt động. Vui lòng đăng nhập.');
+    }
 
-    const user = await this.userService.create({
-      email,
-      password,
-      name,
-      role: 'CUSTOMER',
+    // Tạo mã OTP 6 số
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 phút
+
+    let user;
+    if (existingUser) {
+      // Nếu user đang PENDING thì cập nhật mã mới và mật khẩu mới (phòng trường hợp họ muốn đổi pass)
+      user = await this.userService.updateVerification(existingUser.id, {
+        verificationCode: await bcrypt.hash(otpCode, 10),
+        verificationExpires: otpExpires,
+        name,
+        password: await bcrypt.hash(password, 10), // Cập nhật cả mật khẩu mới
+      });
+    } else {
+      // Tạo user mới với status PENDING
+      user = await this.userService.create({
+        email,
+        password,
+        name,
+        role: 'CUSTOMER',
+        status: UserStatus.PENDING,
+        verificationCode: await bcrypt.hash(otpCode, 10),
+        verificationExpires: otpExpires,
+      });
+    }
+
+    // Gửi mã OTP qua email
+    await this.mailService.sendVerificationCode(email, otpCode, name);
+
+    return { 
+      message: 'Mã xác thực đã được gửi tới email của bạn. Vui lòng kiểm tra và nhập mã để kích hoạt tài khoản.',
+      email 
+    };
+  }
+
+  async verifyOtp(email: string, code: string) {
+    console.log(`🔍 Verifying OTP for: ${email}, Code: ${code}`);
+    const user = await this.userService.findByEmail(email);
+    if (!user) throw new BadRequestException('User not found');
+    
+    // Nếu đã active thì ném lỗi thay vì return message để đồng nhất kiểu trả về
+    if (user.status === UserStatus.ACTIVE) {
+      throw new BadRequestException('Tài khoản đã được kích hoạt từ trước.');
+    }
+
+    if (!user.verificationCode || !user.verificationExpires || new Date() > new Date(user.verificationExpires)) {
+      throw new BadRequestException('Mã xác thực đã hết hạn hoặc không tồn tại. Vui lòng gửi lại mã.');
+    }
+
+    const isValid = await bcrypt.compare(code, user.verificationCode);
+    if (!isValid) throw new BadRequestException('Mã xác thực không đúng.');
+
+    await this.userService.activateUser(user.id);
+    
+    return { message: 'Tài khoản đã được kích hoạt thành công. Vui lòng đăng nhập.' };
+  }
+
+  async resendOtp(email: string) {
+    const user = await this.userService.findByEmail(email);
+    if (!user) throw new BadRequestException('User not found');
+    if (user.status === UserStatus.ACTIVE) throw new BadRequestException('Tài khoản đã được kích hoạt.');
+
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
+
+    await this.userService.updateVerification(user.id, {
+      verificationCode: await bcrypt.hash(otpCode, 10),
+      verificationExpires: otpExpires,
     });
 
-    const { password: _, ...result } = user;
-    const tokenPayload = { sub: result.id };
-    return this.login(tokenPayload, result);
+    await this.mailService.sendVerificationCode(email, otpCode, user.name || undefined);
+
+    return { message: 'Mã xác thực mới đã được gửi.' };
   }
 
   async registerAdmin(registerAdminDto: RegisterAdminDto) {
@@ -84,11 +152,23 @@ export class AuthService {
   async validateUser(email: string, password: string): Promise<any> {
     const user = await this.userService.findByEmail(email);
     if (user && (await bcrypt.compare(password, user.password))) {
+      console.log(`🔍 Login attempt: ${email}, Status: ${user.status}, Deleted: ${!!user.deletedAt}`);
+      
+      if (user.deletedAt) {
+        throw new UnauthorizedException('Tài khoản đã bị xóa hoặc không tồn tại.');
+      }
+
+      if (user.status === UserStatus.PENDING) {
+        throw new UnauthorizedException('Tài khoản chưa được xác thực. Vui lòng kiểm tra email để kích hoạt tài khoản của bạn.');
+      }
+      if (user.status === UserStatus.SUSPENDED) {
+        throw new UnauthorizedException('Tài khoản đã bị khóa. Vui lòng liên hệ bộ phận hỗ trợ.');
+      }
       const { password: _, ...result } = user;
       return result;
     }
     // Generic message to prevent email enumeration attacks
-    throw new UnauthorizedException('Invalid email or password');
+    throw new UnauthorizedException('Email hoặc mật khẩu không chính xác');
   }
 
   async login(tokenPayload: any, userInfo?: any) {

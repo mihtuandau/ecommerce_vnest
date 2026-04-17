@@ -9,6 +9,8 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { ChatService } from './chat.service';
+import { JwtService } from '@nestjs/jwt';
+import { Logger } from '@nestjs/common';
 
 @WebSocketGateway({
   cors: {
@@ -20,30 +22,84 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
 
-  constructor(private chatService: ChatService) {}
+  private readonly logger = new Logger(ChatGateway.name);
 
-  handleConnection(client: Socket) {}
+  constructor(
+    private chatService: ChatService,
+    private jwtService: JwtService,
+  ) {}
 
-  handleDisconnect(client: Socket) {}
+  async handleConnection(client: Socket) {
+    try {
+      // 🔐 Lấy token từ handshake (thường FE gửi qua auth: { token }) 
+      // HOẶC từ headers Authorization
+      const token = client.handshake.auth?.token || client.handshake.headers?.authorization?.split(' ')[1];
+      
+      if (!token) {
+        client.disconnect();
+        return;
+      }
+
+      const payload = this.jwtService.verify(token, {
+        secret: process.env.JWT_SECRET,
+      });
+
+      // Lưu user vào data socket để dùng cho các event sau
+      client.data.user = payload; 
+      this.logger.log(`📱 User ${payload.sub} connected to Chat WebSocket`);
+    } catch (err) {
+      this.logger.error(`❌ Chat connection failed: ${err.message}`);
+      client.disconnect();
+    }
+  }
+
+  handleDisconnect(client: Socket) {
+    this.logger.log(`🔌 Client disconnected: ${client.id}`);
+  }
 
   @SubscribeMessage('joinRoom')
   async handleJoinRoom(
     @ConnectedSocket() client: Socket,
-    @MessageBody() data: { roomId: string; userId: number },
+    @MessageBody() data: { roomId: string },
   ) {
-    client.join(data.roomId);// Load message history
+    const user = client.data.user;
+    if (!user) return { error: 'Unauthorized' };
+
+    // 🛡️ SECURITY: Kiểm tra quyền tham gia phòng
+    const isStaff = ['ADMIN', 'KHO', 'BAN_HANG'].includes(user.role?.toUpperCase());
+    const roomUserId = data.roomId.replace('room_', ''); 
+    
+    // Nếu không phải staff, chỉ cho phép vào phòng của chính mình
+    if (!isStaff && String(roomUserId) !== String(user.sub)) {
+      this.logger.warn(`⚠️ User ${user.sub} tried to join unauthorized room: ${data.roomId}`);
+      return { error: 'Unauthorized room access' };
+    }
+
+    client.join(data.roomId);
     const messages = await this.chatService.getMessages(data.roomId);
+    this.logger.log(`✅ User ${user.sub} joined room ${data.roomId}`);
     return messages;
   }
 
   @SubscribeMessage('sendMessage')
   async handleMessage(
     @ConnectedSocket() client: Socket,
-    @MessageBody() data: { roomId: string; senderId: number; message: string },
+    @MessageBody() data: { roomId: string; message: string },
   ) {
+    const user = client.data.user;
+    if (!user) return { error: 'Unauthorized' };
+
+    // 🛡️ SECURITY: Đảm bảo chỉ gửi tin vào phòng mình đã tham gia hoặc có quyền
+    const isStaff = ['ADMIN', 'KHO', 'BAN_HANG'].includes(user.role?.toUpperCase());
+    const roomUserId = data.roomId.replace('room_', '');
+
+    if (!isStaff && String(roomUserId) !== String(user.sub)) {
+      return { error: 'Unauthorized' };
+    }
+
     const savedMessage = await this.chatService.createMessage(
       data.roomId,
-      data.senderId,
+      user.sub, // Sử dụng ID từ Token thay vì client gửi lên
       data.message,
     );
 
@@ -55,19 +111,26 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('markAsRead')
   async handleMarkAsRead(
-    @MessageBody() data: { roomId: string; userId: number },
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { roomId: string },
   ) {
-    await this.chatService.markAsRead(data.roomId, data.userId);
+    const user = client.data.user;
+    if (!user) return;
+
+    await this.chatService.markAsRead(data.roomId, user.sub);
     this.server.to(data.roomId).emit('messagesRead', { roomId: data.roomId });
   }
 
   @SubscribeMessage('typing')
   handleTyping(
     @ConnectedSocket() client: Socket,
-    @MessageBody() data: { roomId: string; userName: string; isTyping: boolean },
+    @MessageBody() data: { roomId: string; isTyping: boolean },
   ) {
+    const user = client.data.user;
+    if (!user) return;
+
     client.to(data.roomId).emit('userTyping', {
-      userName: data.userName,
+      userName: user.name || 'Ai đó', // Tên lấy từ TOKEN (nếu có trong payload)
       isTyping: data.isTyping,
     });
   }

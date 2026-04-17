@@ -1,68 +1,29 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class ReportRepository {
   constructor(private prisma: PrismaService) {}
 
-  async getRevenueByDate(startDate: Date, endDate: Date) {
-    return this.prisma.order.groupBy({
-      by: ['createdAt'],
+  /**
+   * Lấy danh sách đơn hàng thô để gộp nhóm ở Service
+   */
+  async getRawOrdersForRevenue(startDate: Date, endDate: Date) {
+    return this.prisma.order.findMany({
       where: {
         createdAt: {
           gte: startDate,
           lte: endDate,
         },
-        status: 'DELIVERED',
+        status: { not: 'CANCELLED' },
+        payment: { status: 'SUCCESS' },
       },
-      _sum: {
-        total: true,
+      select: {
+        subtotal: true,
+        createdAt: true,
       },
-      orderBy: {
-        createdAt: 'asc',
-      },
+      orderBy: { createdAt: 'asc' },
     });
-  }
-
-  async getRevenueByMonth(year: number) {
-    const startDate = new Date(year, 0, 1);
-    const endDate = new Date(year, 11, 31, 23, 59, 59);
-
-    return this.prisma.$queryRaw<
-      Array<{ month: number; revenue: number; orders: number }>
-    >`
-      SELECT 
-        EXTRACT(MONTH FROM "createdAt") as month,
-        SUM("total")::float as revenue,
-        COUNT(*)::int as orders
-      FROM "Order"
-      WHERE "createdAt" >= ${startDate}
-        AND "createdAt" <= ${endDate}
-        AND status = 'DELIVERED'
-      GROUP BY EXTRACT(MONTH FROM "createdAt")
-      ORDER BY month ASC
-    `;
-  }
-
-  async getRevenueByYear(startYear: number, endYear: number) {
-    const startDate = new Date(startYear, 0, 1);
-    const endDate = new Date(endYear, 11, 31, 23, 59, 59);
-
-    return this.prisma.$queryRaw<
-      Array<{ year: number; revenue: number; orders: number }>
-    >`
-      SELECT 
-        EXTRACT(YEAR FROM "createdAt")::int as year,
-        SUM("total")::float as revenue,
-        COUNT(*)::int as orders
-      FROM "Order"
-      WHERE "createdAt" >= ${startDate}
-        AND "createdAt" <= ${endDate}
-        AND status = 'DELIVERED'
-      GROUP BY EXTRACT(YEAR FROM "createdAt")
-      ORDER BY year ASC
-    `;
   }
 
   async getOrdersByStatus(startDate: Date, endDate: Date) {
@@ -98,11 +59,13 @@ export class ReportRepository {
       JOIN "ProductVariant" pv ON pv.id = oi."variantId"
       JOIN "Product" p ON p.id = pv."productId"
       JOIN "Order" o ON o.id = oi."orderId"
+      JOIN "Payment" pay ON pay."orderId" = o.id
       WHERE o."createdAt" >= ${startDate}
         AND o."createdAt" <= ${endDate}
-        AND o.status = 'DELIVERED'
+        AND pay.status = 'SUCCESS'
+        AND o.status != 'CANCELLED'
       GROUP BY pv."productId", p.name
-      ORDER BY "totalRevenue" DESC
+      ORDER BY "totalQuantity" DESC
       LIMIT ${limit}
     `;
   }
@@ -126,9 +89,11 @@ export class ReportRepository {
       JOIN "Product" p ON p.id = pv."productId"
       JOIN "Category" c ON c.id = p."categoryId"
       JOIN "Order" o ON o.id = oi."orderId"
+      JOIN "Payment" pay ON pay."orderId" = o.id
       WHERE o."createdAt" >= ${startDate}
         AND o."createdAt" <= ${endDate}
-        AND o.status = 'DELIVERED'
+        AND pay.status = 'SUCCESS'
+        AND o.status != 'CANCELLED'
       GROUP BY p."categoryId", c.name
       ORDER BY "totalRevenue" DESC
       LIMIT ${limit}
@@ -147,7 +112,7 @@ export class ReportRepository {
             },
           },
         }),
-        // Returning customers (had orders before period and also in period)
+        // Returning customers
         this.prisma.$queryRaw<Array<{ count: number }>>`
           SELECT COUNT(DISTINCT o."userId")::int as count
           FROM "Order" o
@@ -157,14 +122,17 @@ export class ReportRepository {
           )
           AND o."createdAt" >= ${startDate}
           AND o."createdAt" <= ${endDate}
+          AND o.status != 'CANCELLED'
         `.then((result) => result[0]?.count || 0),
-        // Total orders in period
+        // Total orders
         this.prisma.order.count({
           where: {
             createdAt: {
               gte: startDate,
               lte: endDate,
             },
+            status: { not: 'CANCELLED' },
+            payment: { status: 'SUCCESS' }
           },
         }),
       ]);
@@ -188,10 +156,11 @@ export class ReportRepository {
             gte: currentStart,
             lte: currentEnd,
           },
-          status: 'DELIVERED',
+          status: { not: 'CANCELLED' },
+          payment: { status: 'SUCCESS' },
         },
         _sum: {
-          total: true,
+          subtotal: true,
         },
       }),
       this.prisma.order.aggregate({
@@ -200,16 +169,17 @@ export class ReportRepository {
             gte: previousStart,
             lte: previousEnd,
           },
-          status: 'DELIVERED',
+          status: { not: 'CANCELLED' },
+          payment: { status: 'SUCCESS' },
         },
         _sum: {
-          total: true,
+          subtotal: true,
         },
       }),
     ]);
 
-    const current = currentRevenue._sum?.total || 0;
-    const previous = previousRevenue._sum?.total || 0;
+    const current = currentRevenue._sum?.subtotal || 0;
+    const previous = previousRevenue._sum?.subtotal || 0;
     const change = previous > 0 ? ((current - previous) / previous) * 100 : 0;
 
     return {

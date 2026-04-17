@@ -16,6 +16,18 @@ const authService = {
     return response;
   },
 
+  verifyOtp: async (email, code) => {
+    const response = await apiService.post(`${AUTH_ENDPOINTS.BASE}/verify-otp`, { email, code });
+    if (response.access_token) {
+      localStorage.setItem('access_token', response.access_token);
+    }
+    return response;
+  },
+
+  resendOtp: async (email) => {
+    return apiService.post(`${AUTH_ENDPOINTS.BASE}/resend-otp`, { email });
+  },
+
   login: async (credentials) => {
     const response = await apiService.post(AUTH_ENDPOINTS.LOGIN, credentials);
     // Lưu token vào localStorage nếu có
@@ -28,9 +40,9 @@ const authService = {
   logout: async () => {
     try {
       await apiService.post(AUTH_ENDPOINTS.LOGOUT);
-    } catch (error) {} finally {
+    } catch (error) {
+    } finally {
       localStorage.removeItem('access_token'); // Xóa token
-      window.location.href = "/login";
     }
   },
 

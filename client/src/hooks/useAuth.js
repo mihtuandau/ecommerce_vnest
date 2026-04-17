@@ -21,8 +21,17 @@ export const useAuth = () => {
   };
 
   const handleRegister = async (userData) => {
-    const data = await context.register(userData);
+    return await context.register(userData);
+  };
+
+  const handleVerifyOtp = async (email, code) => {
+    const data = await context.verifyOtp(email, code);
+    navigate('/login'); // Sau khi verify xong thì về Login
     return data;
+  };
+
+  const handleResendOtp = async (email) => {
+    return await context.resendOtp(email);
   };
 
   const handleLogout = () => {
@@ -34,6 +43,8 @@ export const useAuth = () => {
     ...context,
     handleLogin,
     handleRegister,
+    handleVerifyOtp,
+    handleResendOtp,
     handleLogout,
   };
 };

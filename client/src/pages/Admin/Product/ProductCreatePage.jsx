@@ -252,11 +252,14 @@ const ProductCreatePage = () => {
 
     const payload = {
       name: (values.name || "").trim(),
+      slug: (values.slug || "").trim() || undefined,
       description: (values.description || "").trim() || undefined,
       // Chỉ gửi basePrice khi có giá trị hợp lệ (tránh gửi 0 làm backend 400)
       basePrice: Number.isFinite(basePrice) ? basePrice : undefined,
       categoryId: values.categoryId ? Number(values.categoryId) : undefined,
       brandId: values.brandId ? Number(values.brandId) : undefined,
+      metaTitle: (values.metaTitle || "").trim() || undefined,
+      metaDesc: (values.metaDesc || "").trim() || undefined,
     };
 
     // Remove undefined values

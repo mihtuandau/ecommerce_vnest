@@ -82,28 +82,6 @@ const UserDetailPage = () => {
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center gap-2 text-sm text-slate-400">
-        <span>Dashboard</span>
-        <span>/</span>
-        <Link to="/admin-users" className="font-semibold text-slate-500 hover:text-slate-700">Khách hàng</Link>
-        <span>/</span>
-        <span className="font-semibold text-slate-800">KH #{user.id}</span>
-      </div>
-
-      <div className="flex items-center gap-2.5">
-        <button
-          type="button"
-          onClick={() => navigate('/admin-users')}
-          className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-700"
-          aria-label="Quay lại"
-        >
-          <ArrowLeft size={18} />
-        </button>
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900">Chi tiết khách hàng</h1>
-          <p className="text-sm text-slate-500">#{user.id} · {user.email}</p>
-        </div>
-      </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[390px_1fr]">
         <div className="space-y-4">

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { User, Address, Prisma } from '@prisma/client';
+import { User, Address, Prisma, UserStatus } from '@prisma/client';
 
 
 @Injectable()
@@ -39,6 +39,10 @@ export class UserRepository {
     return this.prisma.user.delete({ where: { id } });
   }
 
+  async deleteMany(where: Prisma.UserWhereInput) {
+    return this.prisma.user.deleteMany({ where });
+  }
+
   async countOrdersByUser(userId: number): Promise<number> {
     return this.prisma.order.count({ where: { userId } });
   }
@@ -47,8 +51,8 @@ export class UserRepository {
     return this.prisma.user.update({
       where: { id },
       data: {
-        status: 'SUSPENDED' as any,
-      } as any,
+        status: UserStatus.SUSPENDED,
+      },
     });
   }
 
@@ -56,9 +60,9 @@ export class UserRepository {
     return this.prisma.user.update({
       where: { id },
       data: {
-        status: 'SUSPENDED' as any,
+        status: UserStatus.SUSPENDED,
         deletedAt: new Date(),
-      } as any,
+      },
     });
   }
 

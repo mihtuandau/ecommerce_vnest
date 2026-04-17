@@ -81,11 +81,6 @@ const AddressManagementPage = () => {
   return (
     <div className="min-h-screen bg-gray-50/50 p-6">
       <div className="mx-auto w-full max-w-[1600px] space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Địa chỉ khách hàng</h1>
-        <p className="mt-1 text-sm text-gray-500">{stats.total} địa chỉ đã lưu</p>
-      </div>
-
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
           <div className="flex items-center gap-3">

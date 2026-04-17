@@ -4,6 +4,7 @@ import { PrismaService } from '../prisma/prisma.service';
 /**
  * Repository pattern for Dashboard data access
  * Handles all database queries related to dashboard statistics
+ * Revenue is sourced from Order.subtotal (Tiền hàng) as requested by user
  */
 @Injectable()
 export class DashboardRepository {
@@ -52,14 +53,69 @@ export class DashboardRepository {
   }
 
   /**
-   * Get total revenue from delivered orders
+   * Get total revenue (Sourced from Order.subtotal)
+   * Only success payments, non-cancelled orders
    */
   async getTotalRevenue(): Promise<number> {
-    const revenueData = await this.prisma.order.aggregate({
-      where: { status: 'DELIVERED' },
-      _sum: { total: true },
+    const data = await this.prisma.order.aggregate({
+      where: { 
+        status: { not: 'CANCELLED' },
+        payment: { status: 'SUCCESS' }
+      },
+      _sum: { subtotal: true },
     });
-    return Number(revenueData._sum.total) || 0;
+    return Number(data._sum.subtotal) || 0;
+  }
+
+  /**
+   * Get revenue by date (Sourced from Order.subtotal, grouped by Order Date)
+   */
+  async getRevenueByDate(date: Date): Promise<number> {
+    const d = new Date(date);
+    const start = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0);
+    const end = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59, 999);
+
+    const data = await this.prisma.order.aggregate({
+      where: {
+        status: { not: 'CANCELLED' },
+        createdAt: { gte: start, lte: end },
+        payment: { status: 'SUCCESS' },
+      },
+      _sum: { subtotal: true },
+    });
+    return Number(data._sum.subtotal) || 0;
+  }
+
+  /**
+   * Get count of new users by date
+   */
+  async getNewUsersCount(date: Date): Promise<number> {
+    const d = new Date(date);
+    const start = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0);
+    const end = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59, 999);
+
+    return this.prisma.user.count({
+      where: {
+        createdAt: { gte: start, lte: end },
+        deletedAt: null,
+      },
+    });
+  }
+
+  /**
+   * Get order count by date
+   */
+  async getOrderCountByDate(date: Date): Promise<number> {
+    const d = new Date(date);
+    const start = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0);
+    const end = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59, 999);
+
+    return this.prisma.order.count({
+      where: {
+        createdAt: { gte: start, lte: end },
+        status: { not: 'CANCELLED' }
+      },
+    });
   }
 
   /**
@@ -72,36 +128,62 @@ export class DashboardRepository {
   }
 
   /**
-   * Get monthly revenue for a specific year
+   * Get monthly revenue records (Sourced from Order.subtotal)
    */
   async getMonthlyRevenue(year: number) {
-    return this.prisma.order.groupBy({
-      by: ['createdAt'],
+    return this.prisma.order.findMany({
       where: {
-        status: 'DELIVERED',
+        status: { not: 'CANCELLED' },
+        payment: { status: 'SUCCESS' },
         createdAt: {
           gte: new Date(year, 0, 1),
           lte: new Date(year, 11, 31, 23, 59, 59),
         },
       },
-      _sum: { total: true },
+      select: {
+        subtotal: true,
+        createdAt: true
+      }
     });
   }
 
   /**
-   * Get daily revenue for a specific month
+   * Get daily revenue records (Sourced from Order.subtotal)
    */
   async getDailyRevenue(year: number, month: number) {
-    return this.prisma.order.groupBy({
-      by: ['createdAt'],
+    return this.prisma.order.findMany({
       where: {
-        status: 'DELIVERED',
+        status: { not: 'CANCELLED' },
+        payment: { status: 'SUCCESS' },
         createdAt: {
           gte: new Date(year, month, 1),
           lte: new Date(year, month + 1, 0, 23, 59, 59),
         },
       },
-      _sum: { total: true },
+      select: {
+        subtotal: true,
+        createdAt: true
+      }
+    });
+  }
+
+  /**
+   * Get revenue records by date range (Sourced from Order.subtotal)
+   */
+  async getRevenueByDateRange(start: Date, end: Date) {
+    return this.prisma.order.findMany({
+      where: {
+        status: { not: 'CANCELLED' },
+        payment: { status: 'SUCCESS' },
+        createdAt: {
+          gte: start,
+          lte: end,
+        },
+      },
+      select: {
+        subtotal: true,
+        createdAt: true
+      }
     });
   }
 
@@ -126,23 +208,27 @@ export class DashboardRepository {
 
   /**
    * Get all order items with product information
-   * Only includes items from DELIVERED orders with SUCCESS payment
    */
   async getAllOrderItemsWithProducts() {
     return this.prisma.orderItem.findMany({
       where: {
         order: {
-          status: 'DELIVERED',
-          payment: {
-            status: 'SUCCESS',
-          },
+          status: { not: 'CANCELLED' },
+          payment: { status: 'SUCCESS' },
         },
       },
       include: {
+        order: {
+          select: {
+            subtotal: true,
+            discountAmount: true,
+          },
+        },
         variant: {
           include: {
             product: {
               include: {
+                images: true,
                 category: { select: { name: true } },
                 brand: { select: { name: true } },
               },

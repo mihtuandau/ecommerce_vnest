@@ -1,5 +1,9 @@
 import dayjs from 'dayjs';
 
+/**
+ * Định dạng dữ liệu cho biểu đồ doanh thu
+ * Đã đồng bộ với cấu trúc dữ liệu mới từ Server (chỉ lấy revenue, date trực tiếp)
+ */
 export const formatRevenueChartData = (revenueData) => {
   console.log('formatRevenueChartData - revenueData:', revenueData);
   if (!revenueData?.data) return [];
@@ -20,9 +24,11 @@ export const formatRevenueChartData = (revenueData) => {
     }));
   }
   
-  return revenueData.data.slice(0, 30).map(item => ({
-    name: dayjs(item.createdAt).format('DD/MM'),
-    revenue: item._sum?.total || 0,
+  // Daily report - API trả về { date: 'DD/MM', revenue, orders }
+  return revenueData.data.slice(0, 60).map(item => ({
+    name: item.date, // Dùng trực tiếp chuỗi 'DD/MM' từ Server
+    revenue: item.revenue || item.total || 0,
+    orders: item.orders || 0,
   }));
 };
 

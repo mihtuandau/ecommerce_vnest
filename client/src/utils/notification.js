@@ -1,8 +1,4 @@
-let notificationInstance = null;
-
-export const setNotificationInstance = (instance) => {
-  notificationInstance = instance;
-};
+import { toast } from 'sonner';
 
 export const parseErrorMessage = (error, defaultMessage = 'Có lỗi xảy ra') => {
   if (error?.response?.data) {
@@ -29,30 +25,34 @@ export const parseErrorMessage = (error, defaultMessage = 'Có lỗi xảy ra') 
 
 export const notify = {
   success: (message, options = {}) => {
-    if (notificationInstance) {
-      const duration = options.duration || 3000;
-      notificationInstance.success(message, duration);
-    }
+    toast.success(message, {
+      id: message, // Toast ID prevents duplicates
+      duration: options.duration || 3000,
+      ...options
+    });
   },
   error: (message, options = {}) => {
-    if (notificationInstance) {
-      const duration = options.duration || 5000;
-      const errorMessage = typeof message === 'object' && message !== null 
-        ? parseErrorMessage(message) 
-        : message;
-      notificationInstance.error(errorMessage, duration);
-    }
+    const errorMessage = typeof message === 'object' && message !== null 
+      ? parseErrorMessage(message) 
+      : message;
+    toast.error(errorMessage, {
+      id: errorMessage, // Toast ID prevents duplicates
+      duration: options.duration || 5000,
+      ...options
+    });
   },
   info: (message, options = {}) => {
-    if (notificationInstance) {
-      const duration = options.duration || 3000;
-      notificationInstance.info(message, duration);
-    }
+    toast.info(message, {
+      id: message, // Toast ID prevents duplicates
+      duration: options.duration || 3000,
+      ...options
+    });
   },
   warning: (message, options = {}) => {
-    if (notificationInstance) {
-      const duration = options.duration || 4000;
-      notificationInstance.warning(message, duration);
-    }
+    toast.warning(message, {
+      id: message, // Toast ID prevents duplicates
+      duration: options.duration || 4000,
+      ...options
+    });
   }
 };

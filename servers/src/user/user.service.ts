@@ -1,7 +1,8 @@
 // src/user/user.service.ts
 import { Injectable } from '@nestjs/common';
 import { UserRepository } from './user.repository';
-import { Prisma, User } from '@prisma/client';
+import { Prisma, User, UserStatus } from '@prisma/client';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { QueryUserDto } from './dto/query-user.dto';
@@ -12,14 +13,38 @@ import * as bcrypt from 'bcrypt';
 export class UserService {
   constructor(private repository: UserRepository) {}
 
-  async create(data: CreateUserDto): Promise<User> {
+  async create(data: any): Promise<User> {
     return this.repository.create({
       email: data.email,
       password: await bcrypt.hash(data.password, 10),
       name: data.name,
       role: data.role || 'CUSTOMER',
-      status: 'ACTIVE' as any,
-    } as any);
+      status: data.status || UserStatus.ACTIVE,
+      verificationCode: data.verificationCode,
+      verificationExpires: data.verificationExpires,
+    });
+  }
+
+  async activateUser(id: number): Promise<User> {
+    console.log(`🚀 Activating user with ID: ${id}`);
+    const updatedUser = await this.repository.update(id, {
+      status: UserStatus.ACTIVE,
+      verificationCode: null,
+      verificationExpires: null,
+      deletedAt: null, // Khôi phục nếu tài khoản đã từng bị xóa mềm
+    });
+    console.log(`✅ User ${id} status updated to: ${updatedUser.status}`);
+    return updatedUser;
+  }
+
+  async updateVerification(id: number, data: { verificationCode: string; verificationExpires: Date; name?: string; password?: string }): Promise<User> {
+    return this.repository.update(id, {
+      verificationCode: data.verificationCode,
+      verificationExpires: data.verificationExpires,
+      name: data.name,
+      password: data.password,
+      status: UserStatus.PENDING, // Khóa tạm thời cho đến khi nhập mã mới thành công
+    });
   }
 
   async findByEmail(email: string): Promise<User | null> {
@@ -35,18 +60,37 @@ export class UserService {
     };
     const users = await this.repository.findAll(where, skip, limit);
     return users.map(user => {
-      const { password, ...userWithoutPassword } = user;
-      return userWithoutPassword as User;
+      const { 
+        password, 
+        verificationCode, 
+        verificationExpires, 
+        resetPasswordToken, 
+        resetPasswordExpires, 
+        deletedAt,
+        ...safeUser 
+      } = user;
+      return safeUser as any;
     });
   }
 
-  async findOne(id: number): Promise<User | null> {
+  async findOne(id: number): Promise<any | null> {
     const user = await this.repository.findById(id);
     if (!user || user.deletedAt) {
       return null;
     }
-    const { password, ...userWithoutPassword } = user;
-    return userWithoutPassword as any;
+    
+    // 🛡️ Lọc sạch các trường nhạy cảm
+    const { 
+      password, 
+      verificationCode, 
+      verificationExpires, 
+      resetPasswordToken, 
+      resetPasswordExpires, 
+      deletedAt,
+      ...safeUser 
+    } = user;
+    
+    return safeUser;
   }
   
   async update(id: number, data: UpdateUserDto): Promise<User> {
@@ -112,5 +156,25 @@ export class UserService {
 
   async updateRolePermissions(role: string, permissionIds: number[]) {
     return this.repository.updateRolePermissions(role as any, permissionIds);
+  }
+
+  // Tự động dọn dẹp các tài khoản PENDING đã hết hạn mã xác thực (chống spam)
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  async handleCleanupExpiredUsers() {
+    console.log('🧹 [Cleanup] Starting cleanup of expired PENDING users...');
+    
+    // Xóa những user PENDING có mã hết hạn
+    const deleteResult = await this.repository.deleteMany({
+      status: UserStatus.PENDING,
+      verificationExpires: {
+        lt: new Date(),
+      },
+    });
+
+    if (deleteResult.count > 0) {
+      console.log(`✅ [Cleanup] Removed ${deleteResult.count} expired PENDING accounts.`);
+    } else {
+      console.log('ℹ️ [Cleanup] No expired PENDING accounts found.');
+    }
   }
 }

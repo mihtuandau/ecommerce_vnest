@@ -169,12 +169,6 @@ export class PaymentService {
     const { page = 1, limit = 10, status, method } = query;
     const skip = (page - 1) * limit;
 
-    // Check cache first
-    const cached = await this.cacheService.getPaymentsList(query);
-    if (cached) {
-      return cached;
-    }
-
     const where = {};
     if (status) where['status'] = status;
     if (method) where['method'] = method;
@@ -187,18 +181,13 @@ export class PaymentService {
     // Serialize all payments
     const serializedPayments = payments.map((p) => PaymentHelper.serializePayment(p));
 
-    const result = {
+    return {
       payments: serializedPayments,
       total,
       page,
       limit,
       totalPages: Math.ceil(total / limit),
     };
-
-    // Set cache
-    await this.cacheService.setPaymentsList(query, result);
-
-    return result;
   }
 
   /**

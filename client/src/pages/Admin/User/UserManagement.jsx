@@ -28,6 +28,7 @@ const AdminUserManagement = () => {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
   const [modalState, setModalState] = useState({ type: null, data: null });
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -38,9 +39,10 @@ const AdminUserManagement = () => {
         user.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         user.email.toLowerCase().includes(searchQuery.toLowerCase());
       const matchRole = !roleFilter || user.role === roleFilter;
-      return matchSearch && matchRole;
+      const matchStatus = !statusFilter || user.status === statusFilter;
+      return matchSearch && matchRole && matchStatus;
     });
-  }, [users, searchQuery, roleFilter]);
+  }, [users, searchQuery, roleFilter, statusFilter]);
 
   const paginatedUsers = useMemo(() => {
     const start = (currentPage - 1) * itemsPerPage;
@@ -49,7 +51,7 @@ const AdminUserManagement = () => {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, roleFilter]);
+  }, [searchQuery, roleFilter, statusFilter]);
 
   const openModal = (type, data = null) => {
     setModalState({ type, data });
@@ -145,6 +147,18 @@ const AdminUserManagement = () => {
                   { value: "BAN_HANG", label: "Nhân viên bán hàng" },
                   { value: "KHO", label: "Thủ kho" },
                   { value: "ADMIN", label: "Quản trị viên" },
+                ]}
+              />
+            </div>
+            <div className="w-full md:w-48">
+              <Select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                options={[
+                  { value: "", label: "Tất cả trạng thái" },
+                  { value: "ACTIVE", label: "Đang hoạt động" },
+                  { value: "PENDING", label: "Chờ xác thực" },
+                  { value: "SUSPENDED", label: "Tạm khóa" },
                 ]}
               />
             </div>

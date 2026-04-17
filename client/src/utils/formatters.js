@@ -148,14 +148,7 @@ export const getTimeLeft = (endDate) => {
   let targetDate;
   
   if (typeof endDate === 'string') {
-    // ÉP BUỘC GIỜ ĐỊA PHƯƠNG:
-    // Xóa 'Z' hoặc múi giờ UTC để trình duyệt không tự cộng thêm 7 tiếng (timezone offset)
-    const cleanDateStr = endDate.replace('Z', '').replace(/\+00:?00$/, '');
-    
-    // Thay '-' bằng '/' để an tâm hơn trên các trình duyệt cũ/Safari
-    const safeDateStr = cleanDateStr.includes('T') ? cleanDateStr : cleanDateStr.replace(/-/g, '/');
-    
-    targetDate = new Date(safeDateStr);
+    targetDate = new Date(endDate);
   } else {
     targetDate = new Date(endDate);
   }

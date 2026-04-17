@@ -59,7 +59,7 @@ export async function generateOrderCode(checkExistsFn: (code: string) => Promise
  */
 export function calculateOrderTotal(
   items: Array<{quantity: number, price: number}>,
-  shippingFee: number = 0,
+  shippingFee: number = 30000,
   discount?: {percentage?: number, fixedAmount?: number, maxDiscountAmount?: number}
 ) {
   const totalItems = items.reduce((sum, item) => sum + item.quantity * item.price, 0);

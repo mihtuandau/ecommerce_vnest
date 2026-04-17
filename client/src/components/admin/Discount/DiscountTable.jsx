@@ -10,111 +10,130 @@ import {
 
 const { Text } = Typography;
 
-// Map status colors for Ant Design Tags
 const getStatusColor = (status) => {
-  const colors = {
-    success: 'success',
-    warning: 'warning',
-    error: 'error',
-    default: 'default',
-  };
+  const colors = { success: 'success', warning: 'warning', error: 'error', default: 'default' };
   return colors[getStatusVariant(status)] || 'default';
 };
 
-const DiscountTable = ({ discounts, loading, mode = 'regular', currentPage = 1, itemsPerPage = 10, total = 0, onPageChange, onSort, onView, onEdit, onDelete }) => {
+const statusClass = (status) => {
+  const s = String(status || '').toLowerCase();
+  if (s === 'expired')  return 'bg-red-50 text-red-600 border border-red-100';
+  if (s === 'active')   return 'bg-green-50 text-green-700 border border-green-100';
+  if (s === 'upcoming') return 'bg-blue-50 text-blue-700 border border-blue-100';
+  return 'bg-gray-100 text-gray-500 border border-gray-200';
+};
+
+const DiscountTable = ({
+  discounts = [],
+  loading,
+  mode = 'regular',
+  currentPage = 1,
+  itemsPerPage = 10,
+  total = 0,
+  onPageChange,
+  onSort,
+  onEdit,
+  onDelete,
+}) => {
   const copyCode = async (code) => {
     if (!code || !navigator?.clipboard) return;
-    try {
-      await navigator.clipboard.writeText(code);
-    } catch {
-      // Silent fail to avoid breaking row actions
-    }
+    try { await navigator.clipboard.writeText(code); } catch {}
   };
 
-  const statusClass = (status) => {
-    const normalized = String(status || '').toLowerCase();
-    if (normalized === 'expired') return 'bg-red-100 text-red-600';
-    if (normalized === 'active') return 'bg-emerald-100 text-emerald-700';
-    if (normalized === 'upcoming') return 'bg-blue-100 text-blue-700';
-    return 'bg-gray-100 text-gray-700';
-  };
-
+  // ── CỘT CHO VOUCHER ─────────────────────────────────────────
   const regularColumns = [
     {
       title: 'STT',
       key: 'index',
-      width: 60,
-      render: (_, __, index) => (currentPage - 1) * itemsPerPage + index + 1,
+      width: 52,
+      align: 'center',
+      render: (_, __, i) => (currentPage - 1) * itemsPerPage + i + 1,
     },
     {
       title: 'Mã giảm giá',
-      dataIndex: 'code',
       key: 'code',
-      sorter: true,
-      render: (code) => <Text strong>{code}</Text>,
-    },
-    {
-      title: 'Mô tả',
-      dataIndex: 'description',
-      key: 'description',
-      ellipsis: {
-        showTitle: true,
-      },
-      render: (description) => description || '-',
+      width: 200,
+      render: (_, record) => (
+        <div>
+          <div className="flex items-center gap-1.5">
+            <Text strong className="font-mono text-sm">{record.code}</Text>
+            <button
+              onClick={() => copyCode(record.code)}
+              className="text-gray-300 hover:text-gray-500 transition"
+              title="Copy"
+            >
+              <CopyOutlined style={{ fontSize: 11 }} />
+            </button>
+          </div>
+          <p className="m-0 text-[11px] text-gray-400 truncate max-w-[180px]">
+            {record.description || '—'}
+          </p>
+        </div>
+      ),
     },
     {
       title: 'Giá trị',
       key: 'value',
+      width: 130,
       render: (_, record) => (
-        <Text strong>{getDiscountTypeText(record)}</Text>
+        <Text strong className="text-blue-600">{getDiscountTypeText(record)}</Text>
       ),
     },
     {
-      title: 'Ngày bắt đầu',
-      dataIndex: 'startDate',
-      key: 'startDate',
-      sorter: true,
-      render: (startDate) => formatDateShort(startDate),
-    },
-    {
-      title: 'Ngày kết thúc',
-      dataIndex: 'endDate',
-      key: 'endDate',
-      render: (endDate) => endDate ? formatDateShort(endDate) : 'Không giới hạn',
+      title: 'Đơn tối thiểu',
+      dataIndex: 'minOrderAmount',
+      key: 'minOrderAmount',
+      width: 120,
+      render: (v) => v ? formatCurrency(Number(v)) : <span className="text-gray-300">—</span>,
     },
     {
       title: 'Lượt dùng',
-      dataIndex: 'usageCount',
-      key: 'usageCount',
-      sorter: true,
-      render: (usageCount) => usageCount || 0,
+      key: 'usage',
+      width: 100,
+      align: 'center',
+      render: (_, r) => (
+        <span className="text-sm text-gray-700">
+          {r.usageCount || 0}
+          {r.usageLimit ? <span className="text-gray-400"> / {r.usageLimit}</span> : ''}
+        </span>
+      ),
+    },
+    {
+      title: 'Hiệu lực',
+      key: 'dates',
+      width: 170,
+      render: (_, r) => (
+        <div className="text-[11px] text-gray-500 leading-relaxed">
+          <div><ClockCircleOutlined className="mr-1 opacity-50" />{formatDateShort(r.startDate)}</div>
+          <div className="text-gray-400">→ {r.endDate ? formatDateShort(r.endDate) : 'Không hạn'}</div>
+        </div>
+      ),
     },
     {
       title: 'Trạng thái',
       dataIndex: 'status',
       key: 'status',
+      width: 120,
       render: (status) => (
-        <Tag color={getStatusColor(status)}>
+        <span className={`inline-flex text-[11px] font-semibold px-2 py-0.5 rounded-full ${statusClass(status)}`}>
           {getStatusText(status)}
-        </Tag>
+        </span>
       ),
     },
     {
       title: 'Thao tác',
       key: 'actions',
-      width: 110,
+      width: 100,
+      align: 'center',
       render: (_, record) => (
-        <Space>
+        <Space size={4}>
           <Tooltip title="Chỉnh sửa">
-            <Button
-              type="text"
-              icon={<EditOutlined />}
-              onClick={() => onEdit(record)}
-            />
+            <Button type="text" size="small" icon={<EditOutlined />} onClick={() => onEdit(record)} />
           </Tooltip>
-          <Tooltip title={record.usageCount > 0 ? 'Không thể xóa mã đã sử dụng' : 'Xóa'}>
+          <Tooltip title={record.usageCount > 0 ? 'Không thể xóa mã đã dùng' : 'Xóa'}>
             <Button
               type="text"
+              size="small"
               danger
               icon={<DeleteOutlined />}
               onClick={() => onDelete(record)}
@@ -126,111 +145,109 @@ const DiscountTable = ({ discounts, loading, mode = 'regular', currentPage = 1, 
     },
   ];
 
+  // ── CỘT CHO FLASH SALE ──────────────────────────────────────
   const flashColumns = [
     {
-      title: <span className="whitespace-nowrap">MÃ CODE</span>,
-      dataIndex: 'code',
+      title: 'STT',
+      key: 'index',
+      width: 52,
+      align: 'center',
+      render: (_, __, i) => (currentPage - 1) * itemsPerPage + i + 1,
+    },
+    {
+      title: 'Chiến dịch',
       key: 'code',
       width: 220,
-      render: (code) => (
-        <div className="flex items-center gap-2 whitespace-nowrap">
-          <Text strong>{code}</Text>
-          <Tooltip title="Sao chép mã">
-            <Button type="text" size="small" icon={<CopyOutlined />} onClick={() => copyCode(code)} />
-          </Tooltip>
-          <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700">FLASH</span>
-        </div>
-      ),
-    },
-    {
-      title: <span className="whitespace-nowrap">MÔ TẢ</span>,
-      dataIndex: 'description',
-      key: 'description',
-      width: 260,
-      render: (description) => (
-        <span className="block max-w-[240px] truncate whitespace-nowrap" title={description || '-'}>
-          {description || '-'}
-        </span>
-      ),
-    },
-    {
-      title: <span className="whitespace-nowrap">GIẢM GIÁ</span>,
-      key: 'value',
-      width: 190,
       render: (_, record) => (
         <div>
-          <p className="m-0 text-lg font-semibold text-orange-600">{getDiscountTypeText(record)}</p>
-          {record.maxDiscountAmount ? (
-            <p className="m-0 text-xs text-gray-500">Tối đa {formatCurrency(record.maxDiscountAmount)}</p>
-          ) : null}
+          <div className="flex items-center gap-1.5">
+            <Text strong className="font-mono text-sm">{record.code}</Text>
+            <button
+              onClick={() => copyCode(record.code)}
+              className="text-gray-300 hover:text-gray-500 transition"
+              title="Copy"
+            >
+              <CopyOutlined style={{ fontSize: 11 }} />
+            </button>
+            <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-orange-100 text-orange-600">
+              FLASH
+            </span>
+          </div>
+          <p className="m-0 text-[11px] text-gray-400 truncate max-w-[200px]">
+            {record.description || '—'}
+          </p>
         </div>
       ),
     },
     {
-      title: <span className="whitespace-nowrap">ĐƠN TỐI THIỂU</span>,
-      dataIndex: 'minOrderAmount',
-      key: 'minOrderAmount',
-      width: 150,
-      render: (value) => <span className="whitespace-nowrap">{formatCurrency(Number(value || 0))}</span>,
+      title: 'Mức giảm',
+      key: 'value',
+      width: 140,
+      render: (_, record) => (
+        <Text strong className="text-orange-600">{getDiscountTypeText(record)}</Text>
+      ),
     },
     {
-      title: <span className="whitespace-nowrap">ĐÃ DÙNG</span>,
-      key: 'usageCount',
-      width: 170,
-      render: (_, record) => {
-        const usage = Number(record.usageCount || 0);
-        const limit = Number(record.usageLimit || 0);
-        const pct = limit > 0 ? Math.min(100, Math.round((usage / limit) * 100)) : 0;
-
+      title: 'Đã dùng / Hạn ngạch',
+      key: 'usage',
+      width: 160,
+      render: (_, r) => {
+        const used  = Number(r.usageCount || 0);
+        const limit = Number(r.usageLimit  || 0);
+        const pct   = limit > 0 ? Math.min(100, Math.round((used / limit) * 100)) : 0;
         return (
           <div>
-            <p className="m-0 text-base font-semibold text-gray-700">
-              {usage}
-              {limit > 0 ? <span className="text-gray-400">/{limit}</span> : null}
-            </p>
-            {limit > 0 ? (
-              <div className="mt-1 h-1 w-[72px] rounded bg-gray-200">
-                <div className="h-1 rounded bg-amber-500" style={{ width: `${pct}%` }} />
+            <span className="text-sm font-semibold text-gray-700">
+              {used}{limit > 0 && <span className="text-gray-400 font-normal"> / {limit}</span>}
+            </span>
+            {limit > 0 && (
+              <div className="mt-1 h-1 w-20 rounded-full bg-gray-200">
+                <div
+                  className="h-1 rounded-full bg-orange-400"
+                  style={{ width: `${pct}%` }}
+                />
               </div>
-            ) : null}
+            )}
           </div>
         );
       },
     },
     {
-      title: <span className="whitespace-nowrap">THỜI GIAN</span>,
-      key: 'timeRange',
-      width: 180,
-      render: (_, record) => (
-        <div className="text-xs text-gray-600">
-          <p className="m-0 inline-flex items-center gap-1"><ClockCircleOutlined /> {formatDateShort(record.startDate)}</p>
-          <p className="m-0 mt-1">→ {record.endDate ? formatDateShort(record.endDate) : 'Không giới hạn'}</p>
+      title: 'Thời gian',
+      key: 'dates',
+      width: 170,
+      render: (_, r) => (
+        <div className="text-[11px] text-gray-500 leading-relaxed">
+          <div><ClockCircleOutlined className="mr-1 opacity-50" />{formatDateShort(r.startDate)}</div>
+          <div className="text-gray-400">→ {r.endDate ? formatDateShort(r.endDate) : 'Không hạn'}</div>
         </div>
       ),
     },
     {
-      title: <span className="whitespace-nowrap">TRẠNG THÁI</span>,
+      title: 'Trạng thái',
       dataIndex: 'status',
       key: 'status',
-      width: 160,
+      width: 120,
       render: (status) => (
-        <span className={`inline-flex whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-semibold ${statusClass(status)}`}>
+        <span className={`inline-flex text-[11px] font-semibold px-2 py-0.5 rounded-full ${statusClass(status)}`}>
           {getStatusText(status)}
         </span>
       ),
     },
     {
-      title: <span className="whitespace-nowrap">THAO TÁC</span>,
+      title: 'Thao tác',
       key: 'actions',
-      width: 90,
+      width: 100,
+      align: 'center',
       render: (_, record) => (
-        <Space>
+        <Space size={4}>
           <Tooltip title="Chỉnh sửa">
-            <Button type="text" icon={<EditOutlined />} onClick={() => onEdit(record)} />
+            <Button type="text" size="small" icon={<EditOutlined />} onClick={() => onEdit(record)} />
           </Tooltip>
-          <Tooltip title={record.usageCount > 0 ? 'Không thể xóa mã đã sử dụng' : 'Xóa'}>
+          <Tooltip title={record.usageCount > 0 ? 'Không thể xóa đã có dữ liệu bán' : 'Xóa'}>
             <Button
               type="text"
+              size="small"
               danger
               icon={<DeleteOutlined />}
               onClick={() => onDelete(record)}
@@ -242,46 +259,37 @@ const DiscountTable = ({ discounts, loading, mode = 'regular', currentPage = 1, 
     },
   ];
 
-  const handleTableChange = (pagination, filters, sorter) => {
-    if (sorter.field) {
-      onSort(sorter.field);
-    }
-  };
-
-  const columns = mode === 'flash' ? flashColumns : regularColumns;
-  const emptyLabel = mode === 'flash' ? 'Không tìm thấy Flash Sale nào' : 'Không tìm thấy mã giảm giá nào';
+  const columns  = mode === 'flash' ? flashColumns : regularColumns;
+  const emptyMsg = mode === 'flash' ? 'Chưa có Flash Sale nào' : 'Chưa có mã giảm giá nào';
 
   return (
     <Table
       columns={columns}
       dataSource={discounts}
       loading={loading}
-      scroll={mode === 'flash' ? { x: 1280 } : undefined}
       rowKey="id"
-      onChange={handleTableChange}
       size="small"
+      scroll={{ x: mode === 'flash' ? 1100 : 950 }}
+      onChange={(_, __, sorter) => sorter.field && onSort?.(sorter.field)}
       pagination={{
         current: currentPage,
         total: total || discounts.length,
         pageSize: itemsPerPage,
-        showSizeChanger: true,
-        showTotal: (count) => mode === 'flash' ? `Hiển thị ${count} Flash Sale` : `Hiển thị ${count} mã giảm giá`,
         onChange: onPageChange,
         size: 'small',
-        placement: 'bottomRight',
+        showSizeChanger: false,
+        showTotal: (n) => `Tổng: ${n} bản ghi`,
       }}
       locale={{
         emptyText: (
-          <div style={{ textAlign: 'center', padding: '40px 0' }}>
-            <TagOutlined style={{ fontSize: 48, color: '#bfbfbf', marginBottom: 16 }} />
-            <div style={{ fontWeight: 500 }}>{emptyLabel}</div>
+          <div className="py-12 flex flex-col items-center text-gray-400">
+            <TagOutlined style={{ fontSize: 32, marginBottom: 8 }} />
+            <span className="text-sm">{emptyMsg}</span>
           </div>
         ),
       }}
-      className="[&_.ant-table-thead>tr>th]:bg-gray-50 [&_.ant-table-thead>tr>th]:font-medium [&_.ant-table-thead>tr>th]:text-gray-700 [&_.ant-table-thead>tr>th]:border-b [&_.ant-table-thead>tr>th]:border-gray-200 [&_.ant-table-thead>tr>th]:px-2 [&_.ant-table-thead>tr>th]:py-2 [&_.ant-table-tbody>tr>td]:px-2 [&_.ant-table-tbody>tr>td]:py-2"
     />
   );
 };
 
 export default DiscountTable;
-

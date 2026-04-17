@@ -35,8 +35,13 @@ const toBoolean = (value) => {
   return false;
 };
 
-const toLocalInput = (iso) =>
-  iso ? new Date(iso).toISOString().slice(0, 16) : '';
+const toLocalInput = (iso) => {
+  if (!iso) return '';
+  const date = new Date(iso);
+  const offset = date.getTimezoneOffset() * 60000;
+  const localDate = new Date(date.getTime() - offset);
+  return localDate.toISOString().slice(0, 16);
+};
 
 // ─── Hook chính ───────────────────────────────────────────────────────────────
 /**
@@ -48,7 +53,7 @@ const useDiscountForm = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const isEdit = Boolean(id);
-  const isFlashSaleCreate = !isEdit && location.pathname === '/admin-discounts/new-flash-sale';
+  const isFlashSaleCreate = !isEdit && location.pathname === '/admin-flash-sales/new';
 
   // Dữ liệu truyền qua navigate state (từ danh sách)
   const stateDiscount = location.state?.discount ?? null;

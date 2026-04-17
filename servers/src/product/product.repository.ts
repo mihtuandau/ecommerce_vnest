@@ -83,23 +83,50 @@ export class ProductRepository {
       ? { id: Number(idOrSlug) } 
       : { slug: idOrSlug as string };
 
+    const publicSelect = {
+      id: true,
+      size: true,
+      color: true,
+      stock: true,
+      price: true,
+      sku: true,
+      isActive: true,
+      images: { orderBy: { displayOrder: 'asc' } as any },
+    };
+
     const variantQuery: any = includeAllVariants
       ? { include: { images: { orderBy: { displayOrder: 'asc' } } } }
       : {
           where: { isActive: true },
-          include: { images: { orderBy: { displayOrder: 'asc' } } },
+          select: publicSelect,
         };
 
     return this.prisma.product.findFirst({
       where: whereCondition,
-      include: {
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        description: true,
+        basePrice: true,
+        categoryId: true,
+        brandId: true,
+        soldCount: true,
+        averageRating: true,
+        reviewCount: true,
+        viewCount: true,
+        isActive: true,
+        metaTitle: true,
+        metaDesc: true,
+        createdAt: true,
+        updatedAt: true,
         category: { select: { id: true, name: true } },
         brand: { select: { id: true, name: true, logo: true } },
         variants: variantQuery,
-        images: { orderBy: { displayOrder: 'asc' } },
+        images: { orderBy: { displayOrder: 'asc' } as any },
         reviews: {
           orderBy: { createdAt: 'desc' },
-          take: 20, // Giới hạn reviews, phần còn lại load lazy
+          take: 20,
           include: {
             user: {
               select: { id: true, name: true },

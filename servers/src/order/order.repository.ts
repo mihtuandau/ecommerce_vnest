@@ -102,7 +102,13 @@ export class OrderRepository {
             },
           },
         },
-        user: true,
+        user: {
+          select: {
+            id: true,
+            email: true,
+            name: true,
+          }
+        },
         payment: true,
         address: true,
         shippingMethod: true,
@@ -166,7 +172,13 @@ export class OrderRepository {
             variant: { include: { product: true } },
           },
         },
-        user: true,
+        user: {
+          select: {
+            id: true,
+            email: true,
+            name: true,
+          }
+        },
       },
     });
   }

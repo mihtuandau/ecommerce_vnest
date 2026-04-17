@@ -29,8 +29,8 @@ const ProductPrice = ({ currentPrice, originalPrice, flashSale }) => {
       {/* Badge */}
       {(flashSale || hasDiscount) && (
         <div className="flex items-center gap-2 mb-2">
-          <span className="inline-flex items-center gap-1 bg-rose-600 text-white text-[9px] font-black uppercase tracking-wide px-2 py-0.5 rounded-full">
-            <Zap size={8} className="fill-white" />
+          <span className={`inline-flex items-center gap-1 text-white text-[9px] font-black uppercase tracking-wide px-2 py-0.5 rounded-full ${flashSale?.isFlashSale ? 'bg-rose-600' : 'bg-blue-600'}`}>
+            {flashSale?.isFlashSale && <Zap size={8} className="fill-white" />}
             {flashSale?.isFlashSale ? 'Flash Sale' : 'Ưu đãi'} &nbsp;·&nbsp; -{discountPercent}%
           </span>
         </div>
@@ -48,8 +48,8 @@ const ProductPrice = ({ currentPrice, originalPrice, flashSale }) => {
         )}
       </div>
 
-      {/* Countdown */}
-      {countdownTarget && timeLeft && !timeLeft.expired && (
+      {/* Countdown - Chỉ hiện cho Flash Sale */}
+      {flashSale?.isFlashSale && countdownTarget && timeLeft && !timeLeft.expired && (
         <div className="flex items-center gap-3 mt-3 pt-3 border-t border-rose-100">
           <div className="flex items-center gap-1.5 text-gray-400">
             <Clock size={13} className="text-rose-400" />

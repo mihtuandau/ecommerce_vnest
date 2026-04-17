@@ -12,6 +12,10 @@ const UserTable = ({ users, currentUserId, hasPermission, currentPage = 1, items
       return { color: 'orange', label: 'Tạm khóa' };
     }
 
+    if (record.status === 'PENDING') {
+      return { color: 'blue', label: 'Chờ xác thực' };
+    }
+
     return { color: 'green', label: 'Đang hoạt động' };
   };
 

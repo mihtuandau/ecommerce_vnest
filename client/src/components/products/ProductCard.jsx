@@ -138,20 +138,18 @@ const ProductCard = ({ product, viewMode = 'grid-4' }) => {
     <div className={`group relative bg-white rounded-xl border border-gray-100 transition-all duration-300 overflow-hidden hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:border-gray-300 hover:-translate-y-1 flex flex-col h-full ${isList ? 'flex-row min-h-[280px]' : ''}`}>
       {isInFlashSale ? (
         <div className={`absolute top-3 left-3 z-10 ${isList ? 'top-2 left-2' : ''}`}>
-          <span className={`flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-white ${productDiscount?.isFlashSale ? 'bg-red-500' : 'bg-black'} ${isList ? 'px-2 py-0.5 text-[10px]' : ''}`}>
-            <Zap size={10} className="fill-white" />
-            {productDiscount?.isFlashSale ? 'FLASH SALE' : 'KM'}{flashSalePercent ? ` -${flashSalePercent}%` : ''}
+          <span className={`flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-white ${productDiscount?.isFlashSale ? 'bg-red-500' : 'bg-blue-600'} ${isList ? 'px-2 py-0.5 text-[10px]' : ''}`}>
+            🔥{flashSalePercent ? ` -${flashSalePercent}%` : ''}
           </span>
 
 
         </div>
       ) : (badge || discountPercent > 0) && (
         <div className={`absolute top-3 left-3 z-10 ${isList ? 'top-2 left-2' : ''}`}>
-          <span className={`px-2.5 py-1 text-xs font-black bg-red-600 text-white shadow-lg shadow-red-100 ${isList ? 'px-2 py-0.5 text-[10px]' : ''}`}>
-            {badge || `-${discountPercent}%`}
+          <span className={`flex items-center gap-1 px-2.5 py-1 text-xs font-black bg-red-600 text-white shadow-lg shadow-red-100 ${isList ? 'px-2 py-0.5 text-[10px]' : ''}`}>
+            🔥 {badge || `-${discountPercent}%`}
           </span>
         </div>
-
       )}
 
       {!isList && (

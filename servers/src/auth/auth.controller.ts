@@ -37,16 +37,28 @@ export class AuthController {
   ) {}
 
   @Post('register')
-  @Throttle({ default: { limit: 50, ttl: 300000 } }) // Increased for dev (was 5 per 5 mins)
-  async register(@Body() registerDto: RegisterDto, @Res() res: Response) {
-    const result = await this.authService.register(registerDto);
-    this.authService.setAuthCookie(res, result.access_token);
-    this.authService.setRefreshTokenCookie(res, result.refresh_token);
+  @Throttle({ default: { limit: 50, ttl: 300000 } })
+  async register(@Body() registerDto: RegisterDto) {
+    return this.authService.register(registerDto);
+  }
 
-    return res.status(HttpStatus.CREATED).json({
-      user: result.user,
-      message: 'User registered successfully',
+  @Post('verify-otp')
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
+  async verifyOtp(
+    @Body() body: { email: string; code: string },
+    @Res() res: Response,
+  ) {
+    const result = await this.authService.verifyOtp(body.email, body.code);
+    
+    return res.json({
+      message: result.message,
     });
+  }
+
+  @Post('resend-otp')
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
+  async resendOtp(@Body() body: { email: string }) {
+    return this.authService.resendOtp(body.email);
   }
 
   @Post('register-admin/initial')
@@ -193,8 +205,17 @@ export class AuthController {
   @ApiBearerAuth('Authorization')
   async getCurrentUser(@Req() req: any) {
     const fullUser = await this.authService.getUserInfo(req.user.userId);
-    if (!fullUser) throw new Error('User not found');
-    const { password: _, ...safeUser } = fullUser;
+    // Lọc các trường an toàn để trả về
+    const safeUser = {
+      id: fullUser.id,
+      email: fullUser.email,
+      name: fullUser.name,
+      role: fullUser.role,
+      status: fullUser.status,
+      createdAt: fullUser.createdAt,
+      updatedAt: fullUser.updatedAt,
+      addresses: fullUser.addresses,
+    };
 
     // Lấy permissions để trả về cho FE
     const permissions = await this.authService.getPermissionsByRole(safeUser.role);

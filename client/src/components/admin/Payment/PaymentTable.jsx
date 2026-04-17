@@ -1,169 +1,187 @@
 import React from 'react';
-import { Table, Tag, Button, Space, Tooltip, Typography } from 'antd';
+import { Table, Tooltip, Button } from 'antd';
+import { SyncOutlined, CheckCircleOutlined, RollbackOutlined } from '@ant-design/icons';
 import {
-  CreditCardOutlined,
-  EyeOutlined,
-  ClockCircleOutlined,
-  CheckCircleOutlined,
-  CloseCircleOutlined,
-  SyncOutlined,
-  DollarOutlined,
-} from '@ant-design/icons';
-import {
-  formatCurrency,
-  formatDate,
-  getStatusVariant,
   getStatusText,
   getMethodText,
 } from '../../../utils/paymentHelpers';
 
-const { Text } = Typography;
-
-const getStatusIcon = (status) => {
-  const icons = {
-    PENDING: <ClockCircleOutlined />,
-    SUCCESS: <CheckCircleOutlined />,
-    FAILED: <CloseCircleOutlined />,
-    REFUNDED: <SyncOutlined />,
-  };
-  return icons[status] || <ClockCircleOutlined />;
+const formatVND = (amount) => {
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
+  }).format(amount || 0);
 };
 
-const getStatusColor = (status) => {
+const getStatusTextColor = (status) => {
   const colors = {
-    success: 'success',
-    warning: 'warning',
-    error: 'error',
-    default: 'default',
-    info: 'processing',
+    SUCCESS: 'text-emerald-500',
+    PENDING: 'text-amber-500',
+    FAILED: 'text-red-500',
+    REFUNDED: 'text-purple-500',
+    CANCELLED: 'text-gray-400',
   };
-  return colors[getStatusVariant(status)] || 'default';
+  return colors[status] || 'text-gray-500';
 };
 
 const PaymentTable = ({
   payments,
   loading,
-  sortField,
-  sortOrder,
-  onSort,
-  onViewDetail,
+  onSyncStatus,
+  onConfirmSuccess,
+  onUpdateStatus,
   currentPage = 1,
-  itemsPerPage = 10,
+  itemsPerPage = 12,
   total = 0,
   onPageChange,
 }) => {
+  
   const columns = [
     {
       title: 'STT',
       key: 'index',
-      width: 60,
-      render: (_, __, index) => index + 1,
+      width: 40,
+      align: 'left',
+      render: (_, __, index) => <span className="text-gray-400 text-[10px] font-bold">{(currentPage - 1) * itemsPerPage + index + 1}</span>,
     },
     {
-      title: 'ID Giao dịch',
-      dataIndex: 'id',
-      key: 'id',
-      sorter: true,
-      render: (id, record) => (
-        <div>
-          <Space>
-            <CreditCardOutlined style={{ color: '#bfbfbf' }} />
-            <Text strong>#{id}</Text>
-          </Space>
-          {record.transactionId && (
-            <div style={{ fontSize: 12, color: '#8c8c8c', marginTop: 4 }}>
-              {record.transactionId}
-            </div>
-          )}
+      title: 'Đơn hàng & Sản phẩm',
+      key: 'order',
+      width: 200,
+      align: 'left',
+      render: (_, record) => (
+        <div className="flex flex-col py-2">
+          <span className="text-[13px] font-bold text-slate-900 mb-1 leading-none italic">
+            {record.order?.orderCode || `#${record.orderId}`}
+          </span>
+          <div className="flex flex-col gap-0.5 mt-1 border-l border-gray-100 pl-2">
+            {record.order?.orderItems?.map((item, i) => (
+              <span key={i} className="text-[10px] text-gray-400 leading-tight italic">
+                - {item.productName} (x{item.quantity})
+              </span>
+            ))}
+          </div>
         </div>
       ),
-    },
-    {
-      title: 'Đơn hàng',
-      dataIndex: 'orderId',
-      key: 'orderId',
-      render: (orderId) => `#${orderId}`,
     },
     {
       title: 'Khách hàng',
       key: 'customer',
-      render: (_, record) => (
-        <div>
-          <div>
-            {record.order?.user?.name || 
-             record.order?.shippingInfo?.fullName || 
-             'Khách vãng lai'}
+      width: 130,
+      align: 'left',
+      render: (_, record) => {
+        const phone = record.order?.guestPhone || record.order?.user?.phone || record.order?.shippingSnapshot?.phone || 'N/A';
+        const name = record.order?.user?.name || record.order?.shippingSnapshot?.fullName || 'Khách vãng lai';
+
+        return (
+          <div className="flex flex-col py-1">
+            <span className="text-[11px] font-bold text-slate-700 leading-tight mb-1">{name}</span>
+            <span className="text-[10px] text-blue-500 font-bold tracking-tight">{phone}</span>
           </div>
-          <Text type="secondary" style={{ fontSize: 12 }}>
-            {record.order?.user?.email || 
-             record.order?.guestEmail || 
-             'N/A'}
-          </Text>
-          {record.order?.guestPhone && (
-            <div style={{ fontSize: 12, color: '#8c8c8c' }}>
-              {record.order?.guestPhone}
-            </div>
-          )}
-        </div>
+        );
+      },
+    },
+    {
+      title: 'Tiền hàng',
+      key: 'subtotal',
+      width: 90,
+      align: 'left',
+      render: (_, record) => (
+        <span className="text-[12px] font-medium text-gray-600">
+          {formatVND(record.order?.subtotal || 0)}
+        </span>
       ),
     },
     {
-      title: 'Số tiền',
-      dataIndex: 'amount',
-      key: 'amount',
-      sorter: true,
-      render: (amount) => <Text strong>{formatCurrency(amount)}</Text>,
+      title: 'Phí Ship',
+      key: 'shipping',
+      width: 90,
+      align: 'left',
+      render: (_, record) => (
+        <span className="text-[11px] font-bold text-orange-400">
+          +{formatVND(record.order?.taxAmount || 30000)}
+        </span>
+      ),
     },
     {
-      title: 'Phương thức',
-      dataIndex: 'method',
-      key: 'method',
-      render: (method) => (
-        <Tag color="blue">{getMethodText(method)}</Tag>
+      title: 'Giảm giá',
+      key: 'discount',
+      width: 90,
+      align: 'left',
+      render: (_, record) => (
+        <span className="text-[11px] font-bold text-red-500">
+          -{formatVND(record.order?.discountAmount || 0)}
+        </span>
+      ),
+    },
+    {
+      title: 'Tổng thu (Bank)',
+      dataIndex: 'amount',
+      key: 'amount',
+      width: 110,
+      align: 'left',
+      render: (amount) => <span className="font-black text-slate-900 text-[14px]">{formatVND(amount)}</span>,
+    },
+    {
+      title: 'PTTT / Ngày',
+      key: 'methodDate',
+      width: 130,
+      align: 'left',
+      render: (_, record) => (
+        <div className="flex flex-col items-start gap-1 py-1">
+          <span className="text-[10px] font-black text-gray-400 uppercase tracking-tighter">
+            {getMethodText(record.method)}
+          </span>
+          <span className="text-[10px] text-gray-300 font-bold uppercase leading-none">
+            {new Date(record.createdAt).toLocaleDateString('vi-VN')}
+          </span>
+        </div>
       ),
     },
     {
       title: 'Trạng thái',
       dataIndex: 'status',
       key: 'status',
+      width: 110,
+      align: 'left',
       render: (status) => (
-        <Tag icon={getStatusIcon(status)} color={getStatusColor(status)}>
+        <span className={`font-black uppercase text-[10px] tracking-widest ${getStatusTextColor(status)}`}>
           {getStatusText(status)}
-        </Tag>
-      ),
-    },
-    {
-      title: 'Thời gian',
-      dataIndex: 'createdAt',
-      key: 'createdAt',
-      sorter: true,
-      render: (createdAt) => (
-        <Text type="secondary">{formatDate(createdAt)}</Text>
+        </span>
       ),
     },
     {
       title: 'Thao tác',
       key: 'actions',
-      width: 120,
-      render: (_, record) => (
-        <Tooltip title="Chi tiết">
-          <Button
-            type="text"
-            icon={<EyeOutlined />}
-            onClick={() => onViewDetail(record)}
-          >
-            Chi tiết
-          </Button>
-        </Tooltip>
-      ),
+      width: 80,
+      align: 'left',
+      render: (_, record) => {
+        const isPending = record.status === 'PENDING';
+        const isOnline = record.method !== 'CASH';
+        const isSuccess = record.status === 'SUCCESS';
+
+        return (
+          <div className="flex items-center justify-start gap-2">
+            {isPending && isOnline && (
+              <Tooltip title="Đồng bộ">
+                <Button size="small" type="text" icon={<SyncOutlined />} onClick={() => onSyncStatus(record)} className="text-blue-500 hover:text-blue-600 p-0" />
+              </Tooltip>
+            )}
+            {isPending && !isOnline && (
+              <Tooltip title="Xác nhận">
+                <Button size="small" type="text" icon={<CheckCircleOutlined />} onClick={() => onConfirmSuccess(record)} className="text-blue-500 hover:text-blue-600 p-0" />
+              </Tooltip>
+            )}
+            {isSuccess && (
+              <Tooltip title="Hoàn tiền">
+                <Button size="small" type="text" icon={<RollbackOutlined />} onClick={() => onUpdateStatus(record.id, 'REFUNDED')} className="text-red-500 hover:text-red-600 p-0" />
+              </Tooltip>
+            )}
+          </div>
+        );
+      },
     },
   ];
-
-  const handleTableChange = (pagination, filters, sorter) => {
-    if (sorter.field) {
-      onSort(sorter.field);
-    }
-  };
 
   return (
     <Table
@@ -171,27 +189,17 @@ const PaymentTable = ({
       dataSource={payments}
       loading={loading}
       rowKey="id"
-      onChange={handleTableChange}
-      size="small"
+      size="middle"
+      scroll={{ x: 1100 }}
       pagination={{
         current: currentPage,
         total: total || payments.length,
         pageSize: itemsPerPage,
-        showSizeChanger: true,
-        showTotal: (count) => `Hiển thị ${count} giao dịch`,
         onChange: onPageChange,
         size: 'small',
-        position: ['bottomRight'],
+        showTotal: (total) => <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Total Pay: {total}</span>,
       }}
-      locale={{
-        emptyText: (
-          <div style={{ textAlign: 'center', padding: '40px 0' }}>
-            <DollarOutlined style={{ fontSize: 48, color: '#bfbfbf', marginBottom: 16 }} />
-            <div style={{ fontWeight: 500 }}>Không có giao dịch nào</div>
-          </div>
-        ),
-      }}
-      className="[&_.ant-table-thead>tr>th]:bg-gray-50 [&_.ant-table-thead>tr>th]:font-medium [&_.ant-table-thead>tr>th]:text-gray-700 [&_.ant-table-thead>tr>th]:border-b [&_.ant-table-thead>tr>th]:border-gray-200 [&_.ant-table-thead>tr>th]:px-2 [&_.ant-table-thead>tr>th]:py-2 [&_.ant-table-tbody>tr>td]:px-2 [&_.ant-table-tbody>tr>td]:py-2"
+      className="reconcile-expert-table [&_.ant-table-cell]:!align-middle [&_.ant-table-cell]:!bg-transparent"
     />
   );
 };

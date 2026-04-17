@@ -37,8 +37,8 @@ export class AddressController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
-    const address = await this.addressService.getAddress(+id);
+  async findOne(@Param('id') id: string, @Req() req: any) {
+    const address = await this.addressService.getAddress(+id, req.user.userId);
     return { address };
   }
 
@@ -46,17 +46,19 @@ export class AddressController {
   async update(
     @Param('id') id: string,
     @Body() updateAddressDto: UpdateAddressDto,
+    @Req() req: any,
   ) {
     const address = await this.addressService.updateAddress(
       +id,
+      req.user.userId,
       updateAddressDto,
     );
     return { message: 'Address updated successfully', address };
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: string) {
-    await this.addressService.deleteAddress(+id);
+  async remove(@Param('id') id: string, @Req() req: any) {
+    await this.addressService.deleteAddress(+id, req.user.userId);
     return { message: 'Address deleted successfully' };
   }
 

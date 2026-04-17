@@ -120,7 +120,10 @@ export class MailService {
           </html>
         `,
       });
-    } catch (error) {}
+    } catch (error) {
+      console.error('Email confirmation error:', error);
+      throw error;
+    }
   }
 
   async sendPasswordReset(email: string, resetUrl: string, userName?: string) {
@@ -199,6 +202,70 @@ export class MailService {
       });
     } catch (error) {
       throw error;
+    }
+  }
+
+  async sendVerificationCode(email: string, code: string, userName?: string) {
+    try {
+      await this.mailerService.sendMail({
+        to: email,
+        subject: 'Xác thực tài khoản của bạn',
+        html: `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="utf-8">
+            <style>
+              body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+              .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+              .header { background: linear-gradient(135deg, #12c2e9 0%, #c471ed 50%, #f64f59 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+              .content { background: #fff; padding: 30px; border: 1px solid #ddd; border-top: none; }
+              .otp-box { background: #f8f9fa; padding: 30px; border-radius: 10px; text-align: center; margin: 20px 0; border: 2px dashed #c471ed; }
+              .otp-code { font-size: 36px; font-weight: bold; color: #f64f59; letter-spacing: 10px; }
+              .info-box { background: #eef2ff; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #12c2e9; font-size: 14px; }
+              .footer { text-align: center; padding: 20px; color: #666; font-size: 14px; }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="header">
+                <h1>Chào mừng đến với cửa hàng</h1>
+                <p>Xác thực email để bắt đầu mua sắm</p>
+              </div>
+              
+              <div class="content">
+                <p>Xin chào ${userName || 'bạn'},</p>
+                <p>Cảm ơn bạn đã đăng ký tài khoản. Để hoàn tất quá trình đăng ký, vui lòng sử dụng mã OTP dưới đây:</p>
+                
+                <div class="otp-box">
+                  <div class="otp-code">${code}</div>
+                  <p style="color: #666; font-size: 12px; margin-top: 10px;">Mã này có hiệu lực trong 10 phút</p>
+                </div>
+ 
+                <div class="info-box">
+                  <p style="margin: 0;"><strong>⚠️ Lưu ý bảo mật:</strong></p>
+                  <ul style="margin: 10px 0 0 20px; padding: 0;">
+                    <li>Không chia sẻ mã này với bất kỳ ai (kể cả nhân viên cửa hàng)</li>
+                    <li>Nếu không phải bạn đăng ký, vui lòng bỏ qua email này</li>
+                  </ul>
+                </div>
+              </div>
+ 
+              <div class="footer">
+                <p>Nếu bạn gặp bất kỳ vấn đề nào, hãy liên hệ bộ phận hỗ trợ</p>
+                <p>Email: support@example.com | Hotline: 1900-xxxx</p>
+                <p style="color: #999; font-size: 12px; margin-top: 20px;">
+                  Email này được gửi tự động, vui lòng không trả lời email này.
+                </p>
+              </div>
+            </div>
+          </body>
+          </html>
+        `,
+      });
+    } catch (error) {
+       console.error('Verification Mail Error:', error);
+       throw error;
     }
   }
 

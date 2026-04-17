@@ -53,17 +53,25 @@ export class PaymentRepository {
           select: {
             id: true,
             orderCode: true,
+            subtotal: true,
+            taxAmount: true,
+            discountAmount: true,
             total: true,
             status: true,
             guestEmail: true,
             guestPhone: true,
-            shippingSnapshot: true, // Đổi từ shippingInfo
+            shippingSnapshot: true,
             createdAt: true,
             user: {
               select: {
                 id: true,
                 name: true,
                 email: true,
+              },
+            },
+            orderItems: {
+              select: {
+                productName: true,
               },
             },
           },

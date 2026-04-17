@@ -8,44 +8,80 @@ export class ReportService {
   constructor(private repository: ReportRepository) {}
 
   private getDateRange(startDate?: string, endDate?: string) {
-    const start = startDate ? new Date(startDate) : new Date(new Date().getFullYear(), 0, 1);
-    const end = endDate ? new Date(endDate) : new Date();
-    end.setHours(23, 59, 59, 999);
+    let start: Date;
+    let end: Date;
+
+    if (startDate) {
+      start = new Date(startDate);
+      start.setHours(0, 0, 0, 0);
+    } else {
+      start = new Date();
+      start.setDate(start.getDate() - 7); // Mặc định 7 ngày
+      start.setHours(0, 0, 0, 0);
+    }
+
+    if (endDate) {
+      end = new Date(endDate);
+      end.setHours(23, 59, 59, 999);
+    } else {
+      end = new Date();
+      end.setHours(23, 59, 59, 999);
+    }
+
     return { start, end };
   }
 
   async getRevenueByPeriod(query: ReportQueryDto) {
     const { start, end } = this.getDateRange(query.startDate, query.endDate);
 
-    if (query.year) {
-      // Monthly report for a specific year
-      const monthlyData = await this.repository.getRevenueByMonth(query.year);
-      return {
-        type: 'monthly',
-        year: query.year,
-        data: monthlyData,
-      };
-    }
+    const rawOrders = await this.repository.getRawOrdersForRevenue(start, end);
 
-    if (query.startYear && query.endYear) {
-      // Yearly report
-      const yearlyData = await this.repository.getRevenueByYear(
-        query.startYear,
-        query.endYear,
-      );
-      return {
-        type: 'yearly',
-        data: yearlyData,
-      };
-    }
+    // Gộp nhóm bằng Javascript để đảm bảo múi giờ VN tuyệt đối
+    const dataMap = new Map<string, { label: string; revenue: number; total: number; orders: number; sortKey: number }>();
 
-    // Daily/date range report
-    const dailyData = await this.repository.getRevenueByDate(start, end);
+    rawOrders.forEach((order) => {
+      const date = new Date(order.createdAt);
+      // Chuyển sang chuỗi ngày VN: "DD/MM"
+      const label = date.toLocaleDateString('vi-VN', {
+        day: '2-digit',
+        month: '2-digit',
+        timeZone: 'Asia/Ho_Chi_Minh',
+      });
+
+      const sortKey = new Date(date.toLocaleString('en-US', { timeZone: 'Asia/Ho_Chi_Minh' })).setHours(0,0,0,0);
+
+      const existing = dataMap.get(label);
+      const revenue = Number(order.subtotal) || 0;
+
+      if (existing) {
+        existing.revenue += revenue;
+        existing.total += revenue;
+        existing.orders += 1;
+      } else {
+        dataMap.set(label, {
+          label,
+          revenue,
+          total: revenue,
+          orders: 1,
+          sortKey
+        });
+      }
+    });
+
+    const data = Array.from(dataMap.values())
+      .sort((a, b) => a.sortKey - b.sortKey)
+      .map(item => ({
+        date: item.label,
+        revenue: item.revenue,
+        total: item.total,
+        orders: item.orders
+      }));
+
     return {
       type: 'daily',
       startDate: start,
       endDate: end,
-      data: dailyData,
+      data,
     };
   }
 
@@ -128,16 +164,16 @@ export class ReportService {
   async exportToExcel(query: ReportQueryDto): Promise<Buffer> {
     const { start, end } = this.getDateRange(query.startDate, query.endDate);
 
+    // Sử dụng chung logic gộp nhóm của web để xuất Excel
+    const revenueReport = await this.getRevenueByPeriod(query);
+    const revenueData = revenueReport.data;
+
     const [
-      revenueData,
       ordersByStatus,
       topProducts,
       topCategories,
       customerStats,
     ] = await Promise.all([
-      query.year
-        ? this.repository.getRevenueByMonth(query.year)
-        : this.repository.getRevenueByDate(start, end),
       this.repository.getOrdersByStatus(start, end),
       this.repository.getTopProducts(start, end, 10),
       this.repository.getTopCategories(start, end, 10),
@@ -146,8 +182,7 @@ export class ReportService {
 
     const workbook = new ExcelJS.Workbook();
     workbook.creator = 'E-Commerce System';
-    workbook.created = new Date();
-
+    
     // Summary Sheet
     const summarySheet = workbook.addWorksheet('Tổng Quan');
     summarySheet.columns = [
@@ -156,7 +191,7 @@ export class ReportService {
     ];
 
     summarySheet.addRows([
-      { metric: 'Thời Gian Báo Cáo', value: `${start.toLocaleDateString()} - ${end.toLocaleDateString()}` },
+      { metric: 'Thời Gian Báo Cáo', value: `${start.toLocaleDateString('vi-VN')} - ${end.toLocaleDateString('vi-VN')}` },
       { metric: '', value: '' },
       { metric: 'Khách Hàng Mới', value: customerStats.newCustomers },
       { metric: 'Khách Hàng Quay Lại', value: customerStats.returningCustomers },
@@ -165,25 +200,12 @@ export class ReportService {
 
     // Revenue Sheet
     const revenueSheet = workbook.addWorksheet('Doanh Thu');
-    if (query.year) {
-      revenueSheet.columns = [
-        { header: 'Tháng', key: 'month', width: 15 },
-        { header: 'Doanh Thu', key: 'revenue', width: 20 },
-        { header: 'Số Đơn', key: 'orders', width: 15 },
-      ];
-      revenueSheet.addRows(revenueData);
-    } else {
-      revenueSheet.columns = [
-        { header: 'Ngày', key: 'date', width: 20 },
-        { header: 'Doanh Thu', key: 'revenue', width: 20 },
-      ];
-      revenueSheet.addRows(
-        revenueData.map((item: any) => ({
-          date: new Date(item.createdAt).toLocaleDateString(),
-          revenue: item._sum?.total || 0,
-        })),
-      );
-    }
+    revenueSheet.columns = [
+      { header: 'Ngày', key: 'date', width: 20 },
+      { header: 'Doanh Thu', key: 'revenue', width: 20 },
+      { header: 'Số Đơn', key: 'orders', width: 15 },
+    ];
+    revenueSheet.addRows(revenueData);
 
     // Orders by Status Sheet
     const ordersSheet = workbook.addWorksheet('Đơn Hàng Theo Trạng Thái');
@@ -201,7 +223,7 @@ export class ReportService {
     // Top Products Sheet
     const productsSheet = workbook.addWorksheet('Sản Phẩm Bán Chạy');
     productsSheet.columns = [
-      { header: 'Sản Phẩm', key: 'productName', width: 30 },
+      { header: 'Sản Phẩm', key: 'productName', width: 35 },
       { header: 'Số Lượng Bán', key: 'quantity', width: 15 },
       { header: 'Doanh Thu', key: 'revenue', width: 20 },
     ];
@@ -211,33 +233,6 @@ export class ReportService {
         quantity: item.totalQuantity,
         revenue: item.totalRevenue,
       })),
-    );
-
-    // Top Categories Sheet
-    const categoriesSheet = workbook.addWorksheet('Danh Mục Bán Chạy');
-    categoriesSheet.columns = [
-      { header: 'Danh Mục', key: 'categoryName', width: 30 },
-      { header: 'Số Đơn Hàng', key: 'orders', width: 15 },
-      { header: 'Doanh Thu', key: 'revenue', width: 20 },
-    ];
-    categoriesSheet.addRows(
-      topCategories.map((item) => ({
-        categoryName: item.categoryName,
-        orders: item.totalOrders,
-        revenue: item.totalRevenue,
-      })),
-    );
-
-    // Style headers
-    [summarySheet, revenueSheet, ordersSheet, productsSheet, categoriesSheet].forEach(
-      (sheet) => {
-        sheet.getRow(1).font = { bold: true };
-        sheet.getRow(1).fill = {
-          type: 'pattern',
-          pattern: 'solid',
-          fgColor: { argb: 'FFE0E0E0' },
-        };
-      },
     );
 
     const buffer = await workbook.xlsx.writeBuffer();

@@ -36,8 +36,10 @@ export class UserController {
 
   @Get()
   @Permissions('user.view')
-  findAll(@Query() query: QueryUserDto) {
-    return this.userService.findAll(query);
+  async findAll(@Query() query: QueryUserDto) {
+    const users = await this.userService.findAll(query);
+    console.log(`📋 [Admin] Fetching users. Found: ${users.length}`);
+    return users;
   }
 
   @Get('profile')
@@ -109,14 +111,20 @@ export class UserController {
     const userRole = req.user.role;
     const permissions = req.user.permissions || [];
 
-    // Cho phép cập nhật nếu là chính mình HOẶC là ADMIN HOẶC có quyền user.manage
-    const canUpdate = userId === id || userRole === 'ADMIN' || permissions.includes('user.manage');
+    // 1. Kiểm tra quyền cập nhật cơ bản
+    const isStaff = userRole === 'ADMIN' || permissions.includes('user.manage');
+    const isSelf = userId === id;
 
-    if (!canUpdate) {
-      throw new ForbiddenException('You can only update your own profile');
+    if (!isStaff && !isSelf) {
+      throw new ForbiddenException('Bạn không có quyền cập nhật người dùng này');
+    }
+    
+    // 2. 🛡️ SECURITY: Ngăn chặn tự nâng cấp quyền nếu không phải nhân sự có thẩm quyền
+    if (!isStaff) {
+      delete updateUserDto.role;
     }
 
-    // Cho phép cập nhật role
+    // 3. Thực hiện cập nhật
     const updatedUser = await this.userService.update(id, updateUserDto);
     await this.auditLogService.write({
       action: 'USER_UPDATE',
