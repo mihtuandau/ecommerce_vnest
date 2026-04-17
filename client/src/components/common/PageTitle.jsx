@@ -2,13 +2,13 @@
  * Elegant page title component for customer pages
  * Centered layout with subtitle, title, divider and optional description/count
  */
-const PageTitle = ({ 
-  subtitle, 
-  title, 
+const PageTitle = ({
+  subtitle,
+  title,
   description,
   count,
-  countLabel = 'sản phẩm',
-  className = ''
+  countLabel = "sản phẩm",
+  className = "",
 }) => {
   return (
     <div className={`text-center mb-10 mt-6 ${className}`}>

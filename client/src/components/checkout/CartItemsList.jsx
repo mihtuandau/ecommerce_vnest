@@ -1,5 +1,5 @@
 import { formatPrice } from "../../utils/formatters";
-import { Zap } from 'lucide-react';
+import { Zap } from "lucide-react";
 
 const CartItemsList = ({ cartItems, originalCartItems }) => {
   return (
@@ -7,13 +7,16 @@ const CartItemsList = ({ cartItems, originalCartItems }) => {
       {cartItems.map((item, idx) => {
         // Handle both cart items from Redux and direct product data from ProductDetailPage
         const price = item.product?.variant?.price || item.price || 0;
-        const originalPrice = item.product?.variant?.originalPrice ||
-          originalCartItems?.[idx]?.product?.variant?.price || price;
+        const originalPrice =
+          item.product?.variant?.originalPrice ||
+          originalCartItems?.[idx]?.product?.variant?.price ||
+          price;
         const hasFlash = originalPrice > price;
         const size = item.product?.variant?.size || item.size;
         const color = item.product?.variant?.color || item.color;
         const productName = item.product?.name || item.name || "Sản phẩm";
-        const image = item.product?.image || item.image || "/placeholder-product.jpg";
+        const image =
+          item.product?.image || item.image || "/placeholder-product.jpg";
 
         return (
           <div
@@ -44,7 +47,9 @@ const CartItemsList = ({ cartItems, originalCartItems }) => {
               <div className="flex items-center justify-between mt-2">
                 <span className="text-xs text-gray-600">× {item.quantity}</span>
                 <div className="text-right">
-                  <span className={`text-sm ${hasFlash ? 'text-red-500 font-semibold' : 'text-gray-900'}`}>
+                  <span
+                    className={`text-sm ${hasFlash ? "text-red-500 font-semibold" : "text-gray-900"}`}
+                  >
                     {formatPrice(price * item.quantity)}
                   </span>
                   {hasFlash && (

@@ -103,9 +103,10 @@ export const getStockStatus = (stock) => {
   }
   return {
     text: 'Còn hàng',
-    color: 'text-[#00a85a] bg-green-50 border-green-200'
+    color: 'text-black bg-gray-50 border-gray-200'
   };
 };
+
 
 /**
  * Tính giá sau khi áp dụng discount tự động từ map { productId: {percentage, fixedAmount} }.
@@ -134,4 +135,43 @@ export const computeFlashPrice = (productId, originalPrice, flashSale) => {
   if (flashSale.percentage) return Math.round(originalPrice * (1 - flashSale.percentage / 100));
   if (flashSale.fixedAmount) return Math.max(0, originalPrice - flashSale.fixedAmount);
   return originalPrice;
+};
+
+/**
+ * Calculate time left until an end date
+ * @param {string|Date} endDate 
+ * @returns {Object|null}
+ */
+export const getTimeLeft = (endDate) => {
+  if (!endDate) return null;
+  
+  let targetDate;
+  
+  if (typeof endDate === 'string') {
+    // ÉP BUỘC GIỜ ĐỊA PHƯƠNG:
+    // Xóa 'Z' hoặc múi giờ UTC để trình duyệt không tự cộng thêm 7 tiếng (timezone offset)
+    const cleanDateStr = endDate.replace('Z', '').replace(/\+00:?00$/, '');
+    
+    // Thay '-' bằng '/' để an tâm hơn trên các trình duyệt cũ/Safari
+    const safeDateStr = cleanDateStr.includes('T') ? cleanDateStr : cleanDateStr.replace(/-/g, '/');
+    
+    targetDate = new Date(safeDateStr);
+  } else {
+    targetDate = new Date(endDate);
+  }
+  
+  if (isNaN(targetDate.getTime())) return null;
+  
+  const diff = targetDate.getTime() - Date.now();
+  
+  if (diff <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0, expired: true };
+  
+  const s = Math.floor(diff / 1000);
+  return {
+    days: Math.floor(s / 86400),
+    hours: Math.floor((s % 86400) / 3600),
+    minutes: Math.floor((s % 3600) / 60),
+    seconds: s % 60,
+    expired: false,
+  };
 };

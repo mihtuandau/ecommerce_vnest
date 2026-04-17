@@ -77,7 +77,7 @@ const AddressManager = () => {
         <h2 className="text-2xl font-light text-gray-900">Địa Chỉ Của Tôi</h2>
         <button
           onClick={() => handleOpenModal()}
-          className="flex items-center gap-2 px-4 py-2 bg-[#00a85a] hover:bg-[#008f4d] text-white transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-black hover:bg-neutral-800 text-white transition-colors"
         >
           <FaPlus size={14} />
           Thêm địa chỉ
@@ -89,7 +89,7 @@ const AddressManager = () => {
           <p className="text-gray-600 mb-4">Chưa có địa chỉ nào</p>
           <button
             onClick={() => handleOpenModal()}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-[#00a85a] hover:bg-[#008f4d] text-white transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-black hover:bg-neutral-800 text-white transition-colors"
           >
             <FaPlus size={14} />
             Thêm địa chỉ đầu tiên

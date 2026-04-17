@@ -123,7 +123,11 @@ export class DiscountService {
 
   /** Danh sách khuyến mãi đang hoạt động cho trang public */
   async getPublicDiscounts() {
-    return this.repository.findPublicActive();
+    const discounts = await this.repository.findPublicActive();
+    return discounts.map(d => ({
+      ...d,
+      usageCount: d._count?.orders || 0,
+    }));
   }
 
   /** Discount (flash hoặc thường) áp dụng cho 1 sản phẩm cụ thể */
@@ -187,6 +191,7 @@ export class DiscountService {
         reviewCount: p.reviewCount,
         viewCount: p.viewCount,
         variants: p.variants,
+        category: p.category, // Pass category to frontend
       };
     });
 

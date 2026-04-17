@@ -5,12 +5,14 @@ const PromoBanner = () => {
     <section className="py-20 bg-white">
       <div className="container mx-auto px-4 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-14">
-          <span className="text-xs uppercase tracking-[0.3em] text-gray-500 mb-4 block">Ưu đãi</span>
-          <h2 className="text-3xl md:text-4xl font-light text-gray-900 mb-4">
-            BỘ SƯU TẬP ĐẶC BIỆT
+        <div className="flex flex-col mb-14 items-center text-center">
+          <span className="text-[10px] uppercase tracking-[0.4em] text-gray-500 font-black mb-3 block">
+            Ưu đãi đặc biệt
+          </span>
+          <h2 className="text-3xl md:text-4xl font-black text-gray-900 tracking-tighter uppercase mb-4">
+            BỘ SƯU TẬP ĐỘC QUYỀN
           </h2>
-          <div className="w-12 h-px bg-gray-900 mx-auto"></div>
+          <div className="h-1 w-20 bg-gray-900 rounded-full"></div>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-6">
@@ -35,9 +37,10 @@ const PromoBanner = () => {
               <p className="text-base text-gray-200 mb-8 max-w-md">
                 Khám phá những thiết kế thời trang mới nhất, phong cách và năng động
               </p>
-              <span className="w-fit px-8 py-3 bg-white text-gray-900 hover:opacity-80 text-xs uppercase tracking-wider transition-all">
+              <span className="w-fit px-8 py-3 bg-white text-black hover:bg-gray-100 text-[10px] uppercase tracking-widest font-bold transition-all border border-transparent hover:border-black">
                 Khám Phá Ngay
               </span>
+
             </div>
           </Link>
 
@@ -63,9 +66,10 @@ const PromoBanner = () => {
                   </span>
                   Giảm giá lên đến 40%
                 </p>
-                <span className="w-fit px-6 py-2 bg-white text-gray-900 hover:opacity-80 text-xs uppercase tracking-wider transition-all">
+                <span className="w-fit px-6 py-2 bg-white text-black hover:bg-gray-100 text-[10px] uppercase tracking-widest font-bold transition-all border border-transparent hover:border-black">
                   Mua Ngay
                 </span>
+
               </div>
             </Link>
 
@@ -89,9 +93,10 @@ const PromoBanner = () => {
                   </span>
                   Xu hướng 2024
                 </p>
-                <span className="w-fit px-6 py-2 bg-white text-gray-900 hover:opacity-80 text-xs uppercase tracking-wider transition-all">
+                <span className="w-fit px-6 py-2 bg-white text-black hover:bg-gray-100 text-[10px] uppercase tracking-widest font-bold transition-all border border-transparent hover:border-black">
                   Xem Ngay
                 </span>
+
               </div>
             </Link>
           </div>

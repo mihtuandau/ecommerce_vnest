@@ -12,7 +12,7 @@ const ProductFilter = ({
   onFilterChange,
   currentFilters = {},
   hideCategories = false,
-  layout = "vertical", 
+  layout = "vertical",
 }) => {
   const [filters, setFilters] = useState({
     categoryId: currentFilters.categoryId || "",
@@ -57,9 +57,9 @@ const ProductFilter = ({
     setFilters(newFilters);
     if (
       ["sortBy", "categoryId", "brandId", "minRating", "stockStatus"].includes(
-        name
+        name,
       )
-    ) { 
+    ) {
       onFilterChange(newFilters);
       setOpenDropdown(null);
     }
@@ -111,8 +111,18 @@ const ProductFilter = ({
       <div className="flex items-center gap-4 text ">
         {/* Filter label */}
         <div className="flex items-center gap-2 text-gray-700">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
+            />
           </svg>
           <span className="font-medium text-sm uppercase">Bộ lọc</span>
         </div>
@@ -158,14 +168,23 @@ const ProductFilter = ({
           placeholder="Giá sản phẩm"
           style={{ width: 180, borderRadius: 0 }}
           popupClassName="no-border-radius"
-          value={filters.minPrice !== priceRange.minPrice || filters.maxPrice !== priceRange.maxPrice ? `${filters.minPrice}-${filters.maxPrice}` : undefined}
+          value={
+            filters.minPrice !== priceRange.minPrice ||
+            filters.maxPrice !== priceRange.maxPrice
+              ? `${filters.minPrice}-${filters.maxPrice}`
+              : undefined
+          }
           onChange={(value) => {
             if (!value) {
-              handleChange('minPrice', priceRange.minPrice);
-              handleChange('maxPrice', priceRange.maxPrice);
-              onFilterChange({ ...filters, minPrice: priceRange.minPrice, maxPrice: priceRange.maxPrice });
+              handleChange("minPrice", priceRange.minPrice);
+              handleChange("maxPrice", priceRange.maxPrice);
+              onFilterChange({
+                ...filters,
+                minPrice: priceRange.minPrice,
+                maxPrice: priceRange.maxPrice,
+              });
             } else {
-              const [min, max] = value.split('-').map(Number);
+              const [min, max] = value.split("-").map(Number);
               const newFilters = { ...filters, minPrice: min, maxPrice: max };
               setFilters(newFilters);
               onFilterChange(newFilters);
@@ -189,11 +208,13 @@ const ProductFilter = ({
           allowClear
           popupClassName="no-border-radius"
         >
-          {ratingOptions.filter(opt => opt.value !== "").map((opt) => (
-            <Option key={opt.value} value={opt.value}>
-              {opt.stars} {opt.label}
-            </Option>
-          ))}
+          {ratingOptions
+            .filter((opt) => opt.value !== "")
+            .map((opt) => (
+              <Option key={opt.value} value={opt.value}>
+                {opt.stars} {opt.label}
+              </Option>
+            ))}
         </Select>
 
         <Select
@@ -252,7 +273,7 @@ const ProductFilter = ({
               <span
                 className={`text-sm ${
                   filters.sortBy === opt.value
-                    ? "text-[#00a85a] font-medium"
+                    ? "text-black font-medium"
                     : "text-gray-700 font-normal"
                 }`}
               >
@@ -264,10 +285,7 @@ const ProductFilter = ({
       </Accordion>
 
       {!hideCategories && categories.length > 0 && (
-        <Accordion
-          title={`Danh mục (${categories.length})`}
-          defaultOpen={true}
-        >
+        <Accordion title={`Danh mục (${categories.length})`} defaultOpen={true}>
           <div className="space-y-1 max-h-64 overflow-y-auto pr-1 custom-scrollbar">
             <label className="flex items-center gap-3 cursor-pointer hover:bg-gray-50 p-2.5 rounded-lg transition-all duration-200 group">
               <input
@@ -278,9 +296,7 @@ const ProductFilter = ({
                 onChange={(e) => handleChange("categoryId", e.target.value)}
                 className="w-4 h-4 cursor-pointer"
               />
-              <span className="text-sm text-gray-700 font-normal">
-                Tất cả
-              </span>
+              <span className="text-sm text-gray-700 font-normal">Tất cả</span>
             </label>
             {categories.map((cat) => (
               <label
@@ -298,7 +314,7 @@ const ProductFilter = ({
                 <span
                   className={`text-sm ${
                     filters.categoryId == cat.id
-                      ? "text-[#00a85a] font-medium"
+                      ? "text-black font-medium"
                       : "text-gray-700 font-normal"
                   }`}
                 >
@@ -322,9 +338,7 @@ const ProductFilter = ({
                 onChange={(e) => handleChange("brandId", e.target.value)}
                 className="w-4 h-4 cursor-pointer"
               />
-              <span className="text-sm text-gray-700 font-normal">
-                Tất cả
-              </span>
+              <span className="text-sm text-gray-700 font-normal">Tất cả</span>
             </label>
             {brands.map((brand) => (
               <label
@@ -342,7 +356,7 @@ const ProductFilter = ({
                 <span
                   className={`text-sm ${
                     filters.brandId == brand.id
-                      ? "text-[#00a85a] font-medium"
+                      ? "text-black font-medium"
                       : "text-gray-700 font-normal"
                   }`}
                 >
@@ -375,7 +389,7 @@ const ProductFilter = ({
                   <span
                     className={`text-sm ${
                       filters.minRating === opt.value
-                        ? "text-[#00a85a] font-medium"
+                        ? "text-black font-medium"
                         : "text-gray-700 font-normal"
                     }`}
                   >
@@ -399,7 +413,7 @@ const ProductFilter = ({
             { value: "inStock", label: "Còn hàng" },
             { value: "outOfStock", label: "Hết hàng" },
           ].map((opt) => (
-            <label  
+            <label
               key={opt.value}
               className="flex items-center gap-3 cursor-pointer hover:bg-gray-50 p-2.5 rounded-lg transition-all duration-200 group"
             >
@@ -414,7 +428,7 @@ const ProductFilter = ({
               <span
                 className={`text-sm ${
                   filters.stockStatus === opt.value
-                    ? "text-[#00a85a] font-medium"
+                    ? "text-black font-medium"
                     : "text-gray-700 font-normal"
                 }`}
               >
@@ -449,7 +463,7 @@ const ProductFilter = ({
               }}
               onMouseUp={applyPriceFilter}
               onTouchEnd={applyPriceFilter}
-              className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#00a85a] transition-all duration-300"
+              className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-black transition-all duration-300"
             />
           </div>
 
@@ -470,7 +484,7 @@ const ProductFilter = ({
               }}
               onMouseUp={applyPriceFilter}
               onTouchEnd={applyPriceFilter}
-              className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#00a85a] transition-all duration-300"
+              className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-black transition-all duration-300"
             />
           </div>
         </div>

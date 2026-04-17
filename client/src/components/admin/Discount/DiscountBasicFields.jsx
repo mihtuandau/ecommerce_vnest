@@ -1,4 +1,4 @@
-import { Percent, DollarSign, RefreshCw } from 'lucide-react';
+import { Percent, DollarSign, RefreshCw, Image as ImageIcon, X, Trash2, UploadCloud, Flame } from 'lucide-react';
 
 const DiscountBasicFields = ({
   formData,
@@ -11,6 +11,10 @@ const DiscountBasicFields = ({
   previewData,
   realtimeStatus,
   isSubmitting,
+  imagePreview,
+  uploading,
+  onImageUpload,
+  onImageRemove,
 }) => {
   const formatPreview = (value) => {
     const num = Number(value);
@@ -53,79 +57,113 @@ const DiscountBasicFields = ({
         )}
 
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
-          <div className={`space-y-5 ${showFlashPanel ? 'lg:col-span-8' : 'lg:col-span-12'}`}>
-            <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">
-                {isDedicatedFlash ? 'Mã Flash Sale' : 'Mã giảm giá'} <span className="text-red-500">*</span>
-              </label>
-              <div className="grid grid-cols-[1fr_auto] gap-2.5">
-                <input
-                  type="text"
-                  value={formData.code}
-                  onChange={(e) => onChange('code', e.target.value.toUpperCase())}
-                  placeholder="VD: TBV2UI4Z"
-                  className="h-10 w-full rounded-xl border border-gray-300 px-3 text-sm font-medium uppercase outline-none transition-colors focus:border-blue-400 focus:ring-2 focus:ring-blue-300"
-                  disabled={isEdit}
-                />
-                {!isEdit && (
-                  <button
-                    type="button"
-                    onClick={onGenerateCode}
-                    className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-gray-300 text-gray-700 transition-colors hover:bg-gray-50"
-                    aria-label="Sinh mã tự động"
-                  >
-                    <RefreshCw size={16} />
-                  </button>
-                )}
-              </div>
-            </div>
+          <div className="lg:col-span-12 space-y-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-5">
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    {isDedicatedFlash ? 'Mã Flash Sale' : 'Mã giảm giá'} <span className="text-red-500">*</span>
+                  </label>
+                  <div className="grid grid-cols-[1fr_auto] gap-2.5">
+                    <input
+                      type="text"
+                      value={formData.code}
+                      onChange={(e) => onChange('code', e.target.value.toUpperCase())}
+                      placeholder="VD: TBV2UI4Z"
+                      className="h-10 w-full rounded-xl border border-gray-300 px-3 text-sm font-medium uppercase outline-none transition-colors focus:border-blue-400 focus:ring-2 focus:ring-blue-300"
+                      disabled={isEdit}
+                    />
+                    {!isEdit && (
+                      <button
+                        type="button"
+                        onClick={onGenerateCode}
+                        className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-gray-300 text-gray-700 transition-colors hover:bg-gray-50"
+                      >
+                        <RefreshCw size={16} />
+                      </button>
+                    )}
+                  </div>
+                </div>
 
-            <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">Mô tả</label>
-              <textarea
-                value={formData.description}
-                onChange={(e) => onChange('description', e.target.value)}
-                placeholder={isDedicatedFlash ? 'Mô tả chương trình Flash Sale...' : 'Mô tả về mã giảm giá này...'}
-                rows={3}
-                className="w-full resize-none rounded-xl border border-gray-300 px-3 py-2.5 text-sm outline-none transition-colors focus:border-blue-400 focus:ring-2 focus:ring-blue-300"
-              />
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">Mô tả</label>
+                  <textarea
+                    value={formData.description}
+                    onChange={(e) => onChange('description', e.target.value)}
+                    placeholder={isDedicatedFlash ? 'Mô tả chương trình Flash Sale...' : 'Mô tả về mã giảm giá này...'}
+                    rows={3}
+                    className="w-full resize-none rounded-xl border border-gray-300 px-3 py-2.5 text-sm outline-none transition-colors focus:border-blue-400 focus:ring-2 focus:ring-blue-300"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Hình đại diện Voucher <span className="text-gray-400 font-normal italic">(Hiện ở tấm vé khách hàng)</span>
+                </label>
+                
+                <div className="relative group">
+                  {imagePreview ? (
+                    <div className="relative h-32 w-full overflow-hidden rounded-2xl border border-blue-200 bg-blue-50">
+                      <img src={imagePreview} alt="Preview" className="h-full w-full object-cover p-2 rounded-[1.5rem]" />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center gap-2">
+                        <label className="cursor-pointer p-2 bg-white rounded-full text-blue-600 hover:scale-110 transition-transform">
+                          <UploadCloud size={20} />
+                          <input type="file" className="hidden" accept="image/*" onChange={onImageUpload} />
+                        </label>
+                        <button
+                          type="button"
+                          onClick={onImageRemove}
+                          className="p-2 bg-white rounded-full text-red-600 hover:scale-110 transition-transform"
+                        >
+                          <Trash2 size={20} />
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <label className="flex h-32 w-full cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 transition-all hover:border-blue-400 hover:bg-blue-50/30">
+                      <div className={`p-2 rounded-xl border border-gray-200 bg-white mb-2 ${uploading ? 'animate-bounce' : ''}`}>
+                        <ImageIcon className="text-gray-400" size={24} />
+                      </div>
+                      <span className="text-[13px] font-medium text-gray-500">{uploading ? 'Đang tải...' : 'Tải ảnh cho Voucher'}</span>
+                      <span className="mt-1 text-[10px] text-gray-400">Khuyên dùng 1:1 hoặc 4:3</span>
+                      <input type="file" className="hidden" accept="image/*" onChange={onImageUpload} disabled={uploading} />
+                    </label>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
 
           {showFlashPanel && (
-            <div className="lg:col-span-4">
-              <div className="h-full rounded-xl border border-amber-300 bg-amber-50/80 px-4 py-3">
-                <div className="mb-2 flex items-center justify-between">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-amber-700">Flash Sale</p>
-                  <span className="rounded-full bg-amber-200 px-2 py-0.5 text-[11px] font-semibold text-amber-800">ON</span>
+            <div className="lg:col-span-12 mt-2">
+              <div className="rounded-xl border border-amber-300 bg-amber-50/80 px-4 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-full bg-amber-200 flex items-center justify-center text-amber-700">
+                    <Flame size={20} />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-slate-700">Chế độ Flash Sale đặc biệt</p>
+                    <p className="text-xs text-gray-600 mt-1">Dùng cho chiến dịch giảm trực tiếp vào giá sản phẩm.</p>
+                  </div>
                 </div>
 
                 {lockFlashSale ? (
-                  <div className="rounded-lg border border-amber-300 bg-white/80 px-3 py-2 text-sm font-medium text-amber-900">
-                    Bạn đang ở chế độ tạo Flash Sale.
-                  </div>
+                  <span className="rounded-full bg-amber-200 px-3 py-1 text-[11px] font-bold text-amber-800 uppercase tracking-widest">Đang bật</span>
                 ) : (
                   <button
                     type="button"
                     onClick={() => onChange('isFlashSale', !formData.isFlashSale)}
-                    className="w-full flex items-center justify-between gap-4 text-left"
+                    className={`relative h-8 w-14 flex-shrink-0 rounded-full transition-colors ${
+                      formData.isFlashSale ? 'bg-blue-600' : 'bg-gray-300'
+                    }`}
                     disabled={isSubmitting}
                   >
-                    <div>
-                      <p className="text-sm font-semibold text-slate-700">Bật/tắt chế độ Flash Sale</p>
-                      <p className="text-xs text-gray-600 mt-1">Dùng cho chiến dịch giảm giá ngắn hạn.</p>
-                    </div>
                     <span
-                      className={`relative h-8 w-14 flex-shrink-0 rounded-full transition-colors ${
-                        formData.isFlashSale ? 'bg-blue-600' : 'bg-gray-300'
+                      className={`absolute top-1 h-6 w-6 rounded-full bg-white transition-transform ${
+                        formData.isFlashSale ? 'translate-x-7' : 'translate-x-1'
                       }`}
-                    >
-                      <span
-                        className={`absolute top-1 h-6 w-6 rounded-full bg-white transition-transform ${
-                          formData.isFlashSale ? 'translate-x-7' : 'translate-x-1'
-                        }`}
-                      />
-                    </span>
+                    />
                   </button>
                 )}
               </div>
@@ -312,9 +350,6 @@ const DiscountBasicFields = ({
             />
             {realtimeValidation.errors.endDate && (
               <p className="text-xs text-red-600 mt-1">{realtimeValidation.errors.endDate}</p>
-            )}
-            {formData.isFlashSale && realtimeValidation.warnings.flashSale && !realtimeValidation.errors.endDate && (
-              <p className="text-xs text-amber-700 mt-1">{realtimeValidation.warnings.flashSale}</p>
             )}
           </div>
         </div>

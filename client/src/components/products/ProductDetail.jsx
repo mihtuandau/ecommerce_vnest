@@ -1,14 +1,11 @@
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { ChevronLeft, ChevronRight, Maximize2, X } from "lucide-react";
 import { useState } from "react";
-import {
-  ProductInfo,
-  ProductPrice,
-  ProductOptions,
-  ProductQuantity,
-  ProductActions,
-  ProductAccordion,
-  ProductShare,
-} from "../../components/productdetail";
+import ProductInfo from "../productdetail/ProductInfo";
+import ProductPrice from "../productdetail/ProductPrice";
+import ProductOptions from "../productdetail/ProductOptions";
+import ProductQuantity from "../productdetail/ProductQuantity";
+import ProductActions from "../productdetail/ProductActions";
+import ProductShare from "../productdetail/ProductShare";
 
 export const ProductImageGallery = ({
   images = [],
@@ -22,158 +19,134 @@ export const ProductImageGallery = ({
 
   if (!images || images.length === 0) {
     return (
-      <div className="aspect-square overflow-hidden bg-white rounded-lg">
+      <div className="aspect-[4/5] overflow-hidden bg-gray-50 rounded-3xl border border-gray-100 flex items-center justify-center">
         <img
           src="/placeholder-product.jpg"
           alt={productName}
-          className="w-full h-full object-cover"
+          className="w-1/2 opacity-20"
         />
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
-      <div
-        className="relative aspect-square overflow-hidden group cursor-zoom-in bg-white border border-gray-200"
-        onClick={() => setIsZoomed(true)}
-        role="button"
-        tabIndex={0}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            setIsZoomed(true);
-          }
-        }}
-        aria-label="Click to zoom image"
-      >
+    <div className="flex flex-col md:flex-row-reverse gap-4">
+      {/* Main Image */}
+      <div className="flex-1 relative aspect-[4/5] overflow-hidden rounded-3xl bg-gray-50 border border-gray-100 group shadow-sm transition-all duration-500 hover:shadow-xl hover:shadow-gray-200/50">
         <img
           src={images[selectedImage]?.url || "/placeholder-product.jpg"}
           alt={`${productName} - ảnh ${selectedImage + 1}`}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
         />
 
+        <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+
+        <button
+          onClick={() => setIsZoomed(true)}
+          className="absolute top-4 right-4 p-3 bg-white/90 backdrop-blur-md rounded-2xl shadow-lg border border-white/50 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 active:scale-95"
+          aria-label="Phóng to"
+        >
+          <Maximize2 size={18} className="text-gray-900" />
+        </button>
+
         {images.length > 1 && (
-          <>
+          <div className="absolute inset-x-4 top-1/2 -translate-y-1/2 flex justify-between pointer-events-none">
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 onPrevImage();
               }}
-              className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/95 hover:bg-white text-gray-700 p-2.5 border border-gray-200 opacity-0 group-hover:opacity-100 transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900"
-              aria-label="Ảnh trước đó"
-              title="Ảnh trước đó (phím mũi tên trái)"
+              className="w-12 h-12 flex items-center justify-center rounded-2xl bg-white/95 backdrop-blur-md shadow-lg border border-white/50 pointer-events-auto opacity-0 group-hover:opacity-100 -translate-x-4 group-hover:translate-x-0 transition-all duration-500 hover:bg-black hover:text-white"
             >
-              <FaChevronLeft size={16} />
+              <ChevronLeft size={20} />
             </button>
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 onNextImage();
               }}
-              className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/95 hover:bg-white text-gray-700 p-2.5 border border-gray-200 opacity-0 group-hover:opacity-100 transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900"
-              aria-label="Ảnh tiếp theo"
-              title="Ảnh tiếp theo (phím mũi tên phải)"
+              className="w-12 h-12 flex items-center justify-center rounded-2xl bg-white/95 backdrop-blur-md shadow-lg border border-white/50 pointer-events-auto opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0 transition-all duration-500 hover:bg-black hover:text-white"
             >
-              <FaChevronRight size={16} />
+              <ChevronRight size={20} />
             </button>
-
-            <div className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm text-gray-900 px-3 py-1.5 border border-gray-200 text-xs font-light" aria-live="polite">
-              {selectedImage + 1} / {images.length}
-            </div>
-          </>
+          </div>
         )}
+
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 px-4 py-2 bg-black/40 backdrop-blur-md rounded-full text-white text-[10px] font-bold tracking-[0.2em] uppercase opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+          {selectedImage + 1} / {images.length}
+        </div>
       </div>
 
+      {/* Thumbnails */}
       {images.length > 1 && (
-        <div className="flex gap-2 overflow-x-auto pb-2">
+        <div className="flex md:flex-col gap-3 overflow-x-auto md:overflow-y-auto max-h-[500px] scrollbar-hide pb-2 md:pb-0">
           {images.map((img, idx) => (
             <button
               key={idx}
               onClick={() => onImageSelect(idx)}
-              className={`flex-shrink-0 w-20 h-20 overflow-hidden border transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 ${
+              className={`relative flex-shrink-0 w-20 md:w-24 aspect-[4/5] rounded-2xl overflow-hidden border-2 transition-all duration-300 transform active:scale-90 ${
                 selectedImage === idx
-                  ? "border-gray-900"
-                  : "border-gray-200 hover:border-gray-400"
+                  ? "border-black shadow-lg shadow-gray-200"
+                  : "border-transparent hover:border-gray-300 opacity-60 hover:opacity-100"
               }`}
-              aria-label={`Xem ảnh số ${idx + 1}`}
-              aria-current={selectedImage === idx}
             >
               <img
                 src={img.url}
                 alt={`${productName} thumbnail ${idx + 1}`}
-                className="w-full h-full object-cover"
+                className={`w-full h-full object-cover transition-all duration-300 ${selectedImage === idx ? 'grayscale-0' : 'grayscale-[40%]'}`}
               />
+              {selectedImage === idx && (
+                <div className="absolute inset-0 bg-black/5" />
+              )}
             </button>
           ))}
         </div>
       )}
 
+      {/* Zoom Modal */}
       {isZoomed && (
         <div
-          className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 bg-white/98 z-[100] flex items-center justify-center animate-in fade-in duration-300"
           onClick={() => setIsZoomed(false)}
-          role="dialog"
-          aria-modal="true"
-          aria-label="Ảnh phóng to"
-          onKeyDown={(e) => {
-            if (e.key === 'Escape') {
-              setIsZoomed(false);
-            } else if (e.key === 'ArrowLeft') {
-              onPrevImage();
-            } else if (e.key === 'ArrowRight') {
-              onNextImage();
-            }
-          }}
         >
           <button
-            className="absolute top-4 right-4 text-white hover:text-gray-300 text-4xl p-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white focus:ring-offset-black"
+            className="absolute top-8 right-8 w-12 h-12 flex items-center justify-center rounded-2xl bg-gray-100 hover:bg-black hover:text-white transition-all duration-300"
             onClick={() => setIsZoomed(false)}
-            aria-label="Đóng ảnh phóng to (ESC)"
-            title="Đóng (phím ESC)"
           >
-            ×
+            <X size={24} />
           </button>
 
-          {images.length > 1 && (
-            <>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onPrevImage();
-                }}
-                className="absolute left-8 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-4 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white focus:ring-offset-black"
-                aria-label="Ảnh trước đó"
-              >
-                <FaChevronLeft size={28} />
-              </button>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onNextImage();
-                }}
-                className="absolute right-8 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-4 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white focus:ring-offset-black"
-                aria-label="Ảnh tiếp theo"
-              >
-                <FaChevronRight size={28} />
-              </button>
-            </>
-          )}
-
-          <div className="max-w-6xl max-h-full">
+          <div className="max-w-[90vw] max-h-[90vh] relative group">
             <img
               src={images[selectedImage]?.url || "/placeholder-product.jpg"}
-              alt={`${productName} - ảnh phóng to ${selectedImage + 1}`}
-              className="max-w-full max-h-screen object-contain"
+              alt={`${productName} - phóng to`}
+              className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             />
+            
+            {images.length > 1 && (
+              <div className="absolute inset-x-[-60px] top-1/2 -translate-y-1/2 hidden lg:flex justify-between">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onPrevImage();
+                  }}
+                  className="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center hover:bg-black hover:text-white transition-all duration-300 active:scale-75"
+                >
+                  <ChevronLeft size={24} />
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onNextImage();
+                  }}
+                  className="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center hover:bg-black hover:text-white transition-all duration-300 active:scale-75"
+                >
+                  <ChevronRight size={24} />
+                </button>
+              </div>
+            )}
           </div>
-
-          {images.length > 1 && (
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-white/90 text-gray-900 px-4 py-2 text-sm" aria-live="polite">
-              {selectedImage + 1} / {images.length}
-            </div>
-          )}
         </div>
       )}
     </div>
@@ -192,26 +165,33 @@ export const ProductDetails = ({
   onColorSelect,
   onQuantityChange,
   onAddToCart,
+  isWishlisted = false,
+  onToggleWishlist,
 }) => {
   const totalStock =
     product?.variants?.reduce((sum, v) => sum + (v.stock || 0), 0) || 0;
-
-  // Ngưỡng cảnh báo sắp hết hàng (dùng lowStockThreshold nếu có, mặc định 5)
   const lowStockThreshold = product?.variants?.[0]?.lowStockThreshold ?? 5;
   const isLowStock = totalStock > 0 && totalStock <= lowStockThreshold;
   const isOutOfStock = totalStock === 0;
 
   return (
-    <div className="max-w-2xl">
+    <div className="w-full flex flex-col gap-4">
+
+      {/* ── 1. Thông tin sản phẩm ─────────────────────── */}
       <ProductInfo product={product} />
-      
-      <ProductPrice 
-        currentPrice={currentPrice} 
-        originalPrice={originalPrice} 
-        product={product}
+
+      <hr className="border-gray-100" />
+
+      {/* ── 2. Giá ───────────────────────────────────── */}
+      <ProductPrice
+        currentPrice={currentPrice}
+        originalPrice={originalPrice}
         flashSale={flashSale}
       />
 
+      <hr className="border-gray-100" />
+
+      {/* ── 3. Chọn size & màu ───────────────────────── */}
       <ProductOptions
         product={product}
         selectedSize={selectedSize}
@@ -220,34 +200,63 @@ export const ProductDetails = ({
         onColorSelect={onColorSelect}
       />
 
-      {/* Cảnh báo tồn kho */}
-      {isOutOfStock && (
-        <div className="flex items-center gap-2 px-4 py-2.5 bg-red-50 border border-red-200 text-red-700 text-sm mb-4">
-          <span className="w-2 h-2 rounded-full bg-red-500 flex-shrink-0" />
-          Sản phẩm tạm hết hàng
-        </div>
-      )}
-      {isLowStock && !isOutOfStock && (
-        <div className="flex items-center gap-2 px-4 py-2.5 bg-amber-50 border border-amber-200 text-amber-700 text-sm mb-4">
-          <span className="w-2 h-2 rounded-full bg-amber-400 flex-shrink-0 animate-pulse" />
-          Chỉ còn <span className="font-semibold">{totalStock}</span> sản phẩm — đặt hàng sớm!
-        </div>
+      <hr className="border-gray-100" />
+
+      {/* ── 4. Tình trạng hàng ───────────────────────── */}
+      {isOutOfStock ? (
+        <p className="text-sm text-red-500 font-medium flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-red-500 inline-block" />
+          Tạm hết hàng
+        </p>
+      ) : isLowStock ? (
+        <p className="text-sm text-amber-600 font-medium flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse inline-block" />
+          Chỉ còn {totalStock} sản phẩm
+        </p>
+      ) : (
+        <p className="text-sm text-emerald-600 font-medium flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
+          Còn hàng ({totalStock} sản phẩm)
+        </p>
       )}
 
+      {/* ── 5. Số lượng ──────────────────────────────── */}
       <ProductQuantity
         quantity={quantity}
         onQuantityChange={onQuantityChange}
         totalStock={totalStock}
       />
 
+      {/* ── 6. Nút hành động ─────────────────────────── */}
       <ProductActions
         onAddToCart={onAddToCart}
         totalStock={totalStock}
+        isWishlisted={isWishlisted}
+        onToggleWishlist={onToggleWishlist}
       />
 
-      <ProductAccordion product={product} />
+      {/* ── 7. Chia sẻ ───────────────────────────────── */}
+      <div className="text-sm text-gray-400">
+        <ProductShare />
+      </div>
 
-      <ProductShare />
+      <hr className="border-gray-100" />
+
+      {/* ── 8. Cam kết/ Trust ────────────────────────── */}
+      <div className="grid grid-cols-2 gap-x-6 gap-y-2.5">
+        {[
+          { emoji: '🚚', text: 'Giao hàng 2-3 ngày' },
+          { emoji: '🛡️', text: 'Bảo hành chính hãng' },
+          { emoji: '🔄', text: 'Đổi trả 30 ngày' },
+          { emoji: '📦', text: 'Đóng gói cẩn thận' },
+        ].map((item, i) => (
+          <div key={i} className="flex items-center gap-2 text-xs text-gray-500">
+            <span>{item.emoji}</span>
+            <span>{item.text}</span>
+          </div>
+        ))}
+      </div>
+
     </div>
   );
 };

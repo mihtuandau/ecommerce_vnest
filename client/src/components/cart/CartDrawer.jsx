@@ -104,7 +104,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
             <div className="relative px-6 py-4 border-b border-gray-100 flex-shrink-0 bg-gradient-to-r from-gray-50 to-white">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-[#00a85a] flex items-center justify-center">
+                  <div className="w-10 h-10 bg-black flex items-center justify-center">
                     <FaShoppingBag className="text-white text-lg" />
                   </div>
                   <div>
@@ -182,7 +182,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
 
                       {/* Quantity & Price - no border radius */}
                       <div className="flex items-center justify-between mt-auto">
-                        <span className="inline-flex items-center justify-center px-3 py-1 text-xs font-semibold bg-[#00a85a] text-white">
+                        <span className="inline-flex items-center justify-center px-3 py-1 text-xs font-semibold bg-black text-white">
                           x{item.quantity}
                         </span>
                         <div className="text-right">
@@ -233,7 +233,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
                 </p>
                 <button
                   onClick={onClose}
-                  className="px-6 py-2.5 bg-[#00a85a] hover:bg-[#008f4d] text-white text-sm font-medium transition-colors cursor-pointer"
+                  className="px-6 py-2.5 bg-black hover:bg-neutral-800 text-white text-sm font-medium transition-colors cursor-pointer"
                 >
                   Tiếp tục mua sắm
                 </button>
@@ -248,7 +248,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
               {/* Coupon code input */}
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <FaTag className="text-[#00a85a] text-sm flex-shrink-0" />
+                  <FaTag className="text-black text-sm flex-shrink-0" />
                   <span className="text-xs font-semibold text-gray-700 uppercase tracking-wide">Mã giảm giá</span>
                 </div>
                 {couponResult?.valid ? (
@@ -275,13 +275,13 @@ const CartDrawer = ({ isOpen, onClose }) => {
                         onChange={(e) => { setCouponCode(e.target.value); setCouponResult(null); }}
                         onKeyDown={(e) => e.key === "Enter" && handleApplyCoupon()}
                         placeholder="Nhập mã giảm giá..."
-                        className="flex-1 text-sm border border-gray-200 px-3 py-2 focus:outline-none focus:border-[#00a85a] transition-colors bg-white"
+                        className="flex-1 text-sm border border-gray-200 px-3 py-2 focus:outline-none focus:border-black transition-colors bg-white"
                       />
                       <button
                         onClick={handleApplyCoupon}
                         disabled={couponLoading || !couponCode.trim()}
                         type="button"
-                        className="px-4 py-2 bg-[#00a85a] hover:bg-[#008f4d] disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold transition-colors cursor-pointer whitespace-nowrap"
+                        className="px-4 py-2 bg-black hover:bg-neutral-800 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold transition-colors cursor-pointer whitespace-nowrap"
                       >
                         {couponLoading ? "..." : "Áp dụng"}
                       </button>
@@ -328,7 +328,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
                 <Link
                   to="/cart"
                   onClick={onClose}
-                  className="flex-1 text-center bg-white hover:bg-gray-50 text-gray-900 text-sm font-semibold py-3 transition-all duration-200 cursor-pointer border-2 border-[#00a85a] hover:border-[#008f4d]"
+                  className="flex-1 text-center bg-white hover:bg-gray-50 text-gray-900 text-sm font-semibold py-3 transition-all duration-200 cursor-pointer border-2 border-black hover:border-neutral-800"
                 >
                   Xem Giỏ Hàng
                 </Link>
@@ -337,7 +337,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
                   to="/checkout"
                   state={couponResult?.valid ? { couponCode, discountAmount, discountInfo: couponResult.discount } : undefined}
                   onClick={onClose}
-                  className="flex-1 text-center bg-[#00a85a] hover:bg-[#008f4d] text-white text-sm font-semibold py-3 transition-all duration-200 cursor-pointer shadow-lg hover:shadow-xl" 
+                  className="flex-1 text-center bg-black hover:bg-neutral-800 text-white text-sm font-semibold py-3 transition-all duration-200 cursor-pointer shadow-lg hover:shadow-xl" 
                 >
                   Thanh Toán
                 </Link>

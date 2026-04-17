@@ -1,5 +1,5 @@
 // src/order/order.service.ts
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { OrderRepository } from './order.repository';
 import { OrderCache } from './order.cache';
 import { OrderCreation } from './order.creation';
@@ -60,16 +60,16 @@ export class OrderService {
     return orders;
   }
 
-  async findOne(id: number): Promise<any> {
-    let order = await this.cacheService.getOrder(id);
-    if (order) {
-      return OrderHelper.serializeOrder(order);
+  async findOne(id: number, user: any): Promise<any> {
+    const order = await this.repository.findById(id);
+
+    if (!order) {
+      throw new NotFoundException(`Đơn hàng #${id} không tồn tại`);
     }
 
-    order = await this.repository.findById(id);
-
-    if (order) {
-      await this.cacheService.setOrder(id, order);
+    // Kiểm tra quyền sở hữu (trừ Admin)
+    if (user.role !== 'ADMIN' && order.userId !== user.userId) {
+      throw new NotFoundException(`Đơn hàng #${id} không tồn tại hoặc không thuộc quyền sở hữu của bạn`);
     }
 
     return OrderHelper.serializeOrder(order);

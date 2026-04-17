@@ -16,103 +16,105 @@ import ResetPasswordPage from "../pages/auth/ResetPasswordPage";
 
 import HomePage from "../pages/Customer/Home/HomePage";
 
-const ProductsPage = lazy(() =>
-  import("../pages/Customer/Product/ProductsPage")
+const ProductsPage = lazy(
+  () => import("../pages/Customer/Product/ProductsPage"),
 );
-const ProductDetailPage = lazy(() =>
-  import("../pages/Customer/Product/ProductDetailPage")
+const ProductDetailPage = lazy(
+  () => import("../pages/Customer/Product/ProductDetailPage"),
 );
-const CategoryPage = lazy(() =>
-  import("../pages/Customer/Product/CategoryPage")
-);
-const FeaturedProductsPage = lazy(() =>
-  import("../pages/Customer/Product/FeaturedProductsPage")
-);
-const BestSellingProductsPage = lazy(() =>
-  import("../pages/Customer/Product/BestSellingProductsPage")
+const CategoryPage = lazy(
+  () => import("../pages/Customer/Product/CategoryPage"),
 );
 const CartPage = lazy(() => import("../pages/Customer/Cart/CartPage"));
 const WishlistPage = lazy(() => import("../pages/Customer/WishlistPage"));
-const CheckoutPage = lazy(() =>
-  import("../pages/Customer/Checkout/CheckoutPage")
+const CheckoutPage = lazy(
+  () => import("../pages/Customer/Checkout/CheckoutPage"),
 );
 const OrdersPage = lazy(() => import("../pages/Customer/Order/OrdersPage"));
-const OrderDetailPage = lazy(() =>
-  import("../pages/Customer/Order/OrderDetailPage")
+const OrderDetailPage = lazy(
+  () => import("../pages/Customer/Order/OrderDetailPage"),
 );
-const OrderLookupPage = lazy(() =>
-  import("../pages/Customer/Order/OrderLookupPage")
+const OrderLookupPage = lazy(
+  () => import("../pages/Customer/Order/OrderLookupPage"),
 );
-const GuestOrderDetailPage = lazy(() =>
-  import("../pages/Customer/Order/GuestOrderDetailPage")
+const GuestOrderDetailPage = lazy(
+  () => import("../pages/Customer/Order/GuestOrderDetailPage"),
 );
 
-const PaymentReturn = lazy(() =>
-  import("../pages/Customer/Payment/PaymentReturn")
+const PaymentReturn = lazy(
+  () => import("../pages/Customer/Payment/PaymentReturn"),
 );
-const PaymentCancel = lazy(() =>
-  import("../pages/Customer/Payment/PaymentCancel")
+const PaymentCancel = lazy(
+  () => import("../pages/Customer/Payment/PaymentCancel"),
 );
-const AdminDashboardPage = lazy(() =>
-  import("../pages/Admin/Dashboard/AdminDashboardPage")
+const AdminDashboardPage = lazy(
+  () => import("../pages/Admin/Dashboard/AdminDashboardPage"),
 );
-const AdminProductsPage = lazy(() =>
-  import("../pages/Admin/Product/ProductsPage")
+const AdminProductsPage = lazy(
+  () => import("../pages/Admin/Product/ProductsPage"),
 );
-const AdminProductDetailPage = lazy(() =>
-  import("../pages/Admin/Product/ProductDetailPage")
+const AdminProductDetailPage = lazy(
+  () => import("../pages/Admin/Product/ProductDetailPage"),
 );
-const AdminProductCreatePage = lazy(() =>
-  import("../pages/Admin/Product/ProductCreatePage")
+const AdminProductCreatePage = lazy(
+  () => import("../pages/Admin/Product/ProductCreatePage"),
 );
-const AdminCategoriesPage = lazy(() =>
-  import("../pages/Admin/Category/CategoriesPage")
+const AdminCategoriesPage = lazy(
+  () => import("../pages/Admin/Category/CategoriesPage"),
 );
 const AdminUsersPage = lazy(() => import("../pages/Admin/User/UserManagement"));
-const AdminUserDetailPage = lazy(() =>
-  import("../pages/Admin/User/UserDetailPage")
+const AdminUserDetailPage = lazy(
+  () => import("../pages/Admin/User/UserDetailPage"),
 );
-const AdminAddressesPage = lazy(() =>
-  import("../pages/Admin/User/AddressManagementPage")
+const AdminAddressesPage = lazy(
+  () => import("../pages/Admin/User/AddressManagementPage"),
 );
+
 const AdminRoleManagementPage = lazy(() =>
   import("../pages/Admin/User/RoleManagement")
 );
 const AdminOrdersPage = lazy(() =>
   import("../pages/Admin/Order/OrderManagement")
+
+const AdminOrdersPage = lazy(
+  () => import("../pages/Admin/Order/OrderManagement"),
+
 );
-const AdminOrderDetailPage = lazy(() =>
-  import("../pages/Admin/Order/OrderDetailPage")
+const AdminOrderDetailPage = lazy(
+  () => import("../pages/Admin/Order/OrderDetailPage"),
 );
-const AdminPaymentsPage = lazy(() =>
-  import("../pages/Admin/Payment/PaymentManagement")
+const AdminPaymentsPage = lazy(
+  () => import("../pages/Admin/Payment/PaymentManagement"),
 );
-const AdminDiscountsPage = lazy(() =>
-  import("../pages/Admin/Discount/DiscountManagement")
+const AdminDiscountsPage = lazy(
+  () => import("../pages/Admin/Discount/DiscountManagement"),
 );
-const AdminDiscountFormPage = lazy(() =>
-  import("../pages/Admin/Discount/DiscountFormPage")
+const AdminDiscountFormPage = lazy(
+  () => import("../pages/Admin/Discount/DiscountFormPage"),
 );
-const AdminBannersPage = lazy(() =>
-  import("../pages/Admin/Banner/BannerManagement")
+const AdminBannersPage = lazy(
+  () => import("../pages/Admin/Banner/BannerManagement"),
 );
-const AdminChatPage = lazy(() =>
-  import("../pages/Admin/Chat/AdminChatManagement")
+const AdminChatPage = lazy(
+  () => import("../pages/Admin/Chat/AdminChatManagement"),
 );
 const AdminReportPage = lazy(() => import("../pages/Admin/Report/ReportPage"));
-const AdminProfilePage = lazy(() =>
-  import("../pages/Admin/Profile/ProfilePage")
+const AdminProfilePage = lazy(
+  () => import("../pages/Admin/Profile/ProfilePage"),
 );
-const CustomerProfilePage = lazy(() =>
-  import("../pages/Customer/Profile/ProfilePage")
+const CustomerProfilePage = lazy(
+  () => import("../pages/Customer/Profile/ProfilePage"),
 );
 const AboutPage = lazy(() => import("../pages/Customer/About/AboutPage"));
 const ContactPage = lazy(() => import("../pages/Customer/Contact/ContactPage"));
-const SupportChatPage = lazy(() =>
-  import("../pages/Customer/Support/SupportChatPage")
+const SupportChatPage = lazy(
+  () => import("../pages/Customer/Support/SupportChatPage"),
 );
-const PromotionsPage = lazy(() =>
-  import("../pages/Customer/Promotions/PromotionsPage")
+const PromotionsPage = lazy(
+  () => import("../pages/Customer/Promotions/PromotionsPage"),
+);
+const FlashSalePage = lazy(
+  () => import("../pages/Customer/FlashSale/FlashSalePage"),
 );
 
 const DEFAULT_TITLE = "MINH TUAN STORE";
@@ -125,8 +127,7 @@ const getRouteTitle = (pathname) => {
     [/^\/forgot-password$/, "Quên mật khẩu"],
     [/^\/reset-password$/, "Đặt lại mật khẩu"],
     [/^\/products$/, "Tất cả sản phẩm"],
-    [/^\/products\/featured$/, "Sản phẩm nổi bật"],
-    [/^\/products\/bestselling$/, "Sản phẩm bán chạy"],
+    [/^\/flash-sale$/, "Flash Sale"],
     [/^\/products\/category\/\d+$/, "Danh mục sản phẩm"],
     [/^\/category\/\d+$/, "Danh mục sản phẩm"],
     [/^\/products\/\d+$/, "Chi tiết sản phẩm"],
@@ -203,6 +204,7 @@ const AppRoutes = () => {
         <Route path="/profile" element={<CustomerProfilePage />} />
         <Route path="/account" element={<CustomerProfilePage />} />
         <Route path="/" element={<HomePage />} />
+        <Route path="/flash-sale" element={<FlashSalePage />} />
 
         {/* About & Contact Routes */}
         <Route path="/about" element={<AboutPage />} />
@@ -213,11 +215,6 @@ const AppRoutes = () => {
 
         {/* Product Routes */}
         <Route path="/products" element={<ProductsPage />} />
-        <Route path="/products/featured" element={<FeaturedProductsPage />} />
-        <Route
-          path="/products/bestselling"
-          element={<BestSellingProductsPage />}
-        />
         <Route path="/products/:id" element={<ProductDetailPage />} />
         <Route path="/products/category/:id" element={<CategoryPage />} />
         <Route path="/category/:id" element={<CategoryPage />} />

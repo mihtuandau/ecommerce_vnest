@@ -52,7 +52,9 @@ const ProductGrid = ({
               </div>
             ) : (
               <>
-                <div className={`aspect-square bg-gray-200 ${viewMode === "grid-2" ? "rounded-t-lg" : ""}`}></div>
+                <div
+                  className={`aspect-square bg-gray-200 ${viewMode === "grid-2" ? "rounded-t-lg" : ""}`}
+                ></div>
                 <div className="p-4 space-y-3">
                   <div className="h-4 bg-gray-200 w-3/4 rounded"></div>
                   <div className="h-4 bg-gray-200 w-1/2 rounded"></div>

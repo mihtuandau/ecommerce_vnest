@@ -39,7 +39,7 @@ const OrderItem = ({
           {canReview && !isReviewed && (
             <button
               onClick={onReview}
-              className="inline-flex flex-shrink-0 items-center gap-1.5 whitespace-nowrap rounded-xl bg-emerald-600 px-3 py-2 text-xs text-white transition-colors hover:bg-emerald-500"
+              className="inline-flex flex-shrink-0 items-center gap-1.5 whitespace-nowrap rounded-xl bg-black px-3 py-2 text-xs text-white transition-colors hover:bg-neutral-800"
             >
               <FaStar size={11} />
               Đánh giá
@@ -57,3 +57,4 @@ const OrderItem = ({
 };
 
 export default OrderItem;
+

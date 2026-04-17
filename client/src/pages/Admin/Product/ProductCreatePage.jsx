@@ -1,25 +1,25 @@
-import { useState, useCallback, useEffect } from 'react';
-import { useNavigate, useParams, useLocation, Link } from 'react-router-dom';
-import { ArrowLeft, Eye } from 'lucide-react';
-import { Button } from 'antd';
-import { Form } from 'antd';
-import { useCategories, useBrands } from '../../../hooks/useProducts';
-import productService from '../../../services/productService';
-import { notify } from '../../../utils/notification';
-import Loading from '../../../components/common/Loading';
-import ProductFormWizard from '../../../components/admin/Product/ProductFormWizard';
+import { useState, useCallback, useEffect } from "react";
+import { useNavigate, useParams, useLocation, Link } from "react-router-dom";
+import { ArrowLeft, Eye } from "lucide-react";
+import { Button } from "antd";
+import { Form } from "antd";
+import { useCategories, useBrands } from "../../../hooks/useProducts";
+import productService from "../../../services/productService";
+import { notify } from "../../../utils/notification";
+import Loading from "../../../components/common/Loading";
+import ProductFormWizard from "../../../components/admin/Product/ProductFormWizard";
 
 const generateSlug = (name) => {
-  return (name || '')
+  return (name || "")
     .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/đ/g, 'd')
-    .replace(/Đ/g, 'D')
-    .replace(/[^a-z0-9\s-]/g, '')
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d")
+    .replace(/Đ/g, "D")
+    .replace(/[^a-z0-9\s-]/g, "")
     .trim()
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-');
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
 };
 
 const ProductCreatePage = () => {
@@ -54,15 +54,15 @@ const ProductCreatePage = () => {
         if (cancelled || !p?.id) return;
         setProduct(p);
         form.setFieldsValue({
-          name: p.name || '',
-          slug: p.slug || '',
-          description: p.description || '',
+          name: p.name || "",
+          slug: p.slug || "",
+          description: p.description || "",
           categoryId: p.categoryId || undefined,
           brandId: p.brandId || undefined,
           basePrice: p.basePrice ?? 0,
           isActive: p.isActive !== false,
-          metaTitle: p.metaTitle || '',
-          metaDesc: p.metaDesc || '',
+          metaTitle: p.metaTitle || "",
+          metaDesc: p.metaDesc || "",
         });
         const mainImages = (p.images || []).filter((img) => !img.variantId);
         setProductImages(
@@ -71,9 +71,9 @@ const ProductCreatePage = () => {
             url: img.url,
             isThumbnail: idx === 0,
             displayOrder: idx,
-            altText: img.altText || '',
+            altText: img.altText || "",
             tempId: `existing-${img.id}`,
-          }))
+          })),
         );
         const vList = (p.variants || []).map((v, idx) => ({
           ...v,
@@ -87,24 +87,26 @@ const ProductCreatePage = () => {
       })
       .catch((err) => {
         if (!cancelled) {
-          notify.error(err?.message || 'Không tải được sản phẩm');
-          navigate('/admin-products');
+          notify.error(err?.message || "Không tải được sản phẩm");
+          navigate("/admin-products");
         }
       })
       .finally(() => {
         if (!cancelled) setLoadingProduct(false);
       });
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [id, isEdit, form, navigate]);
 
   // Scroll to #variants when navigating from "Quản lý biến thể" / "Thêm biến thể"
   useEffect(() => {
-    if (location.hash !== '#variants' || loadingProduct) return;
+    if (location.hash !== "#variants" || loadingProduct) return;
     // Delay để đợi DOM render xong
     const timer = setTimeout(() => {
-      const el = document.getElementById('variants');
+      const el = document.getElementById("variants");
       if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
       }
     }, 100);
     return () => clearTimeout(timer);
@@ -118,20 +120,25 @@ const ProductCreatePage = () => {
   };
 
   // Product Images
-  const handleProductImageSelect = useCallback((e) => {
-    const files = Array.from(e.target.files || []).filter((f) => f && f.size > 0);
-    if (!files.length) return;
-    const base = productImages.length;
-    const newImages = files.map((file, idx) => ({
-      file,
-      isThumbnail: base === 0 && idx === 0,
-      displayOrder: base + idx,
-      altText: '',
-      tempId: `new-${Date.now()}-${idx}`,
-    }));
-    setProductImages((prev) => [...prev, ...newImages].slice(0, 20));
-    e.target.value = '';
-  }, [productImages.length]);
+  const handleProductImageSelect = useCallback(
+    (e) => {
+      const files = Array.from(e.target.files || []).filter(
+        (f) => f && f.size > 0,
+      );
+      if (!files.length) return;
+      const base = productImages.length;
+      const newImages = files.map((file, idx) => ({
+        file,
+        isThumbnail: base === 0 && idx === 0,
+        displayOrder: base + idx,
+        altText: "",
+        tempId: `new-${Date.now()}-${idx}`,
+      }));
+      setProductImages((prev) => [...prev, ...newImages].slice(0, 20));
+      e.target.value = "";
+    },
+    [productImages.length],
+  );
 
   const removeProductImage = useCallback((tempId) => {
     setProductImages((prev) => {
@@ -144,7 +151,7 @@ const ProductCreatePage = () => {
 
   const updateProductImage = useCallback((tempId, updates) => {
     setProductImages((prev) =>
-      prev.map((img) => (img.tempId === tempId ? { ...img, ...updates } : img))
+      prev.map((img) => (img.tempId === tempId ? { ...img, ...updates } : img)),
     );
   }, []);
 
@@ -152,11 +159,11 @@ const ProductCreatePage = () => {
   const addVariant = useCallback(() => {
     const newVariant = {
       id: `temp-${nextVariantId}`,
-      size: '',
-      color: '',
-      price: form.getFieldValue('basePrice') || 0,
+      size: "",
+      color: "",
+      price: form.getFieldValue("basePrice") || 0,
       stock: 0,
-      sku: '',
+      sku: "",
       lowStockThreshold: 5,
       isActive: true,
       images: [],
@@ -168,22 +175,25 @@ const ProductCreatePage = () => {
   const removeVariant = useCallback((variantId) => {
     setVariants((prev) => {
       const v = prev.find((x) => x.id === variantId);
-      if (v && typeof v.id === 'number') setVariantsToDelete((d) => [...d, v.id]);
+      if (v && typeof v.id === "number")
+        setVariantsToDelete((d) => [...d, v.id]);
       return prev.filter((x) => x.id !== variantId);
     });
   }, []);
 
   const updateVariant = useCallback((id, updates) => {
     setVariants((prev) =>
-      prev.map((v) => (v.id === id ? { ...v, ...updates } : v))
+      prev.map((v) => (v.id === id ? { ...v, ...updates } : v)),
     );
   }, []);
 
   // Variant Images
   const handleVariantImageSelect = useCallback((variantId, e) => {
-    const files = Array.from(e.target.files || []).filter((f) => f && f.size > 0);
+    const files = Array.from(e.target.files || []).filter(
+      (f) => f && f.size > 0,
+    );
     if (!files.length) return;
-    
+
     setVariants((prev) =>
       prev.map((v) => {
         if (v.id !== variantId) return v;
@@ -192,28 +202,30 @@ const ProductCreatePage = () => {
           file,
           isPrimary: currentImages.length === 0 && idx === 0,
           displayOrder: currentImages.length + idx,
-          altText: '',
+          altText: "",
           tempId: Date.now() + idx,
         }));
         return {
           ...v,
           images: [...currentImages, ...newImages].slice(0, 10),
         };
-      })
+      }),
     );
-    e.target.value = '';
+    e.target.value = "";
   }, []);
 
   const removeVariantImage = useCallback((variantId, tempId) => {
     setVariants((prev) =>
       prev.map((v) => {
         if (v.id !== variantId) return v;
-        const filtered = (v.images || []).filter((img) => img.tempId !== tempId);
+        const filtered = (v.images || []).filter(
+          (img) => img.tempId !== tempId,
+        );
         return {
           ...v,
           images: filtered.map((img, idx) => ({ ...img, displayOrder: idx })),
         };
-      })
+      }),
     );
   }, []);
 
@@ -224,23 +236,23 @@ const ProductCreatePage = () => {
         return {
           ...v,
           images: (v.images || []).map((img) =>
-            img.tempId === tempId ? { ...img, ...updates } : img
+            img.tempId === tempId ? { ...img, ...updates } : img,
           ),
         };
-      })
+      }),
     );
   }, []);
 
   const buildProductPayload = (values) => {
     const basePriceRaw = values.basePrice;
     const basePrice =
-      (basePriceRaw === '' || basePriceRaw === undefined || basePriceRaw === null)
+      basePriceRaw === "" || basePriceRaw === undefined || basePriceRaw === null
         ? undefined
         : Number(basePriceRaw);
 
     const payload = {
-      name: (values.name || '').trim(),
-      description: (values.description || '').trim() || undefined,
+      name: (values.name || "").trim(),
+      description: (values.description || "").trim() || undefined,
       // Chỉ gửi basePrice khi có giá trị hợp lệ (tránh gửi 0 làm backend 400)
       basePrice: Number.isFinite(basePrice) ? basePrice : undefined,
       categoryId: values.categoryId ? Number(values.categoryId) : undefined,
@@ -248,7 +260,7 @@ const ProductCreatePage = () => {
     };
 
     // Remove undefined values
-    Object.keys(payload).forEach(key => {
+    Object.keys(payload).forEach((key) => {
       if (payload[key] === undefined) {
         delete payload[key];
       }
@@ -261,11 +273,13 @@ const ProductCreatePage = () => {
   const uploadVariantImagesHelper = async (variantId, images) => {
     const withFile = (images || []).filter((im) => im.file);
     if (withFile.length === 0) return;
-    
+
     try {
       const files = withFile.map((im) => im.file);
       const prim = withFile.find((im) => im.isPrimary) || withFile[0];
-      await productService.uploadVariantImages(variantId, files, { isPrimary: prim?.isPrimary || false });
+      await productService.uploadVariantImages(variantId, files, {
+        isPrimary: prim?.isPrimary || false,
+      });
     } catch (e) {
       throw new Error(`Không thể upload ảnh variant: ${e.message}`);
     }
@@ -279,23 +293,37 @@ const ProductCreatePage = () => {
       if (isEdit) {
         await productService.update(id, productPayload);
         for (const imageId of productImagesToDelete) {
-          try { await productService.deleteImage(imageId); } catch (e) { /* ignore */ }
+          try {
+            await productService.deleteImage(imageId);
+          } catch (e) {
+            /* ignore */
+          }
         }
         const newProductImages = productImages.filter((img) => img.file);
         if (newProductImages.length > 0) {
           try {
             const files = newProductImages.map((img) => img.file);
-            const first = newProductImages.find((img) => img.isThumbnail) || newProductImages[0];
-            await productService.uploadImages(id, files, { isThumbnail: first?.isThumbnail || false });
+            const first =
+              newProductImages.find((img) => img.isThumbnail) ||
+              newProductImages[0];
+            await productService.uploadImages(id, files, {
+              isThumbnail: first?.isThumbnail || false,
+            });
           } catch (e) {
-            notify.warning('Cập nhật sản phẩm thành công nhưng upload ảnh mới lỗi.');
+            notify.warning(
+              "Cập nhật sản phẩm thành công nhưng upload ảnh mới lỗi.",
+            );
           }
         }
         for (const vid of variantsToDelete) {
-          try { await productService.deleteVariant(vid); } catch (e) { /* ignore */ }
+          try {
+            await productService.deleteVariant(vid);
+          } catch (e) {
+            /* ignore */
+          }
         }
         for (const variant of variants) {
-          const isNew = typeof variant.id !== 'number';
+          const isNew = typeof variant.id !== "number";
           const payload = {
             size: variant.size || undefined,
             color: variant.color || undefined,
@@ -313,11 +341,15 @@ const ProductCreatePage = () => {
                 try {
                   await uploadVariantImagesHelper(vId, variant.images);
                 } catch (e) {
-                  notify.warning(`Tạo biến thể ${variant.size || ''} - ${variant.color || ''} thành công nhưng upload ảnh lỗi.`);
+                  notify.warning(
+                    `Tạo biến thể ${variant.size || ""} - ${variant.color || ""} thành công nhưng upload ảnh lỗi.`,
+                  );
                 }
               }
             } catch (e) {
-              notify.warning(`Không tạo được biến thể ${variant.size || ''} - ${variant.color || ''}.`);
+              notify.warning(
+                `Không tạo được biến thể ${variant.size || ""} - ${variant.color || ""}.`,
+              );
             }
           } else {
             try {
@@ -327,15 +359,19 @@ const ProductCreatePage = () => {
                 try {
                   await uploadVariantImagesHelper(variant.id, variant.images);
                 } catch (e) {
-                  notify.warning(`Cập nhật biến thể ${variant.size || ''} - ${variant.color || ''} thành công nhưng upload ảnh lỗi.`);
+                  notify.warning(
+                    `Cập nhật biến thể ${variant.size || ""} - ${variant.color || ""} thành công nhưng upload ảnh lỗi.`,
+                  );
                 }
               }
             } catch (e) {
-              notify.warning(`Không cập nhật được biến thể ${variant.size || ''} - ${variant.color || ''}.`);
+              notify.warning(
+                `Không cập nhật được biến thể ${variant.size || ""} - ${variant.color || ""}.`,
+              );
             }
           }
         }
-        notify.success('Đã cập nhật sản phẩm');
+        notify.success("Đã cập nhật sản phẩm");
         navigate(`/admin-products/${id}`);
         return;
       }
@@ -343,16 +379,20 @@ const ProductCreatePage = () => {
       const res = await productService.create(productPayload);
       const created = res?.data || res;
       const pid = created?.id;
-      if (!pid) throw new Error('Không nhận được ID sản phẩm sau khi tạo');
+      if (!pid) throw new Error("Không nhận được ID sản phẩm sau khi tạo");
 
       const withFile = productImages.filter((img) => img.file);
       if (withFile.length > 0) {
         try {
           const files = withFile.map((img) => img.file);
           const first = withFile.find((img) => img.isThumbnail) || withFile[0];
-          await productService.uploadImages(pid, files, { isThumbnail: first?.isThumbnail || false });
+          await productService.uploadImages(pid, files, {
+            isThumbnail: first?.isThumbnail || false,
+          });
         } catch (e) {
-          notify.warning('Đã tạo sản phẩm nhưng upload ảnh lỗi. Thêm ảnh tại trang chi tiết.');
+          notify.warning(
+            "Đã tạo sản phẩm nhưng upload ảnh lỗi. Thêm ảnh tại trang chi tiết.",
+          );
         }
       }
 
@@ -373,18 +413,26 @@ const ProductCreatePage = () => {
             try {
               await uploadVariantImagesHelper(vId, variant.images);
             } catch (e) {
-              notify.warning(`Tạo biến thể ${variant.size || ''} - ${variant.color || ''} thành công nhưng upload ảnh lỗi.`);
+              notify.warning(
+                `Tạo biến thể ${variant.size || ""} - ${variant.color || ""} thành công nhưng upload ảnh lỗi.`,
+              );
             }
           }
         } catch (e) {
-          notify.warning(`Không tạo được biến thể ${variant.size || ''} - ${variant.color || ''}.`);
+          notify.warning(
+            `Không tạo được biến thể ${variant.size || ""} - ${variant.color || ""}.`,
+          );
         }
       }
 
-      notify.success('Đã tạo sản phẩm thành công');
+      notify.success("Đã tạo sản phẩm thành công");
       navigate(`/admin-products/${pid}`);
     } catch (err) {
-      notify.error(err?.response?.data?.message || err?.message || (isEdit ? 'Cập nhật thất bại' : 'Tạo sản phẩm thất bại'));
+      notify.error(
+        err?.response?.data?.message ||
+          err?.message ||
+          (isEdit ? "Cập nhật thất bại" : "Tạo sản phẩm thất bại"),
+      );
     } finally {
       setLoading(false);
     }
@@ -392,7 +440,7 @@ const ProductCreatePage = () => {
 
   const handleCancel = () => {
     if (isEdit && id) navigate(`/admin-products/${id}`);
-    else navigate('/admin-products');
+    else navigate("/admin-products");
   };
 
   return (
@@ -410,12 +458,19 @@ const ProductCreatePage = () => {
             </button>
             <div>
               <nav className="mb-1 flex items-center gap-1.5 text-xs text-gray-500 sm:text-sm">
-                <Link to="/admin-products" className="hover:text-gray-700 transition-colors">Sản phẩm</Link>
+                <Link
+                  to="/admin-products"
+                  className="hover:text-gray-700 transition-colors"
+                >
+                  Sản phẩm
+                </Link>
                 <span>›</span>
-                <span className="text-gray-700 font-medium">{isEdit ? 'Chỉnh sửa' : 'Thêm mới'}</span>
+                <span className="text-gray-700 font-medium">
+                  {isEdit ? "Chỉnh sửa" : "Thêm mới"}
+                </span>
               </nav>
               <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
-                {isEdit ? 'Chỉnh sửa sản phẩm' : 'Thêm sản phẩm mới'}
+                {isEdit ? "Chỉnh sửa sản phẩm" : "Thêm sản phẩm mới"}
               </h1>
             </div>
           </div>
@@ -436,7 +491,7 @@ const ProductCreatePage = () => {
               loading={loading}
               className="h-10 rounded-lg bg-blue-600 px-5 text-sm font-semibold shadow-sm shadow-blue-200 hover:bg-blue-700"
             >
-              {isEdit ? 'Lưu thay đổi' : 'Tạo sản phẩm'}
+              {isEdit ? "Lưu thay đổi" : "Tạo sản phẩm"}
             </Button>
           </div>
         </div>
@@ -464,7 +519,7 @@ const ProductCreatePage = () => {
             brands={brands}
             loading={loading}
             isEdit={isEdit}
-            submitLabel={isEdit ? 'Lưu thay đổi' : 'Thêm sản phẩm'}
+            submitLabel={isEdit ? "Lưu thay đổi" : "Thêm sản phẩm"}
             onCancel={handleCancel}
             onNameChange={handleNameChange}
             onSubmit={handleSubmit}

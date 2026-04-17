@@ -29,7 +29,7 @@ const OrderSummary = ({
   return (
     <div className="bg-white border border-gray-200 p-6 sticky top-4">
       <div className="flex items-center gap-3 mb-8 pb-6 border-b border-gray-200">
-        <div className="w-10 h-10 border border-[#00a85a] flex items-center justify-center">
+        <div className="w-10 h-10 border border-black flex items-center justify-center">
           <FaShoppingBag className="text-gray-900 text-sm" />
         </div>
         <h2 className="text-lg font-normal text-gray-900">Đơn Hàng</h2>
@@ -61,7 +61,7 @@ const OrderSummary = ({
             type="checkbox"
             checked={agreedToTerms}
             onChange={(e) => setAgreedToTerms(e.target.checked)}
-            className="mt-0.5 w-4 h-4 border-gray-300 text-gray-900"
+            className="mt-0.5 w-4 h-4 border-gray-300 text-black"
           />
           <span className="text-sm text-gray-600">
             Tôi đã đọc và đồng ý với{' '}
@@ -75,7 +75,7 @@ const OrderSummary = ({
       <button
         onClick={onSubmitOrder}
         disabled={submitting || !agreedToTerms}
-        className="w-full mt-6 bg-[#00a85a] hover:bg-[#008f4d] text-white py-4 font-normal transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        className="w-full mt-6 bg-black hover:bg-neutral-800 text-white py-4 font-normal transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
       >
         {submitting ? (
           <>

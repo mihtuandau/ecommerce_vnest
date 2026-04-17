@@ -102,7 +102,7 @@ const CartItem = ({ groupedProduct, selectedItems, onToggleItem, onUpdateQuantit
           <div className="flex items-start justify-between mb-3 cursor-pointer">
             <Link
               to={`/products/${groupedProduct.slug || productId}`}
-              className="font-medium text-sm text-gray-900 hover:text-red-600 transition-colors line-clamp-2 flex-1 mr-3 cur"
+              className="font-medium text-sm text-gray-900 hover:text-black transition-colors line-clamp-2 flex-1 mr-3 cur"
             >
               {productName}
             </Link>
@@ -152,7 +152,7 @@ const CartItem = ({ groupedProduct, selectedItems, onToggleItem, onUpdateQuantit
                     {variant.stock !== undefined && (
                       <span className={`px-2 py-1 text-xs ${
                         variant.stock > 10 
-                          ? 'bg-green-100 text-green-800' 
+                          ? 'bg-zinc-100 text-zinc-800' 
                           : variant.stock > 0 
                             ? 'bg-yellow-100 text-yellow-800' 
                             : 'bg-red-100 text-red-800'

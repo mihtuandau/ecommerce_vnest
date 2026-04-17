@@ -1,36 +1,49 @@
-import { FaShoppingCart } from "react-icons/fa";
+import { ShoppingCart, CreditCard, Heart } from "lucide-react";
 
-const ProductActions = ({ onAddToCart, totalStock }) => {
+const ProductActions = ({ onAddToCart, totalStock, isWishlisted = false, onToggleWishlist }) => {
   const isOutOfStock = totalStock === 0;
-  
+
   return (
-    <div className="flex gap-4 mb-12 pb-12 border-b border-gray-100">
+    <div className="flex items-center gap-2.5">
+      {/* Add to cart */}
       <button
         onClick={() => onAddToCart(false)}
         disabled={isOutOfStock}
-        className={`flex-1 h-12 border border-[#1a1a1a] text-xs uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#1a1a1a] ${
+        className={`flex-1 h-11 rounded-lg font-semibold text-sm flex items-center justify-center gap-2 border-2 transition-colors duration-150 active:scale-[0.98] select-none cursor-pointer ${
           isOutOfStock
-            ? 'bg-gray-100 text-gray-400 border-gray-300 cursor-not-allowed'
-            : 'bg-white text-[#1a1a1a] hover:bg-gray-50'
+            ? 'bg-gray-50 text-gray-300 border-gray-200 cursor-not-allowed'
+            : 'bg-white text-gray-900 border-gray-900 hover:bg-gray-100'
         }`}
-        title={isOutOfStock ? 'Sản phẩm đã hết hàng' : 'Thêm vào giỏ hàng'}
-        aria-label={isOutOfStock ? 'Sản phẩm đã hết hàng' : 'Thêm vào giỏ hàng'}
       >
-        <FaShoppingCart className="w-4 h-4" />
-        <span>{isOutOfStock ? 'Hết hàng' : 'Thêm vào giỏ'}</span>
+        <ShoppingCart size={16} strokeWidth={2} />
+        Thêm vào giỏ
       </button>
+
+      {/* Buy now */}
       <button
         onClick={() => onAddToCart(true)}
         disabled={isOutOfStock}
-        className={`flex-1 h-12 text-xs uppercase tracking-wider transition-all duration-200 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#1a1a1a] ${
+        className={`flex-1 h-11 rounded-lg font-semibold text-sm flex items-center justify-center gap-2 border-2 transition-colors duration-150 active:scale-[0.98] select-none cursor-pointer ${
           isOutOfStock
-            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-            : 'bg-[#1a1a1a] text-white hover:bg-gray-800'
+            ? 'bg-gray-200 text-gray-400 border-gray-200 cursor-not-allowed'
+            : 'bg-gray-900 text-white border-gray-900 hover:bg-gray-700'
         }`}
-        title={isOutOfStock ? 'Sản phẩm đã hết hàng' : 'Mua ngay'}
-        aria-label={isOutOfStock ? 'Sản phẩm đã hết hàng' : 'Mua ngay'}
       >
+        <CreditCard size={16} strokeWidth={2} />
         {isOutOfStock ? 'Hết hàng' : 'Mua ngay'}
+      </button>
+
+      {/* Wishlist */}
+      <button
+        onClick={onToggleWishlist}
+        className={`w-11 h-11 rounded-lg border-2 shrink-0 flex items-center justify-center transition-colors duration-150 active:scale-90 cursor-pointer ${
+          isWishlisted
+            ? 'border-rose-400 bg-rose-50 text-rose-500 hover:bg-rose-100'
+            : 'border-gray-200 bg-white text-gray-400 hover:bg-gray-100 hover:border-gray-400 hover:text-gray-700'
+        }`}
+        title={isWishlisted ? 'Bỏ yêu thích' : 'Yêu thích'}
+      >
+        <Heart size={16} className={isWishlisted ? 'fill-rose-500' : ''} />
       </button>
     </div>
   );

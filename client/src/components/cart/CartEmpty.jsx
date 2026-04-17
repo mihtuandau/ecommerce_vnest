@@ -1,6 +1,6 @@
-import { Link } from 'react-router-dom';
-import { FaShoppingBag } from 'react-icons/fa';
-import Button from '../common/Button';
+import { Link } from "react-router-dom";
+import { FaShoppingBag } from "react-icons/fa";
+import Button from "../common/Button";
 
 const CartEmpty = () => {
   return (
@@ -13,10 +13,11 @@ const CartEmpty = () => {
           Giỏ Hàng Trống
         </h2>
         <p className="text-gray-600 mb-8 max-w-md mx-auto leading-relaxed">
-          Bạn chưa có sản phẩm nào trong giỏ hàng. Hãy khám phá các sản phẩm của chúng tôi!
+          Bạn chưa có sản phẩm nào trong giỏ hàng. Hãy khám phá các sản phẩm của
+          chúng tôi!
         </p>
         <Link to="/products">
-          <Button className="bg-[#00a85a] hover:bg-[#008f4d] text-white px-8 py-4 font-normal transition-colors inline-flex items-center gap-2">
+          <Button className="bg-black hover:bg-neutral-800 text-white px-8 py-4 font-normal transition-colors inline-flex items-center gap-2">
             <FaShoppingBag size={16} />
             Mua Sắm Ngay
           </Button>

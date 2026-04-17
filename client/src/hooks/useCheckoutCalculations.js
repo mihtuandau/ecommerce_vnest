@@ -8,22 +8,27 @@ export const useCheckoutCalculations = (cartItems, appliedDiscount) => {
     }, 0);
     
     const shipping = subtotal > 500000 ? 0 : 30000;
-    const totalBeforeDiscount = subtotal + shipping;
 
     let discount = 0;
     if (appliedDiscount) {
       if (appliedDiscount.discountType === 'PERCENTAGE') {
-        discount = (totalBeforeDiscount * appliedDiscount.discountValue) / 100;
-        if (appliedDiscount.maxDiscount) {
-          discount = Math.min(discount, appliedDiscount.maxDiscount);
+        // Áp dụng % giảm giá cho Tạm tính (không tính phí vận chuyển)
+        discount = Math.round((subtotal * appliedDiscount.discountValue) / 100);
+        if (appliedDiscount.maxDiscountAmount || appliedDiscount.maxDiscount) {
+          const max = appliedDiscount.maxDiscountAmount || appliedDiscount.maxDiscount;
+          discount = Math.min(discount, max);
         }
       } else if (appliedDiscount.discountType === 'FIXED') {
         discount = appliedDiscount.discountValue;
       }
     }
     
-    const total = totalBeforeDiscount - discount;
+    // Đảm bảo giảm giá không vượt quá tạm tính
+    discount = Math.min(discount, subtotal);
+    
+    const total = subtotal + shipping - discount;
     const itemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+    
     return { subtotal, shipping, discount, total, itemCount };
   }, [cartItems, appliedDiscount]);
 };

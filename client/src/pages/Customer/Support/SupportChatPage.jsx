@@ -93,10 +93,11 @@ const SupportChatPage = () => {
           </p>
           <button
             onClick={() => navigate("/login")}
-            className="px-8 py-3 bg-[#00a85a] hover:bg-[#008f4d] text-white transition-colors"
+            className="px-8 py-3 bg-black hover:bg-neutral-800 text-white transition-colors uppercase tracking-widest font-black text-xs"
           >
             Đăng Nhập
           </button>
+
         </div>
       </div>
     );
@@ -106,7 +107,8 @@ const SupportChatPage = () => {
     <Layout>
       <div className="min-h-screen bg-white pt-21 pb-8">
         <div className="container mx-auto px-4 max-w-3xl">
-          <div className="bg-[#00a85a] border border-[#00a85a] p-5">
+          <div className="bg-black border border-black p-6">
+
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <button
@@ -163,9 +165,10 @@ const SupportChatPage = () => {
                     >
                       <div
                         className={`w-8 h-8 border flex items-center justify-center flex-shrink-0 ${
-                          isOwn ? "border-[#00a85a] bg-[#00a85a]" : "border-gray-300 bg-white"
+                          isOwn ? "border-black bg-black" : "border-gray-200 bg-white"
                         }`}
                       >
+
                         <User
                           className={`w-4 h-4 ${
                             isOwn ? "text-white" : "text-gray-600"
@@ -176,9 +179,10 @@ const SupportChatPage = () => {
                         <div
                           className={`px-4 py-3 ${
                             isOwn
-                              ? "bg-[#00a85a] text-white"
+                              ? "bg-black text-white"
                               : "bg-gray-100 text-gray-900"
                           }`}
+
                         >
                           <p className="text-sm leading-relaxed">
                             {msg.message}
@@ -227,10 +231,11 @@ const SupportChatPage = () => {
                 <button
                   type="submit"
                   disabled={isLoading || !inputMessage.trim() || !isConnected}
-                  className="w-12 h-12 bg-[#00a85a] text-white hover:bg-[#008f4d] disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+                  className="w-12 h-12 bg-black text-white hover:bg-neutral-800 disabled:bg-gray-200 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
                 >
                   <Send className="w-4 h-4" />
                 </button>
+
               </form>
             </div>
           </div>

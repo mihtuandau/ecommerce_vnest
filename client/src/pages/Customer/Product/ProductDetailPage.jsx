@@ -7,8 +7,10 @@ import { ProductImageGallery, ProductDetails } from '../../../components/product
 import { ProductTabs } from '../../../components/productdetail';
 import { productService } from '../../../services/productService';
 import apiService from '../../../services/apiService';
+import wishlistService from '../../../services/wishlistService';
 import { useCart } from '../../../hooks/useCart';
 import { useAuth } from '../../../hooks/useAuth';
+import { useFlashSale } from '../../../hooks/useFlashSale';
 import ProductRecommendations from '../../../components/products/ProductRecommendations';
 import { notify } from '../../../utils/notification';
 
@@ -19,6 +21,8 @@ const ProductDetailPage = () => {
   const navigate = useNavigate();
   const { addToCart } = useCart();
   const { user } = useAuth();
+  const [isWishlisted, setIsWishlisted] = useState(false);
+  const [wishlistLoading, setWishlistLoading] = useState(false);
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState(0);
@@ -39,12 +43,31 @@ const ProductDetailPage = () => {
     setFlashSale(null);
   }, [id]);
 
+  // Fetch flash sale when product is loaded
   useEffect(() => {
-    if (!id) return;
-    apiService.get(`/discounts/product/${id}`)
-      .then((res) => setFlashSale(res?.data ?? res ?? null))
-      .catch(() => {});
-  }, [id]);
+    if (!product?.id) {
+      setFlashSale(null);
+      return;
+    }
+    
+    apiService.get(`/discounts/product/${product.id}`)
+      .then((res) => {
+        const data = res?.data ?? res ?? null;
+        setFlashSale(data);
+      })
+      .catch((err) => {
+        console.error("Flash sale fetch error:", err);
+        setFlashSale(null);
+      });
+  }, [product?.id]);
+
+  // Check wishlist status when product + variant loaded
+  useEffect(() => {
+    if (!selectedVariant?.id || !user) { setIsWishlisted(false); return; }
+    wishlistService.checkWishlist(selectedVariant.id)
+      .then((res) => setIsWishlisted(res?.isWishlisted ?? res?.data?.isWishlisted ?? false))
+      .catch(() => setIsWishlisted(false));
+  }, [selectedVariant?.id, user]);
 
   useEffect(() => {
     if (!product?.name) return;
@@ -197,12 +220,30 @@ const ProductDetailPage = () => {
   const currentPrice = selectedVariant?.price || product?.basePrice || product?.price;
   const originalPrice = product?.originalPrice;
 
-  // Nếu có flash sale áp dụng cho sản phẩm này → tính giá sau giảm
-  const flashPrice = flashSale
-    ? flashSale.percentage
-      ? Math.round(currentPrice * (1 - flashSale.percentage / 100))
-      : flashSale.fixedAmount
-        ? Math.max(0, currentPrice - flashSale.fixedAmount)
+  const { flashSale: globalFlashSale } = useFlashSale();
+  const activeFlashSale = globalFlashSale?.data || globalFlashSale;
+
+  // Lấy dữ liệu từ discount API cho sản phẩm
+  const productDiscount = flashSale;
+
+  // ĐỒNG BỘ: Kiểm tra xem sản phẩm này có nằm trong Flash Sale hệ thống không
+  const isIncludedInGlobalFlash = useMemo(() => {
+    if (!activeFlashSale?.products || !product?.id) return false;
+    return activeFlashSale.products.some(p => Number(p.id) === Number(product.id));
+  }, [activeFlashSale, product?.id]);
+
+  // Nếu sản phẩm thuộc Flash Sale hệ thống -> Dùng dữ liệu Flash Sale hệ thống để đếm ngược
+  // Nếu không -> Dùng dữ liệu discount riêng của sản phẩm
+  const effectiveFlashSale = (isIncludedInGlobalFlash || productDiscount?.isFlashSale) 
+    ? { ...activeFlashSale, percentage: productDiscount?.percentage || activeFlashSale?.percentage, isFlashSale: true } 
+    : productDiscount;
+
+  // Tính giá Flash Sale
+  const flashPrice = productDiscount
+    ? productDiscount.percentage
+      ? Math.round(currentPrice * (1 - productDiscount.percentage / 100))
+      : productDiscount.fixedAmount
+        ? Math.max(0, currentPrice - productDiscount.fixedAmount)
         : null
     : null;
 
@@ -219,7 +260,7 @@ const ProductDetailPage = () => {
       <Layout>
         <div className="container mx-auto px-4 py-16 text-center">
           <h1 className="text-2xl font-bold mb-4">Không tìm thấy sản phẩm</h1>
-          <Link to="/products" className="text-[#00a85a] hover:underline">
+          <Link to="/products" className="text-black hover:underline">>
             Quay lại danh sách sản phẩm
           </Link>
         </div>
@@ -229,15 +270,17 @@ const ProductDetailPage = () => {
 
   return (
     <Layout>
-      <div className="bg-white min-h-screen pt-21 pb-8">
-        <div className="container mx-auto px-4 lg:px-30">
-          <Breadcrumb items={[
-            { label: 'Sản Phẩm', path: '/products' },
-            { label: product.name }
-          ]} />
+      <div className="bg-white min-h-screen pb-20 overflow-x-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="py-4 opacity-70 hover:opacity-100 transition-opacity">
+            <Breadcrumb items={[
+              { label: 'Sản Phẩm', path: '/products' },
+              { label: product.name }
+            ]} />
+          </div>
 
-          <div className="mb-12">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 pt-4 pb-4">
+          <div className="mb-12 animate-in fade-in slide-in-from-bottom-8 duration-1000 ease-out">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 pt-4 pb-4 items-start">
               <ProductImageGallery
                 images={images}
                 selectedImage={selectedImage}
@@ -251,7 +294,7 @@ const ProductDetailPage = () => {
                 product={product}
                 currentPrice={flashPrice ?? currentPrice}
                 originalPrice={flashPrice ? currentPrice : originalPrice}
-                flashSale={flashSale}
+                flashSale={effectiveFlashSale}
                 selectedSize={selectedSize}
                 selectedColor={selectedColor}
                 selectedVariant={selectedVariant}
@@ -260,20 +303,47 @@ const ProductDetailPage = () => {
                 onColorSelect={setSelectedColor}
                 onQuantityChange={setQuantity}
                 onAddToCart={handleAddToCart}
+                isWishlisted={isWishlisted}
+                onToggleWishlist={async () => {
+                  if (!user) { notify.warning('Vui lòng đăng nhập để lưu yêu thích'); return; }
+                  if (!selectedVariant?.id) { notify.warning('Vui lòng chọn phiên bản sản phẩm'); return; }
+                  if (wishlistLoading) return;
+                  setWishlistLoading(true);
+                  try {
+                    if (isWishlisted) {
+                      await wishlistService.removeFromWishlist(selectedVariant.id);
+                      setIsWishlisted(false);
+                      notify.info('Đã xoá khỏi danh sách yêu thích');
+                    } else {
+                      await wishlistService.addToWishlist(selectedVariant.id);
+                      setIsWishlisted(true);
+                      notify.success('Đã thêm vào danh sách yêu thích!');
+                    }
+                    window.dispatchEvent(new CustomEvent('wishlistUpdated'));
+                  } catch (err) {
+                    notify.error('Không thể cập nhật danh sách yêu thích');
+                  } finally {
+                    setWishlistLoading(false);
+                  }
+                }}
               />
             </div>
 
-            <ProductTabs 
-              product={product}
-              activeTab={activeTab}
-              onTabChange={setActiveTab}
-            />
+            <div className="mt-20">
+              <ProductTabs 
+                product={product}
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
+              />
+            </div>
           </div>
 
-          <ProductRecommendations 
-            productId={product.id} 
-            categoryId={product.categoryId} 
-          />
+          <div className="pt-20 border-t border-gray-100">
+            <ProductRecommendations 
+              productId={product.id} 
+              categoryId={product.categoryId} 
+            />
+          </div>
         </div>
       </div>
     </Layout>

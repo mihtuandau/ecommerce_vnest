@@ -18,7 +18,7 @@ const Loading = memo(({
   const iconSize = sizeClasses[size] || sizeClasses.md;
   
   // Color based on variant
-  const color = variant === 'admin' ? '#1890ff' : '#00a85a';
+  const color = variant === 'admin' ? '#1890ff' : '#000000';
 
   if (fullScreen) {
     return (

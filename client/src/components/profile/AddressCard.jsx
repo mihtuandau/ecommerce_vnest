@@ -16,10 +16,12 @@ const AddressCard = ({ address, onEdit, onDelete, onSetDefault }) => {
           <div className="flex items-center gap-3 mb-3">
             <h3 className="text-base font-normal text-gray-900">{address.fullName}</h3>
             {address.isDefault && (
-              <span className="px-2.5 py-1 bg-[#00a85a] text-white text-xs">
+              <span className="px-2.5 py-1 bg-black text-white text-[10px] uppercase font-bold tracking-widest">
                 Mặc định
               </span>
             )}
+
+
           </div>
           
           <div className="space-y-2 text-sm text-gray-600">
