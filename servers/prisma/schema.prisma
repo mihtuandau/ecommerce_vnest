@@ -34,6 +34,26 @@ model User {
 enum Role {
   CUSTOMER
   ADMIN
+  KHO
+  BAN_HANG
+}
+
+model Permission {
+  id          Int              @id @default(autoincrement())
+  name        String           @unique // e.g., "product.create"
+  description String?
+  roles       PermissionRole[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model PermissionRole {
+  role         Role
+  permissionId Int
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([role, permissionId])
+  @@index([role])
 }
 
 enum UserStatus {

@@ -168,18 +168,23 @@ export class AuthController {
 
     this.authService.setAuthCookie(res, token);
 
+    const permissions = await this.authService.getPermissionsByRole(user.role);
+
     const encodedUser = Buffer.from(
       JSON.stringify({
         id: user.userId,
         email: user.email,
         role: user.role,
+        permissions: permissions,
       }),
     ).toString('base64');
 
     const frontendUrl = process.env.FRONTEND_URL;
+    const isStaff = ['ADMIN', 'KHO', 'BAN_HANG'].includes(user.role?.toUpperCase());
+    const redirectPath = isStaff ? '/admin-dashboard' : '/';
 
     return res.redirect(
-      `${frontendUrl}/?oauth_success=true&user_data=${encodedUser}`,
+      `${frontendUrl}${redirectPath}?oauth_success=true&user_data=${encodedUser}`,
     );
   }
 
@@ -190,6 +195,34 @@ export class AuthController {
     const fullUser = await this.authService.getUserInfo(req.user.userId);
     if (!fullUser) throw new Error('User not found');
     const { password: _, ...safeUser } = fullUser;
-    return safeUser;
+
+    // Lấy permissions để trả về cho FE
+    const permissions = await this.authService.getPermissionsByRole(safeUser.role);
+
+    return {
+      ...safeUser,
+      permissions,
+    };
+  }
+
+  @Get('permissions')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  async getAllPermissions() {
+    return this.authService.getAllPermissions();
+  }
+
+  @Get('roles-permissions')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  async getRolesWithPermissions() {
+    return this.authService.getRolesWithPermissions();
+  }
+
+  @Post('roles-permissions')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  async updateRolePermissions(@Body() body: { role: string; permissionIds: number[] }) {
+    return this.authService.updateRolePermissions(body.role, body.permissionIds);
   }
 }

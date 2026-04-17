@@ -14,6 +14,7 @@ import { CreateVariantDto } from './dto/create-variant.dto';
 import { DeleteProductDto } from './dto/delete-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { multerConfig } from '../upload/multer.config';
+import { Permissions } from '../common/decorators/permissions.decorator';
 
 @ApiTags('Products')
 @Controller('products')
@@ -52,19 +53,19 @@ export class ProductController {
   }
 
   @Post()
-  @Roles('ADMIN')
+  @Permissions('product.manage')
   create(@Body() createProductDto: CreateProductDto) {
     return this.productService.create(createProductDto);
   }
 
   @Put(':id')
-  @Roles('ADMIN')
+  @Permissions('product.manage')
   update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
     return this.productService.update(+id, updateProductDto);
   }
 
   @Delete(':id')
-  @Roles('ADMIN')
+  @Permissions('product.manage')
   remove(@Param('id') id: string, @Body() deleteProductDto: DeleteProductDto) {
     if (!deleteProductDto.confirm) {
       throw new Error('Confirm deletion required');
@@ -73,20 +74,20 @@ export class ProductController {
   }
 
   @Post(':id/variant')
-  @Roles('ADMIN')
+  @Permissions('product.manage')
   createVariant(@Param('id') id: string, @Body() createVariantDto: CreateVariantDto) {
     createVariantDto.productId = +id;
     return this.productService.createVariant(createVariantDto);
   }
 
   @Put('variant/:variantId')
-  @Roles('ADMIN')
+  @Permissions('product.manage')
   updateVariant(@Param('variantId') variantId: string, @Body() body: any) {
     return this.productService.updateVariant(+variantId, body);
   }
 
   @Delete('variant/:variantId')
-  @Roles('ADMIN')
+  @Permissions('product.manage')
   removeVariant(@Param('variantId') variantId: string) {
     return this.productService.deleteVariant(+variantId);
   }
@@ -95,7 +96,7 @@ export class ProductController {
    * Upload images for Product (not for variant)
    */
   @Post(':id/images')
-  @Roles('ADMIN')
+  @Permissions('product.manage')
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FilesInterceptor('files', 10, multerConfig))
   async uploadProductImages(
@@ -123,7 +124,7 @@ export class ProductController {
    * Upload images for ProductVariant
    */
   @Post('variant/:variantId/images')
-  @Roles('ADMIN')
+  @Permissions('product.manage')
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FilesInterceptor('files', 10, multerConfig))
   async uploadVariantImages(
@@ -151,7 +152,7 @@ export class ProductController {
    * Delete ProductImage
    */
   @Delete('images/:imageId')
-  @Roles('ADMIN')
+  @Permissions('product.manage')
   async deleteProductImage(@Param('imageId') imageId: string) {
     return this.productService.deleteProductImage(+imageId);
   }
@@ -160,7 +161,7 @@ export class ProductController {
    * Delete VariantImage
    */
   @Delete('variant-images/:imageId')
-  @Roles('ADMIN')
+  @Permissions('product.manage')
   async deleteVariantImage(@Param('imageId') imageId: string) {
     return this.productService.deleteVariantImage(+imageId);
   }

@@ -111,11 +111,15 @@ export class AuthService {
     );
 
     const { password: _, ...safeUser } = user;
+    const permissions = await this.userService.getPermissionsByRole(user.role);
 
     return {
       access_token: accessToken,
       refresh_token: refreshToken,
-      user: safeUser,
+      user: {
+        ...safeUser,
+        permissions
+      },
     };
   }
 
@@ -231,5 +235,21 @@ export class AuthService {
 
   async getUserInfo(userId: number) {
     return this.userService.findOne(userId);
+  }
+
+  async getPermissionsByRole(role: string) {
+    return this.userService.getPermissionsByRole(role);
+  }
+
+  async getAllPermissions() {
+    return this.userService.getAllPermissions();
+  }
+
+  async getRolesWithPermissions() {
+    return this.userService.getRolesWithPermissions();
+  }
+
+  async updateRolePermissions(role: string, permissionIds: number[]) {
+    return this.userService.updateRolePermissions(role, permissionIds);
   }
 }

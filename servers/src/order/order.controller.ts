@@ -21,6 +21,7 @@ import { UpdateOrderDto } from './dto/update-order.dto';
 import { QueryOrderDto } from './dto/query-order.dto';
 import { ApplyDiscountDto } from './dto/apply-discount.dto';
 import { DeleteOrderDto } from './dto/delete-order.dto';
+import { Permissions } from '../common/decorators/permissions.decorator';
 
 @ApiTags('Orders')
 @ApiBearerAuth()
@@ -62,17 +63,22 @@ export class OrderController {
 
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
+  @Permissions('order.view')
   @ApiBearerAuth('Authorization')
   async findAll(@Query() query: QueryOrderDto, @Req() req: any) {
-    // ✅ Thêm @Req() để lấy req.user
-    // Merge userId từ JWT (user chỉ xem của mình, admin xem all)
-    const userIdFromToken = req.user.userId; // Từ JWT payload
+    const userIdFromToken = req.user.userId;
+    const userRole = req.user.role;
+    const userPermissions = req.user.permissions || [];
+
+    // Cho phép staff xem all, khách hàng chỉ xem của mình
+    const canViewAll = userRole === 'ADMIN' || userPermissions.includes('order.view');
+
     const mergedQuery = {
       ...query,
-      userId: req.user.role === 'ADMIN' ? query.userId : userIdFromToken,
-    }; // ✅ Fix: Merge 1 arg
+      userId: canViewAll ? query.userId : userIdFromToken,
+    };
 
-    return this.orderService.findAll(mergedQuery); // Truyền 1 arg duy nhất
+    return this.orderService.findAll(mergedQuery);
   }
 
   @Get(':id')
@@ -84,7 +90,7 @@ export class OrderController {
 
   @Put(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('ADMIN')
+  @Permissions('order.manage')
   @ApiBearerAuth('Authorization')
   update(@Param('id') id: string, @Body() body: UpdateOrderDto) {
     return this.orderService.update(+id, body);
@@ -117,7 +123,7 @@ export class OrderController {
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('ADMIN')
+  @Permissions('order.manage')
   @ApiBearerAuth('Authorization')
   remove(@Param('id') id: string, @Body() body: DeleteOrderDto) {
     if (!body.confirm) {

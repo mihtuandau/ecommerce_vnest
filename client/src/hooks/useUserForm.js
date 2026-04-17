@@ -5,6 +5,7 @@ export const useUserForm = (initialData = null) => {
     email: '',
     password: '',
     name: '',
+    role: 'CUSTOMER',
   });
 
   const [errors, setErrors] = useState({});
@@ -20,7 +21,7 @@ export const useUserForm = (initialData = null) => {
 
     if (!initialData && !formData.password) {
       newErrors.password = 'Mật khẩu là bắt buộc';
-    } else if (formData.password && formData.password.length < 6) {
+    } else if (formData.password && formData.password.trim().length > 0 && formData.password.length < 6) {
       newErrors.password = 'Mật khẩu phải có ít nhất 6 ký tự';
     }
 
@@ -40,6 +41,7 @@ export const useUserForm = (initialData = null) => {
       email: '',
       password: '',
       name: '',
+      role: 'CUSTOMER',
     });
     setErrors({});
   };
