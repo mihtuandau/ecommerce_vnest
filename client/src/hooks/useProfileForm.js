@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { notify } from '../utils/notification';
 
 export const useProfileForm = (initialUser, updateProfile) => {
@@ -76,10 +76,10 @@ export const useAddressForm = (loadAddresses) => {
     try {
       setLoading(true);
       if (editingAddress) {
-        // TODO: Update address API
+
         notify.success('Cập nhật địa chỉ thành công');
       } else {
-        // TODO: Create address API
+
         notify.success('Thêm địa chỉ thành công');
       }
       closeAddressModal();
@@ -95,7 +95,7 @@ export const useAddressForm = (loadAddresses) => {
     if (!confirm('Bạn có chắc muốn xóa địa chỉ này?')) return;
     
     try {
-      // TODO: Delete address API
+
       notify.success('Xóa địa chỉ thành công');
       loadAddresses();
     } catch (error) {
@@ -115,3 +115,9 @@ export const useAddressForm = (loadAddresses) => {
     handleDeleteAddress,
   };
 };
+
+
+
+
+
+

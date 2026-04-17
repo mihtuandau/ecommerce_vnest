@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+﻿import React, { memo } from 'react';
 import { Loader2 } from 'lucide-react';
 
 const Loading = memo(({ 
@@ -6,7 +6,7 @@ const Loading = memo(({
   text = 'Đang tải...', 
   fullScreen = false,
   className = '',
-  variant = 'user' // 'user' (green) or 'admin' (blue)
+  variant = 'user' 
 }) => {
   const sizeClasses = {
     sm: 'w-4 h-4',
@@ -16,14 +16,13 @@ const Loading = memo(({
   };
 
   const iconSize = sizeClasses[size] || sizeClasses.md;
-  
-  // Color based on variant
+
   const color = variant === 'admin' ? '#1890ff' : '#000000';
 
   if (fullScreen) {
     return (
       <>
-        {/* Loading Spinner Overlay */}
+        {}
         <div className="fixed inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-[9999]">
           <div className="relative w-16 h-16">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full animate-spin-dot loading-dot" style={{ animationDelay: '0s', backgroundColor: color }}></div>
@@ -63,3 +62,9 @@ const Loading = memo(({
 Loading.displayName = 'Loading';
 
 export default Loading;
+
+
+
+
+
+

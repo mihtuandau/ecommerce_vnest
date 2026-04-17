@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { ShoppingCart, ArrowRight, Tag } from "lucide-react";
@@ -35,7 +35,7 @@ const PromotionsPage = () => {
 
   const TABS = [
     { key: "all", label: `Tất cả (${vouchers.length})` },
-    { key: "flash", label: `⚡ Flash Sale (${flashList.length})` },
+    { key: "flash", label: ` Flash Sale (${flashList.length})` },
     { key: "regular", label: `🎟 Khuyến mãi thường (${regularList.length})` },
   ];
 
@@ -43,7 +43,7 @@ const PromotionsPage = () => {
     <Layout>
       <div className="min-h-screen bg-white font-inter pb-24">
         
-        {/* Elegant Minimal Header */}
+        {}
         <div className="pt-20 pb-12 px-4 sm:px-6 lg:px-8 text-center">
            <div className="max-w-7xl mx-auto flex flex-col items-center">
               <p className="text-[11px] md:text-[13px] text-gray-500 tracking-[0.25em] uppercase font-semibold mb-3">
@@ -56,10 +56,10 @@ const PromotionsPage = () => {
            </div>
         </div>
 
-        {/* Main Content Area */}
+        {}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20">
           
-          {/* Tabs */}
+          {}
           <div className="flex flex-wrap justify-center gap-2 mb-10 mx-auto max-w-fit">
             {TABS.map((t) => (
               <button
@@ -76,7 +76,7 @@ const PromotionsPage = () => {
             ))}
           </div>
 
-          {/* Grid Layout */}
+          {}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {displayed.map((v) => (
               <VoucherCard
@@ -98,7 +98,7 @@ const PromotionsPage = () => {
             )}
           </div>
 
-          {/* Call To Action */}
+          {}
           {displayed.length > 0 && (
             <div className="mt-16 flex justify-center">
               <Link
@@ -121,3 +121,9 @@ const PromotionsPage = () => {
 };
 
 export default PromotionsPage;
+
+
+
+
+
+

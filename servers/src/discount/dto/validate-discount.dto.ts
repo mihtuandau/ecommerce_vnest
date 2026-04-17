@@ -1,4 +1,4 @@
-import { IsString } from 'class-validator';
+﻿import { IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class ValidateDiscountDto {
@@ -6,3 +6,9 @@ export class ValidateDiscountDto {
   @IsString()
   code: string;
 }
+
+
+
+
+
+

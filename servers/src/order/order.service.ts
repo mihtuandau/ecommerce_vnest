@@ -1,4 +1,4 @@
-// src/order/order.service.ts
+﻿
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { OrderRepository } from './order.repository';
 import { OrderCache } from './order.cache';
@@ -29,7 +29,6 @@ export class OrderService {
     const { page = 1, limit = 10, status, userId } = query;
     const skip = (page - 1) * limit;
 
-    // Check cache first
     const cached = await this.cacheService.getOrdersList(query);
     if (cached) {
       return cached;
@@ -44,7 +43,6 @@ export class OrderService {
       this.repository.count(where),
     ]);
 
-    // Serialize all orders with payment data
     const serializedOrders = ordersData.map(order => OrderHelper.serializeOrder(order));
 
     const orders = {
@@ -67,7 +65,6 @@ export class OrderService {
       throw new NotFoundException(`Đơn hàng #${id} không tồn tại`);
     }
 
-    // Kiểm tra quyền sở hữu (trừ Admin)
     if (user.role !== 'ADMIN' && order.userId !== user.userId) {
       throw new NotFoundException(`Đơn hàng #${id} không tồn tại hoặc không thuộc quyền sở hữu của bạn`);
     }
@@ -103,3 +100,8 @@ export class OrderService {
     return this.orderManagement.lookupGuestOrder(orderCode, contact);
   }
 }
+
+
+
+
+

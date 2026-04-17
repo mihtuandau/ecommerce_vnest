@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+﻿import { Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
@@ -101,7 +101,7 @@ export class MailService {
                 </div>
 
                 <div style="background: #fff3cd; padding: 15px; border-radius: 5px; margin-top: 20px; border-left: 4px solid #ffc107;">
-                  <p style="margin: 0;"><strong>📝 Lưu ý:</strong></p>
+                  <p style="margin: 0;"><strong> Lưu ý:</strong></p>
                   <p style="margin: 5px 0 0 0; font-size: 14px;">
                     Vui lòng lưu lại mã đơn hàng <strong>${orderCode}</strong> để tra cứu và theo dõi trạng thái đơn hàng.
                   </p>
@@ -121,7 +121,7 @@ export class MailService {
         `,
       });
     } catch (error) {
-      console.error('Email confirmation error:', error);
+
       throw error;
     }
   }
@@ -180,7 +180,7 @@ export class MailService {
                 </p>
 
                 <div class="warning">
-                  <p style="margin: 0;"><strong>⚠️ Cảnh báo bảo mật:</strong></p>
+                  <p style="margin: 0;"><strong> Cảnh báo bảo mật:</strong></p>
                   <p style="margin: 5px 0 0 0; font-size: 14px;">
                     Nếu bạn không yêu cầu đặt lại mật khẩu, có thể có người đang cố gắng truy cập vào tài khoản của bạn. 
                     Vui lòng đổi mật khẩu ngay lập tức hoặc liên hệ với chúng tôi.
@@ -243,7 +243,7 @@ export class MailService {
                 </div>
  
                 <div class="info-box">
-                  <p style="margin: 0;"><strong>⚠️ Lưu ý bảo mật:</strong></p>
+                  <p style="margin: 0;"><strong> Lưu ý bảo mật:</strong></p>
                   <ul style="margin: 10px 0 0 20px; padding: 0;">
                     <li>Không chia sẻ mã này với bất kỳ ai (kể cả nhân viên cửa hàng)</li>
                     <li>Nếu không phải bạn đăng ký, vui lòng bỏ qua email này</li>
@@ -264,7 +264,7 @@ export class MailService {
         `,
       });
     } catch (error) {
-       console.error('Verification Mail Error:', error);
+
        throw error;
     }
   }
@@ -276,3 +276,9 @@ export class MailService {
     }).format(amount);
   }
 }
+
+
+
+
+
+

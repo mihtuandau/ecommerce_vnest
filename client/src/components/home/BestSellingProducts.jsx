@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+﻿import { Link, useNavigate } from "react-router-dom";
 import { ArrowUpRight } from "lucide-react";
 import ProductCard from "../products/ProductCard";
 
@@ -12,7 +12,7 @@ const BestSellingProducts = ({ products = [] }) => {
   return (
     <section className="py-16 bg-gray-50/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        {/* Header */}
+        {}
         <div className="flex flex-col mb-12 items-center text-center">
           <span className="text-[10px] uppercase tracking-[0.4em] text-orange-500 font-black mb-3 block">
             Trending Now
@@ -23,14 +23,14 @@ const BestSellingProducts = ({ products = [] }) => {
           <div className="h-1 w-20 bg-orange-500 rounded-full"></div>
         </div>
 
-        {/* Product Grid */}
+        {}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5">
           {displayProducts.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
 
-        {/* View All link */}
+        {}
         <div className="mt-12 flex justify-center">
           <Link
             to="/products?sort=sold"
@@ -49,3 +49,9 @@ const BestSellingProducts = ({ products = [] }) => {
 };
 
 export default BestSellingProducts;
+
+
+
+
+
+

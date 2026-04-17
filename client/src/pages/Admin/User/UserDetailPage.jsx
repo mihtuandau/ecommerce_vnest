@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, ShoppingCart, Package2, Star, MapPin } from 'lucide-react';
 import { Pagination as AntdPagination } from 'antd';
@@ -200,3 +200,9 @@ const UserDetailPage = () => {
 };
 
 export default UserDetailPage;
+
+
+
+
+
+

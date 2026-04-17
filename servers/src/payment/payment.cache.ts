@@ -1,4 +1,4 @@
-
+﻿
 import { Injectable, Inject, Logger } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
@@ -11,7 +11,7 @@ export class PaymentCache {
   constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
 
   async clearPaymentCaches() {
-    this.logger.log('Payment caches will be invalidated');
+
   }
 
   async getPayment(id: number) {
@@ -33,7 +33,7 @@ export class PaymentCache {
     const cacheKey = buildCacheKey('payments', query);
     const cached = await this.cacheManager.get(cacheKey);
     if (cached) {
-      this.logger.log(`Cache hit for payments: ${cacheKey}`);
+
     }
     return cached;
   }
@@ -41,7 +41,7 @@ export class PaymentCache {
   async setPaymentsList(query: any, data: any, ttl = 3600) {
     const cacheKey = buildCacheKey('payments', query);
     await this.cacheManager.set(cacheKey, data, ttl);
-    this.logger.log(`Cache set for payments: ${cacheKey}`);
+
   }
 
   async clearRelatedCaches(paymentId: number, orderId: number) {
@@ -49,6 +49,11 @@ export class PaymentCache {
     await this.clearPaymentCaches();
     await this.cacheManager.del(`order:${orderId}`);
     await this.cacheManager.del('products:all');
-    this.logger.log('Related caches cleared');
+
   }
 }
+
+
+
+
+

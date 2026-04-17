@@ -1,4 +1,4 @@
-import { BadRequestException } from '@nestjs/common';
+﻿import { BadRequestException } from '@nestjs/common';
 import { calculateOrderTotal, validateDiscount } from './order.helper';
 
 describe('OrderHelper', () => {
@@ -45,3 +45,9 @@ describe('OrderHelper', () => {
     });
   });
 });
+
+
+
+
+
+

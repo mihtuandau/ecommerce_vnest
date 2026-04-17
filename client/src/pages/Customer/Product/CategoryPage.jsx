@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import Layout from '../../../components/layouts/Layout';
 import Breadcrumb from '../../../components/common/Breadcrumb';
@@ -242,3 +242,8 @@ const CategoryPage = () => {
 };
 
 export default CategoryPage;
+
+
+
+
+

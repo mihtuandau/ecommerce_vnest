@@ -1,11 +1,8 @@
-// src/components/common/MutationButton.jsx
+﻿
 import { Button } from 'antd';
 import { CheckOutlined, LoadingOutlined } from '@ant-design/icons';
 
-/**
- * Button component với mutation states
- * Tự động hiện loading và success states
- */
+
 export const MutationButton = ({
   mutation,
   children,
@@ -40,9 +37,7 @@ export const MutationButton = ({
   );
 };
 
-/**
- * Delete button với confirmation
- */
+
 export const DeleteButton = ({
   onConfirm,
   confirmMessage = 'Bạn có chắc muốn xóa?',
@@ -65,3 +60,9 @@ export const DeleteButton = ({
     </Button>
   );
 };
+
+
+
+
+
+

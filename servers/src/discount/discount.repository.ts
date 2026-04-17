@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+﻿import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Discount, Prisma } from '@prisma/client';
 
@@ -42,7 +42,6 @@ export class DiscountRepository {
   async update(id: number, data: Prisma.DiscountUpdateInput): Promise<Discount> {
     const normalizedData: any = { ...data };
 
-    // Defensive normalization: nếu caller truyền mảng thô thì convert về nested update input.
     if (Array.isArray(normalizedData.applicableToProducts)) {
       const productIds = normalizedData.applicableToProducts.filter(
         (id: unknown) => typeof id === 'number' && Number.isFinite(id),
@@ -103,7 +102,7 @@ export class DiscountRepository {
     return this.prisma.discount.findMany({
       where: {
         isActive: true,
-        isFlashSale: false, // Chỉ lấy Voucher thường, không lấy chương trình Flash Sale tự động
+        isFlashSale: false, 
         startDate: { lte: now },
         OR: [{ endDate: null }, { endDate: { gte: now } }],
       },
@@ -133,7 +132,7 @@ export class DiscountRepository {
     return this.prisma.discount.count({ where });
   }
 
-  /** Kiểm tra xem đã có flash sale nào đang active chưa (dùng để validate) */
+  
   async findActiveFlashSale(excludeId?: number) {
     const now = new Date();
     return this.prisma.discount.findFirst({
@@ -176,8 +175,6 @@ export class DiscountRepository {
 
     if (!flashSale) return null;
 
-    // Nếu flash sale không cấu hình ứng dụng cho sản phẩm hay danh mục nào
-    // thì KHÔNG TỰ ĐỘNG nhận vơ sản phẩm. Phải trả về mảng rỗng.
     if (flashSale.applicableToProducts.length === 0 && flashSale.applicableToCategories.length === 0) {
       return { ...flashSale, products: [] };
     }
@@ -228,7 +225,7 @@ export class DiscountRepository {
     return { ...flashSale, products: orderedProducts };
   }
 
-  /** Tìm discount tốt nhất đang active áp dụng cho 1 sản phẩm cụ thể (CHỈ FLASH SALE) */
+  
   async findDiscountForProduct(productId: number) {
     const now = new Date();
     const discounts = await this.prisma.discount.findMany({
@@ -261,7 +258,7 @@ export class DiscountRepository {
     return discounts[0] ?? null;
   }
 
-  /** Tất cả Flash Sale active có danh sách sản phẩm cụ thể (dùng để tự động giảm giá hiển thị) */
+  
   async findAllAutoApply() {
     const now = new Date();
     return this.prisma.discount.findMany({
@@ -287,3 +284,9 @@ export class DiscountRepository {
     });
   }
 }
+
+
+
+
+
+

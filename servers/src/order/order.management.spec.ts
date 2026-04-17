@@ -1,4 +1,4 @@
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+﻿import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { OrderManagement } from './order.management';
 
 describe('OrderManagement.applyDiscount', () => {
@@ -141,3 +141,9 @@ describe('OrderManagement.applyDiscount', () => {
     expect(result.message).toBe('Discount applied');
   });
 });
+
+
+
+
+
+

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { FaMapMarkerAlt, FaStar } from "react-icons/fa";
 import { notify } from "../../utils/notification";
 import addressService from "../../services/addressService";
@@ -20,7 +20,7 @@ const AddressSelector = ({ onAddressSelect, selectedAddressId }) => {
         response.addresses || response.data?.addresses || response || [];
       setAddresses(Array.isArray(addressList) ? addressList : []);
     } catch (error) {
-      console.error("Load addresses error:", error);
+
       notify.error("Không thể tải danh sách địa chỉ");
       setAddresses([]);
     } finally {
@@ -45,7 +45,7 @@ const AddressSelector = ({ onAddressSelect, selectedAddressId }) => {
       );
 
       if (!selectedProvince) {
-        console.log("Province not found for:", address.city);
+
         onAddressSelect(address);
         return;
       }
@@ -95,7 +95,7 @@ const AddressSelector = ({ onAddressSelect, selectedAddressId }) => {
 
       onAddressSelect(addressWithCodes);
     } catch (error) {
-      console.error("Error mapping address codes:", error);
+
       onAddressSelect(address);
     }
   };
@@ -186,3 +186,9 @@ const AddressSelector = ({ onAddressSelect, selectedAddressId }) => {
 };
 
 export default AddressSelector;
+
+
+
+
+
+

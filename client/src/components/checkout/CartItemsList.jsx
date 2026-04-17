@@ -1,11 +1,11 @@
-import { formatPrice } from "../../utils/formatters";
+﻿import { formatPrice } from "../../utils/formatters";
 import { Zap } from "lucide-react";
 
 const CartItemsList = ({ cartItems, originalCartItems }) => {
   return (
     <div className="space-y-4 mb-6 max-h-64 overflow-y-auto">
       {cartItems.map((item, idx) => {
-        // Handle both cart items from Redux and direct product data from ProductDetailPage
+
         const price = item.product?.variant?.price || item.price || 0;
         const originalPrice =
           item.product?.variant?.originalPrice ||
@@ -68,3 +68,9 @@ const CartItemsList = ({ cartItems, originalCartItems }) => {
 };
 
 export default CartItemsList;
+
+
+
+
+
+

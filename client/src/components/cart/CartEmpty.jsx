@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+﻿import { Link } from "react-router-dom";
 import { FaShoppingBag } from "react-icons/fa";
 import Button from "../common/Button";
 
@@ -28,3 +28,9 @@ const CartEmpty = () => {
 };
 
 export default CartEmpty;
+
+
+
+
+
+

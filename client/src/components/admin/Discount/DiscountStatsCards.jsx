@@ -1,4 +1,4 @@
-import { Ticket, CheckCircle, XCircle, Clock, TrendingUp } from 'lucide-react';
+﻿import { Ticket, CheckCircle, XCircle, Clock, TrendingUp } from 'lucide-react';
 import StatsCard from '../../common/StatsCard';
 
 const DiscountStatsCards = ({ stats, mode = 'regular' }) => {
@@ -93,3 +93,9 @@ const DiscountStatsCards = ({ stats, mode = 'regular' }) => {
 };
 
 export default DiscountStatsCards;
+
+
+
+
+
+

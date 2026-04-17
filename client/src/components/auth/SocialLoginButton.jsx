@@ -1,4 +1,4 @@
-const GoogleIcon = () => (
+﻿const GoogleIcon = () => (
   <svg className="w-5 h-5" viewBox="0 0 24 24">
     <path
       fill="#4285F4"
@@ -21,10 +21,9 @@ const GoogleIcon = () => (
 
 const SocialLoginButton = ({ provider = 'google', redirectUrl = '/' }) => {
   const handleClick = () => {
-    // Lưu URL redirect
+
     localStorage.setItem('redirectAfterLogin', redirectUrl);
-    
-    // Redirect đến OAuth provider
+
     const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
     window.location.href = `${baseUrl}/auth/${provider}`;
   };
@@ -59,3 +58,8 @@ const SocialLoginButton = ({ provider = 'google', redirectUrl = '/' }) => {
 };
 
 export default SocialLoginButton;
+
+
+
+
+

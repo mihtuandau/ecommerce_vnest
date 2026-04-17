@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { Mail, Lock, User, ArrowRight, Chrome } from "lucide-react";
@@ -13,7 +13,7 @@ const RegisterPage = () => {
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
-  const [step, setStep] = useState(1); // 1: Info, 2: OTP
+  const [step, setStep] = useState(1); 
   const [otp, setOtp] = useState("");
   const { handleRegister, handleVerifyOtp, handleResendOtp } = useAuth();
   const navigate = useNavigate();
@@ -45,9 +45,9 @@ const RegisterPage = () => {
     setIsLoading(true);
     try {
       await handleRegister(formData);
-      setStep(2); // Chuyển sang bước OTP
+      setStep(2); 
     } catch (error) {
-      // Error handled by context
+
     } finally {
       setIsLoading(false);
     }
@@ -63,9 +63,9 @@ const RegisterPage = () => {
     setIsLoading(true);
     try {
       await handleVerifyOtp(formData.email, otp);
-      // Navigate to home is handled in useAuth
+
     } catch (error) {
-      // Error handled by context
+
     } finally {
       setIsLoading(false);
     }
@@ -250,3 +250,9 @@ const RegisterPage = () => {
 };
 
 export default RegisterPage;
+
+
+
+
+
+

@@ -1,4 +1,4 @@
-import Button from "../common/Button";
+﻿import Button from "../common/Button";
 import { FaCheckCircle, FaExclamationCircle } from "react-icons/fa";
 
 const CartSummary = ({
@@ -19,7 +19,7 @@ const CartSummary = ({
           Tóm Tắt Đơn Hàng
         </h2>
 
-        {/* Selected Items Count */}
+        {}
         {selectedCount !== undefined && totalCount !== undefined && (
           <div className="mb-6 pb-6 border-b border-gray-200">
             <p className="text-sm text-gray-600">
@@ -42,11 +42,11 @@ const CartSummary = ({
             <span className="text-gray-900 font-medium">Miễn phí</span>
           </div>
 
-          {/* Discount Display */}
+          {}
           {discount > 0 && (
             <div className="flex justify-between text-sm">
               <span className="text-red-600 font-medium">
-                ⚡ {promotionTitle}
+                 {promotionTitle}
               </span>
               <span className="text-red-600 font-medium">
                 -{formatPrice(discount)}
@@ -108,3 +108,9 @@ const CartSummary = ({
 };
 
 export default CartSummary;
+
+
+
+
+
+

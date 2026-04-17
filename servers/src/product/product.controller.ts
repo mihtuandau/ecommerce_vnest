@@ -1,4 +1,4 @@
-import { 
+﻿import { 
   Controller, Get, Post, Put, Delete, Body, Param, Query, Request,
   UseGuards, UseInterceptors, UploadedFiles, BadRequestException, HttpCode, HttpStatus
 } from '@nestjs/common';
@@ -47,7 +47,7 @@ export class ProductController {
   @Post(':id/view')
   @HttpCode(HttpStatus.NO_CONTENT)
   incrementView(@Param('id') id: string, @Request() req: any) {
-    // Lấy userId nếu đã đăng nhập, nếu không dùng IP
+
     const identifier = req.user?.userId || req.ip || req.connection.remoteAddress || 'anonymous';
     return this.productService.incrementViewCount(+id, identifier);
   }
@@ -92,9 +92,7 @@ export class ProductController {
     return this.productService.deleteVariant(+variantId);
   }
 
-  /**
-   * Upload images for Product (not for variant)
-   */
+  
   @Post(':id/images')
   @Permissions('product.manage')
   @ApiConsumes('multipart/form-data')
@@ -120,9 +118,7 @@ export class ProductController {
     });
   }
 
-  /**
-   * Upload images for ProductVariant
-   */
+  
   @Post('variant/:variantId/images')
   @Permissions('product.manage')
   @ApiConsumes('multipart/form-data')
@@ -148,22 +144,24 @@ export class ProductController {
     });
   }
 
-  /**
-   * Delete ProductImage
-   */
+  
   @Delete('images/:imageId')
   @Permissions('product.manage')
   async deleteProductImage(@Param('imageId') imageId: string) {
     return this.productService.deleteProductImage(+imageId);
   }
 
-  /**
-   * Delete VariantImage
-   */
+  
   @Delete('variant-images/:imageId')
   @Permissions('product.manage')
   async deleteVariantImage(@Param('imageId') imageId: string) {
     return this.productService.deleteVariantImage(+imageId);
   }
 }
+
+
+
+
+
+
 

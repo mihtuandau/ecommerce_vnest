@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Play, Pause } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -7,7 +7,6 @@ const HeroBanner = ({ slides = [] }) => {
   const [isPlaying, setIsPlaying] = useState(true);
   const [videoMuted, setVideoMuted] = useState(false);
 
-  // Default slides nếu không có data
   const defaultSlides = [
     {
       type: 'image',  
@@ -19,7 +18,6 @@ const HeroBanner = ({ slides = [] }) => {
     },
   ];
 
-  // Map banners từ API với format chuẩn
   const bannerSlides = slides.length > 0 
     ? slides.map(banner => ({
         type: 'image',
@@ -60,7 +58,7 @@ const HeroBanner = ({ slides = [] }) => {
 
   return (
     <div className="relative w-full h-[600px] lg:h-[800px] overflow-hidden bg-gray-100 -mt-[60px]">
-      {/* Slides */}
+      {}
       {bannerSlides.map((slide, index) => (
         <div
           key={index}
@@ -86,7 +84,7 @@ const HeroBanner = ({ slides = [] }) => {
         </div>
       ))}
 
-      {/* Content - Left Side */}
+      {}
       <div className="relative z-20 h-full flex items-center">
         <div className="container mx-auto px-4 sm:px-6 lg:px-16">
           <div className="max-w-xl lg:max-w-2xl">
@@ -116,7 +114,7 @@ const HeroBanner = ({ slides = [] }) => {
         </div>
       </div>
 
-      {/* Navigation Arrows */}
+      {}
       <button
         onClick={prevSlide}
         className="absolute left-2 sm:left-4 lg:left-8 top-1/2 -translate-y-1/2 z-30 w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 flex items-center justify-center bg-white/90 text-gray-900 hover:bg-white transition-colors"
@@ -130,7 +128,7 @@ const HeroBanner = ({ slides = [] }) => {
         <ChevronRight size={20} />
       </button>
 
-      {/* Dots Indicator */}
+      {}
       <div className="absolute bottom-4 sm:bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 z-30 flex gap-1.5 sm:gap-2 md:gap-3">
         {bannerSlides.map((_, index) => (
           <button
@@ -145,7 +143,7 @@ const HeroBanner = ({ slides = [] }) => {
         ))}
       </div>
 
-      {/* Play/Pause Button */}
+      {}
       <button
         onClick={() => setIsPlaying(!isPlaying)}
         className="absolute bottom-4 sm:bottom-6 md:bottom-8 right-4 sm:right-6 md:right-8 z-30 w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-colors"
@@ -157,3 +155,8 @@ const HeroBanner = ({ slides = [] }) => {
 };
 
 export default HeroBanner;
+
+
+
+
+

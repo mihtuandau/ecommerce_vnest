@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { ShoppingCart, Sparkles, Tag, ArrowRight } from "lucide-react";
@@ -35,21 +35,18 @@ const PromotionsPage = () => {
 
   const TABS = [
     { key: "all", label: `Tất cả (${vouchers.length})` },
-    { key: "flash", label: `⚡ Flash Sale (${flashList.length})` },
+    { key: "flash", label: ` Flash Sale (${flashList.length})` },
     { key: "regular", label: `🎟 Khuyến mãi thường (${regularList.length})` },
   ];
 
   return (
     <Layout>
-      {/* 
-        Container with a specific light blue-gray background to make the white
-        cards and the overlapping banner look great.
-      */}
+      {}
       <div className="min-h-screen bg-[#F4F6F8] font-inter pb-20">
         
-        {/* Modern E-commerce Banner Header */}
+        {}
         <div className="bg-gradient-to-r from-blue-700 via-indigo-600 to-blue-800 text-white pt-[72px] pb-[72px] px-5 relative overflow-hidden">
-           {/* Decorative elements behind the text */}
+           {}
            <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-20 pointer-events-none">
               <div className="absolute -top-24 -left-20 w-80 h-80 bg-white rounded-full blur-[80px]"></div>
               <div className="absolute bottom-[-100px] right-[-50px] w-72 h-72 bg-blue-300 rounded-full blur-[90px]"></div>
@@ -69,10 +66,10 @@ const PromotionsPage = () => {
            </div>
         </div>
 
-        {/* Main Content Area - overlaps the banner slightly for depth */}
+        {}
         <div className="max-w-[1100px] mx-auto px-5 -mt-8 relative z-20">
           
-          {/* Floating Tabs */}
+          {}
           <div className="flex flex-wrap justify-center gap-2 mb-8 bg-white/80 backdrop-blur-xl p-2 rounded-2xl shadow-sm border border-gray-100 mx-auto max-w-fit">
             {TABS.map((t) => (
               <button
@@ -89,7 +86,7 @@ const PromotionsPage = () => {
             ))}
           </div>
 
-          {/* Grid Layout */}
+          {}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {displayed.map((v) => (
               <VoucherCard
@@ -113,7 +110,7 @@ const PromotionsPage = () => {
             )}
           </div>
 
-          {/* Call To Action */}
+          {}
           {displayed.length > 0 && (
             <div className="mt-14 flex justify-center">
               <Link
@@ -136,3 +133,9 @@ const PromotionsPage = () => {
 };
 
 export default PromotionsPage;
+
+
+
+
+
+

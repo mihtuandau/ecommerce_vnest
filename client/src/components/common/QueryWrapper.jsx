@@ -1,11 +1,8 @@
-// src/components/common/QueryWrapper.jsx
+﻿
 import { Spin, Result, Button } from 'antd';
 import { ReloadOutlined } from '@ant-design/icons';
 
-/**
- * Wrapper component for TanStack Query states
- * Handles loading, error, and empty states consistently
- */
+
 export const QueryWrapper = ({ 
   isLoading, 
   error, 
@@ -18,7 +15,7 @@ export const QueryWrapper = ({
   onRetry,
   minHeight = 'min-h-[400px]'
 }) => {
-  // Loading state
+
   if (isLoading) {
     return (
       <div className={`flex items-center justify-center ${minHeight}`}>
@@ -27,7 +24,6 @@ export const QueryWrapper = ({
     );
   }
 
-  // Error state
   if (error) {
     return (
       <div className={`flex items-center justify-center ${minHeight}`}>
@@ -51,7 +47,6 @@ export const QueryWrapper = ({
     );
   }
 
-  // Empty state
   if (isEmpty) {
     return (
       <div className={`flex items-center justify-center ${minHeight}`}>
@@ -64,13 +59,10 @@ export const QueryWrapper = ({
     );
   }
 
-  // Success - render children
   return <>{children}</>;
 };
 
-/**
- * Wrapper for list queries
- */
+
 export const QueryListWrapper = ({ 
   isLoading, 
   error, 
@@ -93,9 +85,7 @@ export const QueryListWrapper = ({
   );
 };
 
-/**
- * Wrapper for detail queries
- */
+
 export const QueryDetailWrapper = ({ 
   isLoading, 
   error, 
@@ -117,3 +107,9 @@ export const QueryDetailWrapper = ({
     </QueryWrapper>
   );
 };
+
+
+
+
+
+

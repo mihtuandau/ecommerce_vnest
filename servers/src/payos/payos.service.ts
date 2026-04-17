@@ -1,4 +1,4 @@
-// src/payos/payos.service.ts
+﻿
 import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PayOS } from '@payos/node';
@@ -70,9 +70,7 @@ export class PayOSService {
     this.cancelUrl = this.configService.get<string>('payos.cancelUrl') || `${process.env.FRONTEND_URL || 'https://dautuan.com'}/payment/cancel`;
   }
 
-  /**
-   * Tạo payment link từ PayOS
-   */
+  
   async createPaymentLink(paymentData: PayOSPaymentData) {
     try {
       const body = {
@@ -88,10 +86,8 @@ export class PayOSService {
         cancelUrl: paymentData.cancelUrl || this.cancelUrl,
       };
 
-      this.logger.log(`Creating PayOS payment link for order: ${paymentData.orderCode}`);
       const paymentLinkResponse = await this.payOS.paymentRequests.create(body);
 
-      this.logger.log(`PayOS payment link created successfully: ${paymentLinkResponse.checkoutUrl}`);
       return paymentLinkResponse;
     } catch (error) {
       this.logger.error(`Error creating PayOS payment link: ${error.message}`, error.stack);
@@ -99,12 +95,10 @@ export class PayOSService {
     }
   }
 
-  /**
-   * Lấy thông tin payment từ PayOS
-   */
+  
   async getPaymentInfo(orderCode: number) {
     try {
-      this.logger.log(`Getting payment info for order: ${orderCode}`);
+
       const paymentInfo = await this.payOS.paymentRequests.get(orderCode);
       return paymentInfo;
     } catch (error) {
@@ -113,12 +107,10 @@ export class PayOSService {
     }
   }
 
-  /**
-   * Hủy payment link
-   */
+  
   async cancelPaymentLink(orderCode: number, cancellationReason?: string) {
     try {
-      this.logger.log(`Cancelling payment link for order: ${orderCode}`);
+
       const cancelResponse = await this.payOS.paymentRequests.cancel(orderCode, cancellationReason);
       return cancelResponse;
     } catch (error) {
@@ -127,9 +119,7 @@ export class PayOSService {
     }
   }
 
-  /**
-   * Xác thực webhook từ PayOS
-   */
+  
   async verifyPaymentWebhookData(webhookData: PayOSWebhookData) {
     try {
       const verifiedData = await this.payOS.webhooks.verify(webhookData);
@@ -140,9 +130,7 @@ export class PayOSService {
     }
   }
 
-  /**
-   * Confirm webhook đã nhận
-   */
+  
   async confirmWebhook(webhookUrl: string) {
     try {
       return await this.payOS.webhooks.confirm(webhookUrl);
@@ -152,3 +140,8 @@ export class PayOSService {
     }
   }
 }
+
+
+
+
+

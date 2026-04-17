@@ -1,8 +1,8 @@
-import { Link } from "react-router-dom";
+﻿import { Link } from "react-router-dom";
 import { ChevronRight, ArrowUpRight } from "lucide-react";
 
 const FeaturedCategories = ({ categories = [], isLoading = false }) => {
-  // Skeleton loader for categories
+
   const Skeleton = () => (
     <div className="bg-white rounded-3xl p-6 border border-gray-100 animate-pulse">
       <div className="w-20 h-20 bg-gray-200 rounded-full mx-auto mb-4"></div>
@@ -62,7 +62,7 @@ const FeaturedCategories = ({ categories = [], isLoading = false }) => {
   return (
     <section className="py-16 bg-white overflow-hidden">
       <div className="max-w-7xl mx-auto px-4">
-        {/* Section Header */}
+        {}
         <div className="flex flex-col mb-12 items-center text-center">
           <span className="text-[10px] uppercase tracking-[0.4em] text-blue-600 font-black mb-3 block">
             Khám phá bộ sưu tập
@@ -73,7 +73,7 @@ const FeaturedCategories = ({ categories = [], isLoading = false }) => {
           <div className="h-1 w-20 bg-blue-600 rounded-full"></div>
         </div>
 
-        {/* Categories Flex/Grid */}
+        {}
         <div className="flex flex-wrap justify-center gap-6 sm:gap-8">
           {isLoading
             ? Array(6)
@@ -85,7 +85,7 @@ const FeaturedCategories = ({ categories = [], isLoading = false }) => {
                   to={`/category/${category.id}`}
                   className="group relative bg-white transition-all duration-500 text-center w-[160px] sm:w-[180px]"
                 >
-                  {/* Circular Image Container */}
+                  {}
                   <div className="relative w-24 h-24 sm:w-28 sm:h-28 mx-auto mb-6 transform group-hover:-translate-y-2 transition-transform duration-500">
                     <div className="absolute inset-0 bg-gray-50 rounded-full scale-110 group-hover:scale-125 transition-transform duration-500 group-hover:bg-blue-50/50"></div>
 
@@ -98,7 +98,7 @@ const FeaturedCategories = ({ categories = [], isLoading = false }) => {
                       <div className="absolute inset-0 bg-blue-600/0 group-hover:bg-blue-600/10 transition-colors duration-500"></div>
                     </div>
 
-                    {/* Icon Indicator */}
+                    {}
                     <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-black text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300 shadow-lg">
                       <ChevronRight size={14} />
                     </div>
@@ -137,3 +137,9 @@ const FeaturedCategories = ({ categories = [], isLoading = false }) => {
 };
 
 export default FeaturedCategories;
+
+
+
+
+
+

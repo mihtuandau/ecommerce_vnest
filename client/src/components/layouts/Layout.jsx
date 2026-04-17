@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
 import { useAuth } from '../../hooks/useAuth';
@@ -10,7 +10,6 @@ const Layout = ({ children, showSidebar = false }) => {
   const { user } = useAuth(); 
   const isAdmin = user?.role === 'ADMIN';
 
-  // Admin Layout
   if (showSidebar && isAdmin) {
     return (
       <div className="min-h-screen flex flex-col bg-white">
@@ -24,7 +23,6 @@ const Layout = ({ children, showSidebar = false }) => {
     );
   }
 
-  // Customer Layout
   return (
     <ConfigProvider
       theme={{
@@ -40,7 +38,7 @@ const Layout = ({ children, showSidebar = false }) => {
             colorPrimary: '#000000',
             colorPrimaryHover: '#404040',
             colorPrimaryActive: '#000000',
-            colorTextLightSolid: '#ffffff', // Force white text on primary buttons
+            colorTextLightSolid: '#ffffff', 
           },
           Steps: {
             colorPrimary: '#000000',
@@ -68,3 +66,8 @@ const Layout = ({ children, showSidebar = false }) => {
 
 
 export default Layout;
+
+
+
+
+

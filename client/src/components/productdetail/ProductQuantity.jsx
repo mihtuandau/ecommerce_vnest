@@ -1,4 +1,4 @@
-import { Minus, Plus } from "lucide-react";
+﻿import { Minus, Plus } from "lucide-react";
 
 const ProductQuantity = ({ quantity, onQuantityChange, totalStock }) => {
   return (
@@ -35,3 +35,9 @@ const ProductQuantity = ({ quantity, onQuantityChange, totalStock }) => {
 };
 
 export default ProductQuantity;
+
+
+
+
+
+

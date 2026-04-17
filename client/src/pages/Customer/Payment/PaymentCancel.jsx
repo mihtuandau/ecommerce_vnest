@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+﻿import { useNavigate } from 'react-router-dom';
 import { FaTimesCircle } from 'react-icons/fa';
 
 
@@ -44,3 +44,8 @@ const PaymentCancel = () => {
   );
 };
 export default PaymentCancel;
+
+
+
+
+

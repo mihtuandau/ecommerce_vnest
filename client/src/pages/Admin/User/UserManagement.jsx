@@ -1,4 +1,4 @@
-// src/pages/AdminUserManagement.jsx
+﻿
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search, Plus } from "lucide-react";
@@ -66,7 +66,7 @@ const AdminUserManagement = () => {
       await createMutation.mutateAsync(formData);
       closeModal();
     } catch (err) {
-      // Error handled by mutation
+
     }
   };
 
@@ -95,7 +95,7 @@ const AdminUserManagement = () => {
       });
       closeModal();
     } catch (err) {
-      // Error handled by mutation
+
     }
   };
 
@@ -109,7 +109,7 @@ const AdminUserManagement = () => {
         try {
           await deleteMutation.mutateAsync(user.id);
         } catch (err) {
-          // Error handled by mutation
+
         }
       },
     });
@@ -225,3 +225,9 @@ const AdminUserManagement = () => {
 };
 
 export default AdminUserManagement;
+
+
+
+
+
+

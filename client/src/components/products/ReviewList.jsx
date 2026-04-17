@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Star } from 'lucide-react';
 import reviewService from '../../services/reviewService';
 
@@ -25,14 +25,14 @@ const RatingSummary = ({ reviews, product }) => {
 
   return (
     <div className="flex items-start gap-10 mb-8 pb-8 border-b border-gray-100">
-      {/* Left: big number */}
+      {}
       <div className="flex flex-col items-center min-w-[80px]">
         <span className="text-5xl font-black text-gray-900 leading-none">{avg.toFixed(1)}</span>
         <Stars rating={avg} size={16} />
         <span className="text-xs text-gray-400 mt-1">{total} lượt đánh giá</span>
       </div>
 
-      {/* Right: bars */}
+      {}
       <div className="flex-1 flex flex-col gap-1.5">
         {counts.map(({ star, count }) => {
           const pct = total > 0 ? (count / total) * 100 : 0;
@@ -85,7 +85,7 @@ const ReviewList = ({ productId, product }) => {
 
   return (
     <div>
-      {/* Rating summary — always show */}
+      {}
       <RatingSummary reviews={reviews} product={product} />
 
       {reviews.length === 0 ? (
@@ -100,7 +100,7 @@ const ReviewList = ({ productId, product }) => {
             const initial = (review.user?.name || 'N')[0].toUpperCase();
             return (
               <div key={review.id} className="bg-gray-50/60 rounded-xl p-5 border border-gray-100">
-                {/* Header */}
+                {}
                 <div className="flex items-start gap-3 mb-3">
                   <div className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
                     {initial}
@@ -121,12 +121,12 @@ const ReviewList = ({ productId, product }) => {
                   </div>
                 </div>
 
-                {/* Comment */}
+                {}
                 {review.comment && (
                   <p className="text-sm text-gray-700 leading-relaxed">{review.comment}</p>
                 )}
 
-                {/* Images */}
+                {}
                 {review.images?.length > 0 && (
                   <div className="flex gap-2 mt-3">
                     {review.images.map((img, idx) => (
@@ -143,7 +143,7 @@ const ReviewList = ({ productId, product }) => {
             );
           })}
 
-          {/* Pagination */}
+          {}
           {totalPages > 1 && (
             <div className="flex items-center justify-center gap-2 mt-6">
               <button
@@ -170,3 +170,9 @@ const ReviewList = ({ productId, product }) => {
 };
 
 export default ReviewList;
+
+
+
+
+
+

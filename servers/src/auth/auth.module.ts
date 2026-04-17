@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+﻿import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { AuthService } from './auth.service';
@@ -23,3 +23,9 @@ import { MailModule } from '../mail/mail.module';
   exports: [AuthService, JwtModule],
 })
 export class AuthModule {}
+
+
+
+
+
+

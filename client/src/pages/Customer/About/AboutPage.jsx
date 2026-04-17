@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import { ShopOutlined, RocketOutlined, CustomerServiceOutlined, SafetyOutlined, TeamOutlined, HeartOutlined } from "@ant-design/icons";
 import Layout from "../../../components/layouts/Layout";
 import Breadcrumb from "../../../components/common/Breadcrumb";
@@ -201,3 +201,9 @@ const AboutPage = () => {
 };
 
 export default AboutPage;
+
+
+
+
+
+

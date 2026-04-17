@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { CheckCircle, XCircle, RefreshCw } from 'lucide-react';
 import Modal from '../../common/Modal';
 import Badge from '../../common/Badge';
@@ -22,7 +22,7 @@ const PaymentDetailModal = ({
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Chi tiết thanh toán" size="lg" variant="admin">
       <div className="space-y-6">
-        {/* Payment Info */}
+        {}
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="text-sm font-medium text-gray-700">ID Giao dịch</label>
@@ -72,7 +72,7 @@ const PaymentDetailModal = ({
           </div>
         </div>
 
-        {/* Customer Info */}
+        {}
         {payment.order && (
           <div className="border-t pt-4">
             <h3 className="text-lg font-semibold text-gray-900 mb-3">Thông tin khách hàng</h3>
@@ -93,7 +93,7 @@ const PaymentDetailModal = ({
           </div>
         )}
 
-        {/* Update Status */}
+        {}
         {payment.status === 'PENDING' && (
           <div className="border-t pt-4">
             <h3 className="text-lg font-semibold text-gray-900 mb-3">Cập nhật trạng thái</h3>
@@ -134,3 +134,9 @@ const PaymentDetailModal = ({
 };
 
 export default PaymentDetailModal;
+
+
+
+
+
+

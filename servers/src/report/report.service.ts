@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+﻿import { Injectable } from '@nestjs/common';
 import { ReportRepository } from './report.repository';
 import { ReportQueryDto } from './dto/report-query.dto';
 import * as ExcelJS from 'exceljs';
@@ -16,7 +16,7 @@ export class ReportService {
       start.setHours(0, 0, 0, 0);
     } else {
       start = new Date();
-      start.setDate(start.getDate() - 7); // Mặc định 7 ngày
+      start.setDate(start.getDate() - 7);
       start.setHours(0, 0, 0, 0);
     }
 
@@ -36,12 +36,10 @@ export class ReportService {
 
     const rawOrders = await this.repository.getRawOrdersForRevenue(start, end);
 
-    // Gộp nhóm bằng Javascript để đảm bảo múi giờ VN tuyệt đối
     const dataMap = new Map<string, { label: string; revenue: number; total: number; orders: number; sortKey: number }>();
 
     rawOrders.forEach((order) => {
       const date = new Date(order.createdAt);
-      // Chuyển sang chuỗi ngày VN: "DD/MM"
       const label = date.toLocaleDateString('vi-VN', {
         day: '2-digit',
         month: '2-digit',
@@ -164,7 +162,6 @@ export class ReportService {
   async exportToExcel(query: ReportQueryDto): Promise<Buffer> {
     const { start, end } = this.getDateRange(query.startDate, query.endDate);
 
-    // Sử dụng chung logic gộp nhóm của web để xuất Excel
     const revenueReport = await this.getRevenueByPeriod(query);
     const revenueData = revenueReport.data;
 
@@ -183,7 +180,6 @@ export class ReportService {
     const workbook = new ExcelJS.Workbook();
     workbook.creator = 'E-Commerce System';
     
-    // Summary Sheet
     const summarySheet = workbook.addWorksheet('Tổng Quan');
     summarySheet.columns = [
       { header: 'Chỉ Số', key: 'metric', width: 30 },
@@ -198,7 +194,6 @@ export class ReportService {
       { metric: 'Tổng Đơn Hàng', value: customerStats.totalOrders },
     ]);
 
-    // Revenue Sheet
     const revenueSheet = workbook.addWorksheet('Doanh Thu');
     revenueSheet.columns = [
       { header: 'Ngày', key: 'date', width: 20 },
@@ -207,7 +202,6 @@ export class ReportService {
     ];
     revenueSheet.addRows(revenueData);
 
-    // Orders by Status Sheet
     const ordersSheet = workbook.addWorksheet('Đơn Hàng Theo Trạng Thái');
     ordersSheet.columns = [
       { header: 'Trạng Thái', key: 'status', width: 20 },
@@ -220,7 +214,6 @@ export class ReportService {
       })),
     );
 
-    // Top Products Sheet
     const productsSheet = workbook.addWorksheet('Sản Phẩm Bán Chạy');
     productsSheet.columns = [
       { header: 'Sản Phẩm', key: 'productName', width: 35 },
@@ -239,3 +232,9 @@ export class ReportService {
     return Buffer.from(buffer);
   }
 }
+
+
+
+
+
+

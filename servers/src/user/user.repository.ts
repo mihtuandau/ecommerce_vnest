@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+﻿import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { User, Address, Prisma, UserStatus } from '@prisma/client';
 
@@ -148,7 +148,7 @@ export class UserRepository {
   }
 
   async getRolesWithPermissions() {
-    // Trả về danh sách mapping hiện tại
+
     return this.prisma.permissionRole.findMany({
       include: {
         permission: true,
@@ -157,14 +157,14 @@ export class UserRepository {
   }
 
   async updateRolePermissions(role: any, permissionIds: number[]) {
-    // Sử dụng transaction để đảm bảo tính nhất quán (Xóa cũ - Thêm mới)
+
     return this.prisma.$transaction(async (tx) => {
-      // 1. Xóa tất cả quyền cũ của role này
+      
       await tx.permissionRole.deleteMany({
         where: { role },
       });
 
-      // 2. Thêm các quyền mới
+      
       const newPermissions = permissionIds.map((pId) => ({
         role,
         permissionId: pId,
@@ -178,3 +178,9 @@ export class UserRepository {
     });
   }
 }
+
+
+
+
+
+

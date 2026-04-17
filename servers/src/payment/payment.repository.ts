@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+﻿import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Payment, Prisma } from '@prisma/client';
 
@@ -28,9 +28,7 @@ export class PaymentRepository {
     });
   }
 
-  /**
-   * Find payment by order ID
-   */
+  
   async findByOrderId(orderId: number) {
     return this.prisma.payment.findUnique({
       where: { orderId },
@@ -40,9 +38,7 @@ export class PaymentRepository {
     });
   }
 
-  /**
-   * Find all payments with filters
-   */
+  
   async findAll(where: Prisma.PaymentWhereInput, skip: number, take: number) {
     return this.prisma.payment.findMany({
       where,
@@ -112,17 +108,14 @@ export class PaymentRepository {
             },
           });
         }
-        // NOTE: Stock is reserved at order creation (createOrderTransactional).
-        // No need to decrement stock here again.
+
       }
 
       return paymentUpdated;
     });
   }
 
-  /**
-   * Find order by ID with details for payment
-   */
+  
   async findOrderById(orderId: number) {
     return this.prisma.order.findUnique({
       where: { id: orderId },
@@ -165,3 +158,9 @@ export class PaymentRepository {
     });
   }
 }
+
+
+
+
+
+

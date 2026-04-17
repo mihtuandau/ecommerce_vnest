@@ -1,4 +1,4 @@
-import { FaShoppingBag, FaCheck } from 'react-icons/fa';
+﻿import { FaShoppingBag, FaCheck } from 'react-icons/fa';
 import CartItemsList from './CartItemsList';
 import DiscountCodeSection from './DiscountCodeSection';
 import PriceSummary from './PriceSummary';
@@ -98,3 +98,8 @@ const OrderSummary = ({
 };
 
 export default OrderSummary;
+
+
+
+
+

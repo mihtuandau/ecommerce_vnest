@@ -1,4 +1,4 @@
-import { Star, Eye } from "lucide-react";
+﻿import { Star, Eye } from "lucide-react";
 
 const formatViewCount = (n) => {
   if (!n) return '0';
@@ -10,21 +10,21 @@ const formatViewCount = (n) => {
 const ProductInfo = ({ product }) => {
   return (
     <div>
-      {/* Category tag */}
+      {}
       {product.category && (
         <span className="inline-block text-[10px] font-semibold text-blue-500 bg-blue-50 px-2 py-0.5 rounded mb-2">
           {product.category.name}
         </span>
       )}
 
-      {/* Title */}
+      {}
       <h1 className="text-xl font-bold text-gray-900 leading-snug mb-3">
         {product.name}
       </h1>
 
-      {/* Stats row */}
+      {}
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-500">
-        {/* Stars */}
+        {}
         <div className="flex items-center gap-1">
           {[...Array(5)].map((_, i) => (
             <Star
@@ -57,3 +57,9 @@ const ProductInfo = ({ product }) => {
 };
 
 export default ProductInfo;
+
+
+
+
+
+

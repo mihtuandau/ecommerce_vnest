@@ -1,4 +1,4 @@
-import { FaTimes } from "react-icons/fa";
+﻿import { FaTimes } from "react-icons/fa";
 
 const ActiveFilters = ({
   filters,
@@ -102,3 +102,9 @@ const ActiveFilters = ({
 };
 
 export default ActiveFilters;
+
+
+
+
+
+

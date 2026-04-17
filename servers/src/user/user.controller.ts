@@ -1,4 +1,4 @@
-import {
+﻿import {
   Controller,
   Get,
   Post,
@@ -38,7 +38,7 @@ export class UserController {
   @Permissions('user.view')
   async findAll(@Query() query: QueryUserDto) {
     const users = await this.userService.findAll(query);
-    console.log(`📋 [Admin] Fetching users. Found: ${users.length}`);
+
     return users;
   }
 
@@ -71,7 +71,6 @@ export class UserController {
     const userRole = req.user.role;
     const permissions = req.user.permissions || [];
 
-    // Cho phép xem nếu là chính mình HOẶC là ADMIN HOẶC có quyền user.view
     const canView = userId === id || userRole === 'ADMIN' || permissions.includes('user.view');
 
     if (!canView) {
@@ -82,7 +81,7 @@ export class UserController {
     if (!user) {
       throw new Error('User not found');
     }
-    // Never expose password
+
     const { password, ...userWithoutPassword } = user;
     return userWithoutPassword;
   }
@@ -111,7 +110,7 @@ export class UserController {
     const userRole = req.user.role;
     const permissions = req.user.permissions || [];
 
-    // 1. Kiểm tra quyền cập nhật cơ bản
+    
     const isStaff = userRole === 'ADMIN' || permissions.includes('user.manage');
     const isSelf = userId === id;
 
@@ -119,12 +118,12 @@ export class UserController {
       throw new ForbiddenException('Bạn không có quyền cập nhật người dùng này');
     }
     
-    // 2. 🛡️ SECURITY: Ngăn chặn tự nâng cấp quyền nếu không phải nhân sự có thẩm quyền
+    
     if (!isStaff) {
       delete updateUserDto.role;
     }
 
-    // 3. Thực hiện cập nhật
+    
     const updatedUser = await this.userService.update(id, updateUserDto);
     await this.auditLogService.write({
       action: 'USER_UPDATE',
@@ -192,3 +191,9 @@ export class UserController {
     };
   }
 }
+
+
+
+
+
+

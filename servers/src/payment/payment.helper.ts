@@ -1,4 +1,4 @@
-
+﻿
 import { BadRequestException } from '@nestjs/common';
 import { PayOSService } from '../payos/payos.service';
 
@@ -27,7 +27,6 @@ export async function createPayOSPaymentLink(payosService: PayOSService, order: 
   const buyerEmail = order.user?.email || order.guestEmail || '';
   const buyerPhone = shippingSnapshot?.phone || order.guestPhone || order.address?.phone || '';
 
-  // Validate order items
   if (!order.orderItems || order.orderItems.length === 0) {
     throw new BadRequestException('Order has no items');
   }
@@ -65,3 +64,8 @@ export function serializePayOSPaymentInfo(paymentInfo: any) {
     amountRemaining: paymentInfo.amountRemaining ? Number(paymentInfo.amountRemaining) : paymentInfo.amountRemaining,
   };
 }
+
+
+
+
+

@@ -1,4 +1,4 @@
-// src/payos/dto/payos-webhook.dto.ts
+﻿
 import { IsString, IsObject, IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -39,3 +39,8 @@ export class PayOSWebhookDto {
   @IsString()
   signature: string;
 }
+
+
+
+
+

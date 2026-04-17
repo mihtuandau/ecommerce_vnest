@@ -1,9 +1,9 @@
-import { Search, Filter } from 'lucide-react';
+﻿import { Search, Filter } from 'lucide-react';
 
 const DiscountFilters = ({ search, setSearch, statusFilter, setStatusFilter }) => {
   return (
       <div className="flex flex-col gap-4 md:flex-row">
-        {/* Search */}
+        {}
         <div className="flex-1">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
@@ -17,7 +17,7 @@ const DiscountFilters = ({ search, setSearch, statusFilter, setStatusFilter }) =
           </div>
         </div>
 
-        {/* Status Filter */}
+        {}
         <div className="w-full md:w-48">
           <div className="relative">
             <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
@@ -38,3 +38,9 @@ const DiscountFilters = ({ search, setSearch, statusFilter, setStatusFilter }) =
 };
 
 export default DiscountFilters;
+
+
+
+
+
+

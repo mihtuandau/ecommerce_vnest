@@ -1,4 +1,4 @@
-import { IsInt, IsString, IsOptional, IsBoolean, IsPositive } from 'class-validator';
+﻿import { IsInt, IsString, IsOptional, IsBoolean, IsPositive } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -49,3 +49,9 @@ export class CreateVariantImageDto {
   @IsInt()
   displayOrder?: number;
 }
+
+
+
+
+
+

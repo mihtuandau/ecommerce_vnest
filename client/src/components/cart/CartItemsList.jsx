@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+﻿import { useMemo, useState } from "react";
 import CartItem from "./CartItem";
 import { computeDiscountFromMap } from "../../utils/formatters";
 
@@ -69,7 +69,7 @@ const CartItemsList = ({
       };
       groups[productId].variants.push(variant);
       groups[productId].totalQuantity += item.quantity;
-      // Tính totalPrice dựa trên discountMap
+
       const discountedPrice = computeDiscountFromMap(
         productId,
         originalPrice,
@@ -144,7 +144,7 @@ const CartItemsList = ({
         ))}
       </div>
 
-      {/* Pagination */}
+      {}
       {totalPages > 1 && (
         <div className="bg-white border border-gray-200 p-6">
           <div className="flex items-center justify-between">
@@ -202,3 +202,9 @@ const CartItemsList = ({
   );
 };
 export default CartItemsList;
+
+
+
+
+
+

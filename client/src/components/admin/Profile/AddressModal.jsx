@@ -1,4 +1,4 @@
-import Modal from '../../common/Modal';
+﻿import Modal from '../../common/Modal';
 import Button from '../../common/Button';
 
 const AddressModal = ({ 
@@ -129,3 +129,9 @@ const AddressModal = ({
 };
 
 export default AddressModal;
+
+
+
+
+
+

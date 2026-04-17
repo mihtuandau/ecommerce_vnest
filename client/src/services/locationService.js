@@ -1,4 +1,4 @@
-import axios from 'axios';
+﻿import axios from 'axios';
 import { LOCATION_API, LOCATION_ENDPOINTS } from '../config/apiConstants';
 
 
@@ -23,36 +23,25 @@ const createLocationApiService = () => {
 const locationApi = createLocationApiService();
 
 const locationService = {
-  /**
-   * @returns {Promise} 
-   */
+  
   getAllProvinces: async () => {
     const response = await locationApi.get(LOCATION_ENDPOINTS.ALL_PROVINCES);
     return response.data || [];
   },
 
-  /**
-   * @param {string} provinceId -
-   * @returns {Promise}
-   */
+  
   getDistrictsByProvince: async (provinceId) => {
     const response = await locationApi.get(LOCATION_ENDPOINTS.DISTRICTS_BY_PROVINCE(provinceId));
     return response.data || [];
   },
 
-  /**
-   * @param {string} districtId 
-   * @returns {Promise} 
-   */
+  
   getWardsByDistrict: async (districtId) => {
     const response = await locationApi.get(LOCATION_ENDPOINTS.WARDS_BY_DISTRICT(districtId));
     return response.data || [];
   },
 
-  /**
-   * @param {Object} address
-   * @returns {string} 
-   */
+  
   formatFullAddress: (address) => {
     const parts = [];
     if (address.street) parts.push(address.street);
@@ -64,3 +53,9 @@ const locationService = {
 };
 
 export default locationService;
+
+
+
+
+
+

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { productService } from '../../services/productService';
 import ProductCard from './ProductCard';
 import Loading from '../common/Loading';
@@ -17,7 +17,7 @@ const loadRecommendations = async () => {
       const response = await productService.getRecommendations(productId, categoryId);
       setRecommendedProducts(response.data || response || []);
     } catch (error) {
-      // Silently handle errors to avoid disrupting UX
+
       setRecommendedProducts([]);
     } finally {
       setLoading(false);
@@ -49,3 +49,9 @@ const loadRecommendations = async () => {
   );
 };
 export default ProductRecommendations;
+
+
+
+
+
+

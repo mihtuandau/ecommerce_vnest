@@ -1,4 +1,4 @@
-import { Button, Space, Select, Tag, Tooltip, Popconfirm, Modal } from 'antd';
+﻿import { Button, Space, Select, Tag, Tooltip, Popconfirm, Modal } from 'antd';
 import {
   DeleteOutlined,
   CloseOutlined,
@@ -46,7 +46,7 @@ const BulkActionsBar = ({
         </div>
 
         <Space size="middle" className="flex-wrap">
-          {/* Thay đổi trạng thái */}
+          {}
           <Tooltip title="Thay đổi trạng thái sản phẩm">
             <Select
               placeholder="Thay đổi trạng thái..."
@@ -59,7 +59,7 @@ const BulkActionsBar = ({
             </Select>
           </Tooltip>
 
-          {/* Xuất dữ liệu */}
+          {}
           <Tooltip title="Xuất danh sách sản phẩm được chọn">
             <Button
               type="default"
@@ -71,7 +71,7 @@ const BulkActionsBar = ({
             </Button>
           </Tooltip>
 
-          {/* Xóa hàng loạt */}
+          {}
           <Popconfirm
             title="Xóa sản phẩm"
             description={`Bạn có chắc muốn xóa ${selectedCount} sản phẩm? Hành động này không thể hoàn tác.`}
@@ -97,3 +97,9 @@ const BulkActionsBar = ({
 };
 
 export default BulkActionsBar;
+
+
+
+
+
+

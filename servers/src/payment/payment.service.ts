@@ -1,4 +1,4 @@
-// src/payment/payment.service.ts
+﻿
 import {
   Injectable,
   BadRequestException,
@@ -28,37 +28,31 @@ export class PaymentService {
   ) {}
 
   async create(data: CreatePaymentDto) {
-    // Validate order exists
+
     const order = await this.repository.findOrderById(data.orderId);
     if (!order) {
       throw new BadRequestException('Order not found');
     }
 
-    // Check if order already has a successful or pending payment
     const existingPayment = await this.repository.findByOrderId(data.orderId);
     if (existingPayment) {
-      // If payment is successful, return it
+
       if (existingPayment.status === 'SUCCESS') {
-        this.logger.log(`Order ${data.orderId} already has successful payment ${existingPayment.id}`);
+
         return PaymentHelper.serializePayment({
           ...existingPayment,
           paymentLink: existingPayment.paymentLink,
         });
       }
-      
-      // If payment is pending and has a valid payment link (for PayOS), return it
+
       if (existingPayment.status === 'PENDING' && existingPayment.paymentLink && data.method === 'PAYOS') {
-        this.logger.log(`Order ${data.orderId} already has pending PayOS payment ${existingPayment.id}`);
+
         return PaymentHelper.serializePayment({
           ...existingPayment,
           paymentLink: existingPayment.paymentLink,
         });
       }
-      
-      // For failed/cancelled payments or pending without link, update with new payment link
-      this.logger.log(`Order ${data.orderId} has ${existingPayment.status} payment, updating with new payment link`);
-      
-      // Generate new payment data
+
       let transactionId: string | null = null;
       let paymentLink: string | null = null;
       let payosOrderCode: string | null = null;
@@ -72,7 +66,6 @@ export class PaymentService {
         transactionId = PaymentHelper.generateTransactionId(data.method);
       }
 
-      // Update existing payment with new data
       const updatedPayment = await this.repository.update(existingPayment.id, {
         method: data.method,
         status: 'PENDING',
@@ -82,7 +75,6 @@ export class PaymentService {
         payosOrderCode: payosOrderCode?.toString(),
       });
 
-      // Clear caches
       await this.cacheService.clearPaymentCaches();
       await this.cacheService.deletePayment(updatedPayment.id);
 
@@ -92,8 +84,6 @@ export class PaymentService {
       });
     }
 
-    // No existing payment, create new one
-    // Generate transaction data for different payment methods
     let transactionId: string | null = null;
     let paymentLink: string | null = null;
     let payosOrderCode: string | null = null;
@@ -117,7 +107,6 @@ export class PaymentService {
       payosOrderCode,
     });
 
-    // Clear caches
     await this.cacheService.clearPaymentCaches();
     await this.cacheService.deletePayment(payment.id);
 
@@ -156,10 +145,9 @@ export class PaymentService {
     );
 
     if (data.status === 'SUCCESS') {
-      this.logger.log(`Stock deducted for order ${payment.orderId}`);
+
     }
 
-    // Clear caches
     await this.cacheService.clearRelatedCaches(id, payment.orderId);
 
     return PaymentHelper.serializePayment(updatedPayment);
@@ -178,7 +166,6 @@ export class PaymentService {
       this.repository.count(where),
     ]);
 
-    // Serialize all payments
     const serializedPayments = payments.map((p) => PaymentHelper.serializePayment(p));
 
     return {
@@ -190,9 +177,7 @@ export class PaymentService {
     };
   }
 
-  /**
-   * Get PayOS payment info
-   */
+  
   async getPayOSPaymentInfo(orderCode: number) {
     try {
       const paymentInfo = await this.payosService.getPaymentInfo(orderCode);
@@ -202,9 +187,7 @@ export class PaymentService {
     }
   }
 
-  /**
-   * Cancel PayOS payment
-   */
+  
   async cancelPayOSPayment(paymentId: number, reason?: string) {
     const payment = await this.repository.findById(paymentId);
     if (!payment) {
@@ -218,12 +201,10 @@ export class PaymentService {
     try {
       await this.payosService.cancelPaymentLink(Number(payment.payosOrderCode), reason);
 
-      // Update payment status
       const updatedPayment = await this.repository.update(paymentId, {
         status: 'CANCELLED',
       });
 
-      // Clear cache
       await this.cacheService.clearRelatedCaches(paymentId, payment.orderId);
 
       return PaymentHelper.serializePayment(updatedPayment);
@@ -232,12 +213,10 @@ export class PaymentService {
     }
   }
 
-  // Delegate webhook handling to WebhookService
   async handlePayOSWebhook(webhookData: any) {
     return this.webhookService.handlePayOSWebhook(webhookData);
   }
 
-  // Delegate sync operations to SyncService
   async findByPayosOrderCode(orderCode: string) {
     return this.syncService.findByPayosOrderCodeWithSync(orderCode);
   }
@@ -247,6 +226,11 @@ export class PaymentService {
   }
 
   private async processExternalPayment(data: CreatePaymentDto, transactionId: string) {
-    this.logger.log('Processing external payment for', transactionId);
+
   }
 }
+
+
+
+
+

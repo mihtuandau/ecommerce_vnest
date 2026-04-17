@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+﻿import { Link } from "react-router-dom";
 import {
   FaFacebookF,
   FaInstagram,
@@ -41,7 +41,7 @@ const Footer = () => {
 
       <div className="container mx-auto px-4 lg:px-28 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-          {/* Brand Info */}
+          {}
           <div className="space-y-6">
             <Link to="/" className="inline-block">
               <span className="text-2xl font-black tracking-tighter uppercase italic">MINHTUANSHOP</span>
@@ -69,7 +69,7 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Links Sections */}
+          {}
           <div>
             <h4 className="text-sm font-bold uppercase tracking-[0.2em] mb-8">Cửa hàng</h4>
             <ul className="space-y-4">
@@ -96,7 +96,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Contact Info */}
+          {}
           <div>
             <h4 className="text-sm font-bold uppercase tracking-[0.2em] mb-8">Thông tin</h4>
             <ul className="space-y-6">
@@ -119,7 +119,7 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* Copyright */}
+      {}
       <div className="border-t border-white/10 py-8 bg-[#0a0a0a]">
         <div className="container mx-auto px-4 lg:px-28">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
@@ -142,4 +142,10 @@ const Footer = () => {
 };
 
 export default Footer;
+
+
+
+
+
+
 

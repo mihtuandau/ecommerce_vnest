@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Spin, Result, Button as AntButton } from "antd";
 import { ReloadOutlined, WarningOutlined } from "@ant-design/icons";
@@ -24,9 +24,8 @@ const HomePage = () => {
   const { setUser } = useAuth();
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
 
-  // Modal sẽ hiển thị mỗi lần vào trang (không lưu localStorage)
   useEffect(() => {
-    console.log('Modal state:', showWelcomeModal);
+
   }, [showWelcomeModal]);
 
   useEffect(() => {
@@ -102,10 +101,7 @@ const HomePage = () => {
 
   return (
     <>
-      {/* <WelcomeModal 
-        isOpen={showWelcomeModal} 
-        onClose={() => setShowWelcomeModal(false)} 
-      /> */}
+      {}
       <Layout>
         <HeroBanner slides={homeData.banners || []} />
         
@@ -132,3 +128,9 @@ const HomePage = () => {
 
 
 export default HomePage;
+
+
+
+
+
+

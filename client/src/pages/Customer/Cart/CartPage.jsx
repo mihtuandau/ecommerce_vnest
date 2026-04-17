@@ -1,4 +1,4 @@
-import { useCallback, useState, useMemo, useEffect } from "react";
+﻿import { useCallback, useState, useMemo, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button as AntButton, Modal, Badge, Divider, Space } from "antd";
 import {
@@ -43,12 +43,10 @@ const CartPage = () => {
     }
   }, [isLoggedIn, loadCart]);
 
-  // Debug: Log discountMap
   useEffect(() => {
-    console.log("📊 discountMap loaded:", discountMap);
+
   }, [discountMap]);
 
-  // Tính toán original subtotal (giá gốc trước discount)
   const originalSubtotal = useMemo(() => {
     return cartItems
       .filter((item) => selectedItems.has(item.variantId))
@@ -72,7 +70,6 @@ const CartPage = () => {
       }, 0);
   }, [cartItems, selectedItems, discountMap]);
 
-  // Tính discount từ flash sale
   const selectedDiscount = useMemo(() => {
     return originalSubtotal - selectedTotal;
   }, [originalSubtotal, selectedTotal]);
@@ -251,3 +248,9 @@ const CartPage = () => {
 };
 
 export default CartPage;
+
+
+
+
+
+

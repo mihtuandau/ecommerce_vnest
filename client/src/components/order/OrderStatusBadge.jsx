@@ -1,4 +1,4 @@
-const OrderStatusBadge = ({ status }) => {
+﻿const OrderStatusBadge = ({ status }) => {
   const getStatusBadge = (status) => {
     const statusConfig = {
       PENDING: {
@@ -41,3 +41,9 @@ const OrderStatusBadge = ({ status }) => {
 };
 
 export default OrderStatusBadge;
+
+
+
+
+
+

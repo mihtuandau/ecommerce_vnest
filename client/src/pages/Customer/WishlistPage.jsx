@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+﻿import React, { useState, useEffect } from "react";
 import { Empty, Spin, Modal } from "antd";
 import {
   HeartOutlined,
@@ -139,7 +139,6 @@ const WishlistPage = () => {
                 ) ||
                   variant?.images?.[0] || { url: product?.category?.image };
 
-                // Tính toán giá và discount KM
                 const originalPrice = variant.price || 0;
                 const finalPrice = computeDiscountFromMap(
                   productId,
@@ -257,3 +256,9 @@ const WishlistPage = () => {
 };
 
 export default WishlistPage;
+
+
+
+
+
+

@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from 'framer-motion';
+﻿import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { FaPhoneAlt, FaTruck, FaUndo, FaPercentage } from 'react-icons/fa';
 
@@ -21,7 +21,7 @@ const TopBar = () => {
   return (
     <div className="bg-black text-white hidden lg:block overflow-hidden border-b border-white/10">
       <div className="max-w-7xl mx-auto px-4 h-9 flex items-center justify-between text-[11px] font-medium tracking-wide">
-        {/* Contact Info */}
+        {}
         <div className="flex items-center gap-5">
           <div className="flex items-center gap-2 hover:text-gray-300 transition-colors cursor-pointer">
             <FaPhoneAlt size={10} className="text-gray-400" />
@@ -33,7 +33,7 @@ const TopBar = () => {
           </div>
         </div>
 
-        {/* Marquee Promotion Slider */}
+        {}
         <div className="flex-1 max-w-md mx-auto relative h-full flex items-center justify-center overflow-hidden">
           <AnimatePresence mode="wait">
             <motion.div
@@ -50,7 +50,7 @@ const TopBar = () => {
           </AnimatePresence>
         </div>
 
-        {/* Secondary Links */}
+        {}
         <div className="flex items-center gap-4 text-white/70">
           <span className="hover:text-white transition-colors cursor-pointer px-2 py-0.5 bg-white/10 rounded border border-white/20 hover:bg-white/20">Theo dõi đơn hàng</span>
         </div>
@@ -61,4 +61,10 @@ const TopBar = () => {
 };
 
 export default TopBar;
+
+
+
+
+
+
 

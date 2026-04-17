@@ -1,11 +1,4 @@
-/**
- * API ENDPOINTS CONSTANTS
- * Tập trung quản lý tất cả các API endpoints
- */
-
-// ============================================
-// AUTH ENDPOINTS
-// ============================================
+﻿
 export const AUTH_ENDPOINTS = {
   BASE: '/auth',
   ME: '/auth/me',
@@ -17,9 +10,6 @@ export const AUTH_ENDPOINTS = {
   GOOGLE_LOGIN: '/auth/google',
 };
 
-// ============================================
-// USER ENDPOINTS
-// ============================================
 export const USER_ENDPOINTS = {
   BASE: '/users',
   PROFILE: '/users/profile',
@@ -27,9 +17,6 @@ export const USER_ENDPOINTS = {
   CHANGE_PASSWORD: '/user/change-password',
 };
 
-// ============================================
-// PRODUCT ENDPOINTS
-// ============================================
 export const PRODUCT_ENDPOINTS = {
   BASE: '/products',
   PRICE_RANGE: '/products/price-range',
@@ -40,35 +27,23 @@ export const PRODUCT_ENDPOINTS = {
   UPLOAD_IMAGE: '/products/upload-image',
 };
 
-// ============================================
-// CATEGORY ENDPOINTS
-// ============================================
 export const CATEGORY_ENDPOINTS = {
   BASE: '/categories',
   BY_ID: (id) => `/categories/${id}`,
   UPLOAD_IMAGE: '/categories/upload-image',
 };
 
-// ============================================
-// BRAND ENDPOINTS
-// ============================================
 export const BRAND_ENDPOINTS = {
   BASE: '/brands',
   BY_ID: (id) => `/brands/${id}`,
 };
 
-// ============================================
-// CART ENDPOINTS
-// ============================================
 export const CART_ENDPOINTS = {
   BASE: '/cart',
   ITEMS: '/cart/items',
   ITEM_BY_VARIANT: (variantId) => `/cart/items/${variantId}`,
 };
 
-// ============================================
-// ORDER ENDPOINTS
-// ============================================
 export const ORDER_ENDPOINTS = {
   BASE: '/orders',
   BY_ID: (id) => `/orders/${id}`,
@@ -78,9 +53,6 @@ export const ORDER_ENDPOINTS = {
   CANCEL: (id) => `/orders/${id}/cancel`,
 };
 
-// ============================================
-// PAYMENT ENDPOINTS
-// ============================================
 export const PAYMENT_ENDPOINTS = {
   BASE: '/payments',
   BY_ID: (id) => `/payments/${id}`,
@@ -91,18 +63,12 @@ export const PAYMENT_ENDPOINTS = {
   STATS: '/payments/stats',
 };
 
-// ============================================
-// ADDRESS ENDPOINTS
-// ============================================
 export const ADDRESS_ENDPOINTS = {
   BASE: '/addresses',
   BY_ID: (id) => `/addresses/${id}`,
   SET_DEFAULT: (id) => `/addresses/${id}/set-default`,
 };
 
-// ============================================
-// BANNER ENDPOINTS
-// ============================================
 export const BANNER_ENDPOINTS = {
   BASE: '/banners',
   BY_ID: (id) => `/banners/${id}`,
@@ -110,9 +76,6 @@ export const BANNER_ENDPOINTS = {
   UPLOAD_IMAGE: '/banners/upload-image',
 };
 
-// ============================================
-// DISCOUNT ENDPOINTS
-// ============================================
 export const DISCOUNT_ENDPOINTS = {
   BASE: '/discounts',
   PUBLIC: '/discounts/public',
@@ -123,9 +86,6 @@ export const DISCOUNT_ENDPOINTS = {
   STATS: '/discounts/stats',
 };
 
-// ============================================
-// WISHLIST ENDPOINTS
-// ============================================
 export const WISHLIST_ENDPOINTS = {
   BASE: '/wishlist',
   COUNT: '/wishlist/count',
@@ -133,9 +93,6 @@ export const WISHLIST_ENDPOINTS = {
   CHECK: (variantId) => `/wishlist/check/${variantId}`,
 };
 
-// ============================================
-// REVIEW ENDPOINTS
-// ============================================
 export const REVIEW_ENDPOINTS = {
   BASE: '/reviews',
   BY_ID: (id) => `/reviews/${id}`,
@@ -143,9 +100,6 @@ export const REVIEW_ENDPOINTS = {
   MY_REVIEWS: '/reviews/my-reviews',
 };
 
-// ============================================
-// CHAT ENDPOINTS
-// ============================================
 export const CHAT_ENDPOINTS = {
   ROOMS: '/chat/rooms',
   ROOM_BY_ID: (roomId) => `/chat/rooms/${roomId}`,
@@ -154,17 +108,11 @@ export const CHAT_ENDPOINTS = {
   MARK_READ: (roomId) => `/chat/rooms/${roomId}/mark-read`,
 };
 
-// ============================================
-// CHATBOT ENDPOINTS
-// ============================================
 export const CHATBOT_ENDPOINTS = {
   CHAT: '/chatbot/chat',
   STATUS: '/chatbot/status',
 };
 
-// ============================================
-// DASHBOARD ENDPOINTS
-// ============================================
 export const DASHBOARD_ENDPOINTS = {
   STATS: '/dashboard/stats',
   REVENUE: '/dashboard/revenue',
@@ -172,17 +120,11 @@ export const DASHBOARD_ENDPOINTS = {
   TOP_PRODUCTS: '/dashboard/top-products',
 };
 
-// ============================================ 
-// UPLOAD ENDPOINTS
-// ============================================
 export const UPLOAD_ENDPOINTS = {
   IMAGE: '/upload/image',
   IMAGES: '/upload/images',
 };
 
-// ============================================
-// LOCATION ENDPOINTS (External API)
-// ============================================
 export const LOCATION_API = {
   BASE_URL: 'https://esgoo.net/api-tinhthanh',
 };
@@ -193,9 +135,6 @@ export const LOCATION_ENDPOINTS = {
   WARDS_BY_DISTRICT: (districtId) => `/3/${districtId}.htm`,
 };
 
-// ============================================
-// Helper function để tạo query string
-// ============================================
 export const buildQueryString = (params) => {
   const filtered = Object.entries(params).filter(([_, value]) => value !== undefined && value !== null && value !== '');
   if (filtered.length === 0) return '';
@@ -203,9 +142,6 @@ export const buildQueryString = (params) => {
   return `?${queryString}`;
 };
 
-// ============================================
-// Export tất cả endpoints
-// ============================================
 export const API_ENDPOINTS = {
   AUTH: AUTH_ENDPOINTS,
   USER: USER_ENDPOINTS,
@@ -228,3 +164,9 @@ export const API_ENDPOINTS = {
 };
 
 export default API_ENDPOINTS;
+
+
+
+
+
+

@@ -1,4 +1,4 @@
-import { RefreshCw, UploadCloud, Trash2, Image as ImageIcon, Flame, Ticket, Percent, DollarSign, Tag } from 'lucide-react';
+﻿import { RefreshCw, UploadCloud, Trash2, Image as ImageIcon, Flame, Ticket, Percent, DollarSign, Tag } from 'lucide-react';
 
 const Field = ({ label, hint, required, error, children }) => (
   <div className="space-y-1">
@@ -33,7 +33,7 @@ const DiscountBasicFields = ({
   return (
     <div className="space-y-5">
 
-      {/* ── LOẠI HÌNH ── */}
+      {}
       <div className="rounded-lg border border-gray-200 bg-white overflow-hidden">
         <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-100 bg-gray-50/60">
           <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Loại hình</span>
@@ -83,13 +83,13 @@ const DiscountBasicFields = ({
         </div>
       </div>
 
-      {/* ── THÔNG TIN CƠ BẢN ── */}
+      {}
       <div className="rounded-lg border border-gray-200 bg-white p-4 space-y-4">
         <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Thông tin</p>
 
         <div className="grid grid-cols-12 gap-3">
 
-          {/* Mã code */}
+          {}
           <div className="col-span-12 md:col-span-5">
             <Field label={isFlash ? 'Mã chiến dịch' : 'Mã giảm giá'} required error={realtimeValidation?.errors?.code}>
               <div className="flex gap-2">
@@ -115,7 +115,7 @@ const DiscountBasicFields = ({
             </Field>
           </div>
 
-          {/* Mô tả */}
+          {}
           <div className="col-span-12 md:col-span-7">
             <Field label="Mô tả ngắn">
               <input
@@ -129,7 +129,7 @@ const DiscountBasicFields = ({
           </div>
         </div>
 
-        {/* Banner */}
+        {}
         <Field label="Ảnh banner">
           <div className="relative h-28 rounded-md border border-dashed border-gray-200 bg-gray-50 overflow-hidden group">
             {imagePreview ? (
@@ -138,29 +138,11 @@ const DiscountBasicFields = ({
                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-2">
                   <label className="cursor-pointer h-8 w-8 flex items-center justify-center rounded-md bg-white text-gray-700 hover:text-blue-600 shadow-sm">
                     <UploadCloud size={15} />
-                    <input type="file" className="hidden" accept="image/*" onChange={onImageUpload} />
-                  </label>
-                  <button type="button" onClick={onImageRemove} className="h-8 w-8 flex items-center justify-center rounded-md bg-white text-red-500 shadow-sm">
-                    <Trash2 size={15} />
-                  </button>
-                </div>
-              </>
-            ) : (
-              <label className="cursor-pointer flex flex-col items-center justify-center h-full hover:bg-gray-100 transition">
-                <ImageIcon size={20} className="text-gray-300 mb-1" />
-                <span className="text-[11px] text-gray-400">Tải lên banner (16:9, tối đa 2MB)</span>
-                <input type="file" className="hidden" accept="image/*" onChange={onImageUpload} disabled={uploading} />
-              </label>
-            )}
-          </div>
-        </Field>
-      </div>
-
-      {/* ── GIÁ TRỊ GIẢM ── */}
+                    <input type="file" className="hidden" accept="image}
       <div className="rounded-lg border border-gray-200 bg-white p-4 space-y-4">
         <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Giá trị giảm</p>
 
-        {/* Toggle kiểu giảm */}
+        {}
         <div className="flex rounded-md border border-gray-200 overflow-hidden w-fit">
           {[
             { key: 'percentage',  icon: <Percent size={13} />, label: 'Phần trăm (%)' },
@@ -182,7 +164,7 @@ const DiscountBasicFields = ({
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          {/* Mức giảm */}
+          {}
           <Field label="Mức giảm" required>
             <div className="relative">
               <input
@@ -200,7 +182,7 @@ const DiscountBasicFields = ({
             </div>
           </Field>
 
-          {/* Chỉ hiện với Voucher */}
+          {}
           {!isFlash && (
             <>
               <Field label="Giảm tối đa">
@@ -232,7 +214,7 @@ const DiscountBasicFields = ({
             </>
           )}
 
-          {/* Info cho Flash Sale */}
+          {}
           {isFlash && (
             <div className="md:col-span-2 flex items-center gap-2 rounded-md bg-orange-50 border border-orange-100 px-3 py-2">
               <Flame size={14} className="text-orange-400 shrink-0" />
@@ -241,7 +223,7 @@ const DiscountBasicFields = ({
           )}
         </div>
 
-        {/* Preview Voucher */}
+        {}
         {!isFlash && previewData && (
           <div className="flex items-center justify-between rounded-md bg-gray-900 px-4 py-3 text-white text-sm">
             <div>
@@ -256,7 +238,7 @@ const DiscountBasicFields = ({
         )}
       </div>
 
-      {/* ── THỜI GIAN & GIỚI HẠN ── */}
+      {}
       <div className="rounded-lg border border-gray-200 bg-white p-4 space-y-4">
         <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Thời gian & Giới hạn</p>
 
@@ -296,3 +278,9 @@ const DiscountBasicFields = ({
 };
 
 export default DiscountBasicFields;
+
+
+
+
+
+

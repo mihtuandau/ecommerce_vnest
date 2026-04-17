@@ -1,4 +1,4 @@
-import { Shield, MessageSquare, BarChart2 } from "lucide-react";
+﻿import { Shield, MessageSquare, BarChart2 } from "lucide-react";
 import ReviewList from "../products/ReviewList";
 import { formatPrice } from "../../utils/formatters";
 
@@ -45,7 +45,7 @@ const ProductTabs = ({ product, activeTab, onTabChange }) => {
 
   return (
     <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-      {/* Tab headers */}
+      {}
       <div className="flex border-b border-gray-200">
         {tabs.map(({ id, label, icon: Icon }) => {
           const active = activeTab === id;
@@ -67,21 +67,21 @@ const ProductTabs = ({ product, activeTab, onTabChange }) => {
         })}
       </div>
 
-      {/* Tab content */}
+      {}
       <div className="p-5">
-        {/* Description */}
+        {}
         {activeTab === "description" && (
           <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line">
             {product.description || "Chưa có mô tả chi tiết cho sản phẩm này."}
           </p>
         )}
 
-        {/* Reviews */}
+        {}
         {activeTab === "reviews" && (
           <ReviewList productId={product.id} product={product} />
         )}
 
-        {/* Specs */}
+        {}
         {activeTab === "specs" && (
           <div className="divide-y divide-gray-100">
             {specs.map((row, i) => (
@@ -104,3 +104,9 @@ const ProductTabs = ({ product, activeTab, onTabChange }) => {
 };
 
 export default ProductTabs;
+
+
+
+
+
+

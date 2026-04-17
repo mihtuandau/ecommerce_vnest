@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { notify } from '../utils/notification';
 import locationService from '../services/locationService';
 
@@ -28,15 +28,14 @@ export const useAddressForm = (initialData = null) => {
   useEffect(() => {
     if (initialData && provinces.length > 0 && !initialized) {
       setFormData(initialData);
-      
-      // Load districts if city is present
+
       if (initialData.city) {
         const province = provinces.find(p => p.name === initialData.city);
         if (province) {
           loadDistricts(province.id).then(() => {
-            // After districts are loaded, load wards if state is present
+
             if (initialData.state) {
-              // Wait a bit for districts to be set
+
               setTimeout(() => {
                 const district = districts.find(d => d.name === initialData.state);
                 if (district) loadWards(district.id);
@@ -170,3 +169,9 @@ export const useAddressForm = (initialData = null) => {
     setFormData
   };
 };
+
+
+
+
+
+

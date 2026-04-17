@@ -1,4 +1,4 @@
-import apiService from './apiService';
+﻿import apiService from './apiService';
 import { BANNER_ENDPOINTS } from '../config/apiConstants';
 
 const bannerService = {
@@ -15,10 +15,7 @@ const bannerService = {
     return response;
   },
 
-  /**
-   * Create new banner with image (Admin only)
-   * @param {FormData} formData - FormData with title, subtitle, image file, etc.
-   */
+  
   create: async (formData) => {
     const response = await apiService.upload(BANNER_ENDPOINTS.BASE, formData, {
       'Content-Type': 'multipart/form-data'
@@ -54,3 +51,9 @@ const bannerService = {
 };
 
 export default bannerService;
+
+
+
+
+
+

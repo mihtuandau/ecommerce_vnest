@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Tabs, Button, Badge, Spin, Empty, Modal, Space } from "antd";
 import {
@@ -29,7 +29,7 @@ const OrdersPage = () => {
   const [loading, setLoading] = useState(true);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [reviewedProducts, setReviewedProducts] = useState(new Set()); // Lưu "productId-orderId"
+  const [reviewedProducts, setReviewedProducts] = useState(new Set()); 
   const [isAutoRefreshing, setIsAutoRefreshing] = useState(false);
   const [statusFilter, setStatusFilter] = useState("ALL");
 
@@ -264,3 +264,9 @@ const OrdersPage = () => {
 };
 
 export default OrdersPage;
+
+
+
+
+
+

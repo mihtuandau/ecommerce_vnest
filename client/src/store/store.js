@@ -1,4 +1,4 @@
-import { configureStore } from '@reduxjs/toolkit';
+﻿import { configureStore } from '@reduxjs/toolkit';
 import cartReducer from './slices/cartSlice';
 
 export const store = configureStore({
@@ -46,3 +46,9 @@ if (import.meta.env.DEV && import.meta.hot) {
 }
 
 export default store;
+
+
+
+
+
+

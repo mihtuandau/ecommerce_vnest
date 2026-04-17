@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+﻿import { Controller, Get, UseGuards } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Permissions } from '../common/decorators/permissions.decorator';
@@ -15,5 +15,11 @@ export class ChatController {
     return this.chatService.getAllRooms();
   }
 }
+
+
+
+
+
+
 
 

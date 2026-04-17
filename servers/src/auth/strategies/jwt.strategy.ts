@@ -1,4 +1,4 @@
-import { ExtractJwt, Strategy } from 'passport-jwt';
+﻿import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -35,14 +35,19 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException('User not found');
     }
 
-    // Lấy danh sách permissions từ Database dựa trên Role của user
     const permissions = await this.userService.getPermissionsByRole(user.role);
 
     return {
       userId: user.id,
       email: user.email,
       role: user.role,
-      permissions: permissions, // Mảng các string ['product.manage', 'order.view', ...]
+      permissions: permissions, 
     };
   }
 }
+
+
+
+
+
+

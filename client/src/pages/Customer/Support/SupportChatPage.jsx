@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+﻿import { useState, useEffect, useRef } from "react";
 import { MessageSquare, Send, Loader2, User, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import chatSocketService from "../../../services/chatSocketService";
@@ -141,7 +141,7 @@ const SupportChatPage = () => {
           </div>
 
           <div className="bg-white border-x border-gray-200 h-[500px] flex flex-col">
-            {/* Messages List */}
+            {}
             <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-white custom-scrollbar">
               {messages.length === 0 ? (
                 <div className="text-center py-16">
@@ -284,3 +284,8 @@ const SupportChatPage = () => {
 };
 
 export default SupportChatPage;
+
+
+
+
+

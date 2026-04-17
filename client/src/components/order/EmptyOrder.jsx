@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { FaBox, FaClock } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
@@ -49,3 +49,9 @@ const EmptyOrder = ({ type = 'no-orders', onResetFilter }) => {
 };
 
 export default EmptyOrder;
+
+
+
+
+
+

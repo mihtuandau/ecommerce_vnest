@@ -1,4 +1,4 @@
-import {
+﻿import {
   IsEmail,
   IsString,
   MinLength,
@@ -46,3 +46,9 @@ export class CreateUserDto {
   @IsEnum(Role)
   role?: Role;
 }
+
+
+
+
+
+

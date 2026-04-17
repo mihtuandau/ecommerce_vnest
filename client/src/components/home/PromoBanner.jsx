@@ -1,10 +1,10 @@
-import { Link } from 'react-router-dom';
+﻿import { Link } from 'react-router-dom';
 
 const PromoBanner = () => {
   return (
     <section className="py-20 bg-white">
       <div className="container mx-auto px-4 lg:px-8">
-        {/* Header */}
+        {}
         <div className="flex flex-col mb-14 items-center text-center">
           <span className="text-[10px] uppercase tracking-[0.4em] text-gray-500 font-black mb-3 block">
             Ưu đãi đặc biệt
@@ -16,7 +16,7 @@ const PromoBanner = () => {
         </div>
 
         <div className="grid lg:grid-cols-2 gap-6">
-          {/* Large Promo */}
+          {}
           <Link 
             to="/products" 
             className="relative overflow-hidden h-[500px] group cursor-pointer block"
@@ -44,7 +44,7 @@ const PromoBanner = () => {
             </div>
           </Link>
 
-          {/* Two Small Promos */}
+          {}
           <div className="space-y-6">
             <Link 
               to="/products" 
@@ -106,3 +106,9 @@ const PromoBanner = () => {
   );
 };
 export default PromoBanner;
+
+
+
+
+
+

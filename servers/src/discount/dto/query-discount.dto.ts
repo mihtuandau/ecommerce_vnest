@@ -1,4 +1,4 @@
-import { IsOptional, IsString } from 'class-validator';
+﻿import { IsOptional, IsString } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class QueryDiscountDto {
@@ -12,3 +12,9 @@ export class QueryDiscountDto {
   @IsString()
   status?: string;
 }
+
+
+
+
+
+

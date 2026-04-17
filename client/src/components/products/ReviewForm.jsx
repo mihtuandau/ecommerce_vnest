@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { FaStar } from 'react-icons/fa';
 import { X } from 'lucide-react';
 import { notify } from '../../utils/notification';
@@ -20,7 +20,7 @@ const ReviewForm = ({ productId, orderId, onSuccess, onCancel }) => {
 
     setIsSubmitting(true);
     try {
-      // userId will be extracted from JWT token in backend
+
       await reviewService.createReview(productId, orderId, rating, comment);
       notify.success('Đánh giá thành công!');
       onSuccess?.();
@@ -46,7 +46,7 @@ const ReviewForm = ({ productId, orderId, onSuccess, onCancel }) => {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Rating Stars */}
+        {}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Đánh giá của bạn
@@ -82,7 +82,7 @@ const ReviewForm = ({ productId, orderId, onSuccess, onCancel }) => {
           </div>
         </div>
 
-        {/* Comment */}
+        {}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Nhận xét của bạn (tùy chọn)
@@ -96,7 +96,7 @@ const ReviewForm = ({ productId, orderId, onSuccess, onCancel }) => {
           />
         </div>
 
-        {/* Buttons */}
+        {}
         <div className="flex items-center gap-3">
           <button
             type="submit"
@@ -121,3 +121,9 @@ const ReviewForm = ({ productId, orderId, onSuccess, onCancel }) => {
 };
 
 export default ReviewForm;
+
+
+
+
+
+

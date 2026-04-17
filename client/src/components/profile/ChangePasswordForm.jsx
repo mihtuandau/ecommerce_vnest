@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { notify } from '../../utils/notification';
 import authService from '../../services/authService';
-import { FiEye, FiEyeOff } from 'react-icons/fi'; // Icon mắt đẹp và chuyên nghiệp
+import { FiEye, FiEyeOff } from 'react-icons/fi'; 
 
 const ChangePasswordForm = () => {
   const [formData, setFormData] = useState({
@@ -80,7 +80,7 @@ const ChangePasswordForm = () => {
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-lg mx-auto">
       <div className="space-y-6">
-        {/* Mật khẩu hiện tại */}
+        {}
         <div className="relative">
           <label className="block text-sm font-medium text-gray-900 mb-2">
             Mật khẩu hiện tại <span className="text-red-500">*</span>
@@ -106,7 +106,7 @@ const ChangePasswordForm = () => {
           )}
         </div>
 
-        {/* Mật khẩu mới */}
+        {}
         <div className="relative">
           <label className="block text-sm font-medium text-gray-900 mb-2">
             Mật khẩu mới <span className="text-red-500">*</span>
@@ -132,7 +132,7 @@ const ChangePasswordForm = () => {
           )}
         </div>
 
-        {/* Xác nhận mật khẩu */}
+        {}
         <div className="relative">
           <label className="block text-sm font-medium text-gray-900 mb-2">
             Xác nhận mật khẩu mới <span className="text-red-500">*</span>
@@ -158,7 +158,7 @@ const ChangePasswordForm = () => {
           )}
         </div>
 
-        {/* Lưu ý */}
+        {}
         <div className="p-5 bg-gray-50 border border-gray-200 ">
           <p className="text-sm font-medium text-gray-900 mb-2">Lưu ý:</p>
           <ul className="text-sm text-gray-600 space-y-1 list-disc list-inside">
@@ -168,7 +168,7 @@ const ChangePasswordForm = () => {
         </div>
       </div>
 
-      {/* Nút submit */}
+      {}
       <button
         type="submit"
         disabled={loading}
@@ -181,3 +181,8 @@ const ChangePasswordForm = () => {
 };
 
 export default ChangePasswordForm;
+
+
+
+
+

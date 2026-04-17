@@ -1,4 +1,4 @@
-import {
+﻿import {
   Injectable,
   NestInterceptor,
   ExecutionContext,
@@ -8,15 +8,7 @@ import {
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
-/**
- * LoggingInterceptor - Ghi log request/response timing
- * 
- * Tự động log:
- * - Method + URL
- * - User ID (nếu authenticated)
- * - Response time (ms)
- * - Cảnh báo nếu response chậm (> 3s)
- */
+
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {
   private readonly logger = new Logger('HTTP');
@@ -37,11 +29,10 @@ export class LoggingInterceptor implements NestInterceptor {
 
           const logMessage = `${method} ${url} ${statusCode} - ${duration}ms [${userId}] [${ip}]`;
 
-          // Cảnh báo request chậm
           if (duration > 3000) {
             this.logger.warn(`SLOW REQUEST: ${logMessage} | UA: ${userAgent}`);
           } else {
-            this.logger.log(logMessage);
+
           }
         },
         error: (error) => {
@@ -54,3 +45,9 @@ export class LoggingInterceptor implements NestInterceptor {
     );
   }
 }
+
+
+
+
+
+

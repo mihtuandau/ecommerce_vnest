@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { 
   Layout, 
@@ -96,7 +96,6 @@ const AdminHeader = ({ sidebarOpen, setSidebarOpen }) => {
 
   const unreadCount = notifications.filter((n) => n.unread).length;
 
-  // User menu items
   const userMenuItems = [
     {
       key: 'profile',
@@ -120,7 +119,6 @@ const AdminHeader = ({ sidebarOpen, setSidebarOpen }) => {
     },
   ];
 
-  // Notification dropdown content
   const notificationContent = (
     <div style={{ width: 320 }}>
       <div style={{ 
@@ -275,3 +273,9 @@ const AdminHeader = ({ sidebarOpen, setSidebarOpen }) => {
 };
 
 export default AdminHeader;
+
+
+
+
+
+

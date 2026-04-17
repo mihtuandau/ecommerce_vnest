@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+﻿import { useEffect } from "react";
 import { Spin } from "antd";
 import { useReports } from "../../../hooks/useReports";
 import { notify } from "../../../utils/notification";
@@ -130,7 +130,7 @@ const ReportPage = () => {
             ordersChartData={ordersChartData}
           />
 
-          {/* Top Products Table */}
+          {}
           <ReportTable productTableData={productTableData} />
         </Spin>
       </div>
@@ -139,3 +139,9 @@ const ReportPage = () => {
 };
 
 export default ReportPage;
+
+
+
+
+
+

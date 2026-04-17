@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+﻿import { useMemo } from 'react';
 import { Ruler } from 'lucide-react';
 
 const ProductOptions = ({ product, selectedSize, selectedColor, onSizeSelect, onColorSelect }) => {
@@ -31,10 +31,10 @@ const ProductOptions = ({ product, selectedSize, selectedColor, onSizeSelect, on
   return (
     <div className="flex flex-col gap-4">
 
-      {/* Size */}
+      {}
       {sizes.length > 0 && (
         <div className="flex flex-col gap-2">
-          {/* Header row */}
+          {}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="text-xs font-semibold text-gray-500">Chọn kích cỡ</span>
@@ -46,7 +46,7 @@ const ProductOptions = ({ product, selectedSize, selectedColor, onSizeSelect, on
               <Ruler size={12} /> Hướng dẫn chọn size
             </button>
           </div>
-          {/* Buttons */}
+          {}
           <div className="flex flex-wrap gap-2">
             {sizes.map(size => {
               const isActive = selectedSize === size;
@@ -72,17 +72,17 @@ const ProductOptions = ({ product, selectedSize, selectedColor, onSizeSelect, on
         </div>
       )}
 
-      {/* Color */}
+      {}
       {colors.length > 0 && (
         <div className="flex flex-col gap-2">
-          {/* Header row */}
+          {}
           <div className="flex items-center gap-2">
             <span className="text-xs font-semibold text-gray-500">Màu sắc</span>
             {selectedColor && (
               <span className="text-xs font-bold text-gray-900">· {selectedColor}</span>
             )}
           </div>
-          {/* Buttons */}
+          {}
           <div className="flex flex-wrap gap-2">
             {colors.map(color => {
               const isActive = selectedColor === color;
@@ -119,3 +119,8 @@ const ProductOptions = ({ product, selectedSize, selectedColor, onSizeSelect, on
 };
 
 export default ProductOptions;
+
+
+
+
+

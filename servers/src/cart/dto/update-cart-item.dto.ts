@@ -1,4 +1,4 @@
-import { IsInt, IsPositive, IsOptional } from 'class-validator';
+﻿import { IsInt, IsPositive, IsOptional } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -14,3 +14,8 @@ export class UpdateCartItemDto {
   @IsPositive()
   quantity?: number;
 }
+
+
+
+
+

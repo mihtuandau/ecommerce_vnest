@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+﻿import { useState, useRef, useEffect } from 'react';
 import { MessageCircle, X, Send, Loader2 } from 'lucide-react';
 import chatbotService from '../../services/chatbotService';
 
@@ -99,7 +99,7 @@ const ChatWidget = () => {
 
       {isOpen && (
         <div className="flex flex-col w-96 h-[600px] bg-white rounded-2xl shadow-2xl overflow-hidden animate-slideUp">
-          {/* Header */}
+          {}
           <div className="flex items-center justify-between px-6 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white">
             <div className="flex items-center gap-3">
               <div className="flex items-center justify-center w-10 h-10 bg-white/20 rounded-full backdrop-blur-sm">
@@ -119,7 +119,7 @@ const ChatWidget = () => {
             </button>
           </div>
 
-          {/* Messages */}
+          {}
           <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
             {messages.map((message) => (
               <div
@@ -172,7 +172,7 @@ const ChatWidget = () => {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Input */}
+          {}
           <form className="flex items-center gap-2 p-4 bg-white border-t border-gray-200" onSubmit={handleSubmit}>
             <input
               type="text"
@@ -214,3 +214,9 @@ const ChatWidget = () => {
 };
 
 export default ChatWidget;
+
+
+
+
+
+

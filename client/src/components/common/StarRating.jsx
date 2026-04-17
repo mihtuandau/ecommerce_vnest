@@ -1,4 +1,4 @@
-import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
+﻿import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
 
 const StarRating = ({
   rating = 0,
@@ -32,3 +32,9 @@ const StarRating = ({
 };
 
 export default StarRating;
+
+
+
+
+
+

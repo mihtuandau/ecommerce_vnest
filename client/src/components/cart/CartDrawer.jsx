@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { FaTimes, FaShoppingBag, FaTrash, FaTag, FaCheckCircle, FaTimesCircle } from "react-icons/fa";
+import { FaTimes, FaShoppingBag, FaTag, FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import { useCart } from "../../hooks/useCart";
 import { useAutoApplyDiscounts } from "../../hooks/useFlashSale";
 import { formatPrice, computeDiscountFromMap } from "../../utils/formatters";
 import discountService from "../../services/discountService";
-
-  
+import CartDrawerItem from "./CartDrawerItem";
 
 const CartDrawer = ({ isOpen, onClose }) => {
   const cartData = useCart();
@@ -16,7 +15,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
 
   const [couponCode, setCouponCode] = useState("");
   const [couponLoading, setCouponLoading] = useState(false);
-  const [couponResult, setCouponResult] = useState(null); // { valid, discount, discountAmount, message }
+  const [couponResult, setCouponResult] = useState(null); 
 
   const discountAmount = couponResult?.valid ? (couponResult.discountAmount || 0) : 0;
   const finalTotal = Math.max(0, cartTotal - discountAmount);
@@ -35,7 +34,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
         } else if (discount?.fixedAmount) {
           amount = discount.fixedAmount;
         }
-        // Check minimum order
+
         if (discount?.minOrderAmount && cartTotal < discount.minOrderAmount) {
           setCouponResult({
             valid: false,
@@ -77,17 +76,8 @@ const CartDrawer = ({ isOpen, onClose }) => {
     };
   }, [isOpen]);
 
-  const getProductImage = (item) => {
-    return (
-      item.product?.image ||
-      item.product?.variant?.product?.images?.[0]?.url ||
-      item.product?.images?.[0]?.url
-    );
-  };
-
   return (
     <>
-      {/* Backdrop with fade animation */}
       {isOpen && (
         <div
           className="fixed inset-0 z-[9998] backdrop-blur-sm cursor-pointer"
@@ -96,11 +86,9 @@ const CartDrawer = ({ isOpen, onClose }) => {
         />
       )}
 
-      {/* Modal Dropdown */}
       {isOpen && (
         <div className="fixed top-[64px] right-6 z-[9999]">
           <div className="relative bg-white shadow-2xl w-[420px] max-h-[calc(100vh-100px)] overflow-hidden flex flex-col">
-            {/* Header with gradient accent */}
             <div className="relative px-6 py-4 border-b border-gray-100 flex-shrink-0 bg-gradient-to-r from-gray-50 to-white">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -108,17 +96,12 @@ const CartDrawer = ({ isOpen, onClose }) => {
                     <FaShoppingBag className="text-white text-lg" />
                   </div>
                   <div>
-                    <h2 className="text-lg font-bold text-gray-900">
-                      Giỏ Hàng
-                    </h2>
-                    <p className="text-xs text-gray-500">
-                      {cartItems.length} sản phẩm
-                    </p>
+                    <h2 className="text-lg font-bold text-gray-900">Giỏ Hàng</h2>
+                    <p className="text-xs text-gray-500">{cartItems.length} sản phẩm</p>
                   </div>
                 </div>
                 <button
                   onClick={onClose}
-                  type="button"
                   className="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all duration-200 cursor-pointer"
                 >
                   <FaTimes size={18} />
@@ -126,266 +109,134 @@ const CartDrawer = ({ isOpen, onClose }) => {
               </div>
             </div>
 
-          {/* Items List with custom scrollbar */}
-          <div className="flex-1 overflow-y-auto px-6 py-4 min-h-0 cart-scrollbar">
-            {cartItems.length > 0 ? (
-              <div className="space-y-4">
-                {cartItems.map((item, index) => (
-                  <div
-                    key={item.variantId}
-                    className="group flex gap-4 pb-4 border-b border-gray-100 last:border-0 cart-item-animate"
-                    style={{ animationDelay: `${index * 50}ms` }}
+            <div className="flex-1 overflow-y-auto px-6 py-4 min-h-0 cart-scrollbar">
+              {cartItems.length > 0 ? (
+                <div className="space-y-4">
+                  {cartItems.map((item, index) => (
+                    <CartDrawerItem
+                      key={item.variantId}
+                      item={item}
+                      index={index}
+                      discountMap={discountMap}
+                      computeDiscountFromMap={computeDiscountFromMap}
+                      onRemove={cartData.removeFromCart}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center h-full text-center py-12">
+                  <div className="w-20 h-20 bg-gray-100 flex items-center justify-center mb-4">
+                    <FaShoppingBag className="text-gray-400 text-3xl" />
+                  </div>
+                  <p className="text-gray-900 font-semibold text-base mb-2">Giỏ hàng trống</p>
+                  <p className="text-gray-500 text-sm mb-6">Thêm sản phẩm vào giỏ để tiếp tục mua sắm</p>
+                  <button
+                    onClick={onClose}
+                    className="px-6 py-2.5 bg-black hover:bg-neutral-800 text-white text-sm font-medium transition-colors cursor-pointer"
                   >
-                    {/* Image with hover effect - no border radius */}
-                    <div className="relative w-24 h-24 flex-shrink-0 bg-gray-50 overflow-hidden ring-1 ring-gray-200 group-hover:ring-gray-300 transition-all duration-200">
-                      <img
-                        src={getProductImage(item) || "/placeholder.jpg"}
-                        alt={item.product?.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
+                    Tiếp tục mua sắm
+                  </button>
+                </div>
+              )}
+            </div>
 
-                    {/* Info */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-2 mb-2">
-                        <h3 className="text-sm font-semibold text-gray-900 line-clamp-2 flex-1 leading-snug">
-                          {item.product?.name}
-                        </h3>
+            {cartItems.length > 0 && (
+              <div className="border-t border-gray-100 px-6 py-5 space-y-4 bg-gradient-to-t from-gray-50 to-white flex-shrink-0">
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <FaTag className="text-black text-sm flex-shrink-0" />
+                    <span className="text-xs font-semibold text-gray-700 uppercase tracking-wide">Mã giảm giá</span>
+                  </div>
+                  {couponResult?.valid ? (
+                    <div className="flex items-center justify-between px-3 py-2.5 bg-green-50 border border-green-200">
+                      <div className="flex items-center gap-2">
+                        <FaCheckCircle className="text-green-600 flex-shrink-0" />
+                        <span className="text-sm font-medium text-green-800">{couponCode.toUpperCase()}</span>
+                        <span className="text-xs text-green-600">{couponResult.message}</span>
+                      </div>
+                      <button
+                        onClick={handleRemoveCoupon}
+                        className="text-gray-400 hover:text-red-500 transition-colors cursor-pointer ml-2"
+                      >
+                        <FaTimesCircle size={15} />
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={couponCode}
+                          onChange={(e) => { setCouponCode(e.target.value); setCouponResult(null); }}
+                          onKeyDown={(e) => e.key === "Enter" && handleApplyCoupon()}
+                          placeholder="Nhập mã giảm giá..."
+                          className="flex-1 text-sm border border-gray-200 px-3 py-2 focus:outline-none focus:border-black transition-colors bg-white"
+                        />
                         <button
-                          onClick={() => {
-                            cartData.removeFromCart(item.variantId);
-                          }}
-                          type="button"
-                          className="text-gray-300 hover:text-red-500 hover:bg-red-50 transition-all duration-200 flex-shrink-0 cursor-pointer p-2"
-                          title="Xóa sản phẩm"
+                          onClick={handleApplyCoupon}
+                          disabled={couponLoading || !couponCode.trim()}
+                          className="px-4 py-2 bg-black hover:bg-neutral-800 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold transition-colors cursor-pointer whitespace-nowrap"
                         >
-                          <FaTrash size={13} />
+                          {couponLoading ? "..." : "Áp dụng"}
                         </button>
                       </div>
-
-                      {/* Size/Color - no border radius */}
-                      {(item.product?.variant?.size ||
-                        item.product?.variant?.color) && (
-                        <div className="flex gap-2 mb-3">
-                          {item.product?.variant?.size && (
-                            <span className="inline-flex items-center px-2.5 py-1 text-xs font-medium bg-gray-100 text-gray-700">
-                              {item.product.variant.size}
-                            </span>
-                          )}
-                          {item.product?.variant?.color && (
-                            <span className="inline-flex items-center px-2.5 py-1 text-xs font-medium bg-gray-100 text-gray-700">
-                              {item.product.variant.color}
-                            </span>
-                          )}
+                      {couponResult?.valid === false && (
+                        <div className="flex items-center gap-1.5 mt-1.5">
+                          <FaTimesCircle className="text-red-500 flex-shrink-0 text-xs" />
+                          <p className="text-xs text-red-600">{couponResult.message}</p>
                         </div>
                       )}
-
-                      {/* Quantity & Price - no border radius */}
-                      <div className="flex items-center justify-between mt-auto">
-                        <span className="inline-flex items-center justify-center px-3 py-1 text-xs font-semibold bg-black text-white">
-                          x{item.quantity}
-                        </span>
-                        <div className="text-right">
-                          {(() => {
-                            const originalPrice = item.product?.variant?.price || 0;
-                            const discountedPrice = computeDiscountFromMap(
-                              item.product?.id,
-                              originalPrice,
-                              discountMap
-                            );
-                            const hasDiscount = discountedPrice !== originalPrice;
-                            
-                            if (hasDiscount) {
-                              return (
-                                <>
-                                  <span className="text-base font-bold text-red-500 block">
-                                    {formatPrice(discountedPrice * item.quantity)}
-                                  </span>
-                                  <span className="text-xs text-gray-400 line-through">
-                                    {formatPrice(originalPrice * item.quantity)}
-                                  </span>
-                                </>
-                              );
-                            } else {
-                              return (
-                                <span className="text-base font-bold text-gray-900">
-                                  {formatPrice(originalPrice * item.quantity)}
-                                </span>
-                              );
-                            }
-                          })()}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center h-full text-center py-12">
-                <div className="w-20 h-20 bg-gray-100 flex items-center justify-center mb-4">
-                  <FaShoppingBag className="text-gray-400 text-3xl" />
+                    </>
+                  )}
                 </div>
-                <p className="text-gray-900 font-semibold text-base mb-2">
-                  Giỏ hàng trống
-                </p>
-                <p className="text-gray-500 text-sm mb-6">
-                  Thêm sản phẩm vào giỏ để tiếp tục mua sắm
-                </p>
-                <button
-                  onClick={onClose}
-                  className="px-6 py-2.5 bg-black hover:bg-neutral-800 text-white text-sm font-medium transition-colors cursor-pointer"
-                >
-                  Tiếp tục mua sắm
-                </button>
+
+                <div className="flex justify-between items-center p-4 bg-white border border-gray-200">
+                  <div>
+                    <span className="block text-xs text-gray-500 uppercase tracking-wide mb-1">Tổng tiền</span>
+                    {discountAmount > 0 && (
+                      <span className="block text-sm text-gray-400 line-through mb-0.5">{formatPrice(cartTotal)}</span>
+                    )}
+                    <span className="text-2xl font-bold text-gray-900">{formatPrice(finalTotal)}</span>
+                    {discountAmount > 0 && (
+                      <span className="block text-xs text-green-600 font-medium mt-0.5">Tiết kiệm {formatPrice(discountAmount)}</span>
+                    )}
+                  </div>
+                  <div className="text-right">
+                    <span className="text-xs text-gray-500">{cartItems.length} sản phẩm</span>
+                  </div>
+                </div>
+
+                <div className="flex gap-3">
+                  <Link
+                    to="/cart"
+                    onClick={onClose}
+                    className="flex-1 text-center bg-white hover:bg-gray-50 text-gray-900 text-sm font-semibold py-3 transition-all duration-200 cursor-pointer border-2 border-black hover:border-neutral-800"
+                  >
+                    Xem Giỏ Hàng
+                  </Link>
+                  <Link
+                    to="/checkout"
+                    state={couponResult?.valid ? { couponCode, discountAmount, discountInfo: couponResult.discount } : undefined}
+                    onClick={onClose}
+                    className="flex-1 text-center bg-black hover:bg-neutral-800 text-white text-sm font-semibold py-3 transition-all duration-200 cursor-pointer shadow-lg hover:shadow-xl" 
+                  >
+                    Thanh Toán
+                  </Link>
+                </div>
+                <p className="text-center text-xs text-gray-500">Miễn phí vận chuyển cho đơn hàng trên 500.000₫</p>
               </div>
             )}
           </div>
-
-          {/* Footer with enhanced styling */}
-          {cartItems.length > 0 && (
-            <div className="border-t border-gray-100 px-6 py-5 space-y-4 bg-gradient-to-t from-gray-50 to-white flex-shrink-0">
-
-              {/* Coupon code input */}
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <FaTag className="text-black text-sm flex-shrink-0" />
-                  <span className="text-xs font-semibold text-gray-700 uppercase tracking-wide">Mã giảm giá</span>
-                </div>
-                {couponResult?.valid ? (
-                  <div className="flex items-center justify-between px-3 py-2.5 bg-green-50 border border-green-200">
-                    <div className="flex items-center gap-2">
-                      <FaCheckCircle className="text-green-600 flex-shrink-0" />
-                      <span className="text-sm font-medium text-green-800">{couponCode.toUpperCase()}</span>
-                      <span className="text-xs text-green-600">{couponResult.message}</span>
-                    </div>
-                    <button
-                      onClick={handleRemoveCoupon}
-                      type="button"
-                      className="text-gray-400 hover:text-red-500 transition-colors cursor-pointer ml-2"
-                    >
-                      <FaTimesCircle size={15} />
-                    </button>
-                  </div>
-                ) : (
-                  <>
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        value={couponCode}
-                        onChange={(e) => { setCouponCode(e.target.value); setCouponResult(null); }}
-                        onKeyDown={(e) => e.key === "Enter" && handleApplyCoupon()}
-                        placeholder="Nhập mã giảm giá..."
-                        className="flex-1 text-sm border border-gray-200 px-3 py-2 focus:outline-none focus:border-black transition-colors bg-white"
-                      />
-                      <button
-                        onClick={handleApplyCoupon}
-                        disabled={couponLoading || !couponCode.trim()}
-                        type="button"
-                        className="px-4 py-2 bg-black hover:bg-neutral-800 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold transition-colors cursor-pointer whitespace-nowrap"
-                      >
-                        {couponLoading ? "..." : "Áp dụng"}
-                      </button>
-                    </div>
-                    {couponResult?.valid === false && (
-                      <div className="flex items-center gap-1.5 mt-1.5">
-                        <FaTimesCircle className="text-red-500 flex-shrink-0 text-xs" />
-                        <p className="text-xs text-red-600">{couponResult.message}</p>
-                      </div>
-                    )}
-                  </>
-                )}
-              </div>
-
-              {/* Total with better visual hierarchy - no border radius */}
-              <div className="flex justify-between items-center p-4 bg-white border border-gray-200">
-                <div>
-                  <span className="block text-xs text-gray-500 uppercase tracking-wide mb-1">
-                    Tổng tiền
-                  </span>
-                  {discountAmount > 0 && (
-                    <span className="block text-sm text-gray-400 line-through mb-0.5">
-                      {formatPrice(cartTotal)}
-                    </span>
-                  )}
-                  <span className="text-2xl font-bold text-gray-900">
-                    {formatPrice(finalTotal)}
-                  </span>
-                  {discountAmount > 0 && (
-                    <span className="block text-xs text-green-600 font-medium mt-0.5">
-                      Tiết kiệm {formatPrice(discountAmount)}
-                    </span>
-                  )}
-                </div>
-                <div className="text-right">
-                  <span className="text-xs text-gray-500">
-                    {cartItems.length} sản phẩm
-                  </span>
-                </div>
-              </div>
-
-              {/* Buttons with improved styling - no border radius */}
-              <div className="flex gap-3">
-                <Link
-                  to="/cart"
-                  onClick={onClose}
-                  className="flex-1 text-center bg-white hover:bg-gray-50 text-gray-900 text-sm font-semibold py-3 transition-all duration-200 cursor-pointer border-2 border-black hover:border-neutral-800"
-                >
-                  Xem Giỏ Hàng
-                </Link>
-
-                <Link
-                  to="/checkout"
-                  state={couponResult?.valid ? { couponCode, discountAmount, discountInfo: couponResult.discount } : undefined}
-                  onClick={onClose}
-                  className="flex-1 text-center bg-black hover:bg-neutral-800 text-white text-sm font-semibold py-3 transition-all duration-200 cursor-pointer shadow-lg hover:shadow-xl" 
-                >
-                  Thanh Toán
-                </Link>
-              </div>
-
-              {/* Additional info */}
-              <p className="text-center text-xs text-gray-500">
-                Miễn phí vận chuyển cho đơn hàng trên 500.000₫
-              </p>
-            </div>
-          )}
+          <style>{`
+            @keyframes slideInCart { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
+            .cart-item-animate { animation: slideInCart 0.3s ease-out forwards; }
+            .cart-scrollbar::-webkit-scrollbar { width: 6px; }
+            .cart-scrollbar::-webkit-scrollbar-track { background: transparent; }
+            .cart-scrollbar::-webkit-scrollbar-thumb { background-color: #d1d5db; }
+            .cart-scrollbar::-webkit-scrollbar-thumb:hover { background-color: #9ca3af; }
+          `}</style>
         </div>
-      </div>
       )}
-
-      {/* Custom Styles */}
-      <style>{`
-        @keyframes slideInCart {
-          from {
-            opacity: 0;
-            transform: translateX(10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
-        }
-        
-        .cart-item-animate {
-          animation: slideInCart 0.3s ease-out forwards;
-        }
-
-        .cart-scrollbar::-webkit-scrollbar {
-          width: 6px;
-        }
-
-        .cart-scrollbar::-webkit-scrollbar-track {
-          background: transparent;
-        }
-
-        .cart-scrollbar::-webkit-scrollbar-thumb {
-          background-color: #d1d5db;
-        }
-
-        .cart-scrollbar::-webkit-scrollbar-thumb:hover {
-          background-color: #9ca3af;
-        }
-      `}</style>
     </>
   );
 };

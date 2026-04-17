@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+﻿import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Banner } from '@prisma/client';
 import { CreateBannerDto } from './dto/create-banner.dto';
@@ -29,12 +29,12 @@ export class BannerService {
   }
 
   async update(id: number, data: UpdateBannerDto): Promise<Banner> {
-    await this.findOne(id); // Check if exists
+    await this.findOne(id); 
     return this.prisma.banner.update({ where: { id }, data });
   }
 
   async remove(id: number): Promise<Banner> {
-    await this.findOne(id); // Check if exists
+    await this.findOne(id); 
     return this.prisma.banner.delete({ where: { id } });
   }
 
@@ -46,3 +46,9 @@ export class BannerService {
     });
   }
 }
+
+
+
+
+
+

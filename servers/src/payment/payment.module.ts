@@ -1,4 +1,4 @@
-// src/payment/payment.module.ts
+﻿
 import { Module } from '@nestjs/common';
 import { PaymentController } from './payment.controller';
 import { PaymentWebhookController } from './payment-webhook.controller';
@@ -28,3 +28,8 @@ import { PaymentSync } from './payment.sync';
   exports: [PaymentService],
 })
 export class PaymentModule {}
+
+
+
+
+

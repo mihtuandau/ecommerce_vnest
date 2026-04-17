@@ -1,4 +1,4 @@
-import {
+﻿import {
   Controller,
   Get,
   Query,
@@ -87,3 +87,9 @@ export class ReportController {
     res.send(buffer);
   }
 }
+
+
+
+
+
+

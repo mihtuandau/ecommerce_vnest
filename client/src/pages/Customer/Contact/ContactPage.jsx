@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Form, Input, Button, Row, Col } from 'antd'; // Đã thêm Row, Col
+﻿import React, { useState } from 'react';
+import { Form, Input, Button, Row, Col } from 'antd'; 
 import { PhoneOutlined, MailOutlined, EnvironmentOutlined, ClockCircleOutlined, SendOutlined } from '@ant-design/icons';
 import { FaFacebookF, FaInstagram, FaTwitter } from 'react-icons/fa';
 import Layout from '../../../components/layouts/Layout';
@@ -230,3 +230,8 @@ const ContactPage = () => {
 };
 
 export default ContactPage;
+
+
+
+
+

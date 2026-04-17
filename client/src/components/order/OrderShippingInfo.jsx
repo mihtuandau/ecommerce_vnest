@@ -1,4 +1,4 @@
-const OrderShippingInfo = ({ order }) => {
+﻿const OrderShippingInfo = ({ order }) => {
   const getPaymentMethodText = (method) => {
     const methods = {
       CASH: 'Thanh toán khi nhận hàng (COD)',
@@ -59,3 +59,9 @@ const OrderShippingInfo = ({ order }) => {
 };
 
 export default OrderShippingInfo;
+
+
+
+
+
+

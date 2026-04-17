@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import { Copy, Check, Clock, Percent, Tag, Truck, Zap } from "lucide-react";
 import { formatPrice } from "../../utils/formatters";
 
@@ -21,7 +21,6 @@ const VoucherCard = ({ voucher, onCopy, copiedCode }) => {
     : null;
   const Icon = isFlash ? Zap : isFreeShip ? Truck : isPercent ? Percent : Tag;
 
-  // Design Tokens based on voucher type
   const themeAccent = isFlash ? "orange" : "blue";
 
   const bgLight = isFlash ? "bg-orange-50" : "bg-blue-50";
@@ -39,15 +38,15 @@ const VoucherCard = ({ voucher, onCopy, copiedCode }) => {
     <div
       className={`flex bg-white border ${borderSolid} rounded-xl overflow-hidden hover:border-${themeAccent}-200 hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-all duration-300 relative group`}
     >
-      {/* Left Stub */}
+      {}
       <div
         className={`${bgLight} w-[105px] shrink-0 flex flex-col items-center justify-center p-3 relative border-r-2 border-dashed ${borderDashed}`}
       >
-        {/* Notch top & bottom (creating the ticket effect seamlessly) */}
+        {}
         <div className="absolute -right-[13px] top-0 transform -translate-y-1/2 w-6 h-6 bg-[#F4F6F8] rounded-full border border-gray-200 z-10 group-hover:border-gray-300 transition-colors" />
         <div className="absolute -right-[13px] bottom-0 transform translate-y-1/2 w-6 h-6 bg-[#F4F6F8] rounded-full border border-gray-200 z-10 group-hover:border-gray-300 transition-colors" />
 
-        {/* Icon Inside Value */}
+        {}
         <div
           className={`w-10 h-10 rounded-full ${iconBg} flex items-center justify-center mb-1.5 shadow-sm text-opacity-90`}
         >
@@ -80,7 +79,7 @@ const VoucherCard = ({ voucher, onCopy, copiedCode }) => {
         )}
       </div>
 
-      {/* Right Content */}
+      {}
       <div className="flex-1 min-w-0 p-4 flex flex-col justify-between bg-white relative">
         <div>
           {isFlash && (
@@ -113,7 +112,7 @@ const VoucherCard = ({ voucher, onCopy, copiedCode }) => {
           </div>
         </div>
 
-        {/* Bottom Actions */}
+        {}
         <div className="mt-4 flex items-center justify-between gap-2 pt-3 border-t border-gray-50">
           {voucher.usageLimit != null ? (
             <div className="flex items-center gap-1 text-[11px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded border border-amber-100">
@@ -141,3 +140,9 @@ const VoucherCard = ({ voucher, onCopy, copiedCode }) => {
 };
 
 export default VoucherCard;
+
+
+
+
+
+

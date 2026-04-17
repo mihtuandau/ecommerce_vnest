@@ -1,4 +1,4 @@
-import {
+﻿import {
   Injectable,
   NestInterceptor,
   ExecutionContext,
@@ -9,16 +9,11 @@ import {
 import { Observable, throwError, TimeoutError } from 'rxjs';
 import { catchError, timeout } from 'rxjs/operators';
 
-/**
- * TimeoutInterceptor - Tự động timeout requests chậm
- * 
- * Default: 30 giây. Tránh requests bị treo vô hạn,
- * giải phóng resources cho server.
- */
+
 @Injectable()
 export class TimeoutInterceptor implements NestInterceptor {
   private readonly logger = new Logger('Timeout');
-  private readonly timeoutMs = 30000; // 30 seconds default
+  private readonly timeoutMs = 30000; 
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(
@@ -37,3 +32,9 @@ export class TimeoutInterceptor implements NestInterceptor {
     );
   }
 }
+
+
+
+
+
+

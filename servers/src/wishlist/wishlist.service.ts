@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+﻿import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -108,3 +108,9 @@ export class WishlistService {
     return this.prisma.wishlistItem.count({ where: { userId } });
   }
 }
+
+
+
+
+
+

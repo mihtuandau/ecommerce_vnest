@@ -1,4 +1,4 @@
-import Button from '../common/Button';
+﻿import Button from '../common/Button';
 import Modal from '../common/Modal';
 import { AlertTriangle } from 'lucide-react';
 
@@ -50,3 +50,8 @@ const DeleteConfirmModal = ({
 };
 
 export default DeleteConfirmModal;
+
+
+
+
+

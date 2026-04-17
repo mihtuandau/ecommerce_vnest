@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Zap, 
@@ -17,7 +17,7 @@ import StarRating from '../../../components/common/StarRating';
 import { useQuery } from '@tanstack/react-query';
 import categoryService from '../../../services/categoryService';
 
-/* ---------------- Countdown Helper ---------------- */
+
 function getTimeLeft(endDate) {
   if (!endDate) return null;
   const diff = new Date(endDate).getTime() - Date.now();
@@ -40,7 +40,7 @@ const formatViewCount = (n) => {
   return String(n);
 };
 
-/* ---------------- Sub-components ---------------- */
+
 const FlashCard = ({ product, discountPercent }) => {
   const { addToCart } = useCart();
   
@@ -54,8 +54,7 @@ const FlashCard = ({ product, discountPercent }) => {
 
   const originalPrice = getLowestPrice(product);
   const salePrice = Math.round(originalPrice * (1 - discountPercent / 100));
-  
-  // Real data for stock and ratings
+
   const soldCount = product.soldCount || product.sold || 0;
   const remCount = product.variants?.reduce((sum, v) => sum + (v.stock || 0), 0) || product.stock || 0;
   const totalStock = soldCount + remCount > 0 ? soldCount + remCount : 100;
@@ -79,7 +78,7 @@ const FlashCard = ({ product, discountPercent }) => {
       to={`/products/${product.slug || product.id}`} 
       className="group bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:border-gray-300 transition-all duration-300 flex flex-col h-full hover:-translate-y-1 block"
     >
-      {/* Top Media */}
+      {}
       <div className="relative aspect-square w-full overflow-hidden bg-gray-50 border-b border-gray-100 flex-shrink-0">
         <img 
           src={product.image || product.images?.[0]?.url || '/placeholder-product.jpg'} 
@@ -98,10 +97,10 @@ const FlashCard = ({ product, discountPercent }) => {
         </div>
       </div>
 
-      {/* Content */}
+      {}
       <div className="p-4 flex flex-col flex-grow">
         
-        {/* Title strictly constrained to exactly 2 lines. */}
+        {}
         <h3 
           className="font-medium text-blue-700 text-[13px] sm:text-sm group-hover:text-blue-900 transition-colors mb-1"
           style={{ 
@@ -127,7 +126,7 @@ const FlashCard = ({ product, discountPercent }) => {
            </span>
         </div>
 
-        {/* Price & Progress */}
+        {}
         <div className="mt-auto pt-2">
           <div className="flex items-baseline gap-2 mb-2.5 h-6">
             <span className="text-xl font-heading font-black text-red-500 tracking-tight leading-none">
@@ -158,7 +157,7 @@ const FlashCard = ({ product, discountPercent }) => {
   );
 };
 
-/* ---------------- Main Page ---------------- */
+
 const FlashSalePage = () => {
   const { flashSale: rawData, isLoading } = useFlashSale();
   const { data: catData, isLoading: isLoadingCats } = useQuery({
@@ -221,7 +220,7 @@ const FlashSalePage = () => {
     <Layout>
       <div className="min-h-screen bg-white font-inter pb-24">
         
-        {/* ELEGANT MINIMAL HEADER */}
+        {}
         <div className="pt-20 pb-8 px-4 sm:px-6 lg:px-8 text-center">
            <div className="max-w-7xl mx-auto flex flex-col items-center">
               <p className="text-[11px] md:text-[13px] text-gray-500 tracking-[0.25em] uppercase font-semibold mb-3">
@@ -234,11 +233,11 @@ const FlashSalePage = () => {
            </div>
         </div>
 
-        {/* PRODUCTS LISTING */}
+        {}
         <section className="py-12 sm:py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             
-            {/* Grid */}
+            {}
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
               {filteredProducts.map((product) => (
                 <FlashCard 
@@ -249,7 +248,7 @@ const FlashSalePage = () => {
               ))}
             </div>
             
-            {/* No Products State */}
+            {}
             {!filteredProducts.length && (
               <div className="py-24 text-center border mt-4 border-gray-100 bg-gray-50 rounded-2xl flex flex-col items-center">
                 <Zap size={40} className="text-gray-300 mb-4" />
@@ -266,3 +265,9 @@ const FlashSalePage = () => {
 };
 
 export default FlashSalePage;
+
+
+
+
+
+

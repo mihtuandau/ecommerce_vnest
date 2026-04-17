@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, Maximize2, X } from "lucide-react";
+﻿import { ChevronLeft, ChevronRight, Maximize2, X } from "lucide-react";
 import { useState } from "react";
 import ProductInfo from "../productdetail/ProductInfo";
 import ProductPrice from "../productdetail/ProductPrice";
@@ -31,7 +31,7 @@ export const ProductImageGallery = ({
 
   return (
     <div className="flex flex-col md:flex-row-reverse gap-4">
-      {/* Main Image */}
+      {}
       <div className="flex-1 relative aspect-[4/5] overflow-hidden rounded-3xl bg-gray-50 border border-gray-100 group shadow-sm transition-all duration-500 hover:shadow-xl hover:shadow-gray-200/50">
         <img
           src={images[selectedImage]?.url || "/placeholder-product.jpg"}
@@ -77,7 +77,7 @@ export const ProductImageGallery = ({
         </div>
       </div>
 
-      {/* Thumbnails */}
+      {}
       {images.length > 1 && (
         <div className="flex md:flex-col gap-3 overflow-x-auto md:overflow-y-auto max-h-[500px] scrollbar-hide pb-2 md:pb-0">
           {images.map((img, idx) => (
@@ -103,7 +103,7 @@ export const ProductImageGallery = ({
         </div>
       )}
 
-      {/* Zoom Modal */}
+      {}
       {isZoomed && (
         <div
           className="fixed inset-0 bg-white/98 z-[100] flex items-center justify-center animate-in fade-in duration-300"
@@ -177,12 +177,12 @@ export const ProductDetails = ({
   return (
     <div className="w-full flex flex-col gap-4">
 
-      {/* ── 1. Thông tin sản phẩm ─────────────────────── */}
+      {}
       <ProductInfo product={product} />
 
       <hr className="border-gray-100" />
 
-      {/* ── 2. Giá ───────────────────────────────────── */}
+      {}
       <ProductPrice
         currentPrice={currentPrice}
         originalPrice={originalPrice}
@@ -191,7 +191,7 @@ export const ProductDetails = ({
 
       <hr className="border-gray-100" />
 
-      {/* ── 3. Chọn size & màu ───────────────────────── */}
+      {}
       <ProductOptions
         product={product}
         selectedSize={selectedSize}
@@ -202,7 +202,7 @@ export const ProductDetails = ({
 
       <hr className="border-gray-100" />
 
-      {/* ── 4. Tình trạng hàng ───────────────────────── */}
+      {}
       {isOutOfStock ? (
         <p className="text-sm text-red-500 font-medium flex items-center gap-1.5">
           <span className="w-1.5 h-1.5 rounded-full bg-red-500 inline-block" />
@@ -220,14 +220,14 @@ export const ProductDetails = ({
         </p>
       )}
 
-      {/* ── 5. Số lượng ──────────────────────────────── */}
+      {}
       <ProductQuantity
         quantity={quantity}
         onQuantityChange={onQuantityChange}
         totalStock={totalStock}
       />
 
-      {/* ── 6. Nút hành động ─────────────────────────── */}
+      {}
       <ProductActions
         onAddToCart={onAddToCart}
         totalStock={totalStock}
@@ -235,20 +235,20 @@ export const ProductDetails = ({
         onToggleWishlist={onToggleWishlist}
       />
 
-      {/* ── 7. Chia sẻ ───────────────────────────────── */}
+      {}
       <div className="text-sm text-gray-400">
         <ProductShare />
       </div>
 
       <hr className="border-gray-100" />
 
-      {/* ── 8. Cam kết/ Trust ────────────────────────── */}
+      {}
       <div className="grid grid-cols-2 gap-x-6 gap-y-2.5">
         {[
-          { emoji: '🚚', text: 'Giao hàng 2-3 ngày' },
-          { emoji: '🛡️', text: 'Bảo hành chính hãng' },
+          { emoji: '', text: 'Giao hàng 2-3 ngày' },
+          { emoji: '', text: 'Bảo hành chính hãng' },
           { emoji: '🔄', text: 'Đổi trả 30 ngày' },
-          { emoji: '📦', text: 'Đóng gói cẩn thận' },
+          { emoji: '', text: 'Đóng gói cẩn thận' },
         ].map((item, i) => (
           <div key={i} className="flex items-center gap-2 text-xs text-gray-500">
             <span>{item.emoji}</span>
@@ -260,3 +260,9 @@ export const ProductDetails = ({
     </div>
   );
 };
+
+
+
+
+
+

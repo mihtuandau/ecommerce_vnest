@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+﻿import { useState, useEffect, useCallback } from 'react';
 
 const STORAGE_KEY = 'wishlist_product_ids';
 
@@ -13,7 +13,6 @@ const getStored = () => {
 export const useWishlist = () => {
   const [wishlist, setWishlist] = useState(() => getStored());
 
-  // Sync across tabs
   useEffect(() => {
     const handleStorage = (e) => {
       if (e.key === STORAGE_KEY) {
@@ -42,10 +41,16 @@ export const useWishlist = () => {
         ? current.filter((i) => i !== id)
         : [...current, id];
       save(updated);
-      return !current.includes(id); // true = added, false = removed
+      return !current.includes(id); 
     },
     []
   );
 
   return { wishlist, isWishlisted, toggleWishlist };
 };
+
+
+
+
+
+

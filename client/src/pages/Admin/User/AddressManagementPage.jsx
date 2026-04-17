@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { MapPin, House, Briefcase, Search } from 'lucide-react';
 import { Pagination as AntdPagination } from 'antd';
@@ -14,7 +14,7 @@ const getTypeMeta = (type) => {
   if (type === 'OTHER') {
     return { label: 'Khác', className: 'bg-gray-100 text-gray-600', icon: '📍' };
   }
-  return { label: 'Nhà riêng', className: 'bg-blue-100 text-blue-700', icon: '🏠' };
+  return { label: 'Nhà riêng', className: 'bg-blue-100 text-blue-700', icon: '' };
 };
 
 const buildAddressString = (address) => {
@@ -216,3 +216,9 @@ const AddressManagementPage = () => {
 };
 
 export default AddressManagementPage;
+
+
+
+
+
+

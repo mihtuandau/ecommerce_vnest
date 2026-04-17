@@ -1,4 +1,4 @@
-import { memo } from 'react';
+﻿import { memo } from 'react';
 import { Table, Empty } from 'antd';
 import { getProductTableColumns } from './productTableColumns';
 
@@ -61,3 +61,9 @@ const ProductTable = ({
 };
 
 export default memo(ProductTable);
+
+
+
+
+
+

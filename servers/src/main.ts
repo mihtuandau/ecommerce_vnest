@@ -1,4 +1,4 @@
-import { NestFactory } from '@nestjs/core';
+﻿import { NestFactory } from '@nestjs/core';
 import { ValidationPipe, Logger } from '@nestjs/common';
 import helmet from 'helmet';
 import compression from 'compression';
@@ -11,25 +11,21 @@ import { createCspNonceMiddleware } from './common/middleware/csp-nonce.middlewa
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  
-  // Generate nonce for this server instance
+
   const csrfNonce = crypto.randomBytes(16).toString('base64');
-  
-  // Apply helmet with environment-aware security config
+
   app.use(helmet(getHelmetConfig(csrfNonce)));
-  
-  // Gzip/Brotli compression - giảm ~60% response size
+
   app.use(compression({
-    threshold: 1024, // Chỉ nén responses > 1KB
-    level: 6,        // Compression level (1-9, 6 = balance speed/size)
+    threshold: 1024, 
+    level: 6,        
     filter: (req, res) => {
-      // Không nén nếu header yêu cầu no-compression  
+
       if (req.headers['x-no-compression']) return false;
       return compression.filter(req, res);
     },
   }));
-  
-  // CSP Nonce middleware to generate per-request nonce
+
   app.use(createCspNonceMiddleware());
   app.use(cookieParser());
   app.setGlobalPrefix('api');
@@ -52,7 +48,7 @@ async function bootstrap() {
       },
     }),
   );
-  // Only enable Swagger in development
+
   if (process.env.NODE_ENV !== 'production') {
     const config = new DocumentBuilder()
       .setTitle('E-commerce API')
@@ -82,3 +78,9 @@ async function bootstrap() {
   logger.log(`Swagger docs at http://localhost:${port}/api`);
 }
 bootstrap();
+
+
+
+
+
+

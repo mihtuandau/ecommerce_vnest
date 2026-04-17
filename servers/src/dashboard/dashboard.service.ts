@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+﻿import { Injectable } from '@nestjs/common';
 import { DashboardRepository } from './dashboard.repository';
 import { ReportQueryDto } from '../report/dto/report-query.dto';
 
@@ -38,16 +38,15 @@ export class DashboardService {
       this.repository.getOrderCountByStatus('CANCELLED'),
       this.repository.getTotalCustomers(),
       this.repository.getTotalRevenue(),
-      this.repository.getRevenueByDate(new Date()), // Today
-      this.repository.getRevenueByDate(new Date(Date.now() - 86400000)), // Yesterday
-      this.repository.getNewUsersCount(new Date()), // Today
-      this.repository.getNewUsersCount(new Date(Date.now() - 86400000)), // Yesterday
-      this.repository.getOrderCountByDate(new Date()), // Today
-      this.repository.getOrderCountByDate(new Date(Date.now() - 86400000)), // Yesterday
+      this.repository.getRevenueByDate(new Date()),
+      this.repository.getRevenueByDate(new Date(Date.now() - 86400000)),
+      this.repository.getNewUsersCount(new Date()),
+      this.repository.getNewUsersCount(new Date(Date.now() - 86400000)),
+      this.repository.getOrderCountByDate(new Date()),
+      this.repository.getOrderCountByDate(new Date(Date.now() - 86400000)),
       this.repository.getLowStockCount(10),
     ]);
 
-    // Helper function to calculate percentage change
     const calculateChange = (current: number, previous: number) => {
       if (previous === 0) return current > 0 ? 100 : 0;
       return parseFloat((((current - previous) / previous) * 100).toFixed(1));
@@ -91,7 +90,6 @@ export class DashboardService {
     const now = new Date();
     const year = query.year || now.getFullYear();
 
-    // Nếu chọn xem Theo Năm (Monthly)
     if (query.year || (!query.startDate && !query.endDate)) {
       const orders = await this.repository.getMonthlyRevenue(year);
       const monthlyData = Array.from({ length: 12 }, (_, i) => ({
@@ -110,7 +108,6 @@ export class DashboardService {
         monthlyData[month].orders += 1;
       });
 
-      // Nếu không có query ngày tháng, bổ sung thêm dữ liệu ngày của tháng hiện tại
       if (!query.startDate && !query.endDate) {
         const dailyData = await this.getDailyData(
           now.getFullYear(),
@@ -128,7 +125,6 @@ export class DashboardService {
       return { type: 'monthly', data: monthlyData, year };
     }
 
-    // Nếu chọn xem Theo Khoảng Ngày (Daily)
     const startDateStr = query.startDate as string;
     const endDateStr = query.endDate as string;
 
@@ -136,7 +132,6 @@ export class DashboardService {
     const end = new Date(endDateStr);
     end.setHours(23, 59, 59, 999);
 
-    // Logic: Nếu khoảng cách > 62 ngày (approx 2 months), gộp theo THÁNG
     const diffDays = Math.ceil(
       (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24),
     );
@@ -176,11 +171,9 @@ export class DashboardService {
       };
     }
 
-    // Sử dụng Map để gộp dữ liệu theo ngày thực tế đặt đơn
     const dataMap = new Map();
 
     orders.forEach((item: any) => {
-      // 🌏 Chuyển đổi chính xác sang múi giờ VN
       const date = new Date(item.createdAt);
       const vnTime = new Date(
         date.toLocaleString('en-US', { timeZone: 'Asia/Ho_Chi_Minh' }),
@@ -189,7 +182,6 @@ export class DashboardService {
       const label = `${vnTime.getDate()}/${vnTime.getMonth() + 1}`;
 
       if (!dataMap.has(label)) {
-        // Tạo khóa tạm để sắp xếp (vẫn dùng VN Time cho chuẩn)
         const sortKey = new Date(vnTime).setHours(0, 0, 0, 0);
         dataMap.set(label, { label, revenue: 0, orders: 0, sortKey });
       }
@@ -270,7 +262,6 @@ export class DashboardService {
         existing.totalRevenue += itemRevenue;
         existing.orderCount += 1;
       } else {
-        // Tìm ảnh đại diện
         const thumbnail =
           (product as any).images?.find((img: any) => img.isThumbnail)?.url ||
           (product as any).images?.[0]?.url;
@@ -296,3 +287,9 @@ export class DashboardService {
     return topProducts;
   }
 }
+
+
+
+
+
+

@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+﻿import { Link, useNavigate } from 'react-router-dom';
 import { ArrowUpRight } from 'lucide-react';
 import StarRating from '../common/StarRating';
 
@@ -12,7 +12,7 @@ const TopRatedProducts = ({ products = [] }) => {
   return (
     <section className="py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4">
-        {/* Section Header */}
+        {}
         <div className="flex flex-col mb-12 items-center text-center">
           <span className="text-[10px] uppercase tracking-[0.4em] text-yellow-500 font-black mb-3 block">
             Customer Favorites
@@ -62,7 +62,7 @@ const TopRatedProducts = ({ products = [] }) => {
           })}
         </div>
 
-        {/* View All link */}
+        {}
         <div className="mt-12 flex justify-center">
           <Link
             to="/products?rating=4"
@@ -79,3 +79,9 @@ const TopRatedProducts = ({ products = [] }) => {
 
 
 export default TopRatedProducts;
+
+
+
+
+
+

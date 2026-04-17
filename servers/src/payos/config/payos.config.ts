@@ -1,4 +1,4 @@
-// src/payos/config/payos.config.ts
+﻿
 import { registerAs } from '@nestjs/config';
 
 export default registerAs('payos', () => ({
@@ -8,3 +8,8 @@ export default registerAs('payos', () => ({
   returnUrl: process.env.PAYOS_RETURN_URL ,
   cancelUrl: process.env.PAYOS_CANCEL_URL 
 }));
+
+
+
+
+

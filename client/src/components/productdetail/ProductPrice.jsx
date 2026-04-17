@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { Zap, Clock } from "lucide-react";
 import { formatPrice, getTimeLeft } from "../../utils/formatters";
 
@@ -26,7 +26,7 @@ const ProductPrice = ({ currentPrice, originalPrice, flashSale }) => {
 
   return (
     <div className="bg-rose-50/60 rounded-xl px-4 py-4 border border-rose-100">
-      {/* Badge */}
+      {}
       {(flashSale || hasDiscount) && (
         <div className="flex items-center gap-2 mb-2">
           <span className={`inline-flex items-center gap-1 text-white text-[9px] font-black uppercase tracking-wide px-2 py-0.5 rounded-full ${flashSale?.isFlashSale ? 'bg-rose-600' : 'bg-blue-600'}`}>
@@ -36,7 +36,7 @@ const ProductPrice = ({ currentPrice, originalPrice, flashSale }) => {
         </div>
       )}
 
-      {/* Price */}
+      {}
       <div className="flex items-baseline gap-3">
         <span className="text-3xl font-black text-rose-600 tracking-tight">
           {formatPrice(currentPrice)}
@@ -48,7 +48,7 @@ const ProductPrice = ({ currentPrice, originalPrice, flashSale }) => {
         )}
       </div>
 
-      {/* Countdown - Chỉ hiện cho Flash Sale */}
+      {}
       {flashSale?.isFlashSale && countdownTarget && timeLeft && !timeLeft.expired && (
         <div className="flex items-center gap-3 mt-3 pt-3 border-t border-rose-100">
           <div className="flex items-center gap-1.5 text-gray-400">
@@ -75,3 +75,9 @@ const ProductPrice = ({ currentPrice, originalPrice, flashSale }) => {
 };
 
 export default ProductPrice;
+
+
+
+
+
+

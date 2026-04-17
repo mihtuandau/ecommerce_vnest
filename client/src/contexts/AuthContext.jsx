@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect, useContext } from 'react';
+﻿import { createContext, useState, useEffect, useContext } from 'react';
 import authService from '../services/authService';
 import { notify } from '../utils/notification';
 
@@ -26,7 +26,6 @@ export const AuthProvider = ({ children }) => {
 
     initAuth();
 
-    // Lắng nghe sự kiện token hết hạn (từ axios interceptor)
     const handleAuthExpired = () => {
       setUser(null);
       localStorage.removeItem('access_token');
@@ -39,7 +38,7 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       const data = await authService.register(userData);
-      // Không setUser ở đây vì tài khoản chưa ACTIVE
+
       notify.success(data.message || 'Mã xác thực đã được gửi tới email của bạn');
       return data;
     } catch (error) {
@@ -135,7 +134,7 @@ export const AuthProvider = ({ children }) => {
   const isAdmin = () => user?.role === 'ADMIN';
 
   const hasPermission = (permissionName) => {
-    if (isAdmin()) return true; // Admin mặc định có tất cả quyền
+    if (isAdmin()) return true; 
     return user?.permissions?.includes(permissionName) || false;
   };
 
@@ -173,3 +172,8 @@ export const useAuth = () => {
 };
 
 export default AuthContext;
+
+
+
+
+

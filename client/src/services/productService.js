@@ -1,4 +1,4 @@
-import apiService from "./apiService";
+﻿import apiService from "./apiService";
 import { PRODUCT_ENDPOINTS } from "../config/apiConstants";
 import categoryService from "./categoryService";
 import brandService from "./brandService";
@@ -121,11 +121,11 @@ export const productService = {
 
   getRecommendations: async (productId, categoryId) => {
     try {
-      // Dùng endpoint chuyên biệt thay vì lọc client-side
+
       const response = await apiService.get(PRODUCT_ENDPOINTS.RELATED(productId), { limit: 8 });
       return response.data || response || [];
     } catch (error) {
-      // Fallback: lọc theo category nếu endpoint mới chưa có
+
       const params = { page: 1, limit: 12, categoryId: categoryId || undefined };
       const res = await apiService.get(PRODUCT_ENDPOINTS.BASE, params);
       const products = res.data || res || [];
@@ -139,3 +139,8 @@ export const productService = {
 };
 
 export default productService;
+
+
+
+
+

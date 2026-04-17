@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+﻿import { useState, useMemo } from 'react';
 import { RefreshCw } from 'lucide-react';
 import paymentService from '../../../services/paymentService';
 import { notify } from '../../../utils/notification';
@@ -80,7 +80,7 @@ const PaymentManagement = () => {
     <div className="min-h-screen bg-gray-50/50 p-6">
       <div className="mx-auto w-full max-w-[1600px] space-y-6">
         
-        {/* Header */}
+        {}
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Đối soát thanh toán</h1>
@@ -95,7 +95,7 @@ const PaymentManagement = () => {
           </button>
         </div>
 
-        {/* Quick Stats Summary */}
+        {}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-white border border-gray-100 p-5 rounded-2xl shadow-sm">
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Thanh toán thành công</p>
@@ -111,7 +111,7 @@ const PaymentManagement = () => {
           </div>
         </div>
 
-        {/* Table Content - Expandable */}
+        {}
         <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden text-sm">
           <div className="p-4 border-b border-gray-50">
             <PaymentFilters
@@ -144,3 +144,9 @@ const PaymentManagement = () => {
 };
 
 export default PaymentManagement;
+
+
+
+
+
+

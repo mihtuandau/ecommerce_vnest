@@ -1,4 +1,4 @@
-import { Controller, Post, UseInterceptors, UploadedFiles, BadRequestException } from '@nestjs/common';
+﻿import { Controller, Post, UseInterceptors, UploadedFiles, BadRequestException } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiConsumes } from '@nestjs/swagger';
 import { UploadService } from './upload.service';
@@ -20,4 +20,10 @@ export class UploadController {
     return { urls, message: 'Upload successful' };
   }
 }
+
+
+
+
+
+
 

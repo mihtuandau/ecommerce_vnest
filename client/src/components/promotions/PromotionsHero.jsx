@@ -1,16 +1,16 @@
-import React from "react";
+﻿import React from "react";
 import { Tag, ShoppingCart, Percent, Gift } from "lucide-react";
 
 const PromotionsHero = ({ voucherCount }) => {
   return (
     <section className="relative bg-gradient-to-br from-indigo-600 via-purple-600 via-45% to-pink-500 px-6 pt-[72px] pb-20 text-center overflow-hidden">
-      {/* animated orbs */}
+      {}
       <div className="absolute w-[340px] h-[340px] rounded-full bg-pink-500/30 blur-[72px] -top-20 -left-20 pointer-events-none animate-[blob_7s_ease-in-out_infinite]" />
       <div className="absolute w-[280px] h-[280px] rounded-full bg-indigo-500/40 blur-[60px] -bottom-[60px] -right-10 pointer-events-none animate-[blob_9s_ease-in-out_infinite_reverse]" />
       <div className="absolute w-[200px] h-[200px] rounded-full bg-white/5 blur-[40px] top-[30%] right-[15%] pointer-events-none" />
 
       <div className="relative z-10 max-w-[600px] mx-auto">
-        {/* badge */}
+        {}
         <div className="inline-flex items-center gap-[7px] bg-white/15 border border-white/35 rounded-full px-[18px] py-1.5 mb-[18px] backdrop-blur-md">
           <Gift size={14} className="text-amber-200" />
           <span className="text-white text-[11px] font-extrabold tracking-[0.16em] uppercase">
@@ -30,7 +30,7 @@ const PromotionsHero = ({ voucherCount }) => {
           ngay khi thanh toán!
         </p>
 
-        {/* stat chips */}
+        {}
         <div className="flex gap-2.5 justify-center flex-wrap">
           {[
             {
@@ -57,3 +57,9 @@ const PromotionsHero = ({ voucherCount }) => {
 };
 
 export default PromotionsHero;
+
+
+
+
+
+

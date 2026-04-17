@@ -1,4 +1,4 @@
-import {
+﻿import {
   Controller,
   Get,
   Post,
@@ -37,7 +37,7 @@ export class OrderController {
 
   @Post('guest')
   createGuestOrder(@Body() body: CreateOrderDto) {
-    // Guest checkout - no userId
+
     return this.orderService.create(null, body);
   }
 
@@ -70,7 +70,6 @@ export class OrderController {
     const userRole = req.user.role;
     const userPermissions = req.user.permissions || [];
 
-    // Cho phép staff xem all, khách hàng chỉ xem của mình
     const canViewAll = userRole === 'ADMIN' || userPermissions.includes('order.view');
 
     const mergedQuery = {
@@ -132,3 +131,9 @@ export class OrderController {
     return this.orderService.remove(+id);
   }
 }
+
+
+
+
+
+

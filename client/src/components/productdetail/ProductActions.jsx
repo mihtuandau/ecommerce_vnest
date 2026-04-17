@@ -1,11 +1,11 @@
-import { ShoppingCart, CreditCard, Heart } from "lucide-react";
+﻿import { ShoppingCart, CreditCard, Heart } from "lucide-react";
 
 const ProductActions = ({ onAddToCart, totalStock, isWishlisted = false, onToggleWishlist }) => {
   const isOutOfStock = totalStock === 0;
 
   return (
     <div className="flex items-center gap-2.5">
-      {/* Add to cart */}
+      {}
       <button
         onClick={() => onAddToCart(false)}
         disabled={isOutOfStock}
@@ -19,7 +19,7 @@ const ProductActions = ({ onAddToCart, totalStock, isWishlisted = false, onToggl
         Thêm vào giỏ
       </button>
 
-      {/* Buy now */}
+      {}
       <button
         onClick={() => onAddToCart(true)}
         disabled={isOutOfStock}
@@ -33,7 +33,7 @@ const ProductActions = ({ onAddToCart, totalStock, isWishlisted = false, onToggl
         {isOutOfStock ? 'Hết hàng' : 'Mua ngay'}
       </button>
 
-      {/* Wishlist */}
+      {}
       <button
         onClick={onToggleWishlist}
         className={`w-11 h-11 rounded-lg border-2 shrink-0 flex items-center justify-center transition-colors duration-150 active:scale-90 cursor-pointer ${
@@ -50,3 +50,9 @@ const ProductActions = ({ onAddToCart, totalStock, isWishlisted = false, onToggl
 };
 
 export default ProductActions;
+
+
+
+
+
+

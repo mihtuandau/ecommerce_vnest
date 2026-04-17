@@ -1,4 +1,4 @@
-
+﻿
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
@@ -33,8 +33,8 @@ import { ReportModule } from './report/report.module';
     ConfigModule.forRoot({ isGlobal: true }),  
     ScheduleModule.forRoot(),
     ThrottlerModule.forRoot([{
-      ttl: 60000, // 1 minute
-      limit: 100, // 100 requests per minute (default)
+      ttl: 60000, 
+      limit: 100, 
     }]),
     AuthModule,  
     UserModule,  
@@ -75,3 +75,8 @@ import { ReportModule } from './report/report.module';
   exports: [PrismaService],
 })
 export class AppModule {}
+
+
+
+
+

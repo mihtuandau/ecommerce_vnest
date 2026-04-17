@@ -1,7 +1,4 @@
-/**
- * Elegant page title component for customer pages
- * Centered layout with subtitle, title, divider and optional description/count
- */
+﻿
 const PageTitle = ({
   subtitle,
   title,
@@ -36,3 +33,9 @@ const PageTitle = ({
 };
 
 export default PageTitle;
+
+
+
+
+
+

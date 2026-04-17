@@ -1,4 +1,4 @@
-import { FaTag, FaCheck, FaTimes } from 'react-icons/fa';
+﻿import { FaTag, FaCheck, FaTimes } from 'react-icons/fa';
 import { formatPrice } from '../../utils/formatters';
 import Button from '../common/Button';
 import Input from '../common/Input';
@@ -62,3 +62,8 @@ const DiscountCodeSection = ({
 };
 
 export default DiscountCodeSection;
+
+
+
+
+

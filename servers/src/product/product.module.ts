@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+﻿import { Module } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { ProductController } from './product.controller';
 import { ProductRepository } from './product.repository';
@@ -12,3 +12,8 @@ import { UploadService } from '../upload/upload.service';
   exports: [ProductService],
 })
 export class ProductModule {}
+
+
+
+
+

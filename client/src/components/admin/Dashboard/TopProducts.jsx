@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import { formatPrice } from "../../../utils/formatters";
 
 const TopProducts = ({ products }) => {
@@ -20,7 +20,6 @@ const TopProducts = ({ products }) => {
             const image =
               item.product.thumbnail || "https://via.placeholder.com/60";
 
-            // Định dạng doanh thu linh hoạt
             const revenueFormatted =
               item.totalRevenue >= 1000000
                 ? (item.totalRevenue / 1000000).toLocaleString("vi-VN", {
@@ -94,3 +93,9 @@ const TopProducts = ({ products }) => {
 };
 
 export default TopProducts;
+
+
+
+
+
+

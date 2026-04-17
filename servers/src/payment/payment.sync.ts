@@ -1,4 +1,4 @@
-// src/payment/services/payment-sync.service.ts
+﻿
 import { Injectable, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
 import { PaymentRepository } from './payment.repository';
 import { PayOSService } from '../payos/payos.service';
@@ -24,15 +24,15 @@ export class PaymentSync {
     
     if (payment.status === 'PENDING') {
       try {
-        this.logger.log(`🔄 Payment ${payment.id} is PENDING, syncing with PayOS...`);
+
         const payosInfo = await this.payosService.getPaymentInfo(parseInt(orderCode, 10));
-        this.logger.log('📡 PayOS info:', { status: payosInfo.status });
+
         if (payosInfo.status === 'PAID') {
           const updatedPayment = await this.updatePaymentToSuccess(payment);
           return this.formatPaymentResponse(updatedPayment, payment.order);
         }
       } catch (error) {
-        this.logger.warn('⚠️ Failed to sync with PayOS:', error.message);
+        this.logger.warn(' Failed to sync with PayOS:', error.message);
       }
     }
     
@@ -65,7 +65,7 @@ export class PaymentSync {
     }
 
     if (payment.status !== 'PENDING') {
-      this.logger.log(`Payment ${paymentId} is already ${payment.status}, skipping sync`);
+
       return {
         message: `Payment is already ${payment.status}`,
         payment: PaymentHelper.serializePayment(payment),
@@ -73,11 +73,9 @@ export class PaymentSync {
     }
 
     try {
-      this.logger.log(`🔄 Manually syncing payment ${paymentId} with PayOS orderCode ${payment.payosOrderCode}...`);
-      
+
       const payosInfo = await this.payosService.getPaymentInfo(parseInt(payment.payosOrderCode, 10));
-      this.logger.log(`📡 PayOS info:`, { status: payosInfo.status });
-      
+
       if (payosInfo.status === 'PAID') {
         const updatedPayment = await this.updatePaymentToSuccess(payment);
         return {
@@ -97,14 +95,13 @@ export class PaymentSync {
         };
       }
     } catch (error) {
-      this.logger.error(`❌ Failed to sync payment ${paymentId} with PayOS:`, error.message);
+      this.logger.error(` Failed to sync payment ${paymentId} with PayOS:`, error.message);
       throw new BadRequestException(`Failed to sync with PayOS: ${error.message}`);
     }
   }
 
   private async updatePaymentToSuccess(payment: any) {
-    this.logger.log('✅ PayOS confirmed payment is PAID, updating status to SUCCESS...');
-    
+
     const updatedPayment = await this.repository.updateStatusWithTransaction(
       payment.id,
       'SUCCESS',
@@ -113,8 +110,7 @@ export class PaymentSync {
     );
     
     await this.cacheService.clearRelatedCaches(payment.id, payment.orderId);
-    this.logger.log('✅ Payment status synced successfully to SUCCESS');
-    
+
     return updatedPayment;
   }
 
@@ -129,3 +125,8 @@ export class PaymentSync {
     return updatedPayment;
   }
 }
+
+
+
+
+

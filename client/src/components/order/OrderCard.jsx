@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import { useNavigate } from "react-router-dom";
 import { FaClock } from "react-icons/fa";
 import { formatPrice, formatDateTime } from "../../utils/formatters";
@@ -18,7 +18,7 @@ const OrderCard = ({
 
   return (
     <div className="bg-white border border-gray-200 overflow-hidden">
-      {/* Order Header */}
+      {}
       <div className="px-6 py-4 bg-gray-50 border-b border-gray-200 flex items-center justify-between flex-wrap gap-3">
         <div className="flex items-center gap-4">
           <span className="text-sm font-normal text-gray-900">
@@ -32,7 +32,7 @@ const OrderCard = ({
         </div>
       </div>
 
-      {/* Order Content */}
+      {}
       <div className="px-6 py-5">
         <div className="space-y-4 mb-5">
           {order.items?.slice(0, 2).map((item, idx) => {
@@ -62,7 +62,7 @@ const OrderCard = ({
           )}
         </div>
 
-        {/* Order Footer */}
+        {}
         <div className="flex items-center justify-between pt-5 border-t border-gray-200 flex-wrap gap-3">
           <div>
             <span className="text-sm text-gray-600">Tổng tiền: </span>
@@ -94,3 +94,9 @@ const OrderCard = ({
 };
 
 export default OrderCard;
+
+
+
+
+
+

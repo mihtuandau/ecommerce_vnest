@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import Modal from '../../common/Modal';
 import ImageUploadSection from './ImageUploadSection';
 import productService from '../../../services/productService';
@@ -6,14 +6,14 @@ import { notify } from '../../../utils/notification';
 import Button from '../../common/Button';
 
 const ImageManagerModal = ({ product, isOpen, onClose, onUpdated }) => {
-  // Chỉ lấy ảnh chung (không thuộc variant nào)
+
   const [images, setImages] = useState(
     product?.images?.filter(img => !img.variantId) || []
   );
   const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
-    // Lọc chỉ lấy ảnh chung khi product thay đổi
+
     setImages(product?.images?.filter(img => !img.variantId) || []);
   }, [product]);
 
@@ -21,7 +21,7 @@ const ImageManagerModal = ({ product, isOpen, onClose, onUpdated }) => {
     try {
       const res = await productService.getOne(product.id);
       const p = res?.data || res;
-      // Cập nhật chỉ ảnh chung
+
       setImages(p?.images?.filter(img => !img.variantId) || []);
       if (onUpdated) onUpdated(p);
     } catch (err) {}
@@ -77,3 +77,9 @@ const ImageManagerModal = ({ product, isOpen, onClose, onUpdated }) => {
 };
 
 export default ImageManagerModal;
+
+
+
+
+
+

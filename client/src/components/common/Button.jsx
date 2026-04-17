@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 
 const Button = ({
   type = "button",
@@ -6,17 +6,16 @@ const Button = ({
   loading = false,
   fullWidth = false,
   variant = "primary",
-  size = "md", // sm, md, lg
+  size = "md", 
   icon: Icon,
   className = "",
   children,
   ...props
 }) => {
-  // Base classes - minimalist style
+
   const baseClasses =
     "inline-flex items-center justify-center font-normal focus:outline-none transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-50";
 
-  // Variants - xanh lá cho user, admin override bằng CSS
   const variants = {
     primary:
       "btn-primary bg-black text-white hover:bg-neutral-800 uppercase tracking-widest font-bold",
@@ -33,7 +32,6 @@ const Button = ({
     danger: "bg-white border border-gray-200 text-red-600 hover:bg-red-50",
   };
 
-  // Sizes - consistent spacing
   const sizes = {
     sm: "px-3 py-1.5 text-xs",
     md: "px-4 py-2.5 text-sm",
@@ -80,3 +78,9 @@ const Button = ({
 };
 
 export default Button;
+
+
+
+
+
+

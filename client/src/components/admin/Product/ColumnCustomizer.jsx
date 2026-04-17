@@ -1,4 +1,4 @@
-import { Button, Drawer, Checkbox, Space, Divider, Tooltip } from 'antd';
+﻿import { Button, Drawer, Checkbox, Space, Divider, Tooltip } from 'antd';
 import { SettingOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 
@@ -24,14 +24,14 @@ const ColumnCustomizer = ({ visibleColumns, onColumnsChange }) => {
     const updated = visibleColumns.includes(key)
       ? visibleColumns.filter(k => k !== key)
       : [...visibleColumns, key];
-    // Đảm bảo cột "Chọn", "Sản phẩm", "Thao tác" luôn hiển thị
+
     const mandatoryColumns = ['select', 'product', 'actions'];
     const filtered = updated.filter(k => !mandatoryColumns.includes(k));
     onColumnsChange([...mandatoryColumns, ...filtered]);
   };
 
   const handleResetColumns = () => {
-    // Reset về mặc định
+
     onColumnsChange([
       'select',
       'product',
@@ -116,3 +116,9 @@ const ColumnCustomizer = ({ visibleColumns, onColumnsChange }) => {
 };
 
 export default ColumnCustomizer;
+
+
+
+
+
+

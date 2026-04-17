@@ -1,446 +1,61 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { Order, OrderStatus, Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class OrderRepository {
-  private readonly logger = new Logger(OrderRepository.name);
   constructor(private prisma: PrismaService) {}
 
-  async create(data: Prisma.OrderCreateInput): Promise<Order> {
-    return this.prisma.order.create({
-      data,
-      include: {
-        orderItems: {
-          include: {
-            variant: {
-              include: { product: true, images: true },
-            },
-          },
-        },
-        payment: true,
-        user: {
-          select: {
-            id: true,
-            email: true,
-            name: true,
-          }
-        },
-      },
-    });
-  }
+  private baseInclude = {
+    orderItems: { include: { variant: { include: { product: { include: { images: { select: { url: true }, take: 1 } } }, images: { select: { url: true } } } } } },
+    user: { select: { id: true, email: true, name: true } }, payment: true, address: true, shippingMethod: true
+  };
 
-  /**
-   * Find order by unique code
-   */
-  async findByCode(orderCode: string): Promise<Order | null> {
-    return this.prisma.order.findUnique({
-      where: { orderCode },
-      include: {
-        orderItems: {
-          include: {
-            variant: {
-              include: { 
-                product: { 
-                  include: { 
-                    images: { 
-                      select: { 
-                        url: true 
-                      } 
-                    } 
-                  } 
-                }, 
-                images: { 
-                  select: { 
-                    url: true 
-                  } 
-                }
-              },
-            },
-          },
-        },
-        user: {
-          select: {
-            id: true,
-            email: true,
-            name: true,
-          }
-        },
-        payment: true,
-        address: true,
-        shippingMethod: true,
-      },
-    });
-  }
+  async create(data: Prisma.OrderCreateInput) { return this.prisma.order.create({ data, include: this.baseInclude }); }
+  async findByCode(orderCode: string) { return this.prisma.order.findUnique({ where: { orderCode }, include: this.baseInclude }); }
+  async findById(id: number) { return this.prisma.order.findUnique({ where: { id }, include: this.baseInclude }); }
+  async findAll(where: Prisma.OrderWhereInput, skip: number, take: number) { return this.prisma.order.findMany({ where, skip, take, orderBy: { createdAt: 'desc' }, include: { user: { select: { id: true, name: true, email: true } }, payment: true } }); }
+  async count(where: Prisma.OrderWhereInput) { return this.prisma.order.count({ where }); }
+  async update(id: number, data: Prisma.OrderUpdateInput) { return this.prisma.order.update({ where: { id }, data, include: this.baseInclude }); }
+  async delete(id: number) { return this.prisma.order.delete({ where: { id } }); }
 
-  /**
-   * Find order by ID with relations
-   */
-  async findById(id: number) {
-    return this.prisma.order.findUnique({
-      where: { id },
-      include: {
-        orderItems: {
-          include: {
-            variant: {
-              include: { 
-                product: { 
-                  include: { 
-                    images: { 
-                      select: { 
-                        url: true 
-                      } 
-                    } 
-                  } 
-                }, 
-                images: { 
-                  select: { 
-                    url: true 
-                  } 
-                }
-              },
-            },
-          },
-        },
-        user: {
-          select: {
-            id: true,
-            email: true,
-            name: true,
-          }
-        },
-        payment: true,
-        address: true,
-        shippingMethod: true,
-      },
-    });
-  }
-
-  /**
-   * Find all orders with filters
-   */
-  async findAll(where: Prisma.OrderWhereInput, skip: number, take: number) {
-    return this.prisma.order.findMany({
-      where,
-      skip,
-      take,
-      orderBy: { createdAt: 'desc' },
-      include: {
-        user: { select: { id: true, name: true, email: true } },
-        payment: true, // Include payment info for admin
-        orderItems: {
-          include: {
-            variant: {
-              include: { 
-                product: { 
-                  select: { 
-                    id: true,
-                    name: true,
-                    images: { 
-                      select: { 
-                        url: true 
-                      },
-                      take: 1 
-                    } 
-                  } 
-                } 
-              },
-            },
-          },
-        },
-      },
-    });
-  }
-
-  /**
-   * Count orders with filters
-   */
-  async count(where: Prisma.OrderWhereInput): Promise<number> {
-    return this.prisma.order.count({ where });
-  }
-
-  /**
-   * Update order
-   */
-  async update(id: number, data: Prisma.OrderUpdateInput): Promise<Order> {
-    return this.prisma.order.update({
-      where: { id },
-      data,
-      include: {
-        orderItems: {
-          include: {
-            variant: { include: { product: true } },
-          },
-        },
-        user: {
-          select: {
-            id: true,
-            email: true,
-            name: true,
-          }
-        },
-      },
-    });
-  }
-
-  /**
-   * Delete order
-   */
-  async delete(id: number): Promise<Order> {
-    return this.prisma.order.delete({
-      where: { id },
-    });
-  }
-
-  /**
-   * Find product variants by IDs
-   */
-  async findVariantsByIds(variantIds: number[]) {
-    return this.prisma.productVariant.findMany({
-      where: { id: { in: variantIds } },
-    });
-  }
-
-  /**
-   * Tính giá sau auto-apply discount (flash sale / per-product) cho từng variantId.
-   * Trả về Map<variantId, giá đã giảm> — chỉ chứa những variant CÓ discount.
-   */
-  async findAutoApplyPricesForVariants(variantIds: number[]): Promise<Map<number, number>> {
+  async findAutoApplyPricesForVariants(vIds: number[]) {
     const now = new Date();
-    this.logger.log(`🏷️ Recalculating auto-apply discounts for: ${variantIds.join(',')}`);
-
-    // Fetch variants with product and category info
-    const variants = await this.prisma.productVariant.findMany({
-      where: { id: { in: variantIds } },
-      include: {
-        product: {
-          select: { id: true, categoryId: true, basePrice: true }
-        }
-      }
-    });
-
-    const productInfo = variants.map(v => ({
-      variantId: v.id,
-      productId: v.productId,
-      categoryId: v.product.categoryId,
-      basePrice: v.price // using variant price as base
-    }));
-
-    // Fetch all active discounts that could apply automatically
+    const variants = await this.prisma.productVariant.findMany({ where: { id: { in: vIds } }, include: { product: { select: { categoryId: true } } } });
     const discounts = await this.prisma.discount.findMany({
-      where: {
-        isActive: true,
-        startDate: { lte: now },
-        AND: [
-           { OR: [{ endDate: null }, { endDate: { gte: now } }] },
-           { OR: [{ code: "" }, { isFlashSale: true }] }
-        ]
-      },
-      include: {
-        applicableToProducts: true,
-        applicableToCategories: true,
-      },
-      orderBy: [
-        { percentage: 'desc' },
-        { fixedAmount: 'desc' },
-        { isFlashSale: 'desc' },
-      ],
+      where: { isActive: true, startDate: { lte: now }, AND: [{ OR: [{ endDate: null }, { endDate: { gte: now } }] }, { OR: [{ code: "" }, { isFlashSale: true }] }] },
+      include: { applicableToProducts: true, applicableToCategories: true }, orderBy: [{ percentage: 'desc' }, { fixedAmount: 'desc' }]
     });
-
-    this.logger.log(`🏷️ Found ${discounts.length} potential auto-apply discounts`);
-
     const result = new Map<number, number>();
-
-    for (const info of productInfo) {
-      // Find the first (best) discount that applies to this product
-      const bestDiscount = discounts.find(d => {
-        const hasProductRestriction = d.applicableToProducts.length > 0;
-        const hasCategoryRestriction = d.applicableToCategories.length > 0;
-
-        // If no restrictions, it applies to everything
-        if (!hasProductRestriction && !hasCategoryRestriction) return true;
-
-        // Check product restriction
-        if (hasProductRestriction && d.applicableToProducts.some(ap => ap.productId === info.productId)) {
-          return true;
-        }
-
-        // Check category restriction
-        if (hasCategoryRestriction && d.applicableToCategories.some(ac => ac.categoryId === info.categoryId)) {
-          return true;
-        }
-
-        return false;
-      });
-
-      if (bestDiscount) {
-        let discountedPrice = info.basePrice;
-        if (bestDiscount.percentage) {
-          discountedPrice = Math.round(info.basePrice * (1 - bestDiscount.percentage / 100));
-        } else if (bestDiscount.fixedAmount) {
-          discountedPrice = Math.max(0, info.basePrice - bestDiscount.fixedAmount);
-        }
-        
-        if (discountedPrice < info.basePrice) {
-          this.logger.log(`✅ Applied ${bestDiscount.code || 'Auto-Discount'} to Variant ${info.variantId}: ${info.basePrice} -> ${discountedPrice}`);
-          result.set(info.variantId, discountedPrice);
-        }
+    for (const v of variants) {
+      const best = discounts.find(d => !d.applicableToProducts.length && !d.applicableToCategories.length || d.applicableToProducts.some(ap => ap.productId === v.productId) || d.applicableToCategories.some(ac => ac.categoryId === v.product.categoryId));
+      if (best) {
+        const p = best.percentage ? Math.round(v.price * (1 - best.percentage / 100)) : Math.max(0, v.price - (best.fixedAmount || 0));
+        if (p < v.price) result.set(v.id, p);
       }
     }
-
     return result;
   }
 
-  /**
-   * Find discount by code
-   */
-  async findDiscountByCode(code: string) {
-    return this.prisma.discount.findUnique({
-      where: { code: code.toUpperCase() },
-    });
-  }
+  async findDiscountByCode(code: string) { return this.prisma.discount.findUnique({ where: { code: code.toUpperCase() } }); }
+  async countOrdersUsingDiscount(discountId: number) { return this.prisma.order.count({ where: { discountId, status: { not: 'CANCELLED' as any } } }); }
+  async findGuestOrderByCodeAndContact(code: string, contact: string) { return this.prisma.order.findFirst({ where: { orderCode: code, OR: [{ guestEmail: contact }, { guestPhone: contact }], userId: null }, include: this.baseInclude }); }
+  async incrementProductSoldCount(productId: number, quantity: number) { return this.prisma.product.update({ where: { id: productId }, data: { soldCount: { increment: quantity } } }); }
+  async clearUserCart(userId: number) { await this.prisma.cartItem.deleteMany({ where: { cart: { userId } } }); }
 
-  async countOrdersUsingDiscount(discountId: number): Promise<number> {
-    return this.prisma.order.count({
-      where: {
-        discountId,
-        status: { not: 'CANCELLED' as any },
-      },
-    });
-  }
-
-  /**
-   * Clear user cart
-   */
-  async clearUserCart(userId: number): Promise<void> {
-    await this.prisma.cartItem.deleteMany({
-      where: { cart: { userId } },
-    });
-  }
-
-  /**
-   * Find guest order by code and contact
-   */
-  async findGuestOrder(orderCode: string, contact: string) {
-    return this.prisma.order.findFirst({
-      where: {
-        orderCode,
-        OR: [{ guestEmail: contact }, { guestPhone: contact }],
-        userId: null,
-      },
-      include: {
-        orderItems: {
-          include: {
-            variant: {
-              include: { product: true, images: true },
-            },
-          },
-        },
-        payment: true,
-      },
-    });
-  }
-
-  /**
-   * Alias for findGuestOrder - used by cancel functionality
-   */
-  async findGuestOrderByCodeAndContact(orderCode: string, contact: string) {
-    return this.findGuestOrder(orderCode, contact);
-  }
-
-  /**
-   * Apply discount to order
-   */
-  async applyDiscount(orderId: number, discountId: number) {
-    return this.prisma.order.update({
-      where: { id: orderId },
-      data: { discountId },
-      include: {
-        discount: true,
-        orderItems: true,
-      },
-    });
-  }
-
-  /**
-   * Increment product sold count - with safety check
-   */
-  async incrementProductSoldCount(productId: number, quantity: number) {
-    return await this.prisma.product.update({
-      where: { id: productId },
-      data: { soldCount: { increment: quantity } },
-      select: { id: true, name: true, soldCount: true },
-    });
-  }
-
-  /**
-   * Create order with atomic stock check + decrement (prevents overselling)
-   */
-  async createOrderTransactional(
-    orderData: Prisma.OrderCreateInput,
-    items: Array<{ variantId: number; quantity: number }>,
-  ) {
+  async createOrderTransactional(orderData: Prisma.OrderCreateInput, items: any[]) {
     return this.prisma.$transaction(async (tx) => {
-      // 1. Check stock for all items atomically inside transaction
       for (const item of items) {
-        const variant = await tx.productVariant.findUnique({
-          where: { id: item.variantId },
-          select: { id: true, stock: true, isActive: true },
-        });
-        if (!variant || !variant.isActive) {
-          throw new Error(
-            `Sản phẩm ID ${item.variantId} không tồn tại hoặc đã ngừng kinh doanh`,
-          );
-        }
-        if (variant.stock < item.quantity) {
-          throw new Error(
-            `Sản phẩm ID ${item.variantId} không đủ hàng (còn ${variant.stock}, cần ${item.quantity})`,
-          );
-        }
+        const v = await tx.productVariant.findUnique({ where: { id: item.variantId }, select: { stock: true, isActive: true } });
+        if (!v || !v.isActive || v.stock < item.quantity) throw new Error(`Sản phẩm lội hoặc hết hàng`);
+        await tx.productVariant.update({ where: { id: item.variantId }, data: { stock: { decrement: item.quantity } } });
       }
-
-      // 2. Decrement stock for all items (reserve inventory)
-      await Promise.all(
-        items.map((item) =>
-          tx.productVariant.update({
-            where: { id: item.variantId },
-            data: { stock: { decrement: item.quantity } },
-          }),
-        ),
-      );
-
-      // 3. Create order
-      return tx.order.create({
-        data: orderData,
-        include: {
-          orderItems: {
-            include: {
-              variant: { include: { product: true, images: true } },
-            },
-          },
-          payment: true,
-          user: { select: { id: true, email: true, name: true } },
-        },
-      });
+      return tx.order.create({ data: orderData, include: this.baseInclude });
     });
   }
 
-  /**
-   * Restore stock when order is cancelled
-   */
-  async restoreOrderStock(orderId: number): Promise<void> {
-    const order = await this.prisma.order.findUnique({
-      where: { id: orderId },
-      select: { orderItems: { select: { variantId: true, quantity: true } } },
-    });
-    if (!order || !order.orderItems.length) return;
-    await this.prisma.$transaction(
-      order.orderItems.map((item) =>
-        this.prisma.productVariant.update({
-          where: { id: item.variantId },
-          data: { stock: { increment: item.quantity } },
-        }),
-      ),
-    );
+  async restoreOrderStock(id: number) {
+    const o = await this.prisma.order.findUnique({ where: { id }, select: { orderItems: { select: { variantId: true, quantity: true } } } });
+    if (o) await this.prisma.$transaction(o.orderItems.map(i => this.prisma.productVariant.update({ where: { id: i.variantId }, data: { stock: { increment: i.quantity } } })));
   }
 }

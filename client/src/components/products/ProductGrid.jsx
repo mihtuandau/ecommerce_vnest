@@ -1,4 +1,4 @@
-import ProductCard from "./ProductCard";
+﻿import ProductCard from "./ProductCard";
 import { Link } from "react-router-dom";
 import { FaEye } from "react-icons/fa";
 import Button from "../common/Button";
@@ -71,7 +71,7 @@ const ProductGrid = ({
   if (!products || products.length === 0) {
     return (
       <div className="text-center py-20 border border-gray-200 rounded-lg bg-white">
-        <div className="text-6xl text-gray-300 mb-4">📦</div>
+        <div className="text-6xl text-gray-300 mb-4"></div>
         <h3 className="text-xl font-light text-gray-900 mb-2">
           Không tìm thấy sản phẩm
         </h3>
@@ -80,7 +80,6 @@ const ProductGrid = ({
     );
   }
 
-  // Sử dụng ProductCard cho tất cả view modes
   return (
     <div className={getGridClass()}>
       {products.map((product) => (
@@ -91,3 +90,9 @@ const ProductGrid = ({
 };
 
 export default ProductGrid;
+
+
+
+
+
+

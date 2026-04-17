@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+﻿import { useMemo } from 'react';
 
 export const useCheckoutCalculations = (cartItems, appliedDiscount) => {
   return useMemo(() => {
@@ -12,7 +12,7 @@ export const useCheckoutCalculations = (cartItems, appliedDiscount) => {
     let discount = 0;
     if (appliedDiscount) {
       if (appliedDiscount.discountType === 'PERCENTAGE') {
-        // Áp dụng % giảm giá cho Tạm tính (không tính phí vận chuyển)
+
         discount = Math.round((subtotal * appliedDiscount.discountValue) / 100);
         if (appliedDiscount.maxDiscountAmount || appliedDiscount.maxDiscount) {
           const max = appliedDiscount.maxDiscountAmount || appliedDiscount.maxDiscount;
@@ -22,8 +22,7 @@ export const useCheckoutCalculations = (cartItems, appliedDiscount) => {
         discount = appliedDiscount.discountValue;
       }
     }
-    
-    // Đảm bảo giảm giá không vượt quá tạm tính
+
     discount = Math.min(discount, subtotal);
     
     const total = subtotal + shipping - discount;
@@ -32,3 +31,8 @@ export const useCheckoutCalculations = (cartItems, appliedDiscount) => {
     return { subtotal, shipping, discount, total, itemCount };
   }, [cartItems, appliedDiscount]);
 };
+
+
+
+
+

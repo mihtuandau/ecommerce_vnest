@@ -1,4 +1,4 @@
-import {
+﻿import {
   WebSocketGateway,
   SubscribeMessage,
   MessageBody,
@@ -31,8 +31,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   async handleConnection(client: Socket) {
     try {
-      // 🔐 Lấy token từ handshake (thường FE gửi qua auth: { token }) 
-      // HOẶC từ headers Authorization
+
       const token = client.handshake.auth?.token || client.handshake.headers?.authorization?.split(' ')[1];
       
       if (!token) {
@@ -44,17 +43,16 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         secret: process.env.JWT_SECRET,
       });
 
-      // Lưu user vào data socket để dùng cho các event sau
       client.data.user = payload; 
-      this.logger.log(`📱 User ${payload.sub} connected to Chat WebSocket`);
+
     } catch (err) {
-      this.logger.error(`❌ Chat connection failed: ${err.message}`);
+      this.logger.error(` Chat connection failed: ${err.message}`);
       client.disconnect();
     }
   }
 
   handleDisconnect(client: Socket) {
-    this.logger.log(`🔌 Client disconnected: ${client.id}`);
+
   }
 
   @SubscribeMessage('joinRoom')
@@ -65,19 +63,18 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const user = client.data.user;
     if (!user) return { error: 'Unauthorized' };
 
-    // 🛡️ SECURITY: Kiểm tra quyền tham gia phòng
+    
     const isStaff = ['ADMIN', 'KHO', 'BAN_HANG'].includes(user.role?.toUpperCase());
     const roomUserId = data.roomId.replace('room_', ''); 
-    
-    // Nếu không phải staff, chỉ cho phép vào phòng của chính mình
+
     if (!isStaff && String(roomUserId) !== String(user.sub)) {
-      this.logger.warn(`⚠️ User ${user.sub} tried to join unauthorized room: ${data.roomId}`);
+      this.logger.warn(` User ${user.sub} tried to join unauthorized room: ${data.roomId}`);
       return { error: 'Unauthorized room access' };
     }
 
     client.join(data.roomId);
     const messages = await this.chatService.getMessages(data.roomId);
-    this.logger.log(`✅ User ${user.sub} joined room ${data.roomId}`);
+
     return messages;
   }
 
@@ -89,7 +86,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const user = client.data.user;
     if (!user) return { error: 'Unauthorized' };
 
-    // 🛡️ SECURITY: Đảm bảo chỉ gửi tin vào phòng mình đã tham gia hoặc có quyền
     const isStaff = ['ADMIN', 'KHO', 'BAN_HANG'].includes(user.role?.toUpperCase());
     const roomUserId = data.roomId.replace('room_', '');
 
@@ -99,11 +95,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     const savedMessage = await this.chatService.createMessage(
       data.roomId,
-      user.sub, // Sử dụng ID từ Token thay vì client gửi lên
+      user.sub, 
       data.message,
     );
 
-    // Broadcast to room
     this.server.to(data.roomId).emit('newMessage', savedMessage);
     
     return savedMessage;
@@ -130,8 +125,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (!user) return;
 
     client.to(data.roomId).emit('userTyping', {
-      userName: user.name || 'Ai đó', // Tên lấy từ TOKEN (nếu có trong payload)
+      userName: user.name || 'Ai đó', 
       isTyping: data.isTyping,
     });
   }
 }
+
+
+
+
+
+

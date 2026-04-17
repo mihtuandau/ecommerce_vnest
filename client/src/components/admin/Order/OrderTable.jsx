@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import {
   EyeOutlined,
   SyncOutlined,
@@ -129,7 +129,7 @@ const OrderTable = ({
     try {
       await onSyncPayment(paymentId);
     } catch (error) {
-      console.error("Sync payment error:", error);
+
     } finally {
       setSyncingPaymentId(null);
     }
@@ -268,3 +268,9 @@ const OrderTable = ({
 };
 
 export default OrderTable;
+
+
+
+
+
+

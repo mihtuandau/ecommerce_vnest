@@ -1,11 +1,8 @@
-// src/components/common/PageHeader.jsx
+﻿
 import { Button } from 'antd';
 import { ArrowLeftOutlined, ReloadOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 
-/**
- * Reusable page header component
- */
 export const PageHeader = ({
   title,
   subtitle,
@@ -66,3 +63,9 @@ export const PageHeader = ({
     </div>
   );
 };
+
+
+
+
+
+

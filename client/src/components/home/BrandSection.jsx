@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+﻿import { Link } from 'react-router-dom';
 
 const rawBrands = [
   { id: 1, name: 'Nike', logo: 'https://upload.wikimedia.org/wikipedia/commons/a/a6/Logo_NIKE.svg' },
@@ -11,14 +11,13 @@ const rawBrands = [
   { id: 8, name: 'Dell', logo: 'https://upload.wikimedia.org/wikipedia/commons/4/48/Dell_Logo.svg' },
 ];
 
-// Duplicate for infinite effect
 const brands = [...rawBrands, ...rawBrands];
 
 const BrandSection = () => {
   return (
     <section className="py-20 bg-white overflow-hidden">
       <div className="max-w-7xl mx-auto px-4">
-        {/* Section Header */}
+        {}
         <div className="flex flex-col mb-12 items-center text-center">
           <span className="text-[10px] uppercase tracking-[0.4em] text-orange-500 font-black mb-3 block">
             Partner Brands
@@ -29,7 +28,7 @@ const BrandSection = () => {
           <div className="h-1 w-20 bg-[#ff4d15] rounded-full"></div>
         </div>
         
-        {/* Infinite Marquee Wrapper */}
+        {}
         <div className="marquee-container relative py-4">
           <div className="animate-marquee flex gap-8 items-center">
             {brands.map((brand, idx) => (
@@ -52,3 +51,9 @@ const BrandSection = () => {
 };
 
 export default BrandSection;
+
+
+
+
+
+

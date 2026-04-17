@@ -1,4 +1,4 @@
-// src/user/user.service.ts
+﻿
 import { Injectable } from '@nestjs/common';
 import { UserRepository } from './user.repository';
 import { Prisma, User, UserStatus } from '@prisma/client';
@@ -26,14 +26,14 @@ export class UserService {
   }
 
   async activateUser(id: number): Promise<User> {
-    console.log(`🚀 Activating user with ID: ${id}`);
+
     const updatedUser = await this.repository.update(id, {
       status: UserStatus.ACTIVE,
       verificationCode: null,
       verificationExpires: null,
-      deletedAt: null, // Khôi phục nếu tài khoản đã từng bị xóa mềm
+      deletedAt: null, 
     });
-    console.log(`✅ User ${id} status updated to: ${updatedUser.status}`);
+
     return updatedUser;
   }
 
@@ -43,7 +43,7 @@ export class UserService {
       verificationExpires: data.verificationExpires,
       name: data.name,
       password: data.password,
-      status: UserStatus.PENDING, // Khóa tạm thời cho đến khi nhập mã mới thành công
+      status: UserStatus.PENDING, 
     });
   }
 
@@ -79,7 +79,7 @@ export class UserService {
       return null;
     }
     
-    // 🛡️ Lọc sạch các trường nhạy cảm
+    
     const { 
       password, 
       verificationCode, 
@@ -139,9 +139,7 @@ export class UserService {
     });
   }
 
-  /**
-   * Lấy danh sách tên các quyền hạn (permissions) của một Role cụ thể
-   */
+  
   async getPermissionsByRole(role: string): Promise<string[]> {
     return this.repository.getPermissionsByRole(role as any);
   }
@@ -158,12 +156,9 @@ export class UserService {
     return this.repository.updateRolePermissions(role as any, permissionIds);
   }
 
-  // Tự động dọn dẹp các tài khoản PENDING đã hết hạn mã xác thực (chống spam)
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async handleCleanupExpiredUsers() {
-    console.log('🧹 [Cleanup] Starting cleanup of expired PENDING users...');
-    
-    // Xóa những user PENDING có mã hết hạn
+
     const deleteResult = await this.repository.deleteMany({
       status: UserStatus.PENDING,
       verificationExpires: {
@@ -172,9 +167,14 @@ export class UserService {
     });
 
     if (deleteResult.count > 0) {
-      console.log(`✅ [Cleanup] Removed ${deleteResult.count} expired PENDING accounts.`);
+
     } else {
-      console.log('ℹ️ [Cleanup] No expired PENDING accounts found.');
+
     }
   }
 }
+
+
+
+
+

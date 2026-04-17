@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import {
   Package,
   Users,
@@ -36,7 +36,7 @@ const AdminDashboardPage = () => {
     const loadData = async () => {
       try {
         setLoading(true);
-        // Tính toán 30 ngày qua làm mặc định
+
         const now = new Date();
         const start = new Date();
         start.setDate(now.getDate() - 30);
@@ -80,14 +80,14 @@ const AdminDashboardPage = () => {
     type: revenue?.type,
     year: revenue?.year,
     month: revenue?.month,
-    // Nếu là dữ liệu chi tiết cho một khoảng hoặc năm
+
     data:
       revenue?.data?.map((item) => ({
         label: item.label,
         revenue: item.revenue,
         orders: item.orders || 0,
       })) || [],
-    // Nếu là dữ liệu tổng hợp mặc định
+
     monthly: revenue?.monthly || [],
     daily: revenue?.daily || [],
   };
@@ -130,7 +130,7 @@ const AdminDashboardPage = () => {
     <div className="p-5">
       <div className="mx-auto w-full max-w-[1600px]">
         <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {/* Card 1: Doanh thu hôm nay */}
+          {}
           <div className="flex flex-col justify-between rounded-2xl border border-gray-100 bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.04)] transition-all duration-300 hover:shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
             <div className="mb-5 flex items-start justify-between">
               <div>
@@ -172,7 +172,7 @@ const AdminDashboardPage = () => {
             </div>
           </div>
 
-          {/* Card 2: Đơn hàng mới */}
+          {}
           <div className="flex flex-col justify-between rounded-2xl border border-gray-100 bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.04)] transition-all duration-300 hover:shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
             <div className="mb-5 flex items-start justify-between">
               <div>
@@ -206,7 +206,7 @@ const AdminDashboardPage = () => {
             </div>
           </div>
 
-          {/* Card 3: Khách hàng mới */}
+          {}
           <div className="flex flex-col justify-between rounded-2xl border border-gray-100 bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.04)] transition-all duration-300 hover:shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
             <div className="mb-5 flex items-start justify-between">
               <div>
@@ -242,7 +242,7 @@ const AdminDashboardPage = () => {
             </div>
           </div>
 
-          {/* Card 4: Sản phẩm sắp hết */}
+          {}
           <div className="flex flex-col justify-between rounded-2xl border border-gray-100 bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.04)] transition-all duration-300 hover:shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
             <div className="mb-5 flex items-start justify-between">
               <div>
@@ -261,7 +261,7 @@ const AdminDashboardPage = () => {
           </div>
         </div>
 
-        {/* Row 2: SalesChart (left ~65%) + OrderStatusChart (right ~35%) */}
+        {}
         <div className="mb-5 grid grid-cols-1 gap-4 xl:grid-cols-3">
           <div className="xl:col-span-2">
             <SalesChart
@@ -274,7 +274,7 @@ const AdminDashboardPage = () => {
           </div>
         </div>
 
-        {/* Row 3: TopProducts (left ~35%) + RecentOrders (right ~65%) */}
+        {}
         <div className="mb-5 grid grid-cols-1 gap-4 xl:grid-cols-3">
           <div className="xl:col-span-1">
             <TopProducts products={topProducts} />
@@ -289,3 +289,9 @@ const AdminDashboardPage = () => {
 };
 
 export default AdminDashboardPage;
+
+
+
+
+
+

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+﻿import React, { useState, useEffect } from "react";
 import { Card, Tabs, Checkbox, Button, Space, Divider, Row, Col, Alert, Spin, Tag } from "antd";
 import { ShieldCheck, Save, RefreshCw } from "lucide-react";
 import authService from "../../../services/authService";
@@ -40,7 +40,7 @@ const RoleManagement = () => {
   }, []);
 
   const handleTogglePermission = (role, permissionId) => {
-    // Chỉ cập nhật ở local state
+
     const isChecked = roleMappings.some(rm => rm.role === role && rm.permissionId === permissionId);
     
     if (isChecked) {
@@ -63,8 +63,7 @@ const RoleManagement = () => {
         role: selectedRole,
         permissionIds
       });
-      
-      // Nếu role vừa cập nhật trùng với role của user hiện tại, refresh lại thông tin quyền hạn
+
       if (user?.role === selectedRole) {
         await refreshUser();
       }
@@ -77,7 +76,6 @@ const RoleManagement = () => {
     }
   };
 
-  // Nhóm các quyền theo tiền tố (ví dụ: product.*, order.*)
   const groupedPermissions = permissions.reduce((acc, perm) => {
     const group = perm.name.split('.')[0] || 'Khác';
     if (!acc[group]) acc[group] = [];
@@ -173,3 +171,9 @@ const RoleManagement = () => {
 };
 
 export default RoleManagement;
+
+
+
+
+
+

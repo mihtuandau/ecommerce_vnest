@@ -1,4 +1,4 @@
-import { formatPrice } from "../../utils/formatters";
+﻿import { formatPrice } from "../../utils/formatters";
 
 const OrderPriceSummary = ({ order }) => {
   return (
@@ -45,3 +45,9 @@ const OrderPriceSummary = ({ order }) => {
 };
 
 export default OrderPriceSummary;
+
+
+
+
+
+

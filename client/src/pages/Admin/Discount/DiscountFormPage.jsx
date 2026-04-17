@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+﻿import { useNavigate } from 'react-router-dom';
 import { Save, RefreshCw } from 'lucide-react';
 import Loading from '../../../components/common/Loading';
 import useDiscountForm from '../../../hooks/useDiscountForm';
@@ -43,7 +43,7 @@ const DiscountFormPage = () => {
         <div className="space-y-6">
           <fieldset disabled={isSubmitting} className="space-y-6 disabled:opacity-60">
 
-            {/* Cấu hình ưu đãi */}
+            {}
             <DiscountBasicFields
               formData={formData}
               isEdit={isEdit}
@@ -60,7 +60,7 @@ const DiscountFormPage = () => {
               onImageRemove={handleImageRemove}
             />
 
-            {/* Sản phẩm áp dụng */}
+            {}
             <div className="rounded-lg border border-gray-200 bg-white overflow-hidden">
               <div className="px-4 py-2.5 border-b border-gray-100 bg-gray-50/60">
                 <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
@@ -89,7 +89,7 @@ const DiscountFormPage = () => {
               </div>
             </div>
 
-            {/* Action Bar */}
+            {}
             <div className="rounded-lg border border-gray-200 bg-white p-4 flex items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <span className="text-xs font-semibold text-gray-500">Kích hoạt:</span>
@@ -135,3 +135,9 @@ const DiscountFormPage = () => {
 };
 
 export default DiscountFormPage;
+
+
+
+
+
+

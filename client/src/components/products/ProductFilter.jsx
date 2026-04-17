@@ -247,12 +247,6 @@ const ProductFilter = ({
     );
   }
 
-  const stockOptions = [
-    { value: "", label: "Tất cả" },
-    { value: "inStock", label: "Còn hàng" },
-    { value: "outOfStock", label: "Hết hàng" },
-  ];
-
   return (
     <div className="space-y-4">
       <Accordion title="Sắp xếp" defaultOpen={true}>
@@ -300,7 +294,7 @@ const ProductFilter = ({
             </label>
             {categories.map((cat) => (
               <label
-                key={cat.name}
+                key={cat.id}
                 className="flex items-center gap-3 cursor-pointer hover:bg-gray-50 p-2.5 rounded-lg transition-all duration-200 group"
               >
                 <input

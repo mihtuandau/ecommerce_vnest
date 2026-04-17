@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import {
   LineChart,
   Line,
@@ -12,14 +12,13 @@ import { formatPrice } from "../../../utils/formatters";
 
 const SalesChart = ({ revenueData, onFilterChange }) => {
   const formatCurrency = formatPrice;
-  const [timeRange, setTimeRange] = useState("30_days"); // Hiển thị text nút đang active
+  const [timeRange, setTimeRange] = useState("30_days"); 
 
-  // Dữ liệu hiển thị lấy từ revenueData.data nếu có, không thì lấy từ monthly/daily mặc định
   const getChartData = () => {
     if (revenueData.type === "daily" || revenueData.type === "monthly") {
       return revenueData.data;
     }
-    // Mặc định ban đầu (summary) - Backend đã trả về label rồi
+
     return timeRange === "năm" ? revenueData.monthly : revenueData.daily;
   };
 
@@ -163,3 +162,9 @@ const SalesChart = ({ revenueData, onFilterChange }) => {
 };
 
 export default SalesChart;
+
+
+
+
+
+

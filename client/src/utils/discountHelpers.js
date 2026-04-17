@@ -1,4 +1,4 @@
-import { formatPrice, formatDateTime, formatDate } from './formatters';
+﻿import { formatPrice, formatDateTime, formatDate } from './formatters';
 
 export const formatCurrency = formatPrice;
 
@@ -43,3 +43,9 @@ export const calculateDiscountAmount = (discount, orderTotal) => {
   }
   return 0;
 };
+
+
+
+
+
+

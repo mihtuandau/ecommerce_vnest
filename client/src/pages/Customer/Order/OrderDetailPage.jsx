@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaClock, FaBox } from "react-icons/fa";
 import { notify } from "../../../utils/notification";
@@ -43,7 +43,7 @@ const OrderDetailPage = () => {
 
       setOrder(transformedOrder);
     } catch (error) {
-      console.error("Order load error:", error);
+
       notify.error("Không tìm thấy hoặc không thể tải thông tin đơn hàng");
       navigate("/orders");
     } finally {
@@ -148,3 +148,9 @@ const OrderDetailPage = () => {
 };
 
 export default OrderDetailPage;
+
+
+
+
+
+

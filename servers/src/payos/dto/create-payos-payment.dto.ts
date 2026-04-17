@@ -1,4 +1,4 @@
-// src/payos/dto/create-payos-payment.dto.ts
+﻿
 import { IsNumber, IsString, IsOptional, IsArray } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
@@ -64,3 +64,8 @@ export class CreatePayOSPaymentDto {
   @IsString()
   cancelUrl?: string;
 }
+
+
+
+
+

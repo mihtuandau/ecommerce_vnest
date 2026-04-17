@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+﻿import { Link } from 'react-router-dom';
 import { FaTrash, FaMinus, FaPlus, FaTimes } from 'react-icons/fa';
 import { Zap } from 'lucide-react';
 import { useRef, useEffect } from 'react';
@@ -6,8 +6,7 @@ import { computeDiscountFromMap } from '../../utils/formatters';
 
 const CartItem = ({ groupedProduct, selectedItems, onToggleItem, onUpdateQuantity, onRemove, onRemoveAll, formatPrice, discountMap }) => {
   const { productId, productName, productImage, variants, totalQuantity, totalPrice, hasFlashSale } = groupedProduct;
-  
-  // Refs cho checkbox
+
   const checkboxRef = useRef(null);
   
   const allVariantsSelected = variants.every(v => selectedItems.has(v.variantId));
@@ -42,8 +41,7 @@ const CartItem = ({ groupedProduct, selectedItems, onToggleItem, onUpdateQuantit
       onUpdateQuantity(variantId, 1, 0);
       return;
     }
-    
-    // Tìm variant để lấy stock
+
     const variant = variants.find(v => v.variantId === variantId);
     const maxStock = variant?.stock || 999;
     
@@ -120,11 +118,11 @@ const CartItem = ({ groupedProduct, selectedItems, onToggleItem, onUpdateQuantit
             </button>
           </div>
 
-          {/* Variants List */}
+          {}
           <div className="space-y-3">
             {variants.map((variant) => (
               <div key={`variant-${variant.variantId}`} className="flex items-start gap-3 pb-3 border-b border-gray-100 last:border-0 last:pb-0">
-                {/* Checkbox */}
+                {}
                 <div className="flex-shrink-0 pt-1">
                   <input
                     type="checkbox"
@@ -136,7 +134,7 @@ const CartItem = ({ groupedProduct, selectedItems, onToggleItem, onUpdateQuantit
                   />
                 </div>
                 
-                {/* Variant Info */}
+                {}
                 <div className="flex-1">
                   <div className="flex flex-wrap gap-2 text-xs mb-2">
                     {variant.size && (
@@ -198,9 +196,7 @@ const CartItem = ({ groupedProduct, selectedItems, onToggleItem, onUpdateQuantit
                         const originalPrice = variant.price;
                         const flashPrice = computeDiscountFromMap(productId, originalPrice, discountMap);
                         const hasDiscount = flashPrice !== originalPrice;
-                        
-                        console.log(`Product ${productId}: original=${originalPrice}, flash=${flashPrice}, discountMap=`, discountMap?.[Number(productId)]);
-                        
+
                         if (hasDiscount) {
                           return (
                             <>
@@ -267,3 +263,8 @@ const CartItem = ({ groupedProduct, selectedItems, onToggleItem, onUpdateQuantit
 };
 
 export default CartItem;
+
+
+
+
+

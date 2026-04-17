@@ -1,5 +1,5 @@
-import { IsString, IsNumber, IsPositive, IsOptional, IsInt, IsEnum } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';  // Thêm import cho Swagger
+﻿import { IsString, IsNumber, IsPositive, IsOptional, IsInt, IsEnum } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';  
 
 export class UpdateProductDto {
   @ApiProperty({ 
@@ -95,3 +95,8 @@ export class UpdateProductDto {
   @IsString()
   metaDesc?: string;
 }
+
+
+
+
+

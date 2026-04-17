@@ -1,4 +1,4 @@
-import apiService from "./apiService";
+﻿import apiService from "./apiService";
 import { AUTH_ENDPOINTS, USER_ENDPOINTS } from "../config/apiConstants";
 
 const authService = {
@@ -30,7 +30,7 @@ const authService = {
 
   login: async (credentials) => {
     const response = await apiService.post(AUTH_ENDPOINTS.LOGIN, credentials);
-    // Lưu token vào localStorage nếu có
+
     if (response.access_token) {
       localStorage.setItem('access_token', response.access_token);
     }
@@ -42,7 +42,7 @@ const authService = {
       await apiService.post(AUTH_ENDPOINTS.LOGOUT);
     } catch (error) {
     } finally {
-      localStorage.removeItem('access_token'); // Xóa token
+      localStorage.removeItem('access_token'); 
     }
   },
 
@@ -78,7 +78,7 @@ const authService = {
   },
 
   googleLogin: () => {
-    // Redirect to backend Google OAuth endpoint
+
     const baseUrl = import.meta.env.VITE_API_URL.replace('/api', '');
     window.location.href = `${baseUrl}/api${AUTH_ENDPOINTS.GOOGLE_LOGIN}`;
   },
@@ -97,3 +97,9 @@ const authService = {
 };
 
 export default authService;
+
+
+
+
+
+

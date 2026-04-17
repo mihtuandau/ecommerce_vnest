@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { CheckCircle, XCircle, AlertCircle, Info } from 'lucide-react';
 
 const Alert = ({ type = 'info', message, onClose }) => {
@@ -51,3 +51,8 @@ const Alert = ({ type = 'info', message, onClose }) => {
 };
 
 export default Alert;
+
+
+
+
+

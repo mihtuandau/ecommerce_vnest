@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+﻿import { Link } from 'react-router-dom';
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { FaHeart, FaEye } from 'react-icons/fa';
 import { Zap } from 'lucide-react';
@@ -51,8 +51,7 @@ const ProductCard = ({ product, viewMode = 'grid-4' }) => {
   const minHeightPrice = isGrid4 ? 'min-h-[20px]' : isGrid3 ? 'min-h-[24px]' : isGrid2 ? 'min-h-[28px]' : 'min-h-[20px]';
 
   const productImage = image || (images && images.length > 0 ? images[0].url : '/placeholder-product.jpg');
-  
-  // Get available variant with stock (useMemo for performance)
+
   const availableVariant = useMemo(() => {
     if (!product.variants || product.variants.length === 0) return null;
     const withStock = product.variants.find(v => v.stock > 0);
@@ -74,7 +73,6 @@ const ProductCard = ({ product, viewMode = 'grid-4' }) => {
   const productOriginalPrice = originalPrice;
   const discountPercent = calculateDiscountPercent(productOriginalPrice, productPrice) || discount || 0;
 
-  // Auto-apply discount check từ map (cả flash sale và discount thường)
   const productDiscount = discountMap[Number(id)] || null;
   const isInFlashSale = Boolean(productDiscount);
   const flashSalePercent = productDiscount?.percentage || null;
@@ -139,7 +137,7 @@ const ProductCard = ({ product, viewMode = 'grid-4' }) => {
       {isInFlashSale ? (
         <div className={`absolute top-3 left-3 z-10 ${isList ? 'top-2 left-2' : ''}`}>
           <span className={`flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-white ${productDiscount?.isFlashSale ? 'bg-red-500' : 'bg-blue-600'} ${isList ? 'px-2 py-0.5 text-[10px]' : ''}`}>
-            🔥{flashSalePercent ? ` -${flashSalePercent}%` : ''}
+            {flashSalePercent ? ` -${flashSalePercent}%` : ''}
           </span>
 
 
@@ -147,7 +145,7 @@ const ProductCard = ({ product, viewMode = 'grid-4' }) => {
       ) : (badge || discountPercent > 0) && (
         <div className={`absolute top-3 left-3 z-10 ${isList ? 'top-2 left-2' : ''}`}>
           <span className={`flex items-center gap-1 px-2.5 py-1 text-xs font-black bg-red-600 text-white shadow-lg shadow-red-100 ${isList ? 'px-2 py-0.5 text-[10px]' : ''}`}>
-            🔥 {badge || `-${discountPercent}%`}
+             {badge || `-${discountPercent}%`}
           </span>
         </div>
       )}
@@ -272,3 +270,8 @@ const ProductCard = ({ product, viewMode = 'grid-4' }) => {
 };
 
 export default ProductCard;
+
+
+
+
+

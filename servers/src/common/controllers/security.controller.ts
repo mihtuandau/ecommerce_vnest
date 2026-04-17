@@ -1,23 +1,13 @@
-import { Controller, Get, Res, UseGuards } from '@nestjs/common';
+﻿import { Controller, Get, Res, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import type { Response } from 'express';
 import { JwtAuthGuard } from '../guards/auth.guard';
 
-/**
- * Security Testing Controller
- * - Check security headers
- * - Verify CORS configuration
- * - Test rate limiting
- * 
- * Only available in development mode
- */
+
 @ApiTags('Security Testing (Dev Only)')
 @Controller('security')
 export class SecurityController {
-  /**
-   * Get all response headers (for testing)
-   * Shows what security headers are being sent
-   */
+  
   @Get('/headers')
   @ApiOperation({
     summary: 'Get all security headers (Development Only)',
@@ -26,13 +16,13 @@ Returns all security-related response headers.
 Use this to verify your CSP, CORS, and other security configurations.
 
 Expected headers:
-- ✅ content-security-policy
-- ✅ x-frame-options: DENY
-- ✅ x-content-type-options: nosniff
-- ✅ strict-transport-security
-- ✅ cross-origin-opener-policy
-- ✅ cross-origin-embedder-policy
-- ✅ referrer-policy
+-  content-security-policy
+-  x-frame-options: DENY
+-  x-content-type-options: nosniff
+-  strict-transport-security
+-  cross-origin-opener-policy
+-  cross-origin-embedder-policy
+-  referrer-policy
     `,
   })
   getHeaders(@Res() res: Response) {
@@ -51,9 +41,7 @@ Expected headers:
     });
   }
 
-  /**
-   * Test auth endpoint with security headers
-   */
+  
   @Get('/test-auth')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
@@ -77,17 +65,20 @@ Use this to verify your authentication and rate limiting is working.
     });
   }
 
-  /**
-   * CSP violation report endpoint (optional)
-   */
+  
   @Get('/csp-report')
   @ApiOperation({
     summary: 'CSP Violation Report Endpoint',
     description: 'Browser will POST CSP violations here if configured',
   })
   cspReport(@Res() res: Response) {
-    // In production, log this to your monitoring service
-    console.warn('[CSP Violation] Check browser console for details');
+
     return res.status(204).send();
   }
 }
+
+
+
+
+
+

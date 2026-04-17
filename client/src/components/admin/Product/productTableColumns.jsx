@@ -1,4 +1,4 @@
-import { Checkbox, Dropdown, Button } from 'antd';
+﻿import { Checkbox, Dropdown, Button } from 'antd';
 import { MoreOutlined } from '@ant-design/icons';
 import { formatPrice, formatDate } from '../../../utils/formatters';
 import { Star, AlertTriangle } from 'lucide-react';
@@ -198,3 +198,9 @@ export const getProductTableColumns = ({
     ),
   },
 ];
+
+
+
+
+
+

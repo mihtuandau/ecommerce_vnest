@@ -1,4 +1,4 @@
-// src/payos/payos-webhook.controller.ts
+﻿
 import { 
   Controller, 
   Post,
@@ -12,10 +12,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { PayOSService } from './payos.service';
 import { PayOSWebhookDto } from './dto';
 
-/**
- * Public webhook controller for PayOS - không cần authentication
- * Dành cho PayOS gọi callback và public payment verification
- */
+
 @ApiTags('PayOS Webhooks')
 @Controller('webhooks/payos')
 export class PayOSWebhookController {
@@ -27,16 +24,21 @@ export class PayOSWebhookController {
   @ApiResponse({ status: 200, description: 'Webhook được xử lý thành công' })
   @ApiResponse({ status: 400, description: 'Dữ liệu webhook không hợp lệ' })
   async handlePayOSWebhook(@Body() webhookData: PayOSWebhookDto) {
-    console.log('📥 PayOS Webhook received:', JSON.stringify(webhookData, null, 2));
+
     try {
       const result = await this.payosService.verifyPaymentWebhookData(webhookData);
-      console.log('✅ PayOS Webhook processed successfully:', result);
+
       return { success: true, data: result };
     } catch (error) {
-      console.error('❌ PayOS Webhook error:', error);
+
       return { success: false, error: error.message };
     }
   }
 
 
 }
+
+
+
+
+

@@ -1,4 +1,4 @@
-import { IsEnum } from 'class-validator';
+﻿import { IsEnum } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { PaymentStatus } from '@prisma/client';
 
@@ -7,3 +7,8 @@ export class UpdatePaymentStatusDto {
   @IsEnum(PaymentStatus)
   status: PaymentStatus;
 }
+
+
+
+
+

@@ -1,4 +1,4 @@
-import { formatPrice } from '../../utils/formatters';
+﻿import { formatPrice } from '../../utils/formatters';
 
 const PriceSummary = ({ itemCount, subtotal, shipping, discount, flashSaleDiscount, total }) => {
   return (
@@ -18,7 +18,7 @@ const PriceSummary = ({ itemCount, subtotal, shipping, discount, flashSaleDiscou
       {flashSaleDiscount > 0 && (
         <div className="flex justify-between text-sm">
           <span className="text-red-600 flex items-center gap-1">
-            ⚡ Flash Sale
+             Flash Sale
           </span>
           <span className="text-red-600 font-medium">-{formatPrice(flashSaleDiscount)}</span>
         </div>
@@ -46,3 +46,8 @@ const PriceSummary = ({ itemCount, subtotal, shipping, discount, flashSaleDiscou
 };
 
 export default PriceSummary;
+
+
+
+
+

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+﻿import { useMemo, useState } from 'react';
 import { Card, Table } from 'antd';
 
 const ReportTable = ({ productTableData }) => {
@@ -88,3 +88,9 @@ const ReportTable = ({ productTableData }) => {
 };
 
 export default ReportTable;
+
+
+
+
+
+

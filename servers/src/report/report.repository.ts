@@ -1,13 +1,10 @@
-import { Injectable } from '@nestjs/common';
+﻿import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class ReportRepository {
   constructor(private prisma: PrismaService) {}
 
-  /**
-   * Lấy danh sách đơn hàng thô để gộp nhóm ở Service
-   */
   async getRawOrdersForRevenue(startDate: Date, endDate: Date) {
     return this.prisma.order.findMany({
       where: {
@@ -112,7 +109,6 @@ export class ReportRepository {
             },
           },
         }),
-        // Returning customers
         this.prisma.$queryRaw<Array<{ count: number }>>`
           SELECT COUNT(DISTINCT o."userId")::int as count
           FROM "Order" o
@@ -124,7 +120,6 @@ export class ReportRepository {
           AND o."createdAt" <= ${endDate}
           AND o.status != 'CANCELLED'
         `.then((result) => result[0]?.count || 0),
-        // Total orders
         this.prisma.order.count({
           where: {
             createdAt: {
@@ -189,3 +184,9 @@ export class ReportRepository {
     };
   }
 }
+
+
+
+
+
+

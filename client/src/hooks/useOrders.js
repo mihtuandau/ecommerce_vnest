@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+﻿import { useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import orderService from '../services/orderService';
 import { notify } from '../utils/notification';
@@ -8,7 +8,7 @@ export const useOrders = (params = {}, filters = {}) => {
     queryKey: ['orders', params],
     queryFn: async () => {
       const response = await orderService.getOrders(params);
-      // Normalize response to always return array
+
       if (Array.isArray(response)) return response;
       if (response?.data && Array.isArray(response.data)) return response.data;
       if (response?.orders && Array.isArray(response.orders)) return response.orders;
@@ -116,3 +116,9 @@ export const useCancelOrder = () => {
     },
   });
 };
+
+
+
+
+
+
