@@ -84,18 +84,20 @@ const Header = () => {
   };
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200 transition-transform duration-300 ease-in-out ${showHeader ? "translate-y-0" : "-translate-y-full"}`}>
+    <header className={`sticky top-0 z-50 bg-white border-b border-gray-200 transition-transform duration-300 ease-in-out ${showHeader ? "translate-y-0" : "-translate-y-full"}`}>
       <TopBar />
 
       {/* Mobile Bar */}
       <div className="lg:hidden">
-        <div className="max-w-7xl mx-auto px-4 py-4 border-b border-gray-100 flex items-center justify-between">
-          <Link to="/" className="flex-shrink-0"><img src="/logoMT.png" alt="Logo" className="h-10 w-auto object-contain" /></Link>
-          <div className="flex items-center gap-5">
-            <button className="text-gray-600 p-1" onClick={() => setMobileSearchOpen(!mobileSearchOpen)}><FaSearch size={18} /></button>
-            <Link to="/wishlist" className="relative text-gray-600 p-1"><FaHeart size={20} /><Badge count={wishlistCount} /></Link>
-            <button onClick={() => setCartDrawerOpen(true)} className="relative text-gray-600 p-1"><FaShoppingBag size={18} /><Badge count={cartCount} /></button>
-            <button className="text-gray-700 p-1" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>{mobileMenuOpen ? <FaTimes size={22} /> : <FaBars size={22} />}</button>
+        <div className="max-w-7xl mx-auto px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+          <Link to="/" className="flex-shrink-0 animate-fadeIn">
+            <img src="/logoMT.png" alt="Logo" className="h-9 w-auto object-contain" />
+          </Link>
+          <div className="flex items-center gap-4">
+            <button className="text-gray-600 p-1.5 hover:bg-gray-50 rounded-full transition-colors" onClick={() => setMobileSearchOpen(!mobileSearchOpen)}><FaSearch size={18} /></button>
+            <Link to="/wishlist" className="relative text-gray-600 p-1.5 hover:bg-gray-50 rounded-full transition-colors"><FaHeart size={18} /><Badge count={wishlistCount} /></Link>
+            <button onClick={() => setCartDrawerOpen(true)} className="relative text-gray-600 p-1.5 hover:bg-gray-50 rounded-full transition-colors"><FaShoppingBag size={18} /><Badge count={cartCount} /></button>
+            <button className="text-gray-900 p-1.5 hover:bg-gray-50 rounded-full transition-colors" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>{mobileMenuOpen ? <FaTimes size={20} /> : <FaBars size={20} />}</button>
           </div>
         </div>
         {mobileSearchOpen && (
@@ -124,7 +126,7 @@ const Header = () => {
 
       {/* Desktop Bar */}
       <div className="hidden lg:block bg-white/95 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-3 border-b border-gray-50/50 flex items-center gap-8">
+        <div className="max-w-7xl mx-auto px-6 py-3 border-b border-gray-50/50 flex items-center gap-8">
           <Link to="/" className="flex-shrink-0 transition-transform hover:scale-105 duration-300"><img src="/logoMT.png" alt="Logo" className="h-12 w-auto object-contain" /></Link>
           <div className="flex-1 max-w-2xl mx-auto" ref={desktopSearchRef}>
             <SearchInput 
@@ -146,7 +148,7 @@ const Header = () => {
           </div>
           <UserActions user={user} logout={logout} wishlistCount={wishlistCount} cartCount={cartCount} setCartDrawerOpen={setCartDrawerOpen} userDropdownOpen={userDropdownOpen} setUserDropdownOpen={setUserDropdownOpen} userDropdownRef={userDropdownRef} />
         </div>
-        <div className="max-w-7xl mx-auto px-4"><DesktopNav navLinks={NAV_LINKS} categories={categories} /></div>
+        <div className="max-w-7xl mx-auto px-6"><DesktopNav navLinks={NAV_LINKS} categories={categories} /></div>
       </div>
 
       <CartDrawer isOpen={cartDrawerOpen} onClose={() => setCartDrawerOpen(false)} />

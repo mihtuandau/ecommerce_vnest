@@ -14,7 +14,7 @@ export class OrderRepository {
   async create(data: Prisma.OrderCreateInput) { return this.prisma.order.create({ data, include: this.baseInclude }); }
   async findByCode(orderCode: string) { return this.prisma.order.findUnique({ where: { orderCode }, include: this.baseInclude }); }
   async findById(id: number) { return this.prisma.order.findUnique({ where: { id }, include: this.baseInclude }); }
-  async findAll(where: Prisma.OrderWhereInput, skip: number, take: number) { return this.prisma.order.findMany({ where, skip, take, orderBy: { createdAt: 'desc' }, include: { user: { select: { id: true, name: true, email: true } }, payment: true } }); }
+  async findAll(where: Prisma.OrderWhereInput, skip: number, take: number) { return this.prisma.order.findMany({ where, skip, take, orderBy: { createdAt: 'desc' }, include: this.baseInclude }); }
   async count(where: Prisma.OrderWhereInput) { return this.prisma.order.count({ where }); }
   async update(id: number, data: Prisma.OrderUpdateInput) { return this.prisma.order.update({ where: { id }, data, include: this.baseInclude }); }
   async delete(id: number) { return this.prisma.order.delete({ where: { id } }); }
@@ -41,14 +41,26 @@ export class OrderRepository {
   async countOrdersUsingDiscount(discountId: number) { return this.prisma.order.count({ where: { discountId, status: { not: 'CANCELLED' as any } } }); }
   async findGuestOrderByCodeAndContact(code: string, contact: string) { return this.prisma.order.findFirst({ where: { orderCode: code, OR: [{ guestEmail: contact }, { guestPhone: contact }], userId: null }, include: this.baseInclude }); }
   async incrementProductSoldCount(productId: number, quantity: number) { return this.prisma.product.update({ where: { id: productId }, data: { soldCount: { increment: quantity } } }); }
+  async decrementProductSoldCount(productId: number, quantity: number) { return this.prisma.product.update({ where: { id: productId }, data: { soldCount: { decrement: quantity } } }); }
   async clearUserCart(userId: number) { await this.prisma.cartItem.deleteMany({ where: { cart: { userId } } }); }
 
   async createOrderTransactional(orderData: Prisma.OrderCreateInput, items: any[]) {
     return this.prisma.$transaction(async (tx) => {
       for (const item of items) {
-        const v = await tx.productVariant.findUnique({ where: { id: item.variantId }, select: { stock: true, isActive: true } });
-        if (!v || !v.isActive || v.stock < item.quantity) throw new Error(`Sản phẩm lội hoặc hết hàng`);
-        await tx.productVariant.update({ where: { id: item.variantId }, data: { stock: { decrement: item.quantity } } });
+        // Atomic conditional update: chỉ trừ stock khi stock >= quantity
+        // Ngăn race condition: 2 user đặt cùng lúc, chỉ 1 người thành công
+        const result = await tx.productVariant.updateMany({
+          where: {
+            id: item.variantId,
+            isActive: true,
+            stock: { gte: item.quantity },
+          },
+          data: { stock: { decrement: item.quantity } },
+        });
+
+        if (result.count === 0) {
+          throw new Error('Sản phẩm hết hàng hoặc không đủ số lượng');
+        }
       }
       return tx.order.create({ data: orderData, include: this.baseInclude });
     });

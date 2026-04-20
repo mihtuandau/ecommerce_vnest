@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import Layout from '../../../components/layouts/Layout';
 import Breadcrumb from '../../../components/common/Breadcrumb';
@@ -165,10 +165,10 @@ const CategoryPage = () => {
     return (
       <Layout>
         <div className="container mx-auto px-4 py-16 text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          <h1 className="text-2xl font-semibold text-slate-800 mb-4">
             Không tìm thấy danh mục
           </h1>
-          <a href="/products" className="text-black hover:underline">>
+          <a href="/products" className="text-slate-800 hover:underline">>
             Xem tất cả sản phẩm
           </a>
         </div>
@@ -178,21 +178,14 @@ const CategoryPage = () => {
 
   return (
     <Layout>
-      <div className="bg-white min-h-screen pb-8">
-        <div className="max-w-7xl mx-auto px-4">
-          <Breadcrumb items={[
-            { label: 'Sản Phẩm', path: '/products' },
-            { label: category?.name || 'Danh mục' }
-          ]} />
-
-          {category && (
-            <PageTitle
-              subtitle="Danh mục"
-              title={category.name.toUpperCase()}
-              description={category.description}
-              className="mt-6"
-            />
-          )}
+      <div className="bg-white min-h-screen pb-12 text-slate-800">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="py-2">
+            <Breadcrumb items={[
+              { label: 'Sản Phẩm', path: '/products' },
+              { label: category?.name || 'Danh mục' }
+            ]} />
+          </div>
 
           <div className="sticky top-16 z-10 mb-6">
             <div className="p-3">

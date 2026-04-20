@@ -1,9 +1,9 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Zap, Clock } from "lucide-react";
 import { formatPrice, getTimeLeft } from "../../utils/formatters";
 
 const Seg = ({ val }) => (
-  <span className="inline-block w-8 text-center bg-gray-900 text-white text-xs font-black rounded-md py-0.5 tabular-nums">
+  <span className="inline-block w-8 text-center bg-black text-white text-xs font-semibold rounded-md py-0.5 tabular-nums">
     {String(val).padStart(2, '0')}
   </span>
 );
@@ -29,7 +29,7 @@ const ProductPrice = ({ currentPrice, originalPrice, flashSale }) => {
       {}
       {(flashSale || hasDiscount) && (
         <div className="flex items-center gap-2 mb-2">
-          <span className={`inline-flex items-center gap-1 text-white text-[9px] font-black uppercase tracking-wide px-2 py-0.5 rounded-full ${flashSale?.isFlashSale ? 'bg-rose-600' : 'bg-blue-600'}`}>
+          <span className={`inline-flex items-center gap-1 text-white text-[9px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full ${flashSale?.isFlashSale ? 'bg-rose-600' : 'bg-black'}`}>
             {flashSale?.isFlashSale && <Zap size={8} className="fill-white" />}
             {flashSale?.isFlashSale ? 'Flash Sale' : 'Ưu đãi'} &nbsp;·&nbsp; -{discountPercent}%
           </span>
@@ -38,7 +38,7 @@ const ProductPrice = ({ currentPrice, originalPrice, flashSale }) => {
 
       {}
       <div className="flex items-baseline gap-3">
-        <span className="text-3xl font-black text-rose-600 tracking-tight">
+        <span className="text-3xl font-semibold text-rose-600 tracking-tight">
           {formatPrice(currentPrice)}
         </span>
         {hasDiscount && (
@@ -53,19 +53,19 @@ const ProductPrice = ({ currentPrice, originalPrice, flashSale }) => {
         <div className="flex items-center gap-3 mt-3 pt-3 border-t border-rose-100">
           <div className="flex items-center gap-1.5 text-gray-400">
             <Clock size={13} className="text-rose-400" />
-            <span className="text-[10px] font-bold uppercase tracking-wider">Kết thúc sau</span>
+            <span className="text-[10px] font-semibold uppercase tracking-wider">Kết thúc sau</span>
           </div>
           <div className="flex items-center gap-1 text-gray-700">
             {timeLeft.days > 0 && (
               <>
                 <Seg val={timeLeft.days} />
-                <span className="text-rose-600 font-bold text-[10px] uppercase ml-0.5 mr-1">Ngày</span>
+                <span className="text-rose-600 font-semibold text-[10px] uppercase ml-0.5 mr-1">Ngày</span>
               </>
             )}
             <Seg val={timeLeft.hours} />
-            <span className="text-gray-400 font-bold text-xs">:</span>
+            <span className="text-gray-400 font-semibold text-xs">:</span>
             <Seg val={timeLeft.minutes} />
-            <span className="text-gray-400 font-bold text-xs">:</span>
+            <span className="text-gray-400 font-semibold text-xs">:</span>
             <Seg val={timeLeft.seconds} />
           </div>
         </div>

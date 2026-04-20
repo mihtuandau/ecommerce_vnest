@@ -31,13 +31,6 @@ export class DiscountService {
     const existing = await this.repository.findByCode(dto.code);
     if (existing) throw new BadRequestException('Mã giảm giá đã tồn tại');
 
-    if (dto.isFlashSale) {
-      const activeFlash = await this.repository.findActiveFlashSale();
-      if (activeFlash) {
-        throw new BadRequestException(`Đã có flash sale đang chạy: "${activeFlash.code}"`);
-      }
-    }
-
     const createData: any = {
       ...dto,
       code: dto.code.toUpperCase(),
@@ -50,6 +43,12 @@ export class DiscountService {
       createData.applicableToProducts = {
         create: dto.applicableToProducts.map(productId => ({ productId })),
       };
+    }
+
+    // Flash Sale: dùng Serializable transaction để ngăn race condition
+    // 2 admin tạo cùng lúc → chỉ 1 cái thành công
+    if (dto.isFlashSale) {
+      return this.repository.createFlashSaleTransactional(createData);
     }
 
     return this.repository.create(createData);

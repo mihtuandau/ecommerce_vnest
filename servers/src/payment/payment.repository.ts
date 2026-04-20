@@ -1,4 +1,4 @@
-﻿import { Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Payment, Prisma } from '@prisma/client';
 
@@ -19,8 +19,14 @@ export class PaymentRepository {
       include: {
         order: { 
           include: { 
+            user: true,
+            address: true,
             orderItems: { 
-              include: { variant: true } 
+              include: { 
+                variant: {
+                  include: { product: true }
+                } 
+              } 
             } 
           } 
         },
@@ -28,17 +34,13 @@ export class PaymentRepository {
     });
   }
 
-  
   async findByOrderId(orderId: number) {
     return this.prisma.payment.findUnique({
       where: { orderId },
-      include: {
-        order: true,
-      },
+      include: { order: true },
     });
   }
 
-  
   async findAll(where: Prisma.PaymentWhereInput, skip: number, take: number) {
     return this.prisma.payment.findMany({
       where,
@@ -46,31 +48,11 @@ export class PaymentRepository {
       take,
       include: {
         order: {
-          select: {
-            id: true,
-            orderCode: true,
-            subtotal: true,
-            taxAmount: true,
-            discountAmount: true,
-            total: true,
-            status: true,
-            guestEmail: true,
-            guestPhone: true,
-            shippingSnapshot: true,
-            createdAt: true,
-            user: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
-              },
-            },
-            orderItems: {
-              select: {
-                productName: true,
-              },
-            },
-          },
+          include: {
+            user: true,
+            orderItems: true,
+            address: true,
+          }
         },
       },
       orderBy: { createdAt: 'desc' },
@@ -103,18 +85,14 @@ export class PaymentRepository {
         if (currentOrder && currentOrder.status === 'PENDING') {
           await prisma.order.update({
             where: { id: orderId },
-            data: {
-              status: 'PROCESSING',
-            },
+            data: { status: 'PROCESSING' },
           });
         }
-
       }
 
       return paymentUpdated;
     });
   }
-
   
   async findOrderById(orderId: number) {
     return this.prisma.order.findUnique({
@@ -124,26 +102,21 @@ export class PaymentRepository {
         address: true,
         orderItems: {
           include: {
-            variant: {
-              include: {
-                product: true,
-              },
-            },
+            variant: { include: { product: true } },
           },
         },
       },
     });
   }
 
-  async findByPayosOrderCode(orderCode: string) {
+  async findByOrderCode(orderCode: string) {
     return this.prisma.payment.findFirst({
-      where: { payosOrderCode: orderCode },
+      where: { order: { orderCode: orderCode } },
       include: {
         order: {
           include: {
-            orderItems: {
-              include: { variant: true },
-            },
+            user: true,
+            orderItems: { include: { variant: true } },
           },
         },
       },
@@ -157,10 +130,12 @@ export class PaymentRepository {
       include: { order: true },
     });
   }
+
+  async incrementVariantStock(variantId: number, quantity: number) {
+    return this.prisma.productVariant.update({ where: { id: variantId }, data: { stock: { increment: quantity } } });
+  }
+
+  async decrementProductSoldCount(productId: number, quantity: number) {
+    return this.prisma.product.update({ where: { id: productId }, data: { soldCount: { decrement: quantity } } });
+  }
 }
-
-
-
-
-
-

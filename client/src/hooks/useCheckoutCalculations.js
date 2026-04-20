@@ -1,4 +1,4 @@
-﻿import { useMemo } from 'react';
+import { useMemo } from 'react';
 
 export const useCheckoutCalculations = (cartItems, appliedDiscount) => {
   return useMemo(() => {
@@ -7,7 +7,7 @@ export const useCheckoutCalculations = (cartItems, appliedDiscount) => {
       return sum + (Number(price) * item.quantity);
     }, 0);
     
-    const shipping = subtotal > 500000 ? 0 : 30000;
+    const shipping = subtotal >= 500000 ? 0 : 30000;
 
     let discount = 0;
     if (appliedDiscount) {

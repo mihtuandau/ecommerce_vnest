@@ -1,4 +1,4 @@
-﻿import { 
+import { 
   Controller, 
   Get, 
   Post, 
@@ -7,9 +7,7 @@
   Param, 
   Query, 
   UseGuards, 
-  BadRequestException,
-  HttpCode,
-  HttpStatus,
+  Req,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
@@ -20,6 +18,7 @@ import { PaymentService } from './payment.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentStatusDto } from './dto/update-payment-status.dto';
 import { QueryPaymentDto } from './dto/query-payment.dto';
+import { Request } from 'express';
 
 @ApiTags('Payments')
 @Controller('payments')
@@ -28,36 +27,37 @@ export class PaymentController {
 
   @Post()
   @Throttle({ default: { limit: 10, ttl: 60000 } }) 
-  @ApiOperation({ summary: 'Tạo payment mới và lấy payment link (nếu là PayOS) - Public endpoint cho guest checkout' })
-  create(@Body() createPaymentDto: CreatePaymentDto) {
-    return this.paymentService.create(createPaymentDto);
+  @ApiOperation({ summary: 'Tạo payment mới và lấy link thanh toán VNPay' })
+  create(@Body() createPaymentDto: CreatePaymentDto, @Req() req: Request) {
+    const ipAddr = req.ip || req.headers['x-forwarded-for'] || '127.0.0.1';
+    return this.paymentService.create(createPaymentDto, ipAddr as string);
   }
 
+  @Get('vnpay-return')
+  @ApiOperation({ summary: 'Xử lý kết quả trả về từ VNPay (Return URL)' })
+  async handleVNPayReturn(@Query() query: any) {
+    return this.paymentService.handleVNPayReturn(query);
+  }
+
+  // Khôi phục endpoint sync để không lỗi Frontend Admin
   @Post(':id/sync')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   @ApiBearerAuth('Authorization')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Đồng bộ trạng thái thanh toán với PayOS (Admin only)' })
+  @ApiOperation({ summary: 'Đồng bộ trạng thái (Tính năng tương thích ngược)' })
   async syncPaymentStatus(@Param('id') id: string) {
-    return this.paymentService.syncPaymentWithPayOS(+id);
+    // Với VNPay, trạng thái sẽ cập nhật qua Return URL hoặc IPN, 
+    // ở đây trả về dữ liệu hiện tại để tránh lỗi UI
+    return this.paymentService.findOne(+id);
   }
 
+  // Khôi phục endpoint cancel để không lỗi Frontend Admin
   @Post(':id/cancel')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('Authorization')
-  @ApiOperation({ summary: 'Hủy payment link PayOS' })
-  async cancelPayOSPayment(
-    @Param('id') id: string,
-    @Body('reason') reason?: string,
-  ) {
-    return this.paymentService.cancelPayOSPayment(+id, reason);
-  }
-
-  @Get('payos/order/:orderCode')
-  @ApiOperation({ summary: 'Lấy payment và thông tin đơn hàng theo PayOS order code' })
-  async getPaymentByOrderCode(@Param('orderCode') orderCode: string) {
-    return this.paymentService.findByPayosOrderCode(orderCode);
+  @ApiOperation({ summary: 'Hủy thanh toán' })
+  async cancelPayment(@Param('id') id: string) {
+    return this.paymentService.updateStatus(+id, { status: 'CANCELLED' });
   }
 
   @Get(':id')
@@ -86,10 +86,3 @@ export class PaymentController {
     return this.paymentService.findAll(query);
   }
 }
-
-
-
-
-
-
-

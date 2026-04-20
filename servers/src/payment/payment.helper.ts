@@ -1,71 +1,26 @@
-﻿
-import { BadRequestException } from '@nestjs/common';
-import { PayOSService } from '../payos/payos.service';
 
-export function serializePayment(payment: any) {
+export const serializePayment = (payment: any) => {
   if (!payment) return null;
+  let guestNameFromSnapshot = 'Khách vãng lai';
+  if (payment.order?.shippingSnapshot && typeof payment.order.shippingSnapshot === 'object') {
+    guestNameFromSnapshot = (payment.order.shippingSnapshot as any).fullName || 'Khách vãng lai';
+  }
+
   return {
     ...payment,
-    payosOrderCode: payment.payosOrderCode ? Number(payment.payosOrderCode) : null,
+    amount: payment.amount || payment.order?.total || 0,
+    order: payment.order ? {
+      ...payment.order,
+      customerName: payment.order.user?.name || guestNameFromSnapshot,
+      customerEmail: payment.order.user?.email || payment.order.guestEmail || 'N/A',
+      customerPhone: payment.order.user?.phone || payment.order.guestPhone || 'N/A',
+    } : undefined,
   };
-}
+};
 
-export function generateTransactionId(method: string): string {
-  if (method === 'PAYOS') {
-    return Date.now().toString();
-  }
-  return `TXN_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-}
-
-export function generatePayOSOrderCode(): string {
-  return Date.now().toString();
-}
-
-export async function createPayOSPaymentLink(payosService: PayOSService, order: any, orderCode: string) {
-  const shippingSnapshot = order.shippingSnapshot as any;
-  const buyerName = order.user?.name || shippingSnapshot?.fullName || order.address?.fullName || 'Customer';
-  const buyerEmail = order.user?.email || order.guestEmail || '';
-  const buyerPhone = shippingSnapshot?.phone || order.guestPhone || order.address?.phone || '';
-
-  if (!order.orderItems || order.orderItems.length === 0) {
-    throw new BadRequestException('Order has no items');
-  }
-
-  try {
-    const payosResponse = await payosService.createPaymentLink({
-      orderCode: Number(orderCode),
-      amount: order.total,
-      description: `Thanh toán đơn hàng #${order.id}`,
-      buyerName,
-      buyerEmail,
-      buyerPhone,
-      items: order.orderItems.map((item) => ({
-        name: item.variant?.product?.name || 'Product',
-        quantity: item.quantity,
-        price: item.price,
-      })),
-    });
-
-    return {
-      paymentLink: payosResponse.checkoutUrl,
-      transactionId: payosResponse.paymentLinkId,
-    };
-  } catch (error) {
-    throw new BadRequestException(`Failed to create PayOS payment link: ${error.message}`);
-  }
-}
-
-export function serializePayOSPaymentInfo(paymentInfo: any) {
-  return {
-    ...paymentInfo,
-    orderCode: paymentInfo.orderCode ? Number(paymentInfo.orderCode) : paymentInfo.orderCode,
-    amount: paymentInfo.amount ? Number(paymentInfo.amount) : paymentInfo.amount,
-    amountPaid: paymentInfo.amountPaid ? Number(paymentInfo.amountPaid) : paymentInfo.amountPaid,
-    amountRemaining: paymentInfo.amountRemaining ? Number(paymentInfo.amountRemaining) : paymentInfo.amountRemaining,
-  };
-}
-
-
-
-
-
+export const generateTransactionId = (method: string): string => {
+  const prefix = method.toUpperCase().substring(0, 3);
+  const timestamp = Date.now();
+  const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+  return `${prefix}${timestamp}${random}`;
+};

@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Empty, Spin, Modal } from "antd";
 import {
   HeartOutlined,
@@ -89,19 +89,14 @@ const WishlistPage = () => {
 
   return (
     <Layout>
-      <div className="bg-white min-h-screen pb-8">
-        <div className="max-w-7xl mx-auto px-4">
-          <Breadcrumb items={[{ label: "Sản phẩm yêu thích" }]} />
+      <div className="bg-white min-h-screen pb-12 text-black">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="py-2">
+            <Breadcrumb items={[{ label: "Sản phẩm yêu thích" }]} />
+          </div>
 
-          <PageTitle
-            subtitle="Danh sách"
-            title="SẢN PHẨM YÊU THÍCH"
-            count={wishlistItems.length}
-            countLabel="sản phẩm"
-            className="mt-6"
-          />
-
-          {wishlistItems.length > 0 && (
+          <div className="mt-8">
+            {wishlistItems.length > 0 && (
             <div className="flex justify-end mb-6">
               <button
                 onClick={handleClearAll}
@@ -120,7 +115,7 @@ const WishlistPage = () => {
                 Chưa có sản phẩm yêu thích
               </p>
               <Link to="/products">
-                <button className="px-8 py-3 bg-black text-white text-sm uppercase tracking-wider hover:bg-neutral-800 transition-colors">
+               <button className="px-8 py-3 bg-black !text-white text-sm uppercase tracking-wider hover:bg-neutral-800 transition-colors">
                   Khám Phá Sản Phẩm
                 </button>
               </Link>
@@ -156,7 +151,7 @@ const WishlistPage = () => {
                     {isDiscounted && (
                       <div className="absolute top-2.5 left-2.5 z-10">
                         <span
-                          className={`flex items-center gap-1 px-2 py-0.5 text-[9px] font-black text-white rounded italic ${discountInfo?.isFlashSale ? "bg-red-600" : "bg-black"}`}
+                          className={`flex items-center gap-1 px-2 py-0.5 text-[9px] font-semibold text-white rounded ${discountInfo?.isFlashSale ? "bg-red-600" : "bg-black"}`}
                         >
                           <Zap size={8} className="fill-white" />-
                           {discountInfo?.percentage}%
@@ -199,11 +194,11 @@ const WishlistPage = () => {
 
                     <div className="flex flex-col flex-grow p-3">
                       <div className="flex-grow">
-                        <span className="text-[9px] uppercase tracking-[0.2em] font-black text-blue-600 mb-1 block">
-                          {product.category?.name || "Category"}
+                        <span className="text-[10px] font-semibold text-black mb-1 block">
+                          {product.category?.name || "Danh mục"}
                         </span>
                         <h3
-                          className="text-[12px] font-bold text-gray-900 leading-tight group-hover:text-blue-700 transition-colors line-clamp-2 min-h-[2rem] mb-1.5"
+                          className="text-[13px] font-semibold text-black leading-tight group-hover:text-neutral-800 transition-colors line-clamp-2 min-h-[2rem] mb-1.5"
                           title={product.name}
                         >
                           {product.name || "Sản phẩm"}
@@ -215,30 +210,30 @@ const WishlistPage = () => {
                             size={9}
                             showNumber={false}
                           />
-                          <span className="text-[9px] text-gray-400">
+                          <span className="text-[10px] text-gray-400">
                             ({product.reviewCount || 0})
                           </span>
                         </div>
                       </div>
 
                       <div className="mt-auto pt-2 border-t border-gray-50">
-                        <div className="flex items-baseline gap-1.5 mb-1.5">
+                        <div className="flex items-baseline gap-1.5 mb-1.5 font-inter">
                           <span
-                            className={`text-[15px] font-black tracking-tighter ${isDiscounted ? "text-red-600" : "text-gray-900"}`}
+                            className={`text-[16px] font-semibold ${isDiscounted ? "text-red-600" : "text-black"}`}
                           >
                             {formatPrice(finalPrice)}
                           </span>
                           {isDiscounted && (
-                            <span className="text-[10px] text-gray-400 line-through font-medium opacity-60">
+                            <span className="text-[11px] text-gray-300 line-through font-medium opacity-80">
                               {formatPrice(originalPrice)}
                             </span>
                           )}
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-[9px] uppercase font-bold text-gray-400">
+                          <span className="text-[10px] font-semibold text-gray-400">
                             Đã bán {product.soldCount || 0}
                           </span>
-                          <span className="flex items-center gap-1 text-[9px] text-gray-400 font-bold">
+                          <span className="flex items-center gap-1 text-[10px] text-gray-300 font-medium">
                             <FaEye size={10} /> {product.viewCount || 0}
                           </span>
                         </div>
@@ -251,7 +246,8 @@ const WishlistPage = () => {
           )}
         </div>
       </div>
-    </Layout>
+    </div>
+  </Layout>
   );
 };
 

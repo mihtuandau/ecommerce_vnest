@@ -1,4 +1,4 @@
-﻿const OrderStatusBadge = ({ status }) => {
+const OrderStatusBadge = ({ status }) => {
   const getStatusBadge = (status) => {
     const statusConfig = {
       PENDING: {
@@ -33,7 +33,8 @@
 
   return (
     <span
-      className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${badge.className}`}
+      style={{ fontFamily: 'Inter, sans-serif' }}
+      className={`inline-flex items-center px-2 py-0.5 text-[10px] font-bold ${badge.className}`}
     >
       {badge.label}
     </span>

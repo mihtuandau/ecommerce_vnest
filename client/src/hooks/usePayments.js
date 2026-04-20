@@ -1,4 +1,4 @@
-﻿import { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import paymentService from '../services/paymentService';
 import { notify } from '../utils/notification';
@@ -6,7 +6,7 @@ import { notify } from '../utils/notification';
 export const usePayments = (filters = {}) => {
   const { data: rawData, ...queryResult } = useQuery({
     queryKey: ['payments'],
-    queryFn: () => paymentService.getPayments(),
+    queryFn: () => paymentService.getPayments({ limit: 500 }),
     staleTime: 2 * 60 * 1000,
   });
 

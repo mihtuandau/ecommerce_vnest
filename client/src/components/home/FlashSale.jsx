@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Zap, Clock, ChevronRight, Flame, Heart, Eye } from "lucide-react";
 import { useFlashSale } from "../../hooks/useFlashSale";
@@ -12,8 +12,8 @@ function pad(n) {
 
 const TimeBlock = ({ value, label }) => (
   <div className="flex flex-col items-center">
-    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-black/10 backdrop-blur-md border border-white/20 flex items-center justify-center rounded-xl">
-      <span className="text-xl font-bold text-white tabular-nums leading-none">
+    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-black/20 backdrop-blur-md border border-white/20 flex items-center justify-center rounded-xl">
+      <span className="text-xl font-semibold text-white tabular-nums leading-none">
         {pad(value)}
       </span>
     </div>
@@ -91,7 +91,7 @@ function FlashProductCard({ product, discountPercent }) {
     >
       {}
       <div className="absolute top-2.5 left-2.5 z-20">
-        <div className="bg-[#ff4d15] text-white text-[10px] sm:text-[11px] font-black px-2 py-0.5 rounded shadow-sm italic">
+        <div className="bg-[#ff4d15] text-white text-[10px] sm:text-[11px] font-semibold px-2 py-0.5 rounded shadow-sm">
           -{discountPercent}%
         </div>
       </div>
@@ -108,13 +108,13 @@ function FlashProductCard({ product, discountPercent }) {
 
       {}
       <div className="p-3 flex flex-col flex-grow bg-white">
-        <h3 className="text-[12px] sm:text-[13px] font-bold text-gray-900 line-clamp-2 mb-1.5 h-[2.4em] leading-tight transition-colors overflow-hidden">
+        <h3 className="text-[12px] sm:text-[13px] font-semibold text-slate-800 line-clamp-2 mb-1.5 h-[2.4em] leading-tight transition-colors overflow-hidden">
           {product.name}
         </h3>
 
         <div className="mt-auto space-y-2">
           <div className="flex items-center gap-2 flex-wrap min-h-[1.5rem]">
-            <span className="text-sm sm:text-[15px] font-black text-[#ff4d15] tracking-tight">
+            <span className="text-sm sm:text-[15px] font-semibold text-[#ff4d15] tracking-tight">
               {formatPrice(salePrice)}
             </span>
             {discountPercent > 0 && originalPrice > salePrice && (
@@ -132,7 +132,7 @@ function FlashProductCard({ product, discountPercent }) {
                 style={{ width: `${soldPercent}%` }}
               />
             </div>
-            <div className="flex items-center justify-between text-[8px] font-bold text-gray-400 uppercase tracking-tight">
+            <div className="flex items-center justify-between text-[8px] font-semibold text-gray-400 uppercase tracking-tight">
               <span>ĐÃ BÁN {soldCount}</span>
               {soldPercent > 80 && (
                 <span className="text-red-500">SẮP HẾT</span>
@@ -174,7 +174,7 @@ const FlashSale = () => {
             <div className="flex flex-wrap items-center gap-6 sm:gap-8">
               <div className="flex items-center gap-3">
                 <Flame className="text-white fill-current" size={32} />
-                <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight uppercase italic">
+                <h2 className="text-2xl sm:text-3xl font-semibold text-white uppercase tracking-tight">
                   FLASH SALE
                 </h2>
               </div>
@@ -184,7 +184,7 @@ const FlashSale = () => {
 
             <Link
               to="/flash-sale"
-              className="bg-white text-[#ff4d15] px-6 py-2.5 rounded-full font-bold text-xs flex items-center gap-2 hover:bg-orange-50 transition-colors shadow-lg self-start sm:self-auto"
+              className="bg-white text-[#ff4d15] px-6 py-2.5 rounded-full font-semibold text-xs flex items-center gap-2 hover:bg-orange-50 transition-colors shadow-lg self-start sm:self-auto"
             >
               XEM TẤT CẢ
             </Link>

@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Package,
   Users,
@@ -134,18 +134,18 @@ const AdminDashboardPage = () => {
           <div className="flex flex-col justify-between rounded-2xl border border-gray-100 bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.04)] transition-all duration-300 hover:shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
             <div className="mb-5 flex items-start justify-between">
               <div>
-                <p className="mb-1.5 text-sm font-medium text-gray-500">
+                <p className="mb-1.5 text-sm font-medium text-slate-500">
                   Doanh thu hôm nay
                 </p>
                 <div className="flex items-baseline gap-1">
-                  <h3 className="text-xl font-bold tracking-tight text-gray-800">
+                  <h3 className="text-xl font-semibold tracking-tight text-slate-800">
                     {stats?.revenue?.today
                       ? stats.revenue.today.toLocaleString("vi-VN")
                       : "0"}{" "}
                     ₫
                   </h3>
                 </div>
-                <p className="mt-1 text-xs text-gray-400">
+                <p className="mt-1 text-xs text-slate-400">
                   Doanh thu tích lũy:{" "}
                   {stats?.revenue?.total
                     ? stats.revenue.total.toLocaleString("vi-VN")
@@ -176,13 +176,13 @@ const AdminDashboardPage = () => {
           <div className="flex flex-col justify-between rounded-2xl border border-gray-100 bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.04)] transition-all duration-300 hover:shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
             <div className="mb-5 flex items-start justify-between">
               <div>
-                <p className="mb-1.5 text-sm font-medium text-gray-500">
+                <p className="mb-1.5 text-sm font-medium text-slate-500">
                   Đơn hàng hôm nay
                 </p>
-                <h3 className="text-2xl font-bold tracking-tight text-gray-800">
+                <h3 className="text-2xl font-semibold tracking-tight text-slate-800">
                   {stats?.orders?.today || 0}
                 </h3>
-                <p className="mt-1 text-xs text-gray-400">
+                <p className="mt-1 text-xs text-slate-400">
                   {stats?.orders?.pending || 0} chờ xử lý ·{" "}
                   {stats?.orders?.shipped || 0} đang giao
                 </p>
@@ -210,13 +210,13 @@ const AdminDashboardPage = () => {
           <div className="flex flex-col justify-between rounded-2xl border border-gray-100 bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.04)] transition-all duration-300 hover:shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
             <div className="mb-5 flex items-start justify-between">
               <div>
-                <p className="mb-1.5 text-sm font-medium text-gray-500">
+                <p className="mb-1.5 text-sm font-medium text-slate-500">
                   Khách hàng mới hôm nay
                 </p>
-                <h3 className="text-2xl font-bold tracking-tight text-gray-800">
+                <h3 className="text-2xl font-semibold tracking-tight text-slate-800">
                   {stats?.users?.new || 0}
                 </h3>
-                <p className="mt-1 text-xs text-gray-400">
+                <p className="mt-1 text-xs text-slate-400">
                   Tổng khách:{" "}
                   {stats?.users?.customers
                     ? stats.users.customers.toLocaleString("vi-VN")
@@ -246,13 +246,13 @@ const AdminDashboardPage = () => {
           <div className="flex flex-col justify-between rounded-2xl border border-gray-100 bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.04)] transition-all duration-300 hover:shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
             <div className="mb-5 flex items-start justify-between">
               <div>
-                <p className="mb-1.5 text-sm font-medium text-gray-500">
+                <p className="mb-1.5 text-sm font-medium text-slate-500">
                   Sản phẩm sắp hết
                 </p>
-                <h3 className="text-2xl font-bold tracking-tight text-gray-800">
+                <h3 className="text-2xl font-semibold tracking-tight text-slate-800">
                   {stats?.products?.lowStock || 0}
                 </h3>
-                <p className="mt-1 text-xs text-gray-400">Cần nhập thêm hàng</p>
+                <p className="mt-1 text-xs text-slate-400">Cần nhập thêm hàng</p>
               </div>
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-50 text-orange-500">
                 <Package size={20} strokeWidth={2.5} />

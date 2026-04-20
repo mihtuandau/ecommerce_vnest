@@ -29,12 +29,13 @@ const DiscountTable = ({
       }}
       locale={{
         emptyText: (
-          <div className="py-8 flex flex-col items-center text-gray-400">
+          <div className="py-8 flex flex-col items-center text-gray-500 font-semibold">
             <TagOutlined style={{ fontSize: 24, marginBottom: 8 }} />
             <span className="text-xs">Chưa có dữ liệu</span>
           </div>
         ),
       }}
+      className="[&_.ant-table-thead>tr>th]:bg-slate-50/50 [&_.ant-table-thead>tr>th]:font-semibold [&_.ant-table-thead>tr>th]:text-slate-800 [&_.ant-table-thead>tr>th]:border-b [&_.ant-table-thead>tr>th]:border-slate-100 [&_.ant-table-thead>tr>th]:px-2 [&_.ant-table-thead>tr>th]:py-4 [&_.ant-table-tbody>tr>td]:px-2 [&_.ant-table-tbody>tr>td]:py-3"
     />
   );
 };

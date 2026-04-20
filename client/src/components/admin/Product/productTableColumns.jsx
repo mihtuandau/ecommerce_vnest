@@ -1,4 +1,4 @@
-﻿import { Checkbox, Dropdown, Button } from 'antd';
+import { Checkbox, Dropdown, Button } from 'antd';
 import { MoreOutlined } from '@ant-design/icons';
 import { formatPrice, formatDate } from '../../../utils/formatters';
 import { Star, AlertTriangle } from 'lucide-react';
@@ -44,7 +44,7 @@ export const getProductTableColumns = ({
     ),
   },
   {
-    title: <span className="text-gray-500 font-semibold text-xs tracking-wider uppercase">Sản phẩm</span>,
+    title: <span className="text-slate-800 font-semibold text-xs tracking-wider uppercase">Sản phẩm</span>,
     key: 'product',
     width: 320,
     render: (_, record) => {
@@ -62,10 +62,10 @@ export const getProductTableColumns = ({
             )}
           </div>
           <div className="flex flex-col min-w-0">
-            <span className="font-semibold text-sm text-gray-900 truncate" title={record.name}>
+            <span className="font-semibold text-sm text-slate-800 truncate" title={record.name}>
               {record.name}
             </span>
-            <div className="text-xs text-gray-500 truncate mt-0.5">
+            <div className="text-xs text-slate-800 truncate mt-0.5">
               {variantCount > 0 ? `${variantCount} biến thể • ` : ''}
               {getProductSku(record)}
             </div>
@@ -75,7 +75,7 @@ export const getProductTableColumns = ({
     },
   },
   {
-    title: <span className="text-gray-500 font-semibold text-xs tracking-wider uppercase">Danh mục / Thương hiệu</span>,
+    title: <span className="text-slate-800 font-semibold text-xs tracking-wider uppercase">Danh mục / Thương hiệu</span>,
     key: 'category',
     width: 180,
     render: (_, record) => (
@@ -90,18 +90,18 @@ export const getProductTableColumns = ({
     ),
   },
   {
-    title: <span className="text-gray-500 font-semibold text-xs tracking-wider uppercase">Giá</span>,
+    title: <span className="text-slate-800 font-semibold text-xs tracking-wider uppercase">Giá</span>,
     dataIndex: 'basePrice',
     key: 'price',
     width: 140,
     render: (basePrice, record) => (
-      <span className="font-bold text-gray-900 text-sm">
+      <span className="font-semibold text-slate-800 text-sm">
         {formatPrice(basePrice || record.price || 0)}
       </span>
     ),
   },
   {
-    title: <span className="text-gray-500 font-semibold text-xs tracking-wider uppercase">Tồn kho</span>,
+    title: <span className="text-slate-800 font-semibold text-xs tracking-wider uppercase">Tồn kho</span>,
     key: 'stock',
     width: 120,
     render: (_, record) => {
@@ -131,14 +131,14 @@ export const getProductTableColumns = ({
     },
   },
   {
-    title: <span className="text-gray-500 font-semibold text-xs tracking-wider uppercase">Đã bán</span>,
+    title: <span className="text-slate-800 font-semibold text-xs tracking-wider uppercase">Đã bán</span>,
     dataIndex: 'soldCount',
     key: 'sold',
     width: 100,
-    render: (v) => <span className="font-bold text-gray-900 text-sm">{v ?? 0}</span>,
+    render: (v) => <span className="font-semibold text-slate-800 text-sm">{v ?? 0}</span>,
   },
   {
-    title: <span className="text-gray-500 font-semibold text-xs tracking-wider uppercase">Rating</span>,
+    title: <span className="text-slate-800 font-semibold text-xs tracking-wider uppercase">Rating</span>,
     key: 'rating',
     width: 120,
     render: (_, record) => {
@@ -147,14 +147,14 @@ export const getProductTableColumns = ({
       return (
         <div className="flex items-center gap-1">
           <Star className="text-amber-400 fill-amber-400" size={14} />
-          <span className="font-bold text-gray-900 text-sm">{Number(rating).toFixed(1)}</span>
-          {count > 0 && <span className="text-gray-500 text-xs">({count})</span>}
+          <span className="font-semibold text-slate-800 text-sm">{Number(rating).toFixed(1)}</span>
+          {count > 0 && <span className="text-slate-800 text-xs">({count})</span>}
         </div>
       );
     },
   },
   {
-    title: <span className="text-gray-500 font-semibold text-xs tracking-wider uppercase">Trạng thái</span>,
+    title: <span className="text-slate-800 font-semibold text-xs tracking-wider uppercase">Trạng thái</span>,
     key: 'status',
     width: 120,
     render: (_, record) => (
@@ -165,11 +165,11 @@ export const getProductTableColumns = ({
     ),
   },
   {
-    title: <span className="text-gray-500 font-semibold text-xs tracking-wider uppercase">Ngày tạo</span>,
+    title: <span className="text-slate-800 font-semibold text-xs tracking-wider uppercase">Ngày tạo</span>,
     key: 'createdAt',
     width: 120,
     render: (_, record) => (
-      <span className="text-gray-500 text-xs">
+      <span className="text-slate-800 text-xs">
         {formatDate(record.createdAt)}
       </span>
     ),

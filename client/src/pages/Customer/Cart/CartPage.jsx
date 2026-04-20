@@ -1,4 +1,4 @@
-﻿import { useCallback, useState, useMemo, useEffect } from "react";
+import { useCallback, useState, useMemo, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button as AntButton, Modal, Badge, Divider, Space } from "antd";
 import {
@@ -166,17 +166,14 @@ const CartPage = () => {
   if (!cartItems || cartItems.length === 0) {
     return (
       <Layout>
-        <div className="bg-white min-h-screen pt-21 pb-8">
-          <div className="container mx-auto px-4 lg:px-8">
-            <Breadcrumb items={[{ label: "Giỏ hàng" }]} />
-
-            <PageTitle
-              subtitle="Mua sắm"
-              title="GIỎ HÀNG CỦA BẠN"
-              className="mt-6"
-            />
-
-            <CartEmpty />
+        <div className="bg-white min-h-screen pb-12 text-black">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="py-2">
+              <Breadcrumb items={[{ label: "Giỏ hàng" }]} />
+            </div>
+            <div className="mt-8">
+              <CartEmpty />
+            </div>
           </div>
         </div>
       </Layout>
@@ -185,19 +182,13 @@ const CartPage = () => {
 
   return (
     <Layout>
-      <div className="bg-white min-h-screen pb-8">
-        <div className="max-w-7xl mx-auto px-4">
-          <Breadcrumb items={[{ label: "Giỏ hàng" }]} />
+      <div className="bg-white min-h-screen pb-12 text-black">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="py-2">
+            <Breadcrumb items={[{ label: "Giỏ hàng" }]} />
+          </div>
 
-          <PageTitle
-            subtitle="Mua sắm"
-            title="GIỎ HÀNG CỦA BẠN"
-            count={cartCount}
-            countLabel="sản phẩm trong giỏ hàng"
-            className="mt-6"
-          />
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-6">
             <div className="lg:col-span-2">
               <CartItemsList
                 items={cartItems}
@@ -227,7 +218,7 @@ const CartPage = () => {
               </div>
             </div>
 
-            <div className="lg:col-span-1">
+            <div className="lg:col-span-1 hidden lg:block">
               <div className="sticky top-24">
                 <CartSummary
                   total={selectedTotal}
@@ -240,6 +231,25 @@ const CartPage = () => {
                 />
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Mobile Sticky Footer */}
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-4 py-3 z-50 shadow-[0_-4px_10px_rgba(0,0,0,0.03)] pb-safe">
+          <div className="flex items-center justify-between gap-4 max-w-7xl mx-auto">
+            <div className="flex flex-col">
+              <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-tighter">Tổng thanh toán</span>
+              <span className="text-xl font-semibold text-black font-inter tracking-tighter">
+                {selectedTotal === 0 ? "0 đ" : formatPrice(selectedTotal)}
+              </span>
+            </div>
+            <Button
+              onClick={handleCheckout}
+              disabled={selectedItems.size === 0}
+              className="bg-black text-white px-8 py-3 font-semibold text-sm rounded-none h-11 flex-shrink-0 disabled:opacity-30"
+            >
+              Thanh toán ({selectedItems.size})
+            </Button>
           </div>
         </div>
       </div>

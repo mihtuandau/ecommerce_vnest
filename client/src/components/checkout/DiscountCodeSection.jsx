@@ -1,4 +1,4 @@
-﻿import { FaTag, FaCheck, FaTimes } from 'react-icons/fa';
+import { FaTag, FaCheck, FaTimes } from 'react-icons/fa';
 import { formatPrice } from '../../utils/formatters';
 import Button from '../common/Button';
 import Input from '../common/Input';
@@ -14,16 +14,16 @@ const DiscountCodeSection = ({
   return (
     <div className="border-t border-gray-200 pt-5 mb-5">
       <div className="flex items-center gap-2 mb-3">
-        <FaTag className="text-gray-900 text-sm" />
-        <span className="font-normal text-gray-900">Mã giảm giá</span>
+        <FaTag className="text-slate-800 text-sm" />
+        <span className="font-semibold text-slate-800">Mã giảm giá</span>
       </div>
       
       {appliedDiscount ? (
-        <div className="flex items-center justify-between border border-black p-3">
+        <div className="flex items-center justify-between border border-slate-800 p-3">
           <div className="flex items-center gap-2">
-            <FaCheck className="text-gray-900 text-sm" />
+            <FaCheck className="text-slate-800 text-sm" />
             <div>
-              <div className="font-normal text-gray-900">{appliedDiscount.code}</div>
+              <div className="font-semibold text-slate-800">{appliedDiscount.code}</div>
               <div className="text-xs text-gray-600 mt-0.5">
                 {appliedDiscount.discountType === 'PERCENTAGE' 
                   ? `Giảm ${appliedDiscount.discountValue}%` 
@@ -33,7 +33,7 @@ const DiscountCodeSection = ({
           </div>
           <button
             onClick={onRemoveDiscount}
-            className="text-gray-600 hover:text-gray-900 p-1 transition-colors"
+            className="text-gray-600 hover:text-slate-800 p-1 transition-colors"
           >
             <FaTimes size={14} />
           </button>
@@ -45,7 +45,7 @@ const DiscountCodeSection = ({
             value={discountCode}
             onChange={(e) => setDiscountCode(e.target.value.toUpperCase())}
             placeholder="Nhập mã giảm giá"
-            className="flex-1 px-3 py-2 border border-gray-300 focus:outline-none focus:border-black text-sm transition-colors"
+            className="flex-1 px-3 py-2 border border-gray-300 focus:outline-none focus:border-slate-800 text-sm transition-colors"
             onKeyPress={(e) => e.key === 'Enter' && onApplyDiscount()}
           />
           <button

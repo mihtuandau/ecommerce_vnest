@@ -1,4 +1,4 @@
-﻿import ProductCard from "./ProductCard";
+import ProductCard from "./ProductCard";
 import { Link } from "react-router-dom";
 import { FaEye } from "react-icons/fa";
 import Button from "../common/Button";
@@ -13,17 +13,17 @@ const ProductGrid = ({
   const getGridClass = () => {
     switch (viewMode) {
       case "grid-4":
-        return "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4";
+        return "grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6";
       case "grid-3":
-        return "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6";
+        return "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6";
       case "grid-2":
-        return "grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto lg:gap-8";
+        return "grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-4xl mx-auto lg:gap-8";
       case "grid-1":
         return "grid grid-cols-1 gap-6 max-w-3xl mx-auto";
       case "list":
         return "flex flex-col gap-4 max-w-4xl mx-auto";
       default:
-        return "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4";
+        return "grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6";
     }
   };
 

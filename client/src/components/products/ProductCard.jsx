@@ -1,4 +1,4 @@
-﻿import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { FaHeart, FaEye } from 'react-icons/fa';
 import { Zap } from 'lucide-react';
@@ -39,7 +39,7 @@ const ProductCard = ({ product, viewMode = 'grid-4' }) => {
   const isList = viewMode === 'list';
   
   const titleClass = isGrid4 ? 'text-sm font-medium' : isGrid3 ? 'font-medium text-base' : isGrid2 ? 'text-xl font-medium' : (isGrid1 || isList) ? 'font-medium text-lg' : 'font-medium text-base';
-  const priceClass = isGrid4 ? 'text-base font-bold text-gray-900' : isGrid3 ? 'text-lg font-bold text-gray-900' : isGrid2 ? 'text-lg font-bold text-gray-900' : 'text-xl font-bold text-gray-900';
+  const priceClass = isGrid4 ? 'text-base font-semibold text-slate-800' : isGrid3 ? 'text-lg font-semibold text-slate-800' : isGrid2 ? 'text-lg font-semibold text-slate-800' : 'text-xl font-semibold text-slate-800';
   const originalPriceClass = 'text-sm';
   const ratingSize = isGrid4 ? 10 : isGrid3 ? 12 : isGrid2 ? 11 : 13;
   const soldTextClass = 'text-sm';
@@ -196,14 +196,14 @@ const ProductCard = ({ product, viewMode = 'grid-4' }) => {
       <div className={`flex flex-col ${isList ? 'justify-center' : 'flex-grow'} ${containerClass} ${isList ? 'w-3/5' : ''}`}>
         <Link to={`/products/${product.slug || id}`} className={`block ${isList ? 'mb-2' : 'mb-1'}`}>
           <h3 
-            className={`font-medium text-blue-700 text-[13px] sm:text-sm group-hover:text-blue-900 transition-colors ${isList ? '' : 'mb-1'}`} 
+            className={`font-semibold text-slate-800 text-[13px] sm:text-sm group-hover:text-black transition-colors ${isList ? '' : 'mb-1'}`} 
             style={{ 
               display: '-webkit-box', 
               WebkitLineClamp: 2, 
               WebkitBoxOrient: 'vertical',
               overflow: 'hidden',
-              lineHeight: '20px',
-              height: '40px'
+              lineHeight: '1.4',
+              height: '2.8em'
             }}
             title={name}
           >
@@ -212,12 +212,12 @@ const ProductCard = ({ product, viewMode = 'grid-4' }) => {
         </Link>
 
         <div className={`flex items-center gap-1 mt-1 mb-2 h-4 w-full`}>
-           <StarRating rating={product.averageRating || 0} size={11} showNumber={false} reviewCount={0} />
-           <span className="text-[11px] text-gray-400">({product.reviewCount || 0})</span>
+           <StarRating rating={product.averageRating || 0} size={10} showNumber={false} reviewCount={0} />
+           <span className="text-[10px] text-gray-400 font-semibold tracking-wider">({product.reviewCount || 0})</span>
            
            {!isList && (
-             <span className="flex items-center gap-1 text-[11px] text-gray-400 ml-auto font-medium">
-                <FaEye size={12} className="opacity-80" />
+             <span className="flex items-center gap-1 text-[10px] text-gray-400 ml-auto font-semibold tracking-wider">
+                <FaEye size={10} className="opacity-50" />
                 {formatViewCount(product.viewCount)}
              </span>
            )}
@@ -225,17 +225,17 @@ const ProductCard = ({ product, viewMode = 'grid-4' }) => {
 
         <div className="mt-auto pt-2">
           <div className="flex items-baseline gap-2 mb-2 h-6">
-            <span className={`text-xl font-heading font-black tracking-tight leading-none ${displayOriginalPrice > displayPrice ? 'text-red-500' : 'text-gray-900'}`}>
+            <span className={`text-lg sm:text-xl font-semibold tracking-tighter leading-none ${displayOriginalPrice > displayPrice ? 'text-red-600' : 'text-slate-800'}`}>
               {formatPrice(displayPrice)}
             </span>
             {displayOriginalPrice && displayOriginalPrice > displayPrice && (
-              <span className="text-[11px] text-gray-400 line-through font-medium leading-none">
+              <span className="text-[10px] sm:text-[11px] text-gray-400 line-through tracking-tight leading-none opacity-70 font-medium">
                 {formatPrice(displayOriginalPrice)}
               </span>
             )}
           </div>
           {!isList && (
-            <div className="flex items-center justify-between text-[10px] uppercase font-bold text-gray-500 mt-1">
+            <div className="flex items-center justify-between text-[10px] font-semibold text-gray-400 mt-1">
               <span>Đã bán {product.soldCount || product.sold || 0}</span>
             </div>
           )}

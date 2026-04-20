@@ -1,4 +1,4 @@
-﻿import { Star, Eye } from "lucide-react";
+import { Star, Eye } from "lucide-react";
 
 const formatViewCount = (n) => {
   if (!n) return '0';
@@ -18,7 +18,7 @@ const ProductInfo = ({ product }) => {
       )}
 
       {}
-      <h1 className="text-xl font-bold text-gray-900 leading-snug mb-3">
+      <h1 className="text-xl font-semibold text-slate-800 leading-snug mb-3">
         {product.name}
       </h1>
 

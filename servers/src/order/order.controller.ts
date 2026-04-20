@@ -1,4 +1,4 @@
-﻿import {
+import {
   Controller,
   Get,
   Post,
@@ -99,7 +99,7 @@ export class OrderController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('Authorization')
   async cancelOrder(@Param('id') id: string, @Req() req: any) {
-    return this.orderService.cancelOrder(+id, req.user.userId);
+    return this.orderService.cancelOrder(+id, req.user);
   }
 
   @Put('guest/:orderCode/cancel')

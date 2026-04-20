@@ -1,4 +1,4 @@
-﻿import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { FaPhoneAlt, FaTruck, FaUndo, FaPercentage } from 'react-icons/fa';
 
@@ -42,7 +42,7 @@ const TopBar = () => {
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: -20, opacity: 0 }}
               transition={{ duration: 0.5, ease: "easeInOut" }}
-              className="flex items-center gap-2 text-white uppercase font-bold text-[10px] tracking-widest"
+              className="flex items-center gap-2 text-white font-bold text-xs"
             >
               <span className="text-gray-400">{PROMOTIONS[promoIndex].icon}</span>
               <span>{PROMOTIONS[promoIndex].text}</span>

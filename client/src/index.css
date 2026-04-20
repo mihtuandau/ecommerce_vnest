@@ -1,5 +1,14 @@
 @import "tailwindcss";
-/* @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap"); */
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100..900;1,100..900&display=swap");
+
+/* Global Font Override - Only Inter */
+*, body, h1, h2, h3, h4, h5, h6, .font-heading, .font-outfit, .font-inter, input, button, select, textarea {
+  font-family: "Inter", system-ui, -apple-system, sans-serif !important;
+}
+
+i, em, .italic {
+  font-style: italic !important;
+}
 
 /* Custom Scrollbar Styles */
 .custom-scrollbar::-webkit-scrollbar {
@@ -100,15 +109,19 @@ header button:not(.bg-black):hover path {
     0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
-/* Font family - Modern, Clean, Professional Hierarchy */
+html, body {
+  overflow-x: hidden;
+  position: relative;
+  width: 100%;
+}
+
 body {
-  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
-    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   font-variant-numeric: lining-nums;
   color: #1a1a1a;
   background: #ffffff;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
 h1,
@@ -116,20 +129,9 @@ h2,
 h3,
 h4,
 h5,
-h6,
-.font-heading {
-  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
-    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  letter-spacing: -0.02em;
+h6 {
+  letter-spacing: -0.01em;
   line-height: 1.2;
-}
-
-.font-outfit {
-  font-family: ui-sans-serif, system-ui, sans-serif;
-}
-
-.font-inter {
-  font-family: ui-sans-serif, system-ui, sans-serif;
 }
 
 /* Admin Theme Override - Font */

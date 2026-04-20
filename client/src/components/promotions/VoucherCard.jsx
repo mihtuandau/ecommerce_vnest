@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 import { Copy, Check, Clock, Percent, Tag, Truck, Zap } from "lucide-react";
 import { formatPrice } from "../../utils/formatters";
 
@@ -56,21 +56,21 @@ const VoucherCard = ({ voucher, onCopy, copiedCode }) => {
         {bigValue ? (
           <div className="flex flex-col items-center">
             <span
-              className={`font-heading font-black ${textDark} text-xl leading-none text-center tracking-tight drop-shadow-sm`}
+              className={`font-heading font-semibold ${textDark} text-xl leading-none text-center tracking-tight drop-shadow-sm`}
             >
               {isFixed && bigValue.length > 6
                 ? `${voucher.fixedAmount / 1000}k`
                 : bigValue}
             </span>
             <span
-              className={`text-[9px] font-bold ${textDark} opacity-80 uppercase mt-1 tracking-widest`}
+              className={`text-[9px] font-semibold ${textDark} opacity-80 uppercase mt-1 tracking-widest`}
             >
               giảm
             </span>
           </div>
         ) : (
           <span
-            className={`font-heading font-black ${textDark} text-sm leading-tight text-center`}
+            className={`font-heading font-semibold ${textDark} text-sm leading-tight text-center`}
           >
             FREE
             <br />
@@ -88,7 +88,7 @@ const VoucherCard = ({ voucher, onCopy, copiedCode }) => {
             </div>
           )}
           <h3
-            className="font-bold text-gray-900 text-sm mb-2 line-clamp-2 leading-snug pr-2"
+            className="font-semibold text-slate-800 text-sm mb-2 line-clamp-2 leading-snug pr-2"
             title={voucher.name}
           >
             {voucher.name}

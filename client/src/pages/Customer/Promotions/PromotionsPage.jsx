@@ -1,4 +1,4 @@
-﻿import React, { useState } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { ShoppingCart, ArrowRight, Tag } from "lucide-react";
@@ -49,10 +49,10 @@ const PromotionsPage = () => {
               <p className="text-[11px] md:text-[13px] text-gray-500 tracking-[0.25em] uppercase font-semibold mb-3">
                  Ư U Đ Ã I & V O U C H E R
               </p>
-              <h1 className="font-heading text-3xl md:text-[42px] font-black text-gray-900 uppercase tracking-tight mb-7">
+              <h1 className="font-heading text-3xl md:text-[42px] font-semibold text-black uppercase tracking-tight mb-7">
                  TẤT CẢ VOUCHER
               </h1>
-              <div className="w-16 h-[2px] bg-gray-900"></div>
+              <div className="w-16 h-[2px] bg-black"></div>
            </div>
         </div>
 
@@ -65,10 +65,10 @@ const PromotionsPage = () => {
               <button
                 key={t.key}
                 onClick={() => setTab(t.key)}
-                className={`px-5 py-2.5 rounded-full text-[13px] font-bold transition-all duration-200 border ${
+                className={`px-5 py-2.5 rounded-full text-[13px] font-semibold transition-all duration-200 border ${
                   tab === t.key
-                    ? "bg-gray-900 border-gray-900 text-white shadow-md"
-                    : "bg-white border-gray-200 text-gray-500 hover:border-gray-400 hover:text-gray-900"
+                    ? "bg-black border-black !text-white shadow-md"
+                    : "bg-white border-gray-200 text-gray-500 hover:border-gray-400 hover:text-black"
                 }`}
               >
                 {t.label}
@@ -90,7 +90,7 @@ const PromotionsPage = () => {
             {!displayed.length && (
               <div className="col-span-full py-24 flex flex-col items-center justify-center text-gray-400 bg-gray-50 border border-gray-100 rounded-2xl mt-4">
                 <Tag size={40} className="text-gray-300 mb-4" />
-                <p className="text-base font-bold text-gray-600">
+                <p className="text-base font-semibold text-slate-600">
                   Chưa có voucher nào trong danh mục này
                 </p>
                 <p className="text-sm mt-1">Vui lòng quay lại kiểm tra sau nhé!</p>
@@ -103,7 +103,7 @@ const PromotionsPage = () => {
             <div className="mt-16 flex justify-center">
               <Link
                 to="/products"
-                className="group inline-flex items-center gap-2.5 bg-gray-900 text-white px-9 py-3.5 rounded-full font-bold text-[13px] tracking-wide transition-all hover:bg-gray-800 hover:shadow-lg hover:-translate-y-0.5 uppercase"
+                className="group inline-flex items-center gap-2.5 bg-black text-white px-9 py-3.5 rounded-full font-semibold text-[13px] tracking-wide transition-all hover:bg-neutral-800 hover:shadow-lg hover:-translate-y-0.5 uppercase"
               >
                 <ShoppingCart size={16} />
                 Tiếp tục mua sắm

@@ -1,8 +1,5 @@
-﻿
+
 import { BadRequestException } from '@nestjs/common';
-
-
-
 
 export function serializeOrder(order: any) {
   if (!order) return null;
@@ -22,7 +19,6 @@ export function serializeOrder(order: any) {
   return order;
 }
 
-
 export async function generateOrderCode(checkExistsFn: (code: string) => Promise<any>): Promise<string> {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   let code = '';
@@ -41,13 +37,26 @@ export async function generateOrderCode(checkExistsFn: (code: string) => Promise
   return code;
 }
 
-
 export function calculateOrderTotal(
   items: Array<{quantity: number, price: number}>,
-  shippingFee: number = 30000,
+  providedShippingFee?: number,
   discount?: {percentage?: number, fixedAmount?: number, maxDiscountAmount?: number}
 ) {
   const totalItems = items.reduce((sum, item) => sum + item.quantity * item.price, 0);
+  
+  // Logic phí ship: 30k mặc định, miễn phí nếu trên 500k
+  let shippingFee = 30000;
+  if (totalItems >= 500000) {
+    shippingFee = 0;
+  }
+
+  // Nếu có phí ship truyền vào từ DTO (và khác undefined), ta có thể cân nhắc dùng nó
+  // Nhưng ưu tiên quy tắc 500k của cửa hàng
+  if (providedShippingFee !== undefined && providedShippingFee !== null) {
+    // Nếu đơn hàng >= 500k thì bắt buộc FREE, ngược lại dùng phí cung cấp (hoặc mặc định 30k)
+    shippingFee = totalItems >= 500000 ? 0 : Number(providedShippingFee);
+  }
+
   const taxAmount = 0;
 
   let discountAmount = 0;
@@ -77,7 +86,6 @@ export function calculateOrderTotal(
     discountedTotal, 
   };
 }
-
 
 export function validateDiscount(discount: any, subtotal?: number, currentUsageCount?: number) {
   if (!discount) {
@@ -117,13 +125,12 @@ export function validateDiscount(discount: any, subtotal?: number, currentUsageC
   return true;
 }
 
-
 export function prepareOrderData(
   orderCode: string,
   userId: number | null,
   dto: any,
   items: Array<{variantId: number, quantity: number, price: number, productName?: string}>,
-  totals: { subtotal: number, discountAmount: number, total: number },
+  totals: { subtotal: number, shippingFee: number, discountAmount: number, total: number },
   discount: any
 ) {
   const orderData: any = {
@@ -135,9 +142,11 @@ export function prepareOrderData(
     guestEmail: dto.guestEmail || null,
     guestPhone: dto.guestPhone || null,
     subtotal: totals.subtotal,
+    shippingFee: totals.shippingFee,
     discountAmount: totals.discountAmount,
     total: totals.total,
     taxAmount: 0,
+    paymentMethod: dto.paymentMethod || 'CASH',
     status: 'PENDING',
     orderItems: {
       create: items.map((item) => ({
@@ -168,7 +177,6 @@ export function prepareOrderData(
   return orderData;
 }
 
-
 export function prepareOrderEmailDetails(order: any) {
   const customerEmail = order.guestEmail || order.user?.email;
   const shipping = order.shippingSnapshot as any;
@@ -187,12 +195,8 @@ export function prepareOrderEmailDetails(order: any) {
         price: item.price,
       })),
       total: order.total,
+      shippingFee: order.shippingFee,
       shippingAddress: shipping?.addressString || 'N/A',
     }
   };
 }
-
-
-
-
-

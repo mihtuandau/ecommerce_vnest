@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Table, Tooltip, Button } from 'antd';
 import { SyncOutlined, CheckCircleOutlined, RollbackOutlined } from '@ant-design/icons';
 import {
@@ -14,14 +14,14 @@ const formatVND = (amount) => {
 };
 
 const getStatusTextColor = (status) => {
-  const colors = {
-    SUCCESS: 'text-emerald-500',
-    PENDING: 'text-amber-500',
-    FAILED: 'text-red-500',
-    REFUNDED: 'text-purple-500',
-    CANCELLED: 'text-gray-400',
+  const styles = {
+    SUCCESS: 'text-emerald-600 bg-emerald-50 border-emerald-100',
+    PENDING: 'text-amber-600 bg-amber-50 border-amber-100',
+    FAILED: 'text-rose-600 bg-rose-50 border-rose-100',
+    REFUNDED: 'text-indigo-600 bg-indigo-50 border-indigo-100',
+    CANCELLED: 'text-gray-400 bg-gray-50 border-gray-100',
   };
-  return colors[status] || 'text-gray-500';
+  return styles[status] || 'text-gray-500 bg-gray-50';
 };
 
 const PaymentTable = ({
@@ -31,7 +31,7 @@ const PaymentTable = ({
   onConfirmSuccess,
   onUpdateStatus,
   currentPage = 1,
-  itemsPerPage = 12,
+  itemsPerPage = 10,
   total = 0,
   onPageChange,
 }) => {
@@ -42,7 +42,11 @@ const PaymentTable = ({
       key: 'index',
       width: 40,
       align: 'left',
-      render: (_, __, index) => <span className="text-gray-400 text-[10px] font-bold">{(currentPage - 1) * itemsPerPage + index + 1}</span>,
+      render: (_, __, index) => (
+        <span className="text-gray-500 text-[10px] font-semibold">
+          {total - ((currentPage - 1) * itemsPerPage + index)}
+        </span>
+      ),
     },
     {
       title: 'Đơn hàng & Sản phẩm',
@@ -51,12 +55,12 @@ const PaymentTable = ({
       align: 'left',
       render: (_, record) => (
         <div className="flex flex-col py-2">
-          <span className="text-[13px] font-bold text-slate-900 mb-1 leading-none italic">
+          <span className="text-[13px] font-semibold text-slate-800 mb-1 leading-none">
             {record.order?.orderCode || `#${record.orderId}`}
           </span>
           <div className="flex flex-col gap-0.5 mt-1 border-l border-gray-100 pl-2">
             {record.order?.orderItems?.map((item, i) => (
-              <span key={i} className="text-[10px] text-gray-400 leading-tight italic">
+              <span key={i} className="text-[10px] text-gray-500 leading-tight font-semibold">
                 - {item.productName} (x{item.quantity})
               </span>
             ))}
@@ -67,7 +71,7 @@ const PaymentTable = ({
     {
       title: 'Khách hàng',
       key: 'customer',
-      width: 130,
+      width: 140,
       align: 'left',
       render: (_, record) => {
         const phone = record.order?.guestPhone || record.order?.user?.phone || record.order?.shippingSnapshot?.phone || 'N/A';
@@ -75,65 +79,51 @@ const PaymentTable = ({
 
         return (
           <div className="flex flex-col py-1">
-            <span className="text-[11px] font-bold text-slate-700 leading-tight mb-1">{name}</span>
-            <span className="text-[10px] text-blue-500 font-bold tracking-tight">{phone}</span>
+            <span className="text-[11px] font-semibold text-slate-800 leading-tight mb-1">{name}</span>
+            <span className="text-[10px] text-blue-600 font-semibold tracking-tight">{phone}</span>
           </div>
         );
       },
     },
     {
-      title: 'Tiền hàng',
-      key: 'subtotal',
-      width: 90,
-      align: 'left',
-      render: (_, record) => (
-        <span className="text-[12px] font-medium text-gray-600">
-          {formatVND(record.order?.subtotal || 0)}
-        </span>
-      ),
-    },
-    {
-      title: 'Phí Ship',
-      key: 'shipping',
-      width: 90,
-      align: 'left',
-      render: (_, record) => (
-        <span className="text-[11px] font-bold text-orange-400">
-          +{formatVND(record.order?.taxAmount || 30000)}
-        </span>
-      ),
-    },
-    {
-      title: 'Giảm giá',
-      key: 'discount',
-      width: 90,
-      align: 'left',
-      render: (_, record) => (
-        <span className="text-[11px] font-bold text-red-500">
-          -{formatVND(record.order?.discountAmount || 0)}
-        </span>
-      ),
-    },
-    {
-      title: 'Tổng thu (Bank)',
+      title: 'Giá trị',
       dataIndex: 'amount',
       key: 'amount',
-      width: 110,
+      width: 120,
       align: 'left',
-      render: (amount) => <span className="font-black text-slate-900 text-[14px]">{formatVND(amount)}</span>,
+      render: (amount, record) => (
+        <div className="flex flex-col">
+          <span className="font-semibold text-slate-800 text-[14px] tracking-tighter">{formatVND(amount)}</span>
+          <span className="text-[9px] text-gray-500 font-semibold uppercase tracking-tighter">
+            Ship: +{formatVND(record.order?.shippingFee || 30000)}
+          </span>
+        </div>
+      ),
     },
     {
-      title: 'PTTT / Ngày',
-      key: 'methodDate',
-      width: 130,
+      title: 'PTTT',
+      key: 'method',
+      width: 100,
       align: 'left',
       render: (_, record) => (
-        <div className="flex flex-col items-start gap-1 py-1">
-          <span className="text-[10px] font-black text-gray-400 uppercase tracking-tighter">
-            {getMethodText(record.method)}
-          </span>
-          <span className="text-[10px] text-gray-300 font-bold uppercase leading-none">
+        <span className="text-[10px] font-semibold text-slate-800 uppercase tracking-tighter border border-gray-100 px-2 py-0.5 rounded bg-gray-50">
+          {getMethodText(record.method)}
+        </span>
+      ),
+    },
+    {
+      title: 'Thời gian',
+      key: 'createdAt',
+      width: 140,
+      align: 'left',
+      render: (_, record) => (
+        <div className="flex flex-col py-1">
+          <span className="text-[11px] font-semibold text-slate-800 leading-tight mb-0.5">
             {new Date(record.createdAt).toLocaleDateString('vi-VN')}
+          </span>
+          <span className="text-[10px] text-gray-500 font-semibold flex items-center gap-1">
+            <span className="w-1 h-1 rounded-full bg-gray-200" />
+            {new Date(record.createdAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
           </span>
         </div>
       ),
@@ -145,8 +135,8 @@ const PaymentTable = ({
       width: 110,
       align: 'left',
       render: (status) => (
-        <span className={`font-black uppercase text-[10px] tracking-widest ${getStatusTextColor(status)}`}>
-          {getStatusText(status)}
+        <span className={`px-2 py-0.5 rounded border font-semibold uppercase text-[10px] tracking-widest ${getStatusTextColor(status)}`}>
+          {getStatusText(status).toUpperCase()}
         </span>
       ),
     },
@@ -197,7 +187,7 @@ const PaymentTable = ({
         pageSize: itemsPerPage,
         onChange: onPageChange,
         size: 'small',
-        showTotal: (total) => <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Total Pay: {total}</span>,
+        showTotal: (total) => <span className="text-[10px] text-gray-400 font-semibold uppercase tracking-widest">Total Pay: {total}</span>,
       }}
       className="reconcile-expert-table [&_.ant-table-cell]:!align-middle [&_.ant-table-cell]:!bg-transparent"
     />

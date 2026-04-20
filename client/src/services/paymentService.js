@@ -1,4 +1,4 @@
-﻿import apiService from './apiService';
+import apiService from './apiService';
 import { PAYMENT_ENDPOINTS } from '../config/apiConstants';
 
 const paymentService = {
@@ -84,6 +84,16 @@ const paymentService = {
   verifyPaymentReturn: async (orderCode) => {
     try {
       const response = await apiService.get(`/webhooks/payments/payos/verify/${orderCode}`);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  verifyVNPayReturn: async (vnpParams) => {
+    try {
+      // VNPay returns result via query params, we send them to our backend return endpoint
+      const response = await apiService.get('/payments/vnpay-return', vnpParams);
       return response;
     } catch (error) {
       throw error;

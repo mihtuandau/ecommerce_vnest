@@ -34,7 +34,7 @@ const CartDrawerItem = ({ item, index, discountMap, computeDiscountFromMap, onRe
 
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2 mb-2">
-          <h3 className="text-sm font-semibold text-gray-900 line-clamp-2 flex-1 leading-snug">
+          <h3 className="text-sm font-semibold text-black line-clamp-2 flex-1 leading-snug">
             {item.product?.name}
           </h3>
           <button
@@ -48,14 +48,14 @@ const CartDrawerItem = ({ item, index, discountMap, computeDiscountFromMap, onRe
         </div>
 
         {(item.product?.variant?.size || item.product?.variant?.color) && (
-          <div className="flex gap-2 mb-3">
+          <div className="flex gap-1.5 mb-2.5">
             {item.product?.variant?.size && (
-              <span className="inline-flex items-center px-2.5 py-1 text-xs font-medium bg-gray-100 text-gray-700">
+              <span className="inline-flex px-1.5 py-0.5 text-[10px] font-bold bg-gray-50 text-gray-500 border border-gray-100 uppercase">
                 {item.product.variant.size}
               </span>
             )}
             {item.product?.variant?.color && (
-              <span className="inline-flex items-center px-2.5 py-1 text-xs font-medium bg-gray-100 text-gray-700">
+              <span className="inline-flex px-1.5 py-0.5 bg-gray-50 text-[10px] font-bold text-gray-500 border border-gray-100 uppercase">
                 {item.product.variant.color}
               </span>
             )}
@@ -63,21 +63,21 @@ const CartDrawerItem = ({ item, index, discountMap, computeDiscountFromMap, onRe
         )}
 
         <div className="flex items-center justify-between mt-auto">
-          <span className="inline-flex items-center justify-center px-3 py-1 text-xs font-semibold bg-black text-white">
+          <span className="inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold bg-black text-white">
             x{item.quantity}
           </span>
           <div className="text-right">
             {hasDiscount ? (
               <>
-                <span className="text-base font-bold text-red-500 block">
+                <span className="text-sm font-semibold text-red-500 block font-inter">
                   {formatPrice(discountedPrice * item.quantity)}
                 </span>
-                <span className="text-xs text-gray-400 line-through">
+                <span className="text-[10px] text-gray-300 line-through font-inter">
                   {formatPrice(originalPrice * item.quantity)}
                 </span>
               </>
             ) : (
-              <span className="text-base font-bold text-gray-900">
+              <span className="text-sm font-semibold text-black font-inter">
                 {formatPrice(originalPrice * item.quantity)}
               </span>
             )}

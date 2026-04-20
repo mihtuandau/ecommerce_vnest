@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import { FaSearch, FaBox, FaCheckCircle, FaEye } from "react-icons/fa";
 import { notify } from "../../../utils/notification";
@@ -103,26 +103,66 @@ const OrderLookupPage = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-white pb-8 pt-21">
-        <div className="container mx-auto px-4 max-w-4xl">
-          <div className="mb-6 text-center">
-            <div className="mb-3 inline-flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
-              <FaSearch className="text-2xl text-black" />
+      <div className="min-h-screen bg-white pb-12">
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="mb-10 text-center">
+            <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full bg-gray-50 border border-gray-100 shadow-sm animate-fadeIn">
+              <FaSearch className="text-xl text-black" />
             </div>
-            <h1 className="pb-2 pt-2 text-2xl font-bold text-gray-900">
-              TRA CỨU ĐƠN HÀNG
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight uppercase mb-3 text-center">
+              Tra cứu đơn hàng
             </h1>
-            <p className="text-gray-600">
-              Nhập mã đơn hàng và email/số điện thoại để tra cứu
+            <p className="text-[11px] sm:text-xs font-bold uppercase tracking-widest text-gray-400 max-w-xs mx-auto text-center">
+              Nhập mã đơn hàng để theo dõi tiến độ
             </p>
           </div>
 
-          {recentOrders.length > 0 && !order && (
-            <div className="mb-5 border border-gray-200 bg-white p-4 sm:p-5">
-              <h2 className="mb-3 text-base font-semibold text-gray-900">
-                Đơn hàng gần đây
+          <div className="mb-12 border border-gray-100 bg-white p-6 sm:p-10 shadow-sm">
+            <form onSubmit={handleSearch} className="space-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="relative group">
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2 block">
+                    Mã đơn hàng
+                  </label>
+                  <input
+                    type="text"
+                    value={orderCode}
+                    onChange={(e) => setOrderCode(e.target.value)}
+                    placeholder="Ví dụ: ORD-CSL..."
+                    className="w-full border-b-2 border-gray-100 py-3 text-lg font-bold tracking-tight focus:border-black focus:outline-none transition-all placeholder:text-gray-200 uppercase"
+                  />
+                </div>
+
+                <div className="relative group">
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2 block">
+                    Email / Số điện thoại
+                  </label>
+                  <input
+                    type="text"
+                    value={contact}
+                    onChange={(e) => setContact(e.target.value)}
+                    placeholder="Nhập thông tin..."
+                    className="w-full border-b-2 border-gray-100 py-3 text-lg font-bold tracking-tight focus:border-black focus:outline-none transition-all placeholder:text-gray-200"
+                  />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={searching}
+                className="w-full h-14 bg-black text-white text-[11px] font-bold uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-neutral-800 transition-all shadow-md active:scale-[0.98] disabled:bg-gray-200"
+              >
+                {searching ? "Đang tra cứu..." : "Tra cứu ngay"}
+              </button>
+            </form>
+          </div>
+
+          {recentOrders.length > 0 && (
+            <div className="border border-gray-100 bg-gray-50/50 p-6 sm:p-8">
+              <h2 className="mb-5 text-[11px] font-bold uppercase tracking-widest text-gray-400">
+                Đơn hàng đã tra cứu
               </h2>
-              <div className="space-y-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {recentOrders.map((recentOrder, index) => (
                   <button
                     key={index}
@@ -130,75 +170,24 @@ const OrderLookupPage = () => {
                       setOrderCode(recentOrder.orderCode);
                       setContact(recentOrder.contact);
                     }}
-                    className="w-full border border-gray-200 p-2.5 text-left transition-colors hover:border-black hover:bg-gray-50"
+                    className="border border-gray-100 bg-white p-4 text-left transition-all hover:border-black hover:shadow-lg group"
                   >
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="font-medium text-gray-900">
+                        <p className="font-bold text-gray-900 uppercase tracking-tight">
                           {recentOrder.orderCode}
                         </p>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-[10px] font-bold text-gray-400 mt-1">
                           {recentOrder.contact}
                         </p>
                       </div>
-                      <p className="text-xs text-gray-400">
-                        {new Date(recentOrder.date).toLocaleDateString("vi-VN")}
-                      </p>
+                      <FaEye size={12} className="text-gray-300 group-hover:text-black transition-colors" />
                     </div>
                   </button>
                 ))}
               </div>
             </div>
           )}
-
-          <div className="mb-6 border border-gray-200 bg-white p-4 sm:p-5">
-            <form onSubmit={handleSearch} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Mã đơn hàng <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={orderCode}
-                  onChange={(e) => setOrderCode(e.target.value)}
-                  placeholder="Ví dụ: ORD-A1B2C3"
-                  className="w-full border border-gray-300 px-3.5 py-2.5 focus:border-gray-900 focus:outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Email hoặc Số điện thoại{" "}
-                  <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={contact}
-                  onChange={(e) => setContact(e.target.value)}
-                  placeholder="example@email.com hoặc 0901234567"
-                  className="w-full border border-gray-300 px-3.5 py-2.5 focus:border-gray-900 focus:outline-none"
-                />
-              </div>
-
-              <Button
-                type="submit"
-                disabled={searching}
-                className="w-full flex items-center justify-center gap-2"
-              >
-                {searching ? (
-                  <>
-                    <Loading size="sm" />
-                    Đang tìm kiếm...
-                  </>
-                ) : (
-                  <>
-                    <FaSearch />
-                    Tra cứu đơn hàng
-                  </>
-                )}
-              </Button>
-            </form>
-          </div>
         </div>
       </div>
     </Layout>
@@ -206,9 +195,3 @@ const OrderLookupPage = () => {
 };
 
 export default OrderLookupPage;
-
-
-
-
-
-

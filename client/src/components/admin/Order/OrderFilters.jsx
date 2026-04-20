@@ -1,4 +1,4 @@
-﻿import { Search } from 'lucide-react';
+import { Search } from 'lucide-react';
 import Select from '../../common/Select';
 
 const paymentOptions = [

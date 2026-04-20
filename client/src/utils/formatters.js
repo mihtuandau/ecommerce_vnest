@@ -1,6 +1,7 @@
-﻿
+
 export const formatPrice = (price) => {
-  if (!price || isNaN(price)) return 'Liên hệ';
+  if (price === 0 || price === '0') return '0 ₫';
+  if (!price && price !== 0 || isNaN(price)) return 'Liên hệ';
   return new Intl.NumberFormat('vi-VN', {
     style: 'currency',
     currency: 'VND',

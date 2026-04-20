@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Drawer, Badge, Spin, Empty, Select } from "antd";
 import { Pagination as AntdPagination } from "antd";
@@ -188,18 +188,18 @@ const ProductsPage = () => {
 
   return (
     <Layout>
-      <div className="bg-white min-h-screen pb-8">
-        <div className="max-w-7xl mx-auto px-4">
-          <Breadcrumb
-            items={[
-              {
-                label: breadcrumbLabel,
-                path: window.location.pathname + window.location.search,
-              },
-            ]}
-          />
-
-          <PageTitle subtitle={subtitle} title={pageTitle} />
+      <div className="bg-white min-h-screen pb-12 text-slate-800">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="py-2">
+            <Breadcrumb
+              items={[
+                {
+                  label: breadcrumbLabel,
+                  path: window.location.pathname + window.location.search,
+                },
+              ]}
+            />
+          </div>
 
           <button
             onClick={() => setShowFilter(true)}

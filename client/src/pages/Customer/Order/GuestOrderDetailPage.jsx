@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { FaBox, FaArrowLeft } from "react-icons/fa";
 import Layout from "../../../components/layouts/Layout";
@@ -197,28 +197,39 @@ const GuestOrderDetailPage = () => {
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Tạm tính</span>
                     <span className="text-gray-900">
-                      {formatPrice(order.subtotal || order.total)}
+                      {formatPrice(order.subtotal || order.total - (order.shippingFee || 0))}
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Phí vận chuyển</span>
                     <span className="text-gray-900">
-                      {formatPrice(order.shippingFee || 0)}
+                      {(() => {
+                        const fee = (order.shippingFee > 0) ? order.shippingFee : (order.subtotal < 500000 ? 30000 : 0);
+                        return fee === 0 ? (
+                          <span className="text-green-600 text-[10px] font-bold uppercase">Miễn phí</span>
+                        ) : (
+                          formatPrice(fee)
+                        );
+                      })()}
                     </span>
                   </div>
-                  {order.discount > 0 && (
-                    <div className="flex justify-between text-sm text-black">
+                  {order.discountAmount > 0 && (
+                    <div className="flex justify-between text-sm text-red-600">
                       <span>Giảm giá</span>
-                      <span>-{formatPrice(order.discount)}</span>
+                      <span>-{formatPrice(order.discountAmount)}</span>
                     </div>
                   )}
 
-                  <div className="border-t border-gray-200 pt-3 flex justify-between">
-                    <span className="font-semibold text-gray-900">
+                  <div className="border-t border-gray-200 pt-3 flex justify-between items-center">
+                    <span className="font-semibold text-gray-900 uppercase text-xs tracking-wider">
                       Tổng cộng
                     </span>
-                    <span className="font-bold text-lg text-gray-900">
-                      {formatPrice(order.total)}
+                    <span className="font-black text-xl text-gray-900">
+                      {(() => {
+                        const fee = (order.shippingFee > 0) ? order.shippingFee : (order.subtotal < 500000 ? 30000 : 0);
+                        const displayTotal = (order.shippingFee === 0 && fee > 0) ? (order.total + fee) : order.total;
+                        return formatPrice(displayTotal);
+                      })()}
                     </span>
                   </div>
                 </div>
@@ -230,31 +241,28 @@ const GuestOrderDetailPage = () => {
                     Thanh toán
                   </h2>
                 </div>
-                <div className="space-y-2 p-4 text-sm sm:p-5">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Phương thức</span>
-                    <span className="text-gray-900 font-medium">
-                      {order.paymentMethod === "PAYOS"
-                        ? "PayOS - QR"
-                        : "Tiền mặt"}
+                <div className="space-y-4 p-4 text-sm sm:p-5">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-600 font-medium">Phương thức</span>
+                    <span className="text-gray-900 font-bold uppercase text-[11px]">
+                      {order.paymentMethod === "PAYOS" ? "PayOS - QR" : 
+                       order.paymentMethod === "VNPAY" ? "VNPay" :
+                       order.paymentMethod === "ZALOPAY" ? "ZaloPay" :
+                       "Tiền mặt (COD)"}
                     </span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Trạng thái</span>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-600 font-medium">Trạng thái</span>
                     <span
-                      className={`font-medium ${
-                        order.payment?.status === "SUCCESS"
-                          ? "text-black font-bold"
-                          : order.payment?.status === "PENDING"
-                            ? "text-yellow-600"
-                            : "text-gray-600"
+                      className={`font-bold uppercase text-[9px] px-2 py-0.5 rounded ${
+                        order.payment?.status === "SUCCESS" || order.paymentStatus === "SUCCESS" || order.paymentStatus === "PAID"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-amber-100 text-amber-700"
                       }`}
                     >
-                      {order.payment?.status === "SUCCESS"
+                      {order.payment?.status === "SUCCESS" || order.paymentStatus === "SUCCESS" || order.paymentStatus === "PAID"
                         ? "Đã thanh toán"
-                        : order.payment?.status === "PENDING"
-                          ? "Chờ thanh toán"
-                          : "Chưa thanh toán"}
+                        : "Chờ thanh toán"}
                     </span>
                   </div>
                 </div>

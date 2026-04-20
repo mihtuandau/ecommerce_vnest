@@ -40,9 +40,9 @@ export const DesktopNav = ({ navLinks, categories }) => {
                 <div className="relative" ref={catDropdownRef}>
                   <button
                     onClick={() => setCatDropdownOpen(!catDropdownOpen)}
-                    className={`flex items-center gap-1.5 px-4 py-2 text-sm uppercase tracking-wider transition-all duration-300 rounded-full font-semibold text-gray-600 hover:text-black hover:bg-gray-50 ${catDropdownOpen ? "bg-gray-100 text-black" : ""}`}
+                    className={`flex items-center gap-1.5 px-4 py-2 text-xs uppercase tracking-wider transition-all duration-300 rounded-full font-semibold text-gray-600 hover:text-slate-800 hover:bg-gray-50 ${catDropdownOpen ? "bg-gray-100 text-slate-800" : ""}`}
                   >
-                    <span>DANH MỤC</span>
+                    <span className='text-sm'>DANH MỤC</span>
                     <FaChevronDown size={7} className={`transition-transform duration-300 ${catDropdownOpen ? "rotate-180" : ""}`} />
                   </button>
 
@@ -60,7 +60,7 @@ export const DesktopNav = ({ navLinks, categories }) => {
                               key={cat.id}
                               to={`/category/${cat.id}`}
                               onClick={() => setCatDropdownOpen(false)}
-                              className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-gray-700 hover:text-black text-xs font-bold rounded-lg transition-all uppercase tracking-wide"
+                              className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-slate-500 hover:text-slate-800 text-xs font-semibold rounded-lg transition-all uppercase tracking-wide"
                             >
                               <span className="w-1.5 h-1.5 bg-gray-300 rounded-full" />
                               {cat.name}
@@ -90,7 +90,7 @@ export const DesktopNav = ({ navLinks, categories }) => {
                   key={cat.id}
                   to={`/category/${cat.id}`}
                   className={`px-4 py-2 text-sm uppercase tracking-wider whitespace-nowrap transition-all duration-300 relative group rounded-full ${
-                    isActive ? "font-bold text-black bg-gray-100 shadow-sm" : "font-semibold text-gray-700 hover:text-black hover:bg-gray-50"
+                    isActive ? "font-semibold text-slate-800 bg-gray-100 shadow-sm" : "font-semibold text-slate-500 hover:text-slate-800 hover:bg-gray-50"
                   }`}
                 >
                   {cat.name}

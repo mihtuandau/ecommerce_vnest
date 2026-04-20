@@ -36,7 +36,7 @@ export const UserActions = ({
               </div>
               <div className="flex flex-col items-start leading-none">
                 <span className="text-[10px] text-gray-400 font-medium">Xin chào,</span>
-                <span className="text-[12px] font-bold text-gray-800 group-hover:text-blue-600 truncate max-w-[72px]">
+                <span className="text-[12px] font-semibold text-black group-hover:text-neutral-800 truncate max-w-[72px]">
                   {user.name?.split(" ").slice(-1)[0] || "Bạn"}
                 </span>
               </div>

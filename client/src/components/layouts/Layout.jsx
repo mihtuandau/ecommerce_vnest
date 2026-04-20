@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
 import { useAuth } from '../../hooks/useAuth';
@@ -12,10 +12,10 @@ const Layout = ({ children, showSidebar = false }) => {
 
   if (showSidebar && isAdmin) {
     return (
-      <div className="min-h-screen flex flex-col bg-white">
+      <div className="min-h-screen flex flex-col bg-white overflow-hidden">
         <div className="flex flex-1">
           <Sidebar />
-          <main className="flex-1 px-3 py-4 md:px-4 md:py-5">
+          <main className="flex-1 px-3 py-4 md:px-4 md:py-5 overflow-x-hidden">
             {children || <Outlet />}
           </main>
         </div>
@@ -31,6 +31,7 @@ const Layout = ({ children, showSidebar = false }) => {
           colorLink: '#000000',
           colorLinkHover: '#404040',
           borderRadius: 0,
+          fontFamily: 'Inter, sans-serif',
         },
         components: {
           Button: {
@@ -52,9 +53,9 @@ const Layout = ({ children, showSidebar = false }) => {
         }
       }}
     >
-      <div className="min-h-screen flex flex-col bg-white">
+      <div className="min-h-screen flex flex-col bg-white overflow-x-hidden relative">
         <Header />
-        <main className="flex-1 pt-[120px] md:pt-[167px]">
+        <main className="flex-1 overflow-x-hidden relative">
           {children || <Outlet />}
         </main>
         <Footer />
@@ -63,11 +64,4 @@ const Layout = ({ children, showSidebar = false }) => {
   );
 };
 
-
-
 export default Layout;
-
-
-
-
-

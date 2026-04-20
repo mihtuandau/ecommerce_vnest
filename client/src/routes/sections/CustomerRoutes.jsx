@@ -17,6 +17,8 @@ const Profile = lazy(() => import("../../pages/Customer/Profile/ProfilePage"));
 const About = lazy(() => import("../../pages/Customer/About/AboutPage"));
 const Support = lazy(() => import("../../pages/Customer/Support/SupportChatPage"));
 const Promotions = lazy(() => import("../../pages/Customer/Promotions/PromotionsPage"));
+const PaymentReturn = lazy(() => import("../../pages/Customer/Payment/PaymentReturn.jsx"));
+const PaymentCancel = lazy(() => import("../../pages/Customer/Payment/PaymentCancel.jsx"));
 
 export const customerRoutes = [
   <Route key="c-home" path="/" element={<Home />} />,
@@ -37,4 +39,7 @@ export const customerRoutes = [
   <Route key="c-sup" path="/support" element={<Support />} />,
   <Route key="c-prom" path="/promotions" element={<Promotions />} />,
   <Route key="c-deals" path="/deals" element={<Promotions />} />,
+  <Route key="pay-ret" path="/payment/return" element={<PaymentReturn />} />,
+  <Route key="pay-vnp" path="/payment/vnpay-return" element={<PaymentReturn />} />,
+  <Route key="pay-can" path="/payment/cancel" element={<PaymentCancel />} />,
 ];

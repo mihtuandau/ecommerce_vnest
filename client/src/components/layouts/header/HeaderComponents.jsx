@@ -7,7 +7,7 @@ export const AnimatedNavLink = ({ to, label, icon, className: cls, onClick, isAc
     to={to}
     onClick={onClick}
     className={`flex items-center gap-1.5 px-4 py-2 text-sm uppercase tracking-wider whitespace-nowrap transition-all duration-300 relative group rounded-full ${
-      isActive ? `font-bold text-black bg-gray-100 shadow-sm` : `font-semibold ${cls || "text-gray-600 hover:text-black hover:bg-gray-50"}`
+      isActive ? `font-semibold text-slate-800 bg-gray-100 shadow-sm` : `font-semibold ${cls || "text-slate-500 hover:text-slate-800 hover:bg-gray-50"}`
     }`}
   >
     {icon}
@@ -19,7 +19,7 @@ export const AnimatedNavLink = ({ to, label, icon, className: cls, onClick, isAc
 );
 
 export const Badge = ({ count }) => count > 0 ? (
-  <span className="absolute -top-2 -right-2 w-5 h-5 bg-black text-white text-[10px] rounded-full flex items-center justify-center font-bold border border-white">
+  <span className="absolute -top-2 -right-2 w-5 h-5 bg-black text-white text-[10px] rounded-full flex items-center justify-center font-semibold border border-white">
     {count > 99 ? "99+" : count}
   </span>
 ) : null;
@@ -41,30 +41,30 @@ export const UserMenuItems = ({ user, logout, onClick }) => (
     <Link
       to="/profile"
       onClick={onClick}
-      className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 hover:text-black text-gray-700 text-sm font-semibold uppercase tracking-wide transition-all"
+      className="flex items-center gap-3 px-5 py-3.5 hover:bg-gray-50 hover:text-black text-black text-sm font-semibold transition-all"
     >
-      <FaUserCircle size={16} /> <span>Tài khoản</span>
+      <FaUserCircle size={18} className="text-gray-400" /> <span>Tài khoản</span>
     </Link>
     <Link
       to="/orders"
       onClick={onClick}
-      className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 hover:text-black text-gray-700 text-sm font-semibold uppercase tracking-wide transition-all"
+      className="flex items-center gap-3 px-5 py-3.5 hover:bg-gray-50 hover:text-black text-black text-sm font-semibold transition-all"
     >
-      <FaClipboardList size={16} /> <span>Đơn hàng</span>
+      <FaClipboardList size={18} className="text-gray-400" /> <span>Đơn hàng của tôi</span>
     </Link>
     <Link
       to="/support"
       onClick={onClick}
-      className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 hover:text-black text-gray-700 text-sm font-semibold uppercase tracking-wide transition-all"
+      className="flex items-center gap-3 px-5 py-3.5 hover:bg-gray-50 hover:text-black text-black text-sm font-semibold transition-all"
     >
-      <FaComments size={16} /> <span>Hỗ trợ</span>
+      <FaComments size={18} className="text-gray-400" /> <span>Hỗ trợ khách hàng</span>
     </Link>
-    <div className="border-t border-gray-100">
+    <div className="border-t border-gray-100 mt-1">
       <button
         onClick={() => { onClick(); logout(); }}
-        className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-red-50 text-red-600 text-sm font-semibold uppercase tracking-wide transition-all"
+        className="w-full flex items-center gap-3 px-5 py-3.5 hover:bg-red-50 text-red-600 text-sm font-semibold transition-all"
       >
-        <FaSignOutAlt size={16} /> <span>Đăng xuất</span>
+        <FaSignOutAlt size={18} /> <span>Đăng xuất</span>
       </button>
     </div>
   </div>

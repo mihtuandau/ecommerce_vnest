@@ -3,13 +3,13 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { FaCheckCircle, FaTimesCircle, FaSpinner, FaClock } from "react-icons/fa";
 import paymentService from "../../../services/paymentService";
 
-const StatusLayout = ({ icon: Icon, title, description, children, iconColor = "text-gray-900" }) => (
+const StatusLayout = ({ icon: Icon, title, description, children, iconColor = "text-black" }) => (
   <div className="min-h-screen bg-white flex items-center justify-center p-4">
-    <div className="w-full max-w-lg border-2 border-gray-900 p-12 text-center">
-      <div className="w-20 h-20 mx-auto mb-8 border-2 border-gray-900 flex items-center justify-center">
+    <div className="w-full max-w-lg border-2 border-black p-12 text-center">
+      <div className="w-20 h-20 mx-auto mb-8 border-2 border-black flex items-center justify-center">
         <Icon className={`text-4xl ${iconColor}`} />
       </div>
-      <h1 className="text-3xl font-light text-gray-900 mb-3 tracking-tight">{title}</h1>
+      <h1 className="text-3xl font-semibold text-black mb-3 tracking-tight leading-snug">{title}</h1>
       <p className="text-gray-600 mb-8 font-light leading-relaxed">{description}</p>
       {children}
     </div>
@@ -21,11 +21,11 @@ const OrderSummary = ({ order, amount }) => (
     <div className="space-y-4">
       <div className="flex justify-between pb-4 border-b border-gray-200">
         <span className="text-sm font-light text-gray-600">Mã đơn hàng</span>
-        <span className="font-normal text-gray-900">#{order?.orderCode}</span>
+        <span className="font-semibold text-black">#{order?.orderCode}</span>
       </div>
       <div className="flex justify-between pb-4 border-b border-gray-200">
         <span className="text-sm font-light text-gray-600">Số tiền</span>
-        <span className="font-normal text-gray-900">{amount?.toLocaleString("vi-VN")}₫</span>
+        <span className="font-semibold text-black">{amount?.toLocaleString("vi-VN")}₫</span>
       </div>
       <div className="flex justify-between items-center">
         <span className="text-sm font-light text-gray-600">Trạng thái</span>
@@ -45,6 +45,37 @@ const PaymentReturn = () => {
 
   const checkPaymentStatus = async () => {
     try {
+      const vnp_ResponseCode = searchParams.get("vnp_ResponseCode");
+      
+      // Handle VNPay
+      if (vnp_ResponseCode) {
+        const vnpParams = Object.fromEntries(searchParams.entries());
+        const response = await paymentService.verifyVNPayReturn(vnpParams);
+        
+        if (response) {
+          const { payment, order } = response;
+          setPaymentInfo({ 
+            orderCode: order?.orderCode, 
+            amount: payment?.amount || order?.total, 
+            status: payment?.status 
+          });
+          setOrderInfo({ order });
+
+          if (vnp_ResponseCode === "00" && (payment?.status === "SUCCESS" || payment?.status === "PAID")) {
+            setStatus("success");
+            localStorage.setItem("paymentCompleted", "true");
+          } else if (vnp_ResponseCode === "24") {
+            setStatus("cancelled");
+          } else {
+            setStatus("failed");
+          }
+        } else {
+          setStatus("error");
+        }
+        return;
+      }
+
+      // Handle PayOS / Other
       const orderCode = searchParams.get("orderCode") || searchParams.get("id");
       const cancel = searchParams.get("cancel");
       const statusParam = searchParams.get("status");
@@ -53,8 +84,8 @@ const PaymentReturn = () => {
       if (cancel === "true" || statusParam === "CANCELLED") return setStatus("cancelled");
 
       const response = await paymentService.verifyPaymentReturn(orderCode);
-      if (response.data) {
-        const { payment, order } = response.data;
+      if (response) {
+        const { payment, order } = response;
         setPaymentInfo({ orderCode: payment?.payosOrderCode, amount: payment?.amount || order?.total, status: payment?.status });
         setOrderInfo({ order });
 
@@ -70,8 +101,13 @@ const PaymentReturn = () => {
         setStatus("error");
       }
     } catch (error) {
-      const statusParam = searchParams.get("status");
-      setStatus(statusParam === "PAID" ? "success" : "error");
+      const vnp_ResponseCode = searchParams.get("vnp_ResponseCode");
+      // Tuyệt đối không tự xác nhận thành công nếu Backend báo lỗi checksum (400)
+      if (vnp_ResponseCode === "24") {
+        setStatus("cancelled");
+      } else {
+        setStatus("error");
+      }
     }
   };
 
@@ -103,10 +139,10 @@ const PaymentReturn = () => {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center p-4">
         <div className="text-center">
-          <div className="w-16 h-16 mx-auto mb-6 border-2 border-gray-900 flex items-center justify-center">
-            <FaSpinner className="text-2xl text-gray-900 animate-spin" />
+          <div className="w-16 h-16 mx-auto mb-6 border-2 border-black flex items-center justify-center">
+            <FaSpinner className="text-2xl text-black animate-spin" />
           </div>
-          <h2 className="text-xl font-light text-gray-900 mb-2 tracking-tight">Đang Xác Nhận Thanh Toán</h2>
+          <h1 className="text-3xl font-semibold text-black mb-3 tracking-tight leading-snug">Đang Xác Nhận Thanh Toán..</h1>
           <p className="text-sm text-gray-500 font-light">Vui lòng chờ...</p>
         </div>
       </div>
@@ -118,8 +154,8 @@ const PaymentReturn = () => {
       <StatusLayout icon={FaCheckCircle} title="Thanh Toán Thành Công" description="Đơn hàng đang được xử lý và sẽ được giao trong 2-3 ngày làm việc">
         <OrderSummary order={orderInfo?.order} amount={paymentInfo?.amount} />
         <div className="space-y-3">
-          <button onClick={handleViewOrder} className="w-full bg-black text-white py-3 hover:bg-neutral-800 text-sm">Xem Chi Tiết Đơn Hàng</button>
-          <button onClick={() => navigate("/products")} className="w-full border border-gray-300 py-3 hover:border-gray-900 text-sm">Tiếp Tục Mua Sắm</button>
+          <button onClick={handleViewOrder} className="w-full bg-black hover:bg-neutral-800 text-white py-3 transition-colors text-sm">Xem Chi Tiết Đơn Hàng</button>
+          <button onClick={() => navigate("/products")} className="w-full border border-gray-300 py-3 hover:border-black text-sm">Tiếp Tục Mua Sắm</button>
         </div>
       </StatusLayout>
     );
@@ -129,8 +165,8 @@ const PaymentReturn = () => {
     return (
       <StatusLayout icon={FaTimesCircle} title="Thanh Toán Đã Bị Hủy" description="Bạn đã hủy giao dịch. Đơn hàng vẫn được giữ trong giỏ hàng">
         <div className="space-y-3">
-          <button onClick={() => navigate("/cart")} className="w-full bg-black text-white py-3 hover:bg-neutral-800 text-sm">Quay Lại Giỏ Hàng</button>
-          <button onClick={() => navigate("/checkout")} className="w-full border border-gray-300 py-3 hover:border-gray-900 text-sm">Thử Lại Thanh Toán</button>
+          <button onClick={() => navigate("/cart")} className="w-full bg-black hover:bg-neutral-800 text-white py-3 transition-colors text-sm">Quay Lại Giỏ Hàng</button>
+          <button onClick={() => navigate("/checkout")} className="w-full border border-gray-300 py-3 hover:border-black text-sm">Thử Lại Thanh Toán</button>
         </div>
       </StatusLayout>
     );
@@ -141,8 +177,8 @@ const PaymentReturn = () => {
       <StatusLayout icon={FaClock} title="Đang Xử Lý Thanh Toán" description="Giao dịch đang được xử lý. Vui lòng kiểm tra lại sau vài phút" iconColor="animate-pulse">
         {pollAttempts > 0 && <p className="text-sm text-gray-500 mb-4 font-light">Đang tự động kiểm tra... ({pollAttempts}/10)</p>}
         <div className="space-y-3">
-          <button onClick={checkPaymentStatus} className="w-full bg-black text-white py-3 hover:bg-neutral-800 text-sm">Kiểm Tra Lại</button>
-          <button onClick={() => navigate("/")} className="w-full border border-gray-300 py-3 hover:border-gray-900 text-sm">Về Trang Chủ</button>
+          <button onClick={checkPaymentStatus} className="w-full bg-black hover:bg-neutral-800 text-white py-3 transition-colors text-sm">Kiểm Tra Lại</button>
+          <button onClick={() => navigate("/")} className="w-full border border-gray-300 py-3 hover:border-black text-sm">Về Trang Chủ</button>
         </div>
       </StatusLayout>
     );
@@ -151,8 +187,8 @@ const PaymentReturn = () => {
   return (
     <StatusLayout icon={FaTimesCircle} title={status === "failed" ? "Thanh Toán Thất Bại" : "Có Lỗi Xảy Ra"} description={status === "failed" ? "Giao dịch không thành công. Vui lòng thử lại hoặc liên hệ hỗ trợ" : "Không thể xác nhận trạng thái thanh toán. Vui lòng liên hệ hỗ trợ"}>
       <div className="space-y-3">
-        <button onClick={() => navigate("/checkout")} className="w-full bg-black text-white py-3 hover:bg-neutral-800 text-sm">Thử Lại Thanh Toán</button>
-        <button onClick={() => navigate("/")} className="w-full border border-gray-300 py-3 hover:border-gray-900 text-sm">Về Trang Chủ</button>
+        <button onClick={() => navigate("/checkout")} className="w-full bg-black hover:bg-neutral-800 text-white py-3 transition-colors text-sm">Thử Lại Thanh Toán</button>
+        <button onClick={() => navigate("/")} className="w-full border border-gray-300 py-3 hover:border-black text-sm">Về Trang Chủ</button>
       </div>
     </StatusLayout>
   );

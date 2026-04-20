@@ -1,4 +1,4 @@
-﻿import { Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { ChevronRight, ArrowUpRight } from "lucide-react";
 
 const FeaturedCategories = ({ categories = [], isLoading = false }) => {
@@ -61,20 +61,19 @@ const FeaturedCategories = ({ categories = [], isLoading = false }) => {
 
   return (
     <section className="py-16 bg-white overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4">
-        {}
-        <div className="flex flex-col mb-12 items-center text-center">
-          <span className="text-[10px] uppercase tracking-[0.4em] text-blue-600 font-black mb-3 block">
+      <div className="max-w-7xl mx-auto px-6">
+        {/* Section Header */}
+        <div className="flex flex-col mb-12 items-center text-center animate-fadeIn">
+          <span className="text-[10px] uppercase font-semibold tracking-[0.4em] text-black mb-2">
             Khám phá bộ sưu tập
           </span>
-          <h2 className="text-3xl md:text-4xl font-black text-gray-900 tracking-tighter uppercase mb-4">
-            DANH MỤC NỔI BẬT
+          <h2 className="text-3xl sm:text-4xl font-semibold text-black uppercase tracking-tight mb-4">
+            Danh mục nổi bật
           </h2>
-          <div className="h-1 w-20 bg-blue-600 rounded-full"></div>
+          <div className="h-1.5 w-12 bg-black rounded-full"></div>
         </div>
 
-        {}
-        <div className="flex flex-wrap justify-center gap-6 sm:gap-8">
+        <div className="flex overflow-x-auto lg:flex-wrap lg:justify-center gap-6 sm:gap-8 pb-8 -mx-4 px-4 scrollbar-hide snap-x select-none">
           {isLoading
             ? Array(6)
                 .fill(0)
@@ -83,10 +82,9 @@ const FeaturedCategories = ({ categories = [], isLoading = false }) => {
                 <Link
                   key={category.id}
                   to={`/category/${category.id}`}
-                  className="group relative bg-white transition-all duration-500 text-center w-[160px] sm:w-[180px]"
+                  className="group relative bg-white transition-all duration-500 text-center min-w-[140px] sm:min-w-[160px] lg:w-[180px] snap-start"
                 >
-                  {}
-                  <div className="relative w-24 h-24 sm:w-28 sm:h-28 mx-auto mb-6 transform group-hover:-translate-y-2 transition-transform duration-500">
+                  <div className="relative w-20 h-20 sm:w-28 sm:h-28 mx-auto mb-6 transform group-hover:-translate-y-2 transition-transform duration-500">
                     <div className="absolute inset-0 bg-gray-50 rounded-full scale-110 group-hover:scale-125 transition-transform duration-500 group-hover:bg-blue-50/50"></div>
 
                     <div className="relative w-full h-full overflow-hidden rounded-full border-4 border-white shadow-xl group-hover:shadow-2xl transition-all duration-500">
@@ -98,19 +96,18 @@ const FeaturedCategories = ({ categories = [], isLoading = false }) => {
                       <div className="absolute inset-0 bg-blue-600/0 group-hover:bg-blue-600/10 transition-colors duration-500"></div>
                     </div>
 
-                    {}
                     <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-black text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300 shadow-lg">
                       <ChevronRight size={14} />
                     </div>
                   </div>
 
                   <div className="relative z-10">
-                    <h3 className="text-sm sm:text-base font-bold text-gray-900 mb-1 group-hover:text-blue-600 transition-colors tracking-tight">
+                    <h3 className="text-xs sm:text-base font-semibold text-black mb-1 group-hover:text-neutral-800 transition-colors tracking-tight truncate">
                       {category.name}
                     </h3>
-                    <div className="flex items-center justify-center gap-2">
-                      <span className="w-1 h-1 bg-gray-200 rounded-full group-hover:bg-blue-400 transition-colors"></span>
-                      <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">
+                    <div className="flex items-center justify-center gap-1.5 sm:gap-2">
+                      <span className="w-1 h-1 bg-gray-200 rounded-full group-hover:bg-neutral-400 transition-colors"></span>
+                      <p className="text-[9px] sm:text-[10px] text-gray-400 font-semibold uppercase tracking-widest whitespace-nowrap">
                         {category.productCount} SẢN PHẨM
                       </p>
                     </div>
@@ -122,7 +119,7 @@ const FeaturedCategories = ({ categories = [], isLoading = false }) => {
         <div className="mt-12 flex justify-center">
           <Link
             to="/products"
-            className="group flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-500 hover:text-gray-900 transition-colors"
+            className="group flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-gray-500 hover:text-black transition-colors"
           >
             XEM TẤT CẢ DANH MỤC
             <ArrowUpRight

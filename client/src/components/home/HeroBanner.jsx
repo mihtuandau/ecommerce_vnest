@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Play, Pause } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -57,7 +57,7 @@ const HeroBanner = ({ slides = [] }) => {
   const currentBanner = bannerSlides[currentSlide];
 
   return (
-    <div className="relative w-full h-[600px] lg:h-[800px] overflow-hidden bg-gray-100 -mt-[60px]">
+    <div className="relative w-full h-[600px] lg:h-[800px] overflow-hidden bg-gray-100 -mt-[60px] select-none">
       {}
       {bannerSlides.map((slide, index) => (
         <div
@@ -86,27 +86,27 @@ const HeroBanner = ({ slides = [] }) => {
 
       {}
       <div className="relative z-20 h-full flex items-center">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-16">
+        <div className="max-w-7xl mx-auto px-6 w-full lg:px-16">
           <div className="max-w-xl lg:max-w-2xl">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-6 leading-tight drop-shadow-lg animate-slideUp">
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl xl:text-7xl font-semibold text-black mb-4 sm:mb-6 leading-[1.1] animate-slideUp uppercase tracking-tighter">
               {currentBanner.title}
             </h1>
-            <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-gray-200 mb-4 sm:mb-6 md:mb-8 drop-shadow-lg animate-slideUp animation-delay-200">
+            <p className="text-xs sm:text-base md:text-lg lg:text-xl text-slate-600 mb-8 sm:mb-10 animate-slideUp animation-delay-200 max-w-lg leading-relaxed font-medium">
               {currentBanner.subtitle}
             </p>
-            <div className="flex gap-2 sm:gap-3 md:gap-4 animate-slideUp animation-delay-400">
+            <div className="flex flex-col sm:flex-row gap-4 animate-slideUp animation-delay-400">
               <Link
                 to={currentBanner.ctaLink}
-                className="px-6 py-3 sm:px-8 sm:py-4 md:px-10 md:py-4 text-sm sm:text-base md:text-lg font-medium bg-white text-gray-900 hover:bg-gray-100 shadow-2xl hover:scale-105 transition-all duration-300 uppercase tracking-wider"
+                className="px-8 py-4 sm:px-10 sm:py-5 text-[11px] sm:text-xs font-semibold bg-white text-black border-none hover:bg-black hover:text-white transition-all duration-500 uppercase tracking-[0.2em] shadow-xl text-center"
               >
                 {currentBanner.cta}
               </Link>
               {currentBanner.type === 'video' && (
                 <button
                   onClick={() => setVideoMuted(!videoMuted)}
-                  className="w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-colors"
+                  className="w-full sm:w-14 h-14 flex items-center justify-center bg-white/10 backdrop-blur-md text-white border border-white/20 hover:bg-white/30 transition-all rounded-full"
                 >
-                  {videoMuted ? <Play size={18} /> : <Pause size={18} />}
+                  {videoMuted ? <Play size={20} fill="currentColor" /> : <Pause size={20} fill="currentColor" />}
                 </button>
               )}
             </div>
@@ -117,13 +117,13 @@ const HeroBanner = ({ slides = [] }) => {
       {}
       <button
         onClick={prevSlide}
-        className="absolute left-2 sm:left-4 lg:left-8 top-1/2 -translate-y-1/2 z-30 w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 flex items-center justify-center bg-white/90 text-gray-900 hover:bg-white transition-colors"
+        className="absolute left-2 sm:left-4 lg:left-8 top-1/2 -translate-y-1/2 z-30 w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 flex items-center justify-center bg-white/90 text-black hover:bg-white transition-colors"
       >
         <ChevronLeft size={20} />
       </button>
       <button
         onClick={nextSlide}
-        className="absolute right-2 sm:right-4 lg:right-8 top-1/2 -translate-y-1/2 z-30 w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 flex items-center justify-center bg-white/90 text-gray-900 hover:bg-white transition-colors"
+        className="absolute right-2 sm:right-4 lg:left-8 top-1/2 -translate-y-1/2 z-30 w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 flex items-center justify-center bg-white/90 text-black hover:bg-white transition-colors"
       >
         <ChevronRight size={20} />
       </button>

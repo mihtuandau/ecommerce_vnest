@@ -1,4 +1,4 @@
-﻿import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ArrowUpRight } from "lucide-react";
 import ProductCard from "../products/ProductCard";
 
@@ -14,10 +14,10 @@ const BestSellingProducts = ({ products = [] }) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         {}
         <div className="flex flex-col mb-12 items-center text-center">
-          <span className="text-[10px] uppercase tracking-[0.4em] text-orange-500 font-black mb-3 block">
+          <span className="text-[10px] uppercase tracking-[0.4em] text-orange-500 font-semibold mb-3 block">
             Trending Now
           </span>
-          <h2 className="text-3xl md:text-4xl font-black text-gray-900 tracking-tighter uppercase mb-4">
+          <h2 className="text-3xl md:text-4xl font-semibold text-slate-800 tracking-tighter uppercase mb-4">
             SẢN PHẨM BÁN CHẠY
           </h2>
           <div className="h-1 w-20 bg-orange-500 rounded-full"></div>
@@ -34,7 +34,7 @@ const BestSellingProducts = ({ products = [] }) => {
         <div className="mt-12 flex justify-center">
           <Link
             to="/products?sort=sold"
-            className="group flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-500 hover:text-gray-900 transition-colors"
+            className="group flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-gray-500 hover:text-slate-800 transition-colors"
           >
             XEM TẤT CẢ
             <ArrowUpRight

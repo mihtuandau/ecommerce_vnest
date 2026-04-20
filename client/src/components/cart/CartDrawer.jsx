@@ -13,12 +13,23 @@ const CartDrawer = ({ isOpen, onClose }) => {
   const cartTotal = cartData?.total || 0;
   const { discountMap } = useAutoApplyDiscounts();
 
+  // Tính lại tổng tiền sau giảm giá Flash Sale
+  const dynamicTotal = cartItems.reduce((acc, item) => {
+    const originalPrice = item.product?.variant?.price || 0;
+    const discountedPrice = computeDiscountFromMap(
+      item.product?.id,
+      originalPrice,
+      discountMap
+    );
+    return acc + (discountedPrice * item.quantity);
+  }, 0);
+
   const [couponCode, setCouponCode] = useState("");
   const [couponLoading, setCouponLoading] = useState(false);
   const [couponResult, setCouponResult] = useState(null); 
 
   const discountAmount = couponResult?.valid ? (couponResult.discountAmount || 0) : 0;
-  const finalTotal = Math.max(0, cartTotal - discountAmount);
+  const finalTotal = Math.max(0, dynamicTotal - discountAmount);
 
   const handleApplyCoupon = async () => {
     if (!couponCode.trim()) return;
@@ -96,7 +107,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
                     <FaShoppingBag className="text-white text-lg" />
                   </div>
                   <div>
-                    <h2 className="text-lg font-bold text-gray-900">Giỏ Hàng</h2>
+                    <h2 className="text-lg font-bold text-gray-900">Giỏ hàng</h2>
                     <p className="text-xs text-gray-500">{cartItems.length} sản phẩm</p>
                   </div>
                 </div>
@@ -128,11 +139,11 @@ const CartDrawer = ({ isOpen, onClose }) => {
                   <div className="w-20 h-20 bg-gray-100 flex items-center justify-center mb-4">
                     <FaShoppingBag className="text-gray-400 text-3xl" />
                   </div>
-                  <p className="text-gray-900 font-semibold text-base mb-2">Giỏ hàng trống</p>
-                  <p className="text-gray-500 text-sm mb-6">Thêm sản phẩm vào giỏ để tiếp tục mua sắm</p>
+                  <p className="text-gray-900 font-bold text-base mb-2">Giỏ hàng trống</p>
+                  <p className="text-gray-500 text-sm mb-6">Thêm sản phẩm để tiếp tục mua sắm</p>
                   <button
                     onClick={onClose}
-                    className="px-6 py-2.5 bg-black hover:bg-neutral-800 text-white text-sm font-medium transition-colors cursor-pointer"
+                    className="px-6 py-2.5 bg-black hover:bg-neutral-800 text-white text-[11px] font-bold uppercase tracking-widest transition-all cursor-pointer"
                   >
                     Tiếp tục mua sắm
                   </button>
@@ -144,14 +155,14 @@ const CartDrawer = ({ isOpen, onClose }) => {
               <div className="border-t border-gray-100 px-6 py-5 space-y-4 bg-gradient-to-t from-gray-50 to-white flex-shrink-0">
                 <div>
                   <div className="flex items-center gap-2 mb-2">
-                    <FaTag className="text-black text-sm flex-shrink-0" />
-                    <span className="text-xs font-semibold text-gray-700 uppercase tracking-wide">Mã giảm giá</span>
+                    <FaTag className="text-black text-xs flex-shrink-0" />
+                    <span className="text-[11px] font-semibold text-gray-400">Mã giảm giá</span>
                   </div>
                   {couponResult?.valid ? (
-                    <div className="flex items-center justify-between px-3 py-2.5 bg-green-50 border border-green-200">
+                    <div className="flex items-center justify-between px-3 py-2 bg-green-50 border border-green-100">
                       <div className="flex items-center gap-2">
                         <FaCheckCircle className="text-green-600 flex-shrink-0" />
-                        <span className="text-sm font-medium text-green-800">{couponCode.toUpperCase()}</span>
+                        <span className="text-sm font-bold text-green-800">{couponCode}</span>
                         <span className="text-xs text-green-600">{couponResult.message}</span>
                       </div>
                       <button
@@ -169,40 +180,37 @@ const CartDrawer = ({ isOpen, onClose }) => {
                           value={couponCode}
                           onChange={(e) => { setCouponCode(e.target.value); setCouponResult(null); }}
                           onKeyDown={(e) => e.key === "Enter" && handleApplyCoupon()}
-                          placeholder="Nhập mã giảm giá..."
-                          className="flex-1 text-sm border border-gray-200 px-3 py-2 focus:outline-none focus:border-black transition-colors bg-white"
+                          placeholder="Nhập mã..."
+                          className="flex-1 text-sm border-b border-gray-100 px-1 py-1.5 focus:outline-none focus:border-black transition-colors bg-white font-medium"
                         />
                         <button
                           onClick={handleApplyCoupon}
                           disabled={couponLoading || !couponCode.trim()}
-                          className="px-4 py-2 bg-black hover:bg-neutral-800 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold transition-colors cursor-pointer whitespace-nowrap"
+                          className="px-4 py-2 bg-black hover:bg-neutral-800 disabled:opacity-50 text-white text-[11px] font-bold transition-all cursor-pointer whitespace-nowrap"
                         >
-                          {couponLoading ? "..." : "Áp dụng"}
+                          {couponLoading ? "..." : "Sử dụng"}
                         </button>
                       </div>
                       {couponResult?.valid === false && (
                         <div className="flex items-center gap-1.5 mt-1.5">
-                          <FaTimesCircle className="text-red-500 flex-shrink-0 text-xs" />
-                          <p className="text-xs text-red-600">{couponResult.message}</p>
+                          <FaTimesCircle className="text-red-500 flex-shrink-0 text-[10px]" />
+                          <p className="text-[11px] text-red-500">{couponResult.message}</p>
                         </div>
                       )}
                     </>
                   )}
                 </div>
 
-                <div className="flex justify-between items-center p-4 bg-white border border-gray-200">
+                <div className="flex justify-between items-center p-4 bg-white border border-gray-50 shadow-sm">
                   <div>
-                    <span className="block text-xs text-gray-500 uppercase tracking-wide mb-1">Tổng tiền</span>
-                    {discountAmount > 0 && (
-                      <span className="block text-sm text-gray-400 line-through mb-0.5">{formatPrice(cartTotal)}</span>
+                    <span className="block text-[11px] font-semibold text-gray-400 mb-1">Tổng tiền thanh toán</span>
+                    {finalTotal < cartTotal && (
+                      <span className="block text-sm text-gray-300 line-through mb-0.5 font-inter">{formatPrice(cartTotal)}</span>
                     )}
-                    <span className="text-2xl font-bold text-gray-900">{formatPrice(finalTotal)}</span>
-                    {discountAmount > 0 && (
-                      <span className="block text-xs text-green-600 font-medium mt-0.5">Tiết kiệm {formatPrice(discountAmount)}</span>
-                    )}
+                    <span className="text-2xl font-bold text-gray-900 tracking-tighter font-inter">{formatPrice(finalTotal)}</span>
                   </div>
                   <div className="text-right">
-                    <span className="text-xs text-gray-500">{cartItems.length} sản phẩm</span>
+                    <span className="text-[11px] font-medium text-gray-400">{cartItems.length} sản phẩm</span>
                   </div>
                 </div>
 
@@ -210,20 +218,20 @@ const CartDrawer = ({ isOpen, onClose }) => {
                   <Link
                     to="/cart"
                     onClick={onClose}
-                    className="flex-1 text-center bg-white hover:bg-gray-50 text-gray-900 text-sm font-semibold py-3 transition-all duration-200 cursor-pointer border-2 border-black hover:border-neutral-800"
+                    className="flex-1 text-center bg-white hover:bg-gray-50 text-gray-900 text-[12px] font-bold py-3.5 transition-all duration-200 cursor-pointer border border-gray-100"
                   >
-                    Xem Giỏ Hàng
+                    Xem giỏ hàng
                   </Link>
                   <Link
                     to="/checkout"
                     state={couponResult?.valid ? { couponCode, discountAmount, discountInfo: couponResult.discount } : undefined}
                     onClick={onClose}
-                    className="flex-1 text-center bg-black hover:bg-neutral-800 text-white text-sm font-semibold py-3 transition-all duration-200 cursor-pointer shadow-lg hover:shadow-xl" 
+                    className="flex-1 text-center bg-black hover:bg-neutral-800 text-white text-[12px] font-bold py-3.5 transition-all duration-200 cursor-pointer shadow-lg shadow-black/5" 
                   >
-                    Thanh Toán
+                    Thanh toán
                   </Link>
                 </div>
-                <p className="text-center text-xs text-gray-500">Miễn phí vận chuyển cho đơn hàng trên 500.000₫</p>
+                <p className="text-center text-[10px] text-gray-300 font-medium mt-1">Dịch vụ khách hàng 24/7</p>
               </div>
             )}
           </div>

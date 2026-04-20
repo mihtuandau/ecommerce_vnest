@@ -1,4 +1,5 @@
-﻿import { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
+import { DeleteOutlined } from "@ant-design/icons";
 import CartItem from "./CartItem";
 import { computeDiscountFromMap } from "../../utils/formatters";
 
@@ -108,23 +109,24 @@ const CartItemsList = ({
 
   return (
     <div className="space-y-4">
-      <div className="bg-white border border-gray-200 p-3 md:p-6 flex items-center justify-between shadow-md">
-        <div className="flex items-center gap-2 md:gap-4">
+      <div className="bg-white border border-gray-100 px-4 py-3 flex items-center justify-between rounded-sm">
+        <div className="flex items-center gap-3">
           <input
             type="checkbox"
             checked={allSelected}
             onChange={onToggleAll}
-            className="w-4 h-4 md:w-5 md:h-5 border-gray-300 text-red-600 focus:ring-red-600 cursor-pointer"
+            className="w-4 h-4 border-gray-200 text-black focus:ring-black cursor-pointer rounded-sm"
           />
-          <h2 className="text-sm md:text-base font-bold text-gray-900">
-            <span className="hidden sm:inline">Chọn tất cả </span>({count})
+          <h2 className="text-[13px] font-bold text-gray-900 tracking-tight">
+            Tất cả sản phẩm <span className="text-gray-400 font-medium ml-1">({count})</span>
           </h2>
         </div>
         <button
           onClick={onClearAll}
-          className="text-xs md:text-sm font-medium text-gray-600 hover:text-red-600 transition-colors"
+          className="text-[12px] font-semibold text-gray-400 hover:text-red-500 transition-colors flex items-center gap-1.5"
         >
-          Xóa <span className="hidden sm:inline">tất cả</span>
+          <DeleteOutlined className="text-[10px]" />
+          Xóa toàn bộ
         </button>
       </div>
 

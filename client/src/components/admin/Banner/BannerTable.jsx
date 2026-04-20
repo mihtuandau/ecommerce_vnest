@@ -47,9 +47,9 @@ const BannerTable = ({
       key: 'title',
       render: (title, record) => (
         <div>
-          <div className="font-medium text-gray-900">{title}</div>
+          <div className="font-semibold text-slate-800">{title}</div>
           {record.subtitle && (
-            <div className="text-xs text-gray-500 mt-0.5">{record.subtitle}</div>
+            <div className="text-xs text-slate-500 mt-0.5">{record.subtitle}</div>
           )}
         </div>
       ),
@@ -123,7 +123,7 @@ const BannerTable = ({
         onChange: onPageChange,
         size: 'small',
       }}
-      className="[&_.ant-table-thead>tr>th]:bg-gray-50 [&_.ant-table-thead>tr>th]:font-semibold"
+      className="[&_.ant-table-thead>tr>th]:bg-slate-50/50 [&_.ant-table-thead>tr>th]:font-semibold [&_.ant-table-thead>tr>th]:text-slate-800 [&_.ant-table-thead>tr>th]:border-b [&_.ant-table-thead>tr>th]:border-slate-100"
     />
   );
 };

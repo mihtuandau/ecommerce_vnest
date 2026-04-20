@@ -1,4 +1,4 @@
-﻿
+
 const PageTitle = ({
   subtitle,
   title,
@@ -8,23 +8,29 @@ const PageTitle = ({
   className = "",
 }) => {
   return (
-    <div className={`text-center mb-10 mt-6 ${className}`}>
+    <div className={`text-center mb-12 mt-8 px-6 ${className}`}>
       {subtitle && (
-        <span className="text-xs uppercase tracking-[0.3em] text-gray-500 mb-4 block">
+        <span 
+          style={{ fontFamily: 'Inter, sans-serif' }}
+          className="text-[10px] sm:text-[11px] uppercase tracking-[0.4em] font-black text-blue-600 mb-3 block"
+        >
           {subtitle}
         </span>
       )}
-      <h1 className="text-3xl md:text-4xl font-light text-gray-900 mb-4">
+      <h1 
+        style={{ fontFamily: 'Inter, sans-serif' }}
+        className="text-2xl sm:text-3xl font-bold text-gray-900 mb-5 uppercase tracking-tight"
+      >
         {title}
       </h1>
-      <div className="w-12 h-px bg-gray-900 mx-auto mb-4"></div>
+      <div className="w-16 h-1 bg-blue-600 mx-auto mb-6"></div>
       {description && (
-        <p className="text-gray-600 font-light max-w-2xl mx-auto">
+        <p className="text-sm sm:text-base text-gray-500 font-medium max-w-2xl mx-auto leading-relaxed">
           {description}
         </p>
       )}
       {count !== undefined && (
-        <p className="text-gray-600 font-light">
+        <p className="text-xs sm:text-sm text-gray-400 font-bold uppercase tracking-widest mt-2">
           {count} {countLabel}
         </p>
       )}

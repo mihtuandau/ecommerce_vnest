@@ -1,4 +1,4 @@
-﻿
+
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { OrderRepository } from './order.repository';
 import { OrderCache } from './order.cache';
@@ -29,10 +29,9 @@ export class OrderService {
     const { page = 1, limit = 10, status, userId } = query;
     const skip = (page - 1) * limit;
 
-    const cached = await this.cacheService.getOrdersList(query);
-    if (cached) {
-      return cached;
-    }
+    // Tạm thời vô hiệu hóa Cache để giải quyết lỗi sai lệch giá tiền giữa người dùng và Admin
+    // const cached = await this.cacheService.getOrdersList(query);
+    // if (cached) return cached;
 
     const where = {};
     if (status) where['status'] = status;
@@ -53,8 +52,7 @@ export class OrderService {
       totalPages: Math.ceil(total / limit),
     };
 
-    await this.cacheService.setOrdersList(query, orders);
-
+    // await this.cacheService.setOrdersList(query, orders);
     return orders;
   }
 
@@ -80,8 +78,9 @@ export class OrderService {
     return this.orderManagement.remove(id);
   }
 
-  async cancelOrder(orderId: number, userId: number): Promise<any> {
-    return this.orderManagement.cancelOrder(orderId, userId);
+  async cancelOrder(orderId: number, user: any): Promise<any> {
+    const isAdmin = user.role === 'ADMIN';
+    return this.orderManagement.cancelOrder(orderId, user.userId, isAdmin);
   }
 
   async cancelGuestOrder(orderCode: string, contact: string): Promise<any> {
@@ -100,8 +99,3 @@ export class OrderService {
     return this.orderManagement.lookupGuestOrder(orderCode, contact);
   }
 }
-
-
-
-
-

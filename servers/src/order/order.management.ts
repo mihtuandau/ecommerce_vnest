@@ -1,4 +1,4 @@
-﻿
+
 import { Injectable, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
 import { OrderRepository } from './order.repository';
 import { OrderCache } from './order.cache';
@@ -31,6 +31,7 @@ export class OrderManagement {
       throw new BadRequestException('Cannot update a cancelled order');
     }
 
+
     const order = await this.repository.update(id, dto);
 
     await this.handlePaymentCreation(order, oldOrder, dto);
@@ -40,6 +41,12 @@ export class OrderManagement {
     if (dto.status === 'CANCELLED') {
       await this.repository.restoreOrderStock(id);
 
+      // Nếu đơn hàng cũ đã được giao (đã tăng soldCount), thì phải trừ lại
+      if (oldOrder.status === 'DELIVERED') {
+        for (const item of oldOrder.orderItems) {
+          await this.repository.decrementProductSoldCount(item.variant.productId, item.quantity);
+        }
+      }
     }
 
     await this.cacheService.clearRelatedCaches(id, order.userId || undefined);
@@ -57,16 +64,26 @@ export class OrderManagement {
     return removed;
   }
 
-  async cancelOrder(orderId: number, userId: number): Promise<any> {
+  async cancelOrder(orderId: number, userId: number, isAdmin = false): Promise<any> {
     const order = await this.repository.findById(orderId);
     
     if (!order) throw new NotFoundException('Order not found');
-    if (order.userId !== userId) throw new BadRequestException('Not your order');
+    
+    // Nếu không phải Admin thì mới kiểm tra sở hữu đơn hàng
+    if (!isAdmin && order.userId !== userId) {
+      throw new BadRequestException('Not your order');
+    }
+
     if (!this.canCancelOrder(order.status)) {
       throw new BadRequestException('Cannot cancel order with status: ' + order.status);
     }
 
     const cancelled = await this.repository.update(orderId, { status: 'CANCELLED' });
+
+    // Đồng bộ trạng thái thanh toán nếu có
+    if (order.payment && order.payment.status === 'PENDING') {
+      await this.paymentService.updateStatus(order.payment.id, { status: 'CANCELLED' });
+    }
 
     await this.repository.restoreOrderStock(orderId);
 

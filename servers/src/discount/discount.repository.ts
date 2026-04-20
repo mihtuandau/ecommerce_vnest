@@ -1,4 +1,4 @@
-﻿import { Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Discount, Prisma } from '@prisma/client';
 
@@ -6,8 +6,32 @@ import { Discount, Prisma } from '@prisma/client';
 @Injectable()
 export class DiscountRepository {
   constructor(private prisma: PrismaService) {}
+
   async create(data: Prisma.DiscountCreateInput): Promise<Discount> {
     return this.prisma.discount.create({ data });
+  }
+
+  // Transaction Serializable: đảm bảo chỉ 1 flash sale active tại cùng thời điểm
+  // 2 admin tạo cùng lúc → chỉ 1 cái thành công, cái kia bị rollback
+  async createFlashSaleTransactional(data: Prisma.DiscountCreateInput): Promise<Discount> {
+    return this.prisma.$transaction(async (tx) => {
+      const now = new Date();
+      const activeFlash = await tx.discount.findFirst({
+        where: {
+          isFlashSale: true,
+          isActive: true,
+          startDate: { lte: now },
+          OR: [{ endDate: null }, { endDate: { gte: now } }],
+        },
+        select: { id: true, code: true },
+      });
+
+      if (activeFlash) {
+        throw new Error(`Đã có flash sale đang chạy: "${activeFlash.code}"`);
+      }
+
+      return tx.discount.create({ data });
+    }, { isolationLevel: 'Serializable' });
   }
 
   async findByCode(code: string): Promise<Discount | null> {
@@ -102,7 +126,7 @@ export class DiscountRepository {
     return this.prisma.discount.findMany({
       where: {
         isActive: true,
-        isFlashSale: false, 
+        isFlashSale: false,
         startDate: { lte: now },
         OR: [{ endDate: null }, { endDate: { gte: now } }],
       },
@@ -132,7 +156,6 @@ export class DiscountRepository {
     return this.prisma.discount.count({ where });
   }
 
-  
   async findActiveFlashSale(excludeId?: number) {
     const now = new Date();
     return this.prisma.discount.findFirst({
@@ -225,7 +248,6 @@ export class DiscountRepository {
     return { ...flashSale, products: orderedProducts };
   }
 
-  
   async findDiscountForProduct(productId: number) {
     const now = new Date();
     const discounts = await this.prisma.discount.findMany({
@@ -258,7 +280,6 @@ export class DiscountRepository {
     return discounts[0] ?? null;
   }
 
-  
   async findAllAutoApply() {
     const now = new Date();
     return this.prisma.discount.findMany({
@@ -284,9 +305,3 @@ export class DiscountRepository {
     });
   }
 }
-
-
-
-
-
-

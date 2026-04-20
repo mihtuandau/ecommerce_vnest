@@ -1,4 +1,4 @@
-﻿import { ShoppingCart, CreditCard, Heart } from "lucide-react";
+import { ShoppingCart, CreditCard, Heart } from "lucide-react";
 
 const ProductActions = ({ onAddToCart, totalStock, isWishlisted = false, onToggleWishlist }) => {
   const isOutOfStock = totalStock === 0;
@@ -12,7 +12,7 @@ const ProductActions = ({ onAddToCart, totalStock, isWishlisted = false, onToggl
         className={`flex-1 h-11 rounded-lg font-semibold text-sm flex items-center justify-center gap-2 border-2 transition-colors duration-150 active:scale-[0.98] select-none cursor-pointer ${
           isOutOfStock
             ? 'bg-gray-50 text-gray-300 border-gray-200 cursor-not-allowed'
-            : 'bg-white text-gray-900 border-gray-900 hover:bg-gray-100'
+            : 'bg-white text-black border-black hover:bg-neutral-50'
         }`}
       >
         <ShoppingCart size={16} strokeWidth={2} />
@@ -26,7 +26,7 @@ const ProductActions = ({ onAddToCart, totalStock, isWishlisted = false, onToggl
         className={`flex-1 h-11 rounded-lg font-semibold text-sm flex items-center justify-center gap-2 border-2 transition-colors duration-150 active:scale-[0.98] select-none cursor-pointer ${
           isOutOfStock
             ? 'bg-gray-200 text-gray-400 border-gray-200 cursor-not-allowed'
-            : 'bg-gray-900 text-white border-gray-900 hover:bg-gray-700'
+            : 'bg-black text-white border-black hover:bg-neutral-800'
         }`}
       >
         <CreditCard size={16} strokeWidth={2} />

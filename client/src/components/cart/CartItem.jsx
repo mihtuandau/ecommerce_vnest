@@ -1,4 +1,4 @@
-﻿import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { FaTrash, FaMinus, FaPlus, FaTimes } from 'react-icons/fa';
 import { Zap } from 'lucide-react';
 import { useRef, useEffect } from 'react';
@@ -61,200 +61,119 @@ const CartItem = ({ groupedProduct, selectedItems, onToggleItem, onUpdateQuantit
   };
 
   return (
-    <div className="bg-white border border-gray-200 p-4 shadow-sm hover:shadow-md transition-shadow mb-4 last:mb-0">
-      <div className="flex gap-4">
-        <div className="flex-shrink-0 pt-1">
+    <div className="bg-white border border-gray-100 p-3 sm:p-4 transition-all mb-2 sm:mb-3 last:mb-0 rounded-sm">
+      <div className="flex gap-3 sm:gap-4">
+        <div className="flex-shrink-0 flex items-start pt-1">
           <input
             ref={checkboxRef}
             type="checkbox"
             checked={allVariantsSelected}
             onChange={handleToggleAllVariants}
-            className="w-4 h-4 border-gray-300 text-gray-900 focus:ring-gray-900 cursor-pointer"
-            aria-label={`Chọn tất cả biến thể của ${productName}`}
+            className="w-4 h-4 border-gray-200 text-slate-800 focus:ring-slate-800 cursor-pointer rounded-sm"
           />
         </div>
         
         <Link
           to={`/products/${groupedProduct.slug || productId}`}
-          className="flex-shrink-0 w-20 h-20 bg-gray-100 overflow-hidden relative"
-          aria-label={`Xem chi tiết ${productName}`}
+          className="flex-shrink-0 w-16 h-16 sm:w-24 sm:h-24 bg-gray-50 overflow-hidden rounded-sm border border-gray-50"
         >
           <img
             src={productImage || '/placeholder.jpg'}
             alt={productName || 'Product'}
-            className="w-full h-full object-cover hover:opacity-75 transition-opacity"
-            onError={(e) => {
-              e.target.src = '/placeholder.jpg';
-              e.target.onerror = null; 
-            }}
+            className="w-full h-full object-cover mix-blend-multiply transition-transform duration-500 hover:scale-105"
             loading="lazy"
           />
-          {hasFlashSale && (
-            <span className="absolute top-0 left-0 bg-red-500 text-white text-[9px] font-semibold px-1 py-0.5 flex items-center gap-0.5">
-              <Zap size={8} className="fill-white" /> SALE
-            </span>
-          )}
         </Link>
 
         <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between mb-3 cursor-pointer">
+          <div className="flex items-start justify-between">
             <Link
               to={`/products/${groupedProduct.slug || productId}`}
-              className="font-medium text-sm text-gray-900 hover:text-black transition-colors line-clamp-2 flex-1 mr-3 cur"
+              className="font-semibold text-[14px] sm:text-[15px] text-slate-800 hover:text-slate-800 line-clamp-2 leading-tight"
             >
               {productName}
             </Link>
             <button
               onClick={() => {
-                if (window.confirm('Bạn có chắc muốn xóa tất cả biến thể của sản phẩm này?')) {
+                if (window.confirm('Bạn có chắc muốn xóa sản phẩm này?')) {
                   onRemoveAll(variants.map(v => v.variantId));
                 }
               }}
-              className="flex-shrink-0 p-1.5 text-gray-400 hover:text-red-900 transition-colors"
-              title="Xóa tất cả"
-              aria-label="Xóa tất cả biến thể"
+              className="text-gray-300 hover:text-red-500 ml-2"
             >
               <FaTimes size={14} />
             </button>
           </div>
 
-          {}
-          <div className="space-y-3">
+          <div className="mt-4 space-y-6">
             {variants.map((variant) => (
-              <div key={`variant-${variant.variantId}`} className="flex items-start gap-3 pb-3 border-b border-gray-100 last:border-0 last:pb-0">
-                {}
-                <div className="flex-shrink-0 pt-1">
+              <div key={`variant-${variant.variantId}`} className="group/item">
+                {/* Variant Info Line */}
+                <div className="flex items-center gap-2 mb-3">
                   <input
                     type="checkbox"
-                    id={`variant-${variant.variantId}`}
                     checked={selectedItems.has(variant.variantId)}
                     onChange={() => onToggleItem(variant.variantId)}
-                    className="w-4 h-4 border-gray-300 text-gray-900 focus:ring-gray-900 cursor-pointer"
-                    aria-label={`Chọn ${productName} - ${variant.size || ''} ${variant.color || ''}`}
+                    className="w-4 h-4 border-gray-200 text-slate-800 focus:ring-slate-800 cursor-pointer rounded-sm"
                   />
-                </div>
-                
-                {}
-                <div className="flex-1">
-                  <div className="flex flex-wrap gap-2 text-xs mb-2">
+                  <div className="flex flex-wrap gap-1.5">
                     {variant.size && (
-                      <span className="px-2 py-1 bg-gray-100 border border-gray-300 text-gray-700 text-xs">
-                        Size: {variant.size}
+                      <span className="px-2 py-0.5 bg-gray-50 text-[10px] font-semibold text-gray-400 border border-gray-100 uppercase tracking-tighter">
+                        {variant.size}
                       </span>
                     )}
                     {variant.color && (
-                      <span className="px-2 py-1 bg-gray-100 border border-gray-300 text-gray-700 text-xs">
-                        Màu: {variant.color}
-                      </span>
-                    )}
-                    {variant.stock !== undefined && (
-                      <span className={`px-2 py-1 text-xs ${
-                        variant.stock > 10 
-                          ? 'bg-zinc-100 text-zinc-800' 
-                          : variant.stock > 0 
-                            ? 'bg-yellow-100 text-yellow-800' 
-                            : 'bg-red-100 text-red-800'
-                      }`}>
-                        Còn {variant.stock} sp
+                      <span className="px-2 py-0.5 bg-gray-50 text-[10px] font-semibold text-gray-400 border border-gray-100 uppercase tracking-tighter">
+                        {variant.color}
                       </span>
                     )}
                   </div>
+                </div>
 
-                  <div className="flex items-center justify-between gap-4">
-                    <div className="flex items-center border border-gray-300 overflow-hidden">
+                {/* Price & Quantity Control Line */}
+                <div className="flex items-center justify-between mt-2">
+                  <div className="flex flex-col">
+                    {(() => {
+                      const originalPrice = variant.price;
+                      const flashPrice = computeDiscountFromMap(productId, originalPrice, discountMap);
+                      const hasDiscount = flashPrice !== originalPrice;
+                      return (
+                        <>
+                          <span className={`text-[15px] sm:text-[17px] font-semibold font-inter ${hasDiscount ? 'text-red-600' : 'text-slate-800'}`}>
+                            {formatPrice((hasDiscount ? flashPrice : originalPrice) * variant.quantity)}
+                          </span>
+                          {hasDiscount && (
+                            <span className="text-[11px] text-gray-300 line-through font-inter">
+                              {formatPrice(originalPrice * variant.quantity)}
+                            </span>
+                          )}
+                        </>
+                      );
+                    })()}
+                  </div>
+
+                  <div className="flex items-center">
+                    <div className="flex items-center border border-gray-100 rounded-sm">
                       <button
                         onClick={() => onUpdateQuantity(variant.variantId, variant.quantity, -1)}
                         disabled={variant.quantity <= 1}
-                        className="w-8 h-8 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
-                        aria-label="Giảm số lượng"
+                        className="w-8 h-8 flex items-center justify-center hover:bg-gray-50 disabled:opacity-30"
                       >
-                        <FaMinus size={10} />
+                        <FaMinus size={9} />
                       </button>
-                      <input
-                        type="number"
-                        id={`quantity-${variant.variantId}`}
-                        value={variant.quantity}
-                        onChange={(e) => handleQuantityChange(variant.variantId, variant.quantity, e.target.value)}
-                        onBlur={(e) => handleQuantityBlur(variant.variantId, e)}
-                        className="w-12 h-8 text-center text-sm border-x border-gray-300 focus:outline-none focus:ring-1 focus:ring-gray-900"
-                        min="1"
-                        max={variant.stock || 999}
-                        aria-label="Số lượng"
-                      />
+                      <span className="w-10 text-center text-[12px] font-semibold">{variant.quantity}</span>
                       <button
                         onClick={() => onUpdateQuantity(variant.variantId, variant.quantity, 1)}
                         disabled={variant.quantity >= (variant.stock || 999)}
-                        className="w-8 h-8 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
-                        aria-label="Tăng số lượng"
+                        className="w-8 h-8 flex items-center justify-center hover:bg-gray-50 disabled:opacity-30"
                       >
-                        <FaPlus size={10} />
+                        <FaPlus size={9} />
                       </button>
                     </div>
-
-                    <div className="text-right flex-1">
-                      {(() => {
-                        const originalPrice = variant.price;
-                        const flashPrice = computeDiscountFromMap(productId, originalPrice, discountMap);
-                        const hasDiscount = flashPrice !== originalPrice;
-
-                        if (hasDiscount) {
-                          return (
-                            <>
-                              <span className="text-base font-bold text-red-500 block">
-                                {formatPrice(flashPrice * variant.quantity)}
-                              </span>
-                              <span className="text-xs text-gray-400 line-through">
-                                {formatPrice(originalPrice * variant.quantity)}
-                              </span>
-                            </>
-                          );
-                        } else {
-                          return (
-                            <>
-                              <span className="text-base font-bold text-gray-900 block">
-                                {formatPrice(originalPrice * variant.quantity)}
-                              </span>
-                              {variant.quantity > 1 && (
-                                <span className="text-xs text-gray-500">
-                                  {formatPrice(originalPrice)} × {variant.quantity}
-                                </span>
-                              )}
-                            </>
-                          );
-                        }
-                      })()}
-                    </div>
-
-                    <button
-                      onClick={() => {
-                        if (window.confirm('Bạn có chắc muốn xóa sản phẩm này?')) {
-                          onRemove(variant.variantId);
-                        }
-                      }}
-                      className="flex-shrink-0 p-2 text-gray-400 hover:text-red-600 transition-colors"
-                      title="Xóa biến thể này"
-                      aria-label="Xóa biến thể"
-                    >
-                      <FaTrash size={12} />
-                    </button>
                   </div>
                 </div>
               </div>
             ))}
-          </div>
-
-          <div className="mt-4 pt-4 border-t border-gray-200 flex items-center justify-between">
-            <div className="text-sm text-gray-600">
-              Tổng <span className="font-medium text-gray-900">{totalQuantity}</span> sản phẩm
-            </div>
-            <div className="text-right">
-              <p className="text-lg font-bold text-gray-900">
-                {formatPrice(totalPrice)}
-              </p>
-              <p className="text-xs text-gray-500 mt-1">
-                {variants.length} biến thể
-              </p>
-            </div>
           </div>
         </div>
       </div>

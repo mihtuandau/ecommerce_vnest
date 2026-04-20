@@ -1,4 +1,4 @@
-﻿
+
 import { Injectable, BadRequestException, Logger } from '@nestjs/common';
 import { OrderRepository } from './order.repository';
 import { OrderCache } from './order.cache';
@@ -23,25 +23,27 @@ export class OrderCreation {
   ) {}
 
   async create(userId: number | null, dto: CreateOrderDto): Promise<any> {
-
     const itemsToOrder = await this.getItemsToOrder(userId, dto);
-
     const variantIds = itemsToOrder.map((i) => i.variantId);
+    
+    // 1. Lấy map giá Flash Sale tự động
     const autoDiscountPriceMap = await this.repository.findAutoApplyPricesForVariants(variantIds);
-    const itemsWithDiscounts = itemsToOrder.map((item) => ({
-      ...item,
-      price: autoDiscountPriceMap.get(item.variantId) ?? item.price,
-    }));
-    if (autoDiscountPriceMap.size > 0) {
-
-    }
+    
+    // 2. Chuẩn bị danh sách items với giá đã giảm (nếu có)
+    const itemsWithDiscounts = itemsToOrder.map((item) => {
+      const discountedPrice = autoDiscountPriceMap.get(item.variantId);
+      return {
+        ...item,
+        price: (discountedPrice !== undefined && discountedPrice < item.price) ? discountedPrice : item.price,
+      };
+    });
 
     const originalSubtotal = itemsToOrder.reduce((sum, i) => sum + i.price * i.quantity, 0);
     const autoApplySubtotal = itemsWithDiscounts.reduce((sum, i) => sum + i.price * i.quantity, 0);
     const autoApplySaving = originalSubtotal - autoApplySubtotal;
 
+    // 3. Kiểm tra mã giảm giá thủ công (Voucher)
     const discount = await this.validateDiscount(dto.discountCode, originalSubtotal);
-
     let manualCodeSaving = 0;
     if (discount) {
       if (discount.percentage) {
@@ -55,7 +57,8 @@ export class OrderCreation {
       manualCodeSaving = Math.min(manualCodeSaving, originalSubtotal);
     }
 
-    const useAutoApply = autoApplySaving >= manualCodeSaving;
+    // 4. Quyết định dùng Flash Sale hay Voucher (cái nào lợi hơn cho khách)
+    const useAutoApply = autoApplySaving > 0 && autoApplySaving >= manualCodeSaving;
     const finalItems = useAutoApply ? itemsWithDiscounts : itemsToOrder;
     const finalDiscount = useAutoApply ? null : discount;
 
@@ -63,8 +66,11 @@ export class OrderCreation {
       percentage: finalDiscount.percentage || undefined,
       fixedAmount: finalDiscount.fixedAmount || undefined,
       maxDiscountAmount: finalDiscount.maxDiscountAmount || undefined,
-    } : undefined;
-    const totals = OrderHelper.calculateOrderTotal(finalItems, dto.shippingFee, discountData);
+    } : {
+      fixedAmount: useAutoApply ? autoApplySaving : 0
+    };
+
+    const totals = OrderHelper.calculateOrderTotal(finalItems, dto.shippingFee || 30000, finalDiscount ? discountData : undefined);
 
     const orderCode = await OrderHelper.generateOrderCode(
       (code) => this.repository.findByCode(code)
@@ -77,6 +83,7 @@ export class OrderCreation {
       finalItems, 
       { 
         subtotal: totals.totalItems, 
+        shippingFee: totals.shippingFee,
         discountAmount: totals.discountAmount, 
         total: totals.discountedTotal 
       }, 
@@ -85,10 +92,7 @@ export class OrderCreation {
 
     const order = await this.repository.createOrderTransactional(orderData, finalItems) as any;
 
-
-
     await this.createPaymentRecord(order.id, dto.paymentMethod);
-
     await this.clearUserCartIfNeeded(userId, dto);
 
     if (userId) {
@@ -96,16 +100,13 @@ export class OrderCreation {
     }
 
     await this.sendConfirmationEmail(order);
-
     return order;
   }
 
   private async getItemsToOrder(userId: number | null, dto: CreateOrderDto) {
     if (dto.items && dto.items.length > 0) {
-
       return await this.prepareItemsFromDto(dto.items);
     } else {
-
       if (!userId) {
         throw new BadRequestException('Guest checkout requires items in request body');
       }
@@ -142,7 +143,6 @@ export class OrderCreation {
 
   private async prepareItemsFromCart(userId: number) {
     const cart = await this.cartService.getCart(userId);
-
     if (!cart.cartItems || cart.cartItems.length === 0) {
       throw new BadRequestException('Giỏ hàng trống');
     }
@@ -156,68 +156,36 @@ export class OrderCreation {
   }
 
   private async validateDiscount(discountCode?: string, subtotal?: number) {
-    if (!discountCode) {
-
-      return null;
-    }
-
+    if (!discountCode) return null;
     const discount = await this.repository.findDiscountByCode(discountCode);
-
-    if (!discount) {
-      throw new BadRequestException('Mã giảm giá không tồn tại');
-    }
-
-    if (discount.isFlashSale) {
-      throw new BadRequestException('Mã Flash Sale đã được áp dụng tự động, không cần nhập thêm');
-    }
+    if (!discount) throw new BadRequestException('Mã giảm giá không tồn tại');
+    if (discount.isFlashSale) throw new BadRequestException('Mã Flash Sale đã được áp dụng tự động');
 
     const usageCount = await this.repository.countOrdersUsingDiscount(discount.id);
-
     OrderHelper.validateDiscount(discount, subtotal, usageCount);
-    this.logger.log(' Discount valid:', {
-      percentage: discount.percentage,
-      fixedAmount: discount.fixedAmount,
-      maxDiscountAmount: discount.maxDiscountAmount,
-    });
-
     return discount;
   }
 
   private async createPaymentRecord(orderId: number, paymentMethod?: string) {
     try {
+      const finalMethod = paymentMethod === 'PAYOS' ? 'VNPAY' : (paymentMethod || 'CASH');
       await this.paymentService.create({
         orderId,
-        method: (paymentMethod as any) || 'CASH',
+        method: finalMethod as any,
       });
-
     } catch (error) {
       this.logger.error('Failed to create payment record:', error);
-
     }
   }
 
   private async clearUserCartIfNeeded(userId: number | null, dto: CreateOrderDto) {
-
     if (userId && (!dto.items || dto.items.length === 0)) {
       await this.repository.clearUserCart(userId);
-
     }
   }
 
   private async sendConfirmationEmail(order: any) {
-    this.logger.log(' Preparing email for order:', { 
-      orderCode: order.orderCode, 
-      guestEmail: order.guestEmail,
-      userEmail: order.user?.email 
-    });
-    
     const emailData = OrderHelper.prepareOrderEmailDetails(order);
-    
-    this.logger.log(' Email data prepared:', { 
-      customerEmail: emailData.customerEmail,
-      orderCode: order.orderCode 
-    });
-    
     if (emailData.customerEmail && order.orderCode) {
       this.mailService.sendOrderConfirmation(
         emailData.customerEmail,
@@ -225,16 +193,7 @@ export class OrderCreation {
         emailData.orderDetails,
       ).catch(err => {
         this.logger.error('Failed to send confirmation email:', err);
-
       });
-
-    } else {
-      this.logger.warn(' No customer email found, skipping confirmation email');
     }
   }
-} 
-
-
-
-
-
+}

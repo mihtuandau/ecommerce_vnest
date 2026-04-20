@@ -1,4 +1,4 @@
-﻿import { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { RefreshCw } from 'lucide-react';
 import paymentService from '../../../services/paymentService';
 import { notify } from '../../../utils/notification';
@@ -12,7 +12,7 @@ const PaymentManagement = () => {
   const [statusFilter, setStatusFilter] = useState('');
   const [methodFilter, setMethodFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 12;
+  const itemsPerPage = 10;
 
   const { 
     data: filteredPayments = [], 

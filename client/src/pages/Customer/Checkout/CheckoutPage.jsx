@@ -18,6 +18,7 @@ import { useDiscountCode } from "../../../hooks/useDiscounts";
 import { useCheckoutForm } from "../../../hooks/useCheckoutForm";
 import { useCheckoutSubmit } from "../../../hooks/useCheckoutSubmit";
 import { useCheckoutPricing } from "../../../hooks/useCheckoutPricing";
+import { formatPrice } from "../../../utils/formatters";
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
@@ -61,38 +62,56 @@ const CheckoutPage = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-white pb-8">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="mb-8">
-            <AntButton icon={<ArrowLeftOutlined />} onClick={() => navigate("/cart")} className="mb-4">Quay lại giỏ hàng</AntButton>
-            <PageTitle subtitle="Hoàn tất đơn hàng" title="THANH TOÁN" className="mt-4 mb-8" />
-            <Steps current={1} items={[{ title: "Giỏ hàng" }, { title: "Thanh toán", icon: <CreditCardOutlined /> }, { title: "Hoàn thành" }]} />
-          </div>
+      <div className="min-h-screen bg-[#f9f9f9] pb-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="py-6">
+            <AntButton 
+              icon={<ArrowLeftOutlined />} 
+              onClick={() => navigate("/cart")} 
+              className="h-10 border-none shadow-none hover:text-slate-800 bg-white flex items-center text-xs font-semibold px-4"
+            >
+              Quay lại giỏ hàng
+            </AntButton>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 space-y-6">
-              <Card title={<div className="flex items-center gap-2"><EnvironmentOutlined /><span>Thông tin giao hàng</span></div>} variant="borderless">
-                <ShippingForm shippingInfo={shippingInfo} onInputChange={handleInputChange} onSelectAddressClick={() => setShowAddressModal(true)} isGuest={!user} />
-              </Card>
-              <Card title={<div className="flex items-center gap-2"><CreditCardOutlined /><span>Phương thức thanh toán</span></div>} variant="borderless">
-                <PaymentMethodSelector paymentMethod={paymentMethod} onPaymentMethodChange={setPaymentMethod} />
-              </Card>
+            <div className="mt-8 mb-10 text-center sm:text-left">
+              <h1 className="text-2xl sm:text-3xl font-semibold text-slate-800 mb-2">Thanh toán</h1>
+              <p className="text-sm text-gray-400">Hoàn tất các bước để nhận hàng sớm nhất</p>
             </div>
 
-            <div className="lg:col-span-1">
-              <div className="sticky top-24">
-                <OrderSummary
-                  cartItems={effectiveCartItems} originalCartItems={cartItems} flashSaleDiscount={0} subtotal={subtotal} shipping={shipping} discount={discount} total={total} itemCount={itemCount}
-                  discountCode={discountCode} setDiscountCode={setDiscountCode} appliedDiscount={appliedDiscount} checkingDiscount={checkingDiscount} onApplyDiscount={handleApplyDiscount} onRemoveDiscount={handleRemoveDiscount}
-                  agreedToTerms={agreedToTerms} setAgreedToTerms={setAgreedToTerms} submitting={submitting} onSubmitOrder={() => submitOrder(cartItems, shippingInfo, paymentMethod, agreedToTerms, effectiveDiscount, shipping)}
-                />
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <div className="lg:col-span-2 space-y-6">
+                <div className="bg-white p-4 sm:p-8 border border-gray-100 shadow-[0_1px_3px_rgba(0,0,0,0.02)] rounded-sm">
+                  <div className="flex items-center gap-2 mb-8 border-b border-gray-50 pb-4">
+                    <EnvironmentOutlined className="text-gray-400" />
+                    <span className="font-semibold text-[13px] uppercase tracking-wider text-slate-800">Thông tin giao hàng</span>
+                  </div>
+                  <ShippingForm shippingInfo={shippingInfo} onInputChange={handleInputChange} onSelectAddressClick={() => setShowAddressModal(true)} isGuest={!user} />
+                </div>
+
+                <div className="bg-white p-4 sm:p-8 border border-gray-100 shadow-[0_1px_3px_rgba(0,0,0,0.02)] rounded-sm">
+                  <div className="flex items-center gap-2 mb-8 border-b border-gray-50 pb-4">
+                    <CreditCardOutlined className="text-gray-400" />
+                    <span className="font-semibold text-[13px] uppercase tracking-wider text-slate-800">Phương thức thanh toán</span>
+                  </div>
+                  <PaymentMethodSelector paymentMethod={paymentMethod} onPaymentMethodChange={setPaymentMethod} />
+                </div>
+              </div>
+
+              <div className="lg:col-span-1">
+                <div className="sticky top-24">
+                  <OrderSummary
+                    cartItems={effectiveCartItems} originalCartItems={cartItems} flashSaleDiscount={0} subtotal={subtotal} shipping={shipping} discount={discount} total={total} itemCount={itemCount}
+                    discountCode={discountCode} setDiscountCode={setDiscountCode} appliedDiscount={appliedDiscount} checkingDiscount={checkingDiscount} onApplyDiscount={handleApplyDiscount} onRemoveDiscount={handleRemoveDiscount}
+                    agreedToTerms={agreedToTerms} setAgreedToTerms={setAgreedToTerms} submitting={submitting} onSubmitOrder={() => submitOrder(cartItems, shippingInfo, paymentMethod, agreedToTerms, effectiveDiscount, shipping)}
+                  />
+                </div>
               </div>
             </div>
-          </div>
 
-          <AntModal title="Chọn địa chỉ giao hàng" open={showAddressModal} onCancel={() => setShowAddressModal(false)} footer={null} width={600}>
-            <AddressSelector onAddressSelect={(data) => { handleSelectAddress(data, shippingInfo.email); setShowAddressModal(false); }} selectedAddressId={null} />
-          </AntModal>
+            <AntModal title="Chọn địa chỉ giao hàng" open={showAddressModal} onCancel={() => setShowAddressModal(false)} footer={null} width={600}>
+              <AddressSelector onAddressSelect={(data) => { handleSelectAddress(data, shippingInfo.email); setShowAddressModal(false); }} selectedAddressId={null} />
+            </AntModal>
+          </div>
         </div>
       </div>
     </Layout>

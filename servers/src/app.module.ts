@@ -1,4 +1,3 @@
-﻿
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
@@ -16,7 +15,6 @@ import { UploadModule } from './upload/upload.module';
 import { CacheModule } from './cache/cache.module';  
 import { CategoryModule } from './category/category.module';
 import { PaymentModule } from './payment/payment.module';
-import { PayOSModule } from './payos/payos.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { DiscountModule } from './discount/discount.module';
 import { BannerModule } from './banner/banner.module';
@@ -27,6 +25,7 @@ import { ChatbotModule } from './chatbot/chatbot.module';
 import { ReviewModule } from './review/review.module';
 import { AddressModule } from './address/address.module';
 import { ReportModule } from './report/report.module';
+import { HealthModule } from './common/health/health.module';
 
 @Module({
   imports: [
@@ -45,7 +44,6 @@ import { ReportModule } from './report/report.module';
     CacheModule,
     CategoryModule,
     PaymentModule,
-    PayOSModule,
     DashboardModule,
     DiscountModule,
     BannerModule,
@@ -56,6 +54,7 @@ import { ReportModule } from './report/report.module';
     ReviewModule,
     AddressModule,
     ReportModule,
+    HealthModule,
   ],
   providers: [
     PrismaService,
@@ -75,8 +74,3 @@ import { ReportModule } from './report/report.module';
   exports: [PrismaService],
 })
 export class AppModule {}
-
-
-
-
-

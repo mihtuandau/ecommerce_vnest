@@ -35,8 +35,8 @@ const ProductDetailPage = () => {
   return (
     <Layout>
       <div className="bg-white min-h-screen pb-20 overflow-x-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="py-4 opacity-70 transition-opacity"><Breadcrumb items={[{ label: 'Sản Phẩm', path: '/products' }, { label: product.name }]} /></div>
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="py-4 transition-opacity"><Breadcrumb items={[{ label: 'Sản Phẩm', path: '/products' }, { label: product.name }]} /></div>
           <div className="mb-12 animate-in fade-in slide-in-from-bottom-8 duration-1000">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 pt-4 items-start">
               <ProductImageGallery images={images} selectedImage={selectedImage} onImageSelect={setSelectedImage} onPrevImage={prevImage} onNextImage={nextImage} productName={product.name} />

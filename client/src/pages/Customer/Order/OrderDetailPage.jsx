@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaClock, FaBox } from "react-icons/fa";
 import { notify } from "../../../utils/notification";
@@ -38,7 +38,8 @@ const OrderDetailPage = () => {
       const transformedOrder = {
         ...response,
         items: response.orderItems || [],
-        paymentMethod: response.paymentMethod || "CASH",
+        paymentMethod: response.paymentMethod || response.payment?.method || "CASH",
+        paymentStatus: response.paymentStatus || response.payment?.status || "PENDING",
       };
 
       setOrder(transformedOrder);
@@ -79,7 +80,7 @@ const OrderDetailPage = () => {
         <div className="min-h-screen bg-white pb-8 pt-21">
           <div className="container mx-auto px-4 lg:px-30">
             <div className="text-center py-16">
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">
+              <h3 className="text-xl font-semibold text-slate-800 mb-4">
                 Không tìm thấy đơn hàng
               </h3>
               <button
@@ -97,46 +98,46 @@ const OrderDetailPage = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-white pb-8">
-        <div className="container mx-auto px-4 lg:px-20">
+      <div className="min-h-screen bg-white pb-12">
+        <div className="max-w-7xl mx-auto px-6">
           <Breadcrumb
             items={[
               { label: "Đơn hàng của tôi", path: "/orders" },
               { label: "Chi tiết đơn hàng" },
             ]}
           />
-          <div className="mb-4">
-            <div className="border border-gray-200 bg-white p-4 sm:p-5">
-              <div className="flex items-center justify-between mb-2">
+          <div className="mb-8">
+            <div className="border border-gray-100 bg-gray-50/50 p-6 sm:p-8 relative overflow-hidden">
+              <div className="flex items-center justify-between mb-4 relative z-10">
                 <div className="flex items-center gap-4 flex-wrap">
-                  <h1 className="text-xl font-bold text-gray-900">
+                  <h1 className="text-xl sm:text-2xl font-semibold text-black tracking-tight">
                     Đơn hàng {order.orderCode || `#${order.id}`}
                   </h1>
                   <OrderStatusBadge status={order.status} />
                 </div>
               </div>
-              <div className="flex items-center gap-2 text-sm text-gray-600">
-                <FaClock size={14} />
+              <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-widest text-gray-400 relative z-10">
+                <FaClock size={12} />
                 <span>{formatDateTime(order.createdAt)}</span>
               </div>
             </div>
           </div>
 
-          <div className="space-y-3.5">
-            <OrderShippingInfo order={order} />
-
-            <OrderItemsList items={order.items} />
-
-            <OrderPriceSummary order={order} />
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 gap-6">
+              <OrderShippingInfo order={order} />
+              <OrderItemsList items={order.items} />
+              <OrderPriceSummary order={order} />
+            </div>
 
             {(order.status === "PENDING" ||
               order.status === "AWAITING_PAYMENT") && (
-              <div className="border border-gray-200 bg-white p-4 sm:p-5">
+              <div className="pt-6">
                 <button
                   onClick={handleCancelOrder}
-                  className="w-full bg-red-600 px-4 py-2.5 font-medium text-white transition-colors hover:bg-red-700"
+                  className="w-full bg-black border border-black px-6 py-4 text-[11px] font-semibold uppercase tracking-widest text-white transition-all hover:bg-neutral-800 shadow-sm"
                 >
-                  Hủy đơn hàng
+                  Hủy đơn hàng này
                 </button>
               </div>
             )}
