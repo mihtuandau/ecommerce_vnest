@@ -1,4 +1,4 @@
-import { 
+﻿import { 
   Controller, 
   Get, 
   Post, 
@@ -91,10 +91,9 @@ export class BannerController {
     @UploadedFile() file: Express.Multer.File,
     @Body() body: any
   ) {
-    // Upload ảnh lên Cloudinary
+
     const imageUrls = await this.uploadService.uploadImages([file]);
-    
-    // Tạo banner với URL ảnh từ Cloudinary
+
     const createBannerDto: CreateBannerDto = {
       title: body.title,
       subtitle: body.subtitle,
@@ -194,7 +193,6 @@ export class BannerController {
       order: body.order ? parseInt(body.order) : undefined
     };
 
-    // Nếu có upload ảnh mới, upload lên Cloudinary
     if (file) {
       const imageUrls = await this.uploadService.uploadImages([file]);
       updateBannerDto.image = imageUrls[0];
@@ -219,5 +217,11 @@ export class BannerController {
     return this.bannerService.remove(+id);
   }
 }
+
+
+
+
+
+
 
 

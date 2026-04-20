@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { FaChevronDown } from "react-icons/fa";
 
 const ProductAccordion = ({ product }) => {
@@ -24,7 +24,7 @@ const ProductAccordion = ({ product }) => {
       key: "ask",
       title: "Hỏi về sản phẩm này",
       content:
-        "Có thắc mắc về sản phẩm? Vui lòng liên hệ support@example.com hoặc gọi 1800-123-456",
+        "Có thắc mắc về sản phẩm? Vui lòng liên hệ [EMAIL_ADDRESS] hoặc gọi 0332434324",
     },
   ];
 
@@ -58,3 +58,9 @@ const ProductAccordion = ({ product }) => {
   );
 };
 export default ProductAccordion;
+
+
+
+
+
+

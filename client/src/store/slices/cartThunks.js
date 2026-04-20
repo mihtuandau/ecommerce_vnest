@@ -1,4 +1,4 @@
-import { createAsyncThunk } from '@reduxjs/toolkit';
+﻿import { createAsyncThunk } from '@reduxjs/toolkit';
 import cartService from '../../services/cartService';
 
 const getImageUrl = (images, variantId) => {
@@ -97,3 +97,9 @@ export const clearCartServer = createAsyncThunk(
     }
   }
 );
+
+
+
+
+
+

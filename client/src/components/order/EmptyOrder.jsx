@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { FaBox, FaClock } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
@@ -17,7 +17,7 @@ const EmptyOrder = ({ type = 'no-orders', onResetFilter }) => {
         </p>
         <button
           onClick={() => navigate('/products')}
-          className="bg-[#00a85a] hover:bg-[#008f4d] text-white px-6 py-3 transition-colors"
+          className="bg-black hover:bg-neutral-800 text-white px-6 py-3 transition-colors"
         >
           Mua sắm ngay
         </button>
@@ -37,7 +37,7 @@ const EmptyOrder = ({ type = 'no-orders', onResetFilter }) => {
         </p>
         <button
           onClick={onResetFilter}
-          className="bg-[#00a85a] hover:bg-[#008f4d] text-white px-6 py-3 transition-colors"
+          className="bg-black hover:bg-neutral-800 text-white px-6 py-3 transition-colors"
         >
           Xem tất cả đơn hàng
         </button>
@@ -49,3 +49,9 @@ const EmptyOrder = ({ type = 'no-orders', onResetFilter }) => {
 };
 
 export default EmptyOrder;
+
+
+
+
+
+

@@ -1,4 +1,4 @@
-import { Card, Row, Col, Statistic } from 'antd';
+﻿import { Card, Row, Col, Statistic } from 'antd';
 import { DollarOutlined, ShoppingCartOutlined, UserOutlined, RiseOutlined } from '@ant-design/icons';
 
 const ReportStats = ({ summaryData, customerData }) => {
@@ -56,3 +56,9 @@ const ReportStats = ({ summaryData, customerData }) => {
 };
 
 export default ReportStats;
+
+
+
+
+
+

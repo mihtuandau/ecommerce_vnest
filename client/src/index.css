@@ -1,5 +1,14 @@
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100..900;1,100..900&display=swap");
+
+/* Global Font Override - Only Inter */
+*, body, h1, h2, h3, h4, h5, h6, .font-heading, .font-outfit, .font-inter, input, button, select, textarea {
+  font-family: "Inter", system-ui, -apple-system, sans-serif !important;
+}
+
+i, em, .italic {
+  font-style: italic !important;
+}
 
 /* Custom Scrollbar Styles */
 .custom-scrollbar::-webkit-scrollbar {
@@ -42,9 +51,9 @@
 header a,
 header a svg,
 header a path,
-header button,
-header button svg,
-header button path {
+header button:not(.bg-black),
+header button:not(.bg-black) svg,
+header button:not(.bg-black) path {
   color: inherit !important;
   fill: currentColor !important;
 }
@@ -52,35 +61,77 @@ header button path {
 header a:hover,
 header a:hover svg,
 header a:hover path,
-header button:hover,
-header button:hover svg,
-header button:hover path {
-  color: #374151 !important; /* gray-700 */
-  fill: #374151 !important;
+header button:not(.bg-black):hover,
+header button:not(.bg-black):hover svg,
+header button:not(.bg-black):hover path {
+  color: #000000 !important;
+  fill: #000000 !important;
+}
+
+/* Global monochrome helper */
+.bg-black,
+.bg-\[\#1a1a1a\],
+.bg-\[\#111827\],
+.bg-gray-900,
+.bg-zinc-900,
+.bg-slate-900,
+.btn-primary,
+.btn-dark {
+  color: white !important;
+}
+
+.bg-black svg,
+.bg-\[\#1a1a1a\] svg,
+.bg-\[\#111827\] svg,
+.bg-gray-900 svg,
+.bg-zinc-900 svg,
+.bg-slate-900 svg,
+.btn-primary svg,
+.btn-dark svg,
+.bg-black path,
+.bg-\[\#1a1a1a\] path,
+.bg-\[\#111827\] path,
+.bg-gray-900 path,
+.btn-primary path,
+.btn-dark path {
+  color: white !important;
+  fill: white !important;
 }
 
 :root {
-  
   /* Shadows */
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
-  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -1px rgba(0,0,0,0.04);
-  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -2px rgba(0,0,0,0.04);
-  --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.08), 0 10px 10px -5px rgba(0,0,0,0.04);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-md:
+    0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+  --shadow-lg:
+    0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+  --shadow-xl:
+    0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
-/* Font family - Modern, clean */
+html, body {
+  overflow-x: hidden;
+  position: relative;
+  width: 100%;
+}
+
 body {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   font-variant-numeric: lining-nums;
-  color: var(--color-text);
-  background: var(--color-bg);
+  color: #1a1a1a;
+  background: #ffffff;
   line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   letter-spacing: -0.01em;
-  color: var(--color-text);
+  line-height: 1.2;
 }
 
 /* Admin Theme Override - Font */
@@ -102,10 +153,13 @@ h1, h2, h3, h4, h5, h6 {
 .admin-layout td,
 .admin-layout th,
 .admin-layout label {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+  font-family:
+    "Inter",
+    system-ui,
+    -apple-system,
+    sans-serif !important;
   letter-spacing: -0.01em;
 }
-
 
 .admin-layout .ant-btn-primary {
   background-color: #1890ff !important;
@@ -173,22 +227,52 @@ h1, h2, h3, h4, h5, h6 {
   --admin-density: 0.94;
 }
 
-.admin-layout .p-6 { padding: 1.1rem !important; }
-.admin-layout .p-8 { padding: 1.4rem !important; }
-.admin-layout .px-6 { padding-left: 1.1rem !important; padding-right: 1.1rem !important; }
-.admin-layout .py-5 { padding-top: 0.9rem !important; padding-bottom: 0.9rem !important; }
-.admin-layout .gap-6 { gap: 1rem !important; }
-.admin-layout .mb-8 { margin-bottom: 1.25rem !important; }
+.admin-layout .p-6 {
+  padding: 1.1rem !important;
+}
+.admin-layout .p-8 {
+  padding: 1.4rem !important;
+}
+.admin-layout .px-6 {
+  padding-left: 1.1rem !important;
+  padding-right: 1.1rem !important;
+}
+.admin-layout .py-5 {
+  padding-top: 0.9rem !important;
+  padding-bottom: 0.9rem !important;
+}
+.admin-layout .gap-6 {
+  gap: 1rem !important;
+}
+.admin-layout .mb-8 {
+  margin-bottom: 1.25rem !important;
+}
 
-.admin-layout .rounded-3xl { border-radius: 1rem !important; }
+.admin-layout .rounded-3xl {
+  border-radius: 1rem !important;
+}
 
-.admin-layout .text-4xl { font-size: 2rem !important; line-height: 2.25rem !important; }
-.admin-layout .text-3xl { font-size: 1.65rem !important; line-height: 2rem !important; }
-.admin-layout .text-2xl { font-size: 1.35rem !important; line-height: 1.8rem !important; }
+.admin-layout .text-4xl {
+  font-size: 2rem !important;
+  line-height: 2.25rem !important;
+}
+.admin-layout .text-3xl {
+  font-size: 1.65rem !important;
+  line-height: 2rem !important;
+}
+.admin-layout .text-2xl {
+  font-size: 1.35rem !important;
+  line-height: 1.8rem !important;
+}
 
 @media (max-width: 1280px) {
-  .admin-layout .p-6 { padding: 1rem !important; }
-  .admin-layout .px-6 { padding-left: 1rem !important; padding-right: 1rem !important; }
+  .admin-layout .p-6 {
+    padding: 1rem !important;
+  }
+  .admin-layout .px-6 {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
 }
 
 /* Admin Loading Spinner Override */
@@ -292,10 +376,9 @@ aside[style*="0f1117"] h3,
 aside[style*="0f1117"] h4,
 aside[style*="0f1117"] h5,
 aside[style*="0f1117"] h6 {
-  font-family: 'Inter', system-ui, sans-serif !important;
+  font-family: "Inter", system-ui, sans-serif !important;
   letter-spacing: normal;
 }
-
 
 /* Alternative font options you can use:
    - For elegant/luxury: 'Playfair Display', 'Merriweather', Georgia, 'Times New Roman', serif
@@ -356,7 +439,7 @@ input[type="radio"]:checked {
 }
 
 input[type="radio"]:checked::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 50%;
   left: 50%;
@@ -405,7 +488,7 @@ input[type="checkbox"]:checked {
 }
 
 input[type="checkbox"]:checked::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 1px;
   left: 4px;
@@ -554,4 +637,65 @@ select option:checked:hover,
 .custom-select option:checked:hover {
   background: #000000 !important;
   color: white !important;
+}
+
+/* Marquee Animation for Brands */
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 40s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+.marquee-container {
+  overflow: hidden;
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 10%,
+    black 90%,
+    transparent
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 10%,
+    black 90%,
+    transparent
+  );
+}
+
+/* Hide scrollbar but allow scrolling */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}/* Slim subtle scrollbar for navigation */
+.slim-scrollbar::-webkit-scrollbar {
+  height: 2px;
+  display: block;
+}
+.slim-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.slim-scrollbar::-webkit-scrollbar-thumb {
+  background: #e2e8f0;
+  border-radius: 10px;
+}
+.slim-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #cbd5e1;
 }

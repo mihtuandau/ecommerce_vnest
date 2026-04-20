@@ -1,4 +1,4 @@
-import axios from 'axios';
+﻿import axios from 'axios';
 
 export const API_CONFIG = {
   BASE_URL: import.meta.env.VITE_API_URL ,
@@ -12,7 +12,6 @@ const axiosClient = axios.create({
   withCredentials: true, 
 });
 
-// Add token to all requests
 axiosClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('access_token');
@@ -26,7 +25,6 @@ axiosClient.interceptors.request.use(
   }
 );
 
-// Auto-refresh token khi gặp 401
 let isRefreshing = false;
 let failedQueue = [];
 
@@ -43,15 +41,18 @@ axiosClient.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // Chỉ xử lý 401, bỏ qua các request login/refresh để tránh vòng lặp vô tận
+    const hasToken = !!localStorage.getItem('access_token');
+
     if (
       error.response?.status === 401 &&
+      hasToken &&
       !originalRequest._retry &&
       !originalRequest.url?.includes('/auth/login') &&
+      !originalRequest.url?.includes('/auth/logout') &&
       !originalRequest.url?.includes('/auth/refresh')
     ) {
       if (isRefreshing) {
-        // Queue request lại để đợi token mới
+
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
         })
@@ -76,8 +77,8 @@ axiosClient.interceptors.response.use(
       } catch (refreshError) {
         processQueue(refreshError, null);
         localStorage.removeItem('access_token');
-        // Redirect về login nếu refresh thất bại
-        if (typeof window !== 'undefined') {
+
+        if (typeof window !== 'undefined' && !originalRequest.url?.includes('/auth/logout')) {
           window.dispatchEvent(new CustomEvent('auth:expired'));
         }
         return Promise.reject(refreshError);
@@ -91,3 +92,8 @@ axiosClient.interceptors.response.use(
 );
 
 export default axiosClient;
+
+
+
+
+

@@ -1,4 +1,4 @@
-import { Search, Plus } from 'lucide-react';
+﻿import { Search, Plus } from 'lucide-react';
 import Button from '../../common/Button';
 
 const CategoryFilters = ({ searchQuery, onSearchChange, onAddClick }) => {
@@ -28,3 +28,9 @@ const CategoryFilters = ({ searchQuery, onSearchChange, onAddClick }) => {
 };
 
 export default CategoryFilters;
+
+
+
+
+
+

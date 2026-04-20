@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 
 export const useCheckoutForm = (initialShippingInfo = null) => {
   const [shippingInfo, setShippingInfo] = useState(
@@ -70,3 +70,9 @@ export const useCheckoutForm = (initialShippingInfo = null) => {
     resetForm,
   };
 };
+
+
+
+
+
+

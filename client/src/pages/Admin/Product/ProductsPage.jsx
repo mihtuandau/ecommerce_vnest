@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
@@ -24,10 +24,10 @@ const ProductsPage = () => {
     search: '',
     categoryId: '',
     brandId: '',
-    status: '', // active | inactive | draft
+    status: '', 
     minPrice: '',
     maxPrice: '',
-    // Backend chỉ hỗ trợ 1 param sortBy: newest|oldest|price-asc|price-desc|name-asc|name-desc|sold|rating
+
     sortBy: 'newest',
     page: 1,
     limit: 10
@@ -90,8 +90,7 @@ const ProductsPage = () => {
     setBulkStatusLoading(true);
     try {
       const isActive = newStatus === 'active';
-      
-      // Gọi API để update status của tất cả sản phẩm được chọn
+
       await Promise.all(
         selectedProducts.map(id =>
           productService.update(id, { isActive })
@@ -138,7 +137,7 @@ const ProductsPage = () => {
   return (
     <div className="min-h-screen bg-gray-50/50 p-6">
       <div className="max-w-[1600px] mx-auto w-full">
-        {/* Header Setup */}
+        {}
         <div className="flex justify-between items-start mb-6">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 mb-1">Quản lý sản phẩm</h1>
@@ -157,7 +156,7 @@ const ProductsPage = () => {
           </div>
         </div>
 
-        {/* Stats Row */}
+        {}
         <ProductStats 
           products={productsData?.products || []} 
           getTotalStock={(p) => p.variants ? p.variants.reduce((sum, v) => sum + (v.stock || 0), 0) : (p.stock || 0)} 
@@ -172,9 +171,9 @@ const ProductsPage = () => {
           deleting={deleting}
         />
 
-        {/* Content Box */}
+        {}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-          {/* Custom Tabs & Search */}
+          {}
           <div className="px-6 py-4 border-b border-gray-100">
             <div className="flex flex-col gap-4">
               <div className="flex items-center gap-6 text-sm font-medium border-b border-gray-100 pb-2">
@@ -263,3 +262,8 @@ const ProductsPage = () => {
 };
 
 export default ProductsPage;
+
+
+
+
+

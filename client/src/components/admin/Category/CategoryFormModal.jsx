@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { notify } from '../../../utils/notification';
 import { X, Upload } from 'lucide-react';
 import Button from '../../common/Button';
@@ -11,7 +11,6 @@ const CategoryFormModal = ({ isOpen, onClose, onSubmit, category = null }) => {
   });
   const [imagePreview, setImagePreview] = useState(category?.image || null);
 
-  // Reset form when category changes or modal opens/closes
   useEffect(() => {
     if (isOpen) {
       setFormData({
@@ -25,21 +24,19 @@ const CategoryFormModal = ({ isOpen, onClose, onSubmit, category = null }) => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // Validate file type
+
       if (!file.type.startsWith('image/')) {
         notify.error('Vui lòng chọn file ảnh');
         return;
       }
-      
-      // Validate file size (max 5MB)
+
       if (file.size > 5 * 1024 * 1024) {
         notify.error('Kích thước ảnh không được vượt quá 5MB');
         return;
       }
       
       setFormData({ ...formData, image: file });
-      
-      // Create preview
+
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result);
@@ -155,3 +152,9 @@ const CategoryFormModal = ({ isOpen, onClose, onSubmit, category = null }) => {
 };
 
 export default CategoryFormModal;
+
+
+
+
+
+

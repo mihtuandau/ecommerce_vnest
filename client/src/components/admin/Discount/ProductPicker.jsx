@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import { Search, X, CheckCheck, SquareMinus, Trash2 } from 'lucide-react';
 import { formatPrice } from '../../../utils/formatters';
 
@@ -206,3 +206,9 @@ const ProductPicker = ({
 };
 
 export default ProductPicker;
+
+
+
+
+
+

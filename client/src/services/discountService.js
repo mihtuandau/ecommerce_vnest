@@ -1,4 +1,4 @@
-import apiService from './apiService';
+﻿import apiService from './apiService';
 import { DISCOUNT_ENDPOINTS } from '../config/apiConstants';
 
 const discountService = {
@@ -41,6 +41,10 @@ const discountService = {
     const response = await apiService.post(DISCOUNT_ENDPOINTS.VALIDATE, { code });
     return response;
   },
+  getPublicDiscounts: async () => {
+    const response = await apiService.get(DISCOUNT_ENDPOINTS.PUBLIC);
+    return response;
+  },
   getStats: async () => {
     const response = await apiService.get(DISCOUNT_ENDPOINTS.STATS);
     return response;
@@ -48,3 +52,9 @@ const discountService = {
 };
 
 export default discountService;
+
+
+
+
+
+

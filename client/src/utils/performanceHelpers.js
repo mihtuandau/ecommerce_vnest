@@ -1,10 +1,5 @@
+﻿
 
-/**
- * Debounce function to limit function calls
- * @param {Function} func - Function to debounce
- * @param {number} wait - Wait time in milliseconds
- * @returns {Function} Debounced function
- */
 export const debounce = (func, wait = 300) => {
   let timeout;
   return function executedFunction(...args) {
@@ -17,12 +12,7 @@ export const debounce = (func, wait = 300) => {
   };
 };
 
-/**
- * Throttle function to limit function execution rate
- * @param {Function} func - Function to throttle
- * @param {number} limit - Time limit in milliseconds
- * @returns {Function} Throttled function
- */
+
 export const throttle = (func, limit = 300) => {
   let inThrottle;
   return function executedFunction(...args) {
@@ -34,11 +24,9 @@ export const throttle = (func, limit = 300) => {
   };
 };
 
-/**
- * Simple cache implementation for API calls
- */
+
 class SimpleCache {
-  constructor(ttl = 5 * 60 * 1000) { // Default 5 minutes
+  constructor(ttl = 5 * 60 * 1000) { 
     this.cache = new Map();
     this.ttl = ttl;
   }
@@ -54,7 +42,6 @@ class SimpleCache {
     const item = this.cache.get(key);
     if (!item) return null;
 
-    // Check if expired
     if (Date.now() - item.timestamp > this.ttl) {
       this.cache.delete(key);
       return null;
@@ -82,11 +69,7 @@ class SimpleCache {
 
 export const apiCache = new SimpleCache();
 
-/**
- * Memoize expensive computations
- * @param {Function} fn - Function to memoize
- * @returns {Function} Memoized function
- */
+
 export const memoize = (fn) => {
   const cache = new Map();
   return (...args) => {
@@ -99,3 +82,9 @@ export const memoize = (fn) => {
     return result;
   };
 };
+
+
+
+
+
+

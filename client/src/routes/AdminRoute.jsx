@@ -1,4 +1,4 @@
-import { Navigate } from 'react-router-dom';
+﻿import { Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 const AdminRoute = ({ children }) => {
@@ -12,7 +12,7 @@ const AdminRoute = ({ children }) => {
     return <Navigate to="/login" replace />;
   }
 
-  if (user.role !== 'ADMIN') {
+  if (user.role === 'CUSTOMER') {
     return <Navigate to="/" replace />;
   }
   
@@ -20,3 +20,9 @@ const AdminRoute = ({ children }) => {
 };
 
 export default AdminRoute;
+
+
+
+
+
+

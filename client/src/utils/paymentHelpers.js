@@ -1,4 +1,4 @@
-import { formatPrice, formatDateTime } from './formatters';
+﻿import { formatPrice, formatDateTime } from './formatters';
 
 export const formatCurrency = formatPrice;
 export const formatDate = formatDateTime;
@@ -32,3 +32,9 @@ export const getMethodText = (method) => {
   };
   return texts[method] || method;
 };
+
+
+
+
+
+

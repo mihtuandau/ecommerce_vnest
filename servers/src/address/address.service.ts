@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+﻿import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { Prisma, AddressType } from '@prisma/client';
 import { AddressRepository } from './address.repository';
 import { CreateAddressDto } from './dto/create-address.dto';
@@ -12,10 +12,10 @@ export class AddressService {
     return this.repository.findByUserId(userId);
   }
 
-  async getAddress(id: number) {
+  async getAddress(id: number, userId: number) {
     const address = await this.repository.findById(id);
-    if (!address) {
-      throw new NotFoundException('Address not found');
+    if (!address || address.userId !== userId) {
+      throw new NotFoundException('Address not found or does not belong to user');
     }
     return address;
   }
@@ -43,14 +43,15 @@ export class AddressService {
       isDefault,
     });
   }
-  async updateAddress(id: number, data: UpdateAddressDto) {
+
+  async updateAddress(id: number, userId: number, data: UpdateAddressDto) {
     const address = await this.repository.findById(id);
-    if (!address) {
-      throw new NotFoundException('Address not found');
+    if (!address || address.userId !== userId) {
+      throw new NotFoundException('Address not found or does not belong to user');
     }
 
     if (data.isDefault === true) {
-      await this.repository.removeDefaultFromAllAddresses(address.userId);
+      await this.repository.removeDefaultFromAllAddresses(userId);
     }
 
     const updateData: Prisma.AddressUpdateInput = {};
@@ -69,14 +70,14 @@ export class AddressService {
     return this.repository.update(id, updateData);
   }
 
-  async deleteAddress(id: number) {
+  async deleteAddress(id: number, userId: number) {
     const address = await this.repository.findById(id);
-    if (!address) {
-      throw new NotFoundException('Address not found');
+    if (!address || address.userId !== userId) {
+      throw new NotFoundException('Address not found or does not belong to user');
     }
 
     if (address.isDefault) {
-      const nextAddress = await this.repository.findNextAddress(address.userId, id);
+      const nextAddress = await this.repository.findNextAddress(userId, id);
       if (nextAddress) {
         await this.repository.update(nextAddress.id, { isDefault: true });
       }
@@ -108,3 +109,9 @@ export class AddressService {
     return address ? address.userId === userId : false;
   }
 }
+
+
+
+
+
+

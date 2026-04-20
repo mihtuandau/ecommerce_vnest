@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+﻿import { useState, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Plus, RefreshCw } from 'lucide-react';
 import { notify } from '../../../utils/notification';
@@ -99,7 +99,8 @@ const DiscountManagement = () => {
   };
 
   const handleEdit = (discount) => {
-    navigate(`/admin-discounts/edit/${discount.id}`, { state: { discount } });
+    const path = isFlashSalePage ? `/admin-flash-sales/edit/${discount.id}` : `/admin-discounts/edit/${discount.id}`;
+    navigate(path, { state: { discount } });
   };
 
   const handleCloseModals = () => {
@@ -128,7 +129,7 @@ const DiscountManagement = () => {
               <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
               Làm mới
             </Button>
-            <Button onClick={() => navigate(isFlashSalePage ? '/admin-discounts/new-flash-sale' : '/admin-discounts/new')}>
+            <Button onClick={() => navigate(isFlashSalePage ? '/admin-flash-sales/new' : '/admin-discounts/new')}>
               <Plus className="h-4 w-4 mr-2" />
               {isFlashSalePage ? 'Tạo Flash Sale' : 'Tạo mã giảm giá'}
             </Button>
@@ -175,3 +176,9 @@ const DiscountManagement = () => {
 };
 
 export default DiscountManagement;
+
+
+
+
+
+

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+﻿import { useEffect, useRef } from 'react';
 import { useCart } from '../../hooks/useCart';
 import { useAuth, useAuthLoading } from '../../hooks/useAuth';
 
@@ -21,3 +21,9 @@ export const CartSync = () => {
 };
 
 export default CartSync;
+
+
+
+
+
+

@@ -70,28 +70,26 @@ const ProfilePage = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-white pt-21 pb-8">
-        <div className="container mx-auto px-4 lg:px-8">
-          <Breadcrumb items={[
-            { label: 'Thông tin tài khoản' }
-          ]} />
-          <PageTitle
-            subtitle="Tài khoản"
-            title="THÔNG TIN CÁ NHÂN"
-            className="mt-6"
-          />
+      <div className="min-h-screen bg-white pb-12 text-slate-800">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="py-2">
+            <Breadcrumb items={[
+              { label: 'Thông tin tài khoản' }
+            ]} />
+          </div>
 
-          <Card className="mb-8 shadow-sm">
+          <div className="mt-8">
+            <Card className="mb-8 shadow-sm">
             <div className="flex items-center gap-6">
               <Avatar 
                 size={80} 
                 icon={<UserOutlined />}
-                style={{ backgroundColor: '#00a85a' }}
+                style={{ backgroundColor: '#1e293b' }}
               >
                 {currentUser.name?.charAt(0)?.toUpperCase() || currentUser.email?.charAt(0)?.toUpperCase()}
               </Avatar>
               <div className="flex-1">
-                <h2 className="text-xl font-semibold text-gray-900 mb-1">
+                <h2 className="text-xl font-semibold text-slate-800 mb-1">
                   {currentUser.name || 'Người dùng'}
                 </h2>
                 <p className="text-gray-600">{currentUser.email}</p>
@@ -148,7 +146,7 @@ const ProfilePage = () => {
                               <div className="flex-1 min-w-0">
                                 <Link
                                   to={`/products/${review.productId}`}
-                                  className="text-sm font-medium text-gray-900 hover:text-[#00a85a] transition-colors line-clamp-1"
+                                  className="text-sm font-medium text-slate-800 hover:text-slate-800 transition-colors line-clamp-1"
                                 >
                                   {review.product?.name || `Sản phẩm #${review.productId}`}
                                 </Link>
@@ -179,8 +177,14 @@ const ProfilePage = () => {
           />
         </div>
       </div>
-    </Layout>
+    </div>
+  </Layout>
   );
 };
 
 export default ProfilePage;
+
+
+
+
+

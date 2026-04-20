@@ -1,5 +1,5 @@
-export const normalizeResponse = (response) => {
-  // Handle different response structures
+﻿export const normalizeResponse = (response) => {
+
   if (Array.isArray(response?.data)) return response.data;
   if (Array.isArray(response)) return response;
   if (response?.data?.data) return response.data.data;
@@ -45,3 +45,9 @@ export const retryWithBackoff = async (fn, retries = 3, delay = 1000) => {
     return retryWithBackoff(fn, retries - 1, delay * 2);
   }
 };
+
+
+
+
+
+

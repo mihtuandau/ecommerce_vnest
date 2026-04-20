@@ -1,4 +1,3 @@
-// src/payment/payment.service.ts
 import {
   Injectable,
   BadRequestException,
@@ -6,13 +5,12 @@ import {
   Logger,
 } from '@nestjs/common';
 import { PaymentRepository } from './payment.repository';
-import { PayOSService } from '../payos/payos.service';
+import { VNPayService } from '../vnpay/vnpay.service';
+
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentStatusDto } from './dto/update-payment-status.dto';
 import { QueryPaymentDto } from './dto/query-payment.dto';
 import { PaymentCache } from './payment.cache';
-import { PaymentWebhook } from './payment.webhook';
-import { PaymentSync } from './payment.sync';
 import * as PaymentHelper from './payment.helper';
 
 @Injectable()
@@ -21,125 +19,70 @@ export class PaymentService {
 
   constructor(
     private repository: PaymentRepository,
-    private payosService: PayOSService,
+    private vnpayService: VNPayService,
+
     private cacheService: PaymentCache,
-    private webhookService: PaymentWebhook,
-    private syncService: PaymentSync,
   ) {}
 
-  async create(data: CreatePaymentDto) {
-    // Validate order exists
+  async create(data: CreatePaymentDto, ipAddr: string = '127.0.0.1') {
+    // Tự động chuyển đổi từ PAYOS sang VNPAY để tránh lỗi đồng bộ
+    if (data.method === ('PAYOS' as any)) {
+      data.method = 'VNPAY' as any;
+    }
+
     const order = await this.repository.findOrderById(data.orderId);
     if (!order) {
       throw new BadRequestException('Order not found');
     }
 
-    // Check if order already has a successful or pending payment
     const existingPayment = await this.repository.findByOrderId(data.orderId);
+    
+    if (existingPayment && existingPayment.status === 'SUCCESS') {
+      return PaymentHelper.serializePayment(existingPayment);
+    }
+
+    let transactionId: string | null = null;
+    let paymentLink: string | null = null;
+
+    if (data.method === 'VNPAY') {
+      transactionId = `VNP${Date.now()}`;
+      paymentLink = this.vnpayService.createPaymentUrl({
+        amount: order.total,
+        orderInfo: `Thanh toan don hang ${order.orderCode}`,
+        vnp_TxnRef: order.orderCode as string,
+        ipAddr: ipAddr,
+      });
+    } else {
+      // Các phương thức khác (COD...)
+      transactionId = PaymentHelper.generateTransactionId(data.method);
+    }
+
+    let payment;
     if (existingPayment) {
-      // If payment is successful, return it
-      if (existingPayment.status === 'SUCCESS') {
-        this.logger.log(`Order ${data.orderId} already has successful payment ${existingPayment.id}`);
-        return PaymentHelper.serializePayment({
-          ...existingPayment,
-          paymentLink: existingPayment.paymentLink,
-        });
-      }
-      
-      // If payment is pending and has a valid payment link (for PayOS), return it
-      if (existingPayment.status === 'PENDING' && existingPayment.paymentLink && data.method === 'PAYOS') {
-        this.logger.log(`Order ${data.orderId} already has pending PayOS payment ${existingPayment.id}`);
-        return PaymentHelper.serializePayment({
-          ...existingPayment,
-          paymentLink: existingPayment.paymentLink,
-        });
-      }
-      
-      // For failed/cancelled payments or pending without link, update with new payment link
-      this.logger.log(`Order ${data.orderId} has ${existingPayment.status} payment, updating with new payment link`);
-      
-      // Generate new payment data
-      let transactionId: string | null = null;
-      let paymentLink: string | null = null;
-      let payosOrderCode: string | null = null;
-
-      if (data.method === 'PAYOS') {
-        payosOrderCode = PaymentHelper.generatePayOSOrderCode();
-        const payosData = await PaymentHelper.createPayOSPaymentLink(this.payosService, order, payosOrderCode);
-        paymentLink = payosData.paymentLink;
-        transactionId = payosData.transactionId;
-      } else if (data.method === 'VNPAY' || data.method === 'MOMO') {
-        transactionId = PaymentHelper.generateTransactionId(data.method);
-      }
-
-      // Update existing payment with new data
-      const updatedPayment = await this.repository.update(existingPayment.id, {
+      payment = await this.repository.update(existingPayment.id, {
         method: data.method,
         status: 'PENDING',
         amount: order.total,
         transactionId,
         paymentLink,
-        payosOrderCode: payosOrderCode?.toString(),
       });
-
-      // Clear caches
-      await this.cacheService.clearPaymentCaches();
-      await this.cacheService.deletePayment(updatedPayment.id);
-
-      return PaymentHelper.serializePayment({
-        ...updatedPayment,
+    } else {
+      payment = await this.repository.create({
+        order: { connect: { id: data.orderId } },
+        method: data.method,
+        status: 'PENDING',
+        amount: order.total,
+        transactionId,
         paymentLink,
       });
     }
 
-    // No existing payment, create new one
-    // Generate transaction data for different payment methods
-    let transactionId: string | null = null;
-    let paymentLink: string | null = null;
-    let payosOrderCode: string | null = null;
-
-    if (data.method === 'PAYOS') {
-      payosOrderCode = PaymentHelper.generatePayOSOrderCode();
-      const payosData = await PaymentHelper.createPayOSPaymentLink(this.payosService, order, payosOrderCode);
-      paymentLink = payosData.paymentLink;
-      transactionId = payosData.transactionId;
-    } else if (data.method === 'VNPAY' || data.method === 'MOMO') {
-      transactionId = PaymentHelper.generateTransactionId(data.method);
-    }
-
-    const payment = await this.repository.create({
-      order: { connect: { id: data.orderId } },
-      method: data.method,
-      status: 'PENDING',
-      amount: order.total,
-      transactionId,
-      paymentLink,
-      payosOrderCode,
-    });
-
-    // Clear caches
     await this.cacheService.clearPaymentCaches();
-    await this.cacheService.deletePayment(payment.id);
-
+    
     return PaymentHelper.serializePayment({
       ...payment,
       paymentLink,
     });
-  }
-
-  async findOne(id: number) {
-    let payment = await this.cacheService.getPayment(id);
-    if (payment) {
-      return PaymentHelper.serializePayment(payment);
-    }
-
-    payment = await this.repository.findById(id);
-
-    if (payment) {
-      await this.cacheService.setPayment(id, payment);
-    }
-
-    return PaymentHelper.serializePayment(payment);
   }
 
   async updateStatus(id: number, data: UpdatePaymentStatusDto) {
@@ -155,25 +98,98 @@ export class PaymentService {
       payment.order.orderItems,
     );
 
-    if (data.status === 'SUCCESS') {
-      this.logger.log(`Stock deducted for order ${payment.orderId}`);
+    if (data.status === 'REFUNDED') {
+      this.logger.log(`Payment ${id} REFUNDED - Restoring stock`);
+      for (const item of payment.order.orderItems) {
+        await this.repository.incrementVariantStock(item.variantId, item.quantity);
+      }
+      if (payment.order.status === 'DELIVERED') {
+        for (const item of payment.order.orderItems) {
+          await this.repository.decrementProductSoldCount(item.variant.productId, item.quantity);
+        }
+      }
     }
 
-    // Clear caches
     await this.cacheService.clearRelatedCaches(id, payment.orderId);
-
     return PaymentHelper.serializePayment(updatedPayment);
   }
 
-  async findAll(query: QueryPaymentDto) {
-    const { page = 1, limit = 10, status, method } = query;
-    const skip = (page - 1) * limit;
-
-    // Check cache first
-    const cached = await this.cacheService.getPaymentsList(query);
-    if (cached) {
-      return cached;
+  async handleVNPayReturn(vnp_Params: any) {
+    const result = this.vnpayService.verifyReturnUrl(vnp_Params);
+    if (!result.isValid) {
+      this.logger.error(`VNPay Checksum Mismatch! Params: ${JSON.stringify(vnp_Params)}`);
+      // Vẫn tiếp tục xử lý để Frontend có thể hiển thị trạng thái Hủy/Thất bại dựa trên ResponseCode
     }
+
+    const orderCode = vnp_Params['vnp_TxnRef'];
+    const responseCode = vnp_Params['vnp_ResponseCode'];
+    
+    const payment = await this.repository.findByOrderCode(orderCode);
+    if (!payment) throw new NotFoundException('Payment not found');
+
+    const status = responseCode === '00' ? 'SUCCESS' : 'FAILED';
+    
+    if (payment.status === 'PENDING') {
+      await this.updateStatus(payment.id, { status });
+    }
+    
+    return {
+      isValid: result.isValid,
+      payment: PaymentHelper.serializePayment(payment),
+      order: payment.order,
+    };
+  }
+
+  async handleVNPayIPN(vnp_Params: any) {
+    try {
+      const result = this.vnpayService.verifyReturnUrl(vnp_Params);
+      if (!result.isValid) {
+        return { RspCode: '97', Message: 'Checksum failed' };
+      }
+
+      const orderCode = vnp_Params['vnp_TxnRef'];
+      const vnp_Amount = parseInt(vnp_Params['vnp_Amount']);
+      const responseCode = vnp_Params['vnp_ResponseCode'];
+
+      const payment = await this.repository.findByOrderCode(orderCode);
+      if (!payment) {
+        return { RspCode: '01', Message: 'Order not found' };
+      }
+
+      // vnp_Amount is multiplied by 100
+      if (Math.round(payment.amount * 100) !== vnp_Amount) {
+        return { RspCode: '04', Message: 'Invalid amount' };
+      }
+
+      if (payment.status !== 'PENDING') {
+        return { RspCode: '02', Message: 'Order already confirmed' };
+      }
+
+      const status = responseCode === '00' ? 'SUCCESS' : 'FAILED';
+      await this.updateStatus(payment.id, { status });
+
+      return { RspCode: '00', Message: 'Confirm Success' };
+    } catch (error) {
+      this.logger.error(`VNPay IPN Error: ${error.message}`);
+      return { RspCode: '99', Message: 'Unknown error' };
+    }
+  }
+
+
+
+  async findOne(id: number) {
+    let payment = await this.cacheService.getPayment(id);
+    if (payment) return PaymentHelper.serializePayment(payment);
+
+    payment = await this.repository.findById(id);
+    if (payment) await this.cacheService.setPayment(id, payment);
+
+    return PaymentHelper.serializePayment(payment);
+  }
+
+  async findAll(query: QueryPaymentDto) {
+    const { page = 1, limit = 50, status, method } = query;
+    const skip = (page - 1) * limit;
 
     const where = {};
     if (status) where['status'] = status;
@@ -184,80 +200,12 @@ export class PaymentService {
       this.repository.count(where),
     ]);
 
-    // Serialize all payments
-    const serializedPayments = payments.map((p) => PaymentHelper.serializePayment(p));
-
-    const result = {
-      payments: serializedPayments,
+    return {
+      payments: payments.map((p) => PaymentHelper.serializePayment(p)),
       total,
       page,
       limit,
       totalPages: Math.ceil(total / limit),
     };
-
-    // Set cache
-    await this.cacheService.setPaymentsList(query, result);
-
-    return result;
-  }
-
-  /**
-   * Get PayOS payment info
-   */
-  async getPayOSPaymentInfo(orderCode: number) {
-    try {
-      const paymentInfo = await this.payosService.getPaymentInfo(orderCode);
-      return PaymentHelper.serializePayOSPaymentInfo(paymentInfo);
-    } catch (error) {
-      throw new NotFoundException(`Payment not found for order code: ${orderCode}`);
-    }
-  }
-
-  /**
-   * Cancel PayOS payment
-   */
-  async cancelPayOSPayment(paymentId: number, reason?: string) {
-    const payment = await this.repository.findById(paymentId);
-    if (!payment) {
-      throw new NotFoundException('Payment not found');
-    }
-
-    if (!payment.payosOrderCode) {
-      throw new BadRequestException('This payment does not have a PayOS order code');
-    }
-
-    try {
-      await this.payosService.cancelPaymentLink(Number(payment.payosOrderCode), reason);
-
-      // Update payment status
-      const updatedPayment = await this.repository.update(paymentId, {
-        status: 'CANCELLED',
-      });
-
-      // Clear cache
-      await this.cacheService.clearRelatedCaches(paymentId, payment.orderId);
-
-      return PaymentHelper.serializePayment(updatedPayment);
-    } catch (error) {
-      throw new BadRequestException(`Failed to cancel PayOS payment: ${error.message}`);
-    }
-  }
-
-  // Delegate webhook handling to WebhookService
-  async handlePayOSWebhook(webhookData: any) {
-    return this.webhookService.handlePayOSWebhook(webhookData);
-  }
-
-  // Delegate sync operations to SyncService
-  async findByPayosOrderCode(orderCode: string) {
-    return this.syncService.findByPayosOrderCodeWithSync(orderCode);
-  }
-
-  async syncPaymentWithPayOS(paymentId: number) {
-    return this.syncService.syncPaymentWithPayOS(paymentId);
-  }
-
-  private async processExternalPayment(data: CreatePaymentDto, transactionId: string) {
-    this.logger.log('Processing external payment for', transactionId);
   }
 }

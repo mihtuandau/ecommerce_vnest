@@ -1,4 +1,4 @@
-import { notify } from './notification';
+﻿import { notify } from './notification';
 
 export const validateEmail = (email) => {
   const emailRegex = /^[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -137,3 +137,9 @@ export const saveGuestOrder = (orderCode, email) => {
 export const clearGuestCart = () => {
   localStorage.removeItem("guest_cart");
 };
+
+
+
+
+
+

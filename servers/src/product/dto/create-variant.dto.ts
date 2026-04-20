@@ -1,6 +1,6 @@
-import { IsInt, IsString, IsOptional, IsNumber, IsPositive, Min, IsBoolean } from 'class-validator';
+﻿import { IsInt, IsString, IsOptional, IsNumber, IsPositive, Min, IsBoolean } from 'class-validator';
 import { Type } from 'class-transformer';
-import { ApiProperty } from '@nestjs/swagger';  // Thêm import
+import { ApiProperty } from '@nestjs/swagger';  
 
 export class CreateVariantDto {
   @ApiProperty({ 
@@ -84,3 +84,8 @@ export class CreateVariantDto {
   @IsBoolean()
   isActive?: boolean;
 }
+
+
+
+
+

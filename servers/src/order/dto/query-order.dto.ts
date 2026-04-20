@@ -1,4 +1,4 @@
-import { IsOptional, IsEnum, IsInt, Min } from 'class-validator';
+﻿import { IsOptional, IsEnum, IsInt, Min } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { OrderStatus } from '@prisma/client';
@@ -29,3 +29,8 @@ export class QueryOrderDto {
   @IsInt()
   userId?: number;
 }
+
+
+
+
+

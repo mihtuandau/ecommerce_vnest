@@ -6,7 +6,7 @@ import { notify } from '../utils/notification';
 export const usePayments = (filters = {}) => {
   const { data: rawData, ...queryResult } = useQuery({
     queryKey: ['payments'],
-    queryFn: () => paymentService.getPayments(),
+    queryFn: () => paymentService.getPayments({ limit: 500 }),
     staleTime: 2 * 60 * 1000,
   });
 
@@ -57,16 +57,18 @@ export const usePayments = (filters = {}) => {
   }, [payments, filters]);
 
   const stats = useMemo(() => {
-    const isCompleted = (p) => p.status === 'COMPLETED' || p.status === 'SUCCESS';
+    const successPayments = payments.filter(p => p.status === 'SUCCESS');
+    const refundedPayments = payments.filter(p => p.status === 'REFUNDED');
+    const pendingPayments = payments.filter(p => p.status === 'PENDING');
     
     return {
       total: payments.length,
-      completed: payments.filter(isCompleted).length,
-      pending: payments.filter(p => p.status === 'PENDING').length,
-      failed: payments.filter(p => p.status === 'FAILED').length,
-      totalAmount: payments
-        .filter(isCompleted)
-        .reduce((sum, p) => sum + (Number(p.amount) || 0), 0)
+      successAmount: successPayments.reduce((sum, p) => sum + (Number(p.amount) || 0), 0),
+      refundedAmount: refundedPayments.reduce((sum, p) => sum + (Number(p.amount) || 0), 0),
+      pendingAmount: pendingPayments.reduce((sum, p) => sum + (Number(p.amount) || 0), 0),
+      successCount: successPayments.length,
+      pendingCount: pendingPayments.length,
+      refundedCount: refundedPayments.length,
     };
   }, [payments]);
 
@@ -92,3 +94,9 @@ export const useRefundPayment = () => {
     }
   });
 };
+
+
+
+
+
+

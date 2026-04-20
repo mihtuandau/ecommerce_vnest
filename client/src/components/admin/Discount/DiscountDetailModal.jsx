@@ -1,4 +1,4 @@
-import Modal from '../../common/Modal';
+﻿import Modal from '../../common/Modal';
 import Badge from '../../common/Badge';
 import { formatDateTime, formatDate } from '../../../utils/formatters';
 import {
@@ -15,7 +15,7 @@ const DiscountDetailModal = ({ isOpen, onClose, discount }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Chi tiết mã giảm giá" variant="admin">
       <div className="space-y-6">
-        {/* Header */}
+        {}
         <div className="flex items-center justify-between pb-4 border-b">
           <div>
             <h3 className="text-2xl font-bold text-gray-900">{discount.code}</h3>
@@ -26,7 +26,7 @@ const DiscountDetailModal = ({ isOpen, onClose, discount }) => {
           </Badge>
         </div>
 
-        {/* Mô tả */}
+        {}
         {discount.description && (
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Mô tả</label>
@@ -34,7 +34,7 @@ const DiscountDetailModal = ({ isOpen, onClose, discount }) => {
           </div>
         )}
 
-        {/* Thông tin giảm giá */}
+        {}
         <div className="grid grid-cols-2 gap-4">
           <div className="bg-gray-50 rounded-lg p-4">
             <div className="flex items-center gap-2 mb-2">
@@ -61,7 +61,7 @@ const DiscountDetailModal = ({ isOpen, onClose, discount }) => {
           </div>
         </div>
 
-        {/* Thời gian */}
+        {}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-3">
             <Calendar className="inline h-4 w-4 mr-1" />
@@ -83,7 +83,7 @@ const DiscountDetailModal = ({ isOpen, onClose, discount }) => {
           </div>
         </div>
 
-        {/* Flash Sale info */}
+        {}
         {discount.isFlashSale && (
           <div className="bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200 rounded-xl p-4">
             <div className="flex items-center gap-2 mb-3">
@@ -109,7 +109,7 @@ const DiscountDetailModal = ({ isOpen, onClose, discount }) => {
           </div>
         )}
 
-        {/* Metadata */}
+        {}
         <div className="pt-4 border-t text-xs text-gray-500 space-y-1">
           <div className="flex items-center gap-2">
             <Clock className="h-3 w-3" />
@@ -126,4 +126,10 @@ const DiscountDetailModal = ({ isOpen, onClose, discount }) => {
 };
 
 export default DiscountDetailModal;
+
+
+
+
+
+
 

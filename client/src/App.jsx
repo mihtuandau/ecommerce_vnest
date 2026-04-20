@@ -1,4 +1,4 @@
-// src/App.jsx
+﻿
 import { Suspense, lazy, memo } from "react";
 import { BrowserRouter as Router } from "react-router-dom";
 import { Provider } from "react-redux";
@@ -78,3 +78,9 @@ function App() {
 }
 
 export default App;
+
+
+
+
+
+

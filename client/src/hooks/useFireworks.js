@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from "react";
+﻿import { useCallback, useEffect, useRef } from "react";
 import confetti from "canvas-confetti";
 
 export const useFireworks = () => {
@@ -42,7 +42,7 @@ export const useFireworks = () => {
 
     const sideCannons = (ms, boost = 1) => {
       t(ms, () => {
-        // Left main
+
         shoot({
           particleCount: Math.round(38 * scale * boost), 
           angle: 75,
@@ -133,11 +133,11 @@ export const useFireworks = () => {
     };
 
     const drizzle = (ms, durationMs = 850) => {
-      const steps = 6; // ↓ từ 10
+      const steps = 6; 
       for (let i = 0; i < steps; i++) {
         t(ms + (i * durationMs) / steps, () => {
           shoot({
-            particleCount: Math.round(10 * scale), // ↓ từ 20
+            particleCount: Math.round(10 * scale), 
             angle: 90,
             spread: 110,
             startVelocity: 18,
@@ -150,8 +150,6 @@ export const useFireworks = () => {
         });
       }
     };
-
-    // ======= TIMELINE (giữ nhịp, không spam) =======
 
     sideCannons(0, 1.0);
     sideCannons(260, 1.05);
@@ -171,3 +169,9 @@ export const useFireworks = () => {
 
   return { triggerIntenseFireworks };
 };
+
+
+
+
+
+

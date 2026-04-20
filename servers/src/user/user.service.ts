@@ -1,7 +1,8 @@
-// src/user/user.service.ts
+﻿
 import { Injectable } from '@nestjs/common';
 import { UserRepository } from './user.repository';
-import { Prisma, User } from '@prisma/client';
+import { Prisma, User, UserStatus } from '@prisma/client';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { QueryUserDto } from './dto/query-user.dto';
@@ -12,14 +13,38 @@ import * as bcrypt from 'bcrypt';
 export class UserService {
   constructor(private repository: UserRepository) {}
 
-  async create(data: CreateUserDto): Promise<User> {
+  async create(data: any): Promise<User> {
     return this.repository.create({
       email: data.email,
       password: await bcrypt.hash(data.password, 10),
       name: data.name,
       role: data.role || 'CUSTOMER',
-      status: 'ACTIVE' as any,
-    } as any);
+      status: data.status || UserStatus.ACTIVE,
+      verificationCode: data.verificationCode,
+      verificationExpires: data.verificationExpires,
+    });
+  }
+
+  async activateUser(id: number): Promise<User> {
+
+    const updatedUser = await this.repository.update(id, {
+      status: UserStatus.ACTIVE,
+      verificationCode: null,
+      verificationExpires: null,
+      deletedAt: null, 
+    });
+
+    return updatedUser;
+  }
+
+  async updateVerification(id: number, data: { verificationCode: string; verificationExpires: Date; name?: string; password?: string }): Promise<User> {
+    return this.repository.update(id, {
+      verificationCode: data.verificationCode,
+      verificationExpires: data.verificationExpires,
+      name: data.name,
+      password: data.password,
+      status: UserStatus.PENDING, 
+    });
   }
 
   async findByEmail(email: string): Promise<User | null> {
@@ -33,15 +58,39 @@ export class UserService {
       ...(role ? { role } : {}),
       ...(status ? ({ status } as any) : {}),
     };
-    return this.repository.findAll(where, skip, limit);
+    const users = await this.repository.findAll(where, skip, limit);
+    return users.map(user => {
+      const { 
+        password, 
+        verificationCode, 
+        verificationExpires, 
+        resetPasswordToken, 
+        resetPasswordExpires, 
+        deletedAt,
+        ...safeUser 
+      } = user;
+      return safeUser as any;
+    });
   }
 
-  async findOne(id: number): Promise<User | null> {
+  async findOne(id: number): Promise<any | null> {
     const user = await this.repository.findById(id);
     if (!user || user.deletedAt) {
       return null;
     }
-    return user;
+    
+    
+    const { 
+      password, 
+      verificationCode, 
+      verificationExpires, 
+      resetPasswordToken, 
+      resetPasswordExpires, 
+      deletedAt,
+      ...safeUser 
+    } = user;
+    
+    return safeUser;
   }
   
   async update(id: number, data: UpdateUserDto): Promise<User> {
@@ -89,4 +138,43 @@ export class UserService {
       resetPasswordExpires: null,
     });
   }
+
+  
+  async getPermissionsByRole(role: string): Promise<string[]> {
+    return this.repository.getPermissionsByRole(role as any);
+  }
+
+  async getAllPermissions() {
+    return this.repository.getAllPermissions();
+  }
+
+  async getRolesWithPermissions() {
+    return this.repository.getRolesWithPermissions();
+  }
+
+  async updateRolePermissions(role: string, permissionIds: number[]) {
+    return this.repository.updateRolePermissions(role as any, permissionIds);
+  }
+
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  async handleCleanupExpiredUsers() {
+
+    const deleteResult = await this.repository.deleteMany({
+      status: UserStatus.PENDING,
+      verificationExpires: {
+        lt: new Date(),
+      },
+    });
+
+    if (deleteResult.count > 0) {
+
+    } else {
+
+    }
+  }
 }
+
+
+
+
+

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { notify } from '../utils/notification';
 import productService from '../services/productService';
 import {
@@ -105,23 +105,20 @@ export const useProductActions = ({ refetch, products, selectedProducts = [] }) 
       const existingVariants = currentProduct?.variants || [];
       
       const { toCreate, toUpdate, toDelete } = calculateVariantChanges(existingVariants, variantsData);
-      
-      // Thực hiện các thao tác và lưu kết quả
+
       const results = await Promise.all([
         ...toDelete.map(v => productService.deleteVariant(v.id)),
         ...toCreate.map(v => createVariant(productId, v, currentProduct)),
         ...toUpdate.map(v => updateVariant(v, currentProduct))
       ]);
-      
-      // Lọc ra các variants mới được tạo (bỏ qua kết quả delete)
+
       const createdVariants = results.slice(toDelete.length, toDelete.length + toCreate.length);
       
       notify.success('Đã cập nhật biến thể thành công');
       setShowVariantManager(false);
       setManagingVariantsProduct(null);
       refetch();
-      
-      // Trả về danh sách variants vừa tạo (có ID từ backend)
+
       return createdVariants;
     } catch (error) {
       notify.error('Không thể lưu biến thể');
@@ -154,7 +151,6 @@ export const useProductActions = ({ refetch, products, selectedProducts = [] }) 
   };
 };
 
-// Helper functions
 const calculateVariantChanges = (existingVariants, newVariants) => {
   const toCreate = newVariants.filter(v => !v.id);
   const toUpdate = newVariants.filter(v => v.id);
@@ -238,3 +234,8 @@ const handleProductImages = async (productId, images = []) => {
     } catch (error) {}
   }
 };
+
+
+
+
+

@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+﻿import { useMemo } from 'react';
 import { Package, TrendingUp, AlertTriangle, BarChart2 } from 'lucide-react';
 
 const ProductStats = ({ products = [], getTotalStock }) => {
@@ -12,7 +12,7 @@ const ProductStats = ({ products = [], getTotalStock }) => {
     products.forEach(p => {
       const stock = getTotalStock ? getTotalStock(p) : (p.stock || 0);
       if (stock === 0) outOfStockCount++;
-      else if (stock < 50) lowStockCount++; // Giả sử < 50 là sắp hết hàng giống ảnh
+      else if (stock < 50) lowStockCount++; 
     });
 
     return [
@@ -61,3 +61,9 @@ const ProductStats = ({ products = [], getTotalStock }) => {
 };
 
 export default ProductStats;
+
+
+
+
+
+

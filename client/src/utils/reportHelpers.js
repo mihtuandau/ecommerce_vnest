@@ -1,7 +1,6 @@
-import dayjs from 'dayjs';
+﻿import dayjs from 'dayjs';
 
 export const formatRevenueChartData = (revenueData) => {
-  console.log('formatRevenueChartData - revenueData:', revenueData);
   if (!revenueData?.data) return [];
   
   if (revenueData.type === 'monthly') {
@@ -20,14 +19,14 @@ export const formatRevenueChartData = (revenueData) => {
     }));
   }
   
-  return revenueData.data.slice(0, 30).map(item => ({
-    name: dayjs(item.createdAt).format('DD/MM'),
-    revenue: item._sum?.total || 0,
+  return revenueData.data.slice(0, 60).map(item => ({
+    name: item.date,
+    revenue: item.revenue || item.total || 0,
+    orders: item.orders || 0,
   }));
 };
 
 export const formatOrdersChartData = (ordersData) => {
-  console.log('formatOrdersChartData - ordersData:', ordersData);
   if (!ordersData?.data) return [];
   return ordersData.data.map(item => ({
     name: item.status,
@@ -36,7 +35,6 @@ export const formatOrdersChartData = (ordersData) => {
 };
 
 export const formatTopProductsTableData = (topProductsData) => {
-  console.log('formatTopProductsTableData - topProductsData:', topProductsData);
   if (!topProductsData?.data) return [];
   return topProductsData.data.map((item, index) => ({
     key: index,
@@ -46,3 +44,9 @@ export const formatTopProductsTableData = (topProductsData) => {
     revenue: item.totalRevenue,
   }));
 };
+
+
+
+
+
+

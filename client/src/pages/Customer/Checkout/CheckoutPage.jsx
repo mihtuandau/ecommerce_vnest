@@ -4,7 +4,6 @@ import { useSelector } from "react-redux";
 import { Steps, Card, Button as AntButton, Modal as AntModal, Spin } from "antd";
 import { ArrowLeftOutlined, EnvironmentOutlined, CreditCardOutlined } from "@ant-design/icons";
 import { notify } from "../../../utils/notification";
-import { computeDiscountFromMap } from "../../../utils/formatters";
 import { useAuth } from "../../../contexts/AuthContext";
 import { useCart } from "../../../hooks/useCart";
 import { useAutoApplyDiscounts } from "../../../hooks/useFlashSale";
@@ -13,278 +12,109 @@ import AddressSelector from "../../../components/profile/AddressSelector";
 import ShippingForm from "../../../components/checkout/ShippingForm";
 import PaymentMethodSelector from "../../../components/checkout/PaymentMethodSelector";
 import OrderSummary from "../../../components/checkout/OrderSummary";
+import Layout from "../../../components/layouts/Layout";
 import userService from "../../../services/userService";
-import { useCheckoutCalculations } from "../../../hooks/useCheckoutCalculations";
 import { useDiscountCode } from "../../../hooks/useDiscounts";
 import { useCheckoutForm } from "../../../hooks/useCheckoutForm";
 import { useCheckoutSubmit } from "../../../hooks/useCheckoutSubmit";
-// import Breadcrumb from "../../../components/common/Breadcrumb";
+import { useCheckoutPricing } from "../../../hooks/useCheckoutPricing";
+import { formatPrice } from "../../../utils/formatters";
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
-  useCart(); // Initialize cart hook if needed but we get items from redux
+  useCart(); 
   const { discountMap } = useAutoApplyDiscounts();
-
   const allCartItems = useSelector((state) => state.cart.items);
 
   const cartItems = useMemo(() => {
     let items = location.state?.items || [];
-    
     if (location.state?.product && !location.state?.items) {
       const { product, quantity } = location.state;
-      return [{
-        id: product.variant.id,
-        productId: product.id,
-        name: product.name,
-        image: product.image,
-        price: product.variant.price,
-        quantity: quantity,
-        size: product.variant.size,
-        color: product.variant.color,
-        stock: product.variant.stock,
-      }];
+      return [{ id: product.variant.id, productId: product.id, name: product.name, image: product.image, price: product.variant.price, quantity, size: product.variant.size, color: product.variant.color, stock: product.variant.stock }];
     }
-    
     return items.length > 0 ? items : allCartItems;
   }, [location.state, allCartItems]);
 
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
 
-  const {
-    shippingInfo,
-    paymentMethod,
-    setPaymentMethod,
-    agreedToTerms,
-    setAgreedToTerms,
-    handleInputChange,
-    handleSelectAddress,
-  } = useCheckoutForm();
+  const { shippingInfo, paymentMethod, setPaymentMethod, agreedToTerms, setAgreedToTerms, handleInputChange, handleSelectAddress } = useCheckoutForm();
+  const { code: discountCode, setCode: setDiscountCode, applied: appliedDiscount, isChecking: checkingDiscount, apply: handleApplyDiscount, remove: handleRemoveDiscount } = useDiscountCode();
 
-  const {
-    code: discountCode,
-    setCode: setDiscountCode,
-    applied: appliedDiscount,
-    isChecking: checkingDiscount,
-    apply: handleApplyDiscount,
-    remove: handleRemoveDiscount,
-  } = useDiscountCode();
-
-  // Áp dụng auto-apply discount vào giá từng item trước khi tính toán
-  const adjustedCartItems = useMemo(() => {
-    if (!discountMap || Object.keys(discountMap).length === 0) return cartItems;
-    return cartItems.map(item => {
-      const productId = item.product?.id || item.productId;
-      const originalPrice = item.product?.variant?.price || item.price || 0;
-      const flashPrice = computeDiscountFromMap(productId, originalPrice, discountMap);
-      if (flashPrice === originalPrice) return item;
-      return {
-        ...item,
-        product: {
-          ...item.product,
-          variant: {
-            ...(item.product?.variant || {}),
-            price: flashPrice,
-            originalPrice,
-          },
-        },
-      };
-    });
-  }, [cartItems, discountMap]);
-
-  // Tiết kiệm từ auto-apply discount
-  const flashSaleDiscount = useMemo(() => {
-    if (!discountMap || Object.keys(discountMap).length === 0) return 0;
-    return cartItems.reduce((sum, item) => {
-      const productId = item.product?.id || item.productId;
-      const originalPrice = item.product?.variant?.price || item.price || 0;
-      const flashPrice = computeDiscountFromMap(productId, originalPrice, discountMap);
-      return sum + ((originalPrice - flashPrice) * item.quantity);
-    }, 0);
-  }, [cartItems, discountMap]);
-
-  // Subtotal gốc (cần cho best-wins comparison)
-  const originalSubtotal = useMemo(() => {
-    return cartItems.reduce((sum, item) => {
-      const price = item.product?.variant?.price || item.price || 0;
-      return sum + price * item.quantity;
-    }, 0);
-  }, [cartItems]);
-
-  // Tiết kiệm từ manual code (tính trên giá gốc)
-  const manualCodeSaving = useMemo(() => {
-    if (!appliedDiscount) return 0;
-    let saving = 0;
-    if (appliedDiscount.discountType === 'PERCENTAGE') {
-      saving = Math.round(originalSubtotal * appliedDiscount.discountValue / 100);
-      if (appliedDiscount.maxDiscountAmount) saving = Math.min(saving, appliedDiscount.maxDiscountAmount);
-    } else if (appliedDiscount.discountType === 'FIXED') {
-      saving = appliedDiscount.discountValue;
-    }
-    return Math.min(saving, originalSubtotal);
-  }, [appliedDiscount, originalSubtotal]);
-
-  // Best-wins: chọn cái giảm nhiều hơn, không stack
-  const autoApplyWins = flashSaleDiscount >= manualCodeSaving;
-  const effectiveCartItems = autoApplyWins ? adjustedCartItems : cartItems;
-  const effectiveDiscount = autoApplyWins ? null : appliedDiscount;
-  const effectiveFlashSaving = autoApplyWins ? flashSaleDiscount : 0;
-
-  const { shipping, discount, total, itemCount } =
-    useCheckoutCalculations(effectiveCartItems, effectiveDiscount);
-
+  const { subtotal, shipping, discount, total, itemCount, effectiveCartItems, effectiveDiscount } = useCheckoutPricing(cartItems, discountMap, appliedDiscount);
   const { submitting, handleSubmitOrder: submitOrder } = useCheckoutSubmit(user);
 
   const loadUserProfile = useCallback(async () => {
     try {
       const response = await userService.getProfile();
       setCurrentUser(response.user);
-    } catch (error) {
-      console.error("Failed to load user profile:", error);
-    }
+    } catch (error) {}
   }, []);
 
   useEffect(() => {
-    if (cartItems.length === 0) {
-      notify.error("Giỏ hàng trống!");
-      navigate("/cart");
-      return;
-    }
-
-    if (user && !currentUser) {
-      loadUserProfile();
-    }
+    if (cartItems.length === 0) { notify.error("Giỏ hàng trống!"); navigate("/cart"); return; }
+    if (user && !currentUser) loadUserProfile();
   }, [user, cartItems.length, navigate, currentUser, loadUserProfile]);
 
-  const onSelectAddress = (addressData) => {
-    handleSelectAddress(addressData, shippingInfo.email);
-    setShowAddressModal(false);
-  };
-
-  const onSubmitOrder = () => {
-    submitOrder(cartItems, shippingInfo, paymentMethod, agreedToTerms, effectiveDiscount, shipping);
-  };
-
-  if (cartItems.length === 0) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Spin size="large" tip="Đang tải..." />
-      </div>
-    );
-  }
+  if (cartItems.length === 0) return <div className="flex items-center justify-center min-h-screen"><Spin size="large" tip="Đang tải..." /></div>;
 
   return (
-    <div className="min-h-screen bg-white pt-10 pb-8">
-      <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
-        <div className="mb-8">
-          <AntButton
-            icon={<ArrowLeftOutlined />}
-            onClick={() => navigate("/cart")}
-            className="mb-4"
-          >
-            Quay lại giỏ hàng
-          </AntButton>
-          
-          <PageTitle
-            subtitle="Hoàn tất đơn hàng"
-            title="THANH TOÁN"
-            className="mt-4 mb-8"
-          />
-          
-          <Steps
-            current={1}
-            items={[
-              {
-                title: 'Giỏ hàng',
-              },
-              {
-                title: 'Thanh toán',
-                icon: <CreditCardOutlined />,
-              },
-              {
-                title: 'Hoàn thành',
-              },
-            ]}
-          />
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-6">
-            <Card 
-              title={
-                <div className="flex items-center gap-2">
-                  <EnvironmentOutlined />
-                  <span>Thông tin giao hàng</span>
-                </div>
-              }
-              variant="borderless"
+    <Layout>
+      <div className="min-h-screen bg-[#f9f9f9] pb-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="py-6">
+            <AntButton 
+              icon={<ArrowLeftOutlined />} 
+              onClick={() => navigate("/cart")} 
+              className="h-10 border-none shadow-none hover:text-slate-800 bg-white flex items-center text-xs font-semibold px-4"
             >
-              <ShippingForm
-                shippingInfo={shippingInfo}
-                onInputChange={handleInputChange}
-                onSelectAddressClick={() => setShowAddressModal(true)}
-                isGuest={!user}
-              />
-            </Card>
+              Quay lại giỏ hàng
+            </AntButton>
 
-            <Card 
-              title={
-                <div className="flex items-center gap-2">
-                  <CreditCardOutlined />
-                  <span>Phương thức thanh toán</span>
-                </div>
-              }
-              variant="borderless"
-            >
-              <PaymentMethodSelector
-                paymentMethod={paymentMethod}
-                onPaymentMethodChange={setPaymentMethod}
-              />
-            </Card>
-          </div>
-
-          <div className="lg:col-span-1">
-            <div className="sticky top-24">
-              <OrderSummary
-                cartItems={effectiveCartItems}
-                originalCartItems={cartItems}
-                flashSaleDiscount={effectiveFlashSaving}
-                subtotal={originalSubtotal}
-                shipping={shipping}
-                discount={discount}
-                total={total}
-                itemCount={itemCount}
-                discountCode={discountCode}
-                setDiscountCode={setDiscountCode}
-                appliedDiscount={appliedDiscount}
-                checkingDiscount={checkingDiscount}
-                onApplyDiscount={handleApplyDiscount}
-                onRemoveDiscount={handleRemoveDiscount}
-                agreedToTerms={agreedToTerms}
-                setAgreedToTerms={setAgreedToTerms}
-                submitting={submitting}
-                onSubmitOrder={onSubmitOrder}
-              />
+            <div className="mt-8 mb-10 text-center sm:text-left">
+              <h1 className="text-2xl sm:text-3xl font-semibold text-slate-800 mb-2">Thanh toán</h1>
+              <p className="text-sm text-gray-400">Hoàn tất các bước để nhận hàng sớm nhất</p>
             </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <div className="lg:col-span-2 space-y-6">
+                <div className="bg-white p-4 sm:p-8 border border-gray-100 shadow-[0_1px_3px_rgba(0,0,0,0.02)] rounded-sm">
+                  <div className="flex items-center gap-2 mb-8 border-b border-gray-50 pb-4">
+                    <EnvironmentOutlined className="text-gray-400" />
+                    <span className="font-semibold text-[13px] uppercase tracking-wider text-slate-800">Thông tin giao hàng</span>
+                  </div>
+                  <ShippingForm shippingInfo={shippingInfo} onInputChange={handleInputChange} onSelectAddressClick={() => setShowAddressModal(true)} isGuest={!user} />
+                </div>
+
+                <div className="bg-white p-4 sm:p-8 border border-gray-100 shadow-[0_1px_3px_rgba(0,0,0,0.02)] rounded-sm">
+                  <div className="flex items-center gap-2 mb-8 border-b border-gray-50 pb-4">
+                    <CreditCardOutlined className="text-gray-400" />
+                    <span className="font-semibold text-[13px] uppercase tracking-wider text-slate-800">Phương thức thanh toán</span>
+                  </div>
+                  <PaymentMethodSelector paymentMethod={paymentMethod} onPaymentMethodChange={setPaymentMethod} />
+                </div>
+              </div>
+
+              <div className="lg:col-span-1">
+                <div className="sticky top-24">
+                  <OrderSummary
+                    cartItems={effectiveCartItems} originalCartItems={cartItems} flashSaleDiscount={0} subtotal={subtotal} shipping={shipping} discount={discount} total={total} itemCount={itemCount}
+                    discountCode={discountCode} setDiscountCode={setDiscountCode} appliedDiscount={appliedDiscount} checkingDiscount={checkingDiscount} onApplyDiscount={handleApplyDiscount} onRemoveDiscount={handleRemoveDiscount}
+                    agreedToTerms={agreedToTerms} setAgreedToTerms={setAgreedToTerms} submitting={submitting} onSubmitOrder={() => submitOrder(cartItems, shippingInfo, paymentMethod, agreedToTerms, effectiveDiscount, shipping)}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <AntModal title="Chọn địa chỉ giao hàng" open={showAddressModal} onCancel={() => setShowAddressModal(false)} footer={null} width={600}>
+              <AddressSelector onAddressSelect={(data) => { handleSelectAddress(data, shippingInfo.email); setShowAddressModal(false); }} selectedAddressId={null} />
+            </AntModal>
           </div>
         </div>
-
-        <AntModal
-          title="Chọn địa chỉ giao hàng"
-          open={showAddressModal}
-          onCancel={() => setShowAddressModal(false)}
-          footer={null}
-          width={600}
-        >
-          <AddressSelector
-            onAddressSelect={onSelectAddress}
-            selectedAddressId={null}
-          />
-        </AntModal>
       </div>
-    </div>
+    </Layout>
   );
 };
 

@@ -1,4 +1,4 @@
-import {
+﻿import {
   IsEmail,
   IsString,
   MinLength,
@@ -38,11 +38,17 @@ export class CreateUserDto {
   @ApiProperty({
     example: 'ADMIN',
     description:
-      'Vai trò user (CUSTOMER hoặc ADMIN, tùy chọn - mặc định CUSTOMER)',
+      'Vai trò user (ADMIN, KHO, BAN_HANG, CUSTOMER)',
     required: false,
-    enum: ['CUSTOMER', 'ADMIN'],
+    enum: Role,
   })
   @IsOptional()
-  @IsEnum(['CUSTOMER', 'ADMIN'])
+  @IsEnum(Role)
   role?: Role;
 }
+
+
+
+
+
+

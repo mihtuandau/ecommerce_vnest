@@ -96,7 +96,6 @@ const AdminHeader = ({ sidebarOpen, setSidebarOpen }) => {
 
   const unreadCount = notifications.filter((n) => n.unread).length;
 
-  // User menu items
   const userMenuItems = [
     {
       key: 'profile',
@@ -120,7 +119,6 @@ const AdminHeader = ({ sidebarOpen, setSidebarOpen }) => {
     },
   ];
 
-  // Notification dropdown content
   const notificationContent = (
     <div style={{ width: 320 }}>
       <div style={{ 
@@ -198,7 +196,7 @@ const AdminHeader = ({ sidebarOpen, setSidebarOpen }) => {
         />
         
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Text strong style={{ fontSize: 24, color: '#0f172a', display: viewportWidth >= 640 ? 'block' : 'none', lineHeight: '24px' }}>
+          <Text strong style={{ fontSize: 24, color: '#111827', display: viewportWidth >= 640 ? 'block' : 'none', lineHeight: '24px', fontWeight: 700 }}>
             {pageTitle}
           </Text>
         </div>
@@ -259,10 +257,10 @@ const AdminHeader = ({ sidebarOpen, setSidebarOpen }) => {
               {user?.name?.charAt(0)?.toUpperCase() || "A"}
             </Avatar>
             <div style={{ display: isLgUp ? 'block' : 'none', textAlign: 'left' }}>
-              <Text strong style={{ display: 'block', fontSize: 14, lineHeight: '20px' }}>
+              <Text strong style={{ display: 'block', fontSize: 14, lineHeight: '20px', color: '#111827', fontWeight: 700 }}>
                 {user?.name || "Admin"}
               </Text>
-              <Text type="secondary" style={{ fontSize: 12, lineHeight: '16px' }}>
+              <Text style={{ fontSize: 12, lineHeight: '16px', color: '#6b7280', fontWeight: 700 }}>
                 {user?.role || "Administrator"}
               </Text>
             </div>
@@ -275,3 +273,9 @@ const AdminHeader = ({ sidebarOpen, setSidebarOpen }) => {
 };
 
 export default AdminHeader;
+
+
+
+
+
+

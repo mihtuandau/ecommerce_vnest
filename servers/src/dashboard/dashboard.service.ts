@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common';
+﻿import { Injectable } from '@nestjs/common';
 import { DashboardRepository } from './dashboard.repository';
+import { ReportQueryDto } from '../report/dto/report-query.dto';
 
 @Injectable()
 export class DashboardService {
@@ -12,9 +13,18 @@ export class DashboardService {
       totalCategories,
       totalOrders,
       pendingOrders,
+      processingOrders,
+      shippedOrders,
       deliveredOrders,
+      cancelledOrders,
       totalCustomers,
       totalRevenue,
+      todayRevenue,
+      yesterdayRevenue,
+      todayNewUsers,
+      yesterdayNewUsers,
+      todayOrders,
+      yesterdayOrders,
       lowStockCount,
     ] = await Promise.all([
       this.repository.getTotalUsers(),
@@ -22,17 +32,33 @@ export class DashboardService {
       this.repository.getTotalCategories(),
       this.repository.getTotalOrders(),
       this.repository.getOrderCountByStatus('PENDING'),
+      this.repository.getOrderCountByStatus('PROCESSING'),
+      this.repository.getOrderCountByStatus('SHIPPED'),
       this.repository.getOrderCountByStatus('DELIVERED'),
+      this.repository.getOrderCountByStatus('CANCELLED'),
       this.repository.getTotalCustomers(),
       this.repository.getTotalRevenue(),
+      this.repository.getRevenueByDate(new Date()),
+      this.repository.getRevenueByDate(new Date(Date.now() - 86400000)),
+      this.repository.getNewUsersCount(new Date()),
+      this.repository.getNewUsersCount(new Date(Date.now() - 86400000)),
+      this.repository.getOrderCountByDate(new Date()),
+      this.repository.getOrderCountByDate(new Date(Date.now() - 86400000)),
       this.repository.getLowStockCount(10),
     ]);
+
+    const calculateChange = (current: number, previous: number) => {
+      if (previous === 0) return current > 0 ? 100 : 0;
+      return parseFloat((((current - previous) / previous) * 100).toFixed(1));
+    };
 
     return {
       users: {
         total: totalUsers,
         customers: totalCustomers,
         admins: totalUsers - totalCustomers,
+        new: todayNewUsers,
+        change: calculateChange(todayNewUsers, yesterdayNewUsers),
       },
       products: {
         total: totalProducts,
@@ -44,58 +70,165 @@ export class DashboardService {
       orders: {
         total: totalOrders,
         pending: pendingOrders,
+        processing: processingOrders,
+        shipped: shippedOrders,
         delivered: deliveredOrders,
+        cancelled: cancelledOrders,
+        today: todayOrders,
+        change: calculateChange(todayOrders, yesterdayOrders),
       },
       revenue: {
         total: totalRevenue,
+        today: todayRevenue,
+        change: calculateChange(todayRevenue, yesterdayRevenue),
         currency: 'VND',
       },
     };
   }
 
-  async getRevenueAnalytics() {
+  async getRevenueAnalytics(query: ReportQueryDto) {
     const now = new Date();
-    const currentYear = now.getFullYear();
-    const currentMonth = now.getMonth();
+    const year = query.year || now.getFullYear();
 
-    const monthlyRevenue = await this.repository.getMonthlyRevenue(currentYear);
+    if (query.year || (!query.startDate && !query.endDate)) {
+      const orders = await this.repository.getMonthlyRevenue(year);
+      const monthlyData = Array.from({ length: 12 }, (_, i) => ({
+        label: `T${i + 1}`,
+        revenue: 0,
+        orders: 0,
+      }));
 
-    const monthlyData = Array.from({ length: 12 }, (_, i) => ({
-      month: i + 1,
-      revenue: 0,
-      orders: 0,
-    }));
+      orders.forEach((item: any) => {
+        const date = new Date(item.createdAt);
+        const vnTime = new Date(
+          date.toLocaleString('en-US', { timeZone: 'Asia/Ho_Chi_Minh' }),
+        );
+        const month = vnTime.getMonth();
+        monthlyData[month].revenue += Number(item.subtotal) || 0;
+        monthlyData[month].orders += 1;
+      });
 
-    monthlyRevenue.forEach((item) => {
-      const month = new Date(item.createdAt).getMonth();
-      monthlyData[month].revenue += Number(item._sum.total) || 0;
-      monthlyData[month].orders += 1;
-    });
+      if (!query.startDate && !query.endDate) {
+        const dailyData = await this.getDailyData(
+          now.getFullYear(),
+          now.getMonth(),
+        );
+        return {
+          type: 'summary',
+          monthly: monthlyData,
+          daily: dailyData,
+          year: now.getFullYear(),
+          month: now.getMonth() + 1,
+        };
+      }
 
-    const dailyRevenue = await this.repository.getDailyRevenue(
-      currentYear,
-      currentMonth,
+      return { type: 'monthly', data: monthlyData, year };
+    }
+
+    const startDateStr = query.startDate as string;
+    const endDateStr = query.endDate as string;
+
+    const start = new Date(startDateStr);
+    const end = new Date(endDateStr);
+    end.setHours(23, 59, 59, 999);
+
+    const diffDays = Math.ceil(
+      (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24),
     );
 
-    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-    const dailyData = Array.from({ length: daysInMonth }, (_, i) => ({
-      day: i + 1,
-      revenue: 0,
-      orders: 0,
-    }));
+    const orders = await this.repository.getRevenueByDateRange(start, end);
 
-    dailyRevenue.forEach((item) => {
-      const day = new Date(item.createdAt).getDate() - 1;
-      dailyData[day].revenue += Number(item._sum.total) || 0;
-      dailyData[day].orders += 1;
+    if (diffDays > 62) {
+      const dataMap = new Map();
+
+      const current = new Date(start);
+      while (current <= end) {
+        const key = `T${current.getMonth() + 1}/${current.getFullYear()}`;
+        if (!dataMap.has(key)) {
+          dataMap.set(key, { label: key, revenue: 0, orders: 0 });
+        }
+        current.setMonth(current.getMonth() + 1);
+      }
+
+      orders.forEach((item: any) => {
+        const date = new Date(item.createdAt);
+        const vnTime = new Date(
+          date.toLocaleString('en-US', { timeZone: 'Asia/Ho_Chi_Minh' }),
+        );
+        const key = `T${vnTime.getMonth() + 1}/${vnTime.getFullYear()}`;
+        if (dataMap.has(key)) {
+          const entry = dataMap.get(key);
+          entry.revenue += Number(item.subtotal) || 0;
+          entry.orders += 1;
+        }
+      });
+
+      return {
+        type: 'monthly',
+        data: Array.from(dataMap.values()),
+        startDate: query.startDate,
+        endDate: query.endDate,
+      };
+    }
+
+    const dataMap = new Map();
+
+    orders.forEach((item: any) => {
+      const date = new Date(item.createdAt);
+      const vnTime = new Date(
+        date.toLocaleString('en-US', { timeZone: 'Asia/Ho_Chi_Minh' }),
+      );
+
+      const label = `${vnTime.getDate()}/${vnTime.getMonth() + 1}`;
+
+      if (!dataMap.has(label)) {
+        const sortKey = new Date(vnTime).setHours(0, 0, 0, 0);
+        dataMap.set(label, { label, revenue: 0, orders: 0, sortKey });
+      }
+
+      const entry = dataMap.get(label);
+      entry.revenue += Number(item.subtotal) || 0;
+      entry.orders += 1;
     });
 
+    const data = Array.from(dataMap.values()).sort(
+      (a, b) => a.sortKey - b.sortKey,
+    );
     return {
-      monthly: monthlyData,
-      daily: dailyData,
-      year: currentYear,
-      month: currentMonth + 1,
+      type: 'daily',
+      data,
+      startDate: query.startDate,
+      endDate: query.endDate,
     };
+  }
+
+  private async getDailyData(year: number, month: number) {
+    const orders = await this.repository.getDailyRevenue(year, month);
+    const dataMap = new Map();
+
+    orders.forEach((item: any) => {
+      const date = new Date(item.createdAt);
+      const vnTime = new Date(
+        date.toLocaleString('en-US', { timeZone: 'Asia/Ho_Chi_Minh' }),
+      );
+
+      const label = `${vnTime.getDate()}/${vnTime.getMonth() + 1}`;
+
+      if (!dataMap.has(label)) {
+        dataMap.set(label, {
+          label,
+          revenue: 0,
+          orders: 0,
+          day: vnTime.getDate(),
+        });
+      }
+
+      const entry = dataMap.get(label);
+      entry.revenue += Number(item.subtotal) || 0;
+      entry.orders += 1;
+    });
+
+    return Array.from(dataMap.values()).sort((a, b) => a.day - b.day);
   }
 
   async getRecentOrders(limit: number = 10) {
@@ -110,21 +243,38 @@ export class DashboardService {
       {
         product: any;
         totalSold: number;
+        totalRevenue: number;
         orderCount: number;
       }
     >();
 
     orderItems.forEach((item) => {
-      const productId = item.variant.product.id;
+      const product = item.variant.product;
+      const order = (item as any).order;
+      const productId = product.id;
+      
+      const itemRevenue = Number(item.price) * item.quantity;
+
       const existing = productMap.get(productId);
 
       if (existing) {
         existing.totalSold += item.quantity;
+        existing.totalRevenue += itemRevenue;
         existing.orderCount += 1;
       } else {
+        const thumbnail =
+          (product as any).images?.find((img: any) => img.isThumbnail)?.url ||
+          (product as any).images?.[0]?.url;
+
         productMap.set(productId, {
-          product: item.variant.product,
+          product: {
+            id: product.id,
+            name: product.name,
+            thumbnail: thumbnail,
+            price: item.price,
+          },
           totalSold: item.quantity,
+          totalRevenue: itemRevenue,
           orderCount: 1,
         });
       }
@@ -137,3 +287,9 @@ export class DashboardService {
     return topProducts;
   }
 }
+
+
+
+
+
+

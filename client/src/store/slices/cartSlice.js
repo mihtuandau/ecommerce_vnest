@@ -1,4 +1,4 @@
-import { createSlice, current } from '@reduxjs/toolkit';
+﻿import { createSlice, current } from '@reduxjs/toolkit';
 import { notify } from '../../utils/notification';
 import { loadCartFromStorage, saveCartToStorage, clearCartStorage } from './cartHelpers';
 import {
@@ -86,7 +86,7 @@ const cartSlice = createSlice({
       })
       .addCase(fetchCart.fulfilled, (state, action) => {
         state.loading = false;
-        // Deduplicate items by variantId
+
         const items = action.payload;
         const deduped = items.reduce((acc, item) => {
           const existing = acc.find(i => i.variantId === item.variantId);
@@ -169,3 +169,9 @@ export {
 } from './cartThunks';
 
 export default cartSlice.reducer;
+
+
+
+
+
+

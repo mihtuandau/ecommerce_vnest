@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 
 const Input = ({ 
   type = 'text', 
@@ -13,15 +13,13 @@ const Input = ({
   className = '', 
   ...props 
 }) => {
-  // Base classes - minimalist, no rounded
+
   const baseClasses = 'appearance-none block w-full px-4 py-3 border placeholder-gray-400 focus:outline-none transition-colors duration-200 text-sm font-normal';
 
-  // Error/Normal state - simple border change
   const errorClasses = error 
     ? 'border-red-500 focus:border-red-600 text-red-900' 
     : 'border-gray-300 focus:border-[#00a85a] hover:border-gray-400';
 
-  // Disabled state
   const disabledClasses = disabled 
     ? 'bg-gray-100 text-gray-500 cursor-not-allowed border-gray-200' 
     : 'text-gray-900 bg-white';
@@ -61,3 +59,8 @@ const Input = ({
 };
 
 export default Input;
+
+
+
+
+

@@ -5,12 +5,12 @@ const PriceSummary = ({ itemCount, subtotal, shipping, discount, flashSaleDiscou
     <div className="border-t border-gray-200 pt-5 space-y-3">
       <div className="flex justify-between text-sm">
         <span className="text-gray-600">Tạm tính ({itemCount} sản phẩm)</span>
-        <span className="text-gray-900">{formatPrice(subtotal)}</span>
+        <span className="text-slate-800 font-semibold font-inter">{formatPrice(subtotal)}</span>
       </div>
       
       <div className="flex justify-between text-sm">
         <span className="text-gray-600">Phí vận chuyển</span>
-        <span className="text-gray-900">
+        <span className="text-slate-800 font-semibold font-inter">
           {shipping === 0 ? 'Miễn phí' : formatPrice(shipping)}
         </span>
       </div>
@@ -18,16 +18,16 @@ const PriceSummary = ({ itemCount, subtotal, shipping, discount, flashSaleDiscou
       {flashSaleDiscount > 0 && (
         <div className="flex justify-between text-sm">
           <span className="text-red-600 flex items-center gap-1">
-            ⚡ Flash Sale
+             Flash Sale
           </span>
-          <span className="text-red-600 font-medium">-{formatPrice(flashSaleDiscount)}</span>
+          <span className="text-red-600 font-medium font-semibold font-inter">-{formatPrice(flashSaleDiscount)}</span>
         </div>
       )}
 
       {discount > 0 && (
         <div className="flex justify-between text-sm">
           <span className="text-gray-600">Mã giảm giá</span>
-          <span className="text-gray-900">-{formatPrice(discount)}</span>
+          <span className="text-slate-800 font-semibold font-inter">-{formatPrice(discount)}</span>
         </div>
       )}
 
@@ -38,11 +38,16 @@ const PriceSummary = ({ itemCount, subtotal, shipping, discount, flashSaleDiscou
       )}
 
       <div className="flex justify-between text-base font-normal pt-3 border-t border-gray-200">
-        <span className="text-gray-900">Tổng cộng</span>
-        <span className="text-gray-900">{formatPrice(total)}</span>
+        <span className="text-slate-800">Tổng cộng</span>
+        <span className="text-slate-800 font-semibold font-inter">{formatPrice(total)}</span>
       </div>
     </div>
   );
 };
 
 export default PriceSummary;
+
+
+
+
+

@@ -1,4 +1,4 @@
-// src/order/order.management.ts
+
 import { Injectable, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
 import { OrderRepository } from './order.repository';
 import { OrderCache } from './order.cache';
@@ -18,40 +18,37 @@ export class OrderManagement {
   ) {}
 
   async update(id: number, dto: UpdateOrderDto): Promise<any> {
-    // Clear cache FIRST to ensure we get fresh data from DB
+
     await this.cacheService.deleteOrder(id);
-    
-    // Fetch current order from DB (not cache) - MUST be fresh data
+
     const oldOrder = await this.repository.findById(id);
 
     if (!oldOrder) {
       throw new NotFoundException(`Order with ID ${id} not found`);
     }
 
-    this.logger.log(`📝 Updating order ${id}: Old status = ${oldOrder.status}, New status = ${dto.status || 'unchanged'}`);
-
-    // Không cho phép cập nhật đơn hàng đã hủy
     if (oldOrder.status === 'CANCELLED') {
       throw new BadRequestException('Cannot update a cancelled order');
     }
 
-    // Update order
+
     const order = await this.repository.update(id, dto);
 
-    // Create payment record if not exists and status is updated
     await this.handlePaymentCreation(order, oldOrder, dto);
 
-    // Handle delivered status changes - MUST pass oldOrder (before update)
     await this.handleDeliveredStatus(dto, oldOrder);
 
-    // Restore stock when admin cancels an order
-    // Note: oldOrder.status !== 'CANCELLED' is already guaranteed by the guard above
     if (dto.status === 'CANCELLED') {
       await this.repository.restoreOrderStock(id);
-      this.logger.log(`📦 Stock restored for cancelled order ${id}`);
+
+      // Nếu đơn hàng cũ đã được giao (đã tăng soldCount), thì phải trừ lại
+      if (oldOrder.status === 'DELIVERED') {
+        for (const item of oldOrder.orderItems) {
+          await this.repository.decrementProductSoldCount(item.variant.productId, item.quantity);
+        }
+      }
     }
 
-    // Clear caches after update
     await this.cacheService.clearRelatedCaches(id, order.userId || undefined);
 
     return order;
@@ -67,18 +64,27 @@ export class OrderManagement {
     return removed;
   }
 
-  async cancelOrder(orderId: number, userId: number): Promise<any> {
+  async cancelOrder(orderId: number, userId: number, isAdmin = false): Promise<any> {
     const order = await this.repository.findById(orderId);
     
     if (!order) throw new NotFoundException('Order not found');
-    if (order.userId !== userId) throw new BadRequestException('Not your order');
+    
+    // Nếu không phải Admin thì mới kiểm tra sở hữu đơn hàng
+    if (!isAdmin && order.userId !== userId) {
+      throw new BadRequestException('Not your order');
+    }
+
     if (!this.canCancelOrder(order.status)) {
       throw new BadRequestException('Cannot cancel order with status: ' + order.status);
     }
 
     const cancelled = await this.repository.update(orderId, { status: 'CANCELLED' });
 
-    // Restore stock when user cancels order
+    // Đồng bộ trạng thái thanh toán nếu có
+    if (order.payment && order.payment.status === 'PENDING') {
+      await this.paymentService.updateStatus(order.payment.id, { status: 'CANCELLED' });
+    }
+
     await this.repository.restoreOrderStock(orderId);
 
     await this.cacheService.clearRelatedCaches(orderId, userId);
@@ -90,7 +96,7 @@ export class OrderManagement {
   }
 
   async cancelGuestOrder(orderCode: string, contact: string): Promise<any> {
-    // Find guest order by orderCode and contact
+
     const order = await this.repository.findGuestOrderByCodeAndContact(orderCode, contact);
     
     if (!order) {
@@ -103,7 +109,6 @@ export class OrderManagement {
 
     const cancelled = await this.repository.update(order.id, { status: 'CANCELLED' });
 
-    // Restore stock when guest cancels order
     await this.repository.restoreOrderStock(order.id);
 
     await this.cacheService.clearRelatedCaches(order.id, order.userId || undefined);
@@ -115,7 +120,7 @@ export class OrderManagement {
   }
 
   private canCancelOrder(status: string): boolean {
-    // Chỉ cho phép hủy khi đơn hàng chưa được xác nhận
+
     const cancellableStatuses = ['PENDING', 'AWAITING_PAYMENT'];
     return cancellableStatuses.includes(status);
   }
@@ -181,12 +186,10 @@ export class OrderManagement {
       throw new NotFoundException('Order not found');
     }
 
-    // Check if it's a guest order (no userId)
     if (order.userId) {
       throw new BadRequestException('This order requires login to view');
     }
 
-    // Verify contact information (email or phone)
     const contactMatch = order.guestEmail === contact || order.guestPhone === contact;
 
     if (!contactMatch) {
@@ -203,7 +206,7 @@ export class OrderManagement {
           orderId: order.id,
           method: order.paymentMethod as any,
         });
-        this.logger.log(`✅ Created payment for order ${order.id}`);
+
       } catch (error) {
         this.logger.error('Failed to create payment record:', error);
       }
@@ -211,37 +214,37 @@ export class OrderManagement {
   }
 
   private async handleDeliveredStatus(dto: UpdateOrderDto, oldOrder: any) {
-    this.logger.log(`🔍 handleDeliveredStatus called: dto.status=${dto.status}, oldOrder.status=${oldOrder.status}, orderId=${oldOrder.id}`);
-    
-    // Only increment soldCount if status is CHANGING TO DELIVERED from non-DELIVERED state
+
     if (dto.status === 'DELIVERED' && oldOrder.status !== 'DELIVERED') {
-      this.logger.log(`📦 Status CHANGING to DELIVERED for order ${oldOrder.id} (was ${oldOrder.status})`);
-      this.logger.log(`📊 Order has ${oldOrder.orderItems?.length || 0} items`);
-      
-      // Update soldCount for each product
+
+
       for (const item of oldOrder.orderItems) {
         const productId = item.variant.productId;
         const quantity = item.quantity;
-        this.logger.log(`➕ INCREMENTING soldCount: productId=${productId}, quantity=${quantity}`);
+
         await this.repository.incrementProductSoldCount(productId, quantity);
-        this.logger.log(`✅ Incremented soldCount for product ${productId} by ${quantity}`);
+
       }
-      
-      // Automatically mark payment as SUCCESS when order is delivered
+
       if (oldOrder.payment && oldOrder.payment.status !== 'SUCCESS') {
         try {
           await this.paymentService.updateStatus(oldOrder.payment.id, { status: 'SUCCESS' });
-          this.logger.log(`✅ Updated payment status to SUCCESS for order ${oldOrder.id}`);
+
         } catch (error) {
           this.logger.error('Failed to update payment status:', error);
         }
       } else if (oldOrder.payment?.status === 'SUCCESS') {
-        this.logger.log(`ℹ️ Payment already SUCCESS for order ${oldOrder.id}`);
+
       }
     } else if (dto.status === 'DELIVERED' && oldOrder.status === 'DELIVERED') {
-      this.logger.warn(`⚠️ Order ${oldOrder.id} is ALREADY DELIVERED, SKIPPING soldCount increment`);
+      this.logger.warn(` Order ${oldOrder.id} is ALREADY DELIVERED, SKIPPING soldCount increment`);
     } else {
-      this.logger.log(`ℹ️ Status update but not to DELIVERED (dto=${dto.status}, old=${oldOrder.status}), no soldCount change`);
+
     }
   }
 }
+
+
+
+
+

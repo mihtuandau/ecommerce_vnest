@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards, UseInterceptors, UploadedFile } from '@nestjs/common';
+﻿import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiBearerAuth, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../common/guards/auth.guard';
@@ -8,6 +8,7 @@ import { CategoryService } from './category.service';
 import { UploadService } from '../upload/upload.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { Permissions } from '../common/decorators/permissions.decorator';
 
 @ApiTags('Categories')
 @Controller('categories')
@@ -29,7 +30,7 @@ export class CategoryController {
 
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('ADMIN')
+  @Permissions('category.manage')
   @ApiBearerAuth('Authorization')
   @UseInterceptors(FileInterceptor('image'))
   @ApiConsumes('multipart/form-data')
@@ -51,7 +52,7 @@ export class CategoryController {
 
   @Put(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('ADMIN')
+  @Permissions('category.manage')
   @ApiBearerAuth('Authorization')
   @UseInterceptors(FileInterceptor('image'))
   @ApiConsumes('multipart/form-data')
@@ -74,7 +75,7 @@ export class CategoryController {
 
   @Post('upload-image')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('ADMIN')
+  @Permissions('category.manage')
   @ApiBearerAuth('Authorization')
   @UseInterceptors(FileInterceptor('file'))
   @ApiConsumes('multipart/form-data')
@@ -85,10 +86,16 @@ export class CategoryController {
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('ADMIN')
+  @Permissions('category.manage')
   @ApiBearerAuth('Authorization')
   remove(@Param('id') id: string) {
     return this.categoryService.remove(+id);
   }
 }
+
+
+
+
+
+
 

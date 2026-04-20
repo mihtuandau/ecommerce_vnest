@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Form, Input, Button, Row, Col } from 'antd'; // Đã thêm Row, Col
+﻿import React, { useState } from 'react';
+import { Form, Input, Button, Row, Col } from 'antd'; 
 import { PhoneOutlined, MailOutlined, EnvironmentOutlined, ClockCircleOutlined, SendOutlined } from '@ant-design/icons';
 import { FaFacebookF, FaInstagram, FaTwitter } from 'react-icons/fa';
 import Layout from '../../../components/layouts/Layout';
@@ -24,8 +24,8 @@ const ContactPage = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-white pt-21 pb-8">
-        <div className="container mx-auto px-4 lg:px-8">
+      <div className="min-h-screen bg-white pb-8">
+        <div className="max-w-7xl mx-auto px-4">
           <Breadcrumb items={[
             { label: 'Liên hệ' }
           ]} />
@@ -152,7 +152,7 @@ const ContactPage = () => {
                     htmlType="submit"
                     loading={loading}
                     icon={<SendOutlined />}
-                    style={{ backgroundColor: '#00a85a', borderColor: '#00a85a' }}
+                    style={{ backgroundColor: '#000000', borderColor: '#000000' }}
                   >
                     Gửi Tin Nhắn
                   </Button>
@@ -230,3 +230,8 @@ const ContactPage = () => {
 };
 
 export default ContactPage;
+
+
+
+
+

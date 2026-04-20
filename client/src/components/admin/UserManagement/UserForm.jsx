@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Form, Input, Button, Space, Alert } from "antd";
+﻿import React, { useState } from "react";
+import { Form, Input, Button, Space, Alert, Select } from "antd";
 import { UserOutlined, LockOutlined, MailOutlined } from "@ant-design/icons";
 import { useUserForm } from "../../../hooks/useUserForm";
 
@@ -53,6 +53,7 @@ const UserForm = ({ user, onSubmit, onCancel }) => {
         initialValues={{
           email: formData.email,
           name: formData.name,
+          role: formData.role,
         }}
       >
         <Form.Item
@@ -88,6 +89,7 @@ const UserForm = ({ user, onSubmit, onCancel }) => {
             prefix={<LockOutlined />}
             placeholder="••••••••"
             size="large"
+            autoComplete="new-password"
             value={formData.password}
             onChange={(e) => handleChange("password", e.target.value)}
           />
@@ -100,6 +102,21 @@ const UserForm = ({ user, onSubmit, onCancel }) => {
             size="large"
             value={formData.name}
             onChange={(e) => handleChange("name", e.target.value)}
+          />
+        </Form.Item>
+
+        <Form.Item label="Vai trò" name="role">
+          <Select
+            size="large"
+            value={formData.role}
+            onChange={(val) => handleChange("role", val)}
+            getPopupContainer={(trigger) => trigger.parentNode}
+            options={[
+              { value: "ADMIN", label: "Quản trị viên" },
+              { value: "KHO", label: "Thủ kho" },
+              { value: "BAN_HANG", label: "Nhân viên bán hàng" },
+              { value: "CUSTOMER", label: "Khách hàng" },
+            ]}
           />
         </Form.Item>
 
@@ -119,3 +136,9 @@ const UserForm = ({ user, onSubmit, onCancel }) => {
 };
 
 export default UserForm;
+
+
+
+
+
+

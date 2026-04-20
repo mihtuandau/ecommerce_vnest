@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsUrl } from 'class-validator';
+﻿import { IsString, IsOptional, IsUrl } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateCategoryDto {
@@ -19,3 +19,8 @@ export class CreateCategoryDto {
   @IsOptional()
   image?: string;
 }
+
+
+
+
+

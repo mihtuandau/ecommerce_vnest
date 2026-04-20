@@ -1,249 +1,129 @@
-import { useState, useEffect } from 'react';
-import { Tag, Clock, Eye, Copy, CheckCircle } from 'lucide-react';
-import Layout from '../../../components/layouts/Layout';
-import Loading from '../../../components/common/Loading';
-import Breadcrumb from '../../../components/common/Breadcrumb';
-import PageTitle from '../../../components/common/PageTitle';
-import discountService from '../../../services/discountService';
-import { notify } from '../../../utils/notification';
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { ShoppingCart, ArrowRight, Tag } from "lucide-react";
+import Layout from "../../../components/layouts/Layout";
+import Loading from "../../../components/common/Loading";
+import { notify } from "../../../utils/notification";
+import discountService from "../../../services/discountService";
+import VoucherCard from "../../../components/promotions/VoucherCard";
 
 const PromotionsPage = () => {
-  const [promotions, setPromotions] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [copiedCode, setCopiedCode] = useState(null);
+  const [tab, setTab] = useState("all");
 
-  useEffect(() => {
-    loadPromotions();
-  }, []);
-
-  const loadPromotions = async () => {
-    try {
-      setLoading(true);
-      const response = await discountService.getDiscounts();
-      
-      const data = response?.data || response || [];
-      
-      if (Array.isArray(data)) {
-        const activePromotions = data
-          .filter(item => {
-            const now = new Date();
-            const start = new Date(item.startDate);
-            const end = new Date(item.endDate);
-            return item.status === 'active' && start <= now && end >= now;
-          })
-          .map((item, index) => {
-            return {
-              id: item.id,
-              code: item.code,
-              description: item.description,
-              image: item.image, // URL ảnh từ API
-              value: item.percentage || item.fixedAmount,
-              type: item.percentage ? 'percentage' : 'fixed',
-              startDate: item.startDate,
-              endDate: item.endDate,
-              minOrder: item.minOrderValue || 0,
-              usageCount: item.usageCount || 0,
-              gradient: getGradient(index),
-            };
-          });
-        
-        setPromotions(activePromotions);
-      }
-    } catch (error) {
-      notify.error('Không thể tải khuyến mãi');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getGradient = (index) => {
-    const gradients = [
-      'from-red-500 to-pink-600',
-      'from-green-500 to-emerald-600',
-      'from-blue-500 to-indigo-600',
-      'from-purple-500 to-violet-600',
-      'from-orange-500 to-amber-600',
-      'from-cyan-500 to-blue-600',
-    ];
-    return gradients[index % gradients.length];
-  };
-
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
-  };
-
-  const formatDateRange = (startDate, endDate) => {
-    return `${formatDate(startDate)} - ${formatDate(endDate)}`;
-  };
+  const { data: voucherData, isLoading } = useQuery({
+    queryKey: ["public-discounts"],
+    queryFn: () => discountService.getPublicDiscounts(),
+  });
 
   const handleCopyCode = (code) => {
     navigator.clipboard.writeText(code);
     setCopiedCode(code);
-    notify.success('Đã copy mã: ' + code);
-    setTimeout(() => setCopiedCode(null), 2000);
+    notify.success(`Đã lưu mã: ${code}`);
+    setTimeout(() => setCopiedCode(null), 2500);
   };
 
-  const getTimeRemaining = (endDate) => {
-    const end = new Date(endDate);
-    const now = new Date();
-    const diff = end - now;
-    
-    if (diff <= 0) return 'Đã hết hạn';
-    
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    
-    if (days > 0) return `Còn ${days} ngày`;
-    if (hours > 0) return `Còn ${hours} giờ`;
-    return 'Sắp hết hạn';
-  };
+  if (isLoading) return <Loading fullScreen text="Đang tải ưu đãi..." />;
 
-  if (loading) {
-    return (
-      <Layout>
-        <Loading fullScreen text="Đang tải khuyến mãi..." />
-      </Layout>
-    );
-  }
+  const vouchers = voucherData?.data || voucherData || [];
+  const flashList = vouchers.filter((v) => v.isFlashSale);
+  const regularList = vouchers.filter((v) => !v.isFlashSale);
 
-  const breadcrumbItems = [
-    { label: 'Khuyến mãi' },
+  const displayed =
+    tab === "flash" ? flashList : tab === "regular" ? regularList : vouchers;
+
+  const TABS = [
+    { key: "all", label: `Tất cả (${vouchers.length})` },
+    { key: "flash", label: ` Flash Sale (${flashList.length})` },
+    { key: "regular", label: `🎟 Khuyến mãi thường (${regularList.length})` },
   ];
 
- return (
-  <Layout>
-    <div className="min-h-screen bg-white pt-21 pb-8">
-      <div className="container mx-auto px-4 lg:px-8">
-        <Breadcrumb items={breadcrumbItems} />
+  return (
+    <Layout>
+      <div className="min-h-screen bg-white font-inter pb-24">
+        
+        {}
+        <div className="pt-20 pb-12 px-4 sm:px-6 lg:px-8 text-center">
+           <div className="max-w-7xl mx-auto flex flex-col items-center">
+              <p className="text-[11px] md:text-[13px] text-gray-500 tracking-[0.25em] uppercase font-semibold mb-3">
+                 Ư U Đ Ã I & V O U C H E R
+              </p>
+              <h1 className="font-heading text-3xl md:text-[42px] font-semibold text-black uppercase tracking-tight mb-7">
+                 TẤT CẢ VOUCHER
+              </h1>
+              <div className="w-16 h-[2px] bg-black"></div>
+           </div>
+        </div>
 
-        <PageTitle
-          subtitle="Ưu đãi"
-          title="KHUYẾN MÃI"
-          description="Những ưu đãi hấp dẫn dành riêng cho bạn"
-          className="mt-6 mb-14"
-        />
-      
-        {promotions.length === 0 ? (
-          <div>
-            <p className="text-gray-500 text-lg">Hiện không có khuyến mãi nào</p>
-            <p className="text-gray-400 text-sm mt-2">
-              Hãy quay lại sau để nhận ưu đãi hấp dẫn!
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {promotions.map((promotion) => (
-              <PromotionCard 
-                key={promotion.id} 
-                promotion={promotion} 
-                onCopy={handleCopyCode}
-                copiedCode={copiedCode}
-                getTimeRemaining={getTimeRemaining}
-                formatDateRange={formatDateRange}
-              />
+        {}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20">
+          
+          {}
+          <div className="flex flex-wrap justify-center gap-2 mb-10 mx-auto max-w-fit">
+            {TABS.map((t) => (
+              <button
+                key={t.key}
+                onClick={() => setTab(t.key)}
+                className={`px-5 py-2.5 rounded-full text-[13px] font-semibold transition-all duration-200 border ${
+                  tab === t.key
+                    ? "bg-black border-black !text-white shadow-md"
+                    : "bg-white border-gray-200 text-gray-500 hover:border-gray-400 hover:text-black"
+                }`}
+              >
+                {t.label}
+              </button>
             ))}
           </div>
-        )}
-      </div>
-    </div>
-  </Layout>
-);
-};
 
-const PromotionCard = ({ promotion, onCopy, copiedCode, getTimeRemaining, formatDateRange }) => {
- 
-  return (
-    <div className="bg-white border border-gray-200 hover:border-[#00a85a] transition-all duration-300 overflow-hidden group hover:shadow-lg">
-      <div className={`relative h-48 ${promotion.image ? '' : `bg-gradient-to-br ${promotion.gradient}`}`}>
-        {promotion.image ? (
-          <img 
-            src={promotion.image} 
-            alt={promotion.description || promotion.code}
-            className="absolute inset-0 w-full h-full object-cover"
-            onError={(e) => {
-              e.target.style.display = 'none';
-            }}
-            onLoad={() => {}}
-          />
-        ) : null}
-        
-        <div className="absolute inset-0 bg-black/30"></div>
-      
-        <div className="relative z-10 p-6 flex flex-col justify-between h-full">
-          <div className="flex justify-end">
-            <div className="bg-white px-4 py-2 shadow-lg">
-              <span className="text-2xl font-bold text-red-600">
-                {promotion.type === 'percentage'
-                  ? `-${promotion.value}%`
-                  : `-${Math.floor(promotion.value / 1000)}K`}
-              </span>
-            </div>
-          </div>
+          {}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {displayed.map((v) => (
+              <VoucherCard
+                key={v.id}
+                voucher={v}
+                onCopy={handleCopyCode}
+                copiedCode={copiedCode}
+              />
+            ))}
 
-          <div className="flex-1 flex items-center">
-            <h3 className="text-white font-bold text-lg line-clamp-2 drop-shadow-lg">
-              {promotion.description || promotion.code}
-            </h3>
-          </div>
-
-          <div className="flex items-center justify-between text-white text-sm">
-            <div className="flex items-center gap-1 bg-black/40 px-2 py-1 backdrop-blur-sm">
-              <Clock size={14} />
-              <span>{getTimeRemaining(promotion.endDate)}</span>
-            </div>
-            {promotion.usageCount > 0 && (
-              <div className="flex items-center gap-1 bg-black/40 px-2 py-1 backdrop-blur-sm">
-                <Eye size={14} />
-                <span>{promotion.usageCount}</span>
+            {!displayed.length && (
+              <div className="col-span-full py-24 flex flex-col items-center justify-center text-gray-400 bg-gray-50 border border-gray-100 rounded-2xl mt-4">
+                <Tag size={40} className="text-gray-300 mb-4" />
+                <p className="text-base font-semibold text-slate-600">
+                  Chưa có voucher nào trong danh mục này
+                </p>
+                <p className="text-sm mt-1">Vui lòng quay lại kiểm tra sau nhé!</p>
               </div>
             )}
           </div>
+
+          {}
+          {displayed.length > 0 && (
+            <div className="mt-16 flex justify-center">
+              <Link
+                to="/products"
+                className="group inline-flex items-center gap-2.5 bg-black text-white px-9 py-3.5 rounded-full font-semibold text-[13px] tracking-wide transition-all hover:bg-neutral-800 hover:shadow-lg hover:-translate-y-0.5 uppercase"
+              >
+                <ShoppingCart size={16} />
+                Tiếp tục mua sắm
+                <ArrowRight
+                  size={16}
+                  className="transition-transform group-hover:translate-x-1"
+                />
+              </Link>
+            </div>
+          )}
         </div>
       </div>
-
-      <div className="p-4">
-        <div className="text-xs text-gray-500 mb-2">
-          {formatDateRange(promotion.startDate, promotion.endDate)}
-        </div>
-        
-        <div className="bg-gray-50 border-2 border-dashed border-gray-300 p-3 flex items-center justify-between">
-          <div className="flex-1">
-            <p className="text-xs text-gray-600 mb-1">Mã giảm giá:</p>
-            <p className="text-sm font-bold text-gray-900 tracking-wider">
-              {promotion.code}
-            </p>
-          </div>
-          <button
-            onClick={() => onCopy(promotion.code)}
-            className={`px-3 py-2 text-xs font-bold transition-all ${
-              copiedCode === promotion.code
-                ? 'bg-green-600 text-white'
-                : 'bg-[#00a85a] text-white hover:bg-[#008f4d]'
-            }`}
-          >
-            {copiedCode === promotion.code ? (
-              <span className="flex items-center gap-1">
-                <CheckCircle size={12} />
-                Copied
-              </span>
-            ) : (
-              <span className="flex items-center gap-1 cursor-pointer">
-                <Copy size={12} />
-                COPY
-              </span>
-            )}
-          </button>
-        </div>
-
-        {promotion.minOrder > 0 && (
-          <p className="text-xs text-gray-500 mt-2">
-            Đơn tối thiểu: {promotion.minOrder.toLocaleString()}₫
-          </p>
-        )}
-      </div>
-    </div>
+    </Layout>
   );
 };
 
 export default PromotionsPage;
+
+
+
+
+
+

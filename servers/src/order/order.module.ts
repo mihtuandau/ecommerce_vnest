@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+﻿import { Module } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { OrderController } from './order.controller';
 import { OrderRepository } from './order.repository';
@@ -30,3 +30,8 @@ import { PaymentModule } from '../payment/payment.module';
   exports: [OrderService],  
 })
 export class OrderModule {}
+
+
+
+
+

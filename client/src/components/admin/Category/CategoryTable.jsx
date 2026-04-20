@@ -23,7 +23,7 @@ const CategoryTable = ({
       width: 70,
       align: 'center',
       render: (_, __, index) => (
-        <Text type="secondary">{(currentPage - 1) * itemsPerPage + index + 1}</Text>
+        <span className="text-slate-400 text-[11px] font-medium">{(currentPage - 1) * itemsPerPage + index + 1}</span>
       )
     },
     {
@@ -62,10 +62,10 @@ const CategoryTable = ({
       key: 'name',
       sorter: true,
       render: (name, record) => (
-        <div>
-          <Text strong style={{ display: 'block', fontSize: 13 }}>{name}</Text>
+        <div className="flex flex-col">
+          <span className="text-[13px] font-semibold text-slate-800 leading-tight">{name}</span>
           {record.description && (
-            <Text type="secondary" style={{ fontSize: 11 }}>{record.description}</Text>
+            <span className="text-[11px] text-slate-400 mt-0.5 line-clamp-1">{record.description}</span>
           )}
         </div>
       )
@@ -77,15 +77,9 @@ const CategoryTable = ({
       align: 'center',
       sorter: true,
       render: (_, record) => (
-        <Text strong style={{ 
-          display: 'inline-flex', 
-          padding: '4px 12px', 
-          borderRadius: 16, 
-          background: '#f0f0f0',
-          fontSize: 12
-        }}>
+        <span className="inline-flex px-3 py-1 rounded-full bg-slate-50 text-slate-500 text-[11px] font-semibold border border-slate-100">
           {record._count?.products || 0} sản phẩm
-        </Text>
+        </span>
       )
     },
     {
@@ -141,9 +135,15 @@ const CategoryTable = ({
           onSort(sorter.field);
         }
       }}
-      className="[&_.ant-table-thead>tr>th]:bg-gray-50 [&_.ant-table-thead>tr>th]:font-medium [&_.ant-table-thead>tr>th]:text-gray-700 [&_.ant-table-thead>tr>th]:border-b [&_.ant-table-thead>tr>th]:border-gray-200 [&_.ant-table-thead>tr>th]:px-2 [&_.ant-table-thead>tr>th]:py-2 [&_.ant-table-tbody>tr>td]:px-2 [&_.ant-table-tbody>tr>td]:py-2"
+        className="[&_.ant-table-thead>tr>th]:bg-slate-50/50 [&_.ant-table-thead>tr>th]:font-semibold [&_.ant-table-thead>tr>th]:text-slate-800 [&_.ant-table-thead>tr>th]:border-b [&_.ant-table-thead>tr>th]:border-slate-100 [&_.ant-table-thead>tr>th]:px-2 [&_.ant-table-thead>tr>th]:py-4 [&_.ant-table-tbody>tr>td]:px-2 [&_.ant-table-tbody>tr>td]:py-3"
     />
   );
 };
 
 export default CategoryTable;
+
+
+
+
+
+

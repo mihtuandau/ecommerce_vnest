@@ -1,4 +1,4 @@
-import { Plus, MapPin, Phone, Edit2, Trash2 } from 'lucide-react';
+﻿import { Plus, MapPin, Phone, Edit2, Trash2 } from 'lucide-react';
 import Button from '../../common/Button';
 
 const AddressList = ({ addresses, onAdd, onEdit, onDelete }) => {
@@ -67,3 +67,9 @@ const AddressList = ({ addresses, onAdd, onEdit, onDelete }) => {
 };
 
 export default AddressList;
+
+
+
+
+
+

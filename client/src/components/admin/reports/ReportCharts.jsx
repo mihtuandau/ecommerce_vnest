@@ -1,4 +1,4 @@
-import { Card, Row, Col } from 'antd';
+﻿import { Card, Row, Col } from 'antd';
 import { LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d'];
@@ -61,3 +61,9 @@ const ReportCharts = ({ revenueChartData, ordersChartData }) => {
 };
 
 export default ReportCharts;
+
+
+
+
+
+

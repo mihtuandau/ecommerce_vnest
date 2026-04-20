@@ -13,17 +13,17 @@ const ProductGrid = ({
   const getGridClass = () => {
     switch (viewMode) {
       case "grid-4":
-        return "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4";
+        return "grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6";
       case "grid-3":
-        return "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6";
+        return "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6";
       case "grid-2":
-        return "grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto lg:gap-8";
+        return "grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-4xl mx-auto lg:gap-8";
       case "grid-1":
         return "grid grid-cols-1 gap-6 max-w-3xl mx-auto";
       case "list":
         return "flex flex-col gap-4 max-w-4xl mx-auto";
       default:
-        return "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4";
+        return "grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6";
     }
   };
 
@@ -52,7 +52,9 @@ const ProductGrid = ({
               </div>
             ) : (
               <>
-                <div className={`aspect-square bg-gray-200 ${viewMode === "grid-2" ? "rounded-t-lg" : ""}`}></div>
+                <div
+                  className={`aspect-square bg-gray-200 ${viewMode === "grid-2" ? "rounded-t-lg" : ""}`}
+                ></div>
                 <div className="p-4 space-y-3">
                   <div className="h-4 bg-gray-200 w-3/4 rounded"></div>
                   <div className="h-4 bg-gray-200 w-1/2 rounded"></div>
@@ -69,7 +71,7 @@ const ProductGrid = ({
   if (!products || products.length === 0) {
     return (
       <div className="text-center py-20 border border-gray-200 rounded-lg bg-white">
-        <div className="text-6xl text-gray-300 mb-4">📦</div>
+        <div className="text-6xl text-gray-300 mb-4"></div>
         <h3 className="text-xl font-light text-gray-900 mb-2">
           Không tìm thấy sản phẩm
         </h3>
@@ -78,7 +80,6 @@ const ProductGrid = ({
     );
   }
 
-  // Sử dụng ProductCard cho tất cả view modes
   return (
     <div className={getGridClass()}>
       {products.map((product) => (
@@ -89,3 +90,9 @@ const ProductGrid = ({
 };
 
 export default ProductGrid;
+
+
+
+
+
+

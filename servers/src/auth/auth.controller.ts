@@ -1,4 +1,4 @@
-import {
+﻿import {
   Controller,
   Post,
   Body,
@@ -37,25 +37,37 @@ export class AuthController {
   ) {}
 
   @Post('register')
-  @Throttle({ default: { limit: 50, ttl: 300000 } }) // Increased for dev (was 5 per 5 mins)
-  async register(@Body() registerDto: RegisterDto, @Res() res: Response) {
-    const result = await this.authService.register(registerDto);
-    this.authService.setAuthCookie(res, result.access_token);
-    this.authService.setRefreshTokenCookie(res, result.refresh_token);
+  @Throttle({ default: { limit: 50, ttl: 300000 } })
+  async register(@Body() registerDto: RegisterDto) {
+    return this.authService.register(registerDto);
+  }
 
-    return res.status(HttpStatus.CREATED).json({
-      user: result.user,
-      message: 'User registered successfully',
+  @Post('verify-otp')
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
+  async verifyOtp(
+    @Body() body: { email: string; code: string },
+    @Res() res: Response,
+  ) {
+    const result = await this.authService.verifyOtp(body.email, body.code);
+    
+    return res.json({
+      message: result.message,
     });
   }
 
+  @Post('resend-otp')
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
+  async resendOtp(@Body() body: { email: string }) {
+    return this.authService.resendOtp(body.email);
+  }
+
   @Post('register-admin/initial')
-  @Throttle({ default: { limit: 3, ttl: 60000 } }) // 3 requests per minute
+  @Throttle({ default: { limit: 3, ttl: 60000 } }) 
   async registerInitialAdmin(
     @Body() registerAdminDto: RegisterAdminDto,
     @Res() res: Response,
   ) {
-    // Private endpoint - only works if no admin exists yet
+
     const result = await this.authService.registerInitialAdmin(registerAdminDto);
     this.authService.setAuthCookie(res, result.access_token);
     this.authService.setRefreshTokenCookie(res, result.refresh_token);
@@ -69,7 +81,7 @@ export class AuthController {
   @Post('register-admin')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
-  @Throttle({ default: { limit: 3, ttl: 60000 } }) // 3 requests per minute
+  @Throttle({ default: { limit: 3, ttl: 60000 } }) 
   async registerAdmin(
     @Body() registerAdminDto: RegisterAdminDto,
     @Res() res: Response,
@@ -85,7 +97,7 @@ export class AuthController {
   }
 
   @Post('login')
-  @Throttle({ default: { limit: 100, ttl: 300000 } }) // Increased for dev (was 5 per 5 mins)
+  @Throttle({ default: { limit: 100, ttl: 300000 } }) 
   async login(@Body() loginDto: LoginDto, @Res() res: Response) {
     const user = await this.authService.validateUser(
       loginDto.email,
@@ -110,7 +122,7 @@ export class AuthController {
   }
 
   @Post('refresh')
-  @Throttle({ default: { limit: 10, ttl: 60000 } }) // 10 requests per minute
+  @Throttle({ default: { limit: 10, ttl: 60000 } }) 
   async refreshToken(@Req() req: any, @Res() res: Response) {
     const token = req.cookies?.refresh_token;
     if (!token) {
@@ -124,7 +136,7 @@ export class AuthController {
   }
 
   @Post('forgot-password')
-  @Throttle({ default: { limit: 3, ttl: 3600000 } }) // 3 requests per hour
+  @Throttle({ default: { limit: 3, ttl: 3600000 } }) 
   async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
     return this.authService.forgotPassword(forgotPasswordDto);
   }
@@ -137,7 +149,7 @@ export class AuthController {
   ) {}
 
   @Post('reset-password')
-  @Throttle({ default: { limit: 3, ttl: 3600000 } }) // 3 requests per hour
+  @Throttle({ default: { limit: 3, ttl: 3600000 } }) 
   async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
     return this.authService.resetPassword(
       resetPasswordDto.token,
@@ -163,23 +175,28 @@ export class AuthController {
 
     const token = this.jwtService.sign(payload, {
       secret: process.env.JWT_SECRET,
-      expiresIn: '2h', // 2 hours - same as login for consistency
+      expiresIn: '2h', 
     });
 
     this.authService.setAuthCookie(res, token);
+
+    const permissions = await this.authService.getPermissionsByRole(user.role);
 
     const encodedUser = Buffer.from(
       JSON.stringify({
         id: user.userId,
         email: user.email,
         role: user.role,
+        permissions: permissions,
       }),
     ).toString('base64');
 
     const frontendUrl = process.env.FRONTEND_URL;
+    const isStaff = ['ADMIN', 'KHO', 'BAN_HANG'].includes(user.role?.toUpperCase());
+    const redirectPath = isStaff ? '/admin-dashboard' : '/';
 
     return res.redirect(
-      `${frontendUrl}/?oauth_success=true&user_data=${encodedUser}`,
+      `${frontendUrl}${redirectPath}?oauth_success=true&user_data=${encodedUser}`,
     );
   }
 
@@ -188,8 +205,50 @@ export class AuthController {
   @ApiBearerAuth('Authorization')
   async getCurrentUser(@Req() req: any) {
     const fullUser = await this.authService.getUserInfo(req.user.userId);
-    if (!fullUser) throw new Error('User not found');
-    const { password: _, ...safeUser } = fullUser;
-    return safeUser;
+
+    const safeUser = {
+      id: fullUser.id,
+      email: fullUser.email,
+      name: fullUser.name,
+      role: fullUser.role,
+      status: fullUser.status,
+      createdAt: fullUser.createdAt,
+      updatedAt: fullUser.updatedAt,
+      addresses: fullUser.addresses,
+    };
+
+    const permissions = await this.authService.getPermissionsByRole(safeUser.role);
+
+    return {
+      ...safeUser,
+      permissions,
+    };
+  }
+
+  @Get('permissions')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  async getAllPermissions() {
+    return this.authService.getAllPermissions();
+  }
+
+  @Get('roles-permissions')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  async getRolesWithPermissions() {
+    return this.authService.getRolesWithPermissions();
+  }
+
+  @Post('roles-permissions')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  async updateRolePermissions(@Body() body: { role: string; permissionIds: number[] }) {
+    return this.authService.updateRolePermissions(body.role, body.permissionIds);
   }
 }
+
+
+
+
+
+

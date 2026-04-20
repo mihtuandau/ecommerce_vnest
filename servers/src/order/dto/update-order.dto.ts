@@ -1,4 +1,4 @@
-import { IsOptional, IsEnum } from 'class-validator';
+﻿import { IsOptional, IsEnum } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { OrderStatus } from '@prisma/client';
 
@@ -13,3 +13,8 @@ export class UpdateOrderDto {
   @IsEnum(OrderStatus)
   status?: OrderStatus;
 }
+
+
+
+
+

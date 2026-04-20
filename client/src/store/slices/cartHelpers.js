@@ -1,4 +1,4 @@
-
+﻿
 
 
 const CART_STORAGE_KEY = 'shopping_cart';
@@ -61,3 +61,8 @@ export const clearCartStorage = () => {
     localStorage.removeItem(CART_STORAGE_KEY);
   } catch (error) {}
 };
+
+
+
+
+

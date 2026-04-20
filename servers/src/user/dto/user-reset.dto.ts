@@ -1,4 +1,4 @@
-// @IsDateString() cho string date
+﻿
 import { IsString, IsOptional, IsDateString, MinLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -9,12 +9,12 @@ export class UpdateUserResetDto {
   })
   @IsOptional()
   @IsString()
-  resetPasswordToken?: string | null; // Fix: Union string | null để cho phép null
+  resetPasswordToken?: string | null; 
 
   @ApiProperty({ description: 'Expire time (tùy chọn)', required: false })
   @IsOptional()
-  @IsDateString() // Fix: @IsDateString() cho string ISO date
-  resetPasswordExpires?: string | null; // Fix: string | null (không Date)
+  @IsDateString() 
+  resetPasswordExpires?: string | null; 
 
   @ApiProperty({ description: 'Mật khẩu mới (cho reset)', required: false })
   @IsOptional()
@@ -22,3 +22,9 @@ export class UpdateUserResetDto {
   @MinLength(6)
   password?: string;
 }
+
+
+
+
+
+

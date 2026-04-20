@@ -1,4 +1,4 @@
-import { Upload, X } from 'lucide-react';
+﻿import { Upload, X } from 'lucide-react';
 
 const ImageUploadSection = ({ 
   product, 
@@ -16,7 +16,7 @@ const ImageUploadSection = ({
       {!product?.id && (
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-3">
           <p className="text-xs text-yellow-800">
-            ℹ️ Vui lòng <strong>lưu sản phẩm trước</strong> để upload ảnh
+             Vui lòng <strong>lưu sản phẩm trước</strong> để upload ảnh
           </p>
         </div>
       )}
@@ -26,26 +26,7 @@ const ImageUploadSection = ({
           type="file"
           id="image-upload"
           multiple
-          accept="image/*"
-          onChange={onImageUpload}
-          disabled={!product?.id || uploading}
-          className="hidden"
-        />
-        <label 
-          htmlFor="image-upload" 
-          className={`cursor-pointer ${(!product?.id || uploading) ? 'opacity-50 cursor-not-allowed' : ''}`}
-        >
-          <Upload className="mx-auto mb-2 text-gray-400" size={36} />
-          <p className="text-sm text-gray-600 mb-1">
-            {uploading ? 'Đang upload...' : 'Click để chọn ảnh'}
-          </p>
-          <p className="text-xs text-gray-500">
-            PNG, JPG, GIF, WEBP (max 5MB)
-          </p>
-        </label>
-      </div>
-
-      {/* Image Gallery */}
+          accept="image}
       {images.length > 0 && (
         <div className="mt-4">
           <p className="text-xs text-gray-600 mb-2">
@@ -93,3 +74,8 @@ const ImageUploadSection = ({
 };
 
 export default ImageUploadSection;
+
+
+
+
+

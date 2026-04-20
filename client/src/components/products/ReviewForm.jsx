@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { FaStar } from 'react-icons/fa';
 import { X } from 'lucide-react';
 import { notify } from '../../utils/notification';
@@ -20,7 +20,7 @@ const ReviewForm = ({ productId, orderId, onSuccess, onCancel }) => {
 
     setIsSubmitting(true);
     try {
-      // userId will be extracted from JWT token in backend
+
       await reviewService.createReview(productId, orderId, rating, comment);
       notify.success('Đánh giá thành công!');
       onSuccess?.();
@@ -46,7 +46,7 @@ const ReviewForm = ({ productId, orderId, onSuccess, onCancel }) => {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Rating Stars */}
+        {}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Đánh giá của bạn
@@ -82,7 +82,7 @@ const ReviewForm = ({ productId, orderId, onSuccess, onCancel }) => {
           </div>
         </div>
 
-        {/* Comment */}
+        {}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Nhận xét của bạn (tùy chọn)
@@ -96,12 +96,12 @@ const ReviewForm = ({ productId, orderId, onSuccess, onCancel }) => {
           />
         </div>
 
-        {/* Buttons */}
+        {}
         <div className="flex items-center gap-3">
           <button
             type="submit"
             disabled={isSubmitting || rating === 0}
-            className="flex-1 bg-[#00a85a] text-white px-6 py-3 font-medium hover:bg-[#008f4d] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="flex-1 bg-black text-white px-6 py-3 font-medium hover:bg-neutral-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {isSubmitting ? 'Đang gửi...' : 'Gửi đánh giá'}
           </button>
@@ -121,3 +121,9 @@ const ReviewForm = ({ productId, orderId, onSuccess, onCancel }) => {
 };
 
 export default ReviewForm;
+
+
+
+
+
+

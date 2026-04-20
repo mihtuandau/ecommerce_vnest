@@ -1,4 +1,4 @@
-import { IsOptional, IsInt, IsPositive, IsString, IsBoolean } from 'class-validator';
+﻿import { IsOptional, IsInt, IsPositive, IsString, IsBoolean } from 'class-validator';
 import { Type, Transform } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum } from 'class-validator';
@@ -123,3 +123,8 @@ export class QueryProductDto {
   @IsBoolean()
   outOfStock?: boolean;
 }
+
+
+
+
+

@@ -19,8 +19,14 @@ export class PaymentRepository {
       include: {
         order: { 
           include: { 
+            user: true,
+            address: true,
             orderItems: { 
-              include: { variant: true } 
+              include: { 
+                variant: {
+                  include: { product: true }
+                } 
+              } 
             } 
           } 
         },
@@ -28,21 +34,13 @@ export class PaymentRepository {
     });
   }
 
-  /**
-   * Find payment by order ID
-   */
   async findByOrderId(orderId: number) {
     return this.prisma.payment.findUnique({
       where: { orderId },
-      include: {
-        order: true,
-      },
+      include: { order: true },
     });
   }
 
-  /**
-   * Find all payments with filters
-   */
   async findAll(where: Prisma.PaymentWhereInput, skip: number, take: number) {
     return this.prisma.payment.findMany({
       where,
@@ -50,23 +48,11 @@ export class PaymentRepository {
       take,
       include: {
         order: {
-          select: {
-            id: true,
-            orderCode: true,
-            total: true,
-            status: true,
-            guestEmail: true,
-            guestPhone: true,
-            shippingSnapshot: true, // Đổi từ shippingInfo
-            createdAt: true,
-            user: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
-              },
-            },
-          },
+          include: {
+            user: true,
+            orderItems: true,
+            address: true,
+          }
         },
       },
       orderBy: { createdAt: 'desc' },
@@ -99,22 +85,15 @@ export class PaymentRepository {
         if (currentOrder && currentOrder.status === 'PENDING') {
           await prisma.order.update({
             where: { id: orderId },
-            data: {
-              status: 'PROCESSING',
-            },
+            data: { status: 'PROCESSING' },
           });
         }
-        // NOTE: Stock is reserved at order creation (createOrderTransactional).
-        // No need to decrement stock here again.
       }
 
       return paymentUpdated;
     });
   }
-
-  /**
-   * Find order by ID with details for payment
-   */
+  
   async findOrderById(orderId: number) {
     return this.prisma.order.findUnique({
       where: { id: orderId },
@@ -123,26 +102,21 @@ export class PaymentRepository {
         address: true,
         orderItems: {
           include: {
-            variant: {
-              include: {
-                product: true,
-              },
-            },
+            variant: { include: { product: true } },
           },
         },
       },
     });
   }
 
-  async findByPayosOrderCode(orderCode: string) {
+  async findByOrderCode(orderCode: string) {
     return this.prisma.payment.findFirst({
-      where: { payosOrderCode: orderCode },
+      where: { order: { orderCode: orderCode } },
       include: {
         order: {
           include: {
-            orderItems: {
-              include: { variant: true },
-            },
+            user: true,
+            orderItems: { include: { variant: true } },
           },
         },
       },
@@ -155,5 +129,13 @@ export class PaymentRepository {
       data,
       include: { order: true },
     });
+  }
+
+  async incrementVariantStock(variantId: number, quantity: number) {
+    return this.prisma.productVariant.update({ where: { id: variantId }, data: { stock: { increment: quantity } } });
+  }
+
+  async decrementProductSoldCount(productId: number, quantity: number) {
+    return this.prisma.product.update({ where: { id: productId }, data: { soldCount: { decrement: quantity } } });
   }
 }

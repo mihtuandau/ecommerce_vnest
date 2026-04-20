@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { 
   Edit, 
   Trash2, 
@@ -13,7 +13,7 @@ import Button from '../../common/Button';
 import DeleteConfirmModal from '../../common/DeleteConfirm';
 import { notify } from '../../../utils/notification';
 import ImageManagerModal from './ImageManagerModal';
-// import ProductDetailModal from './ProductDetailModal';
+
 
 const ProductActions = ({ 
   product, 
@@ -54,7 +54,7 @@ const ProductActions = ({
   };
 
   const handleViewDetails = () => {
-    // Open admin detail modal
+
     setShowDetailModal(true);
   };
 
@@ -141,12 +141,12 @@ const ProductActions = ({
 
   return (
     <>
-      {/* Backdrop */}
+      {}
       <div 
         className="fixed inset-0 z-40" 
         onClick={handleBackdropClick}
       >
-        {/* Menu */}
+        {}
         <div className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white rounded-lg shadow-lg border border-gray-200 py-2 min-w-[200px] z-50">
           {actionItems.map((item, index) => (
             <button
@@ -175,7 +175,7 @@ const ProductActions = ({
           isOpen={showImageManager}
           onClose={() => setShowImageManager(false)}
           onUpdated={() => {
-            // parent can refresh if needed
+
             onClose();
           }}
         />
@@ -190,7 +190,7 @@ const ProductActions = ({
           }}
         />
       )}
-      {/* Delete Confirmation Modal */}
+      {}
       <DeleteConfirmModal
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
@@ -207,3 +207,8 @@ const ProductActions = ({
 };
 
 export default ProductActions;
+
+
+
+
+

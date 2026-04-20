@@ -1,4 +1,4 @@
-const GUEST_CART_KEY = 'guest_cart';
+﻿const GUEST_CART_KEY = 'guest_cart';
 
 class GuestCartService {
   getCart() {
@@ -85,3 +85,9 @@ class GuestCartService {
 }
 
 export default new GuestCartService();
+
+
+
+
+
+

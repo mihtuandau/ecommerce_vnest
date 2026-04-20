@@ -120,7 +120,7 @@ const BannerFormModal = ({ banner = null, onSave, onClose }) => {
     >
       <form onSubmit={handleSubmit} className="flex flex-col h-full -m-6">
         <div className="p-6 overflow-y-auto flex-1 space-y-4">
-          {/* Image Upload */}
+          {}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Ảnh Banner <span className="text-red-500">*</span>
@@ -157,7 +157,6 @@ const BannerFormModal = ({ banner = null, onSave, onClose }) => {
             </div>
           </div>
 
-          {/* Title */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Tiêu đề <span className="text-red-500">*</span>
@@ -173,7 +172,7 @@ const BannerFormModal = ({ banner = null, onSave, onClose }) => {
             />
           </div>
 
-          {/* Subtitle */}
+          {}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Phụ đề
@@ -188,7 +187,7 @@ const BannerFormModal = ({ banner = null, onSave, onClose }) => {
             />
           </div>
 
-          {/* Button Text */}
+          {}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Text nút CTA
@@ -203,7 +202,7 @@ const BannerFormModal = ({ banner = null, onSave, onClose }) => {
             />
           </div>
 
-          {/* Video URL (Optional) */}
+          {}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Video URL (tùy chọn)
@@ -218,7 +217,7 @@ const BannerFormModal = ({ banner = null, onSave, onClose }) => {
             />
           </div>
 
-          {/* Order & Active */}
+          {}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -251,7 +250,7 @@ const BannerFormModal = ({ banner = null, onSave, onClose }) => {
           </div>
         </div>
 
-        {/* Footer */}
+        {}
         <div className="px-6 py-4 border-t border-gray-200 flex justify-end gap-3">
           <Button
             type="button"
@@ -277,3 +276,8 @@ const BannerFormModal = ({ banner = null, onSave, onClose }) => {
 
 export default BannerFormModal;
   
+
+
+
+
+

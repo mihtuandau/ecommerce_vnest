@@ -6,8 +6,32 @@ import { Discount, Prisma } from '@prisma/client';
 @Injectable()
 export class DiscountRepository {
   constructor(private prisma: PrismaService) {}
+
   async create(data: Prisma.DiscountCreateInput): Promise<Discount> {
     return this.prisma.discount.create({ data });
+  }
+
+  // Transaction Serializable: đảm bảo chỉ 1 flash sale active tại cùng thời điểm
+  // 2 admin tạo cùng lúc → chỉ 1 cái thành công, cái kia bị rollback
+  async createFlashSaleTransactional(data: Prisma.DiscountCreateInput): Promise<Discount> {
+    return this.prisma.$transaction(async (tx) => {
+      const now = new Date();
+      const activeFlash = await tx.discount.findFirst({
+        where: {
+          isFlashSale: true,
+          isActive: true,
+          startDate: { lte: now },
+          OR: [{ endDate: null }, { endDate: { gte: now } }],
+        },
+        select: { id: true, code: true },
+      });
+
+      if (activeFlash) {
+        throw new Error(`Đã có flash sale đang chạy: "${activeFlash.code}"`);
+      }
+
+      return tx.discount.create({ data });
+    }, { isolationLevel: 'Serializable' });
   }
 
   async findByCode(code: string): Promise<Discount | null> {
@@ -42,7 +66,6 @@ export class DiscountRepository {
   async update(id: number, data: Prisma.DiscountUpdateInput): Promise<Discount> {
     const normalizedData: any = { ...data };
 
-    // Defensive normalization: nếu caller truyền mảng thô thì convert về nested update input.
     if (Array.isArray(normalizedData.applicableToProducts)) {
       const productIds = normalizedData.applicableToProducts.filter(
         (id: unknown) => typeof id === 'number' && Number.isFinite(id),
@@ -103,6 +126,7 @@ export class DiscountRepository {
     return this.prisma.discount.findMany({
       where: {
         isActive: true,
+        isFlashSale: false,
         startDate: { lte: now },
         OR: [{ endDate: null }, { endDate: { gte: now } }],
       },
@@ -115,7 +139,12 @@ export class DiscountRepository {
         fixedAmount: true,
         minOrderAmount: true,
         maxDiscountAmount: true,
+        usageLimit: true,
+        _count: {
+          select: { orders: true }
+        },
         endDate: true,
+        isFlashSale: true,
         applicableToCategories: true,
         applicableToProducts: true,
       },
@@ -127,7 +156,6 @@ export class DiscountRepository {
     return this.prisma.discount.count({ where });
   }
 
-  /** Kiểm tra xem đã có flash sale nào đang active chưa (dùng để validate) */
   async findActiveFlashSale(excludeId?: number) {
     const now = new Date();
     return this.prisma.discount.findFirst({
@@ -170,9 +198,10 @@ export class DiscountRepository {
 
     if (!flashSale) return null;
 
-    // Ưu tiên 1: sản phẩm được gán trực tiếp
-    // Ưu tiên 2: sản phẩm theo category
-    // Ưu tiên 3: bán chạy nhất toàn site
+    if (flashSale.applicableToProducts.length === 0 && flashSale.applicableToCategories.length === 0) {
+      return { ...flashSale, products: [] };
+    }
+
     const productWhere: any = { isActive: true };
     if (flashSale.applicableToProducts.length > 0) {
       productWhere.id = {
@@ -187,30 +216,29 @@ export class DiscountRepository {
     const products = await this.prisma.product.findMany({
       where: productWhere,
       take: 8,
-      // Giữ thứ tự như admin đã chọn nếu có specificProducts, ngược lại sắp bán chạy
       orderBy: flashSale.applicableToProducts.length > 0
         ? { id: 'asc' }
         : { soldCount: 'desc' },
-      include: {
-        images: {
-          orderBy: { isThumbnail: 'desc' },  // thumbnail trước, nếu không có thì lấy ảnh đầu tiên
-          take: 1,
-        },
-        variants: {
-          where: { isActive: true },
-          orderBy: { price: 'asc' },
-          take: 3,
-          include: {
-            images: {
-              orderBy: { isPrimary: 'desc' }, // primary trước, nếu không có thì lấy ảnh đầu tiên
-              take: 1,
+        include: {
+          category: true,
+          images: {
+            orderBy: { isThumbnail: 'desc' },
+            take: 1,
+          },
+          variants: {
+            where: { isActive: true },
+            orderBy: { price: 'asc' },
+            take: 3,
+            include: {
+              images: {
+                orderBy: { isPrimary: 'desc' },
+                take: 1,
+              },
             },
           },
         },
-      },
     });
 
-    // Nếu có specificProducts thì sắp lại theo thứ tự admin đã chọn
     const orderedProducts = flashSale.applicableToProducts.length > 0
       ? flashSale.applicableToProducts
           .map((dp) => products.find((p) => p.id === dp.productId))
@@ -220,13 +248,12 @@ export class DiscountRepository {
     return { ...flashSale, products: orderedProducts };
   }
 
-  /** Tìm discount tốt nhất đang active áp dụng cho 1 sản phẩm cụ thể (flash hoặc thường) */
   async findDiscountForProduct(productId: number) {
     const now = new Date();
-    // Lấy TẤT CẢ discount active, lọc theo product trong WHERE
     const discounts = await this.prisma.discount.findMany({
       where: {
         isActive: true,
+        isFlashSale: true,
         startDate: { lte: now },
         OR: [{ endDate: null }, { endDate: { gte: now } }],
         applicableToProducts: {
@@ -245,21 +272,20 @@ export class DiscountRepository {
         isFlashSale: true,
       },
       orderBy: [
-        { percentage: 'desc' },   // % giảm cao nhất ưu tiên trước
-        { fixedAmount: 'desc' },  // rồi đến giảm tiền cố định cao nhất
-        { isFlashSale: 'desc' },  // flash sale làm tiebreaker nếu ngang nhau
+        { percentage: 'desc' },
+        { fixedAmount: 'desc' },
       ],
     });
 
     return discounts[0] ?? null;
   }
 
-  /** Tất cả discount active có danh sách sản phẩm cụ thể (dùng cho bulk map) */
   async findAllAutoApply() {
     const now = new Date();
     return this.prisma.discount.findMany({
       where: {
         isActive: true,
+        isFlashSale: true,
         startDate: { lte: now },
         OR: [{ endDate: null }, { endDate: { gte: now } }],
       },
@@ -273,9 +299,8 @@ export class DiscountRepository {
         applicableToProducts: true,
       },
       orderBy: [
-        { percentage: 'desc' },   // % giảm cao nhất ưu tiên trước
-        { fixedAmount: 'desc' },  // rồi đến giảm tiền cố định cao nhất
-        { isFlashSale: 'desc' },  // flash sale làm tiebreaker nếu ngang nhau
+        { percentage: 'desc' },
+        { fixedAmount: 'desc' },
       ],
     });
   }

@@ -56,9 +56,11 @@ export const useCheckoutSubmit = (user) => {
         return false;
       }
       
-      if (paymentMethod === 'PAYOS') {
+      // Xử lý các phương thức thanh toán Online (VNPAY, PAYOS)
+      const onlineMethods = ['VNPAY', 'PAYOS'];
+      if (onlineMethods.includes(paymentMethod)) {
         try {
-          const paymentResponse = await paymentService.createPayment(orderId, 'PAYOS');
+          const paymentResponse = await paymentService.createPayment(orderId, paymentMethod);
           
           if (paymentResponse.paymentLink) {
             if (isGuest) {
@@ -73,7 +75,7 @@ export const useCheckoutSubmit = (user) => {
             
             return true;
           } else {
-            notify.error('Không nhận được link thanh toán từ PayOS');
+            notify.error(`Không thể khởi tạo thanh toán qua ${paymentMethod}`);
             return false;
           }
         } catch (error) {
@@ -115,3 +117,9 @@ export const useCheckoutSubmit = (user) => {
     handleSubmitOrder,
   };
 };
+
+
+
+
+
+

@@ -1,4 +1,4 @@
-import { useAuth as useAuthContext } from '../contexts/AuthContext';
+﻿import { useAuth as useAuthContext } from '../contexts/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 export const useAuth = () => {
@@ -12,7 +12,7 @@ export const useAuth = () => {
     const from = location.state?.from || null;
     if (from) {
       navigate(from, { replace: true });
-    } else if (role === 'ADMIN') {
+    } else if (['ADMIN', 'KHO', 'BAN_HANG'].includes(role?.toUpperCase())) {
       navigate('/admin-dashboard');
     } else {
       navigate('/'); 
@@ -21,8 +21,17 @@ export const useAuth = () => {
   };
 
   const handleRegister = async (userData) => {
-    const data = await context.register(userData);
+    return await context.register(userData);
+  };
+
+  const handleVerifyOtp = async (email, code) => {
+    const data = await context.verifyOtp(email, code);
+    navigate('/login'); 
     return data;
+  };
+
+  const handleResendOtp = async (email) => {
+    return await context.resendOtp(email);
   };
 
   const handleLogout = () => {
@@ -34,6 +43,8 @@ export const useAuth = () => {
     ...context,
     handleLogin,
     handleRegister,
+    handleVerifyOtp,
+    handleResendOtp,
     handleLogout,
   };
 };
@@ -58,3 +69,8 @@ export const useAuthLoading = () => {
   return loading;
 };
 export default useAuth;
+
+
+
+
+

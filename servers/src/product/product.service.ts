@@ -1,498 +1,125 @@
-import {
-  Injectable,
-  Inject,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
 import { ProductRepository } from './product.repository';
-import { Product } from '@prisma/client';
-import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
-import { QueryProductDto } from './dto/query-product.dto';
-import { CreateVariantDto } from './dto/create-variant.dto';
 import { UploadService } from '../upload/upload.service';
-import { v2 as cloudinary } from 'cloudinary';
 import { buildCacheKey } from '../common/utils/cache-key.util';
 
 @Injectable()
 export class ProductService {
-  constructor(
-    private repository: ProductRepository,
-    @Inject(CACHE_MANAGER) private cacheManager: Cache,
-    private uploadService: UploadService,
-  ) {}
+  constructor(private repo: ProductRepository, @Inject(CACHE_MANAGER) private cache: Cache, private uploadService: UploadService) {}
 
-  async create(data: CreateProductDto): Promise<Product> {
-    const product = await this.repository.create(data as any);
-    await this.cacheManager.del('products:all');
-    return product;
-  }
+  async create(data: any) { await this.cache.del('products:all'); return this.repo.create(data); }
 
-  async findAll(query: QueryProductDto): Promise<any> {
-    const cacheKey = buildCacheKey('products', query as any);
-    let cached = await this.cacheManager.get<any>(cacheKey);
-    if (cached) {
-      return cached;
-    }
-    const {
-      page = 1,
-      limit = 10,
-      search,
-      categoryId,
-      brandId,
-      minPrice,
-      maxPrice,
-      minRating,
-      sortBy = 'newest',
-      inStock,
-      outOfStock,
-      status,
-    } = query;
-
-    const skip = (page - 1) * limit;
-
-    const where: any = {};
-
-    if (search) {
-      where.name = { contains: search, mode: 'insensitive' };
-    }
-
-    if (categoryId) {
-      where.categoryId = categoryId;
-    }
-
-    if (brandId) {
-      where.brandId = brandId;
-    }
-
-    if (minPrice || maxPrice) {
-      where.basePrice = {};
-      if (minPrice) where.basePrice.gte = minPrice;
-      if (maxPrice) where.basePrice.lte = maxPrice;
-    }
-
-    if (minRating) {
-      where.averageRating = { gte: minRating };
-    }
-
-    // Filter theo trạng thái (map về isActive vì schema không có field draft riêng)
-    if (status) {
-      if (status === 'active') where.isActive = true;
-      if (status === 'inactive' || status === 'draft') where.isActive = false;
-    }
-
-    if (inStock) {
-      where.variants = {
-        some: {
-          stock: { gt: 0 },
-        },
-      };
-    }
-
-    if (outOfStock) {
-      where.variants = {
-        every: {
-          stock: { lte: 0 },
-        },
-      };
-    }
-
-    let orderBy: any = {};
-    switch (sortBy) {
-      case 'price-asc':
-        orderBy = { basePrice: 'asc' };
-        break;
-      case 'price-desc':
-        orderBy = { basePrice: 'desc' };
-        break;
-      case 'name-asc':
-        orderBy = { name: 'asc' };
-        break;
-      case 'name-desc':
-        orderBy = { name: 'desc' };
-        break;
-      case 'sold':
-        orderBy = { soldCount: 'desc' };
-        break;
-      case 'rating':
-        orderBy = { averageRating: 'desc' };
-        break;
-      case 'oldest':
-        orderBy = { createdAt: 'asc' };
-        break;
-      case 'newest':
-      default:
-        orderBy = { createdAt: 'desc' };
-        break;
-    }
-
-    const [total, products] = await Promise.all([
-      this.repository.count(where),
-      this.repository.findAll(where, skip, limit, orderBy),
-    ]);
-
-    const result = {
-      data: products,
-      page,
-      limit,
-      total,
-      totalPages: Math.ceil(total / limit),
-    };
-
-    await this.cacheManager.set(cacheKey, result, 3600);
-    return result;
-  }
-
-  async getPriceRange() {
-    const result = await this.repository.getPriceRange();
-    return result;
-  }
-
-  async findOne(idOrSlug: string | number, includeAllVariants: boolean = false): Promise<any | null> {
-    if (includeAllVariants) {
-      return this.repository.findByIdOrSlug(idOrSlug, true);
-    }
-
-    const cacheKey = `product:${idOrSlug}`;
-    let product: any = await this.cacheManager.get(cacheKey);
-    if (product) {
-      return product;
-    }
-
-    product = await this.repository.findByIdOrSlug(idOrSlug, false);
-
-    if (product) {
-      // Create cache entries for BOTH id and slug so lookup by either uses the same object
-      await this.cacheManager.set(`product:${product.id}`, product, 1800);
-      if (product.slug) {
-        await this.cacheManager.set(`product:${product.slug}`, product, 1800);
-      }
-    }
-
-    return product;
-  }
-
-  /** Tăng viewCount mỗi khi user mở trang chi tiết sản phẩm
-   *  - Check Redis key (viewed:product:{id}:{userId/ip}) để tránh fake view
-   *  - Nếu chưa view hôm nay → tăng viewCount + set Redis key TTL 24h
-   *  - Nếu đã view hôm nay → bỏ qua
-   */
-  async incrementViewCount(id: number, identifier: string): Promise<void> {
-    const viewKey = `viewed:product:${id}:${identifier}`;
-    const viewed = await this.cacheManager.get(viewKey);
-    
-    // Nếu đã xem hôm nay → bỏ qua
-    if (viewed) {
-      return;
-    }
-    
-    // Không xem hôm nay → tăng viewCount + ghi Redis (TTL 24h = 86400 giây)
-    await this.repository.incrementViewCount(id);
-    await this.cacheManager.set(viewKey, true, 86400 * 1000); // ms
-    
-    // Xoá cache product để lần sau fetch lại số liệu mới nhất
-    try {
-      await this.cacheManager.del(`product:${id}`);
-    } catch (_) {
-      // Redis không khả dụng — bỏ qua, DB đã được cập nhật
-    }
-  }
-
-  /** Lấy sản phẩm liên quan (cùng category, loại trừ chính nó) */
-  async getRelatedProducts(id: number, limit = 8): Promise<any[]> {
-    const cacheKey = `product:related:${id}:${limit}`;
-    const cached = await this.cacheManager.get<any[]>(cacheKey);
+  async findAll(q: any) {
+    const key = buildCacheKey('products', q);
+    const cached = await this.cache.get(key);
     if (cached) return cached;
-
-    const product = await this.repository.findById(id);
-    if (!product) throw new NotFoundException(`Product #${id} không tồn tại`);
-
-    const related = await this.repository.findRelated(
-      id,
-      product.categoryId,
-      limit,
-    );
-    await this.cacheManager.set(cacheKey, related, 600); // cache 10 phút
-    return related;
+    const { page = 1, limit = 10, search, categoryId, brandId, minPrice, maxPrice, minRating, sortBy = 'newest', status, inStock, outOfStock } = q;
+    const where: any = {};
+    if (search) where.name = { contains: search, mode: 'insensitive' };
+    if (categoryId) where.categoryId = categoryId;
+    if (brandId) where.brandId = brandId;
+    if (minPrice || maxPrice) where.basePrice = { gte: minPrice, lte: maxPrice };
+    if (minRating) where.averageRating = { gte: minRating };
+    if (status) where.isActive = status === 'active';
+    if (inStock) where.variants = { some: { stock: { gt: 0 } } };
+    if (outOfStock) where.variants = { every: { stock: { lte: 0 } } };
+    const sortMap = { 'price-asc': { basePrice: 'asc' }, 'price-desc': { basePrice: 'desc' }, 'name-asc': { name: 'asc' }, 'sold': { soldCount: 'desc' }, 'rating': { averageRating: 'desc' } };
+    const [total, products] = await Promise.all([this.repo.count(where), this.repo.findAll(where, (page - 1) * limit, limit, sortMap[sortBy] || { createdAt: 'desc' })]);
+    const res = { data: products, page, limit, total, totalPages: Math.ceil(total / limit) };
+    await this.cache.set(key, res, 3600);
+    return res;
   }
 
-  async update(id: number, data: UpdateProductDto): Promise<Product> {
-    // Transform DTO to Prisma format
-    const { categoryId, brandId, status, ...rest } = data;
-    
-    const updateData: any = {
-      ...rest,
-    };
-
-    // Handle category relation
-    if (categoryId !== undefined) {
-      updateData.category = categoryId === null 
-        ? { disconnect: true } 
-        : { connect: { id: categoryId } };
-    }
-
-    // Handle brand relation
-    if (brandId !== undefined) {
-      updateData.brand = brandId === null
-        ? { disconnect: true }
-        : { connect: { id: brandId } };
-    }
-
-    // Map status to isActive (database field)
-    if (status !== undefined) {
-      updateData.isActive = status === 'active';
-    }
-
-    const product = await this.repository.update(id, updateData);
-    await Promise.all([
-      this.cacheManager.del('products:all'),
-      this.cacheManager.del(`product:${id}`),
-    ]);
-    return product;
+  async findOne(id: any, full = false) {
+    if (full) return this.repo.findByIdOrSlug(id, true);
+    const cached = await this.cache.get(`product:${id}`);
+    if (cached) return cached;
+    const p = await this.repo.findByIdOrSlug(id, false);
+    if (p) await this.cache.set(`product:${id}`, p, 1800);
+    return p;
   }
 
-  async remove(id: number): Promise<Product> {
-    const product = await this.repository.findById(id);
-
-    // Xóa ảnh trên Cloudinary song song (batch)
-    if (product?.images?.length) {
-      await Promise.all(
-        product.images.map((image) => this.deleteImageFromCloudinary(image.url)),
-      );
-    }
-
-    const deletedProduct = await this.repository.delete(id);
-    await Promise.all([
-      this.cacheManager.del('products:all'),
-      this.cacheManager.del(`product:${id}`),
-    ]);
-    return deletedProduct;
+  async update(id: number, data: any) {
+    const { status, ...rest } = data;
+    const p = await this.repo.update(id, { ...rest, isActive: status !== undefined ? status === 'active' : undefined });
+    await Promise.all([this.cache.del('products:all'), this.cache.del(`product:${id}`)]);
+    return p;
   }
 
-  async createVariant(data: CreateVariantDto): Promise<any> {
-    // productId phải có (controller đã set từ URL param)
-    if (!data.productId) {
-      throw new BadRequestException('productId is required');
-    }
-
-    const productId = data.productId;
-
-    // Default values nếu FE không truyền
-    if (data.stock === undefined || data.stock === null) {
-      (data as any).stock = 0;
-    }
-
-    if (data.price === undefined || data.price === null) {
-      const product = await this.repository.findById(productId);
-      if (!product) {
-        throw new NotFoundException(`Product #${productId} không tồn tại`);
-      }
-      (data as any).price = product.basePrice;
-    }
-
-    if ((data as any).lowStockThreshold === undefined || (data as any).lowStockThreshold === null) {
-      (data as any).lowStockThreshold = 5;
-    }
-
-    if ((data as any).isActive === undefined || (data as any).isActive === null) {
-      (data as any).isActive = true;
-    }
-
-    const variant = await this.repository.createVariant(data as any);
-    await Promise.all([
-      this.cacheManager.del(`product:${productId}`),
-      this.cacheManager.del('products:all'),
-    ]);
-    return variant;
+  async remove(id: number) {
+    const p = await this.repo.delete(id);
+    await Promise.all([this.cache.del('products:all'), this.cache.del(`product:${id}`)]);
+    return p;
   }
 
-  async updateVariant(variantId: number, data: any): Promise<any> {
-    const existing = await this.repository.findVariantById(variantId);
-    if (!existing)
-      throw new NotFoundException(`Variant #${variantId} không tồn tại`);
-
-    const updated = await this.repository.updateVariant(variantId, data);
-    await Promise.all([
-      this.cacheManager.del(`product:${updated.productId}`),
-      this.cacheManager.del('products:all'),
-    ]);
-    return updated;
+  async createVariant(data: any) {
+    const v = await this.repo.createVariant(data);
+    await this.cache.del(`product:${data.productId}`);
+    return v;
   }
 
-  async deleteVariant(variantId: number): Promise<any> {
-    const existing = await this.repository.findVariantById(variantId);
-    if (!existing)
-      throw new NotFoundException(`Variant #${variantId} không tồn tại`);
-
-    // X\u00f3a VariantImages song song (batch)
-    const images = await this.repository.findVariantImages(variantId);
-    if (images.length) {
-      await Promise.all([
-        ...images.map((img) => this.deleteImageFromCloudinary(img.url)),
-        this.repository.deleteVariantImages(images.map((img) => img.id)),
-      ]);
-    }
-
-    const deleted = await this.repository.deleteVariant(variantId);
-    await Promise.all([
-      this.cacheManager.del(`product:${deleted.productId}`),
-      this.cacheManager.del('products:all'),
-    ]);
-    return deleted;
+  async updateVariant(id: number, data: any) {
+    const v = await this.repo.updateVariant(id, data);
+    await this.cache.del(`product:${v.productId}`);
+    return v;
   }
 
-  /**
-   * Upload images for Product (not variant)
-   */
-  async uploadProductImages(
-    productId: number,
-    files: Express.Multer.File[],
-    metadata: { altText?: string; isThumbnail?: boolean; displayOrder?: number },
-  ): Promise<any> {
-    const product = await this.repository.findById(productId);
+  async deleteVariant(id: number) {
+    const v = await this.repo.deleteVariant(id);
+    await this.cache.del(`product:${v.productId}`);
+    return v;
+  }
 
-    if (!product) {
-      throw new NotFoundException(`Sản phẩm #${productId} không tồn tại`);
-    }
-
+  async uploadProductImages(id: number, files: any[], meta: any) {
     const urls = await this.uploadService.uploadImages(files);
-
-    // Nếu đặt làm thumbnail, bỏ thumbnail cũ
-    if (metadata.isThumbnail) {
-      await this.repository.updateThumbnailStatus(productId, false);
-    }
-
-    const imageData = urls.map((url, index) => ({
-      productId,
-      url,
-      altText: metadata.altText || `${product.name} - Ảnh ${index + 1}`,
-      isThumbnail: metadata.isThumbnail && index === 0,
-      displayOrder: metadata.displayOrder !== undefined ? metadata.displayOrder + index : index,
-    }));
-
-    await this.repository.createImages(imageData);
-
-    await Promise.all([
-      this.cacheManager.del(`product:${productId}`),
-      this.cacheManager.del('products:all'),
-    ]);
-
-    return {
-      message: `Upload thành công ${urls.length} ảnh cho sản phẩm`,
-      imageCount: urls.length,
-    };
+    if (meta.isThumbnail) await this.repo.updateThumbnailStatus(id, false);
+    await this.repo.createImages(urls.map((u, i) => ({ productId: id, url: u, isThumbnail: meta.isThumbnail && i === 0, displayOrder: (meta.displayOrder || 0) + i })));
+    await this.cache.del(`product:${id}`);
+    return { urls };
   }
 
-  /**
-   * Upload images for ProductVariant
-   */
-  async uploadVariantImages(
-    variantId: number,
-    files: Express.Multer.File[],
-    metadata: { altText?: string; isPrimary?: boolean; displayOrder?: number },
-  ): Promise<any> {
-    const variant = await this.repository.findVariantById(variantId);
-
-    if (!variant) {
-      throw new NotFoundException(`Variant #${variantId} không tồn tại`);
-    }
-
+  async uploadVariantImages(vId: number, files: any[], meta: any) {
+    const v = await this.repo.findVariantById(vId);
+    if (!v) throw new NotFoundException();
     const urls = await this.uploadService.uploadImages(files);
+    await this.repo.createVariantImages(urls.map((u, i) => ({ variantId: vId, url: u, isPrimary: meta.isPrimary && i === 0, displayOrder: (meta.displayOrder || 0) + i })));
+    await this.cache.del(`product:${v.productId}`);
+    return { urls };
+  }
 
-    // Nếu đặt làm primary, bỏ primary cũ
-    if (metadata.isPrimary) {
-      await this.repository.updateVariantPrimaryStatus(variantId, false);
+  async deleteProductImage(id: number) {
+    const img = await this.repo.findImageById(id);
+    if (!img) throw new NotFoundException();
+    await this.repo.deleteImages([id]);
+    await this.cache.del(`product:${img.productId}`);
+    return { id };
+  }
+
+  async deleteVariantImage(id: number) {
+    const img = await this.repo.findVariantImageById(id);
+    if (!img) throw new NotFoundException();
+    await this.repo.deleteVariantImages([id]);
+    const v = await this.repo.findVariantById(img.variantId);
+    if (v) await this.cache.del(`product:${v.productId}`);
+    return { id };
+  }
+
+  async incrementViewCount(id: number, identifier: string) {
+    const key = `viewed:${id}:${identifier}`;
+    if (!(await this.cache.get(key))) {
+      await this.repo.incrementViewCount(id);
+      await this.cache.set(key, true, 86400 * 1000);
+      await this.cache.del(`product:${id}`);
     }
-
-    const imageData = urls.map((url, index) => ({
-      variantId,
-      url,
-      altText: metadata.altText || `Variant ${variant.size || ''} ${variant.color || ''} - Ảnh ${index + 1}`,
-      isPrimary: metadata.isPrimary && index === 0,
-      displayOrder: metadata.displayOrder !== undefined ? metadata.displayOrder + index : index,
-    }));
-
-    await this.repository.createVariantImages(imageData);
-
-    await Promise.all([
-      this.cacheManager.del(`product:${variant.productId}`),
-      this.cacheManager.del('products:all'),
-    ]);
-
-    return {
-      message: `Upload thành công ${urls.length} ảnh cho variant`,
-      imageCount: urls.length,
-    };
   }
 
-  /**
-   * Delete ProductImage
-   */
-  async deleteProductImage(imageId: number): Promise<any> {
-    const image = await this.repository.findImageById(imageId);
-
-    if (!image) {
-      throw new NotFoundException(`Ảnh #${imageId} không tồn tại`);
-    }
-
-    await this.deleteImageFromCloudinary(image.url);
-    await this.repository.deleteImages([imageId]);
-
-    await Promise.all([
-      this.cacheManager.del(`product:${image.productId}`),
-      this.cacheManager.del('products:all'),
-    ]);
-
-    return {
-      message: 'Xóa ảnh sản phẩm thành công',
-      deletedImage: image,
-    };
+  async getRelatedProducts(id: number, limit = 8) {
+    const p = await this.repo.findByIdOrSlug(id);
+    if (!p) throw new NotFoundException();
+    return this.repo.findRelated(p.id, p.categoryId, limit);
   }
 
-  /**
-   * Delete VariantImage
-   */
-  async deleteVariantImage(imageId: number): Promise<any> {
-    const image = await this.repository.findVariantImageById(imageId);
-
-    if (!image) {
-      throw new NotFoundException(`Ảnh variant #${imageId} không tồn tại`);
-    }
-
-    await this.deleteImageFromCloudinary(image.url);
-    await this.repository.deleteVariantImages([imageId]);
-
-    // Lấy variant để clear cache
-    const variant = await this.repository.findVariantById(image.variantId);
-    if (variant) {
-      await Promise.all([
-        this.cacheManager.del(`product:${variant.productId}`),
-        this.cacheManager.del('products:all'),
-      ]);
-    }
-
-    return {
-      message: 'Xóa ảnh variant thành công',
-      deletedImage: image,
-    };
-  }
-
-  private async deleteImageFromCloudinary(imageUrl: string): Promise<void> {
-    try {
-      const parts = imageUrl.split('/');
-      const uploadIndex = parts.indexOf('upload');
-
-      if (uploadIndex === -1) return;
-
-      const pathParts = parts.slice(uploadIndex + 2);
-      const publicId = pathParts.join('/').replace(/\.[^/.]+$/, '');
-    } catch (error) {}
-  }
-
-  async incrementSoldCount(productId: number, quantity: number) {
-    await this.repository.incrementSoldCount(productId, quantity);
-    await this.cacheManager.del(`product:${productId}`);
-  }
+  async getPriceRange() { return this.repo.getPriceRange(); }
 }

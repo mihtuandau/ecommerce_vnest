@@ -1,5 +1,5 @@
-// src/order/order.service.ts
-import { Injectable, Logger } from '@nestjs/common';
+
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { OrderRepository } from './order.repository';
 import { OrderCache } from './order.cache';
 import { OrderCreation } from './order.creation';
@@ -29,11 +29,9 @@ export class OrderService {
     const { page = 1, limit = 10, status, userId } = query;
     const skip = (page - 1) * limit;
 
-    // Check cache first
-    const cached = await this.cacheService.getOrdersList(query);
-    if (cached) {
-      return cached;
-    }
+    // Tạm thời vô hiệu hóa Cache để giải quyết lỗi sai lệch giá tiền giữa người dùng và Admin
+    // const cached = await this.cacheService.getOrdersList(query);
+    // if (cached) return cached;
 
     const where = {};
     if (status) where['status'] = status;
@@ -44,7 +42,6 @@ export class OrderService {
       this.repository.count(where),
     ]);
 
-    // Serialize all orders with payment data
     const serializedOrders = ordersData.map(order => OrderHelper.serializeOrder(order));
 
     const orders = {
@@ -55,21 +52,19 @@ export class OrderService {
       totalPages: Math.ceil(total / limit),
     };
 
-    await this.cacheService.setOrdersList(query, orders);
-
+    // await this.cacheService.setOrdersList(query, orders);
     return orders;
   }
 
-  async findOne(id: number): Promise<any> {
-    let order = await this.cacheService.getOrder(id);
-    if (order) {
-      return OrderHelper.serializeOrder(order);
+  async findOne(id: number, user: any): Promise<any> {
+    const order = await this.repository.findById(id);
+
+    if (!order) {
+      throw new NotFoundException(`Đơn hàng #${id} không tồn tại`);
     }
 
-    order = await this.repository.findById(id);
-
-    if (order) {
-      await this.cacheService.setOrder(id, order);
+    if (user.role !== 'ADMIN' && order.userId !== user.userId) {
+      throw new NotFoundException(`Đơn hàng #${id} không tồn tại hoặc không thuộc quyền sở hữu của bạn`);
     }
 
     return OrderHelper.serializeOrder(order);
@@ -83,8 +78,9 @@ export class OrderService {
     return this.orderManagement.remove(id);
   }
 
-  async cancelOrder(orderId: number, userId: number): Promise<any> {
-    return this.orderManagement.cancelOrder(orderId, userId);
+  async cancelOrder(orderId: number, user: any): Promise<any> {
+    const isAdmin = user.role === 'ADMIN';
+    return this.orderManagement.cancelOrder(orderId, user.userId, isAdmin);
   }
 
   async cancelGuestOrder(orderCode: string, contact: string): Promise<any> {

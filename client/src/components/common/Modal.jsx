@@ -1,4 +1,4 @@
-import { X } from "lucide-react";
+﻿import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
@@ -9,7 +9,7 @@ const Modal = ({
   children,
   size = "md",
   showClose = true,
-  variant = "user", // 'user' or 'admin'
+  variant = "user", 
 }) => {
   const [isAnimating, setIsAnimating] = useState(false);
 
@@ -39,7 +39,7 @@ const Modal = ({
     <div className="fixed inset-0 z-[9999] overflow-hidden"
       style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
     >
-      {/* Backdrop */}
+      {}
       <div
         className={`fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300 ${
           isAnimating ? "opacity-100" : "opacity-0"
@@ -49,7 +49,7 @@ const Modal = ({
         style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
       ></div>
       
-      {/* Modal Container - Center */}
+      {}
       <div className="fixed inset-0 flex items-center justify-center p-4 pointer-events-none overflow-y-auto"
         style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
       >
@@ -79,7 +79,7 @@ const Modal = ({
               )}
             </div>
           )}
-          {/* Only add wrapper if not using sub-components */}
+          {}
           {title ? (
             <div className="p-6 overflow-y-auto flex-1">
               {children}
@@ -95,7 +95,6 @@ const Modal = ({
   return createPortal(modalContent, document.body);
 };
 
-// Sub-components for backward compatibility
 Modal.Header = ({ children, onClose }) => (
   <div className="flex items-center justify-between px-6 py-5 border-b border-gray-200 flex-shrink-0">
     <h3 className="text-xl font-semibold text-gray-900">{children}</h3>
@@ -123,3 +122,9 @@ Modal.Footer = ({ children }) => (
 );
 
 export default Modal;
+
+
+
+
+
+

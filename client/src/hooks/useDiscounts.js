@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+﻿import { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import discountService from '../services/discountService';
 import { notify } from '../utils/notification';
@@ -138,6 +138,8 @@ export const useCreateDiscount = () => {
     mutationFn: (data) => discountService.createDiscount(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['discounts'] });
+      queryClient.invalidateQueries({ queryKey: ['flash-sale'] });
+      queryClient.invalidateQueries({ queryKey: ['auto-apply-discounts'] });
       notify.success('Tạo mã giảm giá thành công');
     },
   });
@@ -149,6 +151,8 @@ export const useUpdateDiscount = () => {
     mutationFn: ({ id, data }) => discountService.updateDiscount(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['discounts'] });
+      queryClient.invalidateQueries({ queryKey: ['flash-sale'] });
+      queryClient.invalidateQueries({ queryKey: ['auto-apply-discounts'] });
       notify.success('Cập nhật mã giảm giá thành công');
     },
   });
@@ -160,7 +164,15 @@ export const useDeleteDiscount = () => {
     mutationFn: (id) => discountService.deleteDiscount(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['discounts'] });
+      queryClient.invalidateQueries({ queryKey: ['flash-sale'] });
+      queryClient.invalidateQueries({ queryKey: ['auto-apply-discounts'] });
       notify.success('Xóa mã giảm giá thành công');
     },
   });
 };
+
+
+
+
+
+

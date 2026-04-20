@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Spin, Result, Button as AntButton } from "antd";
 import { ReloadOutlined, WarningOutlined } from "@ant-design/icons";
@@ -14,19 +14,18 @@ import WelcomeModal from "../../../components/common/WelcomeModal";
 import { useHomeData } from "../../../hooks/useHomeData";
 import { useAuth } from "../../../contexts/AuthContext";
 import authService from "../../../services/authService";
-import { notify } from "../../../utils/notification";
-
+import BrandSection from "../../../components/home/BrandSection";
+import TopRatedProducts from "../../../components/home/TopRatedProducts";
 
 const HomePage = () => {
   const { data: homeData, isLoading, error, refetch } = useHomeData();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { setUser } = useAuth();
-  const [showWelcomeModal, setShowWelcomeModal] = useState(true);
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
 
-  // Modal sẽ hiển thị mỗi lần vào trang (không lưu localStorage)
   useEffect(() => {
-    console.log('Modal state:', showWelcomeModal);
+
   }, [showWelcomeModal]);
 
   useEffect(() => {
@@ -55,7 +54,9 @@ const HomePage = () => {
     return (
       <Layout>
         <div className="flex items-center justify-center min-h-screen">
-          <Spin size="large" tip="Đang tải dữ liệu..." />
+          <Spin size="large" spinning={true} tip="Đang tải dữ liệu...">
+            <div className="p-10" />
+          </Spin>
         </div>
       </Layout>
     );
@@ -89,25 +90,34 @@ const HomePage = () => {
     return (
       <Layout>
         <div className="flex items-center justify-center min-h-screen">
-          <Spin size="large" tip="Đang tải dữ liệu..." />
+          <Spin size="large" spinning={true} tip="Đang tải dữ liệu...">
+            <div className="p-10" />
+          </Spin>
         </div>
       </Layout>
     );
   }
 
+
   return (
     <>
-      <WelcomeModal 
-        isOpen={showWelcomeModal} 
-        onClose={() => setShowWelcomeModal(false)} 
-      />
+      {}
       <Layout>
         <HeroBanner slides={homeData.banners || []} />
+        
         <div className="">
           <FeaturedCategories categories={homeData.categories || []} />
+          
           <FlashSale />
+          
           <BestSellingProducts products={homeData.bestSellers || []} />
+          
+          <BrandSection />
+          
           <FeaturedProducts products={homeData.featuredProducts || []} />
+
+          <TopRatedProducts products={homeData.featuredProducts || []} />
+          
           <PromoBanner />
         </div>
       </Layout>
@@ -115,4 +125,12 @@ const HomePage = () => {
   );
 };
 
+
+
 export default HomePage;
+
+
+
+
+
+

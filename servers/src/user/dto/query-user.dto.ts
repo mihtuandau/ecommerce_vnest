@@ -1,4 +1,4 @@
-import { IsOptional, IsInt, IsPositive, IsEnum } from 'class-validator';
+﻿import { IsOptional, IsInt, IsPositive, IsEnum } from 'class-validator';
 import { Type } from 'class-transformer';
 import { Role } from '@prisma/client';
 
@@ -23,3 +23,9 @@ export class QueryUserDto {
   @IsEnum(['ACTIVE', 'SUSPENDED'])
   status?: 'ACTIVE' | 'SUSPENDED';
 }
+
+
+
+
+
+

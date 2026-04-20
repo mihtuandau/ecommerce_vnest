@@ -13,7 +13,9 @@ model User {
   password             String
   name                 String?
   role                 Role           @default(CUSTOMER)
-  status               UserStatus     @default(ACTIVE)
+  status               UserStatus     @default(PENDING)
+  verificationCode     String?
+  verificationExpires  DateTime?
   resetPasswordToken   String?
   resetPasswordExpires DateTime?
   deletedAt            DateTime? // Soft delete: null = active, có giá trị = soft deleted
@@ -26,6 +28,7 @@ model User {
   wishlistItems        WishlistItem[]
   sentMessages         ChatMessage[]  @relation("SentMessages")
   cancelledOrders      Order[]        @relation("CancelledBy") // Orders cancelled by this user/admin
+  refreshTokens        RefreshToken[] // Stored token hashes for revocation
 
   @@index([deletedAt])
   @@index([status])
@@ -34,11 +37,47 @@ model User {
 enum Role {
   CUSTOMER
   ADMIN
+  KHO
+  BAN_HANG
+}
+
+// Lưu hash của Refresh Token để có thể revoke khi logout/đánh cắp
+model RefreshToken {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  tokenHash String   @unique // SHA-256 hash của refresh token
+  expiresAt DateTime
+  revoked   Boolean  @default(false)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([tokenHash])
+  @@index([revoked])
+}
+
+model Permission {
+  id          Int              @id @default(autoincrement())
+  name        String           @unique // e.g., "product.create"
+  description String?
+  roles       PermissionRole[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model PermissionRole {
+  role         Role
+  permissionId Int
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([role, permissionId])
+  @@index([role])
 }
 
 enum UserStatus {
   ACTIVE
   SUSPENDED
+  PENDING
 }
 
 enum AddressType {
@@ -329,11 +368,12 @@ model Order {
   guestPhone       String? // Phone for guest orders
   // Pricing audit trail: total = subtotal - discountAmount + taxAmount
   subtotal         Float           // Tổng giá trước discount và tax
+  shippingFee      Float           @default(0) // Phí vận chuyển
   discountAmount   Float           @default(0) // Số tiền discount (tính từ Discount hay manual)
   taxAmount        Float           @default(0) // Số tiền thuế
   total            Float           // Final formula: subtotal - discountAmount + taxAmount
-  // NOTE: paymentMethod được lưu ở Payment.method - không nên lưu ở Order để tránh inconsistency
-  // Query: SELECT payment.method FROM order LEFT JOIN payment ON order.paymentId = payment.id
+  // NOTE: paymentMethod được lưu ở cả Order (để biết ý định) và Payment.method
+  paymentMethod    String          @default("CASH")
   status           OrderStatus     @default(PENDING)
   statusHistory    Json[]          @default([]) // Lịch sử thay đổi trạng thái [{status, changedAt, changedBy, note}]
   cancelledAt      DateTime? // Thời gian hủy đơn

@@ -1,11 +1,14 @@
-import { useMemo, useState } from 'react';
-import CartItem from './CartItem';
-import { computeDiscountFromMap } from '../../utils/formatters';
+import { useMemo, useState } from "react";
+import { DeleteOutlined } from "@ant-design/icons";
+import CartItem from "./CartItem";
+import { computeDiscountFromMap } from "../../utils/formatters";
 
 const getProductImage = (item) => {
-  return item.product?.image || 
-         item.product?.variant?.product?.images?.[0]?.url ||
-         item.product?.images?.[0]?.url;
+  return (
+    item.product?.image ||
+    item.product?.variant?.product?.images?.[0]?.url ||
+    item.product?.images?.[0]?.url
+  );
 };
 
 const createVariant = (item) => ({
@@ -14,22 +17,33 @@ const createVariant = (item) => ({
   color: item.product?.variant?.color,
   price: item.product?.variant?.price || 0,
   stock: item.product?.variant?.stock || 999,
-  quantity: item.quantity
+  quantity: item.quantity,
 });
 
 const ITEMS_PER_PAGE = 5;
 
-const CartItemsList = ({ items, count, selectedItems, onToggleItem, onToggleAll, onUpdateQuantity, onRemove, onClearAll, formatPrice, discountMap }) => {
+const CartItemsList = ({
+  items,
+  count,
+  selectedItems,
+  onToggleItem,
+  onToggleAll,
+  onUpdateQuantity,
+  onRemove,
+  onClearAll,
+  formatPrice,
+  discountMap,
+}) => {
   const [currentPage, setCurrentPage] = useState(1);
   const allSelected = items.length > 0 && selectedItems.size === items.length;
-  
+
   const groupedProducts = useMemo(() => {
     const groups = {};
-    
-    items.forEach(item => {
+
+    items.forEach((item) => {
       const productId = item.product?.id;
       if (!productId) return;
-      
+
       if (!groups[productId]) {
         groups[productId] = {
           productId,
@@ -41,7 +55,7 @@ const CartItemsList = ({ items, count, selectedItems, onToggleItem, onToggleAll,
           hasFlashSale: false,
         };
       }
-      
+
       const originalPrice = item.product?.variant?.price || 0;
       const productDiscount = discountMap?.[Number(productId)] || null;
 
@@ -56,12 +70,17 @@ const CartItemsList = ({ items, count, selectedItems, onToggleItem, onToggleAll,
       };
       groups[productId].variants.push(variant);
       groups[productId].totalQuantity += item.quantity;
-      // Tính totalPrice dựa trên discountMap
-      const discountedPrice = computeDiscountFromMap(productId, originalPrice, discountMap);
-      groups[productId].totalPrice += (discountedPrice * item.quantity);
-      if (discountedPrice !== originalPrice) groups[productId].hasFlashSale = true;
+
+      const discountedPrice = computeDiscountFromMap(
+        productId,
+        originalPrice,
+        discountMap,
+      );
+      groups[productId].totalPrice += discountedPrice * item.quantity;
+      if (discountedPrice !== originalPrice)
+        groups[productId].hasFlashSale = true;
     });
-    
+
     return Object.values(groups);
   }, [items, discountMap]);
 
@@ -79,7 +98,9 @@ const CartItemsList = ({ items, count, selectedItems, onToggleItem, onToggleAll,
   };
 
   const handleRemoveAll = async (variantIds) => {
-    if (window.confirm('Bạn có chắc muốn xóa tất cả biến thể của sản phẩm này?')) {
+    if (
+      window.confirm("Bạn có chắc muốn xóa tất cả biến thể của sản phẩm này?")
+    ) {
       for (const id of variantIds) {
         await onRemove(id, true);
       }
@@ -88,23 +109,24 @@ const CartItemsList = ({ items, count, selectedItems, onToggleItem, onToggleAll,
 
   return (
     <div className="space-y-4">
-      <div className="bg-white border border-gray-200 p-3 md:p-6 flex items-center justify-between shadow-md">
-        <div className="flex items-center gap-2 md:gap-4">
+      <div className="bg-white border border-gray-100 px-4 py-3 flex items-center justify-between rounded-sm">
+        <div className="flex items-center gap-3">
           <input
             type="checkbox"
             checked={allSelected}
             onChange={onToggleAll}
-            className="w-4 h-4 md:w-5 md:h-5 border-gray-300 text-red-600 focus:ring-red-600 cursor-pointer"
+            className="w-4 h-4 border-gray-200 text-black focus:ring-black cursor-pointer rounded-sm"
           />
-          <h2 className="text-sm md:text-base font-bold text-gray-900">
-            <span className="hidden sm:inline">Chọn tất cả </span>({count})
+          <h2 className="text-[13px] font-bold text-gray-900 tracking-tight">
+            Tất cả sản phẩm <span className="text-gray-400 font-medium ml-1">({count})</span>
           </h2>
         </div>
         <button
           onClick={onClearAll}
-          className="text-xs md:text-sm font-medium text-gray-600 hover:text-red-600 transition-colors"
+          className="text-[12px] font-semibold text-gray-400 hover:text-red-500 transition-colors flex items-center gap-1.5"
         >
-          Xóa <span className="hidden sm:inline">tất cả</span>
+          <DeleteOutlined className="text-[10px]" />
+          Xóa toàn bộ
         </button>
       </div>
 
@@ -124,12 +146,13 @@ const CartItemsList = ({ items, count, selectedItems, onToggleItem, onToggleAll,
         ))}
       </div>
 
-      {/* Pagination */}
+      {}
       {totalPages > 1 && (
         <div className="bg-white border border-gray-200 p-6">
           <div className="flex items-center justify-between">
             <div className="text-sm text-gray-600">
-              {startIndex + 1}–{Math.min(endIndex, groupedProducts.length)} / {groupedProducts.length}
+              {startIndex + 1}–{Math.min(endIndex, groupedProducts.length)} /{" "}
+              {groupedProducts.length}
             </div>
             <div className="flex items-center gap-2">
               <button
@@ -137,27 +160,29 @@ const CartItemsList = ({ items, count, selectedItems, onToggleItem, onToggleAll,
                 disabled={currentPage === 1}
                 className={`px-4 py-2 text-sm transition-colors ${
                   currentPage === 1
-                    ? 'text-gray-400 cursor-not-allowed'
-                    : 'text-gray-900 hover:bg-gray-100'
+                    ? "text-gray-400 cursor-not-allowed"
+                    : "text-gray-900 hover:bg-gray-100"
                 }`}
               >
                 Trước
               </button>
-              
+
               <div className="flex items-center gap-1">
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                  <button
-                    key={page}
-                    onClick={() => goToPage(page)}
-                    className={`min-w-[36px] h-9 text-sm transition-colors ${
-                      currentPage === page
-                        ? 'bg-[#00a85a] text-white'
-                        : 'text-gray-900 hover:bg-gray-100'
-                    }`}
-                  >
-                    {page}
-                  </button>
-                ))}
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                  (page) => (
+                    <button
+                      key={page}
+                      onClick={() => goToPage(page)}
+                      className={`min-w-[36px] h-9 text-sm transition-colors ${
+                        currentPage === page
+                          ? "bg-[#00a85a] text-white"
+                          : "text-gray-900 hover:bg-gray-100"
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  ),
+                )}
               </div>
 
               <button
@@ -165,8 +190,8 @@ const CartItemsList = ({ items, count, selectedItems, onToggleItem, onToggleAll,
                 disabled={currentPage === totalPages}
                 className={`px-4 py-2 text-sm transition-colors ${
                   currentPage === totalPages
-                    ? 'text-gray-400 cursor-not-allowed'
-                    : 'text-gray-900 hover:bg-gray-100'
+                    ? "text-gray-400 cursor-not-allowed"
+                    : "text-gray-900 hover:bg-gray-100"
                 }`}
               >
                 Sau
@@ -179,3 +204,9 @@ const CartItemsList = ({ items, count, selectedItems, onToggleItem, onToggleAll,
   );
 };
 export default CartItemsList;
+
+
+
+
+
+

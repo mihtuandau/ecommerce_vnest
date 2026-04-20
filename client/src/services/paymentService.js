@@ -89,6 +89,22 @@ const paymentService = {
       throw error;
     }
   },
+
+  verifyVNPayReturn: async (vnpParams) => {
+    try {
+      // VNPay returns result via query params, we send them to our backend return endpoint
+      const response = await apiService.get('/payments/vnpay-return', vnpParams);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  },
 };
 
 export default paymentService;
+
+
+
+
+
+

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { FaChevronDown } from 'react-icons/fa';
 
 const Accordion = ({ title, children, defaultOpen = true, className = '' }) => {
@@ -29,3 +29,9 @@ const Accordion = ({ title, children, defaultOpen = true, className = '' }) => {
 };
 
 export default Accordion;
+
+
+
+
+
+

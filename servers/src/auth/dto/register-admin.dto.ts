@@ -1,4 +1,4 @@
-import { IsEmail, IsString, MinLength, IsOptional } from 'class-validator';
+﻿import { IsEmail, IsString, MinLength, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class RegisterAdminDto {
@@ -28,3 +28,9 @@ export class RegisterAdminDto {
   @IsString()
   name?: string;
 }
+
+
+
+
+
+

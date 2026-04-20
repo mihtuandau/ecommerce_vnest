@@ -8,53 +8,47 @@ import { QueryDiscountDto } from './dto/query-discount.dto';
 export class DiscountService {
   constructor(private repository: DiscountRepository) {}
 
-  async create(createDiscountDto: CreateDiscountDto) {
-    if (!createDiscountDto.percentage && !createDiscountDto.fixedAmount) {
+  private mapDiscount(discount: any) {
+    if (!discount) return null;
+    return {
+      ...discount,
+      status: this.getDiscountStatus(discount.startDate, discount.endDate, discount.isActive),
+      usageCount: discount._count?.orders || 0,
+    };
+  }
+
+  private validateType(dto: { percentage?: number; fixedAmount?: number }) {
+    if (!dto.percentage && !dto.fixedAmount) {
       throw new BadRequestException('Phải có ít nhất percentage hoặc fixedAmount');
     }
-
-    if (createDiscountDto.percentage && createDiscountDto.fixedAmount) {
+    if (dto.percentage && dto.fixedAmount) {
       throw new BadRequestException('Chỉ được chọn percentage hoặc fixedAmount, không được cả hai');
     }
-    const existing = await this.repository.findByCode(createDiscountDto.code);
+  }
 
-    if (existing) {
-      throw new BadRequestException('Mã giảm giá đã tồn tại');
-    }
+  async create(dto: CreateDiscountDto) {
+    this.validateType(dto);
+    const existing = await this.repository.findByCode(dto.code);
+    if (existing) throw new BadRequestException('Mã giảm giá đã tồn tại');
 
-    // Kiểm tra flash sale trùng lấp
-    if (createDiscountDto.isFlashSale) {
-      const activeFlash = await this.repository.findActiveFlashSale();
-      if (activeFlash) {
-        throw new BadRequestException(
-          `Đã có flash sale đang chạy: "${activeFlash.code}". Vô hiệu hóa hoặc xóa cái cũ trước rồi mới tạo mới.`,
-        );
-      }
-    }
-
-    // Transform applicableToProducts array to nested create structure for junction table
     const createData: any = {
-      code: createDiscountDto.code.toUpperCase(),
-      description: createDiscountDto.description,
-      image: createDiscountDto.image,
-      isFlashSale: createDiscountDto.isFlashSale,
-      percentage: createDiscountDto.percentage,
-      fixedAmount: createDiscountDto.fixedAmount,
-      minOrderAmount: createDiscountDto.minOrderAmount,
-      maxDiscountAmount: createDiscountDto.maxDiscountAmount,
-      usageLimit: createDiscountDto.usageLimit,
-      startDate: new Date(createDiscountDto.startDate),
-      endDate: createDiscountDto.endDate ? new Date(createDiscountDto.endDate) : null,
-      isActive: createDiscountDto.isActive ?? true,
+      ...dto,
+      code: dto.code.toUpperCase(),
+      startDate: new Date(dto.startDate),
+      endDate: dto.endDate ? new Date(dto.endDate) : null,
+      isActive: dto.isActive ?? true,
     };
 
-    // Handle applicableToProducts junction table
-    if (createDiscountDto.applicableToProducts && createDiscountDto.applicableToProducts.length > 0) {
+    if (dto.applicableToProducts?.length) {
       createData.applicableToProducts = {
-        create: createDiscountDto.applicableToProducts.map(productId => ({
-          productId,
-        })),
+        create: dto.applicableToProducts.map(productId => ({ productId })),
       };
+    }
+
+    // Flash Sale: dùng Serializable transaction để ngăn race condition
+    // 2 admin tạo cùng lúc → chỉ 1 cái thành công
+    if (dto.isFlashSale) {
+      return this.repository.createFlashSaleTransactional(createData);
     }
 
     return this.repository.create(createData);
@@ -63,7 +57,6 @@ export class DiscountService {
   async findAll(query: QueryDiscountDto) {
     const { search, status } = query;
     const now = new Date();
-
     const where: any = {};
 
     if (search) {
@@ -86,47 +79,26 @@ export class DiscountService {
     }
 
     const discounts = await this.repository.findAll(where);
-
-    return discounts.map((discount) => ({
-      ...discount,
-      status: this.getDiscountStatus(discount.startDate, discount.endDate, discount.isActive),
-      usageCount: discount._count.orders,
-    }));
+    return discounts.map(d => this.mapDiscount(d));
   }
 
   async findOne(id: number) {
     const discount = await this.repository.findById(id);
-
-    if (!discount) {
-      throw new NotFoundException('Không tìm thấy mã giảm giá');
-    }
-
-    return {
-      ...discount,
-      status: this.getDiscountStatus(discount.startDate, discount.endDate, discount.isActive),
-      usageCount: discount._count.orders,
-    };
+    if (!discount) throw new NotFoundException('Không tìm thấy mã giảm giá');
+    return this.mapDiscount(discount);
   }
 
   async findByCode(code: string) {
     const discount = await this.repository.findByCode(code);
-
-    if (!discount) {
-      throw new NotFoundException('Không tìm thấy mã giảm giá');
-    }
-
-    return {
-      ...discount,
-      status: this.getDiscountStatus(discount.startDate, discount.endDate, discount.isActive),
-    };
+    if (!discount) throw new NotFoundException('Không tìm thấy mã giảm giá');
+    return this.mapDiscount(discount);
   }
 
-  /** Danh sách khuyến mãi đang hoạt động cho trang public */
   async getPublicDiscounts() {
-    return this.repository.findPublicActive();
+    const discounts = await this.repository.findPublicActive();
+    return discounts.map(d => this.mapDiscount(d));
   }
 
-  /** Discount (flash hoặc thường) áp dụng cho 1 sản phẩm cụ thể */
   async getProductDiscount(productId: number) {
     const discount = await this.repository.findDiscountForProduct(productId);
     if (!discount) return null;
@@ -141,17 +113,13 @@ export class DiscountService {
     };
   }
 
-  /** Map productId → discount tốt nhất (dùng cho card sản phẩm) */
   async getAutoApplyMap() {
     const discounts = await this.repository.findAllAutoApply();
-    // Mỗi productId chỉ giữ 1 discount tốt nhất (% cao nhất ưu tiên, flash sale làm tiebreaker)
-    const map: Record<number, object> = {};
+    const map: Record<number, any> = {};
     for (const d of discounts) {
-      // applicableToProducts is now an array of DiscountProduct objects, extract productId
-      for (const discountProduct of d.applicableToProducts) {
-        const pid = discountProduct.productId;
-        if (!map[pid]) {
-          map[pid] = {
+      for (const dp of d.applicableToProducts) {
+        if (!map[dp.productId]) {
+          map[dp.productId] = {
             percentage: d.percentage,
             fixedAmount: d.fixedAmount,
             isFlashSale: d.isFlashSale,
@@ -163,98 +131,42 @@ export class DiscountService {
     return map;
   }
 
-  /** Flash Sale đang diễn ra */
   async getFlashSale() {
     const flashSale = await this.repository.findFlashSale();
     if (!flashSale) return null;
 
-    // Format products giống với ProductService trả về
-    const formattedProducts = flashSale.products.map((p: any) => {
-      const thumbnail = p.images?.[0]?.url || null;
-      const lowestVariant = p.variants?.[0] || null;
-      const variantImage = lowestVariant?.images?.[0]?.url || null;
+    const formattedProducts = flashSale.products.map((p: any) => ({
+      id: p.id,
+      name: p.name,
+      slug: p.slug,
+      basePrice: p.basePrice,
+      originalPrice: p.basePrice,
+      price: p.variants?.[0]?.price || p.basePrice,
+      image: p.variants?.[0]?.images?.[0]?.url || p.images?.[0]?.url || null,
+      soldCount: p.soldCount,
+      averageRating: p.averageRating,
+      reviewCount: p.reviewCount,
+      viewCount: p.viewCount,
+      variants: p.variants,
+      category: p.category, 
+    }));
 
-      return {
-        id: p.id,
-        name: p.name,
-        slug: p.slug,
-        basePrice: p.basePrice,
-        originalPrice: p.basePrice,
-        price: lowestVariant?.price || p.basePrice,
-        image: variantImage || thumbnail,
-        soldCount: p.soldCount,
-        averageRating: p.averageRating,
-        reviewCount: p.reviewCount,
-        viewCount: p.viewCount,
-        variants: p.variants,
-      };
-    });
-
-    return {
-      id: flashSale.id,
-      code: flashSale.code,
-      description: flashSale.description,
-      image: flashSale.image,
-      percentage: flashSale.percentage,
-      fixedAmount: flashSale.fixedAmount,
-      minOrderAmount: flashSale.minOrderAmount,
-      maxDiscountAmount: flashSale.maxDiscountAmount,
-      startDate: flashSale.startDate,
-      endDate: flashSale.endDate,
-      applicableToProducts: flashSale.applicableToProducts,
-      products: formattedProducts,
-    };
+    return { ...flashSale, products: formattedProducts };
   }
 
   async validateDiscount(code: string) {
     const discount = await this.repository.findByCode(code);
-
-    if (!discount) {
-      return {
-        isValid: false,
-        message: 'Mã giảm giá không tồn tại',
-      };
-    }
-
-    // Flash sale được áp dụng tự động — không cho phép nhập mã thủ công
-    if (discount.isFlashSale) {
-      return {
-        isValid: false,
-        message: 'Mã này là Flash Sale và đã được áp dụng tự động vào sản phẩm, không cần nhập thêm.',
-      };
-    }
-
-    if (!discount.isActive) {
-      return {
-        isValid: false,
-        message: 'Mã giảm giá đã bị vô hiệu hóa.',
-      };
-    }
+    if (!discount) return { isValid: false, message: 'Mã giảm giá không tồn tại' };
+    if (discount.isFlashSale) return { isValid: false, message: 'Mã này là Flash Sale đã được áp dụng tự động.' };
+    if (!discount.isActive) return { isValid: false, message: 'Mã giảm giá đã bị vô hiệu hóa.' };
 
     const now = new Date();
-
-    if (discount.startDate > now) {
-      return {
-        isValid: false,
-        message: `Mã giảm giá chưa có hiệu lực (từ ${discount.startDate.toLocaleDateString('vi-VN')})`,
-      };
-    }
-
-    if (discount.endDate && discount.endDate < now) {
-      return {
-        isValid: false,
-        message: 'Mã giảm giá đã hết hạn',
-      };
-    }
+    if (discount.startDate > now) return { isValid: false, message: `Chưa có hiệu lực (từ ${discount.startDate.toLocaleDateString('vi-VN')})` };
+    if (discount.endDate && discount.endDate < now) return { isValid: false, message: 'Mã giảm giá đã hết hạn' };
 
     if (discount.usageLimit) {
       const usageCount = await this.repository.countEffectiveOrdersUsingDiscount(discount.id);
-      if (usageCount >= discount.usageLimit) {
-        return {
-          isValid: false,
-          message: 'Mã giảm giá đã đạt giới hạn số lần sử dụng',
-        };
-      }
+      if (usageCount >= discount.usageLimit) return { isValid: false, message: 'Đã đạt giới hạn số lần sử dụng' };
     }
 
     return {
@@ -272,121 +184,60 @@ export class DiscountService {
     };
   }
 
-  async update(id: number, updateDiscountDto: UpdateDiscountDto) {
+  async update(id: number, dto: UpdateDiscountDto) {
     const current = await this.findOne(id);
-
-    if (updateDiscountDto.percentage !== undefined || updateDiscountDto.fixedAmount !== undefined) {
-      const newPercentage = updateDiscountDto.percentage ?? current.percentage;
-      const newFixedAmount = updateDiscountDto.fixedAmount ?? current.fixedAmount;
-
-      if (!newPercentage && !newFixedAmount) {
-        throw new BadRequestException('Phải có ít nhất percentage hoặc fixedAmount');
-      }
-
-      if (newPercentage && newFixedAmount) {
-        throw new BadRequestException('Chỉ được chọn percentage hoặc fixedAmount, không được cả hai');
-      }
+    if (dto.percentage !== undefined || dto.fixedAmount !== undefined) {
+      this.validateType({ 
+        percentage: dto.percentage ?? current.percentage, 
+        fixedAmount: dto.fixedAmount ?? current.fixedAmount 
+      });
     }
 
-    const data: any = { ...updateDiscountDto };
-
-    // Kiểm tra flash sale trùng lấp khi bật isFlashSale
-    const becomingFlash =
-      updateDiscountDto.isFlashSale === true && !current.isFlashSale;
-    if (becomingFlash) {
+    if (dto.isFlashSale === true && !current.isFlashSale) {
       const activeFlash = await this.repository.findActiveFlashSale(id);
-      if (activeFlash) {
-        throw new BadRequestException(
-          `Đã có flash sale đang chạy: "${activeFlash.code}". Vô hiệu hóa hoặc xóa cái cũ trước rồi mới chỉnh sửa.`,
-        );
-      }
+      if (activeFlash) throw new BadRequestException(`Đã có flash sale đang chạy: "${activeFlash.code}"`);
     }
 
-    if (updateDiscountDto.code) {
-      data.code = updateDiscountDto.code.toUpperCase();
-    }
-    if (updateDiscountDto.startDate) {
-      data.startDate = new Date(updateDiscountDto.startDate);
-    }
-    if (updateDiscountDto.endDate) {
-      data.endDate = new Date(updateDiscountDto.endDate);
-    }
+    const data: any = { ...dto };
+    if (dto.code) data.code = dto.code.toUpperCase();
+    if (dto.startDate) data.startDate = new Date(dto.startDate);
+    if (dto.endDate) data.endDate = new Date(dto.endDate);
 
-    if (updateDiscountDto.applicableToProducts !== undefined) {
-      const productIds = (updateDiscountDto.applicableToProducts || []).filter(
-        (id): id is number => typeof id === 'number' && Number.isFinite(id),
-      );
-      data.applicableToProducts = productIds.length > 0
-        ? {
-            deleteMany: {},
-            create: productIds.map((productId) => ({ productId })),
-          }
-        : { deleteMany: {} };
+    if (dto.applicableToProducts !== undefined) {
+      const productIds = (dto.applicableToProducts || []).filter(pid => typeof pid === 'number');
+      data.applicableToProducts = {
+        deleteMany: {},
+        create: productIds.map(productId => ({ productId })),
+      };
     }
 
     return this.repository.update(id, data);
   }
 
   async remove(id: number) {
-    await this.findOne(id);
     const usageCount = await this.repository.countOrdersUsingDiscount(id);
-
-    if (usageCount > 0) {
-      throw new BadRequestException(
-        `Không thể xóa mã giảm giá đang được sử dụng bởi ${usageCount} đơn hàng`,
-      );
-    }
-
+    if (usageCount > 0) throw new BadRequestException(`Không thể xóa vì đang được sử dụng bởi ${usageCount} đơn hàng`);
     return this.repository.delete(id);
   }
 
   async getStats() {
     const now = new Date();
-
     const [total, active, expired, upcoming, inactive] = await Promise.all([
       this.repository.count(),
-      this.repository.countWithFilter({
-        isActive: true,
-        startDate: { lte: now },
-        OR: [{ endDate: null }, { endDate: { gte: now } }],
-      }),
-      this.repository.countWithFilter({
-        isActive: true,
-        endDate: { lt: now },
-      }),
-      this.repository.countWithFilter({
-        isActive: true,
-        startDate: { gt: now },
-      }),
-      this.repository.countWithFilter({
-        isActive: false,
-      }),
+      this.repository.countWithFilter({ isActive: true, startDate: { lte: now }, OR: [{ endDate: null }, { endDate: { gte: now } }] }),
+      this.repository.countWithFilter({ isActive: true, endDate: { lt: now } }),
+      this.repository.countWithFilter({ isActive: true, startDate: { gt: now } }),
+      this.repository.countWithFilter({ isActive: false }),
     ]);
 
-    return {
-      total,
-      active,
-      expired,
-      upcoming,
-      inactive,
-    };
+    return { total, active, expired, upcoming, inactive };
   }
 
   private getDiscountStatus(startDate: Date, endDate: Date | null, isActive?: boolean): string {
     const now = new Date();
-
-    if (isActive === false) {
-      return 'inactive';
-    }
-
-    if (startDate > now) {
-      return 'upcoming';
-    }
-
-    if (endDate && endDate < now) {
-      return 'expired';
-    }
-
+    if (isActive === false) return 'inactive';
+    if (startDate > now) return 'upcoming';
+    if (endDate && endDate < now) return 'expired';
     return 'active';
   }
 }

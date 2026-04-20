@@ -1,12 +1,6 @@
-import { Zap } from 'lucide-react';
+﻿import { Zap } from 'lucide-react';
 
-/**
- * Card 2 — Flash Sale toggle
- *
- * Props:
- *  isFlashSale – boolean
- *  onToggle    – () => void (async)
- */
+
 const FlashSaleToggle = ({ isFlashSale, onToggle }) => (
   <div className="bg-white rounded-2xl border border-gray-100 shadow-sm px-6 py-4">
     <div
@@ -17,7 +11,7 @@ const FlashSaleToggle = ({ isFlashSale, onToggle }) => (
       }`}
       onClick={onToggle}
     >
-      {/* Left: icon + label */}
+      {}
       <div className="flex items-center gap-3">
         <div
           className={`w-9 h-9 rounded-lg flex items-center justify-center ${
@@ -37,7 +31,7 @@ const FlashSaleToggle = ({ isFlashSale, onToggle }) => (
         </div>
       </div>
 
-      {/* Right: toggle switch */}
+      {}
       <div
         className={`relative w-12 h-6 rounded-full transition-colors duration-200 ${
           isFlashSale ? 'bg-orange-400' : 'bg-gray-300'
@@ -54,3 +48,9 @@ const FlashSaleToggle = ({ isFlashSale, onToggle }) => (
 );
 
 export default FlashSaleToggle;
+
+
+
+
+
+

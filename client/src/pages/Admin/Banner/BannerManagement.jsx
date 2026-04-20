@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import { Plus, Image as ImageIcon } from 'lucide-react';
 import { notify } from '../../../utils/notification';
 import Button from '../../../components/common/Button';
@@ -140,7 +140,7 @@ const BannerManagement = () => {
           />
         </div>
 
-        {/* Banner Form Modal */}
+        {}
         {showForm && (
           <BannerFormModal
             banner={editingBanner}
@@ -149,7 +149,7 @@ const BannerManagement = () => {
           />
         )}
 
-        {/* Delete Confirmation Modal */}
+        {}
         <DeleteConfirmModal
           isOpen={deleteModalOpen}
           onClose={() => {
@@ -166,3 +166,9 @@ const BannerManagement = () => {
 };
 
 export default BannerManagement;
+
+
+
+
+
+

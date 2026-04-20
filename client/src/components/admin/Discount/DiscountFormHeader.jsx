@@ -1,9 +1,7 @@
-import { ArrowLeft, Save } from 'lucide-react';
+﻿import { ArrowLeft, Save } from 'lucide-react';
 
-/**
- * Top header cho form tạo/chỉnh sửa mã giảm giá.
- */
-const DiscountFormHeader = ({ isEdit, isFlashSaleCreate, discountCode, onBack, loading, uploading }) => (
+
+const DiscountFormHeader = ({ isEdit, isFlashSaleCreate, isFlashSaleMode, discountCode, onBack, loading, uploading }) => (
   <div className="rounded-2xl border border-gray-200 bg-white px-5 py-4 shadow-sm sm:px-6">
     <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
       <div className="flex min-w-0 items-start gap-3">
@@ -19,7 +17,7 @@ const DiscountFormHeader = ({ isEdit, isFlashSaleCreate, discountCode, onBack, l
         <div className="min-w-0">
           <h1 className="truncate text-lg font-semibold text-slate-900 sm:text-xl">
             {isEdit
-              ? `Chỉnh sửa mã: ${discountCode ?? ''}`
+              ? `${isFlashSaleMode ? 'Chỉnh sửa Flash Sale' : 'Chỉnh sửa mã'}: ${discountCode ?? ''}`
               : (isFlashSaleCreate ? 'Tạo Flash Sale mới' : 'Tạo mã giảm giá mới')}
           </h1>
         </div>
@@ -53,3 +51,9 @@ const DiscountFormHeader = ({ isEdit, isFlashSaleCreate, discountCode, onBack, l
 );
 
 export default DiscountFormHeader;
+
+
+
+
+
+

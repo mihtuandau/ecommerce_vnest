@@ -1,4 +1,4 @@
-import { MulterModuleOptions } from '@nestjs/platform-express/multer';
+﻿import { MulterModuleOptions } from '@nestjs/platform-express/multer';
 
 export const multerConfig: MulterModuleOptions = {
   limits: { fileSize: 5 * 1024 * 1024 },  
@@ -10,3 +10,8 @@ export const multerConfig: MulterModuleOptions = {
     }
   },
 };
+
+
+
+
+

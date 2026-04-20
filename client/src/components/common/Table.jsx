@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import { ArrowUp, ArrowDown } from "lucide-react";
 
 const Table = ({ children, className = "" }) => {
@@ -11,17 +11,14 @@ const Table = ({ children, className = "" }) => {
   );
 };
 
-// HEAD
 const TableHead = ({ children }) => (
   <thead className="bg-gradient-to-r from-gray-50 to-gray-100 border-b-2 border-gray-200">{children}</thead>
 );
 
-// BODY
 const TableBody = ({ children }) => (
   <tbody className="bg-white divide-y divide-gray-200">{children}</tbody>
 );
 
-// ROW
 const TableRow = ({ children, className = "", hover = true, ...props }) => (
   <tr
     className={`${
@@ -35,13 +32,12 @@ const TableRow = ({ children, className = "", hover = true, ...props }) => (
   </tr>
 );
 
-// HEADER CELL
 const TableHeader = ({
   children,
   className = "",
   sortable = false,
   onClick,
-  onSort, // Destructure onSort để không spread vào th
+  onSort, 
   sorted,
   sortDir,
   align = "left",
@@ -84,7 +80,6 @@ const TableHeader = ({
   );
 };
 
-// CELL
 const TableCell = ({ children, className = "", align, ...props }) => {
   const alignClass = align === "right" ? "text-right" : align === "center" ? "text-center" : "text-left";
   
@@ -95,7 +90,6 @@ const TableCell = ({ children, className = "", align, ...props }) => {
   );
 };
 
-// SKELETON LOADING
 const TableSkeleton = ({ rows = 5, cols = 5 }) => {
   return (
     <>
@@ -114,7 +108,6 @@ const TableSkeleton = ({ rows = 5, cols = 5 }) => {
   );
 };
 
-// EMPTY TABLE
 const TableEmpty = ({ children, icon: Icon }) => (
   <tr>
     <td colSpan="100" className="px-6 py-12">
@@ -130,7 +123,6 @@ const TableEmpty = ({ children, icon: Icon }) => (
   </tr>
 );
 
-// EXPORT
 Table.Head = TableHead;
 Table.Body = TableBody;
 Table.Row = TableRow;
@@ -140,3 +132,9 @@ Table.Skeleton = TableSkeleton;
 Table.Empty = TableEmpty;
 
 export default Table;
+
+
+
+
+
+

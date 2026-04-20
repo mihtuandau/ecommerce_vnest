@@ -1,4 +1,4 @@
-﻿// src/pages/AdminUserManagement.jsx
+﻿
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search, Plus } from "lucide-react";
@@ -20,7 +20,7 @@ import { useAuth } from "../../../contexts/AuthContext";
 
 const AdminUserManagement = () => {
   const navigate = useNavigate();
-  const { user: currentUser } = useAuth();
+  const { user: currentUser, hasPermission } = useAuth();
   const { data: users = [], isLoading, error, refetch } = useUsers();
   const createMutation = useCreateUser();
   const updateMutation = useUpdateUser();
@@ -28,6 +28,7 @@ const AdminUserManagement = () => {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
   const [modalState, setModalState] = useState({ type: null, data: null });
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -38,9 +39,10 @@ const AdminUserManagement = () => {
         user.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         user.email.toLowerCase().includes(searchQuery.toLowerCase());
       const matchRole = !roleFilter || user.role === roleFilter;
-      return matchSearch && matchRole;
+      const matchStatus = !statusFilter || user.status === statusFilter;
+      return matchSearch && matchRole && matchStatus;
     });
-  }, [users, searchQuery, roleFilter]);
+  }, [users, searchQuery, roleFilter, statusFilter]);
 
   const paginatedUsers = useMemo(() => {
     const start = (currentPage - 1) * itemsPerPage;
@@ -49,7 +51,7 @@ const AdminUserManagement = () => {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, roleFilter]);
+  }, [searchQuery, roleFilter, statusFilter]);
 
   const openModal = (type, data = null) => {
     setModalState({ type, data });
@@ -64,7 +66,7 @@ const AdminUserManagement = () => {
       await createMutation.mutateAsync(formData);
       closeModal();
     } catch (err) {
-      // Error handled by mutation
+
     }
   };
 
@@ -76,8 +78,15 @@ const AdminUserManagement = () => {
         updateData.name = formData.name.trim();
       }
 
-      if (typeof formData.password === "string" && formData.password.trim() !== "") {
+      if (
+        typeof formData.password === "string" &&
+        formData.password.trim() !== ""
+      ) {
         updateData.password = formData.password.trim();
+      }
+
+      if (formData.role) {
+        updateData.role = formData.role;
       }
 
       await updateMutation.mutateAsync({
@@ -86,7 +95,7 @@ const AdminUserManagement = () => {
       });
       closeModal();
     } catch (err) {
-      // Error handled by mutation
+
     }
   };
 
@@ -100,7 +109,7 @@ const AdminUserManagement = () => {
         try {
           await deleteMutation.mutateAsync(user.id);
         } catch (err) {
-          // Error handled by mutation
+
         }
       },
     });
@@ -110,8 +119,12 @@ const AdminUserManagement = () => {
     <div className="min-h-screen bg-gray-50/50 p-6">
       <div className="max-w-[1600px] mx-auto w-full">
         <div className="mb-8">
-          <h1 className="mb-1 text-2xl font-bold text-gray-900">Quản lý người dùng</h1>
-          <p className="text-sm text-gray-500">Quản lý tài khoản và thông tin người dùng trong hệ thống</p>
+          <h1 className="mb-1 text-2xl font-bold text-gray-900">
+            Quản lý người dùng
+          </h1>
+          <p className="text-sm text-gray-500">
+            Quản lý tài khoản và thông tin người dùng trong hệ thống
+          </p>
         </div>
 
         <div className="mb-6 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
@@ -131,13 +144,29 @@ const AdminUserManagement = () => {
                 options={[
                   { value: "", label: "Tất cả vai trò" },
                   { value: "CUSTOMER", label: "Khách hàng" },
+                  { value: "BAN_HANG", label: "Nhân viên bán hàng" },
+                  { value: "KHO", label: "Thủ kho" },
                   { value: "ADMIN", label: "Quản trị viên" },
                 ]}
               />
             </div>
-            <Button icon={Plus} onClick={() => openModal("create")}>
-              Thêm người dùng
-            </Button>
+            <div className="w-full md:w-48">
+              <Select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                options={[
+                  { value: "", label: "Tất cả trạng thái" },
+                  { value: "ACTIVE", label: "Đang hoạt động" },
+                  { value: "PENDING", label: "Chờ xác thực" },
+                  { value: "SUSPENDED", label: "Tạm khóa" },
+                ]}
+              />
+            </div>
+            {hasPermission('user.manage') && (
+              <Button icon={Plus} onClick={() => openModal("create")}>
+                Thêm người dùng
+              </Button>
+            )}
           </div>
         </div>
 
@@ -147,7 +176,11 @@ const AdminUserManagement = () => {
           ) : error ? (
             <div className="p-12 text-center">
               <p className="text-red-600">Lỗi: {String(error)}</p>
-              <Button onClick={() => refetch()} variant="secondary" className="mt-4">
+              <Button
+                onClick={() => refetch()}
+                variant="secondary"
+                className="mt-4"
+              >
                 Thử lại
               </Button>
             </div>
@@ -155,6 +188,7 @@ const AdminUserManagement = () => {
             <UserTable
               users={paginatedUsers}
               currentUserId={currentUser?.id}
+              hasPermission={hasPermission}
               currentPage={currentPage}
               itemsPerPage={itemsPerPage}
               total={filteredUsers.length}
@@ -167,15 +201,33 @@ const AdminUserManagement = () => {
         </div>
       </div>
 
-      <Modal isOpen={modalState.type === "create"} onClose={closeModal} title="Tạo người dùng mới">
+      <Modal
+        isOpen={modalState.type === "create"}
+        onClose={closeModal}
+        title="Tạo người dùng mới"
+      >
         <UserForm onSubmit={handleCreateUser} onCancel={closeModal} />
       </Modal>
 
-      <Modal isOpen={modalState.type === "edit"} onClose={closeModal} title="Chỉnh sửa người dùng">
-        <UserForm user={modalState.data} onSubmit={handleUpdateUser} onCancel={closeModal} />
+      <Modal
+        isOpen={modalState.type === "edit"}
+        onClose={closeModal}
+        title="Chỉnh sửa người dùng"
+      >
+        <UserForm
+          user={modalState.data}
+          onSubmit={handleUpdateUser}
+          onCancel={closeModal}
+        />
       </Modal>
     </div>
   );
 };
 
 export default AdminUserManagement;
+
+
+
+
+
+

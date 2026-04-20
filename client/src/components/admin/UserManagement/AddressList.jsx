@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import AddressCard from './AddressCard';
 
 const AddressList = ({ addresses, userId, onSetDefault, onDelete }) => {
@@ -26,3 +26,8 @@ const AddressList = ({ addresses, userId, onSetDefault, onDelete }) => {
 };
 
 export default AddressList;
+
+
+
+
+

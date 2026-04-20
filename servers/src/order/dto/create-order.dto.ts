@@ -1,4 +1,4 @@
-import { IsInt, IsPositive, IsOptional, IsString, IsArray, ValidateNested } from 'class-validator';
+﻿import { IsInt, IsPositive, IsOptional, IsString, IsArray, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -73,3 +73,8 @@ export class CreateOrderDto {
   @Type(() => OrderItemDto)
   items?: OrderItemDto[];
 }
+
+
+
+
+

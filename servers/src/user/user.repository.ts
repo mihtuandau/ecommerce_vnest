@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+﻿import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { User, Address, Prisma } from '@prisma/client';
+import { User, Address, Prisma, UserStatus } from '@prisma/client';
 
 
 @Injectable()
@@ -39,6 +39,10 @@ export class UserRepository {
     return this.prisma.user.delete({ where: { id } });
   }
 
+  async deleteMany(where: Prisma.UserWhereInput) {
+    return this.prisma.user.deleteMany({ where });
+  }
+
   async countOrdersByUser(userId: number): Promise<number> {
     return this.prisma.order.count({ where: { userId } });
   }
@@ -47,8 +51,8 @@ export class UserRepository {
     return this.prisma.user.update({
       where: { id },
       data: {
-        status: 'SUSPENDED' as any,
-      } as any,
+        status: UserStatus.SUSPENDED,
+      },
     });
   }
 
@@ -56,9 +60,9 @@ export class UserRepository {
     return this.prisma.user.update({
       where: { id },
       data: {
-        status: 'SUSPENDED' as any,
+        status: UserStatus.SUSPENDED,
         deletedAt: new Date(),
-      } as any,
+      },
     });
   }
 
@@ -125,4 +129,58 @@ export class UserRepository {
       },
     });
   }
+
+  async getPermissionsByRole(role: any): Promise<string[]> {
+    const rolePermissions = await this.prisma.permissionRole.findMany({
+      where: { role },
+      include: {
+        permission: true,
+      },
+    });
+
+    return rolePermissions.map((rp) => rp.permission.name);
+  }
+
+  async getAllPermissions() {
+    return this.prisma.permission.findMany({
+      orderBy: { name: 'asc' },
+    });
+  }
+
+  async getRolesWithPermissions() {
+
+    return this.prisma.permissionRole.findMany({
+      include: {
+        permission: true,
+      },
+    });
+  }
+
+  async updateRolePermissions(role: any, permissionIds: number[]) {
+
+    return this.prisma.$transaction(async (tx) => {
+      
+      await tx.permissionRole.deleteMany({
+        where: { role },
+      });
+
+      
+      const newPermissions = permissionIds.map((pId) => ({
+        role,
+        permissionId: pId,
+      }));
+
+      await tx.permissionRole.createMany({
+        data: newPermissions,
+      });
+
+      return { success: true };
+    });
+  }
 }
+
+
+
+
+
+

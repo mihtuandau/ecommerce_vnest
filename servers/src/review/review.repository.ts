@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+﻿import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Review, Prisma } from '@prisma/client';
 
@@ -122,9 +122,7 @@ export class ReviewRepository {
     return this.prisma.review.count({ where: { productId } });
   }
 
-  /**
-   * Update a review
-   */
+  
   async update(id: number, data: Prisma.ReviewUpdateInput) {
     return this.prisma.review.update({
       where: { id },
@@ -141,18 +139,14 @@ export class ReviewRepository {
     });
   }
 
-  /**
-   * Delete a review
-   */
+  
   async delete(id: number): Promise<Review> {
     return this.prisma.review.delete({
       where: { id },
     });
   }
 
-  /**
-   * Get average rating and count for a product
-   */
+  
   async getProductRatingStats(productId: number) {
     return this.prisma.review.aggregate({
       where: { productId },
@@ -161,9 +155,7 @@ export class ReviewRepository {
     });
   }
 
-  /**
-   * Update product rating statistics
-   */
+  
   async updateProductRating(productId: number, averageRating: number, reviewCount: number) {
     return this.prisma.product.update({
       where: { id: productId },
@@ -202,3 +194,9 @@ export class ReviewRepository {
     return this.prisma.review.count({ where });
   }
 }
+
+
+
+
+
+

@@ -1,76 +1,70 @@
-import { useMemo } from 'react';
+﻿import { useMemo } from 'react';
+import { Ruler } from 'lucide-react';
 
-const ProductOptions = ({
-  product,
-  selectedSize,
-  selectedColor,
-  onSizeSelect,
-  onColorSelect,
-}) => {
-  const getSizes = () => {
+const ProductOptions = ({ product, selectedSize, selectedColor, onSizeSelect, onColorSelect }) => {
+  const sizes = useMemo(() => {
     if (!product?.variants) return [];
-    return [...new Set(product.variants.map((v) => v.size).filter(Boolean))];
-  };
+    return [...new Set(product.variants.map(v => v.size).filter(Boolean))];
+  }, [product?.variants]);
 
-  const getColors = () => {
+  const colors = useMemo(() => {
     if (!product?.variants) return [];
-    return [...new Set(product.variants.map((v) => v.color).filter(Boolean))];
-  };
+    return [...new Set(product.variants.map(v => v.color).filter(Boolean))];
+  }, [product?.variants]);
 
-  const sizes = useMemo(() => getSizes(), [product?.variants]);
-  const colors = useMemo(() => getColors(), [product?.variants]);
-
-  // Get available sizes/colors with stock for the selected color/size
-  const getAvailableSizes = () => {
+  const availableSizes = useMemo(() => {
     if (!selectedColor || !product?.variants) return sizes;
     return sizes.filter(size =>
       product.variants.some(v => v.size === size && v.color === selectedColor && v.stock > 0)
     );
-  };
+  }, [selectedColor, product?.variants, sizes]);
 
-  const getAvailableColors = () => {
+  const availableColors = useMemo(() => {
     if (!selectedSize || !product?.variants) return colors;
     return colors.filter(color =>
       product.variants.some(v => v.color === color && v.size === selectedSize && v.stock > 0)
     );
-  };
+  }, [selectedSize, product?.variants, colors]);
 
-  const availableSizes = useMemo(() => getAvailableSizes(), [selectedColor, product?.variants, sizes]);
-  const availableColors = useMemo(() => getAvailableColors(), [selectedSize, product?.variants, colors]);
-
-  if (sizes.length === 0 && colors.length === 0) {
-    return null;
-  }
+  if (sizes.length === 0 && colors.length === 0) return null;
 
   return (
-    <div className="space-y-8 mb-10 pb-10 border-b border-gray-100">
-      {colors.length > 0 && (
-        <div>
-          <div className="text-xs text-gray-500 uppercase tracking-wide mb-4">
-            Màu sắc:{" "}
-            <span className="text-gray-900 font-medium">
-              {selectedColor || "Chọn màu"}
-            </span>
+    <div className="flex flex-col gap-4">
+
+      {}
+      {sizes.length > 0 && (
+        <div className="flex flex-col gap-2">
+          {}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-semibold text-gray-500">Chọn kích cỡ</span>
+              {selectedSize && (
+                <span className="text-xs font-bold text-gray-900">· {selectedSize}</span>
+              )}
+            </div>
+            <button className="flex items-center gap-1 text-xs text-blue-500 hover:underline">
+              <Ruler size={12} /> Hướng dẫn chọn size
+            </button>
           </div>
+          {}
           <div className="flex flex-wrap gap-2">
-            {colors.map((color) => {
-              const isAvailable = availableColors.includes(color);
+            {sizes.map(size => {
+              const isActive = selectedSize === size;
+              const isAvailable = availableSizes.includes(size);
               return (
                 <button
-                  key={color}
-                  onClick={() => onColorSelect(color)}
+                  key={size}
+                  onClick={() => onSizeSelect(size)}
                   disabled={!isAvailable}
-                  className={`px-5 py-2.5 text-xs uppercase tracking-wide transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#1a1a1a] ${
-                    selectedColor === color
-                      ? "bg-[#1a1a1a] !text-white hover:opacity-80"
+                  className={`h-9 min-w-[40px] px-3 rounded-lg text-sm font-semibold border transition-all duration-150 active:scale-95 ${
+                    isActive
+                      ? 'bg-gray-900 text-white border-gray-900 shadow-sm'
                       : isAvailable
-                      ? "bg-white text-gray-700 border border-gray-200 hover:border-gray-400 hover:opacity-80"
-                      : "bg-gray-100 text-gray-400 border border-gray-200 cursor-not-allowed opacity-50"
+                      ? 'bg-white text-gray-700 border-gray-300 hover:border-gray-900'
+                      : 'bg-gray-50 text-gray-300 border-gray-200 cursor-not-allowed line-through'
                   }`}
-                  aria-label={`Chọn màu ${color}${!isAvailable ? ' (hết hàng)' : ''}`}
-                  title={!isAvailable ? 'Tùy chọn này không có sẵn' : ''}
                 >
-                  {color}
+                  {size}
                 </button>
               );
             })}
@@ -78,38 +72,42 @@ const ProductOptions = ({
         </div>
       )}
 
-      {sizes.length > 0 && (
-        <div>
-          <div className="text-xs text-gray-500 uppercase tracking-wide mb-4">
-            Kích thước:{" "}
-            <span className="text-gray-900 font-medium">
-              {selectedSize || "Chọn kích thước"}
-            </span>
+      {}
+      {colors.length > 0 && (
+        <div className="flex flex-col gap-2">
+          {}
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-semibold text-gray-500">Màu sắc</span>
+            {selectedColor && (
+              <span className="text-xs font-bold text-gray-900">· {selectedColor}</span>
+            )}
           </div>
+          {}
           <div className="flex flex-wrap gap-2">
-            {sizes.map((size) => {
-              const isAvailable = availableSizes.includes(size);
-              const getSizeClass = () => {
-                if (size.length <= 2) return 'w-12 h-12';
-                if (size.length <= 4) return 'w-14 h-14 text-[10px]';
-                return 'px-3 h-12 text-[10px] min-w-fit';
-              };
+            {colors.map(color => {
+              const isActive = selectedColor === color;
+              const isAvailable = availableColors.includes(color);
+              const swatch =
+                color.toLowerCase() === 'white' ? '#ffffff' :
+                color.toLowerCase() === 'black' ? '#111111' : color;
               return (
                 <button
-                  key={size}
-                  onClick={() => onSizeSelect(size)}
+                  key={color}
+                  onClick={() => onColorSelect(color)}
                   disabled={!isAvailable}
-                  className={`${getSizeClass()} text-xs font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#1a1a1a] flex items-center justify-center ${
-                    selectedSize === size
-                      ? "bg-[#1a1a1a] !text-white hover:opacity-80"
+                  className={`h-9 px-3 rounded-lg text-sm font-semibold border transition-all duration-150 flex items-center gap-2 active:scale-95 ${
+                    isActive
+                      ? 'bg-gray-900 text-white border-gray-900 shadow-sm'
                       : isAvailable
-                      ? "bg-white text-gray-700 border border-gray-200 hover:border-gray-400 hover:opacity-80"
-                      : "bg-gray-100 text-gray-400 border border-gray-200 cursor-not-allowed opacity-50"
+                      ? 'bg-white text-gray-700 border-gray-300 hover:border-gray-900'
+                      : 'bg-gray-50 text-gray-300 border-gray-200 cursor-not-allowed opacity-50'
                   }`}
-                  aria-label={`Chọn kích thước ${size}${!isAvailable ? ' (hết hàng)' : ''}`}
-                  title={!isAvailable ? 'Tùy chọn này không có sẵn' : ''}
                 >
-                  {size}
+                  <span
+                    className="w-3 h-3 rounded-full border border-black/10 shrink-0"
+                    style={{ backgroundColor: swatch }}
+                  />
+                  {color}
                 </button>
               );
             })}
@@ -119,4 +117,10 @@ const ProductOptions = ({
     </div>
   );
 };
+
 export default ProductOptions;
+
+
+
+
+

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import Button from '../common/Button';
 import Input from '../common/Input';
 
@@ -107,7 +107,7 @@ const PersonalInfoForm = ({ currentUser, onSubmit, loading }) => {
           <button
             type="button"
             onClick={() => setIsEditing(true)}
-            className="px-6 py-3 border border-[#00a85a] hover:bg-[#00a85a] hover:text-white text-[#00a85a] transition-colors"
+            className="px-6 py-3 border border-black hover:bg-black hover:text-white text-black transition-colors"
           >
             Chỉnh sửa
           </button>
@@ -116,14 +116,14 @@ const PersonalInfoForm = ({ currentUser, onSubmit, loading }) => {
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-3 bg-[#00a85a] hover:bg-[#008f4d] text-white transition-colors disabled:opacity-50"
+              className="px-6 py-3 bg-black hover:bg-neutral-800 text-white transition-colors disabled:opacity-50"
             >
               {loading ? 'Đang lưu...' : 'Lưu thay đổi'}
             </button>
             <button
               type="button"
               onClick={handleCancel}
-              className="px-6 py-3 border border-gray-300 hover:border-[#00a85a] text-gray-900 transition-colors"
+              className="px-6 py-3 border border-gray-300 hover:border-black text-gray-900 transition-colors"
             >
               Hủy
             </button>
@@ -134,3 +134,8 @@ const PersonalInfoForm = ({ currentUser, onSubmit, loading }) => {
   );
 };
 export default PersonalInfoForm;
+
+
+
+
+

@@ -1,4 +1,4 @@
-import { notify } from './notification';
+﻿import { notify } from './notification';
 
 export const validateBulkVariant = (bulkData) => {
   if (!bulkData.color?.trim()) {
@@ -69,3 +69,9 @@ export const updateSingleVariant = (variant, product, existingVariants, editingV
     return [...existingVariants, newVariant];
   }
 };
+
+
+
+
+
+

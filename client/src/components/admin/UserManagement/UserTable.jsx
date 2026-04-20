@@ -2,7 +2,7 @@ import React from 'react';
 import { Table, Avatar, Tag, Button, Space, Tooltip, Empty } from 'antd';
 import { EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
 
-const UserTable = ({ users, currentUserId, currentPage = 1, itemsPerPage = 10, total = 0, onPageChange, onEdit, onDelete, onViewAddresses }) => {
+const UserTable = ({ users, currentUserId, hasPermission, currentPage = 1, itemsPerPage = 10, total = 0, onPageChange, onEdit, onDelete, onViewAddresses }) => {
   const getStatusMeta = (record) => {
     if (record.deletedAt) {
       return { color: 'default', label: 'Đã xóa mềm' };
@@ -10,6 +10,10 @@ const UserTable = ({ users, currentUserId, currentPage = 1, itemsPerPage = 10, t
 
     if (record.status === 'SUSPENDED') {
       return { color: 'orange', label: 'Tạm khóa' };
+    }
+
+    if (record.status === 'PENDING') {
+      return { color: 'blue', label: 'Chờ xác thực' };
     }
 
     return { color: 'green', label: 'Đang hoạt động' };
@@ -49,11 +53,19 @@ const UserTable = ({ users, currentUserId, currentPage = 1, itemsPerPage = 10, t
       key: 'role',
       width: 120,
       sorter: (a, b) => (a.role || '').localeCompare(b.role || ''),
-      render: (role) => (
-        <Tag color={role === 'ADMIN' ? 'red' : 'blue'}>
-          {role === 'ADMIN' ? 'Admin' : 'Khách hàng'}
-        </Tag>
-      ),
+      render: (role) => {
+        let color = 'blue';
+        let label = 'Khách hàng';
+        
+        switch(role) {
+          case 'ADMIN': color = 'red'; label = 'Admin'; break;
+          case 'KHO': color = 'emerald'; label = 'Thủ kho'; break;
+          case 'BAN_HANG': color = 'orange'; label = 'Bán hàng'; break;
+          default: color = 'blue'; label = 'Khách hàng';
+        }
+
+        return <Tag color={color}>{label}</Tag>;
+      },
     },
     {
       title: 'Trạng thái',
@@ -107,7 +119,7 @@ const UserTable = ({ users, currentUserId, currentPage = 1, itemsPerPage = 10, t
         </Space>
       ),
     },
-  ];
+  ].filter(col => col.key !== 'actions' || hasPermission?.('user.manage'));
 
   return (
     <Table
@@ -129,9 +141,15 @@ const UserTable = ({ users, currentUserId, currentPage = 1, itemsPerPage = 10, t
         emptyText: <Empty description="Không tìm thấy người dùng" />,
       }}
       scroll={{ x: 800 }}
-      className="[&_.ant-table-thead>tr>th]:bg-gray-50 [&_.ant-table-thead>tr>th]:font-medium [&_.ant-table-thead>tr>th]:text-gray-700 [&_.ant-table-thead>tr>th]:border-b [&_.ant-table-thead>tr>th]:border-gray-200 [&_.ant-table-thead>tr>th]:px-2 [&_.ant-table-thead>tr>th]:py-2 [&_.ant-table-tbody>tr>td]:px-2 [&_.ant-table-tbody>tr>td]:py-2"
+      className="[&_.ant-table-thead>tr>th]:bg-slate-50/50 [&_.ant-table-thead>tr>th]:font-semibold [&_.ant-table-thead>tr>th]:text-slate-800 [&_.ant-table-thead>tr>th]:border-b [&_.ant-table-thead>tr>th]:border-slate-100 [&_.ant-table-thead>tr>th]:px-2 [&_.ant-table-thead>tr>th]:py-4 [&_.ant-table-tbody>tr>td]:px-2 [&_.ant-table-tbody>tr>td]:py-3"
     />
   );
 };
 
 export default UserTable; 
+
+
+
+
+
+

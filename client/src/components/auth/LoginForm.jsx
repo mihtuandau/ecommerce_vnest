@@ -33,7 +33,7 @@ export default function LoginForm({ toggleForm }) {
 
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="email" className="block text-sm font-medium text-slate-800 mb-2">
             Email
           </label>
           <Input
@@ -48,7 +48,7 @@ export default function LoginForm({ toggleForm }) {
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="password" className="block text-sm font-medium text-slate-800 mb-2">
             Mật khẩu
           </label>
           <div className="relative">
@@ -82,17 +82,22 @@ export default function LoginForm({ toggleForm }) {
       </form>
 
       <p className="text-center text-sm">
-        <button onClick={() => toggleForm('forgotPassword')} className="text-[#00a85a] hover:text-[#008f4d]">
+        <button onClick={() => toggleForm('forgotPassword')} className="text-gray-900 hover:underline">
           Quên mật khẩu?
         </button>
       </p>
 
       <p className="text-center text-sm text-gray-600">
         Chưa có tài khoản?{' '}
-        <button onClick={() => toggleForm('register')} className="font-medium text-[#00a85a] hover:text-[#008f4d]">
+        <button onClick={() => toggleForm('register')} className="font-medium text-gray-900 hover:underline">
           Đăng ký ngay
         </button>
       </p>
     </div>
   );
 }
+
+
+
+
+

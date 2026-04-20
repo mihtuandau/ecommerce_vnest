@@ -1,18 +1,9 @@
-// src/order/order.helper.ts
+
 import { BadRequestException } from '@nestjs/common';
 
-/**
- * Pure utility functions for order operations
- * No dependency injection - just pure functions
- */
-
-/**
- * Helper to serialize order (convert BigInt in payment to Number)
- */
 export function serializeOrder(order: any) {
   if (!order) return null;
-  
-  // If order has payment relation, serialize payment BigInt fields
+
   if (order.payment) {
     return {
       ...order,
@@ -28,23 +19,17 @@ export function serializeOrder(order: any) {
   return order;
 }
 
-/**
- * Generate unique order code
- */
 export async function generateOrderCode(checkExistsFn: (code: string) => Promise<any>): Promise<string> {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   let code = '';
-  
-  // Generate format: ORD-XXXXXX (ORD + 6 random chars)
+
   code = 'ORD-';
   for (let i = 0; i < 6; i++) {
     code += chars.charAt(Math.floor(Math.random() * chars.length));
   }
-  
-  // Check if code exists
+
   const existing = await checkExistsFn(code);
-  
-  // Recursively generate new code if exists
+
   if (existing) {
     return generateOrderCode(checkExistsFn);
   }
@@ -52,20 +37,28 @@ export async function generateOrderCode(checkExistsFn: (code: string) => Promise
   return code;
 }
 
-/**
- * Calculate order totals with discount
- * - Discount chỉ áp trên subtotal (items), không giảm phí ship
- * - Có cap bởi maxDiscountAmount nếu được set
- */
 export function calculateOrderTotal(
   items: Array<{quantity: number, price: number}>,
-  shippingFee: number = 0,
+  providedShippingFee?: number,
   discount?: {percentage?: number, fixedAmount?: number, maxDiscountAmount?: number}
 ) {
   const totalItems = items.reduce((sum, item) => sum + item.quantity * item.price, 0);
+  
+  // Logic phí ship: 30k mặc định, miễn phí nếu trên 500k
+  let shippingFee = 30000;
+  if (totalItems >= 500000) {
+    shippingFee = 0;
+  }
+
+  // Nếu có phí ship truyền vào từ DTO (và khác undefined), ta có thể cân nhắc dùng nó
+  // Nhưng ưu tiên quy tắc 500k của cửa hàng
+  if (providedShippingFee !== undefined && providedShippingFee !== null) {
+    // Nếu đơn hàng >= 500k thì bắt buộc FREE, ngược lại dùng phí cung cấp (hoặc mặc định 30k)
+    shippingFee = totalItems >= 500000 ? 0 : Number(providedShippingFee);
+  }
+
   const taxAmount = 0;
 
-  // Tính số tiền được giảm (chỉ áp trên subtotal, không bao gồm ship)
   let discountAmount = 0;
   if (discount) {
     if (discount.percentage) {
@@ -73,11 +66,11 @@ export function calculateOrderTotal(
     } else if (discount.fixedAmount) {
       discountAmount = discount.fixedAmount;
     }
-    // Cap bởi maxDiscountAmount (nếu có)
+
     if (discount.maxDiscountAmount && discountAmount > discount.maxDiscountAmount) {
       discountAmount = discount.maxDiscountAmount;
     }
-    // Không được giảm nhiều hơn chính subtotal
+
     discountAmount = Math.min(discountAmount, totalItems);
   }
 
@@ -85,20 +78,15 @@ export function calculateOrderTotal(
   const discountedTotal = total - discountAmount;
 
   return {
-    totalItems, // subtotal
+    totalItems, 
     shippingFee,
     taxAmount,
     discountAmount,
-    total, // original total including shipping
-    discountedTotal, // final total after discount
+    total, 
+    discountedTotal, 
   };
 }
 
-/**
- * Validate discount code
- * @param discount - discount record from DB
- * @param subtotal - optional items subtotal (không bao gồm phí ship) để check minOrderAmount
- */
 export function validateDiscount(discount: any, subtotal?: number, currentUsageCount?: number) {
   if (!discount) {
     throw new BadRequestException('Mã giảm giá không tồn tại');
@@ -137,15 +125,12 @@ export function validateDiscount(discount: any, subtotal?: number, currentUsageC
   return true;
 }
 
-/**
- * Prepare order data for database
- */
 export function prepareOrderData(
   orderCode: string,
   userId: number | null,
   dto: any,
   items: Array<{variantId: number, quantity: number, price: number, productName?: string}>,
-  totals: { subtotal: number, discountAmount: number, total: number },
+  totals: { subtotal: number, shippingFee: number, discountAmount: number, total: number },
   discount: any
 ) {
   const orderData: any = {
@@ -157,9 +142,11 @@ export function prepareOrderData(
     guestEmail: dto.guestEmail || null,
     guestPhone: dto.guestPhone || null,
     subtotal: totals.subtotal,
+    shippingFee: totals.shippingFee,
     discountAmount: totals.discountAmount,
     total: totals.total,
     taxAmount: 0,
+    paymentMethod: dto.paymentMethod || 'CASH',
     status: 'PENDING',
     orderItems: {
       create: items.map((item) => ({
@@ -171,7 +158,6 @@ export function prepareOrderData(
     },
   };
 
-  // Connect relations instead of direct IDs
   if (userId) {
     orderData.user = { connect: { id: userId } };
   }
@@ -191,9 +177,6 @@ export function prepareOrderData(
   return orderData;
 }
 
-/**
- * Prepare order details for email
- */
 export function prepareOrderEmailDetails(order: any) {
   const customerEmail = order.guestEmail || order.user?.email;
   const shipping = order.shippingSnapshot as any;
@@ -212,6 +195,7 @@ export function prepareOrderEmailDetails(order: any) {
         price: item.price,
       })),
       total: order.total,
+      shippingFee: order.shippingFee,
       shippingAddress: shipping?.addressString || 'N/A',
     }
   };

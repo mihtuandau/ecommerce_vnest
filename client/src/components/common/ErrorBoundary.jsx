@@ -1,4 +1,4 @@
-
+﻿
 import React from 'react';
 import { Result, Button } from 'antd';
 
@@ -13,7 +13,7 @@ class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error('Error Boundary caught:', error, errorInfo);
+
   }
 
   render() {
@@ -39,3 +39,9 @@ class ErrorBoundary extends React.Component {
 }
 
 export default ErrorBoundary;
+
+
+
+
+
+

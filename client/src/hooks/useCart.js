@@ -1,4 +1,4 @@
-import { useSelector, useDispatch } from 'react-redux';
+﻿import { useSelector, useDispatch } from 'react-redux';
 import { useCallback, useMemo, useState, useEffect } from 'react';
 import { useAuth, useAuthLoading } from './useAuth';
 import {
@@ -104,3 +104,9 @@ export const useCart = () => {
 
 export const useCartCount = () => useSelector(selectCartCount);
 export const useCartTotal = () => useSelector(selectCartTotal);
+
+
+
+
+
+

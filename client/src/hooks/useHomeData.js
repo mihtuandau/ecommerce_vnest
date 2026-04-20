@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+﻿import { useQuery } from '@tanstack/react-query';
 import homeService from '../services/homeService';
 
 export const useHomeData = () => {
@@ -12,3 +12,9 @@ export const useHomeData = () => {
     gcTime: 10 * 60 * 1000, 
   });
 };
+
+
+
+
+
+

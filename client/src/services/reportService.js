@@ -1,15 +1,15 @@
-import apiService from './apiService';
+﻿import apiService from './apiService';
 import axiosClient from '../config/apiClient';
 
 const reportService = {
   getRevenueReport: async (params = {}) => {
     try {
-      console.log('Calling /reports/revenue with params:', params);
+
       const response = await apiService.get('/reports/revenue', params);
-      console.log('Revenue report response:', response);
+
       return response;
     } catch (error) {
-      console.error('Revenue report error:', error);
+
       throw error;
     }
   },
@@ -84,3 +84,9 @@ const reportService = {
 };
 
 export default reportService;
+
+
+
+
+
+

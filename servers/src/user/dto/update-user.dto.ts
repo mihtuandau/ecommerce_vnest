@@ -1,4 +1,4 @@
-import { IsString, IsOptional, MinLength, IsEmail, IsEnum } from 'class-validator';
+﻿import { IsString, IsOptional, MinLength, IsEmail, IsEnum } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Role } from '@prisma/client';
 
@@ -33,11 +33,17 @@ export class UpdateUserDto {
 
   @ApiProperty({
     example: 'ADMIN',
-    description: 'Vai trò mới (ADMIN hoặc CUSTOMER, chỉ ADMIN được phép đổi)',
+    description: 'Vai trò mới (ADMIN, KHO, BAN_HANG, CUSTOMER)',
     required: false,
-    enum: ['CUSTOMER', 'ADMIN'],
+    enum: Role,
   })
   @IsOptional()
-  @IsEnum(['CUSTOMER', 'ADMIN'])
+  @IsEnum(Role)
   role?: Role;
 }
+
+
+
+
+
+

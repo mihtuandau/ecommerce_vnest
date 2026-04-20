@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect, useContext } from 'react';
+﻿import { createContext, useState, useEffect, useContext } from 'react';
 import authService from '../services/authService';
 import { notify } from '../utils/notification';
 
@@ -26,7 +26,6 @@ export const AuthProvider = ({ children }) => {
 
     initAuth();
 
-    // Lắng nghe sự kiện token hết hạn (từ axios interceptor)
     const handleAuthExpired = () => {
       setUser(null);
       localStorage.removeItem('access_token');
@@ -39,12 +38,33 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       const data = await authService.register(userData);
-      setUser(data.user);
-      
-      notify.success('Đăng ký thành công!');
+
+      notify.success(data.message || 'Mã xác thực đã được gửi tới email của bạn');
       return data;
     } catch (error) {
       notify.error(error.response?.data?.message || 'Đăng ký thất bại');
+      throw error;
+    }
+  };
+
+  const verifyOtp = async (email, code) => {
+    try {
+      const data = await authService.verifyOtp(email, code);
+      notify.success(data.message || 'Xác thực tài khoản thành công!');
+      return data;
+    } catch (error) {
+      notify.error(error.response?.data?.message || 'Xác thực thất bại');
+      throw error;
+    }
+  };
+
+  const resendOtp = async (email) => {
+    try {
+      const data = await authService.resendOtp(email);
+      notify.success(data.message || 'Mã xác thực mới đã được gửi');
+      return data;
+    } catch (error) {
+      notify.error(error.response?.data?.message || 'Gửi lại mã thất bại');
       throw error;
     }
   };
@@ -113,6 +133,11 @@ export const AuthProvider = ({ children }) => {
 
   const isAdmin = () => user?.role === 'ADMIN';
 
+  const hasPermission = (permissionName) => {
+    if (isAdmin()) return true; 
+    return user?.permissions?.includes(permissionName) || false;
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -120,6 +145,8 @@ export const AuthProvider = ({ children }) => {
         setUser,
         loading,
         register,
+        verifyOtp,
+        resendOtp,
         login,
         logout,
         handleLogout,
@@ -127,6 +154,7 @@ export const AuthProvider = ({ children }) => {
         refreshUser,
         changePassword,
         isAdmin,
+        hasPermission,
         isAuthenticated: !!user
       }}
     >
@@ -144,3 +172,8 @@ export const useAuth = () => {
 };
 
 export default AuthContext;
+
+
+
+
+

@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+﻿import { useNavigate } from 'react-router-dom';
 import { FaTimesCircle } from 'react-icons/fa';
 
 
@@ -22,7 +22,7 @@ const PaymentCancel = () => {
         <div className="space-y-3">
           <button
             onClick={() => navigate('/cart')}
-            className="w-full bg-[#00a85a] text-white px-6 py-3 hover:bg-[#008f4d] transition-colors font-normal text-sm"
+            className="w-full bg-black text-white px-6 py-3 hover:bg-neutral-800 transition-colors font-normal text-sm"
           >
             Quay Lại Giỏ Hàng
           </button>
@@ -44,3 +44,8 @@ const PaymentCancel = () => {
   );
 };
 export default PaymentCancel;
+
+
+
+
+

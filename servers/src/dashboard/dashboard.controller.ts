@@ -1,9 +1,10 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+﻿import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { ApiTags, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../common/guards/auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
-import { Roles } from '../common/decorators/roles.decorator';
 import { DashboardService } from './dashboard.service';
+import { Permissions } from '../common/decorators/permissions.decorator';
+import { ReportQueryDto } from '../report/dto/report-query.dto';
 
 @ApiTags('Dashboard')
 @ApiBearerAuth('Authorization')
@@ -13,28 +14,37 @@ export class DashboardController {
   constructor(private dashboardService: DashboardService) {}
 
   @Get('stats')
-  @Roles('ADMIN')
+  @Permissions('report.view')
   getStats() {
     return this.dashboardService.getStats();
   }
 
   @Get('revenue')
-  @Roles('ADMIN')
-  getRevenue() {
-    return this.dashboardService.getRevenueAnalytics();
+  @Permissions('report.view')
+  @ApiQuery({ name: 'startDate', required: false })
+  @ApiQuery({ name: 'endDate', required: false })
+  @ApiQuery({ name: 'year', required: false, type: Number })
+  getRevenue(@Query() query: ReportQueryDto) {
+    return this.dashboardService.getRevenueAnalytics(query);
   }
 
   @Get('recent-orders')
-  @Roles('ADMIN')
+  @Permissions('report.view')
   getRecentOrders() {
     return this.dashboardService.getRecentOrders();
   }
 
   @Get('top-products')
-  @Roles('ADMIN')
+  @Permissions('report.view')
   getTopProducts() {
     return this.dashboardService.getTopProducts();
   }
 }
+
+
+
+
+
+
 
 

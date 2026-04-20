@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+﻿import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import bannerService from '../services/bannerService';
 import { notify } from '../utils/notification';
 
@@ -10,7 +10,6 @@ export const useBanners = (activeOnly = false) => {
   });
 };
 
-// Hook tạo banner
 export const useCreateBanner = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -79,3 +78,9 @@ export const useToggleBannerStatus = () => {
     }
   });
 };
+
+
+
+
+
+

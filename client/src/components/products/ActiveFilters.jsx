@@ -1,74 +1,78 @@
-import { FaTimes } from 'react-icons/fa';
+﻿import { FaTimes } from "react-icons/fa";
 
-const ActiveFilters = ({ 
-  filters, 
-  categories, 
+const ActiveFilters = ({
+  filters,
+  categories,
   priceRange,
   onRemoveFilter,
-  onClearAll 
+  onClearAll,
 }) => {
   const activeFilters = [];
 
   if (filters.categoryId) {
-    const category = categories.find(c => c.id == filters.categoryId);
+    const category = categories.find((c) => c.id == filters.categoryId);
     if (category) {
       activeFilters.push({
-        type: 'category',
+        type: "category",
         label: `Danh mục: ${category.name}`,
-        key: 'categoryId'
+        key: "categoryId",
       });
     }
   }
 
   if (filters.minPrice || filters.maxPrice) {
-    const min = filters.minPrice ? parseFloat(filters.minPrice) : priceRange.minPrice;
-    const max = filters.maxPrice ? parseFloat(filters.maxPrice) : priceRange.maxPrice;
-    
+    const min = filters.minPrice
+      ? parseFloat(filters.minPrice)
+      : priceRange.minPrice;
+    const max = filters.maxPrice
+      ? parseFloat(filters.maxPrice)
+      : priceRange.maxPrice;
+
     if (min > priceRange.minPrice || max < priceRange.maxPrice) {
       activeFilters.push({
-        type: 'price',
-        label: `Giá sản phẩm: ${min.toLocaleString('vi-VN')}₫ - ${max.toLocaleString('vi-VN')}₫`,
-        key: 'price'
+        type: "price",
+        label: `Giá sản phẩm: ${min.toLocaleString("vi-VN")}₫ - ${max.toLocaleString("vi-VN")}₫`,
+        key: "price",
       });
     }
   }
 
   if (filters.minRating) {
     const ratingLabels = {
-      '5': '5 sao',
-      '4': '4 sao trở lên',
-      '3': '3 sao trở lên'
+      5: "5 sao",
+      4: "4 sao trở lên",
+      3: "3 sao trở lên",
     };
     activeFilters.push({
-      type: 'rating',
+      type: "rating",
       label: `Đánh giá: ${ratingLabels[filters.minRating] || filters.minRating}`,
-      key: 'minRating'
+      key: "minRating",
     });
   }
 
   if (filters.stockStatus) {
     const stockLabels = {
-      'inStock': 'Còn hàng',
-      'outOfStock': 'Hết hàng'
+      inStock: "Còn hàng",
+      outOfStock: "Hết hàng",
     };
     activeFilters.push({
-      type: 'stock',
+      type: "stock",
       label: `Tình trạng: ${stockLabels[filters.stockStatus]}`,
-      key: 'stockStatus'
+      key: "stockStatus",
     });
   }
 
-  if (filters.sortBy && filters.sortBy !== 'newest') {
+  if (filters.sortBy && filters.sortBy !== "newest") {
     const sortLabels = {
-      'price-asc': 'Giá: Thấp → Cao',
-      'price-desc': 'Giá: Cao → Thấp',
-      'sold': 'Bán chạy',
-      'name-asc': 'Tên: A-Z'
+      "price-asc": "Giá: Thấp → Cao",
+      "price-desc": "Giá: Cao → Thấp",
+      sold: "Bán chạy",
+      "name-asc": "Tên: A-Z",
     };
     activeFilters.push({
-      type: 'sort',
+      type: "sort",
       label: `Sắp xếp: ${sortLabels[filters.sortBy]}`,
-      key: 'sortBy'
+      key: "sortBy",
     });
   }
 
@@ -76,8 +80,6 @@ const ActiveFilters = ({
 
   return (
     <div className="flex flex-wrap items-center gap-2 rounded-lg p-4">
-      
-      
       {activeFilters.map((filter, index) => (
         <button
           key={index}
@@ -100,3 +102,9 @@ const ActiveFilters = ({
 };
 
 export default ActiveFilters;
+
+
+
+
+
+
