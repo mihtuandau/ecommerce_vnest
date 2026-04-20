@@ -44,17 +44,12 @@ export function calculateOrderTotal(
 ) {
   const totalItems = items.reduce((sum, item) => sum + item.quantity * item.price, 0);
   
-  // Logic phí ship: 30k mặc định, miễn phí nếu trên 500k
-  let shippingFee = 30000;
+  // Logic phí ship: Ưu tiên phí ship truyền vào (từ GHN), nếu không có thì mặc định 30k
+  let shippingFee = providedShippingFee !== undefined ? Number(providedShippingFee) : 30000;
+  
+  // Miễn phí nếu trên 500k (Quy tắc riêng của shop)
   if (totalItems >= 500000) {
     shippingFee = 0;
-  }
-
-  // Nếu có phí ship truyền vào từ DTO (và khác undefined), ta có thể cân nhắc dùng nó
-  // Nhưng ưu tiên quy tắc 500k của cửa hàng
-  if (providedShippingFee !== undefined && providedShippingFee !== null) {
-    // Nếu đơn hàng >= 500k thì bắt buộc FREE, ngược lại dùng phí cung cấp (hoặc mặc định 30k)
-    shippingFee = totalItems >= 500000 ? 0 : Number(providedShippingFee);
   }
 
   const taxAmount = 0;
@@ -138,6 +133,10 @@ export function prepareOrderData(
     shippingSnapshot: {
       addressString: dto.shippingAddress || null,
       ...(dto.shippingInfo || {}),
+      // Đảm bảo có cả 2 cách gọi để tương thích ngược
+      provinceCode: dto.shippingInfo?.provinceCode || dto.shippingInfo?.cityCode || null,
+      districtCode: dto.shippingInfo?.districtCode || null,
+      wardCode: dto.shippingInfo?.wardCode || null,
     },
     guestEmail: dto.guestEmail || null,
     guestPhone: dto.guestPhone || null,

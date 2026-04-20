@@ -13,12 +13,15 @@ import {
   OrderItemsList,
   OrderPriceSummary,
 } from "../../../components/order";
+import TrackingTimeline from "../../../components/order/TrackingTimeline";
+import ghnService from "../../../services/ghnService";
 
 const OrderDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [trackingLogs, setTrackingLogs] = useState([]);
 
   useEffect(() => {
     if (id) {
@@ -43,6 +46,13 @@ const OrderDetailPage = () => {
       };
 
       setOrder(transformedOrder);
+
+      // Lấy hành trình GHN nếu có
+      if (transformedOrder.shippingCode) {
+        ghnService.getOrderDetail(transformedOrder.shippingCode).then(res => {
+          if (res?.data?.log) setTrackingLogs(res.data.log);
+        }).catch(err => console.error("Lỗi lấy hành trình GHN:", err));
+      }
     } catch (error) {
 
       notify.error("Không tìm thấy hoặc không thể tải thông tin đơn hàng");
@@ -126,6 +136,31 @@ const OrderDetailPage = () => {
           <div className="space-y-6">
             <div className="grid grid-cols-1 gap-6">
               <OrderShippingInfo order={order} />
+              
+              <TrackingTimeline logs={trackingLogs} />
+
+              {order.shippingCode && (
+                <div className="border border-orange-100 bg-orange-50/50 p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 bg-[#FF6433] rounded-full flex items-center justify-center text-white shadow-sm">
+                      <FaBox size={18} />
+                    </div>
+                    <div>
+                      <div className="text-[10px] font-bold uppercase tracking-wider text-orange-600">Đối tác vận chuyển: GHN</div>
+                      <div className="text-sm font-semibold text-slate-800">Mã vận đơn: {order.shippingCode}</div>
+                    </div>
+                  </div>
+                  <a 
+                    href={`https://5sao.ghn.dev/order/tracking-detail?order_code=${order.shippingCode}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-6 py-2 bg-white border border-orange-200 text-orange-600 text-[11px] font-bold uppercase tracking-widest hover:bg-orange-50 transition-all shadow-sm"
+                  >
+                    Tra cứu hành trình đơn hàng
+                  </a>
+                </div>
+              )}
+
               <OrderItemsList items={order.items} />
               <OrderPriceSummary order={order} />
             </div>

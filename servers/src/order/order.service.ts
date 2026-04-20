@@ -98,4 +98,8 @@ export class OrderService {
   async lookupGuestOrder(orderCode: string, contact: string): Promise<any> {
     return this.orderManagement.lookupGuestOrder(orderCode, contact);
   }
+
+  async syncToGHN(id: number): Promise<any> {
+    return this.orderManagement.syncToGHN(id);
+  }
 }

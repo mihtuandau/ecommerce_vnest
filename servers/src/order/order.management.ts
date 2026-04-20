@@ -6,6 +6,7 @@ import { PaymentService } from '../payment/payment.service';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { ApplyDiscountDto } from './dto/apply-discount.dto';
 import * as OrderHelper from './order.helper';
+import { GHNService } from '../ghn/ghn.service';
 
 @Injectable()
 export class OrderManagement {
@@ -15,6 +16,7 @@ export class OrderManagement {
     private repository: OrderRepository,
     private cacheService: OrderCache,
     private paymentService: PaymentService,
+    private ghnService: GHNService,
   ) {}
 
   async update(id: number, dto: UpdateOrderDto): Promise<any> {
@@ -240,6 +242,77 @@ export class OrderManagement {
       this.logger.warn(` Order ${oldOrder.id} is ALREADY DELIVERED, SKIPPING soldCount increment`);
     } else {
 
+    }
+  }
+
+  /**
+   * Đồng bộ đơn hàng sang GHN để lấy mã vận đơn
+   */
+  async syncToGHN(id: number): Promise<any> {
+    const order = await this.repository.findById(id);
+    if (!order) throw new NotFoundException('Không tìm thấy đơn hàng');
+    if (order.shippingCode) throw new BadRequestException('Đơn hàng này đã được tạo vận đơn trước đó');
+
+    const address = order.address || (order.shippingSnapshot as any);
+    const dCode = address.districtCode;
+    const wCode = address.wardCode;
+    
+    if (!address || !dCode || !wCode) {
+      throw new BadRequestException('Địa chỉ giao hàng không đầy đủ thông tin mã vùng GHN (Quận/Huyện hoặc Phường/Xã)');
+    }
+
+    const totalWeight = order.orderItems.reduce((sum, item) => sum + (item.weight || 200) * item.quantity, 0);
+    const maxLength = Math.max(...order.orderItems.map(i => (i.variantSnapshot as any)?.length || 10));
+    const maxWidth = Math.max(...order.orderItems.map(i => (i.variantSnapshot as any)?.width || 10));
+    const totalHeight = order.orderItems.reduce((sum, i) => sum + ((i.variantSnapshot as any)?.height || 5) * i.quantity, 0);
+
+    // Luôn để Shop trả phí cho GHN (1: Shop, 2: Khách)
+    // Vì phí ship đã được tính vào tổng tiền (total) và thu từ khách qua COD rồi.
+    const paymentTypeId = 1;
+
+    const ghnData = {
+      payment_type_id: paymentTypeId,
+      note: "Hàng TMĐT E-Co Vnest",
+      required_note: "KHONGCHOXEMHANG",
+      client_order_code: order.orderCode,
+      to_name: address.fullName || "Khách hàng",
+      to_phone: address.phone || order.guestPhone || "0900000000",
+      to_address: address.street || "Địa chỉ khách hàng",
+      to_ward_code: address.wardCode,
+      to_district_id: Number(address.districtCode),
+      cod_amount: order.payment?.method === 'CASH' ? Math.round(order.total) : 0,
+      content: `Đơn hàng ${order.orderCode}`,
+      weight: Math.min(totalWeight, 30000),
+      length: Math.min(maxLength, 150),
+      width: Math.min(maxWidth, 150),
+      height: Math.min(totalHeight, 150),
+      service_type_id: 2, // Giao hàng chuẩn/lẻ
+      items: order.orderItems.map(item => ({
+        name: item.productName,
+        quantity: item.quantity,
+        weight: item.weight || 200
+      }))
+    };
+
+    try {
+      const result = await this.ghnService.createOrder(ghnData);
+      const shippingCode = result.data.order_code;
+
+      const updated = await this.repository.update(id, {
+        shippingCode: shippingCode,
+        status: 'SHIPPED', // Tự động chuyển trạng thái đơn hàng sang SHIPPED
+      } as any);
+
+      await this.cacheService.clearRelatedCaches(id, order.userId || undefined);
+      return {
+        message: 'Đã tạo vận đơn GHN thành công',
+        shippingCode: shippingCode,
+        ghnResponse: result.data,
+        updatedOrder: updated
+      };
+    } catch (error) {
+      this.logger.error('Lỗi khi đồng bộ đơn sang GHN:', error.response?.data || error.message);
+      throw new BadRequestException('Không thể tạo vận đơn trên hệ thống GHN: ' + (error.response?.data?.message || error.message));
     }
   }
 }

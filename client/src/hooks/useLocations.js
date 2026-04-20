@@ -15,7 +15,11 @@ export const useLocations = (cityCode, districtCode) => {
   }, []);
 
   useEffect(() => {
-    if (cityCode) locationService.getDistrictsByProvince(cityCode).then(d => setDistricts(d || []));
+    console.log('useLocations - cityCode changed:', cityCode);
+    if (cityCode) locationService.getDistrictsByProvince(cityCode).then(d => {
+      console.log('Districts loaded:', d.length);
+      setDistricts(d || []);
+    });
     else { setDistricts([]); setWards([]); }
   }, [cityCode]);
 

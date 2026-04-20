@@ -38,6 +38,7 @@ export class OrderController {
   @Post('guest')
   createGuestOrder(@Body() body: CreateOrderDto) {
 
+
     return this.orderService.create(null, body);
   }
 
@@ -129,6 +130,14 @@ export class OrderController {
       throw new Error('Confirm deletion required');
     }
     return this.orderService.remove(+id);
+  }
+
+  @Post(':id/ghn')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Permissions('order.manage')
+  @ApiBearerAuth('Authorization')
+  syncToGHN(@Param('id') id: string) {
+    return this.orderService.syncToGHN(+id);
   }
 }
 

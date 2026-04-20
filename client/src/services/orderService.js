@@ -1,4 +1,4 @@
-﻿import apiService from './apiService';
+import apiService from './apiService';
 import { ORDER_ENDPOINTS } from '../config/apiConstants';
 
 const orderService = {
@@ -48,6 +48,10 @@ const orderService = {
 
   cancelOrder: async (id) => {
     return await apiService.put(ORDER_ENDPOINTS.CANCEL(id));
+  },
+
+  syncToGHN: async (id) => {
+    return await apiService.post(`${ORDER_ENDPOINTS.BY_ID(id)}/ghn`);
   },
 
   getStats: async () => {

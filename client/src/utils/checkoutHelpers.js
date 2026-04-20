@@ -1,4 +1,4 @@
-﻿import { notify } from './notification';
+import { notify } from './notification';
 
 export const validateEmail = (email) => {
   const emailRegex = /^[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -99,6 +99,14 @@ export const buildOrderData = (cartItems, shippingInfo, paymentMethod, isGuest, 
     shippingInfo: {
       fullName: shippingInfo.fullName,
       phone: shippingInfo.phone,
+      address: shippingInfo.address,
+      ward: shippingInfo.ward,
+      wardCode: shippingInfo.wardCode,
+      district: shippingInfo.district,
+      districtCode: shippingInfo.districtCode,
+      city: shippingInfo.city,
+      cityCode: shippingInfo.cityCode,
+      provinceCode: shippingInfo.cityCode, // Đồng bộ với backend
       note: shippingInfo.note || "",
     },
     paymentMethod,

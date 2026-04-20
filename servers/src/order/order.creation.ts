@@ -8,6 +8,8 @@ import { MailService } from '../mail/mail.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import * as OrderHelper from './order.helper';
 import { PrismaService } from '../prisma/prisma.service';
+import { GHNService } from '../ghn/ghn.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class OrderCreation {
@@ -20,6 +22,8 @@ export class OrderCreation {
     private paymentService: PaymentService,
     private mailService: MailService,
     private prisma: PrismaService,
+    private ghnService: GHNService,
+    private configService: ConfigService,
   ) {}
 
   async create(userId: number | null, dto: CreateOrderDto): Promise<any> {
@@ -70,7 +74,18 @@ export class OrderCreation {
       fixedAmount: useAutoApply ? autoApplySaving : 0
     };
 
-    const totals = OrderHelper.calculateOrderTotal(finalItems, dto.shippingFee || 30000, finalDiscount ? discountData : undefined);
+    // 5. Tính phí vận chuyển qua GHN
+    let ghnShippingFee = dto.shippingFee || 30000;
+    try {
+      const shippingFeeResult = await this.calculateGHNFee(dto, finalItems);
+      if (shippingFeeResult) {
+        ghnShippingFee = shippingFeeResult;
+      }
+    } catch (error) {
+      this.logger.warn('Could not calculate GHN fee, using default or provided fee', error.message);
+    }
+
+    const totals = OrderHelper.calculateOrderTotal(finalItems, ghnShippingFee, finalDiscount ? discountData : undefined);
 
     const orderCode = await OrderHelper.generateOrderCode(
       (code) => this.repository.findByCode(code)
@@ -118,7 +133,7 @@ export class OrderCreation {
     const variantIds = items.map(item => item.variantId);
     const variants = await this.prisma.productVariant.findMany({
       where: { id: { in: variantIds } },
-      include: { product: { select: { name: true } } }
+      include: { product: { select: { name: true, category: { select: { name: true } } } } }
     });
     
     if (!variants || variants.length === 0) {
@@ -136,7 +151,12 @@ export class OrderCreation {
         variantId: item.variantId,
         quantity: item.quantity,
         price: variant.price,
-        productName: variant.product?.name || 'Sản phẩm'
+        productName: variant.product?.name || 'Sản phẩm',
+        weight: variant.weight,
+        length: variant.length,
+        width: variant.width,
+        height: variant.height,
+        category: variant.product?.category?.name
       };
     });
   }
@@ -151,8 +171,58 @@ export class OrderCreation {
       variantId: item.variantId,
       quantity: item.quantity,
       price: item.variant?.price || 0,
-      productName: item.variant?.product?.name || 'Sản phẩm'
+      productName: item.variant?.product?.name || 'Sản phẩm',
+      weight: item.variant?.weight,
+      length: item.variant?.length,
+      width: item.variant?.width,
+      height: item.variant?.height,
+      category: item.variant?.product?.category?.name
     }));
+  }
+
+  private async calculateGHNFee(dto: CreateOrderDto, items: any[]) {
+    let districtCode: string | null = null;
+    let wardCode: string | null = null;
+
+    if (dto.addressId) {
+      const address = await this.prisma.address.findUnique({
+        where: { id: dto.addressId }
+      });
+      if (address) {
+        districtCode = address.districtCode;
+        wardCode = address.wardCode;
+      }
+    } else if (dto.shippingInfo) {
+      districtCode = dto.shippingInfo.districtCode;
+      wardCode = dto.shippingInfo.wardCode;
+    }
+
+    if (!districtCode || !wardCode) return null;
+
+    const totalWeight = items.reduce((sum, item) => sum + (item.weight || 200) * item.quantity, 0);
+    const maxLength = Math.max(...items.map(i => i.length || 10));
+    const maxWidth = Math.max(...items.map(i => i.width || 10));
+    const totalHeight = items.reduce((sum, i) => sum + (i.height || 5) * i.quantity, 0);
+
+    const fromDistrictId = Number(this.configService.get('GHN_FROM_DISTRICT_ID'));
+    if (!fromDistrictId) return null;
+
+    const feeData = {
+      from_district_id: fromDistrictId,
+      service_id: 0,
+      service_type_id: 2, 
+      to_district_id: Number(districtCode),
+      to_ward_code: wardCode,
+      height: Math.min(totalHeight, 150),
+      length: Math.min(maxLength, 150),
+      weight: Math.min(totalWeight, 30000),
+      width: Math.min(maxWidth, 150),
+      insurance_value: 0,
+      coupon: null
+    };
+
+    const result = await this.ghnService.calculateFee(feeData);
+    return result.data.total;
   }
 
   private async validateDiscount(discountCode?: string, subtotal?: number) {

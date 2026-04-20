@@ -1,4 +1,4 @@
-﻿import {
+import {
   IsString,
   IsNotEmpty,
   IsOptional,
@@ -61,6 +61,21 @@ export class CreateAddressDto {
   @IsOptional()
   @IsBoolean()
   isDefault?: boolean;
+
+  @ApiPropertyOptional({ description: 'Mã phường (từ API GHN)' })
+  @IsOptional()
+  @IsString()
+  wardCode?: string;
+
+  @ApiPropertyOptional({ description: 'Mã quận (từ API GHN)' })
+  @IsOptional()
+  @IsString()
+  districtCode?: string;
+
+  @ApiPropertyOptional({ description: 'Mã tỉnh (từ API GHN)' })
+  @IsOptional()
+  @IsString()
+  provinceCode?: string;
 }
 
 
