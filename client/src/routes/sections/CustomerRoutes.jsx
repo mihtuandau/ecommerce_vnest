@@ -19,10 +19,10 @@ const Support = lazy(() => import("../../pages/Customer/Support/SupportChatPage"
 const Promotions = lazy(() => import("../../pages/Customer/Promotions/PromotionsPage"));
 const PaymentReturn = lazy(() => import("../../pages/Customer/Payment/PaymentReturn.jsx"));
 const PaymentCancel = lazy(() => import("../../pages/Customer/Payment/PaymentCancel.jsx"));
-const GHNTest = lazy(() => import("../../pages/Customer/GHN/GHNTestPage.jsx"));
+// const GHNTest = lazy(() => import("../../pages/Customer/GHN/GHNTestPage.jsx"));
 
 export const customerRoutes = [
-  <Route key="ghn-test" path="/ghn-test" element={<GHNTest />} />,
+  // <Route key="ghn-test" path="/ghn-test" element={<GHNTest />} />,
   <Route key="c-home" path="/" element={<Home />} />,
   <Route key="c-fs" path="/flash-sale" element={<FlashSale />} />,
   <Route key="c-p" path="/products" element={<Products />} />,

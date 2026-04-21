@@ -45,6 +45,12 @@ export class CartRepository {
     });
   }
 
+  async findVariantsByIds(variantIds: number[]) {
+    return this.prisma.productVariant.findMany({
+      where: { id: { in: variantIds } },
+      select: { id: true, stock: true, price: true }
+    });
+  }
   
   async findCartItem(cartId: number, variantId: number): Promise<CartItem | null> {
     return this.prisma.cartItem.findUnique({

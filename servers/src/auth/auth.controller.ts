@@ -1,4 +1,4 @@
-﻿import {
+import {
   Controller,
   Post,
   Body,
@@ -50,9 +50,12 @@ export class AuthController {
   ) {
     const result = await this.authService.verifyOtp(body.email, body.code);
     
-    return res.json({
-      message: result.message,
-    });
+    if (result.access_token) {
+      this.authService.setAuthCookie(res, result.access_token);
+      this.authService.setRefreshTokenCookie(res, result.refresh_token);
+    }
+
+    return res.json(result);
   }
 
   @Post('resend-otp')
@@ -182,22 +185,19 @@ export class AuthController {
 
     const permissions = await this.authService.getPermissionsByRole(user.role);
 
-    const encodedUser = Buffer.from(
+    const userData = encodeURIComponent(
       JSON.stringify({
         id: user.userId,
         email: user.email,
         role: user.role,
         permissions: permissions,
       }),
-    ).toString('base64');
-
-    const frontendUrl = process.env.FRONTEND_URL;
-    const isStaff = ['ADMIN', 'KHO', 'BAN_HANG'].includes(user.role?.toUpperCase());
-    const redirectPath = isStaff ? '/admin-dashboard' : '/';
-
-    return res.redirect(
-      `${frontendUrl}${redirectPath}?oauth_success=true&user_data=${encodedUser}`,
     );
+
+    const origins = (process.env.FRONTEND_URL || 'http://localhost:5173').split(',').map(o => o.trim());
+    const frontendUrl = origins.find(o => o.includes('localhost')) || origins[0];
+
+    return res.redirect(`${frontendUrl}/login-success?user=${userData}`);
   }
 
   @Get('me')
@@ -246,9 +246,3 @@ export class AuthController {
     return this.authService.updateRolePermissions(body.role, body.permissionIds);
   }
 }
-
-
-
-
-
-

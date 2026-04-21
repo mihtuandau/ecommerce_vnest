@@ -139,7 +139,7 @@ model Product {
   slug          String?             @unique // SEO-friendly URL (optional để migrate)
   description   String?
   basePrice     Float
-  categoryId    Int
+  categoryId    Int?
   brandId       Int?
   // COMPUTED FIELDS - Phải update trong transaction khi Review/OrderItem thay đổi
   // Hoặc dùng database trigger để tự động sync
@@ -155,7 +155,7 @@ model Product {
   variants      ProductVariant[]
   reviews       Review[] // Thêm relation với Review
   discountProducts DiscountProduct[] // Discount liên kết qua junction table
-  category      Category            @relation(fields: [categoryId], references: [id])
+  category      Category?           @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   brand         Brand?              @relation(fields: [brandId], references: [id])
   createdAt     DateTime            @default(now())
   updatedAt     DateTime            @updatedAt

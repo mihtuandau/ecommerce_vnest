@@ -1,4 +1,5 @@
-﻿import React from 'react';
+import React, { useState } from 'react';
+import { Eye, EyeOff } from 'lucide-react';
 
 const Input = ({ 
   type = 'text', 
@@ -13,18 +14,21 @@ const Input = ({
   className = '', 
   ...props 
 }) => {
+  const [showPassword, setShowPassword] = useState(false);
+  const isPassword = type === 'password';
+  const inputType = isPassword ? (showPassword ? 'text' : 'password') : type;
 
-  const baseClasses = 'appearance-none block w-full px-4 py-3 border placeholder-gray-400 focus:outline-none transition-colors duration-200 text-sm font-normal';
+  const baseClasses = 'appearance-none block w-full px-4 py-3 border border-gray-200 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-all duration-200 text-sm font-normal';
 
   const errorClasses = error 
-    ? 'border-red-500 focus:border-red-600 text-red-900' 
-    : 'border-gray-300 focus:border-[#00a85a] hover:border-gray-400';
+    ? 'border-red-500 focus:border-red-600 text-red-900 ring-red-500' 
+    : 'hover:border-gray-400';
 
   const disabledClasses = disabled 
-    ? 'bg-gray-100 text-gray-500 cursor-not-allowed border-gray-200' 
+    ? 'bg-gray-50 text-gray-400 cursor-not-allowed border-gray-200' 
     : 'text-gray-900 bg-white';
 
-  const classes = `${baseClasses} ${errorClasses} ${disabledClasses} ${Icon ? 'pl-10' : ''} ${className}`;
+  const classes = `${baseClasses} ${errorClasses} ${disabledClasses} ${Icon ? 'pl-11' : ''} ${isPassword ? 'pr-11' : ''} ${className}`;
 
   return (
     <div className="space-y-2">
@@ -35,12 +39,12 @@ const Input = ({
       )}
       <div className="relative">
         {Icon && (
-          <Icon className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <Icon className="w-4 h-4 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2" />
         )}
         <input
           id={name}
           name={name}
-          type={type}
+          type={inputType}
           value={value}
           onChange={onChange}
           disabled={disabled}
@@ -48,6 +52,15 @@ const Input = ({
           required={required}
           {...props}
         />
+        {isPassword && (
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
+          >
+            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+          </button>
+        )}
       </div>
       {error && (
         <p className="text-xs text-red-600" id={`${name}-error`}>

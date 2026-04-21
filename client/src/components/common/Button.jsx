@@ -14,18 +14,18 @@ const Button = ({
 }) => {
 
   const baseClasses =
-    "inline-flex items-center justify-center font-normal focus:outline-none transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-50";
+    "inline-flex items-center justify-center font-normal rounded-lg focus:outline-none transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50 active:scale-[0.98]";
 
   const variants = {
     primary:
-      "btn-primary bg-black text-white hover:bg-neutral-800 uppercase tracking-widest font-bold",
-    dark: "btn-dark bg-black text-white hover:bg-neutral-800 uppercase tracking-widest font-bold",
+      "btn-primary bg-black text-white hover:bg-neutral-800 uppercase tracking-widest font-bold border border-black",
+    dark: "btn-dark bg-black text-white hover:bg-neutral-800 uppercase tracking-widest font-bold border border-black",
     outline:
       "btn-outline border border-black text-black hover:bg-black hover:text-white bg-white uppercase tracking-widest font-bold",
     "outline-light":
-      "btn-outline-light border border-gray-300 text-black hover:border-black bg-white uppercase tracking-widest font-bold",
+      "btn-outline-light border border-gray-300 text-black hover:bg-black hover:text-white bg-white uppercase tracking-widest font-bold",
     "outline-gray":
-      "btn-outline-gray border border-gray-300 text-gray-700 hover:bg-gray-50 bg-white",
+      "btn-outline-gray border border-gray-300 text-gray-700 hover:border-black hover:text-black bg-white",
     secondary:
       "bg-gray-100 text-gray-900 hover:bg-gray-200 border border-gray-200",
     ghost: "btn-ghost bg-transparent text-black hover:bg-gray-100",

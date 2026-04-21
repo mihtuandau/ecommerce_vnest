@@ -82,8 +82,16 @@ export class OrderManagement {
 
     const cancelled = await this.repository.update(orderId, { status: 'CANCELLED' });
 
-    // Đồng bộ trạng thái thanh toán nếu có
-    if (order.payment && order.payment.status === 'PENDING') {
+    // Initiate refund if payment is successful
+    if (order.payment && order.payment.status === 'SUCCESS') {
+      try {
+        await this.paymentService.initiateRefund(order.payment.id);
+      } catch (error) {
+        this.logger.error('Failed to initiate refund during order cancellation:', error);
+        // Don't fail the cancellation, but log for manual review
+      }
+    } else if (order.payment && order.payment.status === 'PENDING') {
+      // Just cancel pending payments
       await this.paymentService.updateStatus(order.payment.id, { status: 'CANCELLED' });
     }
 
@@ -218,15 +226,11 @@ export class OrderManagement {
   private async handleDeliveredStatus(dto: UpdateOrderDto, oldOrder: any) {
 
     if (dto.status === 'DELIVERED' && oldOrder.status !== 'DELIVERED') {
-
-
-      for (const item of oldOrder.orderItems) {
-        const productId = item.variant.productId;
-        const quantity = item.quantity;
-
-        await this.repository.incrementProductSoldCount(productId, quantity);
-
-      }
+      // Note: soldCount and averageRating are now updated automatically via database triggers
+      // - soldCount is incremented when OrderItem is created (in createOrderTransactional)
+      // - soldCount is decremented when OrderItem is deleted (if order is cancelled)
+      // - averageRating is updated when Review is created/updated/deleted
+      // No manual updates needed here anymore.
 
       if (oldOrder.payment && oldOrder.payment.status !== 'SUCCESS') {
         try {
@@ -261,10 +265,20 @@ export class OrderManagement {
       throw new BadRequestException('Địa chỉ giao hàng không đầy đủ thông tin mã vùng GHN (Quận/Huyện hoặc Phường/Xã)');
     }
 
-    const totalWeight = order.orderItems.reduce((sum, item) => sum + (item.weight || 200) * item.quantity, 0);
-    const maxLength = Math.max(...order.orderItems.map(i => (i.variantSnapshot as any)?.length || 10));
-    const maxWidth = Math.max(...order.orderItems.map(i => (i.variantSnapshot as any)?.width || 10));
-    const totalHeight = order.orderItems.reduce((sum, i) => sum + ((i.variantSnapshot as any)?.height || 5) * i.quantity, 0);
+    // Filter out items from deleted products
+    const activeItems = order.orderItems.filter(item => {
+      const product = item.variant?.product;
+      return !product?.deletedAt;
+    });
+
+    if (activeItems.length === 0) {
+      throw new BadRequestException('Không có sản phẩm hợp lệ trong đơn hàng (các sản phẩm đã bị xóa)');
+    }
+
+    const totalWeight = activeItems.reduce((sum, item) => sum + (item.weight || 200) * item.quantity, 0);
+    const maxLength = Math.max(...activeItems.map(i => (i.variantSnapshot as any)?.length || 10));
+    const maxWidth = Math.max(...activeItems.map(i => (i.variantSnapshot as any)?.width || 10));
+    const totalHeight = activeItems.reduce((sum, i) => sum + ((i.variantSnapshot as any)?.height || 5) * i.quantity, 0);
 
     // Luôn để Shop trả phí cho GHN (1: Shop, 2: Khách)
     // Vì phí ship đã được tính vào tổng tiền (total) và thu từ khách qua COD rồi.
@@ -287,7 +301,7 @@ export class OrderManagement {
       width: Math.min(maxWidth, 150),
       height: Math.min(totalHeight, 150),
       service_type_id: 2, // Giao hàng chuẩn/lẻ
-      items: order.orderItems.map(item => ({
+      items: activeItems.map(item => ({
         name: item.productName,
         quantity: item.quantity,
         weight: item.weight || 200

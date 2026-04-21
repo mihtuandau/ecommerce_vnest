@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Lock, CheckCircle } from 'lucide-react';
 import authService from '../../services/authService';
@@ -11,6 +11,13 @@ const ResetPasswordPage = () => {
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token');
   const email = searchParams.get('email');
+
+  useEffect(() => {
+    if (!token || !email) {
+      notify.error('Link không hợp lệ hoặc đã hết hạn. Vui lòng yêu cầu lại.');
+      navigate('/forgot-password');
+    }
+  }, [token, email, navigate]);
 
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -142,8 +149,14 @@ const ResetPasswordPage = () => {
             )}
 
             {email && (
-              <div className="bg-gray-50 border border-gray-200 text-gray-700 px-4 py-3 rounded-lg text-sm">
-                <p>Đặt lại mật khẩu cho: <span className="font-semibold">{email}</span></p>
+              <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-4 rounded-lg text-sm flex items-center space-x-3 mb-6">
+                <div className="bg-green-100 p-2 rounded-full">
+                  <CheckCircle size={18} />
+                </div>
+                <div>
+                  <p className="font-semibold">OTP đã xác thực</p>
+                  <p className="text-xs opacity-80">Thiết lập mật khẩu mới cho {email}</p>
+                </div>
               </div>
             )}
 

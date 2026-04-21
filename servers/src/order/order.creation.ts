@@ -30,8 +30,10 @@ export class OrderCreation {
     const itemsToOrder = await this.getItemsToOrder(userId, dto);
     const variantIds = itemsToOrder.map((i) => i.variantId);
     
-    // 1. Lấy map giá Flash Sale tự động
-    const autoDiscountPriceMap = await this.repository.findAutoApplyPricesForVariants(variantIds);
+    // 1. Auto-apply Flash Sale prices only if NO manual discount code provided
+    const autoDiscountPriceMap = dto.discountCode 
+      ? new Map() // Skip auto-apply if user has manual discount
+      : await this.repository.findAutoApplyPricesForVariants(variantIds);
     
     // 2. Chuẩn bị danh sách items với giá đã giảm (nếu có)
     const itemsWithDiscounts = itemsToOrder.map((item) => {
@@ -75,14 +77,32 @@ export class OrderCreation {
     };
 
     // 5. Tính phí vận chuyển qua GHN
-    let ghnShippingFee = dto.shippingFee || 30000;
+    let ghnShippingFee = 30000; // Default fallback
     try {
       const shippingFeeResult = await this.calculateGHNFee(dto, finalItems);
       if (shippingFeeResult) {
         ghnShippingFee = shippingFeeResult;
+      } else {
+        // GHN calculation failed - either missing address or invalid input
+        // Only use fallback if this is optional shipping (COD order)
+        const isOnlinePayment = ['VNPAY', 'PAYOS'].includes(dto.paymentMethod || '');
+        if (isOnlinePayment) {
+          throw new BadRequestException(
+            'Không thể tính phí vận chuyển. Vui lòng kiểm tra lại địa chỉ giao hàng.'
+          );
+        }
       }
     } catch (error) {
-      this.logger.warn('Could not calculate GHN fee, using default or provided fee', error.message);
+      // GHN service error - strict policy for online payments
+      const isOnlinePayment = ['VNPAY', 'PAYOS'].includes(dto.paymentMethod || '');
+      if (isOnlinePayment) {
+        this.logger.error('GHN fee calculation failed for online payment:', error);
+        throw new BadRequestException(
+          'Không thể tính phí vận chuyển qua GHN. Vui lòng thử lại hoặc chọn phương thức thanh toán khác.'
+        );
+      }
+      // For COD, log warning but continue
+      this.logger.warn('GHN fee calculation failed, using default:', error.message);
     }
 
     const totals = OrderHelper.calculateOrderTotal(finalItems, ghnShippingFee, finalDiscount ? discountData : undefined);
@@ -105,7 +125,12 @@ export class OrderCreation {
       finalDiscount
     );
 
-    const order = await this.repository.createOrderTransactional(orderData, finalItems) as any;
+    const order = await this.repository.createOrderTransactional(
+      orderData, 
+      finalItems,
+      finalDiscount?.id ?? undefined,
+      finalDiscount?.usageLimit ?? undefined
+    ) as any;
 
     await this.createPaymentRecord(order.id, dto.paymentMethod);
     await this.clearUserCartIfNeeded(userId, dto);
@@ -129,7 +154,7 @@ export class OrderCreation {
     }
   }
 
-  private async prepareItemsFromDto(items: Array<{variantId: number, quantity: number}>) {
+  private async prepareItemsFromDto(items: Array<{variantId: number, quantity: number, price?: number}>) {
     const variantIds = items.map(item => item.variantId);
     const variants = await this.prisma.productVariant.findMany({
       where: { id: { in: variantIds } },
@@ -147,10 +172,28 @@ export class OrderCreation {
       if (!variant) {
         throw new BadRequestException(`Sản phẩm ID ${item.variantId} không tồn tại`);
       }
+      
+      // Validate price - if frontend provided expected price, check for significant changes
+      if (item.price !== undefined && variant.price !== item.price) {
+        const priceChange = Math.abs((variant.price - item.price) / item.price) * 100;
+        // If price changed more than 10%, block order and request fresh price from client
+        if (priceChange > 10) {
+          this.logger.warn(
+            `Significant price change detected for variant ${item.variantId}: ` +
+            `expected ${item.price}, actual ${variant.price} (${priceChange.toFixed(2)}% change). Order blocked.`
+          );
+          throw new BadRequestException(
+            `Giá sản phẩm đã thay đổi trên ${priceChange.toFixed(1)}%. ` +
+            `Giá hiện tại: ${variant.price}đ (giá lúc trước: ${item.price}đ). ` +
+            `Vui lòng tải lại giỏ hàng và thử lại.`
+          );
+        }
+      }
+      
       return {
         variantId: item.variantId,
         quantity: item.quantity,
-        price: variant.price,
+        price: variant.price, // Always use current database price, not frontend price
         productName: variant.product?.name || 'Sản phẩm',
         weight: variant.weight,
         length: variant.length,

@@ -43,13 +43,16 @@ export class ReviewService {
       );
     }
 
+    // Validate review images
+    const validatedImages = await this.validateReviewImages(images || []);
+
     const review = await this.repository.create({
       user: { connect: { id: userId } },
       product: { connect: { id: productId } },
       order: { connect: { id: orderId } },
       rating,
       comment,
-      images: images || [],
+      images: validatedImages,
     });
 
     await this.updateProductRating(productId);
@@ -57,6 +60,47 @@ export class ReviewService {
     await this.cacheManager.del(`product:${productId}`);
 
     return review;
+  }
+
+  private async validateReviewImages(images: any[]): Promise<any[]> {
+    if (!images || images.length === 0) return [];
+
+    // Max 5 images
+    if (images.length > 5) {
+      throw new BadRequestException('Tối đa 5 hình ảnh cho một đánh giá');
+    }
+
+    // Allowed image types
+    const allowedMimeTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
+    
+    // Max file size: 5MB per image
+    const maxFileSize = 5 * 1024 * 1024; // 5MB
+
+    for (const image of images) {
+      // Check file type
+      const mimeType = image.mimetype || image.type;
+      if (!allowedMimeTypes.includes(mimeType?.toLowerCase())) {
+        throw new BadRequestException(`Loại tệp không hợp lệ: ${mimeType}. Chỉ chấp nhận các định dạng ảnh: JPG, PNG, GIF, WebP`);
+      }
+
+      // Check file extension
+      if (image.filename || image.originalname) {
+        const filename = image.filename || image.originalname;
+        const ext = filename.substring(filename.lastIndexOf('.')).toLowerCase();
+        if (!allowedExtensions.includes(ext)) {
+          throw new BadRequestException(`Đuôi tệp không hợp lệ: ${ext}`);
+        }
+      }
+
+      // Check file size
+      const fileSize = image.size || (image.buffer?.length);
+      if (fileSize && fileSize > maxFileSize) {
+        throw new BadRequestException(`Kích thước tệp vượt quá giới hạn (Tối đa 5MB): ${(fileSize / 1024 / 1024).toFixed(2)}MB`);
+      }
+    }
+
+    return images;
   }
 
   async canUserReview(

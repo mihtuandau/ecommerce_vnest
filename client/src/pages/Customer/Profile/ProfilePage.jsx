@@ -124,7 +124,7 @@ const ProfilePage = () => {
                 key: 'address',
                 label: <span><EnvironmentOutlined className="mr-1" />Địa Chỉ</span>,
                 children: (
-                  <Card title={<span><EnvironmentOutlined className="mr-2" />Địa Chỉ Giao Hàng</span>} bordered={false} className="shadow-sm">
+                  <Card bordered={false} className="shadow-sm">
                     <AddressManager />
                   </Card>
                 ),

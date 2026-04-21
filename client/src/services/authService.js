@@ -1,9 +1,10 @@
-﻿import apiService from "./apiService";
+import apiService from "./apiService";
 import { AUTH_ENDPOINTS, USER_ENDPOINTS } from "../config/apiConstants";
 
 const authService = {
   verifyAuth: async () => {
     try {
+      // Backend reads 'access_token' from cookie
       const response = await apiService.get(AUTH_ENDPOINTS.ME);
       return response;
     } catch (error) {
@@ -18,9 +19,7 @@ const authService = {
 
   verifyOtp: async (email, code) => {
     const response = await apiService.post(`${AUTH_ENDPOINTS.BASE}/verify-otp`, { email, code });
-    if (response.access_token) {
-      localStorage.setItem('access_token', response.access_token);
-    }
+    // Token is automatically set in cookie by the backend response
     return response;
   },
 
@@ -30,10 +29,7 @@ const authService = {
 
   login: async (credentials) => {
     const response = await apiService.post(AUTH_ENDPOINTS.LOGIN, credentials);
-
-    if (response.access_token) {
-      localStorage.setItem('access_token', response.access_token);
-    }
+    // Token is automatically set in cookie by the backend response
     return response;
   },
   
@@ -41,12 +37,11 @@ const authService = {
     try {
       await apiService.post(AUTH_ENDPOINTS.LOGOUT);
     } catch (error) {
-    } finally {
-      localStorage.removeItem('access_token'); 
     }
+    // Cookie is cleared by the backend
   },
 
-  getToken: () => null,
+  getToken: () => null, // No longer used as tokens are in HttpOnly cookies
 
   updateProfile: async (userData) => {
     const response = await apiService.put(USER_ENDPOINTS.PROFILE, userData);
@@ -54,11 +49,9 @@ const authService = {
   },
 
   changePassword: async (passwordData) => {
-    const token = authService.getToken();
     const response = await apiService.put(
       USER_ENDPOINTS.CHANGE_PASSWORD,
-      passwordData,
-      { Authorization: `Bearer ${token}` }
+      passwordData
     );
     return response;
   },
@@ -78,7 +71,6 @@ const authService = {
   },
 
   googleLogin: () => {
-
     const baseUrl = import.meta.env.VITE_API_URL.replace('/api', '');
     window.location.href = `${baseUrl}/api${AUTH_ENDPOINTS.GOOGLE_LOGIN}`;
   },
@@ -97,9 +89,3 @@ const authService = {
 };
 
 export default authService;
-
-
-
-
-
-

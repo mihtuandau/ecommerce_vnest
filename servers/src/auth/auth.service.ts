@@ -20,29 +20,73 @@ export class AuthService {
   async register(dto: any) {
     const { email, password, name } = dto;
     const existing = await this.userService.findByEmail(email);
-    if (existing?.status === UserStatus.ACTIVE && !existing.deletedAt) throw new BadRequestException('Email đã tồn tại.');
+    
+    // Allow re-registration for PENDING users to refresh OTP/info
+    // Block if email is ACTIVE (and not deleted)
+    if (existing?.status === UserStatus.ACTIVE && !existing.deletedAt) {
+      throw new BadRequestException('Email đã tồn tại.');
+    }
+    
+    // Block only if email is SUSPENDED
+    if (existing?.status === UserStatus.SUSPENDED) {
+      throw new BadRequestException('Tài khoản này đã bị vô hiệu hóa. Vui lòng liên hệ hỗ trợ để biết thêm chi tiết.');
+    }
+
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const expires = new Date(Date.now() + 10 * 60 * 1000);
-    const hashData = { verificationCode: await bcrypt.hash(otp, 10), verificationExpires: expires, name, password: await bcrypt.hash(password, 10) };
-    if (existing) await this.userService.updateVerification(existing.id, hashData);
-    else await this.userService.create({ ...dto, email, role: 'CUSTOMER', status: UserStatus.PENDING, ...hashData });
-    await this.mailService.sendVerificationCode(email, otp, name);
-    return { message: 'Mã xác thực đã gửi.', email };
+    const verificationHash = await bcrypt.hash(otp, 10);
+    const hashData = { 
+      verificationCode: verificationHash, 
+      verificationExpires: expires, 
+      name, 
+      password // raw password
+    };
+    
+    // If user exists (PENDING or DELETED), update account info and send new OTP
+    if (existing) {
+      await this.userService.updateVerification(existing.id, hashData);
+      await this.mailService.sendVerificationCode(email, otp, name);
+      return { message: 'Bạn chưa xác thực tài khoản. Chúng tôi đã gửi lại mã OTP.', email };
+    } else {
+      // Create new user
+      await this.userService.create({ ...dto, email, role: 'CUSTOMER', status: UserStatus.PENDING, ...hashData });
+      await this.mailService.sendVerificationCode(email, otp, name);
+      return { message: 'Mã xác thực đã gửi.', email };
+    }
   }
 
   async verifyOtp(email: string, code: string) {
     const u = await this.userService.findByEmail(email);
-    if (!u || u.status === UserStatus.ACTIVE || !u.verificationCode || !u.verificationExpires || new Date() > new Date(u.verificationExpires)) throw new BadRequestException('Mã không hợp lệ.');
-    if (!(await bcrypt.compare(code, u.verificationCode))) throw new BadRequestException('Mã không đúng.');
-    await this.userService.activateUser(u.id);
-    return { message: 'Kích hoạt thành công.' };
+    if (!u || u.status === UserStatus.ACTIVE || !u.verificationCode || !u.verificationExpires || new Date() > new Date(u.verificationExpires)) {
+      throw new BadRequestException('Mã không hợp lệ hoặc đã hết hạn.');
+    }
+
+    const isMatch = await bcrypt.compare(code, u.verificationCode);
+    if (!isMatch) {
+      throw new BadRequestException('Mã xác thực không chính xác.');
+    }
+
+    const activatedUser = await this.userService.activateUser(u.id);
+    const loginData = await this.login({ sub: activatedUser.id }, activatedUser);
+
+    return { 
+      message: 'Kích hoạt thành công.',
+      ...loginData
+    };
   }
 
   async resendOtp(email: string) {
     const u = await this.userService.findByEmail(email);
     if (!u) throw new BadRequestException('User not found');
+    // Only allow resend for PENDING users
+    if (u.status !== UserStatus.PENDING) {
+      throw new BadRequestException('Chỉ có thể gửi lại mã cho tài khoản chưa xác thực');
+    }
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    await this.userService.updateVerification(u.id, { verificationCode: await bcrypt.hash(otp, 10), verificationExpires: new Date(Date.now() + 600000) });
+    await this.userService.updateOtpOnly(u.id, { 
+      verificationCode: await bcrypt.hash(otp, 10), 
+      verificationExpires: new Date(Date.now() + 600000) 
+    });
     await this.mailService.sendVerificationCode(email, otp, u.name || undefined);
     return { message: 'Mã mới đã gửi.' };
   }
@@ -149,10 +193,19 @@ export class AuthService {
   async forgotPassword(dto: any) {
     const u = await this.userService.findByEmail(dto.email);
     if (!u) return { message: 'Reset link sent' };
-    const token = crypto.randomBytes(32).toString('hex');
-    await this.userService.updateResetToken(u.id, { resetPasswordToken: await bcrypt.hash(token, 10), resetPasswordExpires: new Date(Date.now() + 3600000).toISOString() });
-    await this.mailService.sendPasswordReset(dto.email, `${process.env.FRONTEND_URL}/reset-password?token=${token}&email=${dto.email}`, u.name || undefined);
-    return { message: 'Reset link sent' };
+    
+    // Tạo mã OTP 6 số ngẫu nhiên
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    
+    // Lưu mã OTP đã hash vào DB (dùng chung trường resetPasswordToken)
+    await this.userService.updateResetToken(u.id, { 
+      resetPasswordToken: await bcrypt.hash(otp, 10), 
+      resetPasswordExpires: new Date(Date.now() + 600000).toISOString() // Hết hạn sau 10 phút
+    });
+
+    // Gửi email chứa mã OTP thay vì link
+    await this.mailService.sendPasswordReset(dto.email, otp, u.name || undefined);
+    return { message: 'OTP đã được gửi đến email của bạn.' };
   }
 
   async resetPassword(token: string, email: string, pass: string) {
@@ -164,9 +217,35 @@ export class AuthService {
     return { message: 'Success' };
   }
 
-  setAuthCookie(res: any, t: string) { res.cookie('access_token', t, { httpOnly: true, secure: process.env.NODE_ENV === 'production', maxAge: 7200000 }); }
-  setRefreshTokenCookie(res: any, t: string) { res.cookie('refresh_token', t, { httpOnly: true, secure: process.env.NODE_ENV === 'production', maxAge: 604800000 }); }
-  clearAuthCookie(res: any) { ['access_token', 'refresh_token'].forEach(c => res.cookie(c, '', { maxAge: 0 })); }
+  setAuthCookie(res: any, t: string) { 
+    res.cookie('access_token', t, { 
+      httpOnly: true, 
+      secure: process.env.NODE_ENV === 'production', 
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 7200000 
+    }); 
+  }
+  setRefreshTokenCookie(res: any, t: string) { 
+    res.cookie('refresh_token', t, { 
+      httpOnly: true, 
+      secure: process.env.NODE_ENV === 'production', 
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 604800000 
+    }); 
+  }
+  clearAuthCookie(res: any) { 
+    // Xóa tất cả các biến thể tên để đảm bảo không bị sót
+    const cookiesToClear = ['access_token', 'accessToken', 'refresh_token', 'refreshToken'];
+    cookiesToClear.forEach(c => res.cookie(c, '', { 
+      maxAge: 0, 
+      path: '/',
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production'
+    })); 
+  }
 
   async getUserInfo(id: number) { return this.userService.findOne(id); }
   async getPermissionsByRole(role: string) { return this.userService.getPermissionsByRole(role); }

@@ -55,8 +55,9 @@ export class CartService {
     
     const variant = await this.repository.findVariantById(dto.variantId);
     
-    if (!variant || variant.stock < dto.quantity)
-      throw new BadRequestException('Insufficient stock');
+    if (!variant || !variant.isActive || variant.stock < dto.quantity) {
+      throw new BadRequestException('Product unavailable or insufficient stock');
+    }
       
     let cart = await this.repository.upsertCart(userId);
     
@@ -122,6 +123,49 @@ export class CartService {
 
     await this.cacheManager.del(`cart:${userId}`);
     return cleared;
+  }
+
+  /**
+   * Validate checkout items - check if stock is still available
+   * This should be called before submitting order to provide real-time stock info
+   */
+  async validateCheckoutItems(items: Array<{variantId: number, quantity: number}>) {
+    const variantIds = items.map(item => item.variantId);
+    const variants = await this.repository.findVariantsByIds(variantIds);
+    
+    const variantMap = new Map(variants.map(v => [v.id, v]));
+    
+    const validationResult = items.map(item => {
+      const variant = variantMap.get(item.variantId);
+      
+      if (!variant) {
+        return {
+          variantId: item.variantId,
+          requestedQuantity: item.quantity,
+          availableStock: 0,
+          canCheckout: false,
+          reason: 'Sản phẩm không tồn tại'
+        };
+      }
+      
+      const canCheckout = variant.stock >= item.quantity;
+      
+      return {
+        variantId: item.variantId,
+        requestedQuantity: item.quantity,
+        availableStock: variant.stock,
+        canCheckout,
+        reason: !canCheckout ? `Chỉ còn ${variant.stock} sản phẩm, bạn yêu cầu ${item.quantity}` : undefined
+      };
+    });
+    
+    const allCanCheckout = validationResult.every(r => r.canCheckout);
+    
+    return {
+      valid: allCanCheckout,
+      items: validationResult,
+      message: allCanCheckout ? 'Tất cả sản phẩm có sẵn' : 'Một số sản phẩm không đủ số lượng'
+    };
   }
 }
 

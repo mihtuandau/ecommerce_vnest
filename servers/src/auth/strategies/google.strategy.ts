@@ -1,4 +1,4 @@
-﻿import { PassportStrategy } from '@nestjs/passport';
+import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, VerifyCallback } from 'passport-google-oauth20';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -11,12 +11,15 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     private userService: UserService,
   ) {
     super({
-      clientID: configService.get('GOOGLE_CLIENT_ID'),
-      clientSecret: configService.get('GOOGLE_CLIENT_SECRET'),
-      callbackURL: 'https://api.dautuan.com/api/auth/google-login/callback',
-      scope: ['email', 'profile'],
-      prompt: 'select_account consent', 
-      accessType: 'offline',
+      clientID: configService.get('GOOGLE_CLIENT_ID')?.trim(),
+      clientSecret: configService.get('GOOGLE_CLIENT_SECRET')?.trim(),
+      callbackURL: 'http://localhost:5000/api/auth/google-login/callback',
+      scope: [
+        'https://www.googleapis.com/auth/userinfo.profile',
+        'https://www.googleapis.com/auth/userinfo.email',
+        'openid'
+      ],
+      userProfileURL: 'https://www.googleapis.com/oauth2/v2/userinfo',
     });
   }
 
@@ -24,7 +27,6 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     accessToken: string,
     refreshToken: string,
     profile: any,
-    done: VerifyCallback,
   ): Promise<any> {
     const { emails, displayName } = profile;
     const email = emails[0].value;
@@ -41,7 +43,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
         password: 'google-oauth', 
       });
     }
-    done(null, { userId: user.id, email: user.email, role: user.role });
+    return { userId: user.id, email: user.email, role: user.role };
   }
 }
 

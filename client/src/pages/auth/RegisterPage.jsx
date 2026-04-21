@@ -1,13 +1,18 @@
-﻿import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
-import { Mail, Lock, User, ArrowRight, Chrome } from "lucide-react";
+import { Mail, Lock, User, ArrowRight, Chrome, Eye, EyeOff } from "lucide-react";
 import Input from "../../components/common/Input";
 import Button from "../../components/common/Button";
+import { notify } from "../../utils/notification";
 
 const RegisterPage = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { handleRegister, handleVerifyOtp, handleResendOtp } = useAuth();
+
   const [formData, setFormData] = useState({
-    email: "",
+    email: location.state?.email || "",
     password: "",
     name: "",
   });
@@ -15,8 +20,13 @@ const RegisterPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState(1); 
   const [otp, setOtp] = useState("");
-  const { handleRegister, handleVerifyOtp, handleResendOtp } = useAuth();
-  const navigate = useNavigate();
+
+  // Update email if redirected from login
+  useEffect(() => {
+    if (location.state?.email) {
+      setFormData(prev => ({ ...prev, email: location.state.email }));
+    }
+  }, [location.state]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -31,8 +41,8 @@ const RegisterPage = () => {
     else if (!/\S+@\S+\.\S+/.test(formData.email))
       newErrors.email = "Email is invalid";
     if (!formData.password) newErrors.password = "Password is required";
-    else if (formData.password.length < 6)
-      newErrors.password = "Password must be at least 6 characters";
+    else if (formData.password.length < 8)
+      newErrors.password = "Mật khẩu phải có ít nhất 8 ký tự";
     if (!formData.name) newErrors.name = "Name is required";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -47,7 +57,7 @@ const RegisterPage = () => {
       await handleRegister(formData);
       setStep(2); 
     } catch (error) {
-
+      // Error is handled in AuthContext, no need to notify again
     } finally {
       setIsLoading(false);
     }
@@ -63,9 +73,8 @@ const RegisterPage = () => {
     setIsLoading(true);
     try {
       await handleVerifyOtp(formData.email, otp);
-
     } catch (error) {
-
+      // Error is handled in AuthContext
     } finally {
       setIsLoading(false);
     }
@@ -76,13 +85,14 @@ const RegisterPage = () => {
     try {
       await handleResendOtp(formData.email);
     } catch (error) {
+      // Error is handled in AuthContext
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = `https://api.dautuan.com/api/auth/google?_t=${Date.now()}`;
+    window.location.href = `${import.meta.env.VITE_API_URL}/auth/google?_t=${Date.now()}`;
   };
 
   return (
@@ -157,29 +167,6 @@ const RegisterPage = () => {
                 {isLoading ? "Creating account..." : "Sign up"}
               </Button>
 
-              <div className="relative my-6">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-300"></div>
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-4 bg-white text-gray-500">
-                    Or sign up with
-                  </span>
-                </div>
-              </div>
-
-              <Button
-                type="button"
-                onClick={handleGoogleLogin}
-                variant="outline"
-                fullWidth
-                size="lg"
-                icon={Chrome}
-                className="cursor-pointer"
-              >
-                Sign up with Google
-              </Button>
-
               <p className="text-center text-sm text-gray-600 mt-6">
                 Already have an account?{" "}
                 <Link
@@ -250,9 +237,3 @@ const RegisterPage = () => {
 };
 
 export default RegisterPage;
-
-
-
-
-
-

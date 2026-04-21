@@ -1,5 +1,5 @@
-@import "tailwindcss";
 @import url("https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100..900;1,100..900&display=swap");
+@import "tailwindcss";
 
 /* Global Font Override - Only Inter */
 *, body, h1, h2, h3, h4, h5, h6, .font-heading, .font-outfit, .font-inter, input, button, select, textarea {
@@ -159,6 +159,13 @@ h6 {
     -apple-system,
     sans-serif !important;
   letter-spacing: -0.01em;
+}
+
+/* Global Input Sync */
+input:not([type="checkbox"]):not([type="radio"]), 
+select, 
+textarea {
+  border-radius: 8px !important;
 }
 
 .admin-layout .ant-btn-primary {

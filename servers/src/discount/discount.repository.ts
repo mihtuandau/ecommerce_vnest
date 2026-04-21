@@ -143,8 +143,10 @@ export class DiscountRepository {
         _count: {
           select: { orders: true }
         },
+        startDate: true,
         endDate: true,
         isFlashSale: true,
+        isActive: true,
         applicableToCategories: true,
         applicableToProducts: true,
       },
@@ -191,6 +193,7 @@ export class DiscountRepository {
         maxDiscountAmount: true,
         startDate: true,
         endDate: true,
+        isActive: true,
         applicableToCategories: true,
         applicableToProducts: true,
       },
@@ -267,9 +270,11 @@ export class DiscountRepository {
         code: true,
         percentage: true,
         fixedAmount: true,
+        startDate: true,
         endDate: true,
         description: true,
         isFlashSale: true,
+        isActive: true,
       },
       orderBy: [
         { percentage: 'desc' },
@@ -296,6 +301,8 @@ export class DiscountRepository {
         fixedAmount: true,
         endDate: true,
         isFlashSale: true,
+        isActive: true,
+        startDate: true,
         applicableToProducts: true,
       },
       orderBy: [
