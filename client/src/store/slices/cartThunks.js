@@ -40,13 +40,11 @@ export const fetchCart = createAsyncThunk(
 
 export const addToCartServer = createAsyncThunk(
   'cart/addToCartServer',
-  async ({ variantId, quantity, productData }, { rejectWithValue, dispatch }) => {
+  async ({ variantId, quantity, productData }, { rejectWithValue }) => {
     try {
-      await cartService.addItem(variantId, quantity);
-
-      await dispatch(fetchCart());
-
-      return { variantId, quantity, productData };
+      // Incremental update instead of full fetch to prevent race condition
+      const result = await cartService.addItem(variantId, quantity);
+      return transformCartItem(result);
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Không thể thêm vào giỏ hàng');
     }
@@ -55,13 +53,11 @@ export const addToCartServer = createAsyncThunk(
 
 export const updateCartServer = createAsyncThunk(
   'cart/updateCartServer',
-  async ({ variantId, quantity }, { rejectWithValue, dispatch }) => {
+  async ({ variantId, quantity }, { rejectWithValue }) => {
     try {
-      await cartService.updateItem(variantId, quantity);
-
-      await dispatch(fetchCart());
-
-      return { variantId, quantity };
+      // Incremental update instead of full fetch to prevent race condition
+      const result = await cartService.updateItem(variantId, quantity);
+      return transformCartItem(result);
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Không thể cập nhật giỏ hàng');
     }
@@ -70,12 +66,10 @@ export const updateCartServer = createAsyncThunk(
 
 export const removeFromCartServer = createAsyncThunk(
   'cart/removeFromCartServer',
-  async (variantId, { rejectWithValue, dispatch }) => {
+  async (variantId, { rejectWithValue }) => {
     try {
+      // Remove item without full fetch to prevent race condition
       await cartService.removeItem(variantId);
-
-      await dispatch(fetchCart());
-
       return variantId;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Không thể xóa sản phẩm');
@@ -85,12 +79,10 @@ export const removeFromCartServer = createAsyncThunk(
 
 export const clearCartServer = createAsyncThunk(
   'cart/clearCartServer',
-  async (_, { rejectWithValue, dispatch }) => {
+  async (_, { rejectWithValue }) => {
     try {
+      // Clear cart without full fetch to prevent race condition
       await cartService.clearCart();
-
-      await dispatch(fetchCart());
-
       return true;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Không thể xóa giỏ hàng');

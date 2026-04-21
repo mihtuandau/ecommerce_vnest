@@ -16,7 +16,7 @@ export class ProductService {
     const cached = await this.cache.get(key);
     if (cached) return cached;
     const { page = 1, limit = 10, search, categoryId, brandId, minPrice, maxPrice, minRating, sortBy = 'newest', status, inStock, outOfStock } = q;
-    const where: any = {};
+    const where: any = { deletedAt: null }; // Filter out soft-deleted products
     if (search) where.name = { contains: search, mode: 'insensitive' };
     if (categoryId) where.categoryId = categoryId;
     if (brandId) where.brandId = brandId;

@@ -63,7 +63,8 @@ export class OrderService {
       throw new NotFoundException(`Đơn hàng #${id} không tồn tại`);
     }
 
-    if (user.role !== 'ADMIN' && order.userId !== user.userId) {
+    const isStaff = ['ADMIN', 'KHO', 'BAN_HANG'].includes(user.role);
+    if (!isStaff && order.userId !== user.userId) {
       throw new NotFoundException(`Đơn hàng #${id} không tồn tại hoặc không thuộc quyền sở hữu của bạn`);
     }
 
@@ -97,5 +98,9 @@ export class OrderService {
 
   async lookupGuestOrder(orderCode: string, contact: string): Promise<any> {
     return this.orderManagement.lookupGuestOrder(orderCode, contact);
+  }
+
+  async syncToGHN(id: number): Promise<any> {
+    return this.orderManagement.syncToGHN(id);
   }
 }

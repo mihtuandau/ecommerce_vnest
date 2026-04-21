@@ -1,4 +1,4 @@
-﻿import { Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { User, Address, Prisma, UserStatus } from '@prisma/client';
 
@@ -35,18 +35,6 @@ export class UserRepository {
     return this.prisma.user.update({ where: { id }, data });
   }
 
-  async delete(id: number): Promise<User> {
-    return this.prisma.user.delete({ where: { id } });
-  }
-
-  async deleteMany(where: Prisma.UserWhereInput) {
-    return this.prisma.user.deleteMany({ where });
-  }
-
-  async countOrdersByUser(userId: number): Promise<number> {
-    return this.prisma.order.count({ where: { userId } });
-  }
-
   async suspendUser(id: number): Promise<User> {
     return this.prisma.user.update({
       where: { id },
@@ -64,6 +52,10 @@ export class UserRepository {
         deletedAt: new Date(),
       },
     });
+  }
+
+  async countOrdersByUser(userId: number): Promise<number> {
+    return this.prisma.order.count({ where: { userId } });
   }
 
   async findAddressesByUser(userId: number): Promise<Address[]> {
@@ -176,6 +168,9 @@ export class UserRepository {
 
       return { success: true };
     });
+  }
+  async deleteMany(where: Prisma.UserWhereInput) {
+    return this.prisma.user.deleteMany({ where });
   }
 }
 

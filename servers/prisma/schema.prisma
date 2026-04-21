@@ -139,7 +139,7 @@ model Product {
   slug          String?             @unique // SEO-friendly URL (optional để migrate)
   description   String?
   basePrice     Float
-  categoryId    Int
+  categoryId    Int?
   brandId       Int?
   // COMPUTED FIELDS - Phải update trong transaction khi Review/OrderItem thay đổi
   // Hoặc dùng database trigger để tự động sync
@@ -155,7 +155,7 @@ model Product {
   variants      ProductVariant[]
   reviews       Review[] // Thêm relation với Review
   discountProducts DiscountProduct[] // Discount liên kết qua junction table
-  category      Category            @relation(fields: [categoryId], references: [id])
+  category      Category?           @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   brand         Brand?              @relation(fields: [brandId], references: [id])
   createdAt     DateTime            @default(now())
   updatedAt     DateTime            @updatedAt
@@ -215,6 +215,10 @@ model ProductVariant {
   cartItems         CartItem[]
   orderItems        OrderItem[]
   wishlistItems     WishlistItem[]
+  weight            Int            @default(200) // Khối lượng (gram)
+  length            Int            @default(10)  // Chiều dài (cm)
+  width             Int            @default(10)  // Chiều rộng (cm)
+  height            Int            @default(10)  // Chiều cao (cm)
   createdAt         DateTime       @default(now())
   updatedAt         DateTime       @updatedAt
 
@@ -379,6 +383,8 @@ model Order {
   cancelledAt      DateTime? // Thời gian hủy đơn
   cancelledBy      Int? // User ID hoặc Admin ID hủy đơn - must be valid userId
   cancelReason     String? // Lý do hủy
+  shippingCode     String? // Mã vận đơn từ GHN/GHTK
+  shippingLog      Json?   // Nhật ký vận chuyển từ đối tác
   deletedAt        DateTime? // Soft delete: null = active, có giá trị = soft deleted
   discountId       Int?
   // NOTE: Payment.orderId là đủ - không cần Order.paymentId (tránh circular reference)
@@ -463,6 +469,7 @@ model OrderItem {
   variantSnapshot  Json?           // {size, color, sku, image} - thông tin variant tại thời điểm mua
   order            Order           @relation(fields: [orderId], references: [id])
   variant          ProductVariant  @relation(fields: [variantId], references: [id])
+  weight           Int?            // Snapshot khối lượng tại thời điểm mua
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
 

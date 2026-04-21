@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { computeDiscountFromMap } from '../utils/formatters';
 import { useCheckoutCalculations } from './useCheckoutCalculations';
 
-export const useCheckoutPricing = (cartItems, discountMap, appliedDiscount) => {
+export const useCheckoutPricing = (cartItems, discountMap, appliedDiscount, providedShipping) => {
   const adjustedCartItems = useMemo(() => {
     if (!discountMap || Object.keys(discountMap).length === 0) return cartItems;
     return cartItems.map((item) => {
@@ -58,7 +58,7 @@ export const useCheckoutPricing = (cartItems, discountMap, appliedDiscount) => {
   const effectiveCartItems = autoApplyWins ? adjustedCartItems : cartItems;
   const effectiveDiscount = autoApplyWins ? null : appliedDiscount;
 
-  const result = useCheckoutCalculations(effectiveCartItems, effectiveDiscount);
+  const result = useCheckoutCalculations(effectiveCartItems, effectiveDiscount, providedShipping);
 
   return {
     ...result,

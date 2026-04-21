@@ -1,4 +1,4 @@
-﻿const GoogleIcon = () => (
+const GoogleIcon = () => (
   <svg className="w-5 h-5" viewBox="0 0 24 24">
     <path
       fill="#4285F4"
@@ -24,7 +24,7 @@ const SocialLoginButton = ({ provider = 'google', redirectUrl = '/' }) => {
 
     localStorage.setItem('redirectAfterLogin', redirectUrl);
 
-    const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+    const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
     window.location.href = `${baseUrl}/auth/${provider}`;
   };
 

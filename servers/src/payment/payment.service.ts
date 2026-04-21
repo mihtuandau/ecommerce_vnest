@@ -45,7 +45,11 @@ export class PaymentService {
     let paymentLink: string | null = null;
 
     if (data.method === 'VNPAY') {
-      transactionId = `VNP${Date.now()}`;
+      // Generate unique transaction ID to prevent collision under high load
+      // Using timestamp + random string instead of just Date.now()
+      const timestamp = Date.now();
+      const randomSuffix = Math.random().toString(36).substring(2, 11);
+      transactionId = `VNP${timestamp}_${randomSuffix}`;
       paymentLink = this.vnpayService.createPaymentUrl({
         amount: order.total,
         orderInfo: `Thanh toan don hang ${order.orderCode}`,
@@ -114,11 +118,50 @@ export class PaymentService {
     return PaymentHelper.serializePayment(updatedPayment);
   }
 
+  /**
+   * Initiate refund for a successful payment
+   * This should be called when order is cancelled to request refund from payment gateway
+   */
+  async initiateRefund(paymentId: number) {
+    const payment = await this.repository.findById(paymentId);
+    if (!payment) {
+      throw new NotFoundException('Payment not found');
+    }
+
+    if (payment.status !== 'SUCCESS') {
+      throw new BadRequestException('Can only refund successful payments');
+    }
+
+    try {
+      // For VNPAY/MOMO/PAYOS - mark as REFUNDED
+      // In production, this would call the actual refund API on the payment gateway
+      if (['VNPAY', 'MOMO', 'PAYOS'].includes(payment.method)) {
+        // TODO: Implement actual refund API calls for each gateway
+        // For now, just mark payment as refunded
+        await this.repository.update(paymentId, {
+          status: 'REFUNDED',
+        });
+        this.logger.log(`Refund initiated for ${payment.method} payment ${paymentId}`);
+      } else if (payment.method === 'CASH' || payment.method === 'CARD') {
+        // For cash/card, just mark as refunded since no online refund needed
+        await this.repository.update(paymentId, {
+          status: 'REFUNDED',
+        });
+        this.logger.log(`Refund marked for ${payment.method} payment ${paymentId}`);
+      }
+
+      await this.cacheService.clearPaymentCaches();
+    } catch (error) {
+      this.logger.error(`Error initiating refund for payment ${paymentId}:`, error);
+      throw new BadRequestException('Failed to initiate refund. Please try again later.');
+    }
+  }
+
   async handleVNPayReturn(vnp_Params: any) {
     const result = this.vnpayService.verifyReturnUrl(vnp_Params);
     if (!result.isValid) {
-      this.logger.error(`VNPay Checksum Mismatch! Params: ${JSON.stringify(vnp_Params)}`);
-      // Vẫn tiếp tục xử lý để Frontend có thể hiển thị trạng thái Hủy/Thất bại dựa trên ResponseCode
+      this.logger.error(`VNPay Checksum Mismatch! Request rejected. Params: ${JSON.stringify(vnp_Params)}`);
+      throw new BadRequestException('Invalid VNPay checksum signature');
     }
 
     const orderCode = vnp_Params['vnp_TxnRef'];

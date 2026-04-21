@@ -1,13 +1,14 @@
 import { useMemo } from 'react';
 
-export const useCheckoutCalculations = (cartItems, appliedDiscount) => {
+export const useCheckoutCalculations = (cartItems, appliedDiscount, providedShipping) => {
   return useMemo(() => {
     const subtotal = cartItems.reduce((sum, item) => {
       const price = item.product?.variant?.price || item.variant?.price || item.price || 0;
       return sum + (Number(price) * item.quantity);
     }, 0);
     
-    const shipping = subtotal >= 500000 ? 0 : 30000;
+    // Nếu đơn trên 500k thì FreeShip, ngược lại lấy phí ship từ GHN
+    let shipping = subtotal >= 500000 ? 0 : providedShipping;
 
     let discount = 0;
     if (appliedDiscount) {
@@ -29,7 +30,7 @@ export const useCheckoutCalculations = (cartItems, appliedDiscount) => {
     const itemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
     
     return { subtotal, shipping, discount, total, itemCount };
-  }, [cartItems, appliedDiscount]);
+  }, [cartItems, appliedDiscount, providedShipping]);
 };
 
 

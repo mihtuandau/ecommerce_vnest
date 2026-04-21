@@ -16,7 +16,11 @@ export class CategoryService {
     return this.prisma.category.findMany({ 
       include: { 
         _count: {
-          select: { products: true }
+          select: { 
+            products: {
+              where: { deletedAt: null } // Only count non-deleted products
+            }
+          }
         }
       } 
     });

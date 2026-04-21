@@ -1,12 +1,11 @@
 import { useState } from 'react';
-import {  Eye, EyeOff, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import Button from '../ui/Button';
 import Input from '../ui/Input';
 
 export default function LoginForm({ toggleForm }) {
   const [formData, setFormData] = useState({ email: '', password: '' });
-  const [showPassword, setShowPassword] = useState(false);
   const { handleLogin, message, loading, setMessage } = useAuth();
 
   const handleChange = (e) => {
@@ -51,24 +50,15 @@ export default function LoginForm({ toggleForm }) {
           <label htmlFor="password" className="block text-sm font-medium text-slate-800 mb-2">
             Mật khẩu
           </label>
-          <div className="relative">
-            <Input
-              id="password"
-              name="password"
-              type={showPassword ? 'text' : 'password'}
-              placeholder="password123"
-              value={formData.password}
-              onChange={handleChange}
-              required
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-            >
-              {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-            </button>
-          </div>
+          <Input
+            id="password"
+            name="password"
+            type="password"
+            placeholder="password123"
+            value={formData.password}
+            onChange={handleChange}
+            required
+          />
         </div>
 
         <Button type="submit" loading={loading} className="w-full">

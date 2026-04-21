@@ -16,6 +16,7 @@ import {
   clearCartServer,
   fetchCart,
 } from '../store/slices/cartSlice';
+import { loadCartFromStorage, clearCartStorage } from '../store/slices/cartHelpers';
 
 export const useCart = () => {
   const dispatch = useDispatch();
@@ -28,10 +29,45 @@ export const useCart = () => {
 
   const isLoggedIn = isAuthenticated && !!user;
 
+  // Merge guest cart with server cart when user logs in
+  useEffect(() => {
+    if (authLoading || !isLoggedIn) return;
+
+    const mergeGuestCartWithServer = async () => {
+      try {
+        // Get guest items from localStorage
+        const guestItems = loadCartFromStorage();
+        
+        // Fetch server cart
+        await dispatch(fetchCart()).unwrap();
+        
+        // Add guest items to server cart if there are any
+        if (guestItems && guestItems.length > 0) {
+          for (const guestItem of guestItems) {
+            await dispatch(addToCartServer({
+              variantId: guestItem.variantId,
+              quantity: guestItem.quantity,
+              productData: guestItem.product
+            })).unwrap();
+          }
+          
+          // Clear guest cart after merging
+          clearCartStorage();
+        }
+      } catch (error) {
+        console.error('Failed to merge guest cart:', error);
+        // Still fetch server cart even if merge fails
+        dispatch(fetchCart());
+      }
+    };
+
+    mergeGuestCartWithServer();
+  }, [isLoggedIn, dispatch, authLoading]);
+
   useEffect(() => {
     const handleLoginEvent = () => {
       if (isLoggedIn) {
-        dispatch(fetchCart());
+        // Event is handled by the effect above
       }
     };
     
@@ -40,15 +76,7 @@ export const useCart = () => {
     return () => {
       window.removeEventListener('userLoggedIn', handleLoginEvent);
     };
-  }, [dispatch, isLoggedIn]);
-
-  useEffect(() => {
-    if (authLoading) return;
-    
-    if (isLoggedIn) {
-      dispatch(fetchCart());
-    }
-  }, [isLoggedIn, dispatch, authLoading]);
+  }, [isLoggedIn]);
 
   const loadCart = useCallback(() => {
     if (isLoggedIn) {

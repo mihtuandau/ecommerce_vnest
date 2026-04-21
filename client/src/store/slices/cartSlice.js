@@ -108,7 +108,16 @@ const cartSlice = createSlice({
       })
       .addCase(addToCartServer.fulfilled, (state, action) => {
         state.loading = false;
-    
+        const newItem = action.payload;
+        const existingItem = state.items.find(item => item.variantId === newItem.variantId);
+        
+        if (existingItem) {
+          existingItem.quantity = newItem.quantity;
+          existingItem.addedAt = newItem.addedAt;
+        } else {
+          state.items.push(newItem);
+        }
+        notify.success('Đã thêm vào giỏ hàng!');
       })
       .addCase(addToCartServer.rejected, (state, action) => {
         state.loading = false;
@@ -116,12 +125,24 @@ const cartSlice = createSlice({
         notify.error(action.payload);
       })
       .addCase(updateCartServer.fulfilled, (state, action) => {
+        const updatedItem = action.payload;
+        const itemIndex = state.items.findIndex(item => item.variantId === updatedItem.variantId);
+        
+        if (itemIndex !== -1) {
+          if (updatedItem.quantity < 1) {
+            state.items.splice(itemIndex, 1);
+          } else {
+            state.items[itemIndex].quantity = updatedItem.quantity;
+          }
+        }
       })
       .addCase(updateCartServer.rejected, (state, action) => {
         state.error = action.payload;
         notify.error(action.payload);
       })
       .addCase(removeFromCartServer.fulfilled, (state, action) => {
+        const variantId = action.payload;
+        state.items = state.items.filter(item => item.variantId !== variantId);
         notify.success('Đã xóa khỏi giỏ hàng!');
       })
       .addCase(removeFromCartServer.rejected, (state, action) => {
@@ -129,6 +150,7 @@ const cartSlice = createSlice({
         notify.error(action.payload);
       })
       .addCase(clearCartServer.fulfilled, (state) => {
+        state.items = [];
         notify.success('Đã xóa giỏ hàng', 2000);
       })
       .addCase(clearCartServer.rejected, (state, action) => {

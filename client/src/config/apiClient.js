@@ -1,4 +1,4 @@
-﻿import axios from 'axios';
+import axios from 'axios';
 
 export const API_CONFIG = {
   BASE_URL: import.meta.env.VITE_API_URL ,
@@ -12,18 +12,6 @@ const axiosClient = axios.create({
   withCredentials: true, 
 });
 
-axiosClient.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('access_token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
 
 let isRefreshing = false;
 let failedQueue = [];
@@ -41,23 +29,19 @@ axiosClient.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    const hasToken = !!localStorage.getItem('access_token');
-
+    // If 401 and not already a retry, attempt to refresh token
     if (
       error.response?.status === 401 &&
-      hasToken &&
       !originalRequest._retry &&
       !originalRequest.url?.includes('/auth/login') &&
       !originalRequest.url?.includes('/auth/logout') &&
       !originalRequest.url?.includes('/auth/refresh')
     ) {
       if (isRefreshing) {
-
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
         })
-          .then((token) => {
-            originalRequest.headers.Authorization = `Bearer ${token}`;
+          .then(() => {
             return axiosClient(originalRequest);
           })
           .catch((err) => Promise.reject(err));
@@ -67,18 +51,21 @@ axiosClient.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const { data } = await axiosClient.post('/auth/refresh');
-        const newToken = data.access_token;
-        localStorage.setItem('access_token', newToken);
-        axiosClient.defaults.headers.common.Authorization = `Bearer ${newToken}`;
-        originalRequest.headers.Authorization = `Bearer ${newToken}`;
-        processQueue(null, newToken);
+        // The backend /auth/refresh endpoint reads the refresh_token from cookies
+        await axiosClient.post('/auth/refresh');
+        
+        processQueue(null);
         return axiosClient(originalRequest);
       } catch (refreshError) {
-        processQueue(refreshError, null);
-        localStorage.removeItem('access_token');
+        processQueue(refreshError);
 
-        if (typeof window !== 'undefined' && !originalRequest.url?.includes('/auth/logout')) {
+        // Nếu refresh thất bại, thông báo cho toàn app để logout user
+        // Chặn thông báo nếu đây là yêu cầu kiểm tra ban đầu (/auth/me) để tránh làm phiền khách vãng lai
+        if (
+          typeof window !== 'undefined' && 
+          !originalRequest.url?.includes('/auth/logout') &&
+          !originalRequest.url?.includes('/auth/me')
+        ) {
           window.dispatchEvent(new CustomEvent('auth:expired'));
         }
         return Promise.reject(refreshError);
@@ -92,8 +79,3 @@ axiosClient.interceptors.response.use(
 );
 
 export default axiosClient;
-
-
-
-
-

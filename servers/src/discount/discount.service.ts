@@ -115,8 +115,14 @@ export class DiscountService {
 
   async getAutoApplyMap() {
     const discounts = await this.repository.findAllAutoApply();
+    const now = new Date();
     const map: Record<number, any> = {};
     for (const d of discounts) {
+      // Only include active discounts that haven't expired
+      if (!d.isActive) continue;
+      if (d.startDate > now) continue; // Discount not started yet
+      if (d.endDate && d.endDate < now) continue; // Discount expired
+      
       for (const dp of d.applicableToProducts) {
         if (!map[dp.productId]) {
           map[dp.productId] = {
@@ -186,6 +192,21 @@ export class DiscountService {
 
   async update(id: number, dto: UpdateDiscountDto) {
     const current = await this.findOne(id);
+    
+    // Check if flash sale has already started - prevent modification of critical fields
+    if (current.isFlashSale && current.startDate <= new Date()) {
+      const restrictedFields = ['startDate', 'endDate', 'percentage', 'fixedAmount', 'code', 'applicableToProducts'];
+      const attemptedChanges = restrictedFields.filter(field => 
+        dto[field] !== undefined && dto[field] !== current[field]
+      );
+      
+      if (attemptedChanges.length > 0) {
+        throw new BadRequestException(
+          `Không thể chỉnh sửa flash sale đã bắt đầu. Các trường không thể thay đổi: ${attemptedChanges.join(', ')}`
+        );
+      }
+    }
+    
     if (dto.percentage !== undefined || dto.fixedAmount !== undefined) {
       this.validateType({ 
         percentage: dto.percentage ?? current.percentage, 

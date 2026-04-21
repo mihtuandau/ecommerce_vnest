@@ -1,4 +1,4 @@
-﻿import { useAuth as useAuthContext } from '../contexts/AuthContext';
+import { useAuth as useAuthContext } from '../contexts/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 export const useAuth = () => {
@@ -26,7 +26,8 @@ export const useAuth = () => {
 
   const handleVerifyOtp = async (email, code) => {
     const data = await context.verifyOtp(email, code);
-    navigate('/login'); 
+    // Redirect to home since user is auto-logged in
+    navigate('/'); 
     return data;
   };
 
@@ -69,8 +70,3 @@ export const useAuthLoading = () => {
   return loading;
 };
 export default useAuth;
-
-
-
-
-

@@ -26,6 +26,9 @@ import { ReviewModule } from './review/review.module';
 import { AddressModule } from './address/address.module';
 import { ReportModule } from './report/report.module';
 import { HealthModule } from './common/health/health.module';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { GHNModule } from './ghn/ghn.module';
 
 @Module({
   imports: [
@@ -55,8 +58,11 @@ import { HealthModule } from './common/health/health.module';
     AddressModule,
     ReportModule,
     HealthModule,
+    GHNModule,
   ],
+  controllers: [AppController],
   providers: [
+    AppService,
     PrismaService,
     {
       provide: APP_GUARD,

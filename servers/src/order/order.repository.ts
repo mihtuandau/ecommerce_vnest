@@ -44,8 +44,22 @@ export class OrderRepository {
   async decrementProductSoldCount(productId: number, quantity: number) { return this.prisma.product.update({ where: { id: productId }, data: { soldCount: { decrement: quantity } } }); }
   async clearUserCart(userId: number) { await this.prisma.cartItem.deleteMany({ where: { cart: { userId } } }); }
 
-  async createOrderTransactional(orderData: Prisma.OrderCreateInput, items: any[]) {
+  async createOrderTransactional(orderData: Prisma.OrderCreateInput, items: any[], discountId?: number, discountUsageLimit?: number) {
     return this.prisma.$transaction(async (tx) => {
+      // Validate discount usage within transaction (prevents race condition)
+      if (discountId && discountUsageLimit) {
+        const currentUsageCount = await tx.order.count({
+          where: {
+            discountId,
+            status: { not: 'CANCELLED' as any }
+          }
+        });
+        
+        if (currentUsageCount >= discountUsageLimit) {
+          throw new Error('Mã giảm giá đã hết lượt sử dụng');
+        }
+      }
+
       for (const item of items) {
         // Atomic conditional update: chỉ trừ stock khi stock >= quantity
         // Ngăn race condition: 2 user đặt cùng lúc, chỉ 1 người thành công

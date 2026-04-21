@@ -19,6 +19,7 @@ import { useCheckoutForm } from "../../../hooks/useCheckoutForm";
 import { useCheckoutSubmit } from "../../../hooks/useCheckoutSubmit";
 import { useCheckoutPricing } from "../../../hooks/useCheckoutPricing";
 import { formatPrice } from "../../../utils/formatters";
+import ghnService from "../../../services/ghnService";
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
@@ -41,10 +42,55 @@ const CheckoutPage = () => {
   const [currentUser, setCurrentUser] = useState(null);
 
   const { shippingInfo, paymentMethod, setPaymentMethod, agreedToTerms, setAgreedToTerms, handleInputChange, handleSelectAddress } = useCheckoutForm();
+  const [shippingFee, setShippingFee] = useState(undefined);
   const { code: discountCode, setCode: setDiscountCode, applied: appliedDiscount, isChecking: checkingDiscount, apply: handleApplyDiscount, remove: handleRemoveDiscount } = useDiscountCode();
 
-  const { subtotal, shipping, discount, total, itemCount, effectiveCartItems, effectiveDiscount } = useCheckoutPricing(cartItems, discountMap, appliedDiscount);
+  const { subtotal, shipping, discount, total, itemCount, effectiveCartItems, effectiveDiscount } = useCheckoutPricing(cartItems, discountMap, appliedDiscount, shippingFee);
   const { submitting, handleSubmitOrder: submitOrder } = useCheckoutSubmit(user);
+
+  useEffect(() => {
+    const fetchShippingFee = async () => {
+      console.log('--- Bắt đầu fetchShippingFee ---', {
+        district: shippingInfo.districtCode,
+        ward: shippingInfo.wardCode
+      });
+      
+      if (shippingInfo.districtCode && shippingInfo.wardCode) {
+        setShippingFee(undefined);
+        try {
+          // Tính cân nặng an toàn hơn
+          const weight = cartItems.reduce((sum, item) => {
+            const itemWeight = item.weight || item.variant?.weight || item.product?.variant?.weight || 200;
+            return sum + (itemWeight * item.quantity);
+          }, 0);
+          
+          console.log('Gọi API GHN với weight:', weight);
+          const response = await ghnService.calculateFee({
+            to_district_id: Number(shippingInfo.districtCode),
+            to_ward_code: shippingInfo.wardCode,
+            weight: Math.min(weight, 30000),
+          });
+          
+          console.log('Phản hồi từ Server:', response);
+          const totalFee = response?.data?.total ?? response?.total;
+          
+          if (typeof totalFee === 'number') {
+            console.log('Cập nhật phí ship thành công:', totalFee);
+            setShippingFee(totalFee);
+          } else {
+            console.warn('Response không có total, dùng mặc định 0');
+            setShippingFee(0);
+          }
+        } catch (error) {
+          console.error("Lỗi khi gọi API tính phí:", error);
+          setShippingFee(0);
+        }
+      } else {
+        console.log('Chưa đủ thông tin địa chỉ để tính phí');
+      }
+    };
+    fetchShippingFee();
+  }, [shippingInfo.districtCode, shippingInfo.wardCode, cartItems]);
 
   const loadUserProfile = useCallback(async () => {
     try {

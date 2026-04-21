@@ -1,4 +1,4 @@
-﻿import { NestFactory } from '@nestjs/core';
+import { NestFactory } from '@nestjs/core';
 import { ValidationPipe, Logger } from '@nestjs/common';
 import helmet from 'helmet';
 import compression from 'compression';
@@ -8,6 +8,7 @@ import * as crypto from 'crypto';
 import { AppModule } from './app.module';
 import { getHelmetConfig } from './config/helmet.config';
 import { createCspNonceMiddleware } from './common/middleware/csp-nonce.middleware';
+import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -49,6 +50,9 @@ async function bootstrap() {
     }),
   );
 
+  // Apply global exception filter for better error context
+  app.useGlobalFilters(new AllExceptionsFilter());
+
   if (process.env.NODE_ENV !== 'production') {
     const config = new DocumentBuilder()
       .setTitle('E-commerce API')
@@ -64,10 +68,11 @@ async function bootstrap() {
       )
       .build();
     const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup('api', app, document, {
+    SwaggerModule.setup('api-docs', app, document, {
       customSiteTitle: 'E-commerce API',
-      customfavIcon: '/api/favicon-32x32.png',
-      customCssUrl: '/api/swagger-ui.css',
+      customfavIcon: '/api-docs/favicon-32x32.png',
+      customCssUrl: '/api-docs/swagger-ui.css',
+      useGlobalPrefix: false,
     });
   }
 
@@ -75,7 +80,7 @@ async function bootstrap() {
   const port = process.env.PORT || 5000; 
   await app.listen(port);
   logger.log(`App running on http://localhost:${port}`);
-  logger.log(`Swagger docs at http://localhost:${port}/api`);
+  logger.log(`Swagger docs at http://localhost:${port}/api-docs`);
 }
 bootstrap();
 

@@ -1,4 +1,4 @@
-﻿import { createContext, useState, useEffect, useContext } from 'react';
+import { createContext, useState, useEffect, useContext } from 'react';
 import authService from '../services/authService';
 import { notify } from '../utils/notification';
 
@@ -15,7 +15,6 @@ export const AuthProvider = ({ children }) => {
         
         if (currentUser) {
           setUser(currentUser);
-        } else {
         }
       } catch (error) {
         setUser(null);
@@ -28,7 +27,6 @@ export const AuthProvider = ({ children }) => {
 
     const handleAuthExpired = () => {
       setUser(null);
-      localStorage.removeItem('access_token');
       notify.error('Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại');
     };
     window.addEventListener('auth:expired', handleAuthExpired);
@@ -38,11 +36,11 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       const data = await authService.register(userData);
-
       notify.success(data.message || 'Mã xác thực đã được gửi tới email của bạn');
       return data;
     } catch (error) {
-      notify.error(error.response?.data?.message || 'Đăng ký thất bại');
+      const msg = error.response?.data?.message || 'Đăng ký thất bại';
+      notify.error(Array.isArray(msg) ? msg[0] : msg);
       throw error;
     }
   };
@@ -50,10 +48,16 @@ export const AuthProvider = ({ children }) => {
   const verifyOtp = async (email, code) => {
     try {
       const data = await authService.verifyOtp(email, code);
+      // Auto-login after verification
+      if (data.user) {
+        setUser(data.user);
+        window.dispatchEvent(new Event('userLoggedIn'));
+      }
       notify.success(data.message || 'Xác thực tài khoản thành công!');
       return data;
     } catch (error) {
-      notify.error(error.response?.data?.message || 'Xác thực thất bại');
+      const msg = error.response?.data?.message || 'Xác thực thất bại';
+      notify.error(Array.isArray(msg) ? msg[0] : msg);
       throw error;
     }
   };
@@ -64,7 +68,8 @@ export const AuthProvider = ({ children }) => {
       notify.success(data.message || 'Mã xác thực mới đã được gửi');
       return data;
     } catch (error) {
-      notify.error(error.response?.data?.message || 'Gửi lại mã thất bại');
+      const msg = error.response?.data?.message || 'Gửi lại mã thất bại';
+      notify.error(Array.isArray(msg) ? msg[0] : msg);
       throw error;
     }
   };
@@ -79,7 +84,8 @@ export const AuthProvider = ({ children }) => {
       notify.success('Đăng nhập thành công!');
       return data;
     } catch (error) {
-      notify.error(error.response?.data?.message || 'Đăng nhập thất bại');
+      const msg = error.response?.data?.message || 'Đăng nhập thất bại';
+      notify.error(Array.isArray(msg) ? msg[0] : msg);
       throw error;
     }
   };
@@ -89,7 +95,8 @@ export const AuthProvider = ({ children }) => {
       await authService.logout();
       setUser(null);
       notify.success('Đăng xuất thành công!');
-    } catch (error) {setUser(null);
+    } catch (error) {
+      setUser(null);
     }
   };
 
@@ -172,8 +179,3 @@ export const useAuth = () => {
 };
 
 export default AuthContext;
-
-
-
-
-

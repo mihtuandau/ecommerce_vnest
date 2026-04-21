@@ -1,4 +1,4 @@
-﻿
+
 import { Injectable } from '@nestjs/common';
 import { UserRepository } from './user.repository';
 import { Prisma, User, UserStatus } from '@prisma/client';
@@ -38,12 +38,22 @@ export class UserService {
   }
 
   async updateVerification(id: number, data: { verificationCode: string; verificationExpires: Date; name?: string; password?: string }): Promise<User> {
+    const updateData: Prisma.UserUpdateInput = {
+      verificationCode: data.verificationCode,
+      verificationExpires: data.verificationExpires,
+      status: UserStatus.PENDING,
+    };
+    if (data.name) updateData.name = data.name;
+    if (data.password) updateData.password = await bcrypt.hash(data.password, 10);
+
+    return this.repository.update(id, updateData);
+  }
+
+  async updateOtpOnly(id: number, data: { verificationCode: string; verificationExpires: Date }): Promise<User> {
+    // Update ONLY OTP and expiry time, do NOT touch password
     return this.repository.update(id, {
       verificationCode: data.verificationCode,
       verificationExpires: data.verificationExpires,
-      name: data.name,
-      password: data.password,
-      status: UserStatus.PENDING, 
     });
   }
 

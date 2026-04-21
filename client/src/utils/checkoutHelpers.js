@@ -1,4 +1,4 @@
-﻿import { notify } from './notification';
+import { notify } from './notification';
 
 export const validateEmail = (email) => {
   const emailRegex = /^[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -90,15 +90,27 @@ export const buildOrderData = (cartItems, shippingInfo, paymentMethod, isGuest, 
         throw new Error(`Sản phẩm #${index + 1} có số lượng không hợp lệ (${item.quantity})`);
       }
       
+      // Include expected price for backend validation
+      const price = item.product?.variant?.price || item.price;
+      
       return {
         variantId,
         quantity,
+        price // Send frontend's expected price for backend price change detection
       };
     }),
     shippingAddress: formatShippingAddress(shippingInfo),
     shippingInfo: {
       fullName: shippingInfo.fullName,
       phone: shippingInfo.phone,
+      address: shippingInfo.address,
+      ward: shippingInfo.ward,
+      wardCode: shippingInfo.wardCode,
+      district: shippingInfo.district,
+      districtCode: shippingInfo.districtCode,
+      city: shippingInfo.city,
+      cityCode: shippingInfo.cityCode,
+      provinceCode: shippingInfo.cityCode, // Đồng bộ với backend
       note: shippingInfo.note || "",
     },
     paymentMethod,
@@ -138,8 +150,52 @@ export const clearGuestCart = () => {
   localStorage.removeItem("guest_cart");
 };
 
+/**
+ * Validate checkout items - check if stock is available before submitting order
+ * This prevents checkout with items that are no longer in stock
+ */
+export const validateCheckoutStockAvailability = async (cartItems) => {
+  try {
+    const items = cartItems.map(item => ({
+      variantId: parseInt(item.variantId || item.id, 10),
+      quantity: parseInt(item.quantity, 10)
+    }));
 
-
-
-
+    // Import dynamically to avoid circular dependency
+    const { default: apiService } = await import('../services/apiService');
+    
+    const response = await apiService.post('/cart/validate-checkout', { items });
+    
+    if (!response.valid) {
+      // Some items are out of stock
+      const outOfStockItems = response.items.filter(item => !item.canCheckout);
+      
+      if (outOfStockItems.length > 0) {
+        const messages = outOfStockItems
+          .map(item => `Sản phẩm #${item.variantId}: ${item.reason}`)
+          .join('\n');
+        
+        notify.error(`Không đủ hàng tồn kho:\n${messages}`);
+        
+        // Return validation result with available stock info
+        return {
+          valid: false,
+          items: response.items,
+          message: response.message
+        };
+      }
+    }
+    
+    return {
+      valid: true,
+      items: response.items,
+      message: response.message
+    };
+  } catch (error) {
+    console.error('Stock validation error:', error);
+    // If validation fails, allow checkout but warn user
+    notify.warning('Không thể kiểm tra hàng tồn kho. Vui lòng tiếp tục cẩn thận.');
+    return { valid: true }; // Fallback to allow checkout
+  }
+};
 
