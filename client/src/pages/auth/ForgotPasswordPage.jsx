@@ -9,7 +9,7 @@ import Button from "../../components/common/Button";
 const ForgotPasswordPage = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [step, setStep] = useState(1); // 1: Email, 2: OTP
+  const [step, setStep] = useState(1); 
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [error, setError] = useState("");
