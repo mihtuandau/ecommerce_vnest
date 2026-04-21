@@ -1,6 +1,6 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, ShoppingCart, Package2, Star, MapPin } from 'lucide-react';
+import { ArrowLeft, ShoppingCart, Package2, Star, MapPin, Eye } from 'lucide-react';
 import { Pagination as AntdPagination } from 'antd';
 import userService from '../../../services/userService';
 import orderService from '../../../services/orderService';
@@ -167,7 +167,13 @@ const UserDetailPage = () => {
                         <td className="px-4 py-3 font-semibold text-slate-900">{formatCurrency(order.total)}</td>
                         <td className="px-4 py-3 text-slate-600">{order.status}</td>
                         <td className="px-4 py-3 text-right">
-                          <Link to={`/admin-orders/${order.id}`} className="font-semibold text-blue-600 hover:text-blue-500">Xem đơn</Link>
+                          <Link 
+                            to={`/admin-orders/${order.id}`} 
+                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-blue-600 shadow-sm hover:bg-slate-50 transition-all"
+                            title="Xem chi tiết đơn hàng"
+                          >
+                            <Eye size={16} />
+                          </Link>
                         </td>
                       </tr>
                     ))}

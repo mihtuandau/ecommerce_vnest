@@ -1,6 +1,6 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { MapPin, House, Briefcase, Search } from 'lucide-react';
+import { MapPin, House, Briefcase, Search, Eye } from 'lucide-react';
 import { Pagination as AntdPagination } from 'antd';
 import { useUsers } from '../../../hooks/useUsers';
 import Loading from '../../../components/common/Loading';
@@ -183,7 +183,13 @@ const AddressManagementPage = () => {
                         )}
                       </td>
                       <td className="px-5 py-4 text-right">
-                        <Link to={`/admin-users/${address.userId}`} className="font-semibold text-blue-600 hover:text-blue-500">Xem KH</Link>
+                        <Link 
+                          to={`/admin-users/${address.userId}`} 
+                          className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white text-blue-600 shadow-sm hover:bg-gray-50 transition-all"
+                          title="Xem khách hàng"
+                        >
+                          <Eye size={16} />
+                        </Link>
                       </td>
                     </tr>
                   );
