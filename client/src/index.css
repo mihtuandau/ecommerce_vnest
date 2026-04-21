@@ -251,9 +251,7 @@ textarea {
 .admin-layout .gap-6 {
   gap: 1rem !important;
 }
-.admin-layout .mb-8 {
-  margin-bottom: 1.25rem !important;
-}
+
 
 .admin-layout .rounded-3xl {
   border-radius: 1rem !important;

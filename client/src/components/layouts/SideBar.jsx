@@ -19,10 +19,7 @@ const AdminSidebar = ({ isOpen }) => {
         <Link to="/admin-dashboard" className="flex items-center gap-3 w-full" title={!isOpen ? 'Admin Panel' : undefined}>
           <div className="grid h-8 w-8 place-items-center rounded-lg bg-blue-600 text-white flex-shrink-0"><Package size={16} /></div>
           {isOpen && (
-            <div className="min-w-0">
-              <p className="m-0 text-slate-50 text-2xl font-bold leading-5">ShopAdmin</p>
-              <p className="m-0 text-slate-400 text-xs leading-5">Quản trị hệ thống</p>
-            </div>
+            <p className="!m-0 text-slate-50 text-xl font-bold p-5">Admin Panel</p>
           )}
         </Link>
       </div>
