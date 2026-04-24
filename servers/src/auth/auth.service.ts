@@ -18,7 +18,7 @@ export class AuthService {
   ) {}
 
   async register(dto: any) {
-    const { email, password, name } = dto;
+    const { email, password, name, phone } = dto;
     const existing = await this.userService.findByEmail(email);
     
     // Allow re-registration for PENDING users to refresh OTP/info
@@ -39,6 +39,7 @@ export class AuthService {
       verificationCode: verificationHash, 
       verificationExpires: expires, 
       name, 
+      phone,
       password // raw password
     };
     
@@ -116,10 +117,12 @@ export class AuthService {
     // Dọn token cũ đã hết hạn của user (giữ tối đa 5 thiết bị)
     await this.cleanupOldTokens(u.id);
 
+    const { password, verificationCode, verificationExpires, resetPasswordToken, resetPasswordExpires, ...safeUser } = u;
+
     return {
-      access_token: this.jwtService.sign(common, { secret: process.env.JWT_SECRET, expiresIn: '2h' }),
-      refresh_token: refreshToken,
-      user: { ...u, permissions: await this.userService.getPermissionsByRole(u.role) }
+      accessToken: this.jwtService.sign(common, { secret: process.env.JWT_SECRET, expiresIn: '2h' }),
+      refreshToken,
+      user: { ...safeUser, permissions: await this.userService.getPermissionsByRole(u.role) }
     };
   }
 
@@ -138,7 +141,7 @@ export class AuthService {
       const u = await this.userService.findOne(p.sub);
       if (!u) throw new UnauthorizedException();
 
-      return { access_token: this.jwtService.sign({ sub: u.id, email: u.email, role: u.role }, { secret: process.env.JWT_SECRET, expiresIn: '2h' }) };
+      return { accessToken: this.jwtService.sign({ sub: u.id, email: u.email, role: u.role }, { secret: process.env.JWT_SECRET, expiresIn: '2h' }) };
     } catch { throw new UnauthorizedException(); }
   }
 

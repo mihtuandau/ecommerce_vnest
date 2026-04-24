@@ -16,7 +16,7 @@ export class ProductRepository {
       select: {
         id: true, name: true, slug: true, basePrice: true, soldCount: true, viewCount: true,
         averageRating: true, reviewCount: true, isActive: true, createdAt: true,
-        category: { select: { id: true, name: true } },
+        category: { select: { id: true, name: true, slug: true } },
         brand: { select: { id: true, name: true } },
         images: { orderBy: [{ isThumbnail: 'desc' }, { displayOrder: 'asc' }], take: 1, select: { id: true, url: true, altText: true, isThumbnail: true } },
         variants: { select: { id: true, price: true, stock: true, size: true, color: true, isActive: true } }
@@ -59,6 +59,14 @@ export class ProductRepository {
   async deleteImages(ids: number[]) { return this.prisma.productImage.deleteMany({ where: { id: { in: ids } } }); }
   async deleteVariantImages(ids: number[]) { return this.prisma.variantImage.deleteMany({ where: { id: { in: ids } } }); }
   
+  async deleteImagesByProductId(productId: number) {
+    return this.prisma.productImage.deleteMany({ where: { productId } });
+  }
+
+  async deleteVariantsByProductId(productId: number) {
+    return this.prisma.productVariant.deleteMany({ where: { productId } });
+  }
+  
   async updateThumbnailStatus(pId: number, isThumbnail: boolean) { return this.prisma.productImage.updateMany({ where: { productId: pId }, data: { isThumbnail } }); }
   async updateVariantPrimaryStatus(vId: number, isPrimary: boolean) { return this.prisma.variantImage.updateMany({ where: { variantId: vId }, data: { isPrimary } }); }
 
@@ -72,7 +80,7 @@ export class ProductRepository {
   async incrementViewCount(id: number) { return this.prisma.product.update({ where: { id }, data: { viewCount: { increment: 1 } } }); }
   async incrementSoldCount(id: number, qty: number) { return this.prisma.product.update({ where: { id }, data: { soldCount: { increment: qty } } }); }
   
-  async findRelated(id: number, catId: number, take: number) {
+  async findRelated(id: number, catId: number | null, take: number) {
     return this.prisma.product.findMany({
       where: { id: { not: id }, categoryId: catId, isActive: true },
       take, orderBy: { soldCount: 'desc' },

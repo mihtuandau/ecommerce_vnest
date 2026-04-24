@@ -2,23 +2,47 @@ import React, { lazy } from "react";
 import { Route } from "react-router-dom";
 
 const Home = lazy(() => import("../../pages/Customer/Home/HomePage"));
-const Products = lazy(() => import("../../pages/Customer/Product/ProductsPage"));
-const ProductDetail = lazy(() => import("../../pages/Customer/Product/ProductDetailPage"));
-const Category = lazy(() => import("../../pages/Customer/Product/CategoryPage"));
+const Products = lazy(
+  () => import("../../pages/Customer/Product/ProductsPage"),
+);
+const ProductDetail = lazy(
+  () => import("../../pages/Customer/Product/ProductDetailPage"),
+);
+const Category = lazy(
+  () => import("../../pages/Customer/Product/CategoryPage"),
+);
 const Cart = lazy(() => import("../../pages/Customer/Cart/CartPage"));
 const Wishlist = lazy(() => import("../../pages/Customer/WishlistPage"));
-const Checkout = lazy(() => import("../../pages/Customer/Checkout/CheckoutPage"));
+const Checkout = lazy(
+  () => import("../../pages/Customer/Checkout/CheckoutPage"),
+);
 const Orders = lazy(() => import("../../pages/Customer/Order/OrdersPage"));
-const OrderDetail = lazy(() => import("../../pages/Customer/Order/OrderDetailPage"));
-const OrderLookup = lazy(() => import("../../pages/Customer/Order/OrderLookupPage"));
-const GuestOrder = lazy(() => import("../../pages/Customer/Order/GuestOrderDetailPage"));
-const FlashSale = lazy(() => import("../../pages/Customer/FlashSale/FlashSalePage"));
+const OrderDetail = lazy(
+  () => import("../../pages/Customer/Order/OrderDetailPage"),
+);
+const OrderLookup = lazy(
+  () => import("../../pages/Customer/Order/OrderLookupPage"),
+);
+const GuestOrder = lazy(
+  () => import("../../pages/Customer/Order/GuestOrderDetailPage"),
+);
+const FlashSale = lazy(
+  () => import("../../pages/Customer/FlashSale/FlashSalePage"),
+);
 const Profile = lazy(() => import("../../pages/Customer/Profile/ProfilePage"));
 const About = lazy(() => import("../../pages/Customer/About/AboutPage"));
-const Support = lazy(() => import("../../pages/Customer/Support/SupportChatPage"));
-const Promotions = lazy(() => import("../../pages/Customer/Promotions/PromotionsPage"));
-const PaymentReturn = lazy(() => import("../../pages/Customer/Payment/PaymentReturn.jsx"));
-const PaymentCancel = lazy(() => import("../../pages/Customer/Payment/PaymentCancel.jsx"));
+const Support = lazy(
+  () => import("../../pages/Customer/Support/SupportChatPage"),
+);
+const Promotions = lazy(
+  () => import("../../pages/Customer/Promotions/PromotionsPage"),
+);
+const PaymentReturn = lazy(
+  () => import("../../pages/Customer/Payment/PaymentReturn.jsx"),
+);
+const PaymentCancel = lazy(
+  () => import("../../pages/Customer/Payment/PaymentCancel.jsx"),
+);
 // const GHNTest = lazy(() => import("../../pages/Customer/GHN/GHNTestPage.jsx"));
 
 export const customerRoutes = [
@@ -42,6 +66,10 @@ export const customerRoutes = [
   <Route key="c-prom" path="/promotions" element={<Promotions />} />,
   <Route key="c-deals" path="/deals" element={<Promotions />} />,
   <Route key="pay-ret" path="/payment/return" element={<PaymentReturn />} />,
-  <Route key="pay-vnp" path="/payment/vnpay-return" element={<PaymentReturn />} />,
+  <Route
+    key="pay-vnp"
+    path="/payment/vnpay-return"
+    element={<PaymentReturn />}
+  />,
   <Route key="pay-can" path="/payment/cancel" element={<PaymentCancel />} />,
 ];

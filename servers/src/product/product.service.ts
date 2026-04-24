@@ -7,27 +7,149 @@ import { buildCacheKey } from '../common/utils/cache-key.util';
 
 @Injectable()
 export class ProductService {
-  constructor(private repo: ProductRepository, @Inject(CACHE_MANAGER) private cache: Cache, private uploadService: UploadService) {}
+  constructor(
+    private repo: ProductRepository,
+    @Inject(CACHE_MANAGER) private cache: Cache,
+    private uploadService: UploadService,
+  ) {}
 
-  async create(data: any) { await this.cache.del('products:all'); return this.repo.create(data); }
+  private slugify(text: string): string {
+    return text
+      .toString()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[đĐ]/g, 'd')
+      .replace(/([^0-9a-z-\s])/g, '')
+      .replace(/(\s+)/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  }
+
+  async create(data: any) {
+    const { status, images, variants, ...rest } = data;
+
+    const prismaData: any = {
+      ...rest,
+      isActive: status !== 'inactive',
+      slug: this.slugify(rest.name),
+    };
+
+    if (rest.categoryId) {
+      prismaData.category = { connect: { id: Number(rest.categoryId) } };
+      delete prismaData.categoryId;
+    }
+
+    if (rest.brandId) {
+      prismaData.brand = { connect: { id: Number(rest.brandId) } };
+      delete prismaData.brandId;
+    }
+
+    if (images && Array.isArray(images)) {
+      prismaData.images = {
+        create: images.map((img: any, i: number) => ({
+          url: typeof img === 'string' ? img : img.url,
+          isThumbnail: i === 0,
+          displayOrder: i,
+          altText: rest.name,
+        })),
+      };
+    }
+
+    if (variants && Array.isArray(variants)) {
+      prismaData.variants = {
+        create: variants.map((v: any) => {
+          const variantData: any = {
+            size: v.size,
+            color: v.color,
+            sku: v.sku,
+            price: Number(v.price || rest.basePrice || 0),
+            stock: Number(v.stock || 0),
+            isActive: true,
+          };
+
+          if (v.image) {
+            variantData.images = {
+              create: [
+                {
+                  url: typeof v.image === 'string' ? v.image : v.image.url,
+                  isPrimary: true,
+                  displayOrder: 0,
+                },
+              ],
+            };
+          }
+
+          return variantData;
+        }),
+      };
+    }
+
+    await this.cache.del('products:all');
+    return this.repo.create(prismaData);
+  }
 
   async findAll(q: any) {
     const key = buildCacheKey('products', q);
     const cached = await this.cache.get(key);
     if (cached) return cached;
-    const { page = 1, limit = 10, search, categoryId, brandId, minPrice, maxPrice, minRating, sortBy = 'newest', status, inStock, outOfStock } = q;
+    const {
+      page = 1,
+      limit = 10,
+      search,
+      categoryId,
+      brandId,
+      minPrice,
+      maxPrice,
+      minRating,
+      sortBy = 'newest',
+      status,
+      inStock,
+      outOfStock,
+    } = q;
     const where: any = { deletedAt: null }; // Filter out soft-deleted products
     if (search) where.name = { contains: search, mode: 'insensitive' };
     if (categoryId) where.categoryId = categoryId;
     if (brandId) where.brandId = brandId;
-    if (minPrice || maxPrice) where.basePrice = { gte: minPrice, lte: maxPrice };
+    if (minPrice || maxPrice)
+      where.basePrice = { gte: minPrice, lte: maxPrice };
     if (minRating) where.averageRating = { gte: minRating };
-    if (status) where.isActive = status === 'active';
+    if (status) {
+      if (status !== 'all') {
+        where.isActive = status === 'active';
+      }
+    } else {
+      // Default for customers: only show active products
+      where.isActive = true;
+    }
     if (inStock) where.variants = { some: { stock: { gt: 0 } } };
     if (outOfStock) where.variants = { every: { stock: { lte: 0 } } };
-    const sortMap = { 'price-asc': { basePrice: 'asc' }, 'price-desc': { basePrice: 'desc' }, 'name-asc': { name: 'asc' }, 'sold': { soldCount: 'desc' }, 'rating': { averageRating: 'desc' } };
-    const [total, products] = await Promise.all([this.repo.count(where), this.repo.findAll(where, (page - 1) * limit, limit, sortMap[sortBy] || { createdAt: 'desc' })]);
-    const res = { data: products, page, limit, total, totalPages: Math.ceil(total / limit) };
+    const sortMap = {
+      newest: { createdAt: 'desc' },
+      oldest: { createdAt: 'asc' },
+      'price-asc': { basePrice: 'asc' },
+      'price-desc': { basePrice: 'desc' },
+      'name-asc': { name: 'asc' },
+      'name-desc': { name: 'desc' },
+      sold: { soldCount: 'desc' },
+      rating: { averageRating: { sort: 'desc', nulls: 'last' } },
+    };
+    const [total, products] = await Promise.all([
+      this.repo.count(where),
+      this.repo.findAll(
+        where,
+        (page - 1) * limit,
+        limit,
+        sortMap[sortBy] || { createdAt: 'desc' },
+      ),
+    ]);
+    const res = {
+      data: products,
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    };
     await this.cache.set(key, res, 3600);
     return res;
   }
@@ -42,15 +164,109 @@ export class ProductService {
   }
 
   async update(id: number, data: any) {
-    const { status, ...rest } = data;
-    const p = await this.repo.update(id, { ...rest, isActive: status !== undefined ? status === 'active' : undefined });
-    await Promise.all([this.cache.del('products:all'), this.cache.del(`product:${id}`)]);
+    const { status, images, variants, ...rest } = data;
+
+    const prismaData: any = {
+      ...rest,
+    };
+
+    if (rest.name) {
+      prismaData.slug = this.slugify(rest.name);
+    }
+
+    if (rest.categoryId) {
+      prismaData.category = { connect: { id: Number(rest.categoryId) } };
+      delete prismaData.categoryId;
+    }
+
+    if (rest.brandId) {
+      prismaData.brand = { connect: { id: Number(rest.brandId) } };
+      delete prismaData.brandId;
+    }
+
+    if (status !== undefined) {
+      prismaData.isActive = status === 'active';
+    }
+
+    console.log(
+      `[DEBUG] Updating product ${id} with prismaData:`,
+      JSON.stringify(prismaData, null, 2),
+    );
+
+    // Handle nested images and variants if they are provided
+    // This is a simplified implementation: delete existing and create new
+    // to match the frontend state 1:1.
+    if (images && Array.isArray(images)) {
+      // Clear existing images and create new ones
+      await this.repo.deleteImagesByProductId(id);
+      prismaData.images = {
+        create: images.map((img: any, i: number) => ({
+          url: typeof img === 'string' ? img : img.url,
+          isThumbnail: i === 0,
+          displayOrder: i,
+          altText: rest.name || '',
+        })),
+      };
+    }
+
+    if (variants && Array.isArray(variants)) {
+      // Clear existing variants and create new ones
+      await this.repo.deleteVariantsByProductId(id);
+      prismaData.variants = {
+        create: variants.map((v: any) => {
+          const variantData: any = {
+            size: v.size,
+            color: v.color,
+            sku: v.sku,
+            price: Number(v.price || rest.basePrice || 0),
+            stock: Number(v.stock || 0),
+            isActive: true,
+          };
+
+          if (v.image) {
+            variantData.images = {
+              create: [
+                {
+                  url: typeof v.image === 'string' ? v.image : v.image.url,
+                  isPrimary: true,
+                  displayOrder: 0,
+                },
+              ],
+            };
+          }
+
+          return variantData;
+        }),
+      };
+    }
+
+    const p = await this.repo.update(id, prismaData);
+
+    // Comprehensive cache invalidation
+    const cacheKeys = ['products:all', `product:${id}`];
+
+    if (p.slug) {
+      cacheKeys.push(`product:${p.slug}`);
+    }
+
+    // Attempt to clear all list caches (keys starting with products:)
+    // Since default cache manager might not support wildcards, we at least clear the common ones
+    // or we can use a more global clear if the store allows it.
+
+    await Promise.all(cacheKeys.map((key) => this.cache.del(key)));
+
+    // Optional: If we want to be safe and clear everything related to products
+    // await this.cache.reset(); // Too aggressive, but safe
+
     return p;
   }
 
   async remove(id: number) {
     const p = await this.repo.delete(id);
-    await Promise.all([this.cache.del('products:all'), this.cache.del(`product:${id}`)]);
+    await Promise.all([
+      this.cache.del('products:all'),
+      this.cache.del(`product:${id}`),
+    ]);
     return p;
   }
 
@@ -75,7 +291,14 @@ export class ProductService {
   async uploadProductImages(id: number, files: any[], meta: any) {
     const urls = await this.uploadService.uploadImages(files);
     if (meta.isThumbnail) await this.repo.updateThumbnailStatus(id, false);
-    await this.repo.createImages(urls.map((u, i) => ({ productId: id, url: u, isThumbnail: meta.isThumbnail && i === 0, displayOrder: (meta.displayOrder || 0) + i })));
+    await this.repo.createImages(
+      urls.map((u, i) => ({
+        productId: id,
+        url: u,
+        isThumbnail: meta.isThumbnail && i === 0,
+        displayOrder: (meta.displayOrder || 0) + i,
+      })),
+    );
     await this.cache.del(`product:${id}`);
     return { urls };
   }
@@ -84,7 +307,14 @@ export class ProductService {
     const v = await this.repo.findVariantById(vId);
     if (!v) throw new NotFoundException();
     const urls = await this.uploadService.uploadImages(files);
-    await this.repo.createVariantImages(urls.map((u, i) => ({ variantId: vId, url: u, isPrimary: meta.isPrimary && i === 0, displayOrder: (meta.displayOrder || 0) + i })));
+    await this.repo.createVariantImages(
+      urls.map((u, i) => ({
+        variantId: vId,
+        url: u,
+        isPrimary: meta.isPrimary && i === 0,
+        displayOrder: (meta.displayOrder || 0) + i,
+      })),
+    );
     await this.cache.del(`product:${v.productId}`);
     return { urls };
   }
@@ -118,8 +348,11 @@ export class ProductService {
   async getRelatedProducts(id: number, limit = 8) {
     const p = await this.repo.findByIdOrSlug(id);
     if (!p) throw new NotFoundException();
+    if (!p.categoryId) return [];
     return this.repo.findRelated(p.id, p.categoryId, limit);
   }
 
-  async getPriceRange() { return this.repo.getPriceRange(); }
+  async getPriceRange() {
+    return this.repo.getPriceRange();
+  }
 }

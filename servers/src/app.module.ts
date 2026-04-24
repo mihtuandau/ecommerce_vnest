@@ -29,6 +29,7 @@ import { HealthModule } from './common/health/health.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { GHNModule } from './ghn/ghn.module';
+import { BrandModule } from './brand/brand.module';
 
 @Module({
   imports: [
@@ -58,6 +59,7 @@ import { GHNModule } from './ghn/ghn.module';
     AddressModule,
     ReportModule,
     HealthModule,
+    BrandModule,
     GHNModule,
   ],
   controllers: [AppController],

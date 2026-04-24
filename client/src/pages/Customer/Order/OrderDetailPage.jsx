@@ -41,20 +41,24 @@ const OrderDetailPage = () => {
       const transformedOrder = {
         ...response,
         items: response.orderItems || [],
-        paymentMethod: response.paymentMethod || response.payment?.method || "CASH",
-        paymentStatus: response.paymentStatus || response.payment?.status || "PENDING",
+        paymentMethod:
+          response.paymentMethod || response.payment?.method || "CASH",
+        paymentStatus:
+          response.paymentStatus || response.payment?.status || "PENDING",
       };
 
       setOrder(transformedOrder);
 
       // Lấy hành trình GHN nếu có
       if (transformedOrder.shippingCode) {
-        ghnService.getOrderDetail(transformedOrder.shippingCode).then(res => {
-          if (res?.data?.log) setTrackingLogs(res.data.log);
-        }).catch(err => console.error("Lỗi lấy hành trình GHN:", err));
+        ghnService
+          .getOrderDetail(transformedOrder.shippingCode)
+          .then((res) => {
+            if (res?.data?.log) setTrackingLogs(res.data.log);
+          })
+          .catch((err) => console.error("Lỗi lấy hành trình GHN:", err));
       }
     } catch (error) {
-
       notify.error("Không tìm thấy hoặc không thể tải thông tin đơn hàng");
       navigate("/orders");
     } finally {
@@ -136,7 +140,7 @@ const OrderDetailPage = () => {
           <div className="space-y-6">
             <div className="grid grid-cols-1 gap-6">
               <OrderShippingInfo order={order} />
-              
+
               <TrackingTimeline logs={trackingLogs} />
 
               {order.shippingCode && (
@@ -146,11 +150,15 @@ const OrderDetailPage = () => {
                       <FaBox size={18} />
                     </div>
                     <div>
-                      <div className="text-[10px] font-bold uppercase tracking-wider text-orange-600">Đối tác vận chuyển: GHN</div>
-                      <div className="text-sm font-semibold text-slate-800">Mã vận đơn: {order.shippingCode}</div>
+                      <div className="text-[10px] font-bold uppercase tracking-wider text-orange-600">
+                        Đối tác vận chuyển: GHN
+                      </div>
+                      <div className="text-sm font-semibold text-slate-800">
+                        Mã vận đơn: {order.shippingCode}
+                      </div>
                     </div>
                   </div>
-                  <a 
+                  <a
                     href={`https://5sao.ghn.dev/order/tracking-detail?order_code=${order.shippingCode}`}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -184,9 +192,3 @@ const OrderDetailPage = () => {
 };
 
 export default OrderDetailPage;
-
-
-
-
-
-

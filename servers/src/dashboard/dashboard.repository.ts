@@ -1,4 +1,4 @@
-﻿import { Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -166,6 +166,27 @@ export class DashboardRepository {
             email: true,
           },
         },
+        orderItems: {
+          take: 1,
+          include: {
+            variant: {
+              include: {
+                images: {
+                  take: 1,
+                  orderBy: { isPrimary: 'desc' }
+                },
+                product: {
+                  include: {
+                    images: {
+                      take: 1,
+                      orderBy: { isThumbnail: 'desc' }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       },
     });
   }

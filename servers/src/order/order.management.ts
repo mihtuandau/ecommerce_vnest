@@ -42,13 +42,6 @@ export class OrderManagement {
 
     if (dto.status === 'CANCELLED') {
       await this.repository.restoreOrderStock(id);
-
-      // Nếu đơn hàng cũ đã được giao (đã tăng soldCount), thì phải trừ lại
-      if (oldOrder.status === 'DELIVERED') {
-        for (const item of oldOrder.orderItems) {
-          await this.repository.decrementProductSoldCount(item.variant.productId, item.quantity);
-        }
-      }
     }
 
     await this.cacheService.clearRelatedCaches(id, order.userId || undefined);
@@ -224,28 +217,38 @@ export class OrderManagement {
   }
 
   private async handleDeliveredStatus(dto: UpdateOrderDto, oldOrder: any) {
-
-    if (dto.status === 'DELIVERED' && oldOrder.status !== 'DELIVERED') {
-      // Note: soldCount and averageRating are now updated automatically via database triggers
-      // - soldCount is incremented when OrderItem is created (in createOrderTransactional)
-      // - soldCount is decremented when OrderItem is deleted (if order is cancelled)
-      // - averageRating is updated when Review is created/updated/deleted
-      // No manual updates needed here anymore.
-
+    if (dto.status === 'DELIVERED') {
+      // 1. Update Payment status to SUCCESS if not already
       if (oldOrder.payment && oldOrder.payment.status !== 'SUCCESS') {
         try {
           await this.paymentService.updateStatus(oldOrder.payment.id, { status: 'SUCCESS' });
-
+          this.logger.log(`Automatically marked payment ${oldOrder.payment.id} as SUCCESS for delivered order ${oldOrder.id}`);
         } catch (error) {
-          this.logger.error('Failed to update payment status:', error);
+          this.logger.error('Failed to update payment status for delivered order:', error);
         }
-      } else if (oldOrder.payment?.status === 'SUCCESS') {
-
       }
-    } else if (dto.status === 'DELIVERED' && oldOrder.status === 'DELIVERED') {
-      this.logger.warn(` Order ${oldOrder.id} is ALREADY DELIVERED, SKIPPING soldCount increment`);
-    } else {
 
+      // 2. Increment soldCount for each product if it wasn't DELIVERED before
+      if (oldOrder.status !== 'DELIVERED') {
+        for (const item of oldOrder.orderItems) {
+          try {
+            await this.repository.incrementProductSoldCount(item.variant.productId, item.quantity);
+          } catch (error) {
+            this.logger.error(`Failed to increment soldCount for product ${item.variant.productId}:`, error);
+          }
+        }
+      }
+    } else {
+      // If status is changed FROM DELIVERED to something else (e.g. back to PROCESSING or CANCELLED)
+      if (oldOrder.status === 'DELIVERED') {
+        for (const item of oldOrder.orderItems) {
+          try {
+            await this.repository.decrementProductSoldCount(item.variant.productId, item.quantity);
+          } catch (error) {
+            this.logger.error(`Failed to decrement soldCount for product ${item.variant.productId}:`, error);
+          }
+        }
+      }
     }
   }
 
@@ -294,7 +297,9 @@ export class OrderManagement {
       to_address: address.street || "Địa chỉ khách hàng",
       to_ward_code: address.wardCode,
       to_district_id: Number(address.districtCode),
-      cod_amount: order.payment?.method === 'CASH' ? Math.round(order.total) : 0,
+      cod_amount: (order.paymentMethod === 'CASH' || order.paymentMethod === 'COD' || order.payment?.method === 'CASH') && order.payment?.status !== 'SUCCESS' 
+        ? Math.round(order.total) 
+        : 0,
       content: `Đơn hàng ${order.orderCode}`,
       weight: Math.min(totalWeight, 30000),
       length: Math.min(maxLength, 150),
@@ -307,6 +312,11 @@ export class OrderManagement {
         weight: item.weight || 200
       }))
     };
+
+    // Log để debug COD amount
+    this.logger.debug(
+      `[GHN Sync] Order ${order.orderCode} | paymentMethod: ${order.paymentMethod} | payment.method: ${(order as any).payment?.method} | payment.status: ${(order as any).payment?.status} | cod_amount: ${ghnData.cod_amount} | total: ${order.total}`
+    );
 
     try {
       const result = await this.ghnService.createOrder(ghnData);
@@ -330,8 +340,3 @@ export class OrderManagement {
     }
   }
 }
-
-
-
-
-

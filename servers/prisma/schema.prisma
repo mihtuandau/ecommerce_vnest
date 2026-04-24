@@ -12,6 +12,8 @@ model User {
   email                String         @unique // @unique tự tạo index, không cần @@index
   password             String
   name                 String?
+  phone                String?
+  avatar               String?
   role                 Role           @default(CUSTOMER)
   status               UserStatus     @default(PENDING)
   verificationCode     String?
@@ -126,6 +128,7 @@ model Brand {
 model Category {
   id        Int                 @id @default(autoincrement())
   name      String              @unique
+  slug      String?             @unique // SEO-friendly URL
   image     String?
   products  Product[]
   discountCategories DiscountCategory[] // Discount liên kết qua junction table

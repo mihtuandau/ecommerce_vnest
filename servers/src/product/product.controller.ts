@@ -1,4 +1,4 @@
-﻿import { 
+import { 
   Controller, Get, Post, Put, Delete, Body, Param, Query, Request,
   UseGuards, UseInterceptors, UploadedFiles, BadRequestException, HttpCode, HttpStatus
 } from '@nestjs/common';
@@ -53,19 +53,25 @@ export class ProductController {
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Permissions('product.manage')
+  @ApiBearerAuth('Authorization')
   create(@Body() createProductDto: CreateProductDto) {
     return this.productService.create(createProductDto);
   }
 
   @Put(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Permissions('product.manage')
+  @ApiBearerAuth('Authorization')
   update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
     return this.productService.update(+id, updateProductDto);
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Permissions('product.manage')
+  @ApiBearerAuth('Authorization')
   remove(@Param('id') id: string, @Body() deleteProductDto: DeleteProductDto) {
     if (!deleteProductDto.confirm) {
       throw new Error('Confirm deletion required');
@@ -73,28 +79,36 @@ export class ProductController {
     return this.productService.remove(+id);
   }
 
-  @Post(':id/variant')
+  @Post('variant/:variantId')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Permissions('product.manage')
+  @ApiBearerAuth('Authorization')
   createVariant(@Param('id') id: string, @Body() createVariantDto: CreateVariantDto) {
     createVariantDto.productId = +id;
     return this.productService.createVariant(createVariantDto);
   }
 
   @Put('variant/:variantId')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Permissions('product.manage')
+  @ApiBearerAuth('Authorization')
   updateVariant(@Param('variantId') variantId: string, @Body() body: any) {
     return this.productService.updateVariant(+variantId, body);
   }
 
   @Delete('variant/:variantId')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Permissions('product.manage')
+  @ApiBearerAuth('Authorization')
   removeVariant(@Param('variantId') variantId: string) {
     return this.productService.deleteVariant(+variantId);
   }
 
   
   @Post(':id/images')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Permissions('product.manage')
+  @ApiBearerAuth('Authorization')
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FilesInterceptor('files', 10, multerConfig))
   async uploadProductImages(
@@ -120,7 +134,9 @@ export class ProductController {
 
   
   @Post('variant/:variantId/images')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Permissions('product.manage')
+  @ApiBearerAuth('Authorization')
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FilesInterceptor('files', 10, multerConfig))
   async uploadVariantImages(
@@ -146,14 +162,18 @@ export class ProductController {
 
   
   @Delete('images/:imageId')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Permissions('product.manage')
+  @ApiBearerAuth('Authorization')
   async deleteProductImage(@Param('imageId') imageId: string) {
     return this.productService.deleteProductImage(+imageId);
   }
 
   
   @Delete('variant-images/:imageId')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Permissions('product.manage')
+  @ApiBearerAuth('Authorization')
   async deleteVariantImage(@Param('imageId') imageId: string) {
     return this.productService.deleteVariantImage(+imageId);
   }

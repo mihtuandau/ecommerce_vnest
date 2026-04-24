@@ -50,9 +50,9 @@ export class AuthController {
   ) {
     const result = await this.authService.verifyOtp(body.email, body.code);
     
-    if (result.access_token) {
-      this.authService.setAuthCookie(res, result.access_token);
-      this.authService.setRefreshTokenCookie(res, result.refresh_token);
+    if (result.accessToken) {
+      this.authService.setAuthCookie(res, result.accessToken);
+      this.authService.setRefreshTokenCookie(res, result.refreshToken);
     }
 
     return res.json(result);
@@ -72,8 +72,8 @@ export class AuthController {
   ) {
 
     const result = await this.authService.registerInitialAdmin(registerAdminDto);
-    this.authService.setAuthCookie(res, result.access_token);
-    this.authService.setRefreshTokenCookie(res, result.refresh_token);
+    this.authService.setAuthCookie(res, result.accessToken);
+    this.authService.setRefreshTokenCookie(res, result.refreshToken);
 
     return res.status(HttpStatus.CREATED).json({
       user: result.user,
@@ -90,8 +90,8 @@ export class AuthController {
     @Res() res: Response,
   ) {
     const result = await this.authService.registerAdmin(registerAdminDto);
-    this.authService.setAuthCookie(res, result.access_token);
-    this.authService.setRefreshTokenCookie(res, result.refresh_token);
+    this.authService.setAuthCookie(res, result.accessToken);
+    this.authService.setRefreshTokenCookie(res, result.refreshToken);
 
     return res.status(HttpStatus.CREATED).json({
       user: result.user,
@@ -108,12 +108,12 @@ export class AuthController {
     );
     const result = await this.authService.login({ sub: user.id }, user);
 
-    this.authService.setAuthCookie(res, result.access_token);
-    this.authService.setRefreshTokenCookie(res, result.refresh_token);
+    this.authService.setAuthCookie(res, result.accessToken);
+    this.authService.setRefreshTokenCookie(res, result.refreshToken);
 
     return res.json({
       user: result.user,
-      access_token: result.access_token,
+      accessToken: result.accessToken,
       message: 'Login successful',
     });
   }
@@ -134,8 +134,8 @@ export class AuthController {
         .json({ message: 'No refresh token provided' });
     }
     const result = await this.authService.refreshAccessToken(token);
-    this.authService.setAuthCookie(res, result.access_token);
-    return res.json({ access_token: result.access_token, message: 'Token refreshed' });
+    this.authService.setAuthCookie(res, result.accessToken);
+    return res.json({ accessToken: result.accessToken, message: 'Token refreshed' });
   }
 
   @Post('forgot-password')
@@ -197,6 +197,7 @@ export class AuthController {
     const origins = (process.env.FRONTEND_URL || 'http://localhost:5173').split(',').map(o => o.trim());
     const frontendUrl = origins.find(o => o.includes('localhost')) || origins[0];
 
+    console.log(`Google Auth Redirecting to: ${frontendUrl}/login-success`);
     return res.redirect(`${frontendUrl}/login-success?user=${userData}`);
   }
 
@@ -210,6 +211,8 @@ export class AuthController {
       id: fullUser.id,
       email: fullUser.email,
       name: fullUser.name,
+      phone: fullUser.phone,
+      avatar: fullUser.avatar,
       role: fullUser.role,
       status: fullUser.status,
       createdAt: fullUser.createdAt,

@@ -1,4 +1,4 @@
-﻿import {
+import {
   Controller,
   Get,
   Post,
@@ -62,6 +62,22 @@ export class ReviewController {
       +orderId,
     );
     return review;
+  }
+
+  @Get('my-reviews')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  async getMyReviews(
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+    @Req() req?: any,
+  ) {
+    const userId = req.user.userId;
+    return this.reviewService.getMyReviews(
+      userId,
+      page ? +page : 1,
+      limit ? +limit : 10,
+    );
   }
 
   @Get('product/:productId')

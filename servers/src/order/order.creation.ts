@@ -281,7 +281,18 @@ export class OrderCreation {
 
   private async createPaymentRecord(orderId: number, paymentMethod?: string) {
     try {
-      const finalMethod = paymentMethod === 'PAYOS' ? 'VNPAY' : (paymentMethod || 'CASH');
+      // Chuẩn hóa phương thức thanh toán: COD từ frontend -> CASH trong enum
+      const method = paymentMethod?.toUpperCase();
+      let finalMethod = 'CASH';
+      
+      if (method === 'VNPAY' || method === 'PAYOS') {
+        finalMethod = 'VNPAY';
+      } else if (method === 'MOMO') {
+        finalMethod = 'MOMO';
+      } else if (method === 'CARD') {
+        finalMethod = 'CARD';
+      }
+      
       await this.paymentService.create({
         orderId,
         method: finalMethod as any,

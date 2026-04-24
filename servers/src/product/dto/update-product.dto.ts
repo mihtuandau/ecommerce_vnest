@@ -1,4 +1,4 @@
-﻿import { IsString, IsNumber, IsPositive, IsOptional, IsInt, IsEnum } from 'class-validator';
+import { IsString, IsNumber, IsPositive, IsOptional, IsInt, IsEnum, IsArray } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';  
 
 export class UpdateProductDto {
@@ -94,9 +94,12 @@ export class UpdateProductDto {
   @IsOptional()
   @IsString()
   metaDesc?: string;
+
+  @IsOptional()
+  @IsArray()
+  images?: any[];
+
+  @IsOptional()
+  @IsArray()
+  variants?: any[];
 }
-
-
-
-
-

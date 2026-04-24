@@ -18,6 +18,7 @@ export class UserService {
       email: data.email,
       password: await bcrypt.hash(data.password, 10),
       name: data.name,
+      phone: data.phone,
       role: data.role || 'CUSTOMER',
       status: data.status || UserStatus.ACTIVE,
       verificationCode: data.verificationCode,
@@ -37,13 +38,14 @@ export class UserService {
     return updatedUser;
   }
 
-  async updateVerification(id: number, data: { verificationCode: string; verificationExpires: Date; name?: string; password?: string }): Promise<User> {
+  async updateVerification(id: number, data: { verificationCode: string; verificationExpires: Date; name?: string; password?: string; phone?: string }): Promise<User> {
     const updateData: Prisma.UserUpdateInput = {
       verificationCode: data.verificationCode,
       verificationExpires: data.verificationExpires,
       status: UserStatus.PENDING,
     };
     if (data.name) updateData.name = data.name;
+    if (data.phone) updateData.phone = data.phone;
     if (data.password) updateData.password = await bcrypt.hash(data.password, 10);
 
     return this.repository.update(id, updateData);
@@ -109,6 +111,8 @@ export class UserService {
     if (data.name) updateData.name = data.name;
     if (data.email) updateData.email = data.email;
     if (data.role) updateData.role = data.role;
+    if (data.phone) updateData.phone = data.phone;
+    if (data.avatar) updateData.avatar = data.avatar;
     if (data.password) {
       updateData.password = await bcrypt.hash(data.password, 10);
     }

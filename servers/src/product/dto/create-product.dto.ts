@@ -1,4 +1,4 @@
-﻿import { IsString, IsNumber, IsPositive, IsOptional, IsInt } from 'class-validator';
+import { IsString, IsNumber, IsPositive, IsOptional, IsInt, IsArray, IsEnum } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';  
 
 export class CreateProductDto {
@@ -29,6 +29,16 @@ export class CreateProductDto {
   basePrice: number;
 
   @ApiProperty({ 
+    example: 250000, 
+    description: 'Giá niêm yết (VND)', 
+    required: false 
+  })
+  @IsOptional()
+  @IsNumber()
+  @IsPositive()
+  originalPrice?: number;
+
+  @ApiProperty({ 
     example: 1, 
     description: 'ID category (phải tồn tại)', 
     required: true 
@@ -54,6 +64,16 @@ export class CreateProductDto {
   @IsString()
   slug?: string;
 
+  @ApiProperty({ 
+    example: 'active', 
+    description: 'Trạng thái sản phẩm (active, draft, inactive)', 
+    required: false,
+    enum: ['active', 'draft', 'inactive']
+  })
+  @IsOptional()
+  @IsEnum(['active', 'draft', 'inactive'])
+  status?: string;
+
   @ApiProperty({
     example: 'Áo thun nam - Vnest',
     description: 'SEO meta title (tùy chọn)',
@@ -71,9 +91,12 @@ export class CreateProductDto {
   @IsOptional()
   @IsString()
   metaDesc?: string;
+
+  @IsOptional()
+  @IsArray()
+  images?: any[];
+
+  @IsOptional()
+  @IsArray()
+  variants?: any[];
 }
-
-
-
-
-

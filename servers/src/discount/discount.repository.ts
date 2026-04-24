@@ -47,6 +47,7 @@ export class DiscountRepository {
         _count: {
           select: { orders: true },
         },
+        applicableToProducts: true,
       },
     });
   }
@@ -58,6 +59,7 @@ export class DiscountRepository {
         _count: {
           select: { orders: true },
         },
+        applicableToProducts: true,
       },
       orderBy: { createdAt: 'desc' },
     });

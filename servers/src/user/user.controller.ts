@@ -1,4 +1,4 @@
-﻿import {
+import {
   Controller,
   Get,
   Post,
@@ -37,20 +37,25 @@ export class UserController {
   @Get()
   @Permissions('user.view')
   async findAll(@Query() query: QueryUserDto) {
-    const users = await this.userService.findAll(query);
-
-    return users;
+    return this.userService.findAll(query);
   }
 
+  // ── Must come BEFORE @Get(':id') ──────────────────────────────────
   @Get('profile')
   async getProfile(@Req() req: any) {
     const userId = req.user.userId;
     const user = await this.userService.findOne(userId);
-    if (!user) {
-      throw new Error('User not found');
-    }
-    const { password, ...userWithoutPassword } = user;
-    return { user: userWithoutPassword };
+    if (!user) throw new Error('User not found');
+
+    const {
+      password, verificationCode, verificationExpires,
+      resetPasswordToken, resetPasswordExpires,
+      ...safeUser
+    } = user;
+
+    // Always return fresh permissions from DB so client stays in sync
+    const permissions = await this.userService.getPermissionsByRole(user.role);
+    return { user: { ...safeUser, permissions } };
   }
 
   @Put('profile')
@@ -78,9 +83,7 @@ export class UserController {
     }
 
     const user = await this.userService.findOne(id);
-    if (!user) {
-      throw new Error('User not found');
-    }
+    if (!user) throw new Error('User not found');
 
     const { password, ...userWithoutPassword } = user;
     return userWithoutPassword;
@@ -110,28 +113,23 @@ export class UserController {
     const userRole = req.user.role;
     const permissions = req.user.permissions || [];
 
-    
     const isStaff = userRole === 'ADMIN' || permissions.includes('user.manage');
     const isSelf = userId === id;
 
     if (!isStaff && !isSelf) {
       throw new ForbiddenException('Bạn không có quyền cập nhật người dùng này');
     }
-    
-    
+
     if (!isStaff) {
       delete updateUserDto.role;
     }
 
-    
     const updatedUser = await this.userService.update(id, updateUserDto);
     await this.auditLogService.write({
       action: 'USER_UPDATE',
       actorId: req.user?.userId,
       targetUserId: id,
-      details: {
-        fields: Object.keys(updateUserDto || {}),
-      },
+      details: { fields: Object.keys(updateUserDto || {}) },
     });
     const { password, ...userWithoutPassword } = updatedUser;
     return {
@@ -191,9 +189,3 @@ export class UserController {
     };
   }
 }
-
-
-
-
-
-

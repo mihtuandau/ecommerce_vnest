@@ -8,29 +8,19 @@ async function main() {
 
   // 1. Định nghĩa danh sách các Permission
   const permissions = [
-    {
-      name: 'user.manage',
-      description: 'Toàn quyền quản lý người dùng và phân quyền',
-    },
-    { name: 'user.view', description: 'Xem danh sách khách hàng' },
-    {
-      name: 'product.manage',
-      description: 'Quản lý sản phẩm (thêm, sửa, xóa)',
-    },
+    { name: 'dashboard.view',  description: 'Xem tổng quan dashboard quản trị' },
+    { name: 'user.manage',     description: 'Toàn quyền quản lý người dùng và phân quyền' },
+    { name: 'user.view',       description: 'Xem danh sách khách hàng' },
+    { name: 'product.manage',  description: 'Quản lý sản phẩm (thêm, sửa, xóa)' },
     { name: 'category.manage', description: 'Quản lý danh mục sản phẩm' },
-    { name: 'order.manage', description: 'Quản lý và xử lý đơn hàng' },
-    { name: 'order.view', description: 'Xem danh sách đơn hàng' },
-    {
-      name: 'inventory.manage',
-      description: 'Quản lý kho hàng, nhập xuất tồn',
-    },
-    { name: 'report.view', description: 'Xem báo cáo doanh thu và kinh doanh' },
-    { name: 'chat.support', description: 'Quản lý chat hỗ trợ khách hàng' },
-    {
-      name: 'discount.manage',
-      description: 'Quản lý mã giảm giá và flash sale',
-    },
-    { name: 'banner.manage', description: 'Quản lý banner và giao diện' },
+    { name: 'order.manage',    description: 'Quản lý và xử lý đơn hàng' },
+    { name: 'order.view',      description: 'Xem danh sách đơn hàng' },
+    { name: 'inventory.manage',description: 'Quản lý kho hàng, nhập xuất tồn' },
+    { name: 'report.view',     description: 'Xem báo cáo doanh thu và kinh doanh' },
+    { name: 'chat.support',    description: 'Quản lý chat hỗ trợ khách hàng' },
+    { name: 'discount.manage', description: 'Quản lý mã giảm giá và flash sale' },
+    { name: 'banner.manage',   description: 'Quản lý banner và giao diện' },
+    { name: 'settings.manage', description: 'Cài đặt và phân quyền hệ thống' },
   ];
 
   console.log('--- Creating Permissions ---');
@@ -53,19 +43,21 @@ async function main() {
   const rolePermissionsMap: Record<string, string[]> = {
     [Role.ADMIN]: allPermissions.map((p) => p.name), // Admin có tất cả quyền
     [Role.KHO]: [
+      'dashboard.view',
       'product.manage',
       'category.manage',
       'inventory.manage',
       'order.view',
-      'report.view'
+      'report.view',
     ],
     [Role.BAN_HANG]: [
+      'dashboard.view',
       'order.manage',
       'order.view',
       'user.view',
       'chat.support',
       'discount.manage',
-      'report.view'
+      'report.view',
     ],
     [Role.CUSTOMER]: [], // Khách hàng không có quyền truy cập trang quản trị
   };
@@ -86,8 +78,6 @@ async function main() {
       }
     }
   }
-
-
 }
 
 main()

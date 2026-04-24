@@ -1,4 +1,4 @@
-﻿import { Controller, Post, UseInterceptors, UploadedFiles, BadRequestException } from '@nestjs/common';
+import { Controller, Post, UseInterceptors, UploadedFiles, BadRequestException } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiConsumes } from '@nestjs/swagger';
 import { UploadService } from './upload.service';
@@ -13,6 +13,7 @@ export class UploadController {
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FilesInterceptor('files', 10, multerConfig))
   async uploadImages(@UploadedFiles() files: Express.Multer.File[]) {  
+    console.log('Received files for upload:', files?.length);
     if (!files || files.length === 0) {
       throw new BadRequestException('No files uploaded');
     }

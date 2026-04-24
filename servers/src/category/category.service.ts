@@ -1,4 +1,4 @@
-﻿import { Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Category } from '@prisma/client';
 import { CreateCategoryDto } from './dto/create-category.dto';
@@ -8,8 +8,24 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 export class CategoryService {
   constructor(private prisma: PrismaService) {}
 
+  private slugify(text: string): string {
+    return text
+      .toString()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[đĐ]/g, 'd')
+      .replace(/([^0-9a-z-\s])/g, '')
+      .replace(/(\s+)/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  }
+
   async create(data: CreateCategoryDto): Promise<Category> {
-    return this.prisma.category.create({ data });
+    const slug = this.slugify(data.name);
+    return this.prisma.category.create({ 
+      data: { ...data, slug } 
+    });
   }
 
   async findAll(): Promise<Category[]> {
@@ -31,7 +47,11 @@ export class CategoryService {
   }
 
   async update(id: number, data: UpdateCategoryDto): Promise<Category> {
-    return this.prisma.category.update({ where: { id }, data });
+    const updateData: any = { ...data };
+    if (data.name) {
+      updateData.slug = this.slugify(data.name);
+    }
+    return this.prisma.category.update({ where: { id }, data: updateData });
   }
 
   async remove(id: number): Promise<Category> {
