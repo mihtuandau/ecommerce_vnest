@@ -3,13 +3,14 @@
 import React from "react";
 import { Truck, CreditCard, Package, CheckCircle2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { OrderStatus, PaymentStatus, PaymentMethod } from "@/types/enums";
 
 interface ActionsProps {
   order: any;
   isPending: boolean;
-  onUpdateStatus: (params: { id: string; status: string }) => void;
+  onUpdateStatus: (params: { id: string; status: OrderStatus }) => void;
   onSyncGHN: (id: string) => void;
-  onUpdatePayment: (params: { paymentId: string; status: string; orderId: string }) => void;
+  onUpdatePayment: (params: { paymentId: string; status: PaymentStatus; orderId: string }) => void;
   id: string;
 }
 
@@ -22,7 +23,7 @@ export function Actions({
   id 
 }: ActionsProps) {
   const orderAny = order as any;
-  const isCancelled = order.status === "CANCELLED";
+  const isCancelled = order.status === OrderStatus.CANCELLED;
   
   const isUpdating = isPending;
   const isSyncing = isPending;
@@ -47,12 +48,12 @@ export function Actions({
             <p className="text-sm text-slate-500 italic">{order.note || "Không có ghi chú"}</p>
          </div>
          <div className="pt-2 space-y-3">
-            {!(order.paymentStatus === "PAID" || orderAny.payment?.status === "SUCCESS") && (
+            {!(order.paymentStatus === "PAID" || orderAny.payment?.status === PaymentStatus.SUCCESS) && (
                 <Button 
                     variant="outline"
                     size="sm"
                     className="w-full font-bold h-10 rounded-lg border-emerald-500 text-emerald-600 hover:bg-emerald-50"
-                    onClick={() => orderAny.payment?.id && onUpdatePayment({ paymentId: String(orderAny.payment.id), status: "SUCCESS", orderId: id })}
+                    onClick={() => orderAny.payment?.id && onUpdatePayment({ paymentId: String(orderAny.payment.id), status: PaymentStatus.SUCCESS, orderId: id })}
                     disabled={isPending || !orderAny.payment?.id}
                 >
                     {isUpdatingPayment ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <CreditCard className="h-4 w-4 mr-2" />}
@@ -60,11 +61,11 @@ export function Actions({
                 </Button>
             )}
             
-            {order.status === "PENDING" && (
+            {order.status === OrderStatus.PENDING && (
                 <Button 
                     size="sm"
                     className="w-full font-bold h-10 rounded-lg bg-primary text-white hover:bg-slate-800"
-                    onClick={() => onUpdateStatus({ id, status: "PROCESSING" })}
+                    onClick={() => onUpdateStatus({ id, status: OrderStatus.PROCESSING })}
                     disabled={isPending}
                 >
                     {isUpdating ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <CheckCircle2 className="h-4 w-4 mr-2" />}
@@ -72,7 +73,7 @@ export function Actions({
                 </Button>
             )}
 
-            {order.status === "PROCESSING" && (
+            {order.status === OrderStatus.PROCESSING && (
                 <Button 
                     variant="outline"
                     size="sm"
@@ -85,12 +86,12 @@ export function Actions({
                 </Button>
             )}
 
-            {order.status === "SHIPPED" && (
+            {order.status === OrderStatus.SHIPPED && (
                 <Button 
                     variant="outline"
                     size="sm"
                     className="w-full font-bold h-10 rounded-lg border-indigo-500 text-indigo-600 hover:bg-indigo-50"
-                    onClick={() => onUpdateStatus({ id, status: "DELIVERED" })}
+                    onClick={() => onUpdateStatus({ id, status: OrderStatus.DELIVERED })}
                     disabled={isPending}
                 >
                     {isUpdating ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Package className="h-4 w-4 mr-2" />}
@@ -98,7 +99,7 @@ export function Actions({
                 </Button>
             )}
 
-            {(order.status === "DELIVERED" || isCancelled) && (
+            {(order.status === OrderStatus.DELIVERED || isCancelled) && (
                 <div className="text-center p-3 rounded-lg bg-slate-50 border border-slate-100">
                     <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">
                         {isCancelled ? "Đơn hàng đã hủy" : "Đơn hàng đã hoàn tất"}

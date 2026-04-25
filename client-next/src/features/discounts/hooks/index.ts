@@ -5,10 +5,19 @@ import { discountsApi } from "../api";
 import { queryKeys } from "@/constants/queryKeys";
 import { useToast } from "@/hooks/useToast";
 
+// ── Customer: chỉ lấy voucher (không Flash Sale) ──
 export function useDiscounts(params?: Record<string, any>) {
   return useQuery({
-    queryKey: queryKeys.discounts.all,
+    queryKey: [...queryKeys.discounts.all, "public", params],
     queryFn: () => discountsApi.getDiscounts(params),
+  });
+}
+
+// ── Admin: lấy TẤT CẢ mã giảm giá (bao gồm cả Flash Sale) ──
+export function useAdminDiscounts(params?: Record<string, any>) {
+  return useQuery({
+    queryKey: [...queryKeys.discounts.all, "admin", params],
+    queryFn: () => discountsApi.getDiscounts({ ...params, manage: true }),
   });
 }
 
@@ -28,10 +37,10 @@ export function useCreateDiscount() {
     mutationFn: (data: any) => discountsApi.createDiscount(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.discounts.all });
-      success("Tạo mã giảm giá thành công");
+      success("Tạo chương trình thành công");
     },
     onError: (err: any) => {
-      error(err?.response?.data?.message || "Lỗi khi tạo mã giảm giá");
+      error(err?.response?.data?.message || "Lỗi khi tạo chương trình");
     },
   });
 }
@@ -43,7 +52,7 @@ export function useUpdateDiscount() {
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: any }) =>
       discountsApi.updateDiscount(id, data),
-    onSuccess: (data) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.discounts.all });
       success("Cập nhật thành công");
     },
@@ -61,7 +70,7 @@ export function useDeleteDiscount() {
     mutationFn: (id: string) => discountsApi.deleteDiscount(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.discounts.all });
-      success("Đã xóa mã giảm giá");
+      success("Đã xóa chương trình");
     },
     onError: (err: any) => {
       error(err?.response?.data?.message || "Lỗi khi xóa");
@@ -69,6 +78,7 @@ export function useDeleteDiscount() {
   });
 }
 
+// ── Customer: lấy Flash Sale đang diễn ra (sản phẩm + countdown) ──
 export function useFlashSale() {
   return useQuery({
     queryKey: ["discounts", "flash-sale"],

@@ -39,12 +39,12 @@ export class DashboardRepository {
   async getTotalRevenue(): Promise<number> {
     const data = await this.prisma.order.aggregate({
       where: { 
-        status: { not: 'CANCELLED' },
+        status: 'DELIVERED',
         payment: { status: 'SUCCESS' }
       },
-      _sum: { subtotal: true },
+      _sum: { total: true },
     });
-    return Number(data._sum.subtotal) || 0;
+    return Number(data._sum.total) || 0;
   }
 
   
@@ -55,13 +55,13 @@ export class DashboardRepository {
 
     const data = await this.prisma.order.aggregate({
       where: {
-        status: { not: 'CANCELLED' },
+        status: 'DELIVERED',
         createdAt: { gte: start, lte: end },
         payment: { status: 'SUCCESS' },
       },
-      _sum: { subtotal: true },
+      _sum: { total: true },
     });
-    return Number(data._sum.subtotal) || 0;
+    return Number(data._sum.total) || 0;
   }
 
   
@@ -103,7 +103,7 @@ export class DashboardRepository {
   async getMonthlyRevenue(year: number) {
     return this.prisma.order.findMany({
       where: {
-        status: { not: 'CANCELLED' },
+        status: 'DELIVERED',
         payment: { status: 'SUCCESS' },
         createdAt: {
           gte: new Date(year, 0, 1),
@@ -111,7 +111,7 @@ export class DashboardRepository {
         },
       },
       select: {
-        subtotal: true,
+        total: true,
         createdAt: true
       }
     });
@@ -121,7 +121,7 @@ export class DashboardRepository {
   async getDailyRevenue(year: number, month: number) {
     return this.prisma.order.findMany({
       where: {
-        status: { not: 'CANCELLED' },
+        status: 'DELIVERED',
         payment: { status: 'SUCCESS' },
         createdAt: {
           gte: new Date(year, month, 1),
@@ -129,7 +129,7 @@ export class DashboardRepository {
         },
       },
       select: {
-        subtotal: true,
+        total: true,
         createdAt: true
       }
     });
@@ -139,7 +139,7 @@ export class DashboardRepository {
   async getRevenueByDateRange(start: Date, end: Date) {
     return this.prisma.order.findMany({
       where: {
-        status: { not: 'CANCELLED' },
+        status: 'DELIVERED',
         payment: { status: 'SUCCESS' },
         createdAt: {
           gte: start,
@@ -147,7 +147,7 @@ export class DashboardRepository {
         },
       },
       select: {
-        subtotal: true,
+        total: true,
         createdAt: true
       }
     });
@@ -196,14 +196,14 @@ export class DashboardRepository {
     return this.prisma.orderItem.findMany({
       where: {
         order: {
-          status: { not: 'CANCELLED' },
+          status: 'DELIVERED',
           payment: { status: 'SUCCESS' },
         },
       },
       include: {
         order: {
           select: {
-            subtotal: true,
+            total: true,
             discountAmount: true,
           },
         },

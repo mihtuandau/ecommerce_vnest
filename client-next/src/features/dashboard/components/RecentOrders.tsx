@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/Button";
 import Link from "next/link";
 import { ROUTES } from "@/constants/routes";
 import { formatCurrency } from "@/utils/formatCurrency";
-import dayjs from "dayjs";
+import dayjs from "@/lib/dayjs";
 import { STATUS_MAP } from "../constants";
 
 interface RecentOrdersProps {

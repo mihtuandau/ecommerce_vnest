@@ -16,6 +16,7 @@ import { productsApi } from "@/features/products/api";
 import { usersApi } from "@/features/users/api";
 import { cn } from "@/utils/cn";
 import { useToast } from "@/hooks/useToast";
+import { Role } from "@/types/enums";
 
 const profileSchema = z.object({
   name: z.string().min(2, "Tên phải có ít nhất 2 ký tự"),
@@ -170,7 +171,7 @@ export default function ProfilePage() {
                 <div className="flex items-center justify-center gap-1.5 mt-1">
                   <span className={cn(
                     "px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider",
-                    user.role === "ADMIN" ? "bg-primary/10 text-primary" : "bg-emerald-500/10 text-emerald-500"
+                    user.role === Role.ADMIN ? "bg-primary/10 text-primary" : "bg-emerald-500/10 text-emerald-500"
                   )}>
                     {user.role}
                   </span>

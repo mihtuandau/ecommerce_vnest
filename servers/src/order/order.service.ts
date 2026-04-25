@@ -21,8 +21,8 @@ export class OrderService {
     private orderManagement: OrderManagement,
   ) {}
 
-  async create(userId: number | null, dto: CreateOrderDto): Promise<any> {
-    return this.orderCreation.create(userId, dto);
+  async create(userId: number | null, dto: CreateOrderDto, ipAddr: string = '127.0.0.1'): Promise<any> {
+    return this.orderCreation.create(userId, dto, ipAddr);
   }
 
   async findAll(query: QueryOrderDto) {

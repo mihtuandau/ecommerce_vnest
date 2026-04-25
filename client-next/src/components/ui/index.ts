@@ -22,3 +22,5 @@ export * from "./DropdownMenu";
 export * from "./Sheet";
 export * from "./Skeleton";
 export * from "./Tabs";
+export { Textarea } from "./Textarea";
+export { Switch } from "./Switch";

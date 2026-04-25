@@ -1,7 +1,7 @@
 "use client";
 
 import { useProducts } from "@/features/products/hooks";
-import { ProductCard } from "@/components/shared/ProductCard";
+import { ProductCard } from "./cards/ProductCard";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Product } from "@/types/models";
 import { useSearchParams } from "next/navigation";

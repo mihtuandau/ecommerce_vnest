@@ -4,7 +4,15 @@ import { DataTable } from "@/components/ui/DataTable";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { formatDate } from "@/utils/formatDate";
 import { Button } from "@/components/ui/Button";
-import { Pencil, Trash2, MoreHorizontal, Zap, Ticket, Calendar, History } from "lucide-react";
+import {
+  Pencil,
+  Trash2,
+  MoreHorizontal,
+  Zap,
+  Ticket,
+  Calendar,
+  History,
+} from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { useDeleteDiscount } from "../../hooks";
 import {
@@ -21,9 +29,7 @@ export const columns: ColumnDef<Discount>[] = [
     id: "stt",
     header: "STT",
     cell: ({ row }) => (
-      <span className="text-[10px] font-bold text-slate-400">
-        {row.index + 1}
-      </span>
+      <span className="text-[10px] font-bold text-slate-400">{row.index + 1}</span>
     ),
   },
   {
@@ -53,10 +59,15 @@ export const columns: ColumnDef<Discount>[] = [
     cell: ({ row }) => {
       const discount = row.original;
       return (
-        <Badge variant="outline" className={cn(
-          "text-[9px] font-bold uppercase",
-          discount.isFlashSale ? "bg-amber-50 text-amber-600 border-amber-100" : "bg-slate-50 text-slate-600 border-slate-100"
-        )}>
+        <Badge
+          variant="outline"
+          className={cn(
+            "text-[9px] font-bold uppercase",
+            discount.isFlashSale
+              ? "bg-amber-50 text-amber-600 border-amber-100"
+              : "bg-slate-50 text-slate-600 border-slate-100"
+          )}
+        >
           {discount.isFlashSale ? "Flash Sale" : "Voucher"}
         </Badge>
       );
@@ -69,7 +80,7 @@ export const columns: ColumnDef<Discount>[] = [
       const discount = row.original;
       const isPercentage = !!discount.percentage;
       const value = discount.percentage || discount.fixedAmount || 0;
-      
+
       return (
         <div className="flex flex-col">
           <span className="text-sm font-bold text-slate-900">
@@ -90,19 +101,23 @@ export const columns: ColumnDef<Discount>[] = [
       const used = discount.usageCount || 0;
       const limit = discount.usageLimit || 0;
       const percent = limit > 0 ? (used / limit) * 100 : 0;
-      
+
       return (
         <div className="flex flex-col gap-1 w-24">
           <div className="flex items-center justify-between text-[9px] font-bold uppercase tracking-tighter">
-            <span className="text-slate-400">{used}/{limit}</span>
-            <span className={cn(percent > 90 ? "text-rose-500" : "text-slate-900")}>{Math.round(percent)}%</span>
+            <span className="text-slate-400">
+              {used}/{limit}
+            </span>
+            <span className={cn(percent > 90 ? "text-rose-500" : "text-slate-900")}>
+              {Math.round(percent)}%
+            </span>
           </div>
           <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
-            <div 
+            <div
               className={cn(
                 "h-full transition-all duration-500",
                 percent > 90 ? "bg-rose-500" : "bg-slate-900"
-              )} 
+              )}
               style={{ width: `${Math.min(percent, 100)}%` }}
             />
           </div>
@@ -139,19 +154,22 @@ export const columns: ColumnDef<Discount>[] = [
 
       if (isExpired) {
         return (
-          <Badge variant="outline" className="bg-slate-50 text-slate-400 border-slate-200 rounded-lg px-2 py-0.5 font-bold text-[9px] uppercase">
+          <Badge
+            variant="outline"
+            className="bg-slate-50 text-slate-400 border-slate-200 rounded-lg px-2 py-0.5 font-bold text-[9px] uppercase"
+          >
             Hết hạn
           </Badge>
         );
       }
 
       return (
-        <Badge 
-          variant="outline" 
+        <Badge
+          variant="outline"
           className={cn(
             "rounded-lg px-2 py-0.5 font-bold text-[9px] uppercase",
-            discount.isActive 
-              ? "bg-emerald-50 text-emerald-700 border-emerald-100" 
+            discount.isActive
+              ? "bg-emerald-50 text-emerald-700 border-emerald-100"
               : "bg-rose-50 text-rose-600 border-rose-100"
           )}
         >
@@ -171,12 +189,19 @@ export const columns: ColumnDef<Discount>[] = [
         <div className="flex justify-end">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-slate-400 hover:text-slate-600">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 rounded-lg text-slate-400 hover:text-slate-600"
+              >
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48 rounded-xl p-1 shadow-xl border-slate-200">
-              <DropdownMenuItem 
+            <DropdownMenuContent
+              align="end"
+              className="w-48 rounded-xl p-1 shadow-xl border-slate-200"
+            >
+              <DropdownMenuItem
                 className="rounded-lg cursor-pointer gap-2 py-2.5 text-sm font-medium text-slate-600 focus:text-primary"
                 onClick={() => router.push(`/admin/discounts/${discount.id}`)}
               >
@@ -184,10 +209,12 @@ export const columns: ColumnDef<Discount>[] = [
                 Chỉnh sửa mã
               </DropdownMenuItem>
               <div className="my-1 border-t border-slate-100" />
-              <DropdownMenuItem 
+              <DropdownMenuItem
                 className="rounded-lg cursor-pointer gap-2 py-2.5 text-sm font-medium text-rose-600 focus:bg-rose-50"
                 onClick={() => {
-                  if (confirm(`Bạn có chắc chắn muốn xóa mã giảm giá ${discount.code}?`)) {
+                  if (
+                    confirm(`Bạn có chắc chắn muốn xóa mã giảm giá ${discount.code}?`)
+                  ) {
                     deleteDiscount(discount.id);
                   }
                 }}

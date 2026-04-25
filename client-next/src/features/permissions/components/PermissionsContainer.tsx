@@ -10,6 +10,7 @@ import { RoleInfoCard } from "./RoleInfoCard";
 import { PermissionMatrix } from "./PermissionMatrix";
 import { MANAGED_ROLES } from "../constants";
 import { Permission } from "../api";
+import { Role } from "@/types/enums";
 
 export function PermissionsContainer() {
   const { data: allPermissions = [], isLoading: loadingPerms, refetch: refetchPerms } = useAllPermissions();
@@ -17,7 +18,7 @@ export function PermissionsContainer() {
   const { mutate: updateRole, isPending } = useUpdateRolePermissions();
 
   const [localPerms, setLocalPerms] = useState<Record<string, Set<number>>>({});
-  const [activeRole, setActiveRole] = useState<string>("ADMIN");
+  const [activeRole, setActiveRole] = useState<string>(Role.ADMIN);
   const [dirtyRoles, setDirtyRoles] = useState<Set<string>>(new Set());
 
   useEffect(() => {

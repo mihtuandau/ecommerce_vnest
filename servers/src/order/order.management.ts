@@ -189,17 +189,19 @@ export class OrderManagement {
       throw new NotFoundException('Order not found');
     }
 
-    if (order.userId) {
-      throw new BadRequestException('This order requires login to view');
-    }
-
-    const contactMatch = order.guestEmail === contact || order.guestPhone === contact;
+    // Allow lookup even if order belongs to a user, as long as contact info matches
+    const contactMatch = 
+      order.guestEmail === contact || 
+      order.guestPhone === contact || 
+      order.phone === contact ||
+      order.user?.email === contact ||
+      order.user?.phone === contact;
 
     if (!contactMatch) {
       throw new BadRequestException('Contact information does not match');
     }
 
-    return order;
+    return OrderHelper.serializeOrder(order);
   }
 
   private async handlePaymentCreation(order: any, oldOrder: any, dto: UpdateOrderDto) {
@@ -321,9 +323,17 @@ export class OrderManagement {
     try {
       const result = await this.ghnService.createOrder(ghnData);
       const shippingCode = result.data.order_code;
+      const actualGHNFee = result.data.total_fee || 0;
+
+      // Update snapshot with GHN fee
+      const newSnapshot = {
+        ...(order.shippingSnapshot as any || {}),
+        actualGHNFee: actualGHNFee
+      };
 
       const updated = await this.repository.update(id, {
         shippingCode: shippingCode,
+        shippingSnapshot: newSnapshot,
         status: 'SHIPPED', // Tự động chuyển trạng thái đơn hàng sang SHIPPED
       } as any);
 

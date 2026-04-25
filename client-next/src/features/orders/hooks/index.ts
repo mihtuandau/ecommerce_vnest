@@ -4,13 +4,23 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ordersApi } from "../api";
 import { queryKeys } from "@/constants/queryKeys";
 import { useToast } from "@/hooks/useToast";
+import { OrderStatus, PaymentStatus } from "@/types/enums";
 
 export function useOrders(params?: Record<string, any>) {
   return useQuery({
     queryKey: queryKeys.orders.list(params),
     queryFn: () => ordersApi.getOrders(params),
-    staleTime: 0,              // Luôn fetch lại khi query được invalidate
-    refetchOnWindowFocus: true, // Tự refetch khi người dùng quay lại tab
+    staleTime: 0,
+    refetchOnWindowFocus: true,
+  });
+}
+
+export function useMyOrders(params?: Record<string, any>) {
+  return useQuery({
+    queryKey: [...queryKeys.orders.list(params), "my-orders"],
+    queryFn: () => ordersApi.getMyOrders(params),
+    staleTime: 0,
+    refetchOnWindowFocus: true,
   });
 }
 
@@ -28,7 +38,7 @@ export function useUpdateOrderStatus() {
   const { success, error } = useToast();
 
   return useMutation({
-    mutationFn: ({ id, status }: { id: string; status: string }) =>
+    mutationFn: ({ id, status }: { id: string; status: OrderStatus }) =>
       ordersApi.updateOrderStatus(id, status),
     onSuccess: (data, variables) => {
       // Invalidate bằng cả id từ variables (string) để chắc chắn khớp key
@@ -87,12 +97,21 @@ export function useSyncToGHN() {
   });
 }
 
+export function useGuestOrderDetail(orderCode: string, contact: string) {
+  return useQuery({
+    queryKey: [...queryKeys.orders.detail(orderCode), "guest", contact],
+    queryFn: () => ordersApi.lookupGuestOrder(orderCode, contact),
+    enabled: !!orderCode && !!contact,
+    staleTime: 0,
+  });
+}
+
 export function useUpdatePaymentStatus() {
   const queryClient = useQueryClient();
   const { success, error } = useToast();
 
   return useMutation({
-    mutationFn: ({ paymentId, status, orderId }: { paymentId: string; status: string; orderId?: string }) =>
+    mutationFn: ({ paymentId, status, orderId }: { paymentId: string; status: PaymentStatus; orderId?: string }) =>
       ordersApi.updatePaymentStatus(paymentId, status),
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.orders.list() });

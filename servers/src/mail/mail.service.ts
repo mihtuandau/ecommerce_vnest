@@ -330,7 +330,7 @@ export class MailService {
           <div class="order-code-label">Mã đơn hàng</div>
           <div class="order-code-value">${orderCode}</div>
         </div>
-        <span class="order-badge">Đã nhận</span>
+        <span class="order-badge" style="background:#eff6ff; border-color:#bfdbfe; color:#2563eb">Chờ xử lý</span>
       </div>
 
       <div class="divider"></div>
@@ -366,7 +366,7 @@ export class MailService {
       <div class="divider"></div>
 
       <div class="btn-center">
-        <a href="${process.env.FRONTEND_URL || 'https://dautuan.com'}/order-lookup" class="btn">
+        <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/orders/guest/lookup/${orderCode}?contact=${email}" class="btn">
           Tra cứu đơn hàng
         </a>
       </div>

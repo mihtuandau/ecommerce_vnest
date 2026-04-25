@@ -3,6 +3,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { nameSchema, emailSchema } from "@/lib/zod";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/Select";
@@ -10,13 +11,14 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { User } from "@/types/models";
 import { useEffect } from "react";
 import { Save, X } from "lucide-react";
+import { Role, UserStatus } from "@/types/enums";
 
 const userSchema = z.object({
-  name: z.string().min(2, "Tên phải có ít nhất 2 ký tự"),
-  email: z.string().email("Email không hợp lệ"),
+  name: nameSchema,
+  email: emailSchema,
   phone: z.string().optional(),
-  role: z.enum(["CUSTOMER", "ADMIN", "KHO", "BAN_HANG"]),
-  status: z.enum(["ACTIVE", "SUSPENDED", "PENDING"]),
+  role: z.nativeEnum(Role),
+  status: z.nativeEnum(UserStatus),
   password: z.string().min(6, "Mật khẩu phải có ít nhất 6 ký tự").optional().or(z.literal("")),
 });
 
@@ -35,8 +37,8 @@ export function UserForm({ initialData, onSubmit, isLoading }: UserFormProps) {
       name: "",
       email: "",
       phone: "",
-      role: "CUSTOMER",
-      status: "ACTIVE",
+      role: Role.CUSTOMER,
+      status: UserStatus.ACTIVE,
       password: "",
     },
   });
@@ -47,8 +49,8 @@ export function UserForm({ initialData, onSubmit, isLoading }: UserFormProps) {
         name: initialData.name || "",
         email: initialData.email || "",
         phone: initialData.phone || "",
-        role: initialData.role as any || "CUSTOMER",
-        status: initialData.status as any || "ACTIVE",
+        role: initialData.role || Role.CUSTOMER,
+        status: initialData.status || UserStatus.ACTIVE,
         password: "", 
       });
     }
@@ -114,10 +116,10 @@ export function UserForm({ initialData, onSubmit, isLoading }: UserFormProps) {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent className="rounded-xl">
-                      <SelectItem value="CUSTOMER">Khách hàng</SelectItem>
-                      <SelectItem value="ADMIN">Quản trị viên</SelectItem>
-                      <SelectItem value="KHO">Nhân viên kho</SelectItem>
-                      <SelectItem value="BAN_HANG">Nhân viên bán hàng</SelectItem>
+                      <SelectItem value={Role.CUSTOMER}>Khách hàng</SelectItem>
+                      <SelectItem value={Role.ADMIN}>Quản trị viên</SelectItem>
+                      <SelectItem value={Role.KHO}>Nhân viên kho</SelectItem>
+                      <SelectItem value={Role.BAN_HANG}>Nhân viên bán hàng</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -137,9 +139,9 @@ export function UserForm({ initialData, onSubmit, isLoading }: UserFormProps) {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent className="rounded-xl">
-                      <SelectItem value="ACTIVE">Đang hoạt động</SelectItem>
-                      <SelectItem value="SUSPENDED">Vô hiệu hóa</SelectItem>
-                      <SelectItem value="PENDING">Chờ xác minh</SelectItem>
+                      <SelectItem value={UserStatus.ACTIVE}>Đang hoạt động</SelectItem>
+                      <SelectItem value={UserStatus.SUSPENDED}>Vô hiệu hóa</SelectItem>
+                      <SelectItem value={UserStatus.PENDING}>Chờ xác minh</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />

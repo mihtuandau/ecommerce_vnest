@@ -8,16 +8,11 @@ export const metadata: Metadata = {
   description: "Khám phá hàng ngàn sản phẩm công nghệ và gia dụng cao cấp tại Vnest Store.",
 };
 
+import { ShopSkeleton } from "@/features/shop/components/skeletons/ShopSkeleton";
+
 export default function ProductListingPage() {
   return (
-    <Suspense 
-      fallback={
-        <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4">
-          <Loader2 className="h-10 w-10 animate-spin text-primary/30" />
-          <p className="text-xs font-black text-slate-400 uppercase tracking-[0.2em]">Đang chuẩn bị bộ sưu tập...</p>
-        </div>
-      }
-    >
+    <Suspense fallback={<ShopSkeleton />}>
       <ShopContainer />
     </Suspense>
   );

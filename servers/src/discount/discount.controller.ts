@@ -1,4 +1,4 @@
-﻿import {
+import {
   Controller,
   Get,
   Post,
@@ -68,7 +68,6 @@ export class DiscountController {
   }
 
   @Post('validate')
-  @UseGuards(JwtAuthGuard)
   validate(@Body() validateDto: ValidateDiscountDto) {
     return this.discountService.validateDiscount(validateDto.code);
   }

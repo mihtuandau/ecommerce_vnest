@@ -29,7 +29,8 @@ import { useUpdateOrderStatus } from "../../hooks";
 import { cn } from "@/utils/cn";
 import Link from "next/link";
 import { ROUTES } from "@/constants/routes";
-import dayjs from "dayjs";
+import dayjs from "@/lib/dayjs";
+import { OrderStatus, PaymentStatus } from "@/types/enums";
 
 export const columns: ColumnDef<Order>[] = [
   {
@@ -87,8 +88,8 @@ export const columns: ColumnDef<Order>[] = [
     header: "Thanh toán",
     cell: ({ row }) => {
       const order = row.original as any;
-      const paymentStatus = order.paymentStatus || order.payment?.status || 'PENDING';
-      const isPaid = paymentStatus === "PAID" || paymentStatus === "SUCCESS";
+      const paymentStatus = order.paymentStatus || order.payment?.status || PaymentStatus.PENDING;
+      const isPaid = paymentStatus === "PAID" || paymentStatus === PaymentStatus.SUCCESS;
       
       return (
         <Badge 
@@ -109,13 +110,13 @@ export const columns: ColumnDef<Order>[] = [
     accessorKey: "status",
     header: "Trạng thái",
     cell: ({ row }) => {
-      const status = (row.getValue("status") as string)?.toUpperCase();
-      const statusMap: Record<string, { label: string; class: string }> = {
-        PENDING: { label: "Chờ xử lý", class: "bg-slate-100 text-slate-600 border-slate-200" },
-        PROCESSING: { label: "Đang xử lý", class: "bg-blue-50 text-blue-600 border-blue-200" },
-        SHIPPED: { label: "Đang giao", class: "bg-indigo-50 text-indigo-600 border-indigo-200" },
-        DELIVERED: { label: "Đã giao", class: "bg-emerald-50 text-emerald-600 border-emerald-200" },
-        CANCELLED: { label: "Đã hủy", class: "bg-rose-50 text-rose-600 border-rose-200" },
+      const status = row.getValue("status") as OrderStatus;
+      const statusMap: Record<OrderStatus, { label: string; class: string }> = {
+        [OrderStatus.PENDING]: { label: "Chờ xử lý", class: "bg-slate-100 text-slate-600 border-slate-200" },
+        [OrderStatus.PROCESSING]: { label: "Đang xử lý", class: "bg-blue-50 text-blue-600 border-blue-200" },
+        [OrderStatus.SHIPPED]: { label: "Đang giao", class: "bg-indigo-50 text-indigo-600 border-indigo-200" },
+        [OrderStatus.DELIVERED]: { label: "Đã giao", class: "bg-emerald-50 text-emerald-600 border-emerald-200" },
+        [OrderStatus.CANCELLED]: { label: "Đã hủy", class: "bg-rose-50 text-rose-600 border-rose-200" },
       };
 
       const config = statusMap[status] || { label: status, class: "bg-slate-100 text-slate-600" };

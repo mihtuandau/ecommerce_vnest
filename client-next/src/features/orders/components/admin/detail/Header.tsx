@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import dayjs from "dayjs";
+import dayjs from "@/lib/dayjs";
 import { ChevronLeft, Printer, Share2, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
@@ -13,16 +13,17 @@ import {
 } from "@/components/ui/DropdownMenu";
 import { cn } from "@/utils/cn";
 import { useRouter } from "next/navigation";
+import { OrderStatus, PaymentStatus } from "@/types/enums";
 
 interface HeaderProps {
   order: any;
-  onUpdateStatus: (id: string, status: string) => void;
+  onUpdateStatus: (id: string, status: OrderStatus) => void;
   id: string;
 }
 
 export function Header({ order, onUpdateStatus, id }: HeaderProps) {
   const router = useRouter();
-  const isCancelled = order.status === "CANCELLED";
+  const isCancelled = order.status === OrderStatus.CANCELLED;
   const orderAny = order as any;
 
   return (
@@ -41,11 +42,11 @@ export function Header({ order, onUpdateStatus, id }: HeaderProps) {
             <h1 className="text-xl font-bold text-slate-900">Chi tiết đơn hàng #{order.orderCode}</h1>
             <Badge variant="outline" className={cn(
               "rounded-md px-2 py-0.5 text-[10px] font-bold uppercase border-none",
-              (order.paymentStatus === "PAID" || orderAny.payment?.status === "SUCCESS") 
+              (order.paymentStatus === "PAID" || orderAny.payment?.status === PaymentStatus.SUCCESS) 
                 ? "bg-emerald-50 text-emerald-600" 
                 : "bg-amber-50 text-amber-600"
             )}>
-              {(order.paymentStatus === "PAID" || orderAny.payment?.status === "SUCCESS") ? "Đã thanh toán" : "Chờ thanh toán"}
+              {(order.paymentStatus === "PAID" || orderAny.payment?.status === PaymentStatus.SUCCESS) ? "Đã thanh toán" : "Chờ thanh toán"}
             </Badge>
             {isCancelled && (
               <Badge variant="outline" className="rounded-md px-2 py-0.5 text-[10px] font-bold uppercase bg-rose-50 text-rose-600 border-none">
@@ -75,7 +76,7 @@ export function Header({ order, onUpdateStatus, id }: HeaderProps) {
             {!isCancelled && (
               <DropdownMenuItem 
                 className="text-sm font-medium py-2 text-rose-600"
-                onClick={() => onUpdateStatus(id, "CANCELLED")}
+                onClick={() => onUpdateStatus(id, OrderStatus.CANCELLED)}
               >
                 <XCircle className="h-4 w-4 mr-2" /> Hủy đơn
               </DropdownMenuItem>

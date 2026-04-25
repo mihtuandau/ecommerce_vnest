@@ -4,7 +4,9 @@ import React, { useEffect, useRef, useState } from "react";
 import { User, Send, Loader2, Smile } from "lucide-react";
 import { useChatMessages, useSocket, ChatMessage } from "@/features/chat";
 import { cn } from "@/utils/cn";
+import { Role } from "@/types/enums";
 import { useQueryClient } from "@tanstack/react-query";
+import dayjs from "@/lib/dayjs";
 
 interface ChatWindowProps {
   roomId: string | null;
@@ -105,7 +107,7 @@ export function ChatWindow({ roomId }: ChatWindowProps) {
           </div>
         ) : (
           messages.map((msg, idx) => {
-            const isMe = msg.sender.role !== "CUSTOMER";
+            const isMe = msg.sender.role !== Role.CUSTOMER;
             const showAvatar = idx === 0 || messages[idx - 1].senderId !== msg.senderId;
             const isNextMe = idx < messages.length - 1 && messages[idx + 1].senderId === msg.senderId;
 
@@ -141,7 +143,7 @@ export function ChatWindow({ roomId }: ChatWindowProps) {
                   </div>
                   {(!isNextMe || showAvatar) && (
                     <p className="text-[9px] font-black text-slate-400 uppercase tracking-tighter px-1 opacity-70">
-                      {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      {dayjs(msg.createdAt).format("HH:mm")}
                     </p>
                   )}
                 </div>

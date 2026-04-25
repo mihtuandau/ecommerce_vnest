@@ -19,6 +19,8 @@ export class VNPayService {
     const vnpUrl = this.configService.get('VNP_URL')?.trim();
     const returnUrl = this.configService.get('VNP_RETURN_URL')?.trim();
 
+    console.log(`[VNPayService] Config: TMN=${tmnCode ? 'OK' : 'MISSING'}, Secret=${secretKey ? 'OK' : 'MISSING'}, URL=${vnpUrl ? 'OK' : 'MISSING'}`);
+
     // Đảm bảo múi giờ Việt Nam
     process.env.TZ = 'Asia/Ho_Chi_Minh';
 

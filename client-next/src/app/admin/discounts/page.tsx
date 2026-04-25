@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useDiscounts } from "@/features/discounts/hooks";
+import { useAdminDiscounts } from "@/features/discounts/hooks";
 import { DiscountTable } from "@/features/discounts/components/admin/DiscountTable";
 import { DiscountStats } from "@/features/discounts/components/admin/DiscountStats";
 import { Button } from "@/components/ui/Button";
@@ -10,9 +10,9 @@ import Link from "next/link";
 import { ROUTES } from "@/constants/routes";
 
 export default function AdminDiscountsPage() {
-  const { data, isLoading, refetch, isFetching } = useDiscounts();
+  // Lấy TẤT CẢ (cả voucher + flash sale)
+  const { data, isLoading, refetch, isFetching } = useAdminDiscounts();
 
-  // Backend returns direct array, not PaginatedResponse
   const discounts = Array.isArray(data) ? data : (data as any)?.data || [];
 
   const stats = React.useMemo(() => {
@@ -29,14 +29,13 @@ export default function AdminDiscountsPage() {
 
   return (
     <div className="space-y-6 pb-10">
-      {/* Page Header */}
       <div className="flex items-center justify-between border-b border-slate-100 pb-4">
         <div>
           <h1 className="text-xl font-bold text-slate-900 tracking-tight">
-            Khuyến mãi & Flash Sale
+            Mã giảm giá
           </h1>
           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-            Quản lý mã giảm giá và các chương trình ưu đãi
+            Quản lý mã giảm giá và Flash Sale
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -54,22 +53,20 @@ export default function AdminDiscountsPage() {
             className="h-9 px-4 rounded-lg bg-slate-900 text-white hover:bg-slate-800 font-bold text-xs gap-2"
           >
             <Link href={`${ROUTES.ADMIN_DISCOUNTS}/create`}>
-              <Plus className="h-4 w-4" /> Tạo mã mới
+              <Plus className="h-4 w-4" /> Tạo mới
             </Link>
           </Button>
         </div>
       </div>
 
-      {/* Stats Bar */}
       <DiscountStats {...stats} />
 
-      {/* Main Content Area */}
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
         {isLoading ? (
           <div className="flex h-96 items-center justify-center">
             <div className="flex flex-col items-center gap-3">
               <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
-              <p className="text-sm font-bold text-slate-400">Đang tải khuyến mãi...</p>
+              <p className="text-sm font-bold text-slate-400">Đang tải...</p>
             </div>
           </div>
         ) : (

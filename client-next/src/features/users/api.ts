@@ -1,5 +1,5 @@
 import { api } from "@/lib/axios";
-import type { User } from "@/types/models";
+import type { User, Address } from "@/types/models";
 import type { PaginatedResponse } from "@/types/api";
 
 export const usersApi = {
@@ -39,5 +39,35 @@ export const usersApi = {
   updateProfile: async (profileData: any): Promise<User> => {
     const { data } = await api.put<any>("/users/profile", profileData);
     return data.user || data;
+  },
+
+  // ── Address management ──
+  getAddresses: async (): Promise<{ addresses: Address[] }> => {
+    const { data } = await api.get("/addresses");
+    return data;
+  },
+
+  getAddress: async (id: string): Promise<{ address: Address }> => {
+    const { data } = await api.get(`/addresses/${id}`);
+    return data;
+  },
+
+  createAddress: async (addressData: any): Promise<{ address: Address }> => {
+    const { data } = await api.post("/addresses", addressData);
+    return data;
+  },
+
+  updateAddress: async (id: string, addressData: any): Promise<{ address: Address }> => {
+    const { data } = await api.patch(`/addresses/${id}`, addressData);
+    return data;
+  },
+
+  deleteAddress: async (id: string): Promise<void> => {
+    await api.delete(`/addresses/${id}`);
+  },
+
+  setDefaultAddress: async (id: string): Promise<{ address: Address }> => {
+    const { data } = await api.patch(`/addresses/${id}/set-default`);
+    return data;
   },
 };

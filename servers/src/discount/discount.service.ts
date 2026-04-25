@@ -81,6 +81,10 @@ export class DiscountService {
       ];
     }
 
+    if (query.isFlashSale !== undefined) {
+      where.isFlashSale = query.isFlashSale;
+    }
+
     if (status === 'active') {
       where.isActive = true;
       where.startDate = { lte: now };

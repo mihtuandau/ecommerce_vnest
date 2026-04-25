@@ -3,7 +3,8 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Form } from "@/components/ui/Form";
+import { nameSchema } from "@/lib/zod";
+import { Form } from "@/components/ui/Form" ;
 import { Button } from "@/components/ui/Button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs";
 import { useCategories } from "../../hooks";
@@ -17,7 +18,7 @@ import { Media } from "./ProductForm/Media";
 import { slugify } from "@/utils/slugify";
 
 const productSchema = z.object({
-  name: z.string().min(3, "Tên sản phẩm phải có ít nhất 3 ký tự"),
+  name: nameSchema,
   slug: z.string().min(3, "Slug phải có ít nhất 3 ký tự"),
   description: z.string().min(10, "Mô tả phải có ít nhất 10 ký tự"),
   basePrice: z.coerce.number().min(0, "Giá không được âm"),

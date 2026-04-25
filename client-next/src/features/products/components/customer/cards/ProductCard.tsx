@@ -4,12 +4,14 @@ import { Product } from "@/types/models";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { ShoppingCart, Star, Eye } from "lucide-react";
+import { ShoppingCart, Star, Eye, Heart } from "lucide-react";
 import Link from "next/link";
 import { useCartStore } from "@/store/useCartStore";
+import { useWishlistStore } from "@/store/useWishlistStore";
 import { useToast } from "@/hooks/useToast";
 import { cn } from "@/utils/cn";
 import { useFlashSale } from "@/features/discounts/hooks";
+import { useUIStore } from "@/store/useUIStore";
 
 interface ProductCardProps {
   product: Product;
@@ -18,8 +20,27 @@ interface ProductCardProps {
 
 export function ProductCard({ product, view = "grid" }: ProductCardProps) {
   const addItem = useCartStore((state) => state.addItem);
+  const { toggleWishlist, isInWishlist } = useWishlistStore();
   const { success } = useToast();
   const { data: flashSale } = useFlashSale();
+
+  const isFavorite = isInWishlist(String(product.id));
+
+  const handleToggleWishlist = (e: React.MouseEvent) => {
+    e.preventDefault();
+    toggleWishlist({
+      id: String(product.id),
+      name: product.name,
+      price: price,
+      originalPrice: originalPrice || undefined,
+      imageUrl: imageUrl,
+      slug: product.slug,
+      stock: (product as any).stock || 0,
+    });
+    if (!isFavorite) {
+      success(`Đã thêm ${product.name} vào danh sách yêu thích`);
+    }
+  };
 
   const parsePrice = (val: any): number => {
     let num = 0;
@@ -29,33 +50,40 @@ export function ProductCard({ product, view = "grid" }: ProductCardProps) {
   };
 
   const basePrice = parsePrice(product.price || (product as any).basePrice);
-  
+
   // Check if product is in flash sale
   const isFlashSale = flashSale?.products?.some((p: any) => p.id === product.id);
-  const flashSalePercent = isFlashSale ? (flashSale.percentage || 0) : 0;
-  
+  const flashSalePercent = isFlashSale ? flashSale.percentage || 0 : 0;
+
   // Calculate final price based on flash sale
-  const price = isFlashSale 
+  const price = isFlashSale
     ? Math.round(basePrice * (1 - flashSalePercent / 100))
     : basePrice;
 
   // Set original price if on sale
   const originalPriceVal = product.originalPrice || (product as any).oldPrice;
-  const originalPrice = isFlashSale 
-    ? basePrice 
-    : (originalPriceVal ? parsePrice(originalPriceVal) : null);
+  const originalPrice = isFlashSale
+    ? basePrice
+    : originalPriceVal
+      ? parsePrice(originalPriceVal)
+      : null;
 
   const rawImage = product.images?.[0];
-  const imageUrl = typeof rawImage === "string" ? rawImage : rawImage?.url || "/placeholder.png";
+  const imageUrl =
+    typeof rawImage === "string" ? rawImage : rawImage?.url || "/placeholder.png";
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
+    const defaultVariantId = product.variants?.[0]?.id || product.id;
+    
     addItem({
-      productId: product.id,
+      productId: String(product.id),
+      variantId: String(defaultVariantId),
       name: product.name,
       price: price,
       imageUrl: imageUrl,
       slug: product.slug,
+      quantity: 1,
     });
     success(`Đã thêm ${product.name} vào giỏ hàng`);
   };
@@ -93,14 +121,25 @@ export function ProductCard({ product, view = "grid" }: ProductCardProps) {
 
         <div className="flex-1 p-3 md:p-6 flex flex-col justify-between overflow-hidden">
           <div className="space-y-1 md:space-y-2">
-            <div className="flex items-center gap-3">
-              <span className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-primary/60">
-                {(product as any).brand?.name || "Vnest"}
-              </span>
-              <div className="flex items-center gap-1">
-                <Star className="h-2.5 w-2.5 fill-[#f4c300] text-[#f4c300]" />
-                <span className="text-[10px] font-bold text-slate-400">{rating}</span>
+            <div className="flex items-center justify-between relative">
+              <div className="flex items-center gap-3">
+                <span className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-primary/60">
+                  {(product as any).brand?.name || "Vnest"}
+                </span>
+                <div className="flex items-center gap-1">
+                  <Star className="h-2.5 w-2.5 fill-[#f4c300] text-[#f4c300]" />
+                  <span className="text-[10px] font-bold text-slate-400">{rating}</span>
+                </div>
               </div>
+              <button 
+                onClick={handleToggleWishlist}
+                className={cn(
+                  "h-8 w-8 rounded-full flex items-center justify-center transition-all duration-300",
+                  isFavorite ? "text-rose-500 bg-rose-50" : "text-slate-300 hover:text-rose-500 hover:bg-slate-50"
+                )}
+              >
+                <Heart size={16} className={cn(isFavorite && "fill-current")} />
+              </button>
             </div>
             <Link href={`/shop/${product.slug}`}>
               <h3 className="font-bold text-slate-900 text-[13px] md:text-lg leading-tight line-clamp-1 md:line-clamp-2 hover:text-primary transition-colors">
@@ -108,12 +147,12 @@ export function ProductCard({ product, view = "grid" }: ProductCardProps) {
               </h3>
             </Link>
             <div className="flex items-center gap-3 text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-tight">
-               {soldCount > 0 && <span>Đã bán {soldCount}</span>}
-               {viewCount > 0 && (
-                 <div className="flex items-center gap-1">
-                   <Eye className="h-2.5 w-2.5" /> {viewCount}
-                 </div>
-               )}
+              {soldCount > 0 && <span>Đã bán {soldCount}</span>}
+              {viewCount > 0 && (
+                <div className="flex items-center gap-1">
+                  <Eye className="h-2.5 w-2.5" /> {viewCount}
+                </div>
+              )}
             </div>
           </div>
 
@@ -150,17 +189,28 @@ export function ProductCard({ product, view = "grid" }: ProductCardProps) {
         href={`/shop/${product.slug}`}
         className="block relative h-44 md:h-64 w-full overflow-hidden bg-slate-50/30 p-1.5 md:p-3 flex items-center justify-center shrink-0"
       >
-        <div className="absolute top-2 left-2 md:top-3 md:left-3 z-10 flex flex-col gap-1">
-          {discountPercent > 0 && (
-            <span className="bg-[#e85d24] text-white text-[8px] md:text-[9px] font-black px-1.5 py-0.5 md:px-2 md:py-1 rounded-md shadow-sm uppercase tracking-widest">
-              -{discountPercent}%
-            </span>
-          )}
-          {product.isNew && (
-            <span className="bg-primary text-white text-[8px] md:text-[9px] font-black px-1.5 py-0.5 md:px-2 md:py-1 rounded-md shadow-sm uppercase tracking-widest">
-              NEW
-            </span>
-          )}
+        <div className="absolute top-2 left-2 md:top-3 md:left-3 z-10 flex items-start justify-between w-full pr-4 md:pr-6">
+          <div className="flex flex-col gap-1">
+            {discountPercent > 0 && (
+              <span className="bg-[#e85d24] text-white text-[8px] md:text-[9px] font-black px-1.5 py-0.5 md:px-2 md:py-1 rounded-md shadow-sm uppercase tracking-widest">
+                -{discountPercent}%
+              </span>
+            )}
+            {product.isNew && (
+              <span className="bg-primary text-white text-[8px] md:text-[9px] font-black px-1.5 py-0.5 md:px-2 md:py-1 rounded-md shadow-sm uppercase tracking-widest">
+                NEW
+              </span>
+            )}
+          </div>
+          <button 
+            onClick={handleToggleWishlist}
+            className={cn(
+              "h-7 w-7 md:h-9 md:w-9 rounded-full backdrop-blur-md flex items-center justify-center transition-all duration-300",
+              isFavorite ? "text-rose-500 bg-white/90 shadow-sm" : "text-slate-400 bg-white/60 hover:text-rose-500 hover:bg-white shadow-sm"
+            )}
+          >
+            <Heart size={14} className={cn(isFavorite && "fill-current")} />
+          </button>
         </div>
 
         <img
@@ -203,12 +253,12 @@ export function ProductCard({ product, view = "grid" }: ProductCardProps) {
             </div>
 
             <div className="flex items-center gap-1.5 text-[8px] md:text-[9px] font-bold text-slate-400 uppercase tracking-tight flex-wrap justify-end ml-auto min-w-0">
-               {soldCount > 0 && <span className="truncate">Bán {soldCount}</span>}
-               {viewCount > 0 && (
-                 <div className="flex items-center gap-0.5 shrink-0">
-                   <Eye className="h-2.5 w-2.5" /> <span>{viewCount}</span>
-                 </div>
-               )}
+              {soldCount > 0 && <span className="truncate">Bán {soldCount}</span>}
+              {viewCount > 0 && (
+                <div className="flex items-center gap-0.5 shrink-0">
+                  <Eye className="h-2.5 w-2.5" /> <span>{viewCount}</span>
+                </div>
+              )}
             </div>
           </div>
         </div>

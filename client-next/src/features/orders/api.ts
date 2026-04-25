@@ -1,10 +1,26 @@
 import { api } from "@/lib/axios";
 import type { Order } from "@/types/models";
+import { OrderStatus, PaymentStatus } from "@/types/enums";
 
 export const ordersApi = {
+  createOrder: async (orderData: any, isGuest = false): Promise<any> => {
+    const endpoint = isGuest ? "/orders/guest" : "/orders";
+    const { data } = await api.post(endpoint, orderData);
+    return data;
+  },
+
   getOrders: async (params?: Record<string, any>): Promise<Order[]> => {
+    // Dùng cho Admin - xem tất cả đơn hàng
     const { data: body } = await api.get<any>("/orders", { params });
-    // Handle various response structures from backend body
+    if (Array.isArray(body)) return body;
+    if (body?.data && Array.isArray(body.data)) return body.data;
+    if (body?.orders && Array.isArray(body.orders)) return body.orders;
+    return [];
+  },
+
+  getMyOrders: async (params?: Record<string, any>): Promise<Order[]> => {
+    // Dùng cho Khách hàng - chỉ xem đơn hàng cá nhân
+    const { data: body } = await api.get<any>("/orders/my-orders", { params });
     if (Array.isArray(body)) return body;
     if (body?.data && Array.isArray(body.data)) return body.data;
     if (body?.orders && Array.isArray(body.orders)) return body.orders;
@@ -16,7 +32,7 @@ export const ordersApi = {
     return body?.data || body;
   },
 
-  updateOrderStatus: async (id: string, status: string): Promise<Order> => {
+  updateOrderStatus: async (id: string, status: OrderStatus): Promise<Order> => {
     // Backend uses PUT /orders/:id for status updates
     const { data } = await api.put<Order>(`/orders/${id}`, { status });
     return data;
@@ -31,9 +47,16 @@ export const ordersApi = {
     return data;
   },
 
-  updatePaymentStatus: async (paymentId: string, status: string) => {
+  updatePaymentStatus: async (paymentId: string, status: PaymentStatus) => {
     const { data } = await api.put(`/payments/${paymentId}/status`, { status });
     return data;
+  },
+
+  lookupGuestOrder: async (orderCode: string, contact: string): Promise<Order> => {
+    const { data: body } = await api.get<any>(`/orders/guest/lookup/${orderCode}`, {
+      params: { contact }
+    });
+    return body?.data || body;
   },
 
   getStats: async () => {

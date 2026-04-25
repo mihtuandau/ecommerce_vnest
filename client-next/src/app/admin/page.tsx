@@ -17,10 +17,7 @@ import { RecentOrders } from "@/features/dashboard/components/RecentOrders";
 import { usePermission } from "@/hooks/usePermission";
 import { AccessDenied } from "@/components/ui/AccessDenied";
 
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
-
-dayjs.extend(relativeTime);
+import dayjs from "@/lib/dayjs";
 
 export default function AdminDashboardPage() {
   const { can } = usePermission();

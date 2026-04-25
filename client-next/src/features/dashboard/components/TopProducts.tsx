@@ -17,7 +17,7 @@ export function TopProducts({ products, isLoading }: TopProductsProps) {
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
           <CardTitle className="text-lg font-bold text-slate-900">Sản phẩm bán chạy</CardTitle>
-          <CardDescription className="text-xs font-medium text-slate-500">Top 5 sản phẩm theo doanh thu</CardDescription>
+          <CardDescription className="text-xs font-medium text-slate-500">Top 5 sản phẩm theo số lượng bán</CardDescription>
         </div>
         <Link href={ROUTES.ADMIN_PRODUCTS} className="text-[10px] font-bold uppercase text-primary hover:underline">Tất cả sản phẩm</Link>
       </CardHeader>

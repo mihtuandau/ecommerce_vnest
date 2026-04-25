@@ -15,18 +15,19 @@ import {
 import { cn } from "@/utils/cn";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Role, UserStatus } from "@/types/enums";
 
 const roleConfig: Record<string, { label: string; color: string; icon: any }> = {
-  ADMIN: { label: "Quản trị viên", color: "bg-slate-900 text-white border-slate-900", icon: Shield },
-  CUSTOMER: { label: "Khách hàng", color: "bg-blue-50 text-blue-600 border-blue-100", icon: UserIcon },
-  KHO: { label: "Kho", color: "bg-amber-50 text-amber-700 border-amber-100", icon: Warehouse },
-  BAN_HANG: { label: "Bán hàng", color: "bg-indigo-50 text-indigo-600 border-indigo-100", icon: BadgeDollarSign },
+  [Role.ADMIN]: { label: "Quản trị viên", color: "bg-slate-900 text-white border-slate-900", icon: Shield },
+  [Role.CUSTOMER]: { label: "Khách hàng", color: "bg-blue-50 text-blue-600 border-blue-100", icon: UserIcon },
+  [Role.KHO]: { label: "Kho", color: "bg-amber-50 text-amber-700 border-amber-100", icon: Warehouse },
+  [Role.BAN_HANG]: { label: "Bán hàng", color: "bg-indigo-50 text-indigo-600 border-indigo-100", icon: BadgeDollarSign },
 };
 
 const statusConfig: Record<string, { label: string; color: string }> = {
-  ACTIVE: { label: "Đang hoạt động", color: "bg-emerald-50 text-emerald-700 border-emerald-200" },
-  SUSPENDED: { label: "Đã vô hiệu", color: "bg-rose-50 text-rose-700 border-rose-200" },
-  PENDING: { label: "Chờ xác minh", color: "bg-slate-100 text-slate-600 border-slate-200" },
+  [UserStatus.ACTIVE]: { label: "Đang hoạt động", color: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+  [UserStatus.SUSPENDED]: { label: "Đã vô hiệu", color: "bg-rose-50 text-rose-700 border-rose-200" },
+  [UserStatus.PENDING]: { label: "Chờ xác minh", color: "bg-slate-100 text-slate-600 border-slate-200" },
 };
 
 export const columns: ColumnDef<User>[] = [
@@ -100,8 +101,8 @@ export const columns: ColumnDef<User>[] = [
     accessorKey: "status",
     header: "Trạng thái",
     cell: ({ row }) => {
-      const status = row.getValue("status") as string || "ACTIVE";
-      const config = statusConfig[status] || statusConfig.ACTIVE;
+      const status = row.getValue("status") as UserStatus || UserStatus.ACTIVE;
+      const config = statusConfig[status] || statusConfig[UserStatus.ACTIVE];
       return (
         <Badge variant="outline" className={cn("rounded-full px-2 py-0.5 font-bold text-[10px]", config.color)}>
           {config.label}
@@ -127,7 +128,7 @@ export const columns: ColumnDef<User>[] = [
       const { mutate: updateUser } = useUpdateUser();
 
       const toggleStatus = () => {
-        const newStatus = user.status === "ACTIVE" ? "SUSPENDED" : "ACTIVE";
+        const newStatus = user.status === UserStatus.ACTIVE ? UserStatus.SUSPENDED : UserStatus.ACTIVE;
         updateUser({ id: user.id, data: { status: newStatus } });
       };
 
@@ -150,11 +151,11 @@ export const columns: ColumnDef<User>[] = [
               <DropdownMenuItem 
                 className={cn(
                   "rounded-lg cursor-pointer gap-2 py-2.5 text-sm font-medium focus:bg-slate-50",
-                  user.status === "ACTIVE" ? "text-amber-600" : "text-emerald-600"
+                  user.status === UserStatus.ACTIVE ? "text-amber-600" : "text-emerald-600"
                 )}
                 onClick={toggleStatus}
               >
-                {user.status === "ACTIVE" ? (
+                {user.status === UserStatus.ACTIVE ? (
                   <>
                     <Ban className="h-4 w-4" />
                     Vô hiệu hóa

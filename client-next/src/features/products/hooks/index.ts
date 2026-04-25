@@ -16,8 +16,8 @@ export function useProductDetail(slugOrId: string, allVariants = false) {
     queryKey: [...queryKeys.products.detail(String(slugOrId)), allVariants],
     queryFn: () => productsApi.getProduct(slugOrId, allVariants),
     enabled: !!slugOrId,
-    staleTime: 0,
-    gcTime: 0,
+    staleTime: 5 * 60 * 1000, // Dữ liệu được coi là mới trong 5 phút
+    gcTime: 10 * 60 * 1000,  // Lưu trong bộ nhớ đệm 10 phút
   });
 }
 

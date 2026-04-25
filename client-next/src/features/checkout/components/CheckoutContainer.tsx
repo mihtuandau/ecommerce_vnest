@@ -1,0 +1,448 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
+import { useCartStore } from "@/store/useCartStore";
+import { shippingApi } from "@/features/shipping/api";
+import { ordersApi } from "@/features/orders/api";
+import { discountsApi } from "@/features/discounts/api";
+import { useToast } from "@/hooks/useToast";
+import { useRouter, useSearchParams } from "next/navigation";
+import { ROUTES } from "@/constants/routes";
+import { Truck, Loader2, ArrowLeft } from "lucide-react";
+import { useAuthStore } from "@/store/useAuthStore";
+import { Skeleton } from "@/components/ui/Skeleton";
+import { useAddresses } from "@/features/users/hooks";
+import Link from "next/link";
+
+// Sub-components
+import { CheckoutSteps } from "./CheckoutSteps";
+import { ShippingForm } from "./ShippingForm";
+import { PaymentMethods } from "./PaymentMethods";
+import { OrderSummary } from "./OrderSummary";
+
+
+export function CheckoutContainer() {
+  const { items, buyNowItem, clearBuyNowItem } = useCartStore();
+  const { user } = useAuthStore();
+  const { success, error, warning } = useToast();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const [mounted, setMounted] = useState(false);
+  const [hasAppliedDefault, setHasAppliedDefault] = useState(false);
+
+  const isBuyNow = searchParams.get("buyNow") === "true";
+  const displayItems = React.useMemo(
+    () => (isBuyNow && buyNowItem ? [buyNowItem] : items.filter((i) => i.selected)),
+    [isBuyNow, buyNowItem, items]
+  );
+
+  // Hook lấy địa chỉ đã lưu để tự động áp dụng
+  const { data: addressData } = useAddresses();
+
+  const subtotal = React.useMemo(
+    () => displayItems.reduce((sum, i) => sum + i.price * i.quantity, 0),
+    [displayItems]
+  );
+
+  const [provinces, setProvinces] = useState<any[]>([]);
+  const [districts, setDistricts] = useState<any[]>([]);
+  const [wards, setWards] = useState<any[]>([]);
+  const [shippingFee, setShippingFee] = useState(0);
+  const [isCalculatingFee, setIsCalculatingFee] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Discount states
+  const [discountCode, setDiscountCode] = useState("");
+  const [appliedDiscount, setAppliedDiscount] = useState<any>(null);
+  const [discountAmount, setDiscountAmount] = useState(0);
+  const [isApplyingDiscount, setIsApplyingDiscount] = useState(false);
+
+  const [form, setForm] = useState({
+    fullName: "",
+    phone: "",
+    email: "",
+    provinceId: "",
+    districtId: "",
+    wardCode: "",
+    street: "",
+    paymentMethod: "COD",
+  });
+
+  // Khởi tạo form khi mount và có user
+  useEffect(() => {
+    setMounted(true);
+    shippingApi.getProvinces().then((res) => setProvinces(res.data || []));
+
+    if (user) {
+      setForm((prev) => ({
+        ...prev,
+        fullName: user.name || "",
+        phone: (user as any).phone || "",
+        email: user.email || "",
+      }));
+    }
+  }, [user]);
+
+  const applySavedAddress = async (addr: any) => {
+    try {
+      const provinceId = addr.provinceCode ? String(addr.provinceCode) : "";
+      const districtId = addr.districtCode ? String(addr.districtCode) : "";
+      let wardCode = addr.wardCode ? String(addr.wardCode) : "";
+
+      console.log("=== Áp dụng địa chỉ lưu sẵn:", { provinceId, districtId, wardCode });
+
+      // Tải dữ liệu Quận và Phường trước khi cập nhật form
+      if (provinceId) {
+        const distRes = await shippingApi.getDistricts(Number(provinceId));
+        const dists = distRes.data || [];
+        setDistricts(dists);
+        
+        if (districtId) {
+          const wardRes = await shippingApi.getWards(Number(districtId));
+          const wrds = wardRes.data || [];
+          setWards(wrds);
+          
+          // Nếu địa chỉ lưu không có phường, lấy phường đầu tiên
+          if (!wardCode && wrds.length > 0) {
+            wardCode = wrds[0].WardCode;
+          }
+        }
+      }
+
+      // Cập nhật TOÀN BỘ form một lần duy nhất để tránh mất dữ liệu
+      setForm((prev) => ({
+        ...prev,
+        fullName: addr.fullName || prev.fullName,
+        phone: addr.phone || prev.phone,
+        email: addr.email || prev.email || "",
+        provinceId,
+        districtId,
+        wardCode,
+        street: addr.street || "",
+      }));
+
+      console.log("=== Đã cập nhật xong form:", { provinceId, districtId, wardCode });
+    } catch (err) {
+      console.error("Lỗi khi áp dụng địa chỉ:", err);
+    }
+  };
+
+  useEffect(() => {
+    if (addressData?.addresses && addressData.addresses.length > 0 && mounted && !hasAppliedDefault) {
+      const defaultAddr = addressData.addresses.find((a: any) => a.isDefault) || addressData.addresses[0];
+      if (defaultAddr) {
+        applySavedAddress(defaultAddr);
+        setHasAppliedDefault(true);
+      }
+    }
+  }, [addressData, mounted, hasAppliedDefault]);
+
+  useEffect(() => {
+    const timer = setTimeout(async () => {
+      if (form.districtId) {
+        setIsCalculatingFee(true);
+        try {
+          const totalWeight = displayItems.reduce((sum, i) => sum + 1000 * i.quantity, 0);
+          const res = await shippingApi.calculateFee({
+            to_district_id: Number(form.districtId),
+            to_ward_code: form.wardCode || "",
+            weight: totalWeight,
+          });
+          setShippingFee(res.data?.total || 30000);
+        } catch (err) {
+          setShippingFee(30000);
+        } finally {
+          setIsCalculatingFee(false);
+        }
+      } else {
+        setShippingFee(0);
+      }
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [form.districtId, form.wardCode, displayItems]);
+
+  // Handle Apply Discount
+  const handleApplyDiscount = async () => {
+    const codeToValidate = discountCode.trim().toUpperCase();
+    if (!codeToValidate) return;
+    
+    setIsApplyingDiscount(true);
+    try {
+      const res = await discountsApi.validateDiscount(codeToValidate);
+      console.log("=== DISCOUNT VALIDATE RESPONSE ===", JSON.stringify(res, null, 2));
+
+      // Backend trả về { isValid, message, discount? }
+      if (!res.isValid) {
+        warning(res.message || "Mã giảm giá không hợp lệ");
+        setIsApplyingDiscount(false);
+        return;
+      }
+
+      const discount = res.discount;
+      if (!discount) {
+        throw new Error("Mã giảm giá không hợp lệ");
+      }
+
+      console.log("=== DISCOUNT DATA ===", {
+        discountType: discount.discountType,
+        discountValue: discount.discountValue,
+        percentage: discount.percentage,
+        fixedAmount: discount.fixedAmount,
+        maxDiscountAmount: discount.maxDiscountAmount,
+        minOrderAmount: discount.minOrderAmount,
+        subtotal,
+      });
+
+      // Tính số tiền giảm — hỗ trợ cả 2 format response từ backend
+      const isPercentage = discount.discountType === "PERCENTAGE" || !!discount.percentage;
+      const rawValue = discount.discountValue || discount.percentage || discount.fixedAmount || 0;
+
+      let amount = 0;
+      if (isPercentage) {
+        amount = Math.round((subtotal * rawValue) / 100);
+        // Giới hạn giảm tối đa (nếu có)
+        if (discount.maxDiscountAmount && discount.maxDiscountAmount > 0 && amount > discount.maxDiscountAmount) {
+          amount = discount.maxDiscountAmount;
+        }
+      } else {
+        amount = rawValue;
+      }
+
+      // Không cho giảm vượt quá tổng đơn
+      amount = Math.min(amount, subtotal);
+
+      console.log("=== CALCULATED DISCOUNT ===", { isPercentage, rawValue, amount });
+
+      if (discount.minOrderAmount && discount.minOrderAmount > 0 && subtotal < discount.minOrderAmount) {
+        warning(`Mã này chỉ áp dụng cho đơn hàng từ ${new Intl.NumberFormat('vi-VN').format(discount.minOrderAmount)}đ`);
+        setIsApplyingDiscount(false);
+        return;
+      }
+
+      setAppliedDiscount({ ...discount, code: codeToValidate });
+      setDiscountAmount(amount);
+      success(`Đã áp dụng mã giảm giá: -${new Intl.NumberFormat('vi-VN').format(amount)}đ`);
+    } catch (err: any) {
+      console.error("Discount Error:", err);
+      error(err?.response?.data?.message || "Mã giảm giá không hợp lệ hoặc đã hết hạn");
+      setAppliedDiscount(null);
+      setDiscountAmount(0);
+    } finally {
+      setIsApplyingDiscount(false);
+    }
+  };
+
+  const handleRemoveDiscount = () => {
+    setAppliedDiscount(null);
+    setDiscountAmount(0);
+    setDiscountCode("");
+    success("Đã gỡ mã giảm giá");
+  };
+
+  const [isLoadingDistricts, setIsLoadingDistricts] = useState(false);
+  const [isLoadingWards, setIsLoadingWards] = useState(false);
+
+  const handleProvinceChange = async (id: string) => {
+    setForm((prev) => ({ ...prev, provinceId: id, districtId: "", wardCode: "" }));
+    setDistricts([]);
+    setWards([]);
+    
+    if (id) {
+      setIsLoadingDistricts(true);
+      try {
+        const res = await shippingApi.getDistricts(Number(id));
+        const data = res.data || [];
+        setDistricts(data);
+        console.log(`=== Tải được ${data.length} Quận/Huyện cho Tỉnh ${id} ===`);
+      } catch (err) {
+        console.error("Lỗi khi tải Quận/Huyện:", err);
+        error("Không thể tải danh sách Quận/Huyện");
+      } finally {
+        setIsLoadingDistricts(false);
+      }
+    }
+  };
+
+  const handleDistrictChange = async (id: string) => {
+    setForm((prev) => ({ ...prev, districtId: id, wardCode: "" }));
+    setWards([]);
+    
+    if (id) {
+      setIsLoadingWards(true);
+      try {
+        const res = await shippingApi.getWards(Number(id));
+        const data = res.data || [];
+        setWards(data);
+        console.log(`=== Tải được ${data.length} Phường/Xã cho Quận ${id} ===`);
+        
+        // Tự động chọn phường đầu tiên nếu có dữ liệu để tránh lỗi "chưa chọn"
+        if (data.length > 0) {
+          setForm(prev => ({ ...prev, wardCode: data[0].WardCode }));
+        }
+      } catch (err) {
+        console.error("Lỗi khi tải Phường/Xã:", err);
+        error("Không thể tải danh sách Phường/Xã");
+      } finally {
+        setIsLoadingWards(false);
+      }
+    }
+  };
+
+  const handleWardChange = (code: string) => {
+    if (!code) return; // Chặn việc reset về rỗng do lỗi component
+    console.log("=== Đã chọn Phường/Xã mã:", code);
+    setForm((prev) => ({ ...prev, wardCode: code }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Kiểm tra từng trường và báo lỗi cụ thể
+    if (!form.fullName) return error("Vui lòng nhập họ và tên người nhận");
+    if (!form.phone) return error("Vui lòng nhập số điện thoại");
+    if (!form.email) return error("Vui lòng nhập email nhận thông báo");
+    if (!form.provinceId) return error("Vui lòng chọn Tỉnh / Thành phố");
+    if (!form.districtId) return error("Vui lòng chọn Quận / Huyện");
+    if (!form.wardCode) return error("Vui lòng chọn Phường / Xã");
+    if (!form.street) return error("Vui lòng nhập địa chỉ cụ thể (số nhà, tên đường)");
+
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
+    try {
+      const isGuest = !user;
+      const orderData = {
+        items: displayItems.map((i) => ({
+          variantId: Number(i.variantId),
+          quantity: i.quantity,
+        })),
+        shippingInfo: {
+          fullName: form.fullName,
+          phone: form.phone,
+          province: provinces.find((p) => String(p.ProvinceID) === String(form.provinceId))?.ProvinceName,
+          district: districts.find((d) => String(d.DistrictID) === String(form.districtId))?.DistrictName,
+          ward: wards.find((w) => w.WardCode === form.wardCode)?.WardName,
+          street: form.street,
+          districtCode: form.districtId,
+          wardCode: form.wardCode,
+        },
+        paymentMethod: form.paymentMethod,
+        shippingFee: Math.round(shippingFee),
+        discountCode: appliedDiscount?.code || undefined,
+        guestEmail: form.email,
+        guestPhone: form.phone,
+      };
+
+      const res = await ordersApi.createOrder(orderData, isGuest);
+      const paymentLink = res.paymentLink || res.payment?.paymentLink;
+
+      if (form.paymentMethod === "VNPAY" && !paymentLink) {
+        throw new Error("Không thể tạo liên kết thanh toán VNPay. Vui lòng thử lại.");
+      }
+
+      if (paymentLink) {
+        window.location.href = paymentLink;
+        return;
+      }
+
+      success("Đặt hàng thành công!");
+      if (isBuyNow) clearBuyNowItem();
+      else displayItems.forEach((i) => useCartStore.getState().removeItem(i.variantId));
+
+      if (isGuest && res.orderCode) router.push(`/orders/guest/lookup/${res.orderCode}?contact=${form.phone}`);
+      else if (res.id) router.push(`/orders/${res.id}`);
+      else router.push(ROUTES.ORDERS);
+    } catch (err: any) {
+      error(err?.response?.data?.message || err?.message || "Có lỗi xảy ra khi đặt hàng");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (!mounted) {
+    return (
+      <div className="bg-[#fcfdfe] min-h-screen pb-20">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 border-b border-slate-100 pb-8 mb-10">
+            <div className="flex items-center gap-5">
+              <Skeleton className="h-11 w-11 rounded-full shrink-0" />
+              <div className="space-y-2">
+                <Skeleton className="h-8 w-40" />
+                <Skeleton className="h-4 w-60" />
+              </div>
+            </div>
+            <Skeleton className="h-10 w-full lg:w-96 rounded-xl" />
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div className="lg:col-span-8 space-y-6"><Skeleton className="h-[500px] w-full rounded-2xl" /></div>
+            <div className="lg:col-span-4"><Skeleton className="h-[600px] w-full rounded-2xl shadow-sm" /></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const showEmpty = mounted && !isBuyNow && items.filter(i => i.selected).length === 0;
+  const showBuyNowEmpty = mounted && isBuyNow && !buyNowItem;
+
+  return (
+    <div className="bg-[#fcfdfe] min-h-screen pb-20">
+      {(showEmpty || showBuyNowEmpty) ? (
+        <div className="bg-white min-h-[70vh] flex flex-col items-center justify-center text-center px-4">
+          <div className="h-20 w-20 rounded-full bg-slate-50 flex items-center justify-center mb-6 border border-slate-100"><Truck className="h-10 w-10 text-slate-200" /></div>
+          <h1 className="text-2xl font-bold text-slate-900 mb-2">Chưa có sản phẩm nào để thanh toán</h1>
+          <Button onClick={() => router.push("/shop")} className="rounded-xl px-10 h-12 font-bold uppercase tracking-wider">Quay lại cửa hàng</Button>
+        </div>
+      ) : (
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 border-b border-slate-100 pb-8 mb-10">
+            <div className="flex items-center gap-5">
+              <button type="button" onClick={() => router.back()} className="h-11 w-11 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:text-[#1565C1] hover:border-[#1565C1] hover:bg-blue-50 transition-all shrink-0 shadow-sm"><ArrowLeft size={20} /></button>
+              <div className="space-y-1">
+                <h1 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">Thanh toán</h1>
+                <p className="text-slate-500 text-sm font-medium">Hoàn tất thông tin để đặt hàng của bạn</p>
+              </div>
+            </div>
+            <div className="w-full lg:w-auto overflow-x-auto pb-2 lg:pb-0"><CheckoutSteps /></div>
+          </div>
+          <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            <div className="lg:col-span-8 space-y-6">
+              <ShippingForm 
+                form={form}
+                setForm={setForm}
+                provinces={provinces}
+                districts={districts}
+                wards={wards}
+                handleProvinceChange={handleProvinceChange}
+                handleDistrictChange={handleDistrictChange}
+                handleWardChange={handleWardChange}
+                isLoadingDistricts={isLoadingDistricts}
+                isLoadingWards={isLoadingWards}
+                user={user}
+              />
+              <PaymentMethods paymentMethod={form.paymentMethod} setPaymentMethod={(method) => setForm({ ...form, paymentMethod: method })} />
+            </div>
+            <div className="lg:col-span-4">
+              <OrderSummary 
+                items={displayItems} 
+                subtotal={subtotal} 
+                shippingFee={shippingFee} 
+                isSubmitting={isSubmitting} 
+                canSubmit={true} 
+                isCalculatingFee={isCalculatingFee}
+                discountCode={discountCode}
+                setDiscountCode={setDiscountCode}
+                appliedDiscount={appliedDiscount}
+                discountAmount={discountAmount}
+                onApplyDiscount={handleApplyDiscount}
+                onRemoveDiscount={handleRemoveDiscount}
+                isApplyingDiscount={isApplyingDiscount}
+              />
+            </div>
+          </form>
+        </div>
+      )}
+    </div>
+  );
+}

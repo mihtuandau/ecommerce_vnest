@@ -46,7 +46,7 @@ export class GHNService {
    * Tính phí vận chuyển
    */
   async calculateFee(feeData: any) {
-    const fromDistrictId = Number(this.configService.get<string>('GHN_FROM_DISTRICT_ID'));
+    const fromDistrictId = Number(this.configService.get<string>('GHN_FROM_DISTRICT_ID') || 0);
     
     // Đảm bảo các thông số mặc định nếu thiếu
     const finalData = {
@@ -62,7 +62,15 @@ export class GHNService {
       ...feeData,
     };
 
+    // Chuyển đổi các trường số nếu cần
+    if (finalData.to_district_id) finalData.to_district_id = Number(finalData.to_district_id);
+    if (finalData.weight) finalData.weight = Number(finalData.weight);
+
     try {
+      if (!this.ghnToken || !this.shopId) {
+        throw new Error('GHN config missing (Token or ShopId)');
+      }
+
       const response = await firstValueFrom(
         this.httpService.post(`${this.apiUrl}/v2/shipping-order/fee`, finalData, {
           headers: {
@@ -75,7 +83,12 @@ export class GHNService {
       return response.data;
     } catch (error) {
       this.logger.error('GHN Calculate Fee Error:', error.response?.data || error.message);
-      throw error;
+      // Trả về phí ship mặc định (ví dụ 30,000đ) nếu API GHN lỗi để khách vẫn có thể đặt hàng
+      return {
+        code: 200,
+        message: 'Fallback fee used due to GHN error',
+        data: { total: 30000 }
+      };
     }
   }
 
@@ -83,36 +96,53 @@ export class GHNService {
    * Lấy danh sách Tỉnh/Thành phố
    */
   async getProvinces() {
-    const response = await firstValueFrom(
-      this.httpService.get(`${this.apiUrl}/master-data/province`, {
-        headers: { Token: this.ghnToken },
-      }),
-    );
-    return response.data;
+    try {
+      const response = await firstValueFrom(
+        this.httpService.get(`${this.apiUrl}/master-data/province`, {
+          headers: { Token: this.ghnToken },
+        }),
+      );
+      return response.data;
+    } catch (error) {
+      this.logger.error('GHN Get Provinces Error:', error.response?.data || error.message);
+      return { data: [] };
+    }
   }
 
   /**
    * Lấy danh sách Quận/Huyện theo Tỉnh
    */
   async getDistricts(provinceId: number) {
-    const response = await firstValueFrom(
-      this.httpService.get(`${this.apiUrl}/master-data/district?province_id=${provinceId}`, {
-        headers: { Token: this.ghnToken },
-      }),
-    );
-    return response.data;
+    if (!provinceId) return { data: [] };
+    try {
+      const response = await firstValueFrom(
+        this.httpService.get(`${this.apiUrl}/master-data/district?province_id=${provinceId}`, {
+          headers: { Token: this.ghnToken },
+        }),
+      );
+      return response.data;
+    } catch (error) {
+      this.logger.error(`GHN Get Districts Error (Province ${provinceId}):`, error.response?.data || error.message);
+      return { data: [] };
+    }
   }
 
   /**
    * Lấy danh sách Phường/Xã theo Quận
    */
   async getWards(districtId: number) {
-    const response = await firstValueFrom(
-      this.httpService.get(`${this.apiUrl}/master-data/ward?district_id=${districtId}`, {
-        headers: { Token: this.ghnToken },
-      }),
-    );
-    return response.data;
+    if (!districtId) return { data: [] };
+    try {
+      const response = await firstValueFrom(
+        this.httpService.get(`${this.apiUrl}/master-data/ward?district_id=${districtId}`, {
+          headers: { Token: this.ghnToken },
+        }),
+      );
+      return response.data;
+    } catch (error) {
+      this.logger.error(`GHN Get Wards Error (District ${districtId}):`, error.response?.data || error.message);
+      return { data: [] };
+    }
   }
 
   /**

@@ -1,0 +1,22 @@
+import { api } from "@/lib/axios";
+
+export const reviewsApi = {
+  getProductReviews: async (productId: number, page = 1, limit = 10) => {
+    const response = await api.get(`/reviews/product/${productId}`, {
+      params: { page, limit },
+    });
+    return response.data;
+  },
+  
+  createReview: async (data: any) => {
+    const response = await api.post("/reviews", data);
+    return response.data;
+  },
+  
+  canUserReview: async (productId: number, orderId: number) => {
+    const response = await api.get(`/reviews/can-review/${productId}`, {
+      params: { orderId },
+    });
+    return response.data;
+  },
+};

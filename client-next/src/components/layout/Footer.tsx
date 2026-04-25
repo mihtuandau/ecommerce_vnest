@@ -10,7 +10,7 @@ export function Footer() {
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
         <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5">
           <div className="lg:col-span-2 space-y-8">
-            <Link href="/" className="flex items-center gap-2 group bg-white p-2 rounded-xl w-fit">
+            <Link href="/" className="flex items-center gap-2 group p-2 rounded-xl w-fit bg-white">
               <img
                 src="/logoMT.png"
                 alt="MINHTUANSHOP"

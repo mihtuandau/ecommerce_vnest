@@ -10,11 +10,18 @@ interface CustomerProps {
 export function Customer({ order }: CustomerProps) {
   const orderAny = order as any;
   const snapshot = orderAny.shippingSnapshot;
-  const address = orderAny.shippingAddress;
   
-  const customerName = snapshot?.fullName || address?.fullName || address?.name || orderAny.user?.name || "Khách hàng";
-  const customerPhone = snapshot?.phone || address?.phone || orderAny.user?.phone || orderAny.guestPhone || "—";
-  const customerAddress = snapshot?.addressString || (typeof address === 'string' ? address : `${address?.street || ""}, ${address?.ward || ""}, ${address?.district || ""}, ${address?.province || ""}`);
+  const customerName = snapshot?.fullName || orderAny.user?.name || "Khách hàng";
+  const customerPhone = snapshot?.phone || orderAny.user?.phone || orderAny.guestPhone || "—";
+  
+  // Ghép địa chỉ từ snapshot (thông tin lúc đặt hàng)
+  const snapshotAddress = snapshot 
+    ? [snapshot.street, snapshot.ward, snapshot.district, snapshot.province]
+        .filter(Boolean)
+        .join(", ")
+    : "";
+
+  const customerAddress = snapshot?.addressString || snapshotAddress || "—";
 
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-6">

@@ -4,12 +4,15 @@ import Link from "next/link";
 import { Search, Menu, ChevronDown, Zap, Tag, Sparkles, X, ChevronRight, Heart } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { CartDrawer } from "@/features/cart/components/CartDrawer";
+import { Skeleton } from "@/components/ui/Skeleton";
+import { CartDropdown } from "@/features/cart/components/CartDropdown";
 import { ROUTES } from "@/constants/routes";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useWishlistStore } from "@/store/useWishlistStore";
 import { useCategories } from "@/features/categories/hooks";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
+import { Role } from "@/types/enums";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,24 +24,32 @@ import {
 
 const NAV_LINKS = [
   { href: "/",           label: "Trang chủ" },
-  { href: "/shop",       label: "Cửa hàng"  },
-  { href: "/new",        label: "Hàng mới",  icon: Sparkles },
-  { href: "/flash-sale", label: "Flash Sale", icon: Zap, activeColor: "text-[#e85d24]", activeBg: "bg-[#e85d24]/5" },
-  { href: "/deals",      label: "Ưu đãi",    icon: Tag },
+  { href: "/shop",       label: "Cửa hàng", exact: true },
+  { href: "/shop?sortBy=newest", label: "Hàng mới", icon: Sparkles },
+  { href: "/flash-sale",  label: "Flash Sale", icon: Zap, activeColor: "text-[#e85d24]", activeBg: "bg-[#e85d24]/5" },
+  { href: "/offers",      label: "Ưu đãi",    icon: Tag },
 ];
 
 export function Header() {
   const { user, clearAuth } = useAuthStore();
+  const { items: wishlistItems } = useWishlistStore();
   const { data: categories } = useCategories();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
+
+  const currentPathWithSearch = pathname + (searchParams.toString() ? `?${searchParams.toString()}` : "");
 
   const [catOpen, setCatOpen]       = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileCatOpen, setMobileCatOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isScrolled, setIsScrolled] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Scroll detection
   useEffect(() => {
@@ -51,7 +62,7 @@ export function Header() {
 
   const catRef = useRef<HTMLDivElement>(null);
   const categoryList = Array.isArray(categories) ? categories : [];
-  const activeCategoryId = searchParams.get("category");
+  const activeCategoryId = searchParams.get("categoryId");
 
   // Đóng category dropdown khi click ngoài
   useEffect(() => {
@@ -133,13 +144,21 @@ export function Header() {
 
               {/* RIGHT — Cart + User */}
               <div className="flex shrink-0 items-center justify-end gap-1 min-w-[160px]">
-                <Button variant="ghost" size="icon" className="h-11 w-11 rounded-full text-slate-600 hover:text-primary hover:bg-primary/5 transition-all" asChild>
+                <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl text-slate-600 hover:text-primary hover:bg-primary/5 transition-all relative" asChild>
                   <Link href={ROUTES.WISHLIST}>
                     <Heart className="h-6 w-6" />
+                    {mounted && wishlistItems.length > 0 && (
+                      <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-lg bg-primary text-[10px] font-medium text-white shadow-sm ring-2 ring-white">
+                        {wishlistItems.length}
+                      </span>
+                    )}
                   </Link>
                 </Button>
-                <CartDrawer />
-                {user ? (
+                <CartDropdown />
+                {!mounted ? (
+                  <Skeleton className="h-10 w-10 rounded-full opacity-50" />
+                ) : user ? (
+                  // ...
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="icon" className="h-11 w-11 rounded-full">
@@ -156,7 +175,7 @@ export function Header() {
                       <DropdownMenuSeparator />
                       <DropdownMenuItem asChild><Link href={ROUTES.ACCOUNT}>Tài khoản của tôi</Link></DropdownMenuItem>
                       <DropdownMenuItem asChild><Link href={ROUTES.ORDERS}>Đơn hàng của tôi</Link></DropdownMenuItem>
-                      {user.role === "ADMIN" && (
+                      {user.role === Role.ADMIN && (
                         <DropdownMenuItem asChild className="text-primary font-bold">
                           <Link href={ROUTES.ADMIN}>Quản trị hệ thống</Link>
                         </DropdownMenuItem>
@@ -171,9 +190,14 @@ export function Header() {
                     </DropdownMenuContent>
                   </DropdownMenu>
                 ) : (
-                  <Button asChild size="sm" className="rounded-full px-5 h-9 text-sm font-semibold">
-                    <Link href={ROUTES.LOGIN}>Đăng nhập</Link>
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <Button asChild variant="ghost" className="hidden sm:flex rounded-full px-4 h-9 text-xs font-semibold text-slate-500 hover:text-primary">
+                      <Link href={ROUTES.ORDER_LOOKUP}>Tra cứu</Link>
+                    </Button>
+                    <Button asChild size="sm" className="rounded-full px-5 h-9 text-sm font-semibold shadow-lg shadow-primary/20 transition-all active:scale-95">
+                      <Link href={ROUTES.LOGIN}>Đăng nhập</Link>
+                    </Button>
+                  </div>
                 )}
               </div>
 
@@ -188,12 +212,26 @@ export function Header() {
 
               {/* Nav links */}
               {NAV_LINKS.map((link) => {
-                const isActive = pathname === link.href;
+                // Logic: A specific filtered link takes priority over the general "Cửa hàng" link
+                const isSpecificLink = link.href.includes("?");
+                const otherSpecificActive = NAV_LINKS.some(l => l.href.includes("?") && currentPathWithSearch.includes(l.href));
+                
+                let isActive = false;
+                if (link.href === "/") {
+                  isActive = pathname === "/";
+                } else if (isSpecificLink) {
+                  isActive = currentPathWithSearch.includes(link.href);
+                } else if (link.href === "/shop") {
+                  isActive = pathname === "/shop" && !otherSpecificActive;
+                } else {
+                  isActive = pathname === link.href;
+                }
+
                 const Icon = link.icon;
                 const isColored = !!link.activeColor;
                 return (
                   <Link
-                    key={link.href}
+                    key={link.label}
                     href={link.href}
                     className={`flex items-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-full transition-all duration-200 whitespace-nowrap
                       ${isActive
@@ -227,7 +265,7 @@ export function Header() {
                         {categoryList.map((cat) => (
                           <Link
                             key={cat.id}
-                            href={`/shop?category=${cat.id}`}
+                            href={`/shop?categoryId=${cat.id}`}
                             onClick={() => setCatOpen(false)}
                             className={`flex items-center gap-3 px-4 py-2.5 text-xs font-semibold rounded-xl transition-all
                               ${activeCategoryId === String(cat.id)
@@ -298,11 +336,24 @@ export function Header() {
         <div className="flex-1 overflow-y-auto py-3">
           <div className="px-3 space-y-0.5">
             {NAV_LINKS.map((link) => {
-              const isActive = pathname === link.href;
+              const isSpecificLink = link.href.includes("?");
+              const otherSpecificActive = NAV_LINKS.some(l => l.href.includes("?") && currentPathWithSearch.includes(l.href));
+              
+              let isActive = false;
+              if (link.href === "/") {
+                isActive = pathname === "/";
+              } else if (isSpecificLink) {
+                isActive = currentPathWithSearch.includes(link.href);
+              } else if (link.href === "/shop") {
+                isActive = pathname === "/shop" && !otherSpecificActive;
+              } else {
+                isActive = pathname === link.href;
+              }
+              
               const Icon = link.icon;
               return (
                 <Link
-                  key={link.href}
+                  key={link.label}
                   href={link.href}
                   className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all
                     ${isActive ? "bg-primary text-white" : "text-slate-600 hover:bg-primary/5 hover:text-primary"}`}
@@ -318,10 +369,15 @@ export function Header() {
             <Link
               href={ROUTES.WISHLIST}
               onClick={() => setMobileOpen(false)}
-              className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-600 hover:bg-primary/5 hover:text-primary transition-all"
+              className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-600 hover:bg-primary/5 hover:text-primary transition-all relative"
             >
               <Heart className="h-4 w-4 flex-shrink-0" />
               Danh sách yêu thích
+              {mounted && wishlistItems.length > 0 && (
+                <span className="ml-auto h-5 w-5 bg-primary text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                  {wishlistItems.length}
+                </span>
+              )}
             </Link>
           </div>
 
@@ -340,7 +396,7 @@ export function Header() {
                 {categoryList.map((cat) => (
                   <Link
                     key={cat.id}
-                    href={`/shop?category=${cat.id}`}
+                    href={`/shop?categoryId=${cat.id}`}
                     className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm transition-all
                       ${activeCategoryId === String(cat.id)
                         ? "bg-primary/10 text-primary font-bold"
@@ -358,7 +414,9 @@ export function Header() {
 
         {/* User section ở cuối drawer */}
         <div className="flex-shrink-0 border-t border-slate-100 p-4">
-          {user ? (
+          {!mounted ? (
+            <Skeleton className="h-10 w-10 rounded-full opacity-50" />
+          ) : user ? (
             <div className="space-y-2">
               <div className="flex items-center gap-3 px-2 py-1">
                 <div className="h-9 w-9 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-sm flex-shrink-0">

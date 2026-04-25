@@ -44,20 +44,26 @@ export class PaymentService {
     let transactionId: string | null = null;
     let paymentLink: string | null = null;
 
+    console.log(`[PaymentService] Creating payment for order ${order.orderCode}, Method: ${data.method}`);
+
     if (data.method === 'VNPAY') {
-      // Generate unique transaction ID to prevent collision under high load
-      // Using timestamp + random string instead of just Date.now()
       const timestamp = Date.now();
       const randomSuffix = Math.random().toString(36).substring(2, 11);
       transactionId = `VNP${timestamp}_${randomSuffix}`;
+      
       paymentLink = this.vnpayService.createPaymentUrl({
         amount: order.total,
         orderInfo: `Thanh toan don hang ${order.orderCode}`,
         vnp_TxnRef: order.orderCode as string,
         ipAddr: ipAddr,
       });
+
+      console.log(`[PaymentService] VNPay Link Generated: ${paymentLink ? 'YES' : 'NO'}`);
+      
+      if (!paymentLink) {
+        throw new BadRequestException('Không thể khởi tạo liên kết thanh toán VNPay. Vui lòng kiểm tra cấu hình hệ thống.');
+      }
     } else {
-      // Các phương thức khác (COD...)
       transactionId = PaymentHelper.generateTransactionId(data.method);
     }
 
@@ -83,10 +89,13 @@ export class PaymentService {
 
     await this.cacheService.clearPaymentCaches();
     
-    return PaymentHelper.serializePayment({
-      ...payment,
-      paymentLink,
-    });
+    // TRẢ VỀ ĐỐI TƯỢNG PHẲNG (PLAIN OBJECT) - TRÁNH SERIALIZATION LÀM MẤT DỮ LIỆU
+    const serializedPayment = PaymentHelper.serializePayment(payment);
+    
+    return {
+      ...serializedPayment,
+      paymentLink: paymentLink, // Đảm bảo luôn có ở cấp này
+    };
   }
 
   async updateStatus(id: number, data: UpdatePaymentStatusDto) {
@@ -172,14 +181,19 @@ export class PaymentService {
 
     const status = responseCode === '00' ? 'SUCCESS' : 'FAILED';
     
+    let updatedPayment = payment;
     if (payment.status === 'PENDING') {
-      await this.updateStatus(payment.id, { status });
+      updatedPayment = await this.updateStatus(payment.id, { status });
     }
     
     return {
+      success: status === 'SUCCESS',
       isValid: result.isValid,
-      payment: PaymentHelper.serializePayment(payment),
-      order: payment.order,
+      payment: PaymentHelper.serializePayment(updatedPayment),
+      order: {
+        ...updatedPayment.order,
+        totalAmount: updatedPayment.amount, // Khớp với frontend mong đợi
+      },
     };
   }
 

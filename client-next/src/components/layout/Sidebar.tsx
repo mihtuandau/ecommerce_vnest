@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard, Package, Layers, ShoppingCart, Users,
   Tag, Image, MessageCircle, BarChart3, ChevronLeft,
-  ChevronRight, Settings, Warehouse,
+  ChevronRight, Settings, Warehouse, Zap,
 } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { useAuth } from "@/features/auth/hooks/useAuth";
@@ -29,7 +29,7 @@ const navGroups = [
       { label: "Sản phẩm",   href: "/admin/products",   icon: Package,   permission: "product.manage" },
       { label: "Danh mục",   href: "/admin/categories", icon: Layers,    permission: "category.manage" },
       { label: "Kho hàng",   href: "/admin/inventory",  icon: Warehouse, permission: "inventory.manage" },
-      { label: "Khuyến mãi", href: "/admin/discounts",  icon: Tag,       permission: "discount.manage" },
+      { label: "Mã giảm giá", href: "/admin/discounts",  icon: Tag,       permission: "discount.manage" },
     ],
   },
   {

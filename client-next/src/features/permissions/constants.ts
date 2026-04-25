@@ -4,6 +4,7 @@ import {
   Settings, ShieldCheck
 } from "lucide-react";
 import React from "react";
+import { Role } from "@/types/enums";
 
 export const PERMISSION_GROUPS: Record<string, { label: string; icon: React.ElementType; color: string; bg: string }> = {
   user:      { label: "Người dùng",  icon: Users,         color: "text-blue-600",   bg: "bg-blue-50" },
@@ -19,14 +20,14 @@ export const PERMISSION_GROUPS: Record<string, { label: string; icon: React.Elem
   settings:  { label: "Cài đặt",    icon: Settings,      color: "text-slate-600",  bg: "bg-slate-50" },
 };
 
-export const ROLE_CONFIG: Record<string, { label: string; desc: string; color: string; border: string; bg: string; icon: any }> = {
-  ADMIN:    { label: "Quản trị viên", desc: "Toàn quyền truy cập",     color: "text-rose-600",    border: "border-rose-200",    bg: "bg-rose-50",    icon: ShieldCheck },
-  KHO:      { label: "Quản lý kho",   desc: "Quản lý xuất nhập tồn",   color: "text-amber-600",   border: "border-amber-200",   bg: "bg-amber-50",   icon: Warehouse },
-  BAN_HANG: { label: "Bán hàng",      desc: "Xử lý đơn & khách hàng",  color: "text-sky-600",     border: "border-sky-200",     bg: "bg-sky-50",     icon: ShoppingCart },
-  CUSTOMER: { label: "Khách hàng",    desc: "Mua hàng & Đánh giá",     color: "text-slate-600",  border: "border-slate-200",  bg: "bg-slate-50",   icon: Users },
+export const ROLE_CONFIG: Record<Role, { label: string; desc: string; color: string; border: string; bg: string; icon: any }> = {
+  [Role.ADMIN]:    { label: "Quản trị viên", desc: "Toàn quyền truy cập",     color: "text-rose-600",    border: "border-rose-200",    bg: "bg-rose-50",    icon: ShieldCheck },
+  [Role.KHO]:      { label: "Quản lý kho",   desc: "Quản lý xuất nhập tồn",   color: "text-amber-600",   border: "border-amber-200",   bg: "bg-amber-50",   icon: Warehouse },
+  [Role.BAN_HANG]: { label: "Bán hàng",      desc: "Xử lý đơn & khách hàng",  color: "text-sky-600",     border: "border-sky-200",     bg: "bg-sky-50",     icon: ShoppingCart },
+  [Role.CUSTOMER]: { label: "Khách hàng",    desc: "Mua hàng & Đánh giá",     color: "text-slate-600",  border: "border-slate-200",  bg: "bg-slate-50",   icon: Users },
 };
 
-export const MANAGED_ROLES = ["ADMIN", "KHO", "BAN_HANG", "CUSTOMER"];
+export const MANAGED_ROLES = [Role.ADMIN, Role.KHO, Role.BAN_HANG, Role.CUSTOMER];
 
 export const ACTION_LABELS: Record<string, string> = {
   manage: "Quản lý",

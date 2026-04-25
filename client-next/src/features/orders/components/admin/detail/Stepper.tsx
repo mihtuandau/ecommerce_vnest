@@ -3,24 +3,25 @@
 import React from "react";
 import { Clock, Package, Truck, CheckCircle2, Loader2 } from "lucide-react";
 import { cn } from "@/utils/cn";
+import { OrderStatus } from "@/types/enums";
 
 interface StepperProps {
-  status: string;
+  status: OrderStatus | string;
   isPending: boolean;
-  onUpdateStatus: (id: string, status: string) => void;
+  onUpdateStatus: (id: string, status: OrderStatus) => void;
   id: string;
 }
 
 const statusSteps = [
-  { key: "PENDING", label: "Chờ xử lý", icon: Clock },
-  { key: "PROCESSING", label: "Đang xử lý", icon: Package },
-  { key: "SHIPPED", label: "Đang giao", icon: Truck },
-  { key: "DELIVERED", label: "Đã giao", icon: CheckCircle2 },
+  { key: OrderStatus.PENDING, label: "Chờ xử lý", icon: Clock },
+  { key: OrderStatus.PROCESSING, label: "Đang xử lý", icon: Package },
+  { key: OrderStatus.SHIPPED, label: "Đang giao", icon: Truck },
+  { key: OrderStatus.DELIVERED, label: "Đã giao", icon: CheckCircle2 },
 ];
 
 export function Stepper({ status, isPending, onUpdateStatus, id }: StepperProps) {
   const currentStepIndex = statusSteps.findIndex(s => s.key === status);
-  const isCancelled = status === "CANCELLED";
+  const isCancelled = status === OrderStatus.CANCELLED;
 
   if (isCancelled) return null;
 
@@ -39,7 +40,7 @@ export function Stepper({ status, isPending, onUpdateStatus, id }: StepperProps)
              return (
                 <div key={step.key} className="relative z-10 flex flex-col items-center gap-3">
                    <button 
-                    onClick={() => !isPending && onUpdateStatus(id, step.key)}
+                    onClick={() => !isPending && onUpdateStatus(id, step.key as OrderStatus)}
                     disabled={isPending || isCompleted}
                     className={cn(
                         "h-10 w-10 rounded-full flex items-center justify-center border-2 transition-all relative",

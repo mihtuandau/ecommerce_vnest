@@ -4,6 +4,7 @@ import React from "react";
 import { User } from "@/types/models";
 import { Button } from "@/components/ui/Button";
 import { Ban, CheckCircle2, Trash2, Mail, ShieldAlert } from "lucide-react";
+import { UserStatus } from "@/types/enums";
 import { 
   useUpdateUser, 
   useResetPassword, 
@@ -21,7 +22,7 @@ export function Actions({ user, onEdit }: ActionsProps) {
   const { mutate: updateUser, isPending: isUpdating } = useUpdateUser();
 
   const toggleStatus = () => {
-    const newStatus = user.status === "ACTIVE" ? "SUSPENDED" : "ACTIVE";
+    const newStatus = user.status === UserStatus.ACTIVE ? UserStatus.SUSPENDED : UserStatus.ACTIVE;
     updateUser({ id: user.id, data: { status: newStatus } });
   };
 
@@ -47,12 +48,12 @@ export function Actions({ user, onEdit }: ActionsProps) {
           variant="outline" 
           className={cn(
             "w-full justify-start gap-2 rounded-xl font-bold border-slate-200 hover:bg-slate-50",
-            user.status === "ACTIVE" ? "text-amber-600" : "text-emerald-600"
+            user.status === UserStatus.ACTIVE ? "text-amber-600" : "text-emerald-600"
           )}
           onClick={toggleStatus}
           disabled={isUpdating}
         >
-          {user.status === "ACTIVE" ? (
+          {user.status === UserStatus.ACTIVE ? (
             <>
               <Ban className="h-4 w-4" />
               Vô hiệu hóa tài khoản

@@ -46,7 +46,6 @@ export function Items({ order }: ItemsProps) {
                 </div>
                 <div className="text-right">
                    <p className="font-bold text-slate-900 text-sm">{formatCurrency(item.price)}</p>
-                   <p className="text-[10px] text-slate-400 font-medium">Tổng: {formatCurrency(item.price * item.quantity)}</p>
                 </div>
               </div>
             ))
@@ -55,25 +54,35 @@ export function Items({ order }: ItemsProps) {
           )}
       </div>
       
-      <div className="p-6 bg-slate-50/30 border-t border-slate-100 space-y-2">
-         <div className="flex justify-between text-sm text-slate-500">
-            <span>Tạm tính</span>
+      <div className="p-8 bg-slate-50/30 border-t border-slate-100 flex justify-end">
+        <div className="w-full max-w-sm space-y-4">
+          <div className="flex justify-between text-[13px]">
+            <span className="text-slate-400 font-medium uppercase tracking-widest text-[9px]">Tạm tính</span>
             <span className="font-semibold text-slate-700">{formatCurrency(subtotal)}</span>
-         </div>
-         <div className="flex justify-between text-sm text-slate-500">
-            <span>Phí vận chuyển</span>
-            <span className="font-semibold text-slate-700">{formatCurrency(shippingFee)}</span>
-         </div>
-         {discountAmount > 0 && (
-            <div className="flex justify-between text-sm text-emerald-600">
-                <span>Giảm giá</span>
-                <span className="font-semibold">-{formatCurrency(discountAmount)}</span>
+          </div>
+           <div className="flex justify-between text-[13px]">
+            <span className="text-slate-400 font-medium uppercase tracking-widest text-[9px]">Phí vận chuyển</span>
+            <span className="font-semibold text-slate-700">+{formatCurrency(shippingFee)}</span>
+          </div>
+          {orderAny.shippingSnapshot?.actualGHNFee > 0 && (
+            <div className="flex justify-between text-[11px] -mt-2 bg-slate-50 p-2 rounded-lg border border-slate-100 border-dashed">
+              <span className="text-slate-500 font-medium">Phí GHN (Thực tế)</span>
+              <span className="font-bold text-slate-600">-{formatCurrency(orderAny.shippingSnapshot.actualGHNFee)}</span>
             </div>
-         )}
-         <div className="flex justify-between items-center pt-4 mt-2 border-t border-slate-200">
-            <span className="font-bold text-slate-900">Tổng cộng</span>
-            <span className="font-bold text-xl text-primary">{formatCurrency(totalAmount)}</span>
-         </div>
+          )}
+          {discountAmount > 0 && (
+            <div className="flex justify-between text-[13px]">
+              <span className="text-slate-400 font-medium uppercase tracking-widest text-[9px]">Giảm giá</span>
+              <span className="font-semibold text-emerald-600">-{formatCurrency(discountAmount)}</span>
+            </div>
+          )}
+          <div className="pt-5 border-t border-slate-200 flex justify-between items-end">
+            <span className="text-slate-900 font-bold uppercase tracking-widest text-[11px]">Tổng cộng</span>
+            <span className="text-3xl font-bold text-primary tabular-nums tracking-tighter leading-none">
+              {formatCurrency(totalAmount)}
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   );

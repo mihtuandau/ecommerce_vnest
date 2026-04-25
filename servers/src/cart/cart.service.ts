@@ -1,4 +1,4 @@
-﻿import {
+import {
   Injectable,
   NotFoundException,
   BadRequestException,
@@ -49,6 +49,30 @@ export class CartService {
     await this.cacheManager.set(cacheKey, cartWithTotal, 300);
     
     return cartWithTotal;
+  }
+
+  async sync(userId: number, items: Array<{ variantId: number; quantity: number }>): Promise<any> {
+    const cart = await this.repository.upsertCart(userId);
+    
+    // Clear existing items and add new ones
+    await this.repository.deleteAllCartItems(cart.id);
+    
+    if (items.length > 0) {
+      for (const item of items) {
+        try {
+          await this.repository.createCartItem({
+            cart: { connect: { id: cart.id } },
+            variant: { connect: { id: item.variantId } },
+            quantity: item.quantity,
+          });
+        } catch (error) {
+          // Skip invalid variants or other errors during sync
+        }
+      }
+    }
+
+    await this.cacheManager.del(`cart:${userId}`);
+    return this.getCart(userId);
   }
 
   async addItem(userId: number, dto: AddCartItemDto): Promise<any> {

@@ -1,20 +1,30 @@
 import { api } from "@/lib/axios";
 import type { Discount } from "@/types/models";
-import type { PaginatedResponse } from "@/types/api";
 
 export const discountsApi = {
   getDiscounts: async (
     params?: Record<string, any>
-  ): Promise<PaginatedResponse<Discount>> => {
-    const { data } = await api.get<PaginatedResponse<Discount>>("/discounts", {
-      params,
+  ): Promise<any> => {
+    // manage: true → admin endpoint, otherwise → public (customer) endpoint
+    const isAdmin = params?.manage;
+    const endpoint = isAdmin ? "/discounts" : "/discounts/public";
+
+    // Không gửi "manage" lên server (server không biết field này)
+    const { manage, ...serverParams } = params || {};
+
+    const { data: body } = await api.get<any>(endpoint, {
+      params: serverParams,
     });
-    return data;
+
+    // Robust unwrapping
+    if (Array.isArray(body)) return { data: body };
+    if (body?.data && Array.isArray(body.data)) return body;
+    return body;
   },
 
   getDiscount: async (id: string): Promise<Discount> => {
-    const { data } = await api.get<Discount>(`/discounts/${id}`);
-    return data;
+    const { data: body } = await api.get<any>(`/discounts/${id}`);
+    return body?.data || body;
   },
 
   createDiscount: async (discountData: any): Promise<Discount> => {
@@ -31,8 +41,8 @@ export const discountsApi = {
     await api.delete(`/discounts/${id}`);
   },
 
-  validateDiscount: async (code: string): Promise<Discount> => {
-    const { data } = await api.post<Discount>("/discounts/validate", { code });
+  validateDiscount: async (code: string): Promise<any> => {
+    const { data } = await api.post<any>("/discounts/validate", { code });
     return data;
   },
 
@@ -42,7 +52,7 @@ export const discountsApi = {
   },
 
   getFlashSale: async () => {
-    const { data } = await api.get("/discounts/flash-sale");
-    return data;
+    const { data: body } = await api.get<any>("/discounts/flash-sale");
+    return body?.data || body;
   },
 };

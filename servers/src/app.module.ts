@@ -37,7 +37,7 @@ import { BrandModule } from './brand/brand.module';
     ScheduleModule.forRoot(),
     ThrottlerModule.forRoot([{
       ttl: 60000, 
-      limit: 100, 
+      limit: 1000, 
     }]),
     AuthModule,  
     UserModule,  

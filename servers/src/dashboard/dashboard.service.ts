@@ -1,4 +1,4 @@
-﻿import { Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { DashboardRepository } from './dashboard.repository';
 import { ReportQueryDto } from '../report/dto/report-query.dto';
 
@@ -104,7 +104,7 @@ export class DashboardService {
           date.toLocaleString('en-US', { timeZone: 'Asia/Ho_Chi_Minh' }),
         );
         const month = vnTime.getMonth();
-        monthlyData[month].revenue += Number(item.subtotal) || 0;
+        monthlyData[month].revenue += Number(item.total) || 0;
         monthlyData[month].orders += 1;
       });
 
@@ -158,7 +158,7 @@ export class DashboardService {
         const key = `T${vnTime.getMonth() + 1}/${vnTime.getFullYear()}`;
         if (dataMap.has(key)) {
           const entry = dataMap.get(key);
-          entry.revenue += Number(item.subtotal) || 0;
+          entry.revenue += Number(item.total) || 0;
           entry.orders += 1;
         }
       });
@@ -187,7 +187,7 @@ export class DashboardService {
       }
 
       const entry = dataMap.get(label);
-      entry.revenue += Number(item.subtotal) || 0;
+      entry.revenue += Number(item.total) || 0;
       entry.orders += 1;
     });
 
@@ -224,7 +224,7 @@ export class DashboardService {
       }
 
       const entry = dataMap.get(label);
-      entry.revenue += Number(item.subtotal) || 0;
+      entry.revenue += Number(item.total) || 0;
       entry.orders += 1;
     });
 
@@ -241,8 +241,9 @@ export class DashboardService {
     const productMap = new Map<
       number,
       {
-        product: any;
-        totalSold: number;
+        productName: string;
+        image: string;
+        totalQuantity: number;
         totalRevenue: number;
         orderCount: number;
       }
@@ -250,7 +251,6 @@ export class DashboardService {
 
     orderItems.forEach((item) => {
       const product = item.variant.product;
-      const order = (item as any).order;
       const productId = product.id;
       
       const itemRevenue = Number(item.price) * item.quantity;
@@ -258,22 +258,18 @@ export class DashboardService {
       const existing = productMap.get(productId);
 
       if (existing) {
-        existing.totalSold += item.quantity;
+        existing.totalQuantity += item.quantity;
         existing.totalRevenue += itemRevenue;
         existing.orderCount += 1;
       } else {
         const thumbnail =
           (product as any).images?.find((img: any) => img.isThumbnail)?.url ||
-          (product as any).images?.[0]?.url;
+          (product as any).images?.[0]?.url || "";
 
         productMap.set(productId, {
-          product: {
-            id: product.id,
-            name: product.name,
-            thumbnail: thumbnail,
-            price: item.price,
-          },
-          totalSold: item.quantity,
+          productName: product.name,
+          image: thumbnail,
+          totalQuantity: item.quantity,
           totalRevenue: itemRevenue,
           orderCount: 1,
         });
@@ -281,15 +277,9 @@ export class DashboardService {
     });
 
     const topProducts = Array.from(productMap.values())
-      .sort((a, b) => b.totalSold - a.totalSold)
+      .sort((a, b) => b.totalQuantity - a.totalQuantity)
       .slice(0, limit);
 
     return topProducts;
   }
 }
-
-
-
-
-
-

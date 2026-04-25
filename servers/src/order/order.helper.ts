@@ -46,11 +46,6 @@ export function calculateOrderTotal(
   
   // Logic phí ship: Ưu tiên phí ship truyền vào (từ GHN), nếu không có thì mặc định 30k
   let shippingFee = providedShippingFee !== undefined ? Number(providedShippingFee) : 30000;
-  
-  // Miễn phí nếu trên 500k (Quy tắc riêng của shop)
-  if (totalItems >= 500000) {
-    shippingFee = 0;
-  }
 
   const taxAmount = 0;
 

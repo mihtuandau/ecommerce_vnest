@@ -7,7 +7,7 @@ import { ShoppingCart, Star, TrendingUp, Sparkles, Award } from "lucide-react";
 import Link from "next/link";
 import { useCartStore } from "@/store/useCartStore";
 import { useToast } from "@/hooks/useToast";
-import { cn } from "@/utils/cn";
+import { useUIStore } from "@/store/useUIStore";
 
 interface HomeProductCardProps {
   product: Product;
@@ -15,7 +15,7 @@ interface HomeProductCardProps {
 }
 
 export function HomeProductCard({ product, variant }: HomeProductCardProps) {
-  const addItem = useCartStore((state) => state.addItem);
+  const { addItem } = useCartStore();
   const { success } = useToast();
 
   const parsePrice = (val: any) => {
@@ -33,12 +33,16 @@ export function HomeProductCard({ product, variant }: HomeProductCardProps) {
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
+    const defaultVariantId = product.variants?.[0]?.id || product.id;
+
     addItem({
-      productId: product.id,
+      productId: String(product.id),
+      variantId: String(defaultVariantId),
       name: product.name,
       price: price,
       imageUrl: imageUrl,
       slug: product.slug,
+      quantity: 1,
     });
     success(`Đã thêm ${product.name} vào giỏ hàng`);
   };

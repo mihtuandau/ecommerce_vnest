@@ -1,7 +1,7 @@
 "use client";
 
 import { useProducts } from "@/features/products/hooks";
-import { ProductCard } from "@/components/shared/ProductCard";
+import { ProductCard } from "./cards/ProductCard";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Product } from "@/types/models";
 
@@ -41,18 +41,7 @@ export function RelatedProducts({ categoryId, currentProductId }: RelatedProduct
   if (related.length === 0) return null;
 
   return (
-    <div className="space-y-12">
-      <div className="flex items-center gap-6">
-        <div className="h-px flex-1 bg-slate-100" />
-        <div className="text-center space-y-2">
-          <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Discovery</span>
-          <h2 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tighter uppercase italic">
-            Sản phẩm <span className="text-primary">Tương tự</span>
-          </h2>
-        </div>
-        <div className="h-px flex-1 bg-slate-100" />
-      </div>
-
+    <div className="space-y-10">
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-10">
         {related.map((product: Product) => (
           <div key={product.id} className="animate-in fade-in zoom-in-95 duration-500">

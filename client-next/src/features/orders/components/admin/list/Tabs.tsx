@@ -3,6 +3,7 @@
 import React from "react";
 import { cn } from "@/utils/cn";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs";
+import { OrderStatus } from "@/types/enums";
 
 interface OrderTabsProps {
   activeTab: string;
@@ -20,11 +21,11 @@ interface OrderTabsProps {
 export function OrderTabs({ activeTab, onTabChange, counts }: OrderTabsProps) {
   const tabItems = [
     { value: "ALL", label: "Tất cả", count: counts.ALL },
-    { value: "PENDING", label: "Chờ xử lý", count: counts.PENDING },
-    { value: "PROCESSING", label: "Đang xử lý", count: counts.PROCESSING },
-    { value: "SHIPPED", label: "Đang giao", count: counts.SHIPPED },
-    { value: "DELIVERED", label: "Đã giao", count: counts.DELIVERED },
-    { value: "CANCELLED", label: "Đã hủy", count: counts.CANCELLED },
+    { value: OrderStatus.PENDING, label: "Chờ xử lý", count: counts.PENDING },
+    { value: OrderStatus.PROCESSING, label: "Đang xử lý", count: counts.PROCESSING },
+    { value: OrderStatus.SHIPPED, label: "Đang giao", count: counts.SHIPPED },
+    { value: OrderStatus.DELIVERED, label: "Đã giao", count: counts.DELIVERED },
+    { value: OrderStatus.CANCELLED, label: "Đã hủy", count: counts.CANCELLED },
   ];
 
   return (

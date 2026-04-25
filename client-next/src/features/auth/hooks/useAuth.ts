@@ -2,6 +2,7 @@
 
 import { useMutation } from "@tanstack/react-query";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useCartStore } from "@/store/useCartStore";
 import { authApi } from "../api";
 import type { LoginPayload, RegisterPayload } from "../types";
 import { sanitizeUser } from "@/utils/sanitizeUser";
@@ -29,6 +30,7 @@ export function useAuth() {
       // Ignore errors — always clear local state regardless
     } finally {
       clearAuth();
+      useCartStore.getState().clearCart();
       if (typeof window !== "undefined") {
         window.location.href = "/login";
       }

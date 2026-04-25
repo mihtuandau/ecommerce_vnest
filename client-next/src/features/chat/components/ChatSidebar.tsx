@@ -7,6 +7,7 @@ import { useChatRooms } from "@/features/chat";
 import { formatDistanceToNow } from "date-fns";
 import { vi } from "date-fns/locale";
 import { cn } from "@/utils/cn";
+import { Role } from "@/types/enums";
 
 interface ChatSidebarProps {
   selectedRoom: string | null;
@@ -63,7 +64,7 @@ export function ChatSidebar({ selectedRoom, onSelectRoom }: ChatSidebarProps) {
               const isActive = selectedRoom === room.roomId;
               const lastMsg = room.lastMessage;
               const sender = lastMsg.sender;
-              const isCustomerMsg = sender.role === "CUSTOMER";
+              const isCustomerMsg = sender.role === Role.CUSTOMER;
 
               return (
                 <button

@@ -20,7 +20,7 @@ import {
 } from "recharts";
 import { useRevenueReport } from "@/features/reports/hooks";
 import { formatCurrency } from "@/utils/formatCurrency";
-import dayjs from "dayjs";
+import dayjs from "@/lib/dayjs";
 
 interface RevenueChartProps {
   data: any[];

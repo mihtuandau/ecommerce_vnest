@@ -10,6 +10,7 @@ import { cn } from "@/utils/cn";
 import { OrderTabs } from "@/features/orders/components/admin/list/Tabs";
 import { OrderListToolbar } from "@/features/orders/components/admin/list/ListToolbar";
 import { OrderListHeader } from "@/features/orders/components/admin/list/ListHeader";
+import { OrderStatus } from "@/types/enums";
 
 export default function AdminOrdersPage() {
   const { data: orders = [], isLoading, refetch, isFetching } = useOrders({ limit: 1000 });
@@ -18,11 +19,11 @@ export default function AdminOrdersPage() {
 
   const counts = React.useMemo(() => ({
     ALL: orders.length,
-    PENDING: orders.filter(o => o.status === "PENDING").length,
-    PROCESSING: orders.filter(o => o.status === "PROCESSING").length,
-    SHIPPED: orders.filter(o => o.status === "SHIPPED").length,
-    DELIVERED: orders.filter(o => o.status === "DELIVERED").length,
-    CANCELLED: orders.filter(o => o.status === "CANCELLED").length,
+    PENDING: orders.filter(o => o.status === OrderStatus.PENDING).length,
+    PROCESSING: orders.filter(o => o.status === OrderStatus.PROCESSING).length,
+    SHIPPED: orders.filter(o => o.status === OrderStatus.SHIPPED).length,
+    DELIVERED: orders.filter(o => o.status === OrderStatus.DELIVERED).length,
+    CANCELLED: orders.filter(o => o.status === OrderStatus.CANCELLED).length,
   }), [orders]);
 
   const filteredOrders = React.useMemo(() => {

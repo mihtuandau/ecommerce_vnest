@@ -10,6 +10,7 @@ import {
   Request,
   Query,
   Req,
+  Ip,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../common/guards/auth.guard';
@@ -31,15 +32,13 @@ export class OrderController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  create(@Request() req, @Body() body: CreateOrderDto) {
-    return this.orderService.create(req.user.userId, body);
+  create(@Request() req, @Body() body: CreateOrderDto, @Ip() ip: string) {
+    return this.orderService.create(req.user.userId, body, ip);
   }
 
   @Post('guest')
-  createGuestOrder(@Body() body: CreateOrderDto) {
-
-
-    return this.orderService.create(null, body);
+  createGuestOrder(@Body() body: CreateOrderDto, @Ip() ip: string) {
+    return this.orderService.create(null, body, ip);
   }
 
   @Get('guest/lookup/:orderCode')

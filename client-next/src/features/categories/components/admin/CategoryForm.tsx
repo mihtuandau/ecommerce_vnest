@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { nameSchema } from "@/lib/zod";
 import {
   Form,
   FormControl,
@@ -25,7 +26,7 @@ import {
 } from "lucide-react";
 
 const categorySchema = z.object({
-  name: z.string().min(2, "Tên danh mục phải có ít nhất 2 ký tự"),
+  name: nameSchema,
 });
 
 type CategoryFormValues = z.infer<typeof categorySchema>;

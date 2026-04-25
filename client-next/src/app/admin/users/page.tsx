@@ -6,6 +6,7 @@ import { UserTable } from "@/features/users/components/admin/UserTable";
 import { Header } from "@/features/users/components/admin/list/Header";
 import { Stats } from "@/features/users/components/admin/list/Stats";
 import { Toolbar } from "@/features/users/components/admin/list/Toolbar";
+import { Role } from "@/types/enums";
 
 export default function AdminUsersPage() {
   const { data, isLoading } = useUsers();
@@ -15,7 +16,7 @@ export default function AdminUsersPage() {
 
   const stats = React.useMemo(() => ({
     total: users.length,
-    admins: users.filter((u: any) => u.role === "ADMIN").length,
+    admins: users.filter((u: any) => u.role === Role.ADMIN).length,
     active: users.length, // Could be more specific if active status exists
   }), [users]);
 

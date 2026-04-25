@@ -1,16 +1,23 @@
 "use client";
 
 import React from "react";
-import { 
-  FormControl, 
-  FormField, 
-  FormItem, 
-  FormLabel, 
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
   FormMessage,
-  FormDescription 
+  FormDescription,
 } from "@/components/ui/Form";
 import { Input } from "@/components/ui/Input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/Select";
+import { Switch } from "@/components/ui/Switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/Select";
 import { FileText, DollarSign } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 
@@ -34,9 +41,15 @@ export function GeneralInfo({ form, categories }: GeneralInfoProps) {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="font-bold text-xs uppercase tracking-widest text-muted-foreground">Tên sản phẩm</FormLabel>
+                <FormLabel className="font-bold text-xs uppercase tracking-widest text-muted-foreground">
+                  Tên sản phẩm
+                </FormLabel>
                 <FormControl>
-                  <Input placeholder="Ví dụ: iPhone 15 Pro Max" className="h-12 rounded-xl border-slate-200 focus:ring-primary/20" {...field} />
+                  <Input
+                    placeholder="Ví dụ: iPhone 15 Pro Max"
+                    className="h-12 rounded-xl border-slate-200 focus:ring-primary/20"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -49,9 +62,15 @@ export function GeneralInfo({ form, categories }: GeneralInfoProps) {
               name="slug"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="font-bold text-xs uppercase tracking-widest text-muted-foreground">Slug</FormLabel>
+                  <FormLabel className="font-bold text-xs uppercase tracking-widest text-muted-foreground">
+                    Slug
+                  </FormLabel>
                   <FormControl>
-                    <Input placeholder="iphone-15-pro" className="h-12 rounded-xl border-slate-200 font-mono text-xs focus:ring-primary/20" {...field} />
+                    <Input
+                      placeholder="iphone-15-pro"
+                      className="h-12 rounded-xl border-slate-200 font-mono text-xs focus:ring-primary/20"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -62,8 +81,13 @@ export function GeneralInfo({ form, categories }: GeneralInfoProps) {
               name="categoryId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="font-bold text-xs uppercase tracking-widest text-muted-foreground">Danh mục</FormLabel>
-                  <Select onValueChange={(val) => field.onChange(Number(val))} value={field.value ? String(field.value) : ""}>
+                  <FormLabel className="font-bold text-xs uppercase tracking-widest text-muted-foreground">
+                    Danh mục
+                  </FormLabel>
+                  <Select
+                    onValueChange={(val) => field.onChange(Number(val))}
+                    value={field.value ? String(field.value) : ""}
+                  >
                     <FormControl>
                       <SelectTrigger className="h-12 rounded-xl border-slate-200 text-foreground font-medium focus:ring-primary/20">
                         <SelectValue placeholder="Chọn danh mục" />
@@ -71,7 +95,13 @@ export function GeneralInfo({ form, categories }: GeneralInfoProps) {
                     </FormControl>
                     <SelectContent className="rounded-xl border-slate-200">
                       {categories?.map((cat: any) => (
-                        <SelectItem key={cat.id} value={String(cat.id)} className="rounded-lg">{cat.name}</SelectItem>
+                        <SelectItem
+                          key={cat.id}
+                          value={String(cat.id)}
+                          className="rounded-lg"
+                        >
+                          {cat.name}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -93,9 +123,16 @@ export function GeneralInfo({ form, categories }: GeneralInfoProps) {
               name="basePrice"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="font-bold text-xs uppercase tracking-widest text-muted-foreground">Giá bán (VNĐ)</FormLabel>
+                  <FormLabel className="font-bold text-xs uppercase tracking-widest text-muted-foreground">
+                    Giá bán (VNĐ)
+                  </FormLabel>
                   <FormControl>
-                    <Input type="text" placeholder="Ví dụ: 36.990.000" className="h-12 rounded-xl border-slate-200 font-bold text-primary focus:ring-primary/20" {...field} />
+                    <Input
+                      type="text"
+                      placeholder="Ví dụ: 36.990.000"
+                      className="h-12 rounded-xl border-slate-200 font-bold text-primary focus:ring-primary/20"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -106,9 +143,16 @@ export function GeneralInfo({ form, categories }: GeneralInfoProps) {
               name="originalPrice"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="font-bold text-xs uppercase tracking-widest text-muted-foreground">Giá gốc (VNĐ)</FormLabel>
+                  <FormLabel className="font-bold text-xs uppercase tracking-widest text-muted-foreground">
+                    Giá gốc (VNĐ)
+                  </FormLabel>
                   <FormControl>
-                    <Input type="text" placeholder="Ví dụ: 40.000.000" className="h-12 rounded-xl border-slate-200 text-muted-foreground focus:ring-primary/20" {...field} />
+                    <Input
+                      type="text"
+                      placeholder="Ví dụ: 40.000.000"
+                      className="h-12 rounded-xl border-slate-200 text-muted-foreground focus:ring-primary/20"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -121,15 +165,18 @@ export function GeneralInfo({ form, categories }: GeneralInfoProps) {
             render={({ field }) => (
               <FormItem className="flex flex-row items-center justify-between rounded-xl border border-slate-100 p-4 bg-slate-50">
                 <div className="space-y-0.5">
-                  <FormLabel className="text-sm font-bold text-slate-900">Hiển thị trên cửa hàng</FormLabel>
-                  <FormDescription className="text-[10px] text-slate-500">Bật để khách hàng có thể mua sản phẩm này</FormDescription>
+                  <FormLabel className="text-sm font-bold text-slate-900">
+                    Hiển thị trên cửa hàng
+                  </FormLabel>
+                  <FormDescription className="text-[10px] text-slate-500">
+                    Bật để khách hàng có thể mua sản phẩm này
+                  </FormDescription>
                 </div>
                 <FormControl>
-                  <input 
-                    type="checkbox" 
+                  <Switch 
                     checked={field.value === "active"} 
-                    onChange={(e) => field.onChange(e.target.checked ? "active" : "inactive")}
-                    className="h-5 w-5 rounded-md accent-primary cursor-pointer" 
+                    onCheckedChange={(checked) => field.onChange(checked ? "active" : "inactive")}
+                    className="data-[state=checked]:!bg-green-500"
                   />
                 </FormControl>
               </FormItem>

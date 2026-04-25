@@ -1,5 +1,6 @@
-﻿import { IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsString, IsBoolean } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 
 export class QueryDiscountDto {
   @ApiPropertyOptional({ description: 'Tìm kiếm theo mã hoặc mô tả' })
@@ -11,10 +12,10 @@ export class QueryDiscountDto {
   @IsOptional()
   @IsString()
   status?: string;
+
+  @ApiPropertyOptional({ description: 'Lọc theo loại Flash Sale' })
+  @IsOptional()
+  @Transform(({ value }) => value === 'true' || value === true)
+  @IsBoolean()
+  isFlashSale?: boolean;
 }
-
-
-
-
-
-

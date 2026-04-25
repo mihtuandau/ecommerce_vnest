@@ -2,7 +2,7 @@
 
 import React from "react";
 import { LucideIcon, ChevronRight } from "lucide-react";
-import { HomeProductCard } from "./HomeProductCard";
+import { HomeProductCard } from "@/features/products/components/customer/cards/HomeProductCard";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
 import { cn } from "@/utils/cn";

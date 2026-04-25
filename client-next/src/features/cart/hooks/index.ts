@@ -1,6 +1,6 @@
 "use client";
 
-import { useCartStore } from "../store";
+import { useCartStore } from "@/store/useCartStore";
 
 export function useCart() {
   const { items, addItem, removeItem, updateQuantity, clearCart, totalPrice } =

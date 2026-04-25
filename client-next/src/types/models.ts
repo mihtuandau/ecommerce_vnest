@@ -1,3 +1,5 @@
+import { Role, UserStatus, OrderStatus, PaymentMethod, PaymentStatus, DiscountType } from "./enums";
+
 // ── Domain models — synced with Prisma schema ──
 
 export interface User {
@@ -6,8 +8,8 @@ export interface User {
   email: string;
   phone?: string;
   avatar?: string;
-  role: "CUSTOMER" | "ADMIN" | "KHO" | "BAN_HANG";
-  status: "ACTIVE" | "SUSPENDED" | "PENDING";
+  role: Role;
+  status: UserStatus;
   createdAt: string;
   updatedAt: string;
 }
@@ -45,9 +47,9 @@ export interface Order {
   items: OrderItem[];
   totalAmount: number;
   shippingFee: number;
-  status: string;
-  paymentMethod: string;
-  paymentStatus: string;
+  status: OrderStatus;
+  paymentMethod: PaymentMethod;
+  paymentStatus: PaymentStatus;
   shippingAddress: Address;
   note?: string;
   createdAt: string;
@@ -66,8 +68,10 @@ export interface Address {
   id: string;
   fullName: string;
   phone: string;
-  province: string;
-  district: string;
+  province?: string;
+  district?: string;
+  city?: string;
+  state?: string;
   ward: string;
   street: string;
   isDefault: boolean;
@@ -90,7 +94,7 @@ export interface Banner {
   title: string;
   description?: string;
   image: string;
-  imageUrl?: string; 
+  imageUrl?: string;
   link?: string;
   order: number;
   isActive: boolean;
@@ -99,7 +103,7 @@ export interface Banner {
 export interface Discount {
   id: string;
   code: string;
-  type: "PERCENTAGE" | "FIXED";
+  type: DiscountType;
   value: number;
   minOrderValue?: number;
   maxDiscount?: number;

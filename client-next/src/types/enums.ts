@@ -1,24 +1,29 @@
-// ── Enums — synced with backend ──
+// ── Enums — synced with backend prisma schema ──
 
 export enum Role {
-  USER = "USER",
+  CUSTOMER = "CUSTOMER",
   ADMIN = "ADMIN",
-  STAFF = "STAFF",
-  
+  KHO = "KHO",
+  BAN_HANG = "BAN_HANG",
+}
+
+export enum UserStatus {
+  ACTIVE = "ACTIVE",
+  SUSPENDED = "SUSPENDED",
+  PENDING = "PENDING",
 }
 
 export enum OrderStatus {
   PENDING = "PENDING",
-  CONFIRMED = "CONFIRMED",
   PROCESSING = "PROCESSING",
-  SHIPPING = "SHIPPING",
+  SHIPPED = "SHIPPED",
   DELIVERED = "DELIVERED",
   CANCELLED = "CANCELLED",
-  RETURNED = "RETURNED",
 }
 
 export enum PaymentMethod {
-  COD = "COD",
+  CASH = "CASH",
+  CARD = "CARD",
   VNPAY = "VNPAY",
   MOMO = "MOMO",
   PAYOS = "PAYOS",
@@ -26,8 +31,13 @@ export enum PaymentMethod {
 
 export enum PaymentStatus {
   PENDING = "PENDING",
-  PAID = "PAID",
+  SUCCESS = "SUCCESS",
   FAILED = "FAILED",
   REFUNDED = "REFUNDED",
   CANCELLED = "CANCELLED",
+}
+
+export enum DiscountType {
+  PERCENTAGE = "PERCENTAGE",
+  FIXED = "FIXED",
 }
