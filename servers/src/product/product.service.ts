@@ -210,10 +210,60 @@ export class ProductService {
     }
 
     if (variants && Array.isArray(variants)) {
-      // Clear existing variants and create new ones
-      await this.repo.deleteVariantsByProductId(id);
-      prismaData.variants = {
-        create: variants.map((v: any) => {
+      const currentProduct = await this.repo.findById(id);
+      const existingVariants = currentProduct?.variants || [];
+      
+      const updateOperations: any[] = [];
+      const createOperations: any[] = [];
+
+      // 1. Mark all existing variants as inactive first
+      existingVariants.forEach((ev: any) => {
+        updateOperations.push({
+          where: { id: ev.id },
+          data: { isActive: false }
+        });
+      });
+
+      // 2. Process the incoming variants
+      for (const v of variants) {
+        const existing = v.id ? existingVariants.find((ev: any) => ev.id === v.id) : null;
+        
+        if (existing) {
+          // If variant exists, update it and set isActive back to true
+          // We need to find the previous update operation for this ID and replace it
+          const opIndex = updateOperations.findIndex(op => op.where.id === existing.id);
+          const updateData: any = {
+            size: v.size,
+            color: v.color,
+            sku: v.sku,
+            price: Number(v.price || rest.basePrice || 0),
+            stock: Number(v.stock || 0),
+            isActive: true,
+          };
+
+          if (v.image) {
+            updateData.images = {
+              deleteMany: {}, // Clear old images for this variant
+              create: [
+                {
+                  url: typeof v.image === 'string' ? v.image : v.image.url,
+                  isPrimary: true,
+                  displayOrder: 0,
+                },
+              ],
+            };
+          }
+          
+          if (opIndex > -1) {
+            updateOperations[opIndex].data = updateData;
+          } else {
+            updateOperations.push({
+              where: { id: existing.id },
+              data: updateData
+            });
+          }
+        } else {
+          // New variant
           const variantData: any = {
             size: v.size,
             color: v.color,
@@ -235,8 +285,13 @@ export class ProductService {
             };
           }
 
-          return variantData;
-        }),
+          createOperations.push(variantData);
+        }
+      }
+
+      prismaData.variants = {
+        update: updateOperations,
+        create: createOperations,
       };
     }
 

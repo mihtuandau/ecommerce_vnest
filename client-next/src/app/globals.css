@@ -192,3 +192,53 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* ──────────────────────────────────────────────
+   Print Styles
+   ────────────────────────────────────────────── */
+@media print {
+  @page {
+    size: A4;
+    margin: 15mm;
+  }
+
+  /* 
+     EXTREME PRINT ISOLATION:
+     1. Hide everything on the page
+     2. Only show the print-area
+  */
+  body * {
+    visibility: hidden !important;
+  }
+
+  #print-area, #print-area * {
+    visibility: visible !important;
+  }
+
+  #print-area {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    display: block !important;
+    background: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Force non-print elements to truly disappear */
+  .no-print, nav, aside, footer, header, button, .Sidebar, .AdminTopBar {
+    display: none !important;
+  }
+
+  /* Hide scrollbars and other artifacts */
+  ::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  /* Color adjustments */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}

@@ -1,4 +1,4 @@
-﻿import { Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -112,11 +112,24 @@ export class ChatService {
           },
         });
 
+        // Get customer info from roomId (room_{id})
+        const userIdRaw = roomId.replace('room_', '');
+        const userId = parseInt(userIdRaw);
+        
+        let customer: any = null;
+        if (!isNaN(userId)) {
+          customer = await this.prisma.user.findUnique({
+            where: { id: userId },
+            select: { id: true, name: true, email: true },
+          });
+        }
+
         rooms.push({
           roomId,
           unreadCount,
           lastMessage,
-        });
+          customer,
+        } as any);
       }
     }
 

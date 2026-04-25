@@ -10,6 +10,11 @@ interface ProductGalleryProps {
 
 export function ProductGallery({ images, name }: ProductGalleryProps) {
   const [selectedImage, setSelectedImage] = useState(0);
+  
+  // Reset selection when images list changes (e.g., when variant is selected)
+  React.useEffect(() => {
+    setSelectedImage(0);
+  }, [images]);
 
   const getImageUrl = (img: any) => {
     const rawUrl = typeof img === 'string' ? img : img?.url || "";

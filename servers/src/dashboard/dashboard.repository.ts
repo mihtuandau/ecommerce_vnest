@@ -1,5 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 @Injectable()
 export class DashboardRepository {
@@ -40,28 +46,60 @@ export class DashboardRepository {
     const data = await this.prisma.order.aggregate({
       where: { 
         status: 'DELIVERED',
-        payment: { status: 'SUCCESS' }
+        payment: { status: { in: ['SUCCESS', 'REFUNDED'] } }
       },
-      _sum: { total: true },
+      _sum: { 
+        subtotal: true,
+        discountAmount: true
+      },
     });
-    return Number(data._sum.total) || 0;
+    
+    // Lấy tổng hoàn tiền từ bảng Payment
+    const refundData = await this.prisma.payment.aggregate({
+      where: {
+        order: { status: 'DELIVERED' },
+        status: { in: ['SUCCESS', 'REFUNDED'] }
+      },
+      _sum: { refundAmount: true }
+    });
+
+    const net = (Number(data._sum.subtotal) || 0) - (Number(data._sum.discountAmount) || 0);
+    const refund = Number(refundData._sum.refundAmount) || 0;
+    return net - refund;
   }
 
   
   async getRevenueByDate(date: Date): Promise<number> {
-    const d = new Date(date);
-    const start = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0);
-    const end = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59, 999);
+    const vnDate = dayjs(date).tz('Asia/Ho_Chi_Minh');
+    const start = vnDate.startOf('day').toDate();
+    const end = vnDate.endOf('day').toDate();
 
     const data = await this.prisma.order.aggregate({
       where: {
         status: 'DELIVERED',
         createdAt: { gte: start, lte: end },
-        payment: { status: 'SUCCESS' },
+        payment: { status: { in: ['SUCCESS', 'REFUNDED'] } }
       },
-      _sum: { total: true },
+      _sum: { 
+        subtotal: true,
+        discountAmount: true
+      },
     });
-    return Number(data._sum.total) || 0;
+
+    const refundData = await this.prisma.payment.aggregate({
+      where: {
+        order: {
+          status: 'DELIVERED',
+          createdAt: { gte: start, lte: end }
+        },
+        status: { in: ['SUCCESS', 'REFUNDED'] }
+      },
+      _sum: { refundAmount: true }
+    });
+
+    const net = (Number(data._sum.subtotal) || 0) - (Number(data._sum.discountAmount) || 0);
+    const refund = Number(refundData._sum.refundAmount) || 0;
+    return net - refund;
   }
 
   
@@ -80,9 +118,9 @@ export class DashboardRepository {
 
   
   async getOrderCountByDate(date: Date): Promise<number> {
-    const d = new Date(date);
-    const start = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0);
-    const end = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59, 999);
+    const vnDate = dayjs(date).tz('Asia/Ho_Chi_Minh');
+    const start = vnDate.startOf('day').toDate();
+    const end = vnDate.endOf('day').toDate();
 
     return this.prisma.order.count({
       where: {
@@ -101,17 +139,24 @@ export class DashboardRepository {
 
   
   async getMonthlyRevenue(year: number) {
+    const startOfYear = dayjs().tz('Asia/Ho_Chi_Minh').year(year).startOf('year').toDate();
+    const endOfYear = dayjs().tz('Asia/Ho_Chi_Minh').year(year).endOf('year').toDate();
+
     return this.prisma.order.findMany({
       where: {
         status: 'DELIVERED',
-        payment: { status: 'SUCCESS' },
+        payment: { status: { in: ['SUCCESS', 'REFUNDED'] } },
         createdAt: {
-          gte: new Date(year, 0, 1),
-          lte: new Date(year, 11, 31, 23, 59, 59),
+          gte: startOfYear,
+          lte: endOfYear,
         },
       },
       select: {
-        total: true,
+        subtotal: true,
+        discountAmount: true,
+        payment: {
+          select: { refundAmount: true }
+        },
         createdAt: true
       }
     });
@@ -119,17 +164,24 @@ export class DashboardRepository {
 
   
   async getDailyRevenue(year: number, month: number) {
+    const startOfMonth = dayjs().tz('Asia/Ho_Chi_Minh').year(year).month(month).startOf('month').toDate();
+    const endOfMonth = dayjs().tz('Asia/Ho_Chi_Minh').year(year).month(month).endOf('month').toDate();
+
     return this.prisma.order.findMany({
       where: {
         status: 'DELIVERED',
-        payment: { status: 'SUCCESS' },
+        payment: { status: { in: ['SUCCESS', 'REFUNDED'] } },
         createdAt: {
-          gte: new Date(year, month, 1),
-          lte: new Date(year, month + 1, 0, 23, 59, 59),
+          gte: startOfMonth,
+          lte: endOfMonth,
         },
       },
       select: {
-        total: true,
+        subtotal: true,
+        discountAmount: true,
+        payment: {
+          select: { refundAmount: true }
+        },
         createdAt: true
       }
     });
@@ -140,16 +192,17 @@ export class DashboardRepository {
     return this.prisma.order.findMany({
       where: {
         status: 'DELIVERED',
-        payment: { status: 'SUCCESS' },
-        createdAt: {
-          gte: start,
-          lte: end,
-        },
+        createdAt: { gte: start, lte: end },
+        payment: { status: { in: ['SUCCESS', 'REFUNDED'] } },
       },
       select: {
-        total: true,
+        subtotal: true,
+        discountAmount: true,
+        payment: {
+          select: { refundAmount: true }
+        },
         createdAt: true
-      }
+      },
     });
   }
 
@@ -164,6 +217,7 @@ export class DashboardRepository {
             id: true,
             name: true,
             email: true,
+            phone: true,
           },
         },
         orderItems: {
@@ -197,7 +251,7 @@ export class DashboardRepository {
       where: {
         order: {
           status: 'DELIVERED',
-          payment: { status: 'SUCCESS' },
+          payment: { status: { in: ['SUCCESS', 'REFUNDED'] } },
         },
       },
       include: {
@@ -222,9 +276,5 @@ export class DashboardRepository {
     });
   }
 }
-
-
-
-
 
 

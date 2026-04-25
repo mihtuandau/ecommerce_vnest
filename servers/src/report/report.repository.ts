@@ -1,5 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 @Injectable()
 export class ReportRepository {
@@ -13,7 +19,7 @@ export class ReportRepository {
           lte: endDate,
         },
         status: 'DELIVERED',
-        payment: { status: 'SUCCESS' },
+        payment: { status: { in: ['SUCCESS', 'REFUNDED'] } },
       },
       select: {
         subtotal: true,
@@ -68,7 +74,7 @@ export class ReportRepository {
       JOIN "ProductVariant" pv ON pv.id = oi."variantId"
       JOIN "Product" p ON p.id = pv."productId"
       WHERE o.status = 'DELIVERED' 
-        AND pay.status = 'SUCCESS'
+        AND pay.status IN ('SUCCESS', 'REFUNDED')
         AND o."createdAt" >= ${startDate}
         AND o."createdAt" <= ${endDate}
       GROUP BY p.id, p.name
@@ -100,7 +106,7 @@ export class ReportRepository {
       JOIN "Product" p ON p.id = pv."productId"
       JOIN "Category" c ON c.id = p."categoryId"
       WHERE o.status = 'DELIVERED' 
-        AND pay.status = 'SUCCESS'
+        AND pay.status IN ('SUCCESS', 'REFUNDED')
         AND o."createdAt" >= ${startDate}
         AND o."createdAt" <= ${endDate}
       GROUP BY p."categoryId", c.name
@@ -132,7 +138,7 @@ export class ReportRepository {
           AND o."createdAt" >= ${startDate}
           AND o."createdAt" <= ${endDate}
           AND o.status = 'DELIVERED'
-          AND p.status = 'SUCCESS'
+          AND p.status IN ('SUCCESS', 'REFUNDED')
         `.then((result) => result[0]?.count || 0),
         this.prisma.order.count({
           where: {
@@ -141,7 +147,7 @@ export class ReportRepository {
               lte: endDate,
             },
             status: 'DELIVERED',
-            payment: { status: 'SUCCESS' }
+            payment: { status: { in: ['SUCCESS', 'REFUNDED'] } }
           },
         }),
       ]);
@@ -200,21 +206,21 @@ export class ReportRepository {
       this.prisma.order.count({ 
         where: { 
           status: 'DELIVERED',
-          payment: { status: 'SUCCESS' }
+          payment: { status: { in: ['SUCCESS', 'REFUNDED'] } }
         } 
       }),
       this.prisma.order.count({
         where: {
           createdAt: { gte: startDate, lte: endDate },
           status: 'DELIVERED',
-          payment: { status: 'SUCCESS' }
+          payment: { status: { in: ['SUCCESS', 'REFUNDED'] } }
         },
       }),
       this.prisma.order.count({
         where: {
           createdAt: { gte: previousStart, lte: previousEnd },
           status: 'DELIVERED',
-          payment: { status: 'SUCCESS' }
+          payment: { status: { in: ['SUCCESS', 'REFUNDED'] } }
         },
       }),
     ]);
@@ -231,20 +237,21 @@ export class ReportRepository {
   }
 
   async getTodayOrders() {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
+    const vnNow = dayjs().tz('Asia/Ho_Chi_Minh');
+    const startOfToday = vnNow.startOf('day').toDate();
+    const endOfToday = vnNow.endOf('day').toDate();
+    const startOfYesterday = vnNow.subtract(1, 'day').startOf('day').toDate();
+    const endOfYesterday = vnNow.subtract(1, 'day').endOf('day').toDate();
 
     const [todayCount, yesterdayCount] = await Promise.all([
       this.prisma.order.count({
-        where: { createdAt: { gte: today, lt: tomorrow } }
+        where: { createdAt: { gte: startOfToday, lte: endOfToday } }
       }),
       this.prisma.order.count({
         where: { 
           createdAt: { 
-            gte: new Date(today.getTime() - 86400000), 
-            lt: today 
+            gte: startOfYesterday, 
+            lte: endOfYesterday
           } 
         }
       })
@@ -268,7 +275,7 @@ export class ReportRepository {
         where: {
           createdAt: { gte: currentStart, lte: currentEnd },
           status: 'DELIVERED',
-          payment: { status: 'SUCCESS' }
+          payment: { status: { in: ['SUCCESS', 'REFUNDED'] } }
         },
         _sum: { 
           subtotal: true,
@@ -279,7 +286,7 @@ export class ReportRepository {
         where: {
           createdAt: { gte: previousStart, lte: previousEnd },
           status: 'DELIVERED',
-          payment: { status: 'SUCCESS' }
+          payment: { status: { in: ['SUCCESS', 'REFUNDED'] } }
         },
         _sum: { 
           subtotal: true,
@@ -289,7 +296,7 @@ export class ReportRepository {
       this.prisma.order.aggregate({
         where: {
           status: 'DELIVERED',
-          payment: { status: 'SUCCESS' }
+          payment: { status: { in: ['SUCCESS', 'REFUNDED'] } }
         },
         _sum: { 
           subtotal: true,
@@ -298,26 +305,32 @@ export class ReportRepository {
       }),
     ]);
 
-    // Lấy Refund Amount trong kỳ
+    // Lấy Refund Amount - chỉ tính hoàn tiền của các đơn hàng đã được tính vào doanh thu (DELIVERED & SUCCESS/REFUNDED)
     const [currentRefund, previousRefund, absoluteRefund] = await Promise.all([
       this.prisma.payment.aggregate({
         where: {
-          order: { createdAt: { gte: currentStart, lte: currentEnd }, status: 'DELIVERED' },
-          status: 'SUCCESS'
+          order: { 
+            createdAt: { gte: currentStart, lte: currentEnd }, 
+            status: 'DELIVERED' 
+          },
+          status: { in: ['SUCCESS', 'REFUNDED'] }
         },
         _sum: { refundAmount: true }
       }),
       this.prisma.payment.aggregate({
         where: {
-          order: { createdAt: { gte: previousStart, lte: previousEnd }, status: 'DELIVERED' },
-          status: 'SUCCESS'
+          order: { 
+            createdAt: { gte: previousStart, lte: previousEnd }, 
+            status: 'DELIVERED' 
+          },
+          status: { in: ['SUCCESS', 'REFUNDED'] }
         },
         _sum: { refundAmount: true }
       }),
       this.prisma.payment.aggregate({
         where: {
           order: { status: 'DELIVERED' },
-          status: 'SUCCESS'
+          status: { in: ['SUCCESS', 'REFUNDED'] }
         },
         _sum: { refundAmount: true }
       }),

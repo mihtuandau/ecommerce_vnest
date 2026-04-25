@@ -71,7 +71,7 @@ export class PaymentService {
     if (existingPayment) {
       payment = await this.repository.update(existingPayment.id, {
         method: data.method,
-        status: 'PENDING',
+        status: data.status || 'PENDING',
         amount: order.total,
         transactionId,
         paymentLink,
@@ -80,7 +80,7 @@ export class PaymentService {
       payment = await this.repository.create({
         order: { connect: { id: data.orderId } },
         method: data.method,
-        status: 'PENDING',
+        status: data.status || 'PENDING',
         amount: order.total,
         transactionId,
         paymentLink,

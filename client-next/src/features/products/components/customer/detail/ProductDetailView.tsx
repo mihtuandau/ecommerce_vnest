@@ -34,6 +34,32 @@ export function ProductDetailView({ slug }: ProductDetailViewProps) {
     );
   }, [product, selectedSize, selectedColor]);
 
+  // ── Combine All Images (Main + Variants) ──
+  const allAvailableImages = useMemo(() => {
+    if (!product) return [];
+    const mainImages = product.images || [];
+    const variantImages: any[] = [];
+    
+    product.variants?.forEach((v: any) => {
+      v.images?.forEach((img: any) => {
+        // Tránh trùng lặp URL
+        if (!variantImages.some(vi => vi.url === img.url) && !mainImages.some(mi => mi.url === img.url)) {
+          variantImages.push(img);
+        }
+      });
+    });
+
+    if (selectedVariant?.images?.length > 0) {
+      // Nếu đã chọn biến thể, đưa ảnh biến thể đó lên đầu
+      const otherImages = [...mainImages, ...variantImages].filter(
+        img => !selectedVariant.images.some((svi: any) => svi.url === img.url)
+      );
+      return [...selectedVariant.images, ...otherImages];
+    }
+
+    return [...mainImages, ...variantImages];
+  }, [product, selectedVariant]);
+
   if (isLoading) {
     return (
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-20">
@@ -89,7 +115,10 @@ export function ProductDetailView({ slug }: ProductDetailViewProps) {
           
           {/* ── Left: Image Gallery ── */}
           <div className="lg:col-span-7">
-            <ProductGallery images={product.images} name={product.name} />
+            <ProductGallery 
+              images={allAvailableImages} 
+              name={product.name} 
+            />
           </div>
 
           {/* ── Right: Product Info & Actions ── */}
@@ -104,7 +133,12 @@ export function ProductDetailView({ slug }: ProductDetailViewProps) {
             <ProductActions 
               product={product} 
               finalPrice={finalPrice} 
-              currentStock={currentStock} 
+              currentStock={currentStock}
+              selectedSize={selectedSize}
+              setSelectedSize={setSelectedSize}
+              selectedColor={selectedColor}
+              setSelectedColor={setSelectedColor}
+              selectedVariant={selectedVariant}
             />
           </div>
         </div>

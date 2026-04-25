@@ -60,7 +60,7 @@ export const columns: ColumnDef<Order>[] = [
     cell: ({ row }) => {
       const order = row.original as any;
       const name = order.shippingSnapshot?.fullName || order.user?.name || "Khách vãng lai";
-      const phone = order.shippingSnapshot?.phone || order.user?.phone || "--";
+      const phone = order.shippingSnapshot?.phone || order.guestPhone || order.user?.phone || "--";
 
       return (
         <div className="flex flex-col">

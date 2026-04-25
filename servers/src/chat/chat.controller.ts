@@ -1,4 +1,4 @@
-﻿import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, UseGuards, Param } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Permissions } from '../common/decorators/permissions.decorator';
@@ -13,6 +13,18 @@ export class ChatController {
   @Permissions('chat.support')
   async getAllRooms() {
     return this.chatService.getAllRooms();
+  }
+
+  @Get('rooms/:roomId/messages')
+  @Permissions('chat.support')
+  async getMessages(@Param('roomId') roomId: string) {
+    return this.chatService.getMessages(roomId);
+  }
+
+  @Get('rooms/:roomId/mark-as-read')
+  @Permissions('chat.support')
+  async markAsRead(@Param('roomId') roomId: string) {
+    return this.chatService.markAsRead(roomId, 0); 
   }
 }
 

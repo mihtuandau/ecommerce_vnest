@@ -8,9 +8,13 @@ export default function AdminLayout({
 }) {
   return (
     <div className="flex min-h-screen bg-muted/20">
-      <Sidebar />
+      <div className="no-print">
+        <Sidebar />
+      </div>
       <div className="flex-1 flex flex-col h-screen overflow-hidden">
-        <AdminTopBar />
+        <div className="no-print">
+          <AdminTopBar />
+        </div>
         <main className="flex-1 overflow-y-auto p-8 custom-scrollbar">
           <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500">
             {children}

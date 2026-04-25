@@ -10,9 +10,10 @@ import dayjs from "@/lib/dayjs";
 
 interface ChatWindowProps {
   roomId: string | null;
+  customerName?: string | null;
 }
 
-export function ChatWindow({ roomId }: ChatWindowProps) {
+export function ChatWindow({ roomId, customerName }: ChatWindowProps) {
   const queryClient = useQueryClient();
   const { data: initialMessages, isLoading } = useChatMessages(roomId);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -84,7 +85,9 @@ export function ChatWindow({ roomId }: ChatWindowProps) {
             <User className="h-5 w-5 text-slate-300" />
           </div>
           <div>
-            <h3 className="text-sm font-black text-slate-900 uppercase tracking-tight">Phòng {roomId}</h3>
+            <h3 className="text-sm font-black text-slate-900 uppercase tracking-tight">
+              {customerName || `Phòng ${roomId}`}
+            </h3>
             <div className="flex items-center gap-1.5 mt-0.5">
               <div className={cn("h-1.5 w-1.5 rounded-full", isConnected ? "bg-emerald-500" : "bg-slate-300")} />
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">

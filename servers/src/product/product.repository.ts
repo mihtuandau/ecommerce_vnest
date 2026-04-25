@@ -30,7 +30,13 @@ export class ProductRepository {
     const isNum = typeof idOrSlug === 'number' || !isNaN(Number(idOrSlug));
     const variantArgs: any = includeAllVariants 
       ? { include: { images: { orderBy: { displayOrder: 'asc' } } } } 
-      : { where: { isActive: true }, select: { id: true, size: true, color: true, stock: true, price: true, sku: true, isActive: true, images: { select: { url: true }, orderBy: { displayOrder: 'asc' } } } };
+      : { 
+          where: { isActive: true }, 
+          select: { 
+            id: true, size: true, color: true, stock: true, price: true, sku: true, isActive: true, 
+            images: { select: { id: true, url: true, isPrimary: true }, orderBy: { displayOrder: 'asc' } } 
+          } 
+        };
     
     return this.prisma.product.findFirst({
       where: isNum ? { id: Number(idOrSlug) } : { slug: idOrSlug as string },
@@ -45,7 +51,9 @@ export class ProductRepository {
     });
   }
 
-  async findById(id: number) { return this.findByIdOrSlug(id); }
+  async findById(id: number) { 
+    return this.findByIdOrSlug(id, true); 
+  }
 
   async update(id: number, data: Prisma.ProductUpdateInput) {
     return this.prisma.product.update({ where: { id }, data, include: { category: true, brand: true, variants: true, images: true } });

@@ -11,7 +11,7 @@ export const useSocket = () => {
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
-    const token = Cookies.get("aaccess-token");
+    const token = Cookies.get("accessToken");
     if (!token) return;
 
     const socket = io(SOCKET_URL, {

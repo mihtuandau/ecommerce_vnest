@@ -59,8 +59,13 @@ export function Header({ order, onUpdateStatus, id }: HeaderProps) {
           </p>
         </div>
       </div>
-      <div className="flex items-center gap-2">
-        <Button variant="outline" size="sm" className="font-semibold gap-2 border-slate-200">
+      <div className="flex items-center gap-2 no-print">
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="font-semibold gap-2 border-slate-200"
+          onClick={() => window.print()}
+        >
           <Printer className="h-4 w-4" /> In đơn
         </Button>
         <DropdownMenu>

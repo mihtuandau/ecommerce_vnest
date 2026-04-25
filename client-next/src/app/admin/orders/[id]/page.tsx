@@ -8,6 +8,7 @@ import { Stepper } from "@/features/orders/components/admin/detail/Stepper";
 import { Items } from "@/features/orders/components/admin/detail/Items";
 import { Customer } from "@/features/orders/components/admin/detail/Customer";
 import { Actions } from "@/features/orders/components/admin/detail/Actions";
+import { PrintInvoice } from "@/features/orders/components/admin/detail/PrintInvoice";
 
 export default function AdminOrderDetailPage() {
   const { id } = useParams() as { id: string };
@@ -30,41 +31,46 @@ export default function AdminOrderDetailPage() {
   if (!order) return <div className="p-20 text-center font-bold text-slate-500">Không tìm thấy đơn hàng</div>;
 
   return (
-    <div className="space-y-4 pb-10 mx-auto">
-      {/* Top Header */}
-      <Header 
-        order={order} 
-        id={id} 
-        onUpdateStatus={(id, status) => updateStatus({ id, status })} 
-      />
+    <div className="space-y-4 pb-10 mx-auto relative">
+      <div className="no-print space-y-4">
+        {/* Top Header */}
+        <Header 
+          order={order} 
+          id={id} 
+          onUpdateStatus={(id, status) => updateStatus({ id, status })} 
+        />
 
-      {/* Progress Stepper */}
-      <Stepper 
-        status={order.status} 
-        id={id} 
-        isPending={isPending} 
-        onUpdateStatus={(id, status) => updateStatus({ id, status })} 
-      />
+        {/* Progress Stepper */}
+        <Stepper 
+          status={order.status} 
+          id={id} 
+          isPending={isPending} 
+          onUpdateStatus={(id, status) => updateStatus({ id, status })} 
+        />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Column: Items */}
-        <div className="lg:col-span-2 space-y-6">
-           <Items order={order} />
-        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left Column: Items */}
+          <div className="lg:col-span-2 space-y-6">
+            <Items order={order} />
+          </div>
 
-        {/* Right Column: Customer & Actions */}
-        <div className="space-y-6">
-           <Customer order={order} />
-           <Actions 
-              order={order}
-              id={id}
-              isPending={isPending}
-              onUpdateStatus={updateStatus}
-              onSyncGHN={syncGHN}
-              onUpdatePayment={updatePayment}
-           />
+          {/* Right Column: Customer & Actions */}
+          <div className="space-y-6">
+            <Customer order={order} />
+            <Actions 
+                order={order}
+                id={id}
+                isPending={isPending}
+                onUpdateStatus={updateStatus}
+                onSyncGHN={syncGHN}
+                onUpdatePayment={updatePayment}
+            />
+          </div>
         </div>
       </div>
+
+      {/* DEDICATED PRINT COMPONENT */}
+      <PrintInvoice order={order} />
     </div>
   );
 }

@@ -4,3 +4,4 @@ export * from "./hooks";
 export * from "./socket";
 export * from "./components/ChatSidebar";
 export * from "./components/ChatWindow";
+export * from "./components/ChatWidget";

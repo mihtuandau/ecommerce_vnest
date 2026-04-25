@@ -16,6 +16,7 @@ import { DetailHeader } from "./detail/DetailHeader";
 import { DetailStepper } from "./detail/DetailStepper";
 import { DetailItems } from "./detail/DetailItems";
 import { DetailSidebar } from "./detail/DetailSidebar";
+import { PrintInvoice } from "../admin/detail/PrintInvoice";
 
 const statusConfig: Record<string, { label: string; color: string; icon: any }> = {
   [OrderStatus.PENDING]: {
@@ -134,42 +135,47 @@ export function OrderDetailView() {
   const isCancelled = order.status === OrderStatus.CANCELLED;
 
   return (
-    <div className="min-h-screen bg-white pb-20">
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <DetailHeader 
-          orderCode={order.orderCode}
-          createdAt={order.createdAt}
-          status={order.status}
-          isPaid={isPaid}
-          isCancelled={isCancelled}
-          onReorder={handleReorder}
-          onCancel={() => confirm("Hủy đơn hàng này?") && cancelOrder(order.id)}
-          statusConfig={statusConfig}
-        />
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-6">
-            <DetailStepper status={order.status} isCancelled={isCancelled} />
-            <DetailItems 
-              orderItems={order.orderItems}
-              total={order.total}
-              shippingFee={order.shippingFee}
-              discountAmount={order.discountAmount}
-            />
-          </div>
-
-          <DetailSidebar 
-            shippingSnapshot={order.shippingSnapshot}
-            user={order.user}
-            addressRelation={order.address}
-            paymentMethod={order.paymentMethod}
-            paymentStatus={order.paymentStatus}
+    <div className="min-h-screen bg-white pb-20 relative">
+      <div className="no-print">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <DetailHeader 
+            orderCode={order.orderCode}
+            createdAt={order.createdAt}
+            status={order.status}
             isPaid={isPaid}
             isCancelled={isCancelled}
-            shippingCode={order.shippingCode}
+            onReorder={handleReorder}
+            onCancel={() => confirm("Hủy đơn hàng này?") && cancelOrder(order.id)}
+            statusConfig={statusConfig}
           />
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2 space-y-6">
+              <DetailStepper status={order.status} isCancelled={isCancelled} />
+              <DetailItems 
+                orderItems={order.orderItems}
+                total={order.total}
+                shippingFee={order.shippingFee}
+                discountAmount={order.discountAmount}
+              />
+            </div>
+
+            <DetailSidebar 
+              shippingSnapshot={order.shippingSnapshot}
+              user={order.user}
+              addressRelation={order.address}
+              paymentMethod={order.paymentMethod}
+              paymentStatus={order.paymentStatus}
+              isPaid={isPaid}
+              isCancelled={isCancelled}
+              shippingCode={order.shippingCode}
+            />
+          </div>
         </div>
       </div>
+
+      {/* DEDICATED PRINT COMPONENT */}
+      <PrintInvoice order={order} />
     </div>
   );
 }

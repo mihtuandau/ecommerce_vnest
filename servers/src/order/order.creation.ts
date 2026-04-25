@@ -96,7 +96,14 @@ export class OrderCreation {
         };
 
     // 5. Tính phí vận chuyển qua GHN
-    let ghnShippingFee = 30000; // Default fallback
+    let ghnShippingFee = dto.shippingFee !== undefined ? dto.shippingFee : 30000;
+    
+    // Nếu là đơn hàng POS/Mua tại quầy, phí ship mặc định là 0 nếu không được cung cấp
+    const isPOS = dto.status === 'DELIVERED' || dto.shippingAddress === 'Mua tại quầy';
+    if (isPOS && dto.shippingFee === undefined) {
+      ghnShippingFee = 0;
+    }
+
     try {
       const shippingFeeResult = await this.calculateGHNFee(dto, finalItems);
       if (shippingFeeResult) {
@@ -107,7 +114,7 @@ export class OrderCreation {
         const isOnlinePayment = ['VNPAY', 'PAYOS'].includes(
           dto.paymentMethod || '',
         );
-        if (isOnlinePayment) {
+        if (isOnlinePayment && !isPOS) {
           throw new BadRequestException(
             'Không thể tính phí vận chuyển. Vui lòng kiểm tra lại địa chỉ giao hàng.',
           );
@@ -118,7 +125,7 @@ export class OrderCreation {
       const isOnlinePayment = ['VNPAY', 'PAYOS'].includes(
         dto.paymentMethod || '',
       );
-      if (isOnlinePayment) {
+      if (isOnlinePayment && !isPOS) {
         this.logger.error(
           'GHN fee calculation failed for online payment:',
           error,
@@ -127,11 +134,13 @@ export class OrderCreation {
           'Không thể tính phí vận chuyển qua GHN. Vui lòng thử lại hoặc chọn phương thức thanh toán khác.',
         );
       }
-      // For COD, log warning but continue
-      this.logger.warn(
-        'GHN fee calculation failed, using default:',
-        error.message,
-      );
+      // For COD or POS, log warning but continue
+      if (!isPOS) {
+        this.logger.warn(
+          'GHN fee calculation failed, using default:',
+          error.message,
+        );
+      }
     }
 
     const totals = OrderHelper.calculateOrderTotal(
@@ -165,7 +174,7 @@ export class OrderCreation {
       finalDiscount?.usageLimit ?? undefined,
     )) as any;
 
-    const payment = await this.createPaymentRecord(order.id, dto.paymentMethod, ipAddr);
+    const payment = await this.createPaymentRecord(order.id, dto.paymentMethod, ipAddr, order.status);
     
     // Log để kiểm tra ngay tại Server
     console.log(`[OrderCreation] Created payment for ${order.orderCode}: ${payment ? 'OK' : 'NULL'}`);
@@ -210,7 +219,7 @@ export class OrderCreation {
       where: { id: { in: variantIds } },
       include: {
         product: {
-          select: { name: true, category: { select: { name: true } } },
+          select: { id: true, name: true, category: { select: { name: true } } },
         },
       },
     });
@@ -249,6 +258,7 @@ export class OrderCreation {
 
       return {
         variantId: item.variantId,
+        productId: variant.productId,
         quantity: item.quantity,
         price: variant.price, // Always use current database price, not frontend price
         productName: variant.product?.name || 'Sản phẩm',
@@ -269,6 +279,7 @@ export class OrderCreation {
 
     return cart.cartItems.map((item) => ({
       variantId: item.variantId,
+      productId: item.variant?.productId,
       quantity: item.quantity,
       price: item.variant?.price || 0,
       productName: item.variant?.product?.name || 'Sản phẩm',
@@ -347,7 +358,7 @@ export class OrderCreation {
     return discount;
   }
 
-  private async createPaymentRecord(orderId: number, paymentMethod?: string, ipAddr: string = '127.0.0.1') {
+  private async createPaymentRecord(orderId: number, paymentMethod?: string, ipAddr: string = '127.0.0.1', orderStatus?: string) {
     // Chuẩn hóa phương thức thanh toán: COD từ frontend -> CASH trong enum
     const method = paymentMethod?.toUpperCase();
     let finalMethod = 'CASH';
@@ -363,6 +374,7 @@ export class OrderCreation {
     const payment = await this.paymentService.create({
       orderId,
       method: finalMethod as any,
+      status: orderStatus === 'DELIVERED' ? 'SUCCESS' : 'PENDING'
     }, ipAddr);
 
     return payment;

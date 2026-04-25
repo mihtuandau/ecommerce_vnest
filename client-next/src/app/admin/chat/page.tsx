@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/Input";
 import { ChatSidebar, ChatWindow } from "@/features/chat";
 
 export default function AdminChatPage() {
-  const [selectedRoom, setSelectedRoom] = useState<string | null>(null);
+  const [selectedRoom, setSelectedRoom] = useState<any | null>(null);
 
   return (
     <div className="h-[calc(100vh-100px)] flex flex-col -m-6 bg-slate-50/30">
@@ -25,14 +25,17 @@ export default function AdminChatPage() {
           {/* Sidebar */}
           <div className="h-full border-r border-slate-100 overflow-hidden">
             <ChatSidebar 
-              selectedRoom={selectedRoom} 
-              onSelectRoom={setSelectedRoom} 
+              selectedRoom={selectedRoom?.roomId} 
+              onSelectRoom={(room: any) => setSelectedRoom(room)} 
             />
           </div>
 
           {/* Chat Window */}
           <div className="h-full overflow-hidden bg-white">
-            <ChatWindow roomId={selectedRoom} />
+            <ChatWindow 
+              roomId={selectedRoom?.roomId} 
+              customerName={selectedRoom?.customer?.name}
+            />
           </div>
         </div>
       </div>

@@ -40,6 +40,15 @@ export class OrderController {
   createGuestOrder(@Body() body: CreateOrderDto, @Ip() ip: string) {
     return this.orderService.create(null, body, ip);
   }
+  
+  @Post('admin')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Permissions('order.manage')
+  @ApiBearerAuth('Authorization')
+  adminCreate(@Body() body: CreateOrderDto, @Ip() ip: string) {
+    // Admin có thể truyền userId trực tiếp trong body
+    return this.orderService.create(body.userId || null, body, ip);
+  }
 
   @Get('guest/lookup/:orderCode')
   async lookupGuestOrder(

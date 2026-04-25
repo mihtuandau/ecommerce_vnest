@@ -75,6 +75,14 @@ export class OrderRepository {
         if (result.count === 0) {
           throw new Error('Sản phẩm hết hàng hoặc không đủ số lượng');
         }
+
+        // Increment soldCount if the order is already DELIVERED
+        if (orderData.status === 'DELIVERED') {
+          await tx.product.update({
+            where: { id: item.productId },
+            data: { soldCount: { increment: item.quantity } }
+          });
+        }
       }
       return tx.order.create({ data: orderData, include: this.baseInclude });
     });

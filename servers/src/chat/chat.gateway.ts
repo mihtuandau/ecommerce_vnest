@@ -1,4 +1,4 @@
-﻿import {
+import {
   WebSocketGateway,
   SubscribeMessage,
   MessageBody,
@@ -14,7 +14,7 @@ import { Logger } from '@nestjs/common';
 
 @WebSocketGateway({
   cors: {
-    origin: process.env.ALLOWED_ORIGINS?.split(',') || ['https://dautuan.com', 'https://www.dautuan.com'],
+    origin: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000', 'https://dautuan.com', 'https://www.dautuan.com'],
     credentials: true,
   },
 })
@@ -31,7 +31,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   async handleConnection(client: Socket) {
     try {
-
       const token = client.handshake.auth?.token || client.handshake.headers?.authorization?.split(' ')[1];
       
       if (!token) {
@@ -44,16 +43,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       });
 
       client.data.user = payload; 
-
     } catch (err) {
-      this.logger.error(` Chat connection failed: ${err.message}`);
+      this.logger.error(`Chat connection failed: ${err.message}`);
       client.disconnect();
     }
   }
 
-  handleDisconnect(client: Socket) {
-
-  }
+  handleDisconnect(client: Socket) {}
 
   @SubscribeMessage('joinRoom')
   async handleJoinRoom(
@@ -63,12 +59,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const user = client.data.user;
     if (!user) return { error: 'Unauthorized' };
 
-    
     const isStaff = ['ADMIN', 'KHO', 'BAN_HANG'].includes(user.role?.toUpperCase());
     const roomUserId = data.roomId.replace('room_', ''); 
 
     if (!isStaff && String(roomUserId) !== String(user.sub)) {
-      this.logger.warn(` User ${user.sub} tried to join unauthorized room: ${data.roomId}`);
+      this.logger.warn(`User ${user.sub} tried to join unauthorized room: ${data.roomId}`);
       return { error: 'Unauthorized room access' };
     }
 
@@ -130,9 +125,3 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     });
   }
 }
-
-
-
-
-
-

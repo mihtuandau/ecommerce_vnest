@@ -4,24 +4,61 @@ import React, { useState } from "react";
 import { Search, User } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { useChatRooms } from "@/features/chat";
-import { formatDistanceToNow } from "date-fns";
-import { vi } from "date-fns/locale";
 import { cn } from "@/utils/cn";
 import { Role } from "@/types/enums";
+import { chatApi } from "../api";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import "dayjs/locale/vi";
+import { useQueryClient } from "@tanstack/react-query";
+
+dayjs.extend(relativeTime);
+dayjs.locale("vi");
 
 interface ChatSidebarProps {
   selectedRoom: string | null;
-  onSelectRoom: (roomId: string) => void;
+  onSelectRoom: (room: any) => void;
 }
 
 export function ChatSidebar({ selectedRoom, onSelectRoom }: ChatSidebarProps) {
+  const queryClient = useQueryClient();
   const { data: rooms, isLoading } = useChatRooms();
   const [search, setSearch] = useState("");
+
+  const handleSelectRoom = (room: any) => {
+    onSelectRoom(room);
+    
+    // Đánh dấu đã đọc ngay lập tức trong bộ nhớ đệm (Optimistic Update)
+    queryClient.setQueryData(["chat-rooms"], (oldData: any) => {
+      if (!oldData) return oldData;
+      return oldData.map((r: any) => 
+        r.roomId === room.roomId ? { ...r, unreadCount: 0 } : r
+      );
+    });
+
+    // Gọi API để Backend cập nhật trạng thái đã đọc
+    chatApi.markAsRead(room.roomId).then(() => {
+      queryClient.invalidateQueries({ queryKey: ["chat-rooms"] });
+    });
+  };
 
   const filteredRooms = rooms?.filter((room) =>
     room.lastMessage.sender.name.toLowerCase().includes(search.toLowerCase()) ||
     room.roomId.toLowerCase().includes(search.toLowerCase())
   );
+
+  const formatTime = (date: string) => {
+    const d = dayjs(date);
+    const now = dayjs();
+    
+    if (now.diff(d, 'hour') < 24) {
+      return d.fromNow();
+    }
+    if (now.diff(d, 'day') < 7) {
+      return d.format("ddd");
+    }
+    return d.format("DD/MM");
+  };
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
@@ -69,7 +106,7 @@ export function ChatSidebar({ selectedRoom, onSelectRoom }: ChatSidebarProps) {
               return (
                 <button
                   key={room.roomId}
-                  onClick={() => onSelectRoom(room.roomId)}
+                  onClick={() => handleSelectRoom(room)}
                   className={cn(
                     "w-full flex items-start gap-4 p-4 rounded-2xl transition-all duration-300 group relative border-2",
                     isActive 
@@ -95,13 +132,10 @@ export function ChatSidebar({ selectedRoom, onSelectRoom }: ChatSidebarProps) {
                         "text-sm font-black truncate",
                         isActive ? "text-slate-900" : "text-slate-600"
                       )}>
-                        {isCustomerMsg ? sender.name : "Bạn"}
+                        {room.customer?.name || (isCustomerMsg ? sender.name : "Khách hàng")}
                       </p>
                       <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter whitespace-nowrap">
-                        {formatDistanceToNow(new Date(lastMsg.createdAt), { 
-                          addSuffix: false, 
-                          locale: vi 
-                        })}
+                        {formatTime(lastMsg.createdAt)}
                       </span>
                     </div>
                     <p className={cn(

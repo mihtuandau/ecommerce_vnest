@@ -4,6 +4,7 @@ import React from "react";
 import { RefreshCw, Download, Plus } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/utils/cn";
+import Link from "next/link";
 
 interface OrderListHeaderProps {
   totalOrders: number;
@@ -34,9 +35,11 @@ export function OrderListHeader({ totalOrders, onRefresh, isFetching }: OrderLis
         <Button variant="outline" size="sm" className="font-bold gap-2 border-slate-200 hover:bg-slate-50">
           <Download className="h-4 w-4 text-slate-400" /> Xuất Excel
         </Button>
-        <Button size="sm" className="font-bold gap-2 bg-primary text-white hover:bg-slate-800 shadow-sm">
-          <Plus className="h-4 w-4" /> Tạo đơn mới
-        </Button>
+        <Link href="/admin/orders/create">
+          <Button size="sm" className="font-bold gap-2 bg-primary text-white hover:bg-slate-800 shadow-sm">
+            <Plus className="h-4 w-4" /> Tạo đơn mới
+          </Button>
+        </Link>
       </div>
     </div>
   );

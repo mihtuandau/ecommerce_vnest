@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Search, Menu, ChevronDown, Zap, Tag, Sparkles, X, ChevronRight, Heart } from "lucide-react";
+import { Search, Menu, ChevronDown, Zap, Tag, Sparkles, X, ChevronRight, Heart, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Skeleton } from "@/components/ui/Skeleton";
@@ -161,10 +161,18 @@ export function Header() {
                   // ...
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-11 w-11 rounded-full">
-                        <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-base shadow-lg shadow-primary/20">
-                          {user.name?.charAt(0).toUpperCase()}
-                        </div>
+                      <Button variant="ghost" size="icon" className="h-11 w-11 rounded-full overflow-hidden">
+                        {user.avatar ? (
+                          <img 
+                            src={user.avatar} 
+                            alt={user.name || "User"} 
+                            className="h-10 w-10 rounded-full object-cover shadow-lg shadow-primary/20" 
+                          />
+                        ) : (
+                          <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-base shadow-lg shadow-primary/20">
+                            {user.name?.charAt(0).toUpperCase()}
+                          </div>
+                        )}
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-56 rounded-2xl shadow-xl border-slate-100">
@@ -175,6 +183,11 @@ export function Header() {
                       <DropdownMenuSeparator />
                       <DropdownMenuItem asChild><Link href={ROUTES.ACCOUNT}>Tài khoản của tôi</Link></DropdownMenuItem>
                       <DropdownMenuItem asChild><Link href={ROUTES.ORDERS}>Đơn hàng của tôi</Link></DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href="/support" className="flex items-center gap-2">
+                          Hỗ trợ trực tuyến
+                        </Link>
+                      </DropdownMenuItem>
                       {user.role === Role.ADMIN && (
                         <DropdownMenuItem asChild className="text-primary font-bold">
                           <Link href={ROUTES.ADMIN}>Quản trị hệ thống</Link>
@@ -419,9 +432,17 @@ export function Header() {
           ) : user ? (
             <div className="space-y-2">
               <div className="flex items-center gap-3 px-2 py-1">
-                <div className="h-9 w-9 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-sm flex-shrink-0">
-                  {user.name?.charAt(0).toUpperCase()}
-                </div>
+                {user.avatar ? (
+                  <img 
+                    src={user.avatar} 
+                    alt={user.name || "User"} 
+                    className="h-9 w-9 rounded-full object-cover flex-shrink-0" 
+                  />
+                ) : (
+                  <div className="h-9 w-9 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-sm flex-shrink-0">
+                    {user.name?.charAt(0).toUpperCase()}
+                  </div>
+                )}
                 <div className="min-w-0">
                   <p className="text-sm font-bold truncate">{user.name}</p>
                   <p className="text-xs text-muted-foreground truncate">{user.email}</p>
@@ -433,6 +454,9 @@ export function Header() {
                 </Link>
                 <Link href={ROUTES.ORDERS} className="text-center text-xs font-semibold py-2 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors">
                   Đơn hàng
+                </Link>
+                <Link href="/support" className="col-span-2 text-center text-xs font-bold py-2 rounded-xl bg-blue-50 text-[#1565C1] hover:bg-blue-100 transition-colors">
+                  Hỗ trợ trực tuyến
                 </Link>
               </div>
               <button

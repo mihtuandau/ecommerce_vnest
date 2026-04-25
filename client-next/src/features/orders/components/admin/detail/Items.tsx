@@ -60,14 +60,10 @@ export function Items({ order }: ItemsProps) {
             <span className="text-slate-400 font-medium uppercase tracking-widest text-[9px]">Tạm tính</span>
             <span className="font-semibold text-slate-700">{formatCurrency(subtotal)}</span>
           </div>
-           <div className="flex justify-between text-[13px]">
-            <span className="text-slate-400 font-medium uppercase tracking-widest text-[9px]">Phí vận chuyển</span>
-            <span className="font-semibold text-slate-700">+{formatCurrency(shippingFee)}</span>
-          </div>
-          {orderAny.shippingSnapshot?.actualGHNFee > 0 && (
-            <div className="flex justify-between text-[11px] -mt-2 bg-slate-50 p-2 rounded-lg border border-slate-100 border-dashed">
-              <span className="text-slate-500 font-medium">Phí GHN (Thực tế)</span>
-              <span className="font-bold text-slate-600">-{formatCurrency(orderAny.shippingSnapshot.actualGHNFee)}</span>
+          {shippingFee > 0 && (
+            <div className="flex justify-between text-[13px]">
+              <span className="text-slate-400 font-medium uppercase tracking-widest text-[9px]">Phí vận chuyển</span>
+              <span className="font-semibold text-slate-700">+{formatCurrency(shippingFee)}</span>
             </div>
           )}
           {discountAmount > 0 && (

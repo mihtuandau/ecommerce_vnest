@@ -2,7 +2,7 @@ import { OrderDetailView } from "@/features/orders/components/customer/OrderDeta
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Chi tiết đơn hàng — Minh Tuấn Store",
+  title: "Chi tiết đơn hàng — Minh Tuấn Shop",
   description: "Xem chi tiết thông tin đơn hàng của bạn.",
 };
 

@@ -9,4 +9,12 @@ export const chatApi = {
     const { data } = await api.get(`/chat/rooms/${roomId}/messages`);
     return data;
   },
+  chatbotChat: async (message: string) => {
+    const { data } = await api.post("/chatbot/chat", { message });
+    return data;
+  },
+  markAsRead: async (roomId: string) => {
+    const { data } = await api.get(`/chat/rooms/${roomId}/mark-as-read`);
+    return data;
+  }
 };

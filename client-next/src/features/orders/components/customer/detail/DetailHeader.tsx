@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { ArrowLeft, ShoppingCart, Package, Clock, Truck, CheckCircle2, XCircle } from "lucide-react";
+import { ArrowLeft, ShoppingCart, Package, Clock, Truck, CheckCircle2, XCircle, Printer } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { useRouter } from "next/navigation";
 import { OrderStatus } from "@/types/enums";
@@ -92,6 +92,14 @@ export function DetailHeader({
           className="border-slate-200 text-slate-600 text-xs font-medium h-9 px-4 rounded-lg"
         >
           Liên hệ hỗ trợ
+        </Button>
+        <Button
+          variant="outline"
+          className="border-slate-200 text-slate-600 text-xs font-medium h-9 px-4 rounded-lg flex items-center gap-2"
+          onClick={() => window.print()}
+        >
+          <Printer className="h-3.5 w-3.5" />
+          In hóa đơn
         </Button>
         {!isCancelled && status === OrderStatus.PENDING && (
           <Button

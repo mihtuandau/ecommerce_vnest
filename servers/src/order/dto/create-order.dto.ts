@@ -1,4 +1,4 @@
-﻿import { IsInt, IsPositive, IsOptional, IsString, IsArray, ValidateNested } from 'class-validator';
+import { IsInt, IsPositive, IsOptional, IsString, IsArray, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -14,6 +14,11 @@ class OrderItemDto {
   @IsInt()
   @IsPositive()
   quantity: number;
+
+  @ApiProperty({ example: 100000, description: 'Giá tại thời điểm chọn', required: false })
+  @IsOptional()
+  @Type(() => Number)
+  price?: number;
 }
 
 export class CreateOrderDto {
@@ -72,6 +77,18 @@ export class CreateOrderDto {
   @ValidateNested({ each: true })
   @Type(() => OrderItemDto)
   items?: OrderItemDto[];
+
+  @ApiProperty({ example: 1, description: 'ID người dùng (chỉ dành cho Admin)', required: false })
+  @Type(() => Number)
+  @IsOptional()
+  @IsInt()
+  @IsPositive()
+  userId?: number;
+
+  @ApiProperty({ example: 'PENDING', description: 'Trạng thái đơn hàng', required: false })
+  @IsOptional()
+  @IsString()
+  status?: string;
 }
 
 

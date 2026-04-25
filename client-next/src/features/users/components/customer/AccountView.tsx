@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/Input";
 import { CardContent } from "@/components/ui/Card";
 import { 
   User, MapPin, Lock, Camera, ShoppingBag, Wallet, 
-  Phone, Trash2, CheckCircle2, X, Plus, Loader2 
+  Phone, Trash2, CheckCircle2, X, Plus, Loader2
 } from "lucide-react";
 import Link from "next/link";
 import { formatCurrency } from "@/utils/formatCurrency";
@@ -206,9 +206,17 @@ export function AccountView() {
         {/* ── Profile Header ── */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 px-6 py-5 bg-white rounded-2xl border border-slate-100 shadow-sm">
           <div className="relative">
-            <div className="h-14 w-14 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 text-lg font-medium border border-slate-200">
-              {user.name?.charAt(0).toUpperCase()}
-            </div>
+            {user.avatar ? (
+              <img 
+                src={user.avatar} 
+                alt={user.name || "User"} 
+                className="h-14 w-14 rounded-full object-cover border-2 border-white shadow-md" 
+              />
+            ) : (
+              <div className="h-14 w-14 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 text-lg font-medium border border-slate-200">
+                {user.name?.charAt(0).toUpperCase()}
+              </div>
+            )}
             <button className="absolute -bottom-0.5 -right-0.5 h-6 w-6 bg-white border border-slate-200 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 transition-colors shadow-sm">
               <Camera size={11} />
             </button>

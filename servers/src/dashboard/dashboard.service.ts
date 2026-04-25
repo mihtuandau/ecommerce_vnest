@@ -1,6 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { DashboardRepository } from './dashboard.repository';
 import { ReportQueryDto } from '../report/dto/report-query.dto';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 @Injectable()
 export class DashboardService {
@@ -38,12 +44,12 @@ export class DashboardService {
       this.repository.getOrderCountByStatus('CANCELLED'),
       this.repository.getTotalCustomers(),
       this.repository.getTotalRevenue(),
-      this.repository.getRevenueByDate(new Date()),
-      this.repository.getRevenueByDate(new Date(Date.now() - 86400000)),
-      this.repository.getNewUsersCount(new Date()),
-      this.repository.getNewUsersCount(new Date(Date.now() - 86400000)),
-      this.repository.getOrderCountByDate(new Date()),
-      this.repository.getOrderCountByDate(new Date(Date.now() - 86400000)),
+      this.repository.getRevenueByDate(dayjs().tz('Asia/Ho_Chi_Minh').toDate()),
+      this.repository.getRevenueByDate(dayjs().tz('Asia/Ho_Chi_Minh').subtract(1, 'day').toDate()),
+      this.repository.getNewUsersCount(dayjs().tz('Asia/Ho_Chi_Minh').toDate()),
+      this.repository.getNewUsersCount(dayjs().tz('Asia/Ho_Chi_Minh').subtract(1, 'day').toDate()),
+      this.repository.getOrderCountByDate(dayjs().tz('Asia/Ho_Chi_Minh').toDate()),
+      this.repository.getOrderCountByDate(dayjs().tz('Asia/Ho_Chi_Minh').subtract(1, 'day').toDate()),
       this.repository.getLowStockCount(10),
     ]);
 
@@ -99,26 +105,29 @@ export class DashboardService {
       }));
 
       orders.forEach((item: any) => {
-        const date = new Date(item.createdAt);
-        const vnTime = new Date(
-          date.toLocaleString('en-US', { timeZone: 'Asia/Ho_Chi_Minh' }),
-        );
-        const month = vnTime.getMonth();
-        monthlyData[month].revenue += Number(item.total) || 0;
+        const vnTime = dayjs(item.createdAt).tz('Asia/Ho_Chi_Minh');
+        const month = vnTime.month();
+        const subtotal = Number(item.subtotal) || 0;
+        const discount = Number(item.discountAmount) || 0;
+        const refund = Number(item.payment?.refundAmount) || 0;
+        const netRevenue = subtotal - discount - refund;
+        
+        monthlyData[month].revenue += netRevenue;
         monthlyData[month].orders += 1;
       });
 
       if (!query.startDate && !query.endDate) {
+        const vnNow = dayjs().tz('Asia/Ho_Chi_Minh');
         const dailyData = await this.getDailyData(
-          now.getFullYear(),
-          now.getMonth(),
+          vnNow.year(),
+          vnNow.month(),
         );
         return {
           type: 'summary',
           monthly: monthlyData,
           daily: dailyData,
-          year: now.getFullYear(),
-          month: now.getMonth() + 1,
+          year: vnNow.year(),
+          month: vnNow.month() + 1,
         };
       }
 
@@ -128,39 +137,30 @@ export class DashboardService {
     const startDateStr = query.startDate as string;
     const endDateStr = query.endDate as string;
 
-    const start = new Date(startDateStr);
-    const end = new Date(endDateStr);
-    end.setHours(23, 59, 59, 999);
+    const start = dayjs(startDateStr).startOf('day');
+    const end = dayjs(endDateStr).endOf('day');
 
-    const diffDays = Math.ceil(
-      (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24),
-    );
+    const diffDays = end.diff(start, 'day');
 
-    const orders = await this.repository.getRevenueByDateRange(start, end);
+    const orders = await this.repository.getRevenueByDateRange(start.toDate(), end.toDate());
 
     if (diffDays > 62) {
       const dataMap = new Map();
 
-      const current = new Date(start);
-      while (current <= end) {
-        const key = `T${current.getMonth() + 1}/${current.getFullYear()}`;
+      orders.forEach((item: any) => {
+        const vnTime = dayjs(item.createdAt).tz('Asia/Ho_Chi_Minh');
+        const key = `T${vnTime.month() + 1}/${vnTime.year()}`;
         if (!dataMap.has(key)) {
           dataMap.set(key, { label: key, revenue: 0, orders: 0 });
         }
-        current.setMonth(current.getMonth() + 1);
-      }
-
-      orders.forEach((item: any) => {
-        const date = new Date(item.createdAt);
-        const vnTime = new Date(
-          date.toLocaleString('en-US', { timeZone: 'Asia/Ho_Chi_Minh' }),
-        );
-        const key = `T${vnTime.getMonth() + 1}/${vnTime.getFullYear()}`;
-        if (dataMap.has(key)) {
-          const entry = dataMap.get(key);
-          entry.revenue += Number(item.total) || 0;
-          entry.orders += 1;
-        }
+        const entry = dataMap.get(key);
+        const subtotal = Number(item.subtotal) || 0;
+        const discount = Number(item.discountAmount) || 0;
+        const refund = Number(item.payment?.refundAmount) || 0;
+        const netRevenue = subtotal - discount - refund;
+        
+        entry.revenue += netRevenue;
+        entry.orders += 1;
       });
 
       return {
@@ -174,20 +174,21 @@ export class DashboardService {
     const dataMap = new Map();
 
     orders.forEach((item: any) => {
-      const date = new Date(item.createdAt);
-      const vnTime = new Date(
-        date.toLocaleString('en-US', { timeZone: 'Asia/Ho_Chi_Minh' }),
-      );
-
-      const label = `${vnTime.getDate()}/${vnTime.getMonth() + 1}`;
+      const vnTime = dayjs(item.createdAt).tz('Asia/Ho_Chi_Minh');
+      const label = vnTime.format('DD/MM');
 
       if (!dataMap.has(label)) {
-        const sortKey = new Date(vnTime).setHours(0, 0, 0, 0);
+        const sortKey = vnTime.startOf('day').valueOf();
         dataMap.set(label, { label, revenue: 0, orders: 0, sortKey });
       }
 
       const entry = dataMap.get(label);
-      entry.revenue += Number(item.total) || 0;
+      const subtotal = Number(item.subtotal) || 0;
+      const discount = Number(item.discountAmount) || 0;
+      const refund = Number(item.payment?.refundAmount) || 0;
+      const netRevenue = subtotal - discount - refund;
+      
+      entry.revenue += netRevenue;
       entry.orders += 1;
     });
 
@@ -207,24 +208,25 @@ export class DashboardService {
     const dataMap = new Map();
 
     orders.forEach((item: any) => {
-      const date = new Date(item.createdAt);
-      const vnTime = new Date(
-        date.toLocaleString('en-US', { timeZone: 'Asia/Ho_Chi_Minh' }),
-      );
-
-      const label = `${vnTime.getDate()}/${vnTime.getMonth() + 1}`;
+      const vnTime = dayjs(item.createdAt).tz('Asia/Ho_Chi_Minh');
+      const label = vnTime.format('DD/MM');
 
       if (!dataMap.has(label)) {
         dataMap.set(label, {
           label,
           revenue: 0,
           orders: 0,
-          day: vnTime.getDate(),
+          day: vnTime.date(),
         });
       }
 
       const entry = dataMap.get(label);
-      entry.revenue += Number(item.total) || 0;
+      const subtotal = Number(item.subtotal) || 0;
+      const discount = Number(item.discountAmount) || 0;
+      const refund = Number(item.payment?.refundAmount) || 0;
+      const netRevenue = subtotal - discount - refund;
+      
+      entry.revenue += netRevenue;
       entry.orders += 1;
     });
 

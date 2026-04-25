@@ -2,33 +2,32 @@ import { Injectable } from '@nestjs/common';
 import { ReportRepository } from './report.repository';
 import { ReportQueryDto } from './dto/report-query.dto';
 import * as ExcelJS from 'exceljs';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 @Injectable()
 export class ReportService {
   constructor(private repository: ReportRepository) {}
 
   private getDateRange(startDate?: string, endDate?: string) {
-    let start: Date;
-    let end: Date;
+    const vnNow = dayjs().tz('Asia/Ho_Chi_Minh');
+    
+    const start = startDate 
+      ? dayjs(startDate).tz('Asia/Ho_Chi_Minh').startOf('day') 
+      : vnNow.subtract(30, 'day').startOf('day');
+      
+    const end = endDate 
+      ? dayjs(endDate).tz('Asia/Ho_Chi_Minh').endOf('day') 
+      : vnNow.endOf('day');
 
-    if (startDate) {
-      start = new Date(startDate);
-      start.setHours(0, 0, 0, 0);
-    } else {
-      start = new Date();
-      start.setDate(start.getDate() - 30);
-      start.setHours(0, 0, 0, 0);
-    }
-
-    if (endDate) {
-      end = new Date(endDate);
-      end.setHours(23, 59, 59, 999);
-    } else {
-      end = new Date();
-      end.setHours(23, 59, 59, 999);
-    }
-
-    return { start, end };
+    return { 
+      start: start.toDate(), 
+      end: end.toDate() 
+    };
   }
 
   async getRevenueByPeriod(query: ReportQueryDto) {
@@ -39,14 +38,12 @@ export class ReportService {
     const dataMap = new Map<string, { label: string; revenue: number; total: number; orders: number; sortKey: number }>();
 
     // Initialize the map with all dates in the range
-    const current = new Date(start);
-    while (current <= end) {
-      const label = current.toLocaleDateString('vi-VN', {
-        day: '2-digit',
-        month: '2-digit',
-        timeZone: 'Asia/Ho_Chi_Minh',
-      });
-      const sortKey = current.getTime();
+    let current = dayjs(start).tz('Asia/Ho_Chi_Minh');
+    const endDay = dayjs(end).tz('Asia/Ho_Chi_Minh');
+    
+    while (current.isBefore(endDay) || current.isSame(endDay, 'day')) {
+      const label = current.format('DD/MM');
+      const sortKey = current.valueOf();
 
       dataMap.set(label, {
         label,
@@ -56,16 +53,12 @@ export class ReportService {
         sortKey
       });
 
-      current.setDate(current.getDate() + 1);
+      current = current.add(1, 'day');
     }
 
     rawOrders.forEach((order) => {
-      const date = new Date(order.createdAt);
-      const label = date.toLocaleDateString('vi-VN', {
-        day: '2-digit',
-        month: '2-digit',
-        timeZone: 'Asia/Ho_Chi_Minh',
-      });
+      const vnTime = dayjs(order.createdAt).tz('Asia/Ho_Chi_Minh');
+      const label = vnTime.format('DD/MM');
 
       const existing = dataMap.get(label);
       const revenue = (Number(order.subtotal) || 0) - (Number(order.discountAmount) || 0) - (Number(order.payment?.refundAmount) || 0);
@@ -144,7 +137,8 @@ export class ReportService {
     const { start, end } = this.getDateRange(query.startDate, query.endDate);
 
     const [
-      revenue,
+      revenueReport,
+      revenueComparison,
       ordersComparison,
       ordersByStatus,
       products,
@@ -152,6 +146,7 @@ export class ReportService {
       topProducts,
       todayOrders,
     ] = await Promise.all([
+      this.getRevenueByPeriod(query),
       this.repository.getRevenueComparison(start, end),
       this.repository.getOrdersComparison(start, end),
       this.repository.getOrdersByStatus(start, end),
@@ -161,14 +156,24 @@ export class ReportService {
       this.repository.getTodayOrders(),
     ]);
 
+    // Đảm bảo tổng trong kỳ khớp 100% với biểu đồ
+    const periodRevenue = revenueReport.data.reduce((sum: number, item: any) => sum + item.revenue, 0);
+    const periodOrders = revenueReport.data.reduce((sum: number, item: any) => sum + item.orders, 0);
+
     return {
       period: {
         startDate: start,
         endDate: end,
       },
-      revenue,
+      revenue: {
+        total: periodRevenue,
+        absoluteTotal: revenueComparison.absoluteTotal,
+        growth: revenueComparison.growth,
+      },
       orders: {
-        ...ordersComparison,
+        periodTotal: periodOrders, // Dùng tổng từ biểu đồ
+        total: ordersComparison.total,
+        growth: ordersComparison.growth,
         today: todayOrders.today,
         change: todayOrders.change,
       },
@@ -182,16 +187,15 @@ export class ReportService {
   async exportToExcel(query: ReportQueryDto): Promise<Buffer> {
     const { start, end } = this.getDateRange(query.startDate, query.endDate);
 
-    const revenueReport = await this.getRevenueByPeriod(query);
-    const revenueData = revenueReport.data;
-
     const [
+      revenueReport,
       ordersByStatus,
       topProducts,
       topCategories,
       customerStats,
       detailedOrders,
     ] = await Promise.all([
+      this.getRevenueByPeriod(query),
       this.repository.getOrdersByStatus(start, end),
       this.repository.getTopProducts(start, end, 20),
       this.repository.getTopCategories(start, end, 10),
@@ -199,6 +203,7 @@ export class ReportService {
       this.repository.getDetailedOrders(start, end),
     ]) as any[];
 
+    const revenueData = revenueReport.data;
     const totalSubtotal = detailedOrders.reduce((acc: number, curr: any) => acc + Number(curr.subtotal || 0), 0);
     const totalDiscount = detailedOrders.reduce((acc: number, curr: any) => acc + Number(curr.discountAmount || 0), 0);
     const totalRefund = detailedOrders.reduce((acc: number, curr: any) => acc + Number(curr.payment?.refundAmount || 0), 0);

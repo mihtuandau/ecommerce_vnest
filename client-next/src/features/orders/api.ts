@@ -9,6 +9,11 @@ export const ordersApi = {
     return data;
   },
 
+  createAdminOrder: async (orderData: any): Promise<any> => {
+    const { data } = await api.post("/orders/admin", orderData);
+    return data;
+  },
+
   getOrders: async (params?: Record<string, any>): Promise<Order[]> => {
     // Dùng cho Admin - xem tất cả đơn hàng
     const { data: body } = await api.get<any>("/orders", { params });

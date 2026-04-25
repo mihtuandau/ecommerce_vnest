@@ -61,7 +61,16 @@ export function RecentOrders({ orders, isLoading }: RecentOrdersProps) {
                       )}
                     </div>
                     <div>
-                      <p className="text-sm font-bold text-slate-900 leading-none mb-1 line-clamp-1">{order.user?.name || order.shippingSnapshot?.fullName || "Khách lẻ"}</p>
+                      <div className="flex items-center gap-2 mb-1">
+                        <p className="text-sm font-bold text-slate-900 leading-none line-clamp-1">
+                          {order.user?.name || order.shippingSnapshot?.fullName || "Khách lẻ"}
+                        </p>
+                        {(order.guestPhone || order.user?.phone) && (
+                          <span className="text-[10px] font-bold text-primary px-1.5 py-0.5 bg-primary/5 rounded">
+                            {order.guestPhone || order.user?.phone}
+                          </span>
+                        )}
+                      </div>
                       <p className="text-[10px] text-slate-500 font-semibold flex items-center gap-1">
                         <Clock className="h-3 w-3" />
                         {dayjs(order.createdAt).fromNow()}

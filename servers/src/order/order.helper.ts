@@ -141,7 +141,7 @@ export function prepareOrderData(
     total: totals.total,
     taxAmount: 0,
     paymentMethod: dto.paymentMethod || 'CASH',
-    status: 'PENDING',
+    status: dto.status || 'PENDING',
     orderItems: {
       create: items.map((item) => ({
         variantId: item.variantId,
