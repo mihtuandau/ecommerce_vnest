@@ -218,7 +218,7 @@ export function OrderHistoryView() {
                         </div>
 
                         <div
-                          className={`rounded-full px-4 py-1 text-[11px] font-semibold border ${displayStatus.color}`}
+                          className={`rounded-full px-3 py-1.5 text-[11px] font-medium border h-fit leading-none flex items-center justify-center ${displayStatus.color}`}
                         >
                           {displayStatus.label}
                         </div>

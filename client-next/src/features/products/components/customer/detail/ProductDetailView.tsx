@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
-import { useProductDetail } from "@/features/products/hooks";
+import React, { useState, useMemo, useEffect } from "react";
+import { useProductDetail, useIncrementView } from "@/features/products/hooks";
 import { useFlashSale } from "@/features/discounts/hooks";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Button } from "@/components/ui/Button";
@@ -21,9 +21,21 @@ interface ProductDetailViewProps {
 export function ProductDetailView({ slug }: ProductDetailViewProps) {
   const { data: product, isLoading, error } = useProductDetail(slug);
   const { data: flashSale } = useFlashSale();
+  const { mutate: incrementView } = useIncrementView();
   
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
+
+  // Increment view count with 3s delay to ensure meaningful engagement
+  useEffect(() => {
+    if (product?.id) {
+      const timer = setTimeout(() => {
+        incrementView(String(product.id));
+      }, 3000); // 3 seconds delay
+
+      return () => clearTimeout(timer); // Cleanup if user leaves early
+    }
+  }, [product?.id, incrementView]);
 
   // Find Selected Variant
   const selectedVariant = useMemo(() => {
@@ -99,7 +111,7 @@ export function ProductDetailView({ slug }: ProductDetailViewProps) {
     ? Math.round(currentBasePrice * (1 - flashSalePercent / 100))
     : currentBasePrice;
     
-  const originalPriceVal = product.originalPrice || (product as any).oldPrice;
+  const originalPriceVal = selectedVariant?.originalPrice || product.originalPrice || (product as any).oldPrice;
   const finalOriginalPrice = isFlashSale 
     ? currentBasePrice 
     : originalPriceVal;
@@ -133,6 +145,7 @@ export function ProductDetailView({ slug }: ProductDetailViewProps) {
             <ProductActions 
               product={product} 
               finalPrice={finalPrice} 
+              finalOriginalPrice={finalOriginalPrice} 
               currentStock={currentStock}
               selectedSize={selectedSize}
               setSelectedSize={setSelectedSize}

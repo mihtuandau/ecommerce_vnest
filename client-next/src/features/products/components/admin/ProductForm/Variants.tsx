@@ -40,7 +40,7 @@ export function Variants({
           type="button"
           variant="outline"
           className="rounded-lg font-bold gap-2 border-slate-200 hover:bg-slate-50"
-          onClick={() => append({ size: "", color: "", price: 0, stock: 0, image: "" })}
+          onClick={() => append({ size: "", color: "", price: 0, originalPrice: 0, stock: 0, image: "" })}
         >
           <Plus className="h-4 w-4" /> Thêm biến thể mới
         </Button>
@@ -51,7 +51,7 @@ export function Variants({
           {fields.map((field, index) => (
             <div
               key={field.id}
-              className="grid grid-cols-1 md:grid-cols-6 gap-6 p-6 bg-slate-50 rounded-xl border border-slate-200 items-end group relative transition-all hover:border-primary/30"
+              className="grid grid-cols-1 md:grid-cols-7 gap-6 p-6 bg-slate-50 rounded-xl border border-slate-200 items-end group relative transition-all hover:border-primary/30"
             >
               <div className="flex flex-col gap-2">
                 <FormLabel className="text-[10px] font-bold uppercase text-slate-500 tracking-widest">
@@ -136,12 +136,32 @@ export function Variants({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-[10px] font-bold uppercase text-slate-500 tracking-widest">
-                      Giá riêng (VNĐ)
+                      Giá bán (VNĐ)
                     </FormLabel>
                     <FormControl>
                       <Input
                         type="text"
-                        placeholder="Theo giá gốc"
+                        placeholder="Giá bán"
+                        className="h-11 rounded-xl border-slate-200 bg-white focus:ring-primary/20"
+                        {...field}
+                        value={field.value || ""}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name={`variants.${index}.originalPrice`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-[10px] font-bold uppercase text-slate-500 tracking-widest">
+                      Giá gốc (Gạch ngang)
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        type="text"
+                        placeholder="Giá niêm yết"
                         className="h-11 rounded-xl border-slate-200 bg-white focus:ring-primary/20"
                         {...field}
                         value={field.value || ""}
@@ -198,7 +218,7 @@ export function Variants({
             type="button"
             className="rounded-lg font-bold px-6 bg-primary text-white hover:bg-slate-800 shadow-sm"
             onClick={() =>
-              append({ size: "", color: "", price: 0, stock: 0, image: "" })
+              append({ size: "", color: "", price: 0, originalPrice: 0, stock: 0, image: "" })
             }
           >
             Tạo biến thể đầu tiên

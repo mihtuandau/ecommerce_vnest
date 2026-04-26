@@ -11,6 +11,7 @@ import { ROUTES } from "@/constants/routes";
 import { Truck, Loader2, ArrowLeft } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { Button } from "@/components/ui/Button";
 import { useAddresses } from "@/features/users/hooks";
 import Link from "next/link";
 
@@ -30,6 +31,7 @@ export function CheckoutContainer() {
 
   const [mounted, setMounted] = useState(false);
   const [hasAppliedDefault, setHasAppliedDefault] = useState(false);
+  const [isSuccessRedirecting, setIsSuccessRedirecting] = useState(false);
 
   const isBuyNow = searchParams.get("buyNow") === "true";
   const displayItems = React.useMemo(
@@ -41,7 +43,7 @@ export function CheckoutContainer() {
   const { data: addressData } = useAddresses();
 
   const subtotal = React.useMemo(
-    () => displayItems.reduce((sum, i) => sum + i.price * i.quantity, 0),
+    () => displayItems.reduce((sum, i) => sum + (i.discountedPrice || i.price) * i.quantity, 0),
     [displayItems]
   );
 
@@ -347,12 +349,16 @@ export function CheckoutContainer() {
       }
 
       success("Đặt hàng thành công!");
+      setIsSuccessRedirecting(true);
       if (isBuyNow) clearBuyNowItem();
       else displayItems.forEach((i) => useCartStore.getState().removeItem(i.variantId));
 
-      if (isGuest && res.orderCode) router.push(`/orders/guest/lookup/${res.orderCode}?contact=${form.phone}`);
-      else if (res.id) router.push(`/orders/${res.id}`);
-      else router.push(ROUTES.ORDERS);
+      const successParams = new URLSearchParams();
+      if (res.orderCode) successParams.set("orderCode", res.orderCode);
+      if (res.id) successParams.set("orderId", String(res.id));
+      successParams.set("contact", form.phone);
+
+      router.push(`/checkout/success?${successParams.toString()}`);
     } catch (err: any) {
       error(err?.response?.data?.message || err?.message || "Có lỗi xảy ra khi đặt hàng");
     } finally {
@@ -383,8 +389,8 @@ export function CheckoutContainer() {
     );
   }
 
-  const showEmpty = mounted && !isBuyNow && items.filter(i => i.selected).length === 0;
-  const showBuyNowEmpty = mounted && isBuyNow && !buyNowItem;
+  const showEmpty = mounted && !isBuyNow && !isSuccessRedirecting && items.filter(i => i.selected).length === 0;
+  const showBuyNowEmpty = mounted && isBuyNow && !isSuccessRedirecting && !buyNowItem;
 
   return (
     <div className="bg-[#fcfdfe] min-h-screen pb-20">

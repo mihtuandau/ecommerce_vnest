@@ -1,4 +1,3 @@
-
 import { BadRequestException } from '@nestjs/common';
 
 export function serializeOrder(order: any) {
@@ -9,22 +8,24 @@ export function serializeOrder(order: any) {
       ...order,
       payment: {
         ...order.payment,
-        payosOrderCode: order.payment.payosOrderCode 
-          ? Number(order.payment.payosOrderCode) 
+        payosOrderCode: order.payment.payosOrderCode
+          ? Number(order.payment.payosOrderCode)
           : null,
       },
     };
   }
-  
+
   return order;
 }
 
-export async function generateOrderCode(checkExistsFn: (code: string) => Promise<any>): Promise<string> {
+export async function generateOrderCode(
+  checkExistsFn: (code: string) => Promise<any>,
+): Promise<string> {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   let code = '';
 
   code = 'ORD-';
-  for (let i = 0; i < 6; i++) {
+  for (let i = 0; i < 10; i++) {
     code += chars.charAt(Math.floor(Math.random() * chars.length));
   }
 
@@ -33,31 +34,42 @@ export async function generateOrderCode(checkExistsFn: (code: string) => Promise
   if (existing) {
     return generateOrderCode(checkExistsFn);
   }
-  
+
   return code;
 }
 
 export function calculateOrderTotal(
-  items: Array<{quantity: number, price: number}>,
+  items: Array<{ quantity: number; price: number }>,
   providedShippingFee?: number,
-  discount?: {percentage?: number, fixedAmount?: number, maxDiscountAmount?: number}
+  discount?: {
+    percentage?: number;
+    fixedAmount?: number;
+    maxDiscountAmount?: number;
+  },
 ) {
-  const totalItems = items.reduce((sum, item) => sum + item.quantity * item.price, 0);
-  
+  const totalItems = items.reduce(
+    (sum, item) => sum + item.quantity * item.price,
+    0,
+  );
+
   // Logic phí ship: Ưu tiên phí ship truyền vào (từ GHN), nếu không có thì mặc định 30k
-  let shippingFee = providedShippingFee !== undefined ? Number(providedShippingFee) : 30000;
+  let shippingFee =
+    providedShippingFee !== undefined ? Number(providedShippingFee) : 30000;
 
   const taxAmount = 0;
 
   let discountAmount = 0;
   if (discount) {
     if (discount.percentage) {
-      discountAmount = Math.round(totalItems * discount.percentage / 100);
+      discountAmount = Math.round((totalItems * discount.percentage) / 100);
     } else if (discount.fixedAmount) {
       discountAmount = discount.fixedAmount;
     }
 
-    if (discount.maxDiscountAmount && discountAmount > discount.maxDiscountAmount) {
+    if (
+      discount.maxDiscountAmount &&
+      discountAmount > discount.maxDiscountAmount
+    ) {
       discountAmount = discount.maxDiscountAmount;
     }
 
@@ -68,16 +80,20 @@ export function calculateOrderTotal(
   const discountedTotal = total - discountAmount;
 
   return {
-    totalItems, 
+    totalItems,
     shippingFee,
     taxAmount,
     discountAmount,
-    total, 
-    discountedTotal, 
+    total,
+    discountedTotal,
   };
 }
 
-export function validateDiscount(discount: any, subtotal?: number, currentUsageCount?: number) {
+export function validateDiscount(
+  discount: any,
+  subtotal?: number,
+  currentUsageCount?: number,
+) {
   if (!discount) {
     throw new BadRequestException('Mã giảm giá không tồn tại');
   }
@@ -98,7 +114,11 @@ export function validateDiscount(discount: any, subtotal?: number, currentUsageC
     throw new BadRequestException('Mã giảm giá đã hết hạn');
   }
 
-  if (subtotal !== undefined && discount.minOrderAmount && subtotal < discount.minOrderAmount) {
+  if (
+    subtotal !== undefined &&
+    discount.minOrderAmount &&
+    subtotal < discount.minOrderAmount
+  ) {
     throw new BadRequestException(
       `Đơn hàng tối thiểu ${discount.minOrderAmount.toLocaleString('vi-VN')}đ để sử dụng mã này`,
     );
@@ -119,17 +139,35 @@ export function prepareOrderData(
   orderCode: string,
   userId: number | null,
   dto: any,
-  items: Array<{variantId: number, quantity: number, price: number, productName?: string}>,
-  totals: { subtotal: number, shippingFee: number, discountAmount: number, total: number },
-  discount: any
+  items: Array<{
+    variantId: number;
+    quantity: number;
+    price: number;
+    productName?: string;
+  }>,
+  totals: {
+    subtotal: number;
+    shippingFee: number;
+    discountAmount: number;
+    total: number;
+  },
+  discount: any,
 ) {
   const orderData: any = {
     orderCode,
     shippingSnapshot: {
-      addressString: dto.shippingAddress || null,
+      addressString:
+        dto.shippingAddress ||
+        (dto.shippingInfo
+          ? `${dto.shippingInfo.street || ''}, ${dto.shippingInfo.ward || ''}, ${dto.shippingInfo.district || ''}, ${dto.shippingInfo.province || ''}`.replace(
+              /^, /,
+              '',
+            )
+          : null),
       ...(dto.shippingInfo || {}),
       // Đảm bảo có cả 2 cách gọi để tương thích ngược
-      provinceCode: dto.shippingInfo?.provinceCode || dto.shippingInfo?.cityCode || null,
+      provinceCode:
+        dto.shippingInfo?.provinceCode || dto.shippingInfo?.cityCode || null,
       districtCode: dto.shippingInfo?.districtCode || null,
       wardCode: dto.shippingInfo?.wardCode || null,
     },
@@ -143,10 +181,11 @@ export function prepareOrderData(
     paymentMethod: dto.paymentMethod || 'CASH',
     status: dto.status || 'PENDING',
     orderItems: {
-      create: items.map((item) => ({
+      create: items.map((item: any) => ({
         variantId: item.variantId,
         quantity: item.quantity,
         price: item.price,
+        originalPrice: item.originalPrice,
         productName: item.productName || 'Sản phẩm',
       })),
     },
@@ -175,22 +214,29 @@ export function prepareOrderEmailDetails(order: any) {
   const customerEmail = order.guestEmail || order.user?.email;
   const shipping = order.shippingSnapshot as any;
   const customerName = shipping?.fullName || order.user?.name || 'Khách hàng';
-  
+
   return {
     customerEmail,
     customerName,
     orderDetails: {
       customerName,
-      items: order.orderItems.map(item => ({
-        productName: item.variant?.product?.name || 'N/A',
+      items: order.orderItems.map((item) => ({
+        productName: item.variant?.product?.name || item.productName || 'N/A',
         size: item.variant?.size,
         color: item.variant?.color,
         quantity: item.quantity,
         price: item.price,
+        originalPrice: item.originalPrice,
       })),
-      total: order.total,
+      subtotal: order.subtotal,
+      discountAmount: order.discountAmount,
       shippingFee: order.shippingFee,
+      total: order.total,
+      paymentMethod: order.paymentMethod === 'COD' ? 'Thanh toán khi nhận hàng (COD)' : 
+                     order.paymentMethod === 'VNPAY' ? 'Thanh toán qua VNPay' : 
+                     order.paymentMethod === 'BANK_TRANSFER' ? 'Chuyển khoản ngân hàng' : order.paymentMethod,
       shippingAddress: shipping?.addressString || 'N/A',
+      createdAt: order.createdAt,
     }
   };
 }

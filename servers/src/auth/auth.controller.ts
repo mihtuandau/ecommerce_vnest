@@ -37,7 +37,7 @@ export class AuthController {
   ) {}
 
   @Post('register')
-  @Throttle({ default: { limit: 50, ttl: 300000 } })
+  @Throttle({ default: { limit: 5, ttl: 300000 } })
   async register(@Body() registerDto: RegisterDto) {
     return this.authService.register(registerDto);
   }
@@ -100,7 +100,7 @@ export class AuthController {
   }
 
   @Post('login')
-  @Throttle({ default: { limit: 100, ttl: 300000 } }) 
+  @Throttle({ default: { limit: 5, ttl: 300000 } }) 
   async login(@Body() loginDto: LoginDto, @Res() res: Response) {
     const user = await this.authService.validateUser(
       loginDto.email,
@@ -183,22 +183,11 @@ export class AuthController {
 
     this.authService.setAuthCookie(res, token);
 
-    const permissions = await this.authService.getPermissionsByRole(user.role);
-
-    const userData = encodeURIComponent(
-      JSON.stringify({
-        id: user.userId,
-        email: user.email,
-        role: user.role,
-        permissions: permissions,
-      }),
-    );
-
-    const origins = (process.env.FRONTEND_URL || 'http://localhost:5173').split(',').map(o => o.trim());
+    const origins = (process.env.FRONTEND_URL || 'http://localhost:3000').split(',').map(o => o.trim());
     const frontendUrl = origins.find(o => o.includes('localhost')) || origins[0];
 
-    console.log(`Google Auth Redirecting to: ${frontendUrl}/login-success`);
-    return res.redirect(`${frontendUrl}/login-success?user=${userData}`);
+    console.log(`Google Auth Redirecting to: ${frontendUrl}`);
+    return res.redirect(`${frontendUrl}/?auth_success=true`);
   }
 
   @Get('me')

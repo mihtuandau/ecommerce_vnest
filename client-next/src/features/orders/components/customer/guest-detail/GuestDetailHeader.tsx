@@ -59,7 +59,7 @@ export function GuestDetailHeader({
         </button>
         <div className="flex items-center gap-3">
           <h1 className="text-xl font-semibold text-slate-800">Đơn hàng #{orderCode}</h1>
-          <span className={`px-2.5 py-0.5 rounded text-[11px] font-medium border ${currentStatus.color}`}>
+          <span className={`px-3 py-1.5 rounded-full text-[11px] font-medium border h-fit leading-none flex items-center justify-center ${currentStatus.color}`}>
             {currentStatus.label}
           </span>
         </div>

@@ -99,11 +99,11 @@ export function ProductInfo({ product, flashSale, finalPrice, finalOriginalPrice
           )}
 
           <div className="flex items-baseline gap-3">
-            <span className="text-3xl font-semibold text-rose-500 tracking-tight tabular-nums">
+            <span className="text-3xl font-bold text-rose-500 tracking-tight tabular-nums">
               {formatCurrency(finalPrice)}
             </span>
             {finalOriginalPrice && finalOriginalPrice > finalPrice && (
-              <span className="text-sm text-slate-300 line-through font-medium">
+              <span className="text-sm text-slate-500 line-through font-semibold">
                 {formatCurrency(finalOriginalPrice)}
               </span>
             )}

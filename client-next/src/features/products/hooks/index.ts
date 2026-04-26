@@ -108,3 +108,9 @@ export function useBrands() {
   });
 }
 
+export function useIncrementView() {
+  return useMutation({
+    mutationFn: (id: string) => productsApi.incrementView(id),
+  });
+}
+

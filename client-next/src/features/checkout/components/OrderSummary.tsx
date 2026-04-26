@@ -67,7 +67,16 @@ export function OrderSummary({
                 <span className="block text-sm font-medium text-slate-800 line-clamp-2 leading-snug">{item.name}</span>
                 <div className="flex items-center justify-between mt-2">
                   <span className="text-xs text-slate-400 font-medium">Số lượng: {item.quantity}</span>
-                  <span className="text-sm font-semibold text-slate-900">{formatCurrency(item.price * item.quantity)}</span>
+                  <div className="text-right flex flex-col items-end">
+                    <span className="text-sm font-bold text-slate-900">
+                      {formatCurrency((item.discountedPrice || item.price) * item.quantity)}
+                    </span>
+                    {(item.discountedPrice || (item.originalPrice && item.originalPrice > item.price)) && (
+                      <span className="text-[10px] text-slate-500 line-through font-semibold">
+                        {formatCurrency((item.originalPrice || item.price) * item.quantity)}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -120,14 +129,14 @@ export function OrderSummary({
         <div className="space-y-3 pt-2">
           <div className="flex justify-between items-center text-sm font-medium text-slate-500">
             <span>Tạm tính</span>
-            <span className="text-slate-900 font-semibold">{formatCurrency(subtotal)}</span>
+            <span className="text-slate-900 font-bold">{formatCurrency(subtotal)}</span>
           </div>
           <div className="flex justify-between items-center text-sm font-medium text-slate-500">
             <span>Phí vận chuyển</span>
             {isCalculatingFee ? (
               <span className="text-xs text-primary animate-pulse italic">Đang tính...</span>
             ) : (
-              <span className="text-slate-900 font-semibold">{formatCurrency(shippingFee)}</span>
+              <span className="text-slate-900 font-bold">{formatCurrency(shippingFee)}</span>
             )}
           </div>
           {discountAmount > 0 && (
@@ -143,7 +152,7 @@ export function OrderSummary({
           <div className="flex justify-between items-center">
             <span className="text-base font-bold text-slate-900">Tổng cộng</span>
             <div className="text-right">
-              <span className="text-2xl font-black text-primary tabular-nums block leading-none">
+              <span className="text-2xl font-bold text-primary tabular-nums block leading-none">
                 {formatCurrency(total)}
               </span>
               <p className="text-[10px] text-slate-400 mt-1.5 font-medium">Đã bao gồm VAT</p>
@@ -156,7 +165,7 @@ export function OrderSummary({
           type="submit" 
           disabled={isSubmitting || !canSubmit}
           className={cn(
-            "w-full h-14 rounded-2xl text-sm font-bold uppercase tracking-widest transition-all active:scale-[0.98] shadow-lg",
+            "w-full h-14 rounded-2xl text-base font-semibold transition-all active:scale-[0.98] shadow-lg",
             !canSubmit ? "bg-slate-100 text-slate-400 shadow-none cursor-not-allowed" : "bg-primary text-white hover:bg-primary/90 shadow-primary/20"
           )}
         >

@@ -12,42 +12,70 @@ import { UpdateCartItemDto } from './dto/update-cart-item.dto';
 import { RemoveCartItemDto } from './dto/remove-cart-item.dto';
 import { QueryCartDto } from './dto/query-cart.dto';
 import { Prisma, Cart, CartItem, ProductVariant } from '@prisma/client';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class CartService {
   constructor(
     private repository: CartRepository,
+    private prisma: PrismaService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   async getCart(userId: number): Promise<any> {
-    
     const cacheKey = `cart:${userId}`;
-    let cart:
-      | (Cart & { cartItems: (CartItem & { variant: ProductVariant })[] })
-      | null
-      | undefined = await this.cacheManager.get(cacheKey);
+    let cart: any = await this.cacheManager.get(cacheKey);
 
-    if (cart) {
-      const total = cart.cartItems.reduce(
-        (sum, item) => sum + item.quantity * item.variant.price,
-        0,
-      );
-      return { ...cart, total };
+    if (!cart) {
+      cart = await this.repository.findByUserId(userId);
     }
-    
-    cart = await this.repository.findByUserId(userId);
 
     if (!cart) throw new NotFoundException('Cart not found');
 
-    const total = cart.cartItems.reduce(
-      (sum, item) => sum + item.quantity * item.variant.price,
-      0,
-    );
-    const cartWithTotal = { ...cart, total };
+    // Fetch active automatic discounts (Flash Sales)
+    const now = new Date();
+    const activeDiscounts = await this.prisma.discount.findMany({
+      where: {
+        isActive: true,
+        startDate: { lte: now },
+        AND: [
+          { OR: [{ endDate: null }, { endDate: { gte: now } }] },
+          { OR: [{ isFlashSale: true }, { code: "" }] },
+        ],
+      },
+      include: {
+        applicableToProducts: { select: { productId: true } },
+        applicableToCategories: { select: { categoryId: true } },
+      },
+    });
+
+    const calculateDiscount = (item: any) => {
+      const variant = item.variant;
+      if (!variant) return item.variant?.price || 0;
+      
+      const discountedPrice = require('../common/utils/discount.util').calculateDiscountedPrice(
+        { ...variant, product: { categoryId: variant.product?.categoryId } },
+        activeDiscounts
+      );
+      return discountedPrice;
+    };
+
+    // Filter items and calculate totals with real-time pricing
+    const processedItems = cart.cartItems
+      .filter((item: any) => item.variant && item.variant.isActive && !item.variant.product.deletedAt)
+      .map((item: any) => {
+        const discountedPrice = calculateDiscount(item);
+        return {
+          ...item,
+          discountedPrice,
+          subtotal: item.quantity * discountedPrice
+        };
+      });
+
+    const total = processedItems.reduce((sum: number, item: any) => sum + item.subtotal, 0);
+    const cartWithTotal = { ...cart, cartItems: processedItems, total };
 
     await this.cacheManager.set(cacheKey, cartWithTotal, 300);
-    
     return cartWithTotal;
   }
 

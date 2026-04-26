@@ -103,7 +103,7 @@ export function DetailSidebar({
             </div>
           )}
         </div>
-        {!isPaid && !isCancelled && (
+        {!isPaid && !isCancelled && paymentMethod !== "COD" && (
           <Button className="w-full h-9 bg-slate-800 hover:bg-slate-900 text-white text-xs font-medium rounded-lg mt-2 uppercase tracking-wider">
             Thanh toán ngay
           </Button>

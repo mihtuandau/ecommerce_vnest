@@ -20,6 +20,7 @@ import { useRouter } from "next/navigation";
 interface ProductActionsProps {
   product: any;
   finalPrice: number;
+  finalOriginalPrice?: number | null;
   currentStock: number;
   selectedSize: string | null;
   setSelectedSize: (size: string | null) => void;
@@ -31,6 +32,7 @@ interface ProductActionsProps {
 export function ProductActions({
   product,
   finalPrice,
+  finalOriginalPrice,
   currentStock,
   selectedSize,
   setSelectedSize,
@@ -97,6 +99,7 @@ export function ProductActions({
       variantId: String(selectedVariant?.id || product.id),
       name: product.name,
       price: finalPrice,
+      originalPrice: finalOriginalPrice,
       imageUrl: selectedVariant?.images?.[0]?.url || product.images?.[0]?.url || product.images?.[0] || "/placeholder.png",
       slug: product.slug,
       quantity: quantity,
@@ -114,6 +117,7 @@ export function ProductActions({
       variantId: String(selectedVariant?.id || product.id),
       name: product.name,
       price: finalPrice,
+      originalPrice: finalOriginalPrice,
       imageUrl: selectedVariant?.images?.[0]?.url || product.images?.[0]?.url || product.images?.[0] || "/placeholder.png",
       slug: product.slug,
       quantity: quantity,

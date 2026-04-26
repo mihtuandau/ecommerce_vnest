@@ -50,8 +50,40 @@ export function DetailItems({ orderItems, total, shippingFee, discountAmount }: 
                 </span>
               </p>
             </div>
-            <div className="text-sm font-semibold text-slate-700">
-              {formatCurrency(item.price)}
+            <div className="text-right flex flex-col items-end">
+              <span className="text-sm font-bold text-slate-700">
+                {formatCurrency(item.price)}
+              </span>
+              {/* Fallback chain logic:
+                  1. item.originalPrice: The precise price captured at purchase (Priority)
+                  2. item.variant.price: If variant price is currently higher than what was paid (Likely a flash sale order)
+                  3. item.variant.product.originalPrice: General MSRP
+              */}
+              {(() => {
+                const snapshottedOriginal = Number(item.originalPrice);
+                const currentVariantPrice = Number(item.variant?.price);
+                const productOriginal = Number(item.variant?.product?.originalPrice);
+                const paidPrice = Number(item.price);
+                
+                let displayOriginalPrice = 0;
+                
+                if (snapshottedOriginal && snapshottedOriginal > paidPrice) {
+                  displayOriginalPrice = snapshottedOriginal;
+                } else if (currentVariantPrice && currentVariantPrice > paidPrice) {
+                  displayOriginalPrice = currentVariantPrice;
+                } else if (productOriginal && productOriginal > paidPrice) {
+                  displayOriginalPrice = productOriginal;
+                }
+
+                if (displayOriginalPrice > 0) {
+                  return (
+                    <span className="text-[10px] text-slate-500 line-through font-semibold">
+                      {formatCurrency(displayOriginalPrice)}
+                    </span>
+                  );
+                }
+                return null;
+              })()}
             </div>
           </div>
         ))}

@@ -19,17 +19,37 @@ export interface Product {
   name: string;
   slug: string;
   description: string;
-  price: number;
-  originalPrice?: number;
-  images: string[];
+  basePrice: number;
+  price?: number; 
+  originalPrice?: number | null;
+  images: any[];
   categoryId: string;
   category?: Category;
+  brandId?: string;
+  brand?: any;
+  variants?: ProductVariant[];
   stock: number;
   rating: number;
   reviewCount: number;
+  soldCount?: number;
+  viewCount?: number;
   isActive: boolean;
+  isNew?: boolean;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface ProductVariant {
+  id: string;
+  productId: string;
+  size?: string;
+  color?: string;
+  sku?: string;
+  price: number;
+  originalPrice?: number | null;
+  stock: number;
+  isActive: boolean;
+  images?: any[];
 }
 
 export interface Category {
@@ -38,6 +58,7 @@ export interface Category {
   slug: string;
   parentId?: string;
   image?: string;
+  products?: Product[];
 }
 
 export interface Order {
@@ -62,6 +83,7 @@ export interface OrderItem {
   product?: Product;
   quantity: number;
   price: number;
+  originalPrice?: number | null;
 }
 
 export interface Address {

@@ -142,6 +142,7 @@ model Product {
   slug          String?             @unique // SEO-friendly URL (optional để migrate)
   description   String?
   basePrice     Float
+  originalPrice Float?              // Giá gốc mặc định của sản phẩm
   categoryId    Int?
   brandId       Int?
   // COMPUTED FIELDS - Phải update trong transaction khi Review/OrderItem thay đổi
@@ -209,6 +210,7 @@ model ProductVariant {
   color             String?
   stock             Int            @default(0)
   price             Float
+  originalPrice     Float?         // Giá gốc để hiển thị gạch ngang
   sku               String?        @unique // SKU phải unique theo định nghĩa
   lowStockThreshold Int            @default(5) // Cảnh báo hết hàng
   isActive          Boolean        @default(true) // Variant còn bán không
@@ -467,6 +469,7 @@ model OrderItem {
   variantId        Int
   quantity         Int
   price            Float           // Snapshot giá tại thời điểm order (đã tính)
+  originalPrice    Float?          // Lưu lại giá gốc tại thời điểm mua
   // Snapshot thông tin sản phẩm tại thời điểm mua - tránh mất dữ liệu nếu variant/product bị xóa hoặc đổi
   productName      String          // Tên sản phẩm tại thời điểm mua (VD: "iPhone 15 Pro")
   variantSnapshot  Json?           // {size, color, sku, image} - thông tin variant tại thời điểm mua

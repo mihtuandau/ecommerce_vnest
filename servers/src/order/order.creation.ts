@@ -9,6 +9,7 @@ import * as OrderHelper from './order.helper';
 import { PrismaService } from '../prisma/prisma.service';
 import { GHNService } from '../ghn/ghn.service';
 import { ConfigService } from '@nestjs/config';
+import * as DiscountUtil from '../common/utils/discount.util';
 
 @Injectable()
 export class OrderCreation {
@@ -216,10 +217,15 @@ export class OrderCreation {
   ) {
     const variantIds = items.map((item) => item.variantId);
     const variants = await this.prisma.productVariant.findMany({
-      where: { id: { in: variantIds } },
-      include: {
+      where: { 
+        id: { in: variantIds },
+        isActive: true,
+        product: { deletedAt: null, isActive: true } 
+      },
+      select: {
+        id: true, productId: true, price: true, originalPrice: true, weight: true, length: true, width: true, height: true,
         product: {
-          select: { id: true, name: true, category: { select: { name: true } } },
+          select: { id: true, name: true, isActive: true, deletedAt: true, originalPrice: true, categoryId: true, category: { select: { name: true } } },
         },
       },
     });
@@ -230,44 +236,55 @@ export class OrderCreation {
 
     const variantMap = new Map(variants.map((v) => [v.id, v]));
 
+    const activeDiscounts = await this.getActiveDiscounts();
+
     return items.map((item) => {
       const variant = variantMap.get(item.variantId);
-      if (!variant) {
-        throw new BadRequestException(
-          `Sản phẩm ID ${item.variantId} không tồn tại`,
-        );
-      }
+      if (!variant) return null;
 
-      // Validate price - if frontend provided expected price, check for significant changes
-      if (item.price !== undefined && variant.price !== item.price) {
-        const priceChange =
-          Math.abs((variant.price - item.price) / item.price) * 100;
-        // If price changed more than 10%, block order and request fresh price from client
-        if (priceChange > 10) {
-          this.logger.warn(
-            `Significant price change detected for variant ${item.variantId}: ` +
-              `expected ${item.price}, actual ${variant.price} (${priceChange.toFixed(2)}% change). Order blocked.`,
-          );
-          throw new BadRequestException(
-            `Giá sản phẩm đã thay đổi trên ${priceChange.toFixed(1)}%. ` +
-              `Giá hiện tại: ${variant.price}đ (giá lúc trước: ${item.price}đ). ` +
-              `Vui lòng tải lại giỏ hàng và thử lại.`,
-          );
-        }
-      }
+      const discountedPrice = DiscountUtil.calculateDiscountedPrice(
+        variant as any,
+        activeDiscounts
+      );
+
+      const isFlashSaleActive = discountedPrice < variant.price;
 
       return {
         variantId: item.variantId,
         productId: variant.productId,
         quantity: item.quantity,
-        price: variant.price, // Always use current database price, not frontend price
+        // PRIORITY LOGIC:
+        // 1. If Flash Sale active: Selling Price = Discounted, Strikethrough = Normal Variant Price
+        // 2. No Flash Sale: Selling Price = Normal Variant Price, Strikethrough = MSRP (OriginalPrice)
+        price: discountedPrice,
+        originalPrice: isFlashSaleActive 
+          ? variant.price 
+          : (variant.originalPrice || variant.product?.originalPrice),
         productName: variant.product?.name || 'Sản phẩm',
         weight: variant.weight,
         length: variant.length,
         width: variant.width,
         height: variant.height,
-        category: variant.product?.category?.name,
+        category: (variant.product as any)?.category?.name,
       };
+    }).filter(Boolean);
+  }
+
+  private async getActiveDiscounts() {
+    const now = new Date();
+    return this.prisma.discount.findMany({
+      where: {
+        isActive: true,
+        startDate: { lte: now },
+        AND: [
+          { OR: [{ endDate: null }, { endDate: { gte: now } }] },
+          { OR: [{ isFlashSale: true }, { code: "" }] },
+        ],
+      },
+      include: {
+        applicableToProducts: { select: { productId: true } },
+        applicableToCategories: { select: { categoryId: true } },
+      },
     });
   }
 
@@ -277,18 +294,28 @@ export class OrderCreation {
       throw new BadRequestException('Giỏ hàng trống');
     }
 
-    return cart.cartItems.map((item) => ({
-      variantId: item.variantId,
-      productId: item.variant?.productId,
-      quantity: item.quantity,
-      price: item.variant?.price || 0,
-      productName: item.variant?.product?.name || 'Sản phẩm',
-      weight: item.variant?.weight,
-      length: item.variant?.length,
-      width: item.variant?.width,
-      height: item.variant?.height,
-      category: item.variant?.product?.category?.name,
-    }));
+    return cart.cartItems.map((item) => {
+      const isFlashSaleActive = item.discountedPrice && item.discountedPrice < (item.variant?.price || 0);
+
+      return {
+        variantId: item.variantId,
+        productId: item.variant?.productId,
+        quantity: item.quantity,
+        // PRIORITY LOGIC:
+        // 1. If Flash Sale active: Selling Price = Discounted, Strikethrough = Normal Variant Price
+        // 2. No Flash Sale: Selling Price = Normal Variant Price, Strikethrough = MSRP (OriginalPrice)
+        price: item.discountedPrice || item.variant?.price || 0,
+        originalPrice: isFlashSaleActive 
+          ? item.variant?.price 
+          : (item.variant?.originalPrice || item.variant?.product?.originalPrice),
+        productName: item.variant?.product?.name || 'Sản phẩm',
+        weight: item.variant?.weight,
+        length: item.variant?.length,
+        width: item.variant?.width,
+        height: item.variant?.height,
+        category: item.variant?.product?.category?.name,
+      };
+    });
   }
 
   private async calculateGHNFee(dto: CreateOrderDto, items: any[]) {

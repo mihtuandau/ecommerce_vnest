@@ -124,7 +124,7 @@ export class OrderManagement {
 
   private canCancelOrder(status: string): boolean {
 
-    const cancellableStatuses = ['PENDING', 'AWAITING_PAYMENT'];
+    const cancellableStatuses = ['PENDING', 'PROCESSING'];
     return cancellableStatuses.includes(status);
   }
 

@@ -34,6 +34,7 @@ const productSchema = z.object({
     sku: z.string().nullable().optional(),
     image: z.string().nullable().optional(),
     price: z.coerce.number().min(0).optional(),
+    originalPrice: z.coerce.number().min(0).optional(),
     stock: z.coerce.number().min(0).default(0),
   })).optional(),
 });
@@ -121,30 +122,26 @@ export function ProductForm({ initialData, onSubmit, isLoading }: ProductFormPro
     };
 
     const basePrice = cleanNumber(data.basePrice || 0);
+    const originalPrice = cleanNumber(data.originalPrice);
     const cleanedVariants = (data.variants || []).map((v: any) => ({
       ...v,
       price: cleanNumber(v.price) > 0 ? cleanNumber(v.price) : basePrice,
+      originalPrice: v.originalPrice ? cleanNumber(v.originalPrice) : null,
       stock: Number(v.stock || 0),
     }));
 
-    if (!initialData) {
-      // Structure data for backend CreateProductDto (Strict)
-      const dto = {
-        name: data.name,
-        slug: data.slug,
-        description: data.description,
-        basePrice: basePrice,
-        originalPrice: cleanNumber(data.originalPrice),
-        categoryId: Number(data.categoryId),
-        status: data.status || "active",
-        images: images,
-        variants: cleanedVariants,
-      };
-      onSubmit(dto as any);
-    } else {
-      // For Update, we can be more flexible
-      onSubmit({ ...data, images, variants: cleanedVariants });
-    }
+    // Common payload structure for both Create and Update
+    const payload = {
+      ...data,
+      basePrice,
+      originalPrice,
+      images,
+      variants: cleanedVariants,
+      categoryId: Number(data.categoryId),
+      status: data.status || "active",
+    };
+
+    onSubmit(payload as any);
   };
 
   const onInvalid = (errors: any) => {

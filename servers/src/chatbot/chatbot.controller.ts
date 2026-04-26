@@ -1,4 +1,5 @@
-﻿import { Controller, Post, Body, Get } from '@nestjs/common';
+import { Controller, Post, Body, Get } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { ChatbotService } from './chatbot.service';
 import { ChatQueryDto } from './dto/chat-query.dto';
 
@@ -7,6 +8,7 @@ export class ChatbotController {
   constructor(private readonly chatbotService: ChatbotService) {}
 
   @Post('chat')
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   async chat(@Body() chatQueryDto: ChatQueryDto) {
     const { message } = chatQueryDto;
     const response = await this.chatbotService.chat(message);

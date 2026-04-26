@@ -17,7 +17,6 @@ export class ChatService {
           select: {
             id: true,
             name: true,
-            email: true,
             role: true,
           },
         },
@@ -33,7 +32,6 @@ export class ChatService {
           select: {
             id: true,
             name: true,
-            email: true,
             role: true,
           },
         },

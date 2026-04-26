@@ -14,6 +14,8 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyCart } from "./EmptyCart";
 import { CartItem } from "./CartItem";
 import { CartSummary } from "./CartSummary";
+import { cartApi } from "../api";
+import { toast } from "sonner";
 
 export function CartContainer() {
   const {
@@ -21,10 +23,9 @@ export function CartContainer() {
     updateQuantity,
     removeItem,
     clearCart,
+    setItems,
     toggleSelectItem,
     toggleSelectAll,
-    selectedTotalPrice,
-    selectedCount,
   } = useCartStore();
 
   const [mounted, setMounted] = useState(false);
@@ -32,7 +33,41 @@ export function CartContainer() {
 
   useEffect(() => {
     setMounted(true);
+    
+    // Sync cart with server to get latest prices/discounts
+    const syncWithServer = async () => {
+      try {
+        const cartData = await cartApi.getCart();
+        if (cartData && cartData.cartItems) {
+          const mappedItems = cartData.cartItems.map((item: any) => ({
+            productId: item.variant.productId,
+            variantId: item.variantId,
+            name: item.variant.product.name,
+            price: Number(item.variant.price),
+            discountedPrice: item.discountedPrice ? Number(item.discountedPrice) : undefined,
+            originalPrice: (item.variant.originalPrice || item.variant.product.originalPrice) ? Number(item.variant.originalPrice || item.variant.product.originalPrice) : undefined,
+            quantity: item.quantity,
+            imageUrl: item.variant.images?.[0]?.url || item.variant.product.images?.[0]?.url,
+            slug: item.variant.product.slug,
+            color: item.variant.color,
+            size: item.variant.size,
+          }));
+          setItems(mappedItems);
+        }
+      } catch (error) {
+        console.error("Failed to sync cart:", error);
+        // Don't show toast on 401 as it's expected for guests
+      }
+    };
+    
+    syncWithServer();
   }, []);
+
+  // Calculate derived state in component for better reactivity
+  const selectedItems = items.filter(i => i.selected);
+  const selectedCount = selectedItems.length;
+  const selectedTotalPrice = selectedItems.reduce((sum, i) => sum + (i.discountedPrice || i.price) * i.quantity, 0);
+  const isAllSelected = items.length > 0 && items.every((i) => i.selected);
 
   if (!mounted) {
     return (
@@ -63,8 +98,6 @@ export function CartContainer() {
     );
   }
 
-  const isAllSelected = items.length > 0 && items.every((i) => i.selected);
-
   if (items.length === 0) {
     return <EmptyCart />;
   }
@@ -84,7 +117,7 @@ export function CartContainer() {
                 <ChevronLeft size={20} />
               </button>
               <div className="space-y-1">
-                <h1 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">Giỏ hàng của bạn</h1>
+                <h1 className="text-2xl md:text-3xl font-semibold text-slate-900 tracking-tight">Giỏ hàng của bạn</h1>
                 <p className="text-slate-500 text-sm font-medium">Bạn có {items.length} sản phẩm trong giỏ hàng</p>
               </div>
             </div>
@@ -151,8 +184,8 @@ export function CartContainer() {
             {/* Right Column: Order Summary */}
             <div className="lg:col-span-4 lg:sticky lg:top-24">
               <CartSummary
-                selectedCount={selectedCount()}
-                selectedTotalPrice={selectedTotalPrice()}
+                selectedCount={selectedCount}
+                selectedTotalPrice={selectedTotalPrice}
               />
             </div>
           </div>

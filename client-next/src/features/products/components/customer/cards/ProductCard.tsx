@@ -61,7 +61,7 @@ export function ProductCard({ product, view = "grid" }: ProductCardProps) {
     : basePrice;
 
   // Set original price if on sale
-  const originalPriceVal = product.originalPrice || (product as any).oldPrice;
+  const originalPriceVal = product.variants?.[0]?.originalPrice || product.originalPrice || (product as any).oldPrice;
   const originalPrice = isFlashSale
     ? basePrice
     : originalPriceVal
@@ -81,6 +81,7 @@ export function ProductCard({ product, view = "grid" }: ProductCardProps) {
       variantId: String(defaultVariantId),
       name: product.name,
       price: price,
+      originalPrice: originalPrice || undefined,
       imageUrl: imageUrl,
       slug: product.slug,
       quantity: 1,
@@ -123,12 +124,12 @@ export function ProductCard({ product, view = "grid" }: ProductCardProps) {
           <div className="space-y-1 md:space-y-2">
             <div className="flex items-center justify-between relative">
               <div className="flex items-center gap-3">
-                <span className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-primary/60">
+                <span className="text-[9px] md:text-[10px] font-semibold tracking-wide text-primary/60">
                   {(product as any).brand?.name || "Vnest"}
                 </span>
                 <div className="flex items-center gap-1">
                   <Star className="h-2.5 w-2.5 fill-[#f4c300] text-[#f4c300]" />
-                  <span className="text-[10px] font-bold text-slate-400">{rating}</span>
+                  <span className="text-[10px] font-medium text-slate-400">{rating}</span>
                 </div>
               </div>
               <button 
@@ -142,11 +143,11 @@ export function ProductCard({ product, view = "grid" }: ProductCardProps) {
               </button>
             </div>
             <Link href={`/shop/${product.slug}`}>
-              <h3 className="font-bold text-slate-900 text-[13px] md:text-lg leading-tight line-clamp-1 md:line-clamp-2 hover:text-primary transition-colors">
+              <h3 className="font-semibold text-slate-900 text-[13px] md:text-lg leading-tight line-clamp-1 md:line-clamp-2 hover:text-primary transition-colors">
                 {product.name}
               </h3>
             </Link>
-            <div className="flex items-center gap-3 text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-tight">
+            <div className="flex items-center gap-3 text-[9px] md:text-[10px] font-medium text-slate-400 tracking-tight">
               {soldCount > 0 && <span>Đã bán {soldCount}</span>}
               {viewCount > 0 && (
                 <div className="flex items-center gap-1">
@@ -158,11 +159,11 @@ export function ProductCard({ product, view = "grid" }: ProductCardProps) {
 
           <div className="flex items-center justify-between mt-auto pt-2">
             <div className="flex items-baseline gap-2">
-              <span className="text-base md:text-2xl font-black text-slate-900 tabular-nums">
+              <span className="text-lg md:text-2xl font-bold text-[#1565C0] tabular-nums">
                 {formatCurrency(price)}
               </span>
               {discountPercent > 0 && (
-                <span className="text-[10px] md:text-sm text-slate-400 line-through font-medium">
+                <span className="text-[10px] md:text-sm text-slate-500 line-through font-semibold">
                   {formatCurrency(originalPrice!)}
                 </span>
               )}
@@ -170,7 +171,7 @@ export function ProductCard({ product, view = "grid" }: ProductCardProps) {
 
             <Button
               onClick={handleAddToCart}
-              className="h-8 md:h-11 px-4 md:px-8 rounded-xl bg-primary hover:bg-[#0d47a1] text-white shadow-lg shadow-blue-500/10 font-bold text-[10px] md:text-xs uppercase tracking-widest gap-2"
+              className="h-8 md:h-11 px-4 md:px-8 rounded-xl bg-primary hover:bg-[#0d47a1] text-white shadow-lg shadow-blue-500/10 font-semibold text-[10px] md:text-xs tracking-wide gap-2"
             >
               <ShoppingCart className="h-4 w-4" />
               <span className="hidden sm:inline">Thêm vào giỏ</span>
@@ -192,13 +193,13 @@ export function ProductCard({ product, view = "grid" }: ProductCardProps) {
         <div className="absolute top-2 left-2 md:top-3 md:left-3 z-10 flex items-start justify-between w-full pr-4 md:pr-6">
           <div className="flex flex-col gap-1">
             {discountPercent > 0 && (
-              <span className="bg-[#e85d24] text-white text-[8px] md:text-[9px] font-black px-1.5 py-0.5 md:px-2 md:py-1 rounded-md shadow-sm uppercase tracking-widest">
+              <span className="bg-[#e85d24] text-white text-[8px] md:text-[9px] font-bold px-1.5 py-0.5 md:px-2 md:py-1 rounded-md shadow-sm tracking-wide">
                 -{discountPercent}%
               </span>
             )}
             {product.isNew && (
-              <span className="bg-primary text-white text-[8px] md:text-[9px] font-black px-1.5 py-0.5 md:px-2 md:py-1 rounded-md shadow-sm uppercase tracking-widest">
-                NEW
+              <span className="bg-primary text-white text-[8px] md:text-[9px] font-bold px-1.5 py-0.5 md:px-2 md:py-1 rounded-md shadow-sm tracking-wide">
+                Mới
               </span>
             )}
           </div>
@@ -225,13 +226,13 @@ export function ProductCard({ product, view = "grid" }: ProductCardProps) {
         <div className="space-y-1 flex-1 pt-2">
           {/* Brand Row */}
           <div className="flex items-center justify-between">
-            <span className="text-[8px] md:text-[9px] font-black text-slate-400 uppercase tracking-widest">
+            <span className="text-[8px] md:text-[9px] font-semibold text-slate-400 tracking-wide">
               {(product as any).brand?.name || "Vnest"}
             </span>
           </div>
 
           <Link href={`/shop/${product.slug}`} className="block group/title">
-            <h3 className="font-bold text-slate-900 text-[11px] md:text-[13px] leading-tight line-clamp-2 group-hover/title:text-primary transition-colors min-h-[28px] md:min-h-[32px]">
+            <h3 className="font-semibold text-slate-900 text-[11px] md:text-[13px] leading-tight line-clamp-2 group-hover/title:text-primary transition-colors min-h-[28px] md:min-h-[32px]">
               {product.name}
             </h3>
           </Link>
@@ -252,8 +253,8 @@ export function ProductCard({ product, view = "grid" }: ProductCardProps) {
               </span>
             </div>
 
-            <div className="flex items-center gap-1.5 text-[8px] md:text-[9px] font-bold text-slate-400 uppercase tracking-tight flex-wrap justify-end ml-auto min-w-0">
-              {soldCount > 0 && <span className="truncate">Bán {soldCount}</span>}
+            <div className="flex items-center gap-1.5 text-[8px] md:text-[9px] font-medium text-slate-400 tracking-tight flex-wrap justify-end ml-auto min-w-0">
+              {soldCount > 0 && <span className="truncate">Đã bán {soldCount}</span>}
               {viewCount > 0 && (
                 <div className="flex items-center gap-0.5 shrink-0">
                   <Eye className="h-2.5 w-2.5" /> <span>{viewCount}</span>
@@ -265,11 +266,11 @@ export function ProductCard({ product, view = "grid" }: ProductCardProps) {
 
         <div className="flex items-center justify-between pt-1.5 md:pt-2 mt-2 border-t border-slate-50">
           <div className="flex flex-col">
-            <span className="text-sm md:text-base font-black text-slate-900 tabular-nums leading-tight">
+            <span className="text-[15px] md:text-lg font-bold text-[#1565C0] tabular-nums leading-tight">
               {formatCurrency(price)}
             </span>
             {discountPercent > 0 && (
-              <span className="text-[9px] md:text-[10px] text-slate-400 line-through font-medium">
+              <span className="text-[9px] md:text-[10px] text-slate-500 line-through font-semibold">
                 {formatCurrency(originalPrice!)}
               </span>
             )}

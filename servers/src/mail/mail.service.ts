@@ -103,12 +103,9 @@ export class MailService {
     .order-code-block {
       background: #f9f9f9;
       border: 1px solid #e8e8e8;
-      border-radius: 6px;
+      border-radius: 8px;
       padding: 16px 20px;
       margin: 24px 0;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
     }
     .order-code-label { font-size: 12px; color: #888; margin-bottom: 2px; }
     .order-code-value {
@@ -119,13 +116,17 @@ export class MailService {
       font-variant-numeric: tabular-nums;
     }
     .order-badge {
-      font-size: 11px;
-      font-weight: 500;
-      color: #16a34a;
-      background: #f0fdf4;
-      border: 1px solid #bbf7d0;
-      padding: 3px 8px;
-      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #2563eb;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      padding: 2px 8px;
+      border-radius: 24px;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+      margin-left: 8px;
     }
 
     /* Items table */
@@ -296,7 +297,16 @@ export class MailService {
     orderCode: string,
     orderDetails: any,
   ) {
-    const { customerName, items, total, shippingAddress } = orderDetails;
+    const { 
+      customerName, 
+      items, 
+      subtotal, 
+      discountAmount, 
+      shippingFee, 
+      total, 
+      paymentMethod, 
+      shippingAddress 
+    } = orderDetails;
 
     const itemRows = items
       .map((item: any) => {
@@ -307,6 +317,10 @@ export class MailService {
           .filter(Boolean)
           .join(' · ');
 
+        const paidPrice = Number(item.price);
+        const originalPrice = Number(item.originalPrice);
+        const hasDiscount = originalPrice && originalPrice > paidPrice;
+
         return `
           <tr>
             <td>
@@ -314,7 +328,14 @@ export class MailService {
               ${variants ? `<div class="item-variant">${variants}</div>` : ''}
             </td>
             <td class="center">${item.quantity}</td>
-            <td class="right">${this.formatCurrency(item.price * item.quantity)}</td>
+            <td class="right">
+              <div style="font-weight:600; color:#1a1a1a">${this.formatCurrency(paidPrice * item.quantity)}</div>
+              ${hasDiscount ? `
+                <div style="font-size:11px; color:#888; text-decoration:line-through; font-weight:400; margin-top:2px">
+                  ${this.formatCurrency(originalPrice * item.quantity)}
+                </div>
+              ` : ''}
+            </td>
           </tr>
         `;
       })
@@ -326,11 +347,15 @@ export class MailService {
       <p class="subtitle">Cảm ơn bạn đã mua sắm. Đơn hàng đang chờ xử lý.</p>
 
       <div class="order-code-block">
-        <div>
-          <div class="order-code-label">Mã đơn hàng</div>
-          <div class="order-code-value">${orderCode}</div>
-        </div>
-        <span class="order-badge" style="background:#eff6ff; border-color:#bfdbfe; color:#2563eb">Chờ xử lý</span>
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+          <tr>
+            <td>
+              <div class="order-code-label">Mã đơn hàng</div>
+              <div class="order-code-value" style="display: inline-block; vertical-align: middle;">${orderCode}</div>
+              <span class="order-badge" style="background:#eff6ff; border-color:#bfdbfe; color:#2563eb; vertical-align: middle;">Chờ xử lý</span>
+            </td>
+          </tr>
+        </table>
       </div>
 
       <div class="divider"></div>
@@ -338,6 +363,10 @@ export class MailService {
       <div class="meta-row">
         <span class="meta-label">Người nhận</span>
         <span class="meta-value">${customerName}</span>
+      </div>
+      <div class="meta-row">
+        <span class="meta-label">Phương thức thanh toán</span>
+        <span class="meta-value">${paymentMethod}</span>
       </div>
       <div class="meta-row">
         <span class="meta-label">Địa chỉ giao hàng</span>
@@ -357,8 +386,22 @@ export class MailService {
         <tbody>
           ${itemRows}
           <tr class="total-row">
-            <td colspan="2" class="total-label">Tổng cộng</td>
-            <td class="total-amount">${this.formatCurrency(total)}</td>
+            <td colspan="2" class="total-label" style="font-weight:400; color:#888">Tạm tính</td>
+            <td class="right" style="padding-top:14px; font-variant-numeric:tabular-nums">${this.formatCurrency(subtotal)}</td>
+          </tr>
+          ${discountAmount > 0 ? `
+          <tr class="total-row">
+            <td colspan="2" class="total-label" style="font-weight:400; color:#888">Giảm giá</td>
+            <td class="right" style="padding-top:8px; color:#ef4444; font-variant-numeric:tabular-nums">-${this.formatCurrency(discountAmount)}</td>
+          </tr>
+          ` : ''}
+          <tr class="total-row">
+            <td colspan="2" class="total-label" style="font-weight:400; color:#888">Phí vận chuyển</td>
+            <td class="right" style="padding-top:8px; font-variant-numeric:tabular-nums">${this.formatCurrency(shippingFee)}</td>
+          </tr>
+          <tr class="total-row">
+            <td colspan="2" class="total-label" style="font-size:16px; padding-top:20px">Tổng cộng</td>
+            <td class="total-amount" style="font-size:20px; padding-top:20px; color:#1a1a1a">${this.formatCurrency(total)}</td>
           </tr>
         </tbody>
       </table>

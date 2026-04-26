@@ -18,7 +18,7 @@ export function CartSummary({ selectedCount, selectedTotalPrice }: CartSummaryPr
   return (
     <Card className="border border-slate-100 rounded-[2rem] overflow-hidden bg-white">
       <div className="bg-slate-50 p-8 border-b border-slate-100">
-        <h3 className="font-semibold text-slate-900 flex items-center gap-3 uppercase text-xs tracking-widest">
+        <h3 className="font-semibold text-slate-900 flex items-center gap-3 text-sm">
           <CreditCard className="w-5 h-5 text-primary" />
           Thanh toán đơn hàng
         </h3>
@@ -28,11 +28,11 @@ export function CartSummary({ selectedCount, selectedTotalPrice }: CartSummaryPr
         <div className="space-y-4">
           <div className="flex justify-between items-center text-sm">
             <span className="text-slate-500 font-medium">Tạm tính ({selectedCount} sản phẩm)</span>
-            <span className="font-semibold text-slate-900 tabular-nums">{formatCurrency(selectedTotalPrice)}</span>
+            <span className="font-bold text-slate-900 tabular-nums">{formatCurrency(selectedTotalPrice)}</span>
           </div>
           <div className="flex justify-between items-center text-sm">
             <span className="text-slate-500 font-medium">Phí giao hàng</span>
-            <span className="text-green-600 font-medium uppercase text-[10px] tracking-widest bg-green-50 px-2 py-1 rounded-lg">Miễn phí</span>
+            <span className="text-slate-400 font-medium text-[11px] bg-slate-50 px-3 py-1 rounded-lg">Tính ở bước thanh toán</span>
           </div>
         </div>
 
@@ -40,10 +40,10 @@ export function CartSummary({ selectedCount, selectedTotalPrice }: CartSummaryPr
 
         <div className="flex justify-between items-end">
           <div className="space-y-1">
-            <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Tổng cộng</span>
+            <span className="text-[11px] font-semibold text-slate-400 tracking-wide">Tổng cộng</span>
             <p className="text-[10px] text-slate-400 font-medium">Đã bao gồm VAT</p>
           </div>
-          <p className="text-3xl font-semibold text-primary tabular-nums tracking-tighter">{formatCurrency(selectedTotalPrice)}</p>
+          <p className="text-3xl font-bold text-primary tabular-nums tracking-tighter">{formatCurrency(selectedTotalPrice)}</p>
         </div>
         
         <div className="space-y-4 pt-2">
@@ -61,7 +61,7 @@ export function CartSummary({ selectedCount, selectedTotalPrice }: CartSummaryPr
           
           <div className="flex items-center justify-center gap-2 py-2">
             <ShieldCheck className="w-4 h-4 text-slate-200" />
-            <span className="text-[10px] font-medium text-slate-300 uppercase tracking-widest">Thanh toán bảo mật</span>
+            <span className="text-[10px] font-medium text-slate-300 tracking-wider">Thanh toán bảo mật</span>
           </div>
         </div>
 

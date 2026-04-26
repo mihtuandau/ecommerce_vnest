@@ -95,7 +95,7 @@ export const columns: ColumnDef<Order>[] = [
         <Badge 
           variant="outline" 
           className={cn(
-            "text-[10px] font-bold px-2 py-0.5 rounded-md",
+            "text-[10px] font-bold px-3 py-1 rounded-full h-fit leading-none flex items-center justify-center",
             isPaid 
               ? "bg-emerald-50 text-emerald-600 border-emerald-200" 
               : "bg-amber-50 text-amber-600 border-amber-200"
@@ -124,7 +124,7 @@ export const columns: ColumnDef<Order>[] = [
       return (
         <Badge
           variant="outline"
-          className={cn("rounded-md px-2 py-0.5 font-bold text-[10px]", config.class)}
+          className={cn("rounded-full px-3 py-1.5 font-medium text-[11px] h-fit leading-none flex items-center justify-center", config.class)}
         >
           {config.label}
         </Badge>

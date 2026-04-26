@@ -40,6 +40,7 @@ export function HomeProductCard({ product, variant }: HomeProductCardProps) {
       variantId: String(defaultVariantId),
       name: product.name,
       price: price,
+      originalPrice: originalPrice || undefined,
       imageUrl: imageUrl,
       slug: product.slug,
       quantity: 1,
@@ -67,11 +68,11 @@ export function HomeProductCard({ product, variant }: HomeProductCardProps) {
         </div>
 
         <div className="absolute top-2.5 left-2.5 md:top-4 md:left-4 z-30 flex flex-col gap-1">
-          <span className="bg-[#1565C0] text-white text-[8px] md:text-[9px] font-bold px-2 py-0.5 md:px-2.5 md:py-1.5 rounded-full shadow-lg uppercase tracking-wider">
+          <span className="bg-[#1565C0] text-white text-[8px] md:text-[9px] font-semibold px-2 py-0.5 md:px-2.5 md:py-1.5 rounded-full shadow-lg tracking-wide">
             Nổi bật
           </span>
           {discount && (
-            <span className="bg-[#e85d24] text-white text-[8px] md:text-[9px] font-black px-2 py-0.5 md:px-2.5 md:py-1 rounded-lg shadow-lg uppercase tracking-widest">
+            <span className="bg-[#e85d24] text-white text-[8px] md:text-[9px] font-bold px-2 py-0.5 md:px-2.5 md:py-1 rounded-lg shadow-lg tracking-widest">
               -{discount}%
             </span>
           )}
@@ -80,13 +81,20 @@ export function HomeProductCard({ product, variant }: HomeProductCardProps) {
         <div className="absolute inset-0 z-20 bg-gradient-to-t from-black/70 via-black/5 to-transparent" />
 
         <div className="absolute bottom-0 left-0 right-0 z-30 p-3 md:p-5 space-y-1 md:space-y-1.5">
-          <h3 className="text-[11px] md:text-sm font-bold text-white line-clamp-1 md:line-clamp-2 leading-tight drop-shadow-sm">
+          <h3 className="text-[11px] md:text-sm font-semibold text-white line-clamp-1 md:line-clamp-2 leading-tight drop-shadow-sm">
             {product.name}
           </h3>
           <div className="flex items-center justify-between gap-1">
-            <span className="text-[13px] md:text-xl font-black text-white drop-shadow-sm tabular-nums">
-              {formatCurrency(price)}
-            </span>
+            <div className="flex flex-col">
+              <span className="text-base md:text-2xl font-bold text-white drop-shadow-sm tabular-nums">
+                {formatCurrency(price)}
+              </span>
+              {originalPrice && originalPrice > price && (
+                <span className="text-[10px] md:text-sm text-white/60 line-through font-semibold">
+                  {formatCurrency(originalPrice)}
+                </span>
+              )}
+            </div>
             <button
               onClick={handleAddToCart}
               className="rounded-full h-7 w-7 md:h-9 md:w-9 shadow-xl bg-white text-[#1565C0] hover:bg-[#1565C0] hover:text-white transition-all border-none flex items-center justify-center shrink-0"
@@ -113,11 +121,11 @@ export function HomeProductCard({ product, variant }: HomeProductCardProps) {
             className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-[1.03] mix-blend-multiply"
           />
           <div className="absolute top-1.5 right-1.5 md:top-2 md:right-2 flex flex-col gap-1">
-            <div className="bg-[#1565C0]/10 text-[#1565C0] text-[8px] md:text-[9px] font-bold px-2 py-0.5 md:px-2.5 md:py-1 rounded-full flex items-center gap-1 shadow-sm border border-[#1565C0]/20 tracking-wide">
+            <div className="bg-[#1565C0]/10 text-[#1565C0] text-[8px] md:text-[9px] font-semibold px-2 py-0.5 md:px-2.5 md:py-1 rounded-full flex items-center gap-1 shadow-sm border border-[#1565C0]/20 tracking-wide">
               <TrendingUp className="h-2.5 w-2.5" /> Bán chạy
             </div>
             {discount && (
-              <div className="bg-[#e85d24] text-white text-[8px] md:text-[9px] font-black px-2 py-0.5 md:px-2.5 md:py-1 rounded-full text-center shadow-sm uppercase tracking-widest">
+              <div className="bg-[#e85d24] text-white text-[8px] md:text-[9px] font-bold px-2 py-0.5 md:px-2.5 md:py-1 rounded-full text-center shadow-sm tracking-widest">
                 -{discount}%
               </div>
             )}
@@ -130,12 +138,23 @@ export function HomeProductCard({ product, variant }: HomeProductCardProps) {
           </h3>
           <div className="flex items-center justify-between gap-2">
             <div className="flex flex-col">
-              <span className="text-[13px] md:text-lg font-black text-[#1a1a1a] tabular-nums leading-tight">
+              <span className="text-[15px] md:text-xl font-bold text-[#1565C0] tabular-nums leading-tight">
                 {formatCurrency(price)}
               </span>
-              <span className="text-[8px] md:text-[9px] font-black text-[#999] uppercase tracking-[0.1em] mt-0.5">
-                Đã bán {(product as any).soldCount || 0}
-              </span>
+              {originalPrice && originalPrice > price && (
+                <span className="text-[9px] md:text-[11px] text-slate-500 line-through font-semibold">
+                  {formatCurrency(originalPrice)}
+                </span>
+              )}
+              <div className="flex items-center gap-2 mt-1">
+                <span className="text-[8px] md:text-[9px] font-medium text-slate-400">
+                  Đã bán {(product as any).soldCount || 0}
+                </span>
+                <span className="text-slate-200">|</span>
+                <span className="text-[8px] md:text-[9px] font-medium text-slate-400 flex items-center gap-0.5">
+                  {(product as any).viewCount || 0} lượt xem
+                </span>
+              </div>
             </div>
             <button
               onClick={handleAddToCart}
@@ -177,11 +196,18 @@ export function HomeProductCard({ product, variant }: HomeProductCardProps) {
             {product.name}
           </h3>
           <div className="flex items-center justify-between pt-1">
-            <span className="text-[13px] md:text-base font-black text-[#1a1a1a] tabular-nums">
-              {formatCurrency(price)}
-            </span>
-            <div className="hidden xs:block text-[7px] md:text-[8px] font-black text-[#1565C0] bg-[#1565C0]/10 px-1.5 py-0.5 rounded-md uppercase tracking-[0.1em]">
-              Top Rated
+            <div className="flex flex-col">
+              <span className="text-[15px] md:text-lg font-bold text-[#1565C0] tabular-nums">
+                {formatCurrency(price)}
+              </span>
+              {originalPrice && originalPrice > price && (
+                <span className="text-[9px] md:text-[10px] text-slate-500 line-through font-semibold">
+                  {formatCurrency(originalPrice)}
+                </span>
+              )}
+            </div>
+            <div className="hidden xs:block text-[8px] md:text-[9px] font-semibold text-[#1565C0] bg-[#1565C0]/5 px-2 py-0.5 rounded-full tracking-wide">
+              Top đánh giá
             </div>
           </div>
         </div>

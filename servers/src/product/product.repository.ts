@@ -7,19 +7,27 @@ export class ProductRepository {
   constructor(private prisma: PrismaService) {}
 
   async create(data: Prisma.ProductCreateInput) {
-    return this.prisma.product.create({ data, include: { category: true, brand: true, variants: true, images: true } });
+    return this.prisma.product.create({ 
+      data, 
+      include: { 
+        category: { select: { id: true, name: true, slug: true } }, 
+        brand: { select: { id: true, name: true } }, 
+        variants: { include: { images: true } }, 
+        images: true 
+      } 
+    });
   }
 
   async findAll(where: Prisma.ProductWhereInput, skip: number, take: number, orderBy?: any) {
     return this.prisma.product.findMany({
       where, skip, take, orderBy,
       select: {
-        id: true, name: true, slug: true, basePrice: true, soldCount: true, viewCount: true,
+        id: true, name: true, slug: true, basePrice: true, originalPrice: true, soldCount: true, viewCount: true,
         averageRating: true, reviewCount: true, isActive: true, createdAt: true,
         category: { select: { id: true, name: true, slug: true } },
         brand: { select: { id: true, name: true } },
         images: { orderBy: [{ isThumbnail: 'desc' }, { displayOrder: 'asc' }], take: 1, select: { id: true, url: true, altText: true, isThumbnail: true } },
-        variants: { select: { id: true, price: true, stock: true, size: true, color: true, isActive: true } }
+        variants: { select: { id: true, price: true, originalPrice: true, stock: true, size: true, color: true, isActive: true } }
       }
     });
   }
@@ -33,7 +41,7 @@ export class ProductRepository {
       : { 
           where: { isActive: true }, 
           select: { 
-            id: true, size: true, color: true, stock: true, price: true, sku: true, isActive: true, 
+            id: true, size: true, color: true, stock: true, price: true, originalPrice: true, sku: true, isActive: true, 
             images: { select: { id: true, url: true, isPrimary: true }, orderBy: { displayOrder: 'asc' } } 
           } 
         };
@@ -41,7 +49,7 @@ export class ProductRepository {
     return this.prisma.product.findFirst({
       where: isNum ? { id: Number(idOrSlug) } : { slug: idOrSlug as string },
       select: {
-        id: true, name: true, slug: true, description: true, basePrice: true, categoryId: true, brandId: true,
+        id: true, name: true, slug: true, description: true, basePrice: true, originalPrice: true, categoryId: true, brandId: true,
         soldCount: true, averageRating: true, reviewCount: true, viewCount: true, isActive: true,
         metaTitle: true, metaDesc: true, createdAt: true, updatedAt: true,
         category: { select: { id: true, name: true } }, brand: { select: { id: true, name: true, logo: true } },
@@ -56,7 +64,16 @@ export class ProductRepository {
   }
 
   async update(id: number, data: Prisma.ProductUpdateInput) {
-    return this.prisma.product.update({ where: { id }, data, include: { category: true, brand: true, variants: true, images: true } });
+    return this.prisma.product.update({ 
+      where: { id }, 
+      data, 
+      include: { 
+        category: { select: { id: true, name: true, slug: true } }, 
+        brand: { select: { id: true, name: true } }, 
+        variants: { include: { images: true } }, 
+        images: true 
+      } 
+    });
   }
 
   async delete(id: number) { return this.prisma.product.delete({ where: { id } }); }

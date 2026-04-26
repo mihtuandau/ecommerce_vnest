@@ -107,6 +107,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const user = client.data.user;
     if (!user) return;
 
+    // Security Check: Only staff or room owner can mark as read
+    const isStaff = ['ADMIN', 'KHO', 'BAN_HANG'].includes(user.role?.toUpperCase());
+    const roomUserId = data.roomId.replace('room_', '');
+    if (!isStaff && String(roomUserId) !== String(user.sub)) {
+      return;
+    }
+
     await this.chatService.markAsRead(data.roomId, user.sub);
     this.server.to(data.roomId).emit('messagesRead', { roomId: data.roomId });
   }
@@ -118,6 +125,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   ) {
     const user = client.data.user;
     if (!user) return;
+
+    // Security Check: Only staff or room owner can send typing events
+    const isStaff = ['ADMIN', 'KHO', 'BAN_HANG'].includes(user.role?.toUpperCase());
+    const roomUserId = data.roomId.replace('room_', '');
+    if (!isStaff && String(roomUserId) !== String(user.sub)) {
+      return;
+    }
 
     client.to(data.roomId).emit('userTyping', {
       userName: user.name || 'Ai đó', 

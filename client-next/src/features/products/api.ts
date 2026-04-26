@@ -91,5 +91,9 @@ export const productsApi = {
     });
     return data.urls?.[0] || data[0]; 
   },
+
+  incrementView: async (id: string): Promise<void> => {
+    await api.post(`/products/${id}/view`);
+  },
 };
 

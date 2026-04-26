@@ -58,7 +58,7 @@ export function CartItem({ item, updateQuantity, removeItem, toggleSelectItem }:
                 <div className="flex flex-wrap gap-x-4 gap-y-1">
                   {(item.color || item.size) && (
                     <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Phân loại:</span>
+                      <span className="text-[10px] font-semibold text-slate-400 tracking-wide">Phân loại:</span>
                       <span className="text-[10px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded">
                         {[item.color, item.size].filter(Boolean).join(" / ")}
                       </span>
@@ -70,7 +70,29 @@ export function CartItem({ item, updateQuantity, removeItem, toggleSelectItem }:
                 </div>
               </div>
               <div className="text-right">
-                <p className="text-lg font-semibold text-slate-900 tabular-nums">{formatCurrency(item.price)}</p>
+                {item.discountedPrice && item.discountedPrice < item.price ? (
+                  <div className="flex flex-col items-end">
+                    <p className="text-lg font-bold text-[#1565C0] tabular-nums">
+                      {formatCurrency(item.discountedPrice)}
+                    </p>
+                    <p className="text-xs text-slate-500 line-through font-semibold tabular-nums">
+                      {formatCurrency(item.price)}
+                    </p>
+                  </div>
+                ) : item.originalPrice && item.originalPrice > item.price ? (
+                  <div className="flex flex-col items-end">
+                    <p className="text-lg font-bold text-[#1565C0] tabular-nums">
+                      {formatCurrency(item.price)}
+                    </p>
+                    <p className="text-xs text-slate-500 line-through font-semibold tabular-nums">
+                      {formatCurrency(item.originalPrice)}
+                    </p>
+                  </div>
+                ) : (
+                  <p className="text-lg font-bold text-[#1565C0] tabular-nums">
+                    {formatCurrency(item.price)}
+                  </p>
+                )}
               </div>
             </div>
             
@@ -98,7 +120,9 @@ export function CartItem({ item, updateQuantity, removeItem, toggleSelectItem }:
 
               <div className="flex items-center gap-6">
                 <div className="text-right">
-                  <p className="text-base font-semibold text-primary tabular-nums">{formatCurrency(item.price * item.quantity)}</p>
+                  <p className="text-base font-bold text-[#1565C0] tabular-nums">
+                    {formatCurrency((item.discountedPrice || item.price) * item.quantity)}
+                  </p>
                 </div>
                 <Button
                   variant="ghost"

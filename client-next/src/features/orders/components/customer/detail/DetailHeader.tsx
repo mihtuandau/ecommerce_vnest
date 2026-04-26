@@ -68,7 +68,7 @@ export function DetailHeader({
               Đơn hàng #{orderCode}
             </h1>
             <span
-              className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${currentStatus.color}`}
+              className={`px-3 py-1.5 rounded-full text-[11px] font-medium border h-fit leading-none flex items-center justify-center ${currentStatus.color}`}
             >
               {currentStatus.label}
             </span>

@@ -33,6 +33,8 @@ export class ProductService {
       ...rest,
       isActive: status !== 'inactive',
       slug: this.slugify(rest.name),
+      basePrice: rest.basePrice ? Number(rest.basePrice) : 0,
+      originalPrice: rest.originalPrice ? Number(rest.originalPrice) : null,
     };
 
     if (rest.categoryId) {
@@ -64,6 +66,7 @@ export class ProductService {
             color: v.color,
             sku: v.sku,
             price: Number(v.price || rest.basePrice || 0),
+            originalPrice: v.originalPrice ? Number(v.originalPrice) : null,
             stock: Number(v.stock || 0),
             isActive: true,
           };
@@ -156,9 +159,17 @@ export class ProductService {
 
   async findOne(id: any, full = false) {
     if (full) return this.repo.findByIdOrSlug(id, true);
+    
     const cached = await this.cache.get(`product:${id}`);
     if (cached) return cached;
+    
     const p = await this.repo.findByIdOrSlug(id, false);
+    
+    // Security check: If not in full (admin) mode, ensure product is active
+    if (!full && p && !p.isActive) {
+      throw new NotFoundException('Sản phẩm hiện không khả dụng');
+    }
+
     if (p) await this.cache.set(`product:${id}`, p, 1800);
     return p;
   }
@@ -169,6 +180,9 @@ export class ProductService {
     const prismaData: any = {
       ...rest,
     };
+
+    if (rest.basePrice !== undefined) prismaData.basePrice = Number(rest.basePrice);
+    if (rest.originalPrice !== undefined) prismaData.originalPrice = rest.originalPrice ? Number(rest.originalPrice) : null;
 
     if (rest.name) {
       prismaData.slug = this.slugify(rest.name);
@@ -237,6 +251,7 @@ export class ProductService {
             color: v.color,
             sku: v.sku,
             price: Number(v.price || rest.basePrice || 0),
+            originalPrice: v.originalPrice ? Number(v.originalPrice) : null,
             stock: Number(v.stock || 0),
             isActive: true,
           };
@@ -269,6 +284,7 @@ export class ProductService {
             color: v.color,
             sku: v.sku,
             price: Number(v.price || rest.basePrice || 0),
+            originalPrice: v.originalPrice ? Number(v.originalPrice) : null,
             stock: Number(v.stock || 0),
             isActive: true,
           };

@@ -1,4 +1,4 @@
-﻿import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -23,10 +23,8 @@ export class ChatbotService {
 
     try {
       this.genAI = new GoogleGenerativeAI(apiKey);
-
-      this.model = this.genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+      this.model = this.genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
       this.aiAvailable = true;
-
     } catch (error) {
       this.logger.error(' Failed to initialize Gemini:', error.message);
       this.aiAvailable = false;
@@ -34,16 +32,21 @@ export class ChatbotService {
   }
 
   async chat(message: string): Promise<string> {
-
     if (!this.aiAvailable || !this.model) {
       return 'Xin lỗi, hệ thống AI chưa sẵn sàng. Vui lòng thử lại sau.';
     }
 
     try {
+      // Bảo vệ chống Prompt Injection cơ bản
+      const sanitizedMessage = message
+        .replace(/ignore previous instructions/gi, "[blocked]")
+        .replace(/forget everything/gi, "[blocked]")
+        .replace(/bỏ qua mọi hướng dẫn/gi, "[blocked]")
+        .substring(0, 1000);
 
-      const prompt = `Bạn là trợ lý AI thân thiện của một cửa hàng thời trang trực tuyến. Hãy trả lời câu hỏi của khách hàng một cách ngắn gọn, hữu ích và chuyên nghiệp bằng tiếng Việt.
+      const prompt = `Bạn là trợ lý AI thân thiện của một cửa hàng thời trang trực tuyến Vnest. Hãy trả lời câu hỏi của khách hàng một cách ngắn gọn, hữu ích và chuyên nghiệp bằng tiếng Việt.
 
-Câu hỏi của khách hàng: ${message}
+Câu hỏi của khách hàng: ${sanitizedMessage}
 
 Hãy trả lời:`;
 
@@ -62,8 +65,6 @@ Hãy trả lời:`;
     }
   }
 
-   
-
   getAIStatus(): { available: boolean; provider: string } {
     return {
       available: this.aiAvailable,
@@ -71,9 +72,3 @@ Hãy trả lời:`;
     };
   }
 }
-
-
-
-
-
-

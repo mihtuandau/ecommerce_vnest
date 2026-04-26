@@ -127,7 +127,7 @@ export function WishlistView() {
                           {formatCurrency(item.price)}
                         </span>
                         {item.originalPrice && item.originalPrice > item.price && (
-                          <span className="text-xs text-slate-400 line-through decoration-slate-300">
+                          <span className="text-xs text-slate-500 line-through font-semibold">
                             {formatCurrency(item.originalPrice)}
                           </span>
                         )}

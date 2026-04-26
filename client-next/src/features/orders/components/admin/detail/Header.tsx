@@ -41,7 +41,7 @@ export function Header({ order, onUpdateStatus, id }: HeaderProps) {
           <div className="flex items-center gap-3">
             <h1 className="text-xl font-bold text-slate-900">Chi tiết đơn hàng #{order.orderCode}</h1>
             <Badge variant="outline" className={cn(
-              "rounded-md px-2 py-0.5 text-[10px] font-bold uppercase border-none",
+              "rounded-full px-3 py-1.5 text-[11px] font-medium border-none h-fit leading-none flex items-center justify-center",
               (order.paymentStatus === "PAID" || orderAny.payment?.status === PaymentStatus.SUCCESS) 
                 ? "bg-emerald-50 text-emerald-600" 
                 : "bg-amber-50 text-amber-600"
@@ -49,7 +49,7 @@ export function Header({ order, onUpdateStatus, id }: HeaderProps) {
               {(order.paymentStatus === "PAID" || orderAny.payment?.status === PaymentStatus.SUCCESS) ? "Đã thanh toán" : "Chờ thanh toán"}
             </Badge>
             {isCancelled && (
-              <Badge variant="outline" className="rounded-md px-2 py-0.5 text-[10px] font-bold uppercase bg-rose-50 text-rose-600 border-none">
+              <Badge variant="outline" className="rounded-full px-3 py-1.5 text-[11px] font-medium bg-rose-50 text-rose-600 border-none h-fit leading-none flex items-center justify-center">
                 Đã hủy
               </Badge>
             )}

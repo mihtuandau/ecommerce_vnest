@@ -36,8 +36,17 @@ import { BrandModule } from './brand/brand.module';
     ConfigModule.forRoot({ isGlobal: true }),  
     ScheduleModule.forRoot(),
     ThrottlerModule.forRoot([{
-      ttl: 60000, 
-      limit: 1000, 
+      name: 'short',
+      ttl: 1000,
+      limit: 10, // 10 req / sec
+    }, {
+      name: 'medium',
+      ttl: 60000,
+      limit: 60, // 60 req / min
+    }, {
+      name: 'long',
+      ttl: 3600000,
+      limit: 1000, // 1000 req / hour
     }]),
     AuthModule,  
     UserModule,  

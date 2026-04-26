@@ -6,6 +6,8 @@ export interface CartItem {
   variantId: string;
   name: string;
   price: number;
+  discountedPrice?: number;
+  originalPrice?: number;
   quantity: number;
   imageUrl: string;
   slug: string;
@@ -67,7 +69,23 @@ export const useCartStore = create<CartStore>()(
 
       clearCart: () => set({ items: [] }),
       
-      setItems: (items) => set({ items: items.map(item => ({ ...item, selected: item.selected ?? true })) }),
+      setItems: (newItems) =>
+        set((state) => {
+          const mergedItems = newItems.map((ni) => {
+            const existing = state.items.find((i) => i.variantId === ni.variantId);
+            return {
+              ...ni,
+              selected: existing ? existing.selected : (ni.selected ?? true),
+            };
+          });
+          
+          // Remove potential duplicates by variantId
+          const uniqueItems = Array.from(
+            new Map(mergedItems.map(item => [item.variantId, item])).values()
+          );
+          
+          return { items: uniqueItems };
+        }),
 
       setBuyNowItem: (item) => set({ buyNowItem: item }),
       
@@ -85,12 +103,12 @@ export const useCartStore = create<CartStore>()(
           items: state.items.map((item) => ({ ...item, selected })),
         })),
       
-      totalPrice: () => get().items.reduce((sum, i) => sum + i.price * i.quantity, 0),
+      totalPrice: () => get().items.reduce((sum, i) => sum + (i.discountedPrice || i.price) * i.quantity, 0),
 
       selectedTotalPrice: () =>
         get().items
           .filter((i) => i.selected)
-          .reduce((sum, i) => sum + i.price * i.quantity, 0),
+          .reduce((sum, i) => sum + (i.discountedPrice || i.price) * i.quantity, 0),
 
       selectedCount: () => get().items.filter((i) => i.selected).length,
     }),
