@@ -1,4 +1,4 @@
-﻿import { Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Review, Prisma } from '@prisma/client';
 
@@ -181,6 +181,7 @@ export class ReviewRepository {
           select: {
             id: true,
             name: true,
+            images: true,
           },
         },
       },

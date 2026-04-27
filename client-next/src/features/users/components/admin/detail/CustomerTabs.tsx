@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs";
 import { ShoppingBag, MapPin, Star, UserCog } from "lucide-react";
 import { CustomerOrders } from "./CustomerOrders";
 import { CustomerAddresses } from "./CustomerAddresses";
+import { CustomerReviews } from "./CustomerReviews";
 import { UserForm } from "../UserForm";
 import { User } from "@/types/models";
 
@@ -66,9 +67,7 @@ export function CustomerTabs({ user, activeTab, onTabChange, onUpdate, isUpdatin
           </TabsContent>
 
           <TabsContent value="reviews" className="mt-0 focus-visible:outline-none">
-            <div className="p-12 text-center border-2 border-dashed border-slate-100 rounded-xl">
-              <p className="text-slate-400 font-bold text-sm">Chưa có đánh giá nào từ khách hàng này.</p>
-            </div>
+            <CustomerReviews userId={user.id} />
           </TabsContent>
 
           <TabsContent value="settings" className="mt-0 focus-visible:outline-none">

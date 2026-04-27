@@ -72,6 +72,7 @@ export function ShippingForm({
               placeholder="Nguyễn Văn A" 
               value={form.fullName}
               onChange={(e) => setForm({...form, fullName: e.target.value})}
+              autoComplete="off"
               className="rounded-xl h-11 border-slate-200 focus:ring-primary/10 transition-all text-sm"
             />
           </div>
@@ -84,6 +85,7 @@ export function ShippingForm({
               placeholder="09xx xxx xxx" 
               value={form.phone}
               onChange={(e) => setForm({...form, phone: e.target.value})}
+              autoComplete="off"
               className="rounded-xl h-11 border-slate-200 focus:ring-primary/10 transition-all text-sm"
             />
           </div>
@@ -97,6 +99,7 @@ export function ShippingForm({
               placeholder="example@gmail.com" 
               value={form.email}
               onChange={(e) => setForm({...form, email: e.target.value})}
+              autoComplete="off"
               className="rounded-xl h-11 border-slate-200 focus:ring-primary/10 transition-all text-sm"
             />
           </div>
@@ -165,6 +168,7 @@ export function ShippingForm({
             placeholder="Số nhà, tên đường..." 
             value={form.street}
             onChange={(e) => setForm({...form, street: e.target.value})}
+            autoComplete="off"
             className="rounded-xl h-11 border-slate-200 focus:ring-primary/10 transition-all text-sm"
           />
         </div>

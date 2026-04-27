@@ -313,4 +313,14 @@ export class DiscountRepository {
       ],
     });
   }
+
+  async hasUserUsedDiscount(userId: number, discountId: number): Promise<boolean> {
+    const count = await this.prisma.discountUsage.count({
+      where: {
+        userId,
+        discountId,
+      },
+    });
+    return count > 0;
+  }
 }

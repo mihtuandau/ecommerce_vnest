@@ -68,7 +68,7 @@ export function ProductSection({
 
       <div className={cn(
         "grid gap-4 md:gap-8",
-        variant === "toprated" ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" : "grid-cols-2 lg:grid-cols-4"
+        variant === "toprated" ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" : "grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
       )}>
         {products.slice(0, variant === "toprated" ? 6 : 4).map((product) => (
           <HomeProductCard key={product.id} product={product} variant={variant} />

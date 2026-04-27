@@ -10,6 +10,8 @@ import Link from "next/link";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs";
 import { OrderStatus, PaymentStatus } from "@/types/enums";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { ReviewModal } from "@/features/reviews/components/customer/ReviewModal";
+import { MessageSquare } from "lucide-react";
 
 const formatDate = (dateString: string) => {
   return new Date(dateString).toLocaleString("vi-VN", {
@@ -28,6 +30,8 @@ const statusLabelMap: Record<string, string> = {
   [OrderStatus.SHIPPED]: "Đang giao",
   [OrderStatus.DELIVERED]: "Đã giao",
   [OrderStatus.CANCELLED]: "Đã hủy",
+  [OrderStatus.RETURN_REQUESTED]: "Trả hàng",
+  [OrderStatus.RETURNED]: "Đã trả",
 };
 
 const statusConfig: Record<string, { label: string; color: string }> = {
@@ -51,12 +55,24 @@ const statusConfig: Record<string, { label: string; color: string }> = {
     label: "Đã hủy",
     color: "bg-rose-50 text-rose-600 border-rose-100",
   },
+  [OrderStatus.RETURN_REQUESTED]: {
+    label: "Yêu cầu trả hàng",
+    color: "bg-amber-50 text-amber-600 border-amber-100",
+  },
+  [OrderStatus.RETURNED]: {
+    label: "Đã trả hàng",
+    color: "bg-purple-50 text-purple-600 border-purple-100",
+  },
 };
 
 export function OrderHistoryView() {
   const [status, setStatus] = useState("ALL");
   const { data, isLoading } = useMyOrders();
   const { mutate: cancelOrder } = useCancelOrder();
+  const [selectedReviewItem, setSelectedReviewItem] = useState<any>(null);
+  const [selectedOrderId, setSelectedOrderId] = useState<number>(0);
+  const [selectedOrderCode, setSelectedOrderCode] = useState<string>("");
+  
   const orders = data || [];
 
   const getCount = (s: string) => {
@@ -68,7 +84,8 @@ export function OrderHistoryView() {
     status === "ALL" ? orders : orders.filter((o) => o.status === status);
 
   return (
-    <div className="min-h-screen bg-slate-50/30">
+    <>
+      <div className="min-h-screen bg-slate-50/30">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-16">
         <div className="flex items-center gap-4 border-b border-slate-100 pb-8">
           <Link
@@ -89,37 +106,43 @@ export function OrderHistoryView() {
 
         <div className="space-y-10">
           <Tabs value={status} onValueChange={setStatus} className="w-full">
-            <TabsList className="flex w-full overflow-x-auto no-scrollbar h-auto p-1 bg-white rounded-2xl border border-slate-100 shadow-sm gap-1">
-              {[
-                "ALL",
-                OrderStatus.PENDING,
-                OrderStatus.PROCESSING,
-                OrderStatus.SHIPPED,
-                OrderStatus.DELIVERED,
-                OrderStatus.CANCELLED,
-              ].map((s) => (
-                <TabsTrigger
-                  key={s}
-                  value={s}
-                  className="flex-1 min-w-[100px] py-3 rounded-xl text-[12px] font-semibold transition-all data-[state=active]:bg-primary data-[state=active]:text-white"
-                >
-                  <div className="flex items-center gap-2">
-                    <span>{statusLabelMap[s]}</span>
-                    {getCount(s) > 0 && (
-                      <span
-                        className={`flex items-center justify-center min-w-[18px] h-4.5 px-1 rounded-full text-[9px] ${
-                          status === s
-                            ? "bg-white/20 text-white"
-                            : "bg-slate-50 text-slate-400"
-                        }`}
-                      >
-                        {getCount(s)}
-                      </span>
-                    )}
-                  </div>
-                </TabsTrigger>
-              ))}
-            </TabsList>
+            <div className="relative">
+              <TabsList className="flex w-full overflow-x-auto justify-start h-auto p-1 bg-white rounded-2xl border border-slate-100 shadow-sm gap-1 no-scrollbar select-none">
+                {[
+                  "ALL",
+                  OrderStatus.PENDING,
+                  OrderStatus.PROCESSING,
+                  OrderStatus.SHIPPED,
+                  OrderStatus.DELIVERED,
+                  OrderStatus.CANCELLED,
+                  OrderStatus.RETURN_REQUESTED,
+                  OrderStatus.RETURNED,
+                ].map((s) => (
+                  <TabsTrigger
+                    key={s}
+                    value={s}
+                    className="flex-shrink-0 min-w-fit px-5 py-3 rounded-xl text-[12px] font-semibold transition-all data-[state=active]:bg-primary data-[state=active]:text-white whitespace-nowrap"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span>{statusLabelMap[s]}</span>
+                      {getCount(s) > 0 && (
+                        <span
+                          className={`flex items-center justify-center min-w-[18px] h-4.5 px-1.5 rounded-full text-[9px] ${
+                            status === s
+                              ? "bg-white/20 text-white"
+                              : "bg-slate-50 text-slate-400"
+                          }`}
+                        >
+                          {getCount(s)}
+                        </span>
+                      )}
+                    </div>
+                  </TabsTrigger>
+                ))}
+                {/* Spacer to ensure the last item is not cut off */}
+                <div className="flex-shrink-0 w-4 lg:hidden" />
+              </TabsList>
+            </div>
           </Tabs>
 
           <div className="grid gap-6">
@@ -196,10 +219,10 @@ export function OrderHistoryView() {
                     className="group border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 rounded-2xl overflow-hidden bg-white"
                   >
                     <CardContent className="p-0">
-                      <div className="flex items-center justify-between px-6 py-4 bg-slate-50/30 border-b border-slate-100">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between px-4 sm:px-6 py-4 bg-slate-50/30 border-b border-slate-100 gap-3">
                         <div className="flex items-center gap-5 text-[12px]">
                           <div className="flex items-center gap-2">
-                            <span className="text-slate-400 font-medium uppercase tracking-widest text-[9px]">
+                            <span className="text-slate-400 font-medium tracking-widest text-[9px]">
                               Mã đơn
                             </span>
                             <span className="font-semibold text-slate-700">
@@ -208,7 +231,7 @@ export function OrderHistoryView() {
                           </div>
                           <span className="text-slate-200">|</span>
                           <div className="flex items-center gap-2">
-                            <span className="text-slate-400 font-medium uppercase tracking-widest text-[9px]">
+                            <span className="text-slate-400 font-medium tracking-widest text-[9px]">
                               Ngày đặt
                             </span>
                             <span className="text-slate-600 font-medium">
@@ -224,20 +247,27 @@ export function OrderHistoryView() {
                         </div>
                       </div>
 
-                      <div className="p-8">
-                        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-10">
-                          <div className="flex flex-1 gap-8 items-center">
+                      <div className="p-4 sm:p-8">
+                        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 sm:gap-10">
+                          <div className="flex flex-1 gap-4 sm:gap-8 items-center">
                             <div className="h-20 w-20 rounded-2xl border border-slate-100 overflow-hidden shrink-0 bg-slate-50/50 p-2 group-hover:border-primary/20 transition-colors">
-                              <img
-                                src={
-                                  order.orderItems[0]?.variant?.product?.images[0]
-                                    ?.url ||
-                                  order.orderItems[0]?.variant?.images[0]?.url ||
-                                  "/placeholder.png"
-                                }
-                                alt="Product"
-                                className="h-full w-full object-contain mix-blend-multiply"
-                              />
+                              {(() => {
+                                const normalize = (path: string) => {
+                                  if (!path) return "";
+                                  if (path.startsWith('http')) return path;
+                                  return `/${path.replace(/\\/g, '/').replace(/^\//, '')}`;
+                                };
+                                const imgSrc = (order.orderItems[0]?.variantSnapshot as any)?.image ||
+                                              order.orderItems[0]?.variant?.images?.[0]?.url ||
+                                              order.orderItems[0]?.variant?.product?.images?.[0]?.url;
+                                return (
+                                  <img
+                                    src={imgSrc ? normalize(imgSrc) : "/placeholder.png"}
+                                    alt="Product"
+                                    className="h-full w-full object-contain mix-blend-multiply"
+                                  />
+                                );
+                              })()}
                             </div>
                             <div className="flex-1 min-w-0 space-y-3">
                               <div>
@@ -260,7 +290,7 @@ export function OrderHistoryView() {
 
                               <div className="flex flex-wrap items-center gap-6 pt-1">
                                 <div className="space-y-1">
-                                  <p className="text-[9px] uppercase tracking-widest text-slate-400 font-medium">
+                                  <p className="text-[9px] tracking-widest text-slate-400 font-medium">
                                     Khách hàng
                                   </p>
                                   <p className="text-[13px] font-semibold text-slate-700">
@@ -271,7 +301,7 @@ export function OrderHistoryView() {
                                   </p>
                                 </div>
                                 <div className="space-y-1">
-                                  <p className="text-[9px] uppercase tracking-widest text-slate-400 font-medium">
+                                  <p className="text-[9px] tracking-widest text-slate-400 font-medium">
                                     Số lượng
                                   </p>
                                   <p className="text-[13px] font-semibold text-slate-700">
@@ -279,7 +309,7 @@ export function OrderHistoryView() {
                                   </p>
                                 </div>
                                 <div className="space-y-1">
-                                  <p className="text-[9px] uppercase tracking-widest text-slate-400 font-medium">
+                                  <p className="text-[9px] tracking-widest text-slate-400 font-medium">
                                     Thanh toán
                                   </p>
                                   <div className="flex items-center gap-2">
@@ -290,10 +320,20 @@ export function OrderHistoryView() {
                                       className={`px-2 py-0.5 rounded-md text-[9px] font-semibold border ${
                                         isPaid
                                           ? "bg-emerald-50 text-emerald-600 border-emerald-100"
-                                          : "bg-amber-50 text-amber-600 border-amber-100"
+                                          : (order.payment?.status === "REFUNDED" || order.paymentStatus === "REFUNDED")
+                                            ? "bg-purple-50 text-purple-600 border-purple-200"
+                                            : (order.payment?.status === "CANCELLED" || order.paymentStatus === "CANCELLED")
+                                              ? "bg-rose-50 text-rose-600 border-rose-100"
+                                              : "bg-amber-50 text-amber-600 border-amber-100"
                                       }`}
                                     >
-                                      {isPaid ? "ĐÃ THANH TOÁN" : "CHỜ THANH TOÁN"}
+                                      {isPaid 
+                                        ? "Đã thanh toán" 
+                                        : (order.payment?.status === "REFUNDED" || order.paymentStatus === "REFUNDED")
+                                          ? "Đã hoàn tiền"
+                                          : (order.payment?.status === "CANCELLED" || order.paymentStatus === "CANCELLED")
+                                            ? "Đã hủy thanh toán"
+                                            : "Chờ thanh toán"}
                                     </div>
                                   </div>
                                 </div>
@@ -301,9 +341,9 @@ export function OrderHistoryView() {
                             </div>
                           </div>
 
-                          <div className="flex flex-row lg:flex-col items-center lg:items-end justify-between lg:justify-start gap-6 lg:min-w-[240px] pt-6 lg:pt-0 border-t lg:border-t-0 border-slate-50">
-                            <div className="text-left lg:text-right space-y-1">
-                              <p className="text-[9px] uppercase tracking-widest text-slate-400 font-medium">
+                          <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pt-6 border-t border-slate-50">
+                            <div className="flex-1 space-y-1">
+                              <p className="text-[9px] tracking-widest text-slate-400 font-medium">
                                 Tổng cộng
                               </p>
                               <p className="text-2xl font-semibold text-primary tabular-nums tracking-tighter leading-none">
@@ -311,41 +351,85 @@ export function OrderHistoryView() {
                               </p>
                             </div>
 
-                            <div className="flex gap-3 w-full sm:w-auto">
-                              {order.status === OrderStatus.PENDING && (
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="h-11 px-6 rounded-2xl text-rose-500 hover:bg-rose-50 text-[13px] font-semibold"
-                                  onClick={() => {
-                                    if (
-                                      confirm("Bạn có chắc chắn muốn hủy đơn hàng này?")
-                                    ) {
-                                      cancelOrder(order.id);
-                                    }
-                                  }}
-                                >
-                                  Hủy đơn
-                                </Button>
-                              )}
+                            <div className="flex items-center justify-end gap-3 w-full sm:w-auto sm:min-w-[300px]">
+                              <div className="flex items-center gap-3">
+                                {order.status === OrderStatus.PENDING && (
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="h-10 md:h-11 px-6 rounded-xl border-rose-200 text-rose-500 hover:bg-rose-50 hover:border-rose-300 text-[13px] font-semibold transition-all whitespace-nowrap"
+                                    onClick={() => {
+                                      if (
+                                        confirm("Bạn có chắc chắn muốn hủy đơn hàng này?")
+                                      ) {
+                                        cancelOrder(order.id);
+                                      }
+                                    }}
+                                  >
+                                    Hủy đơn
+                                  </Button>
+                                )}
+                                {(() => {
+                                  if (order.status !== OrderStatus.DELIVERED) return null;
+                                  
+                                  const unreviewedItem = order.orderItems?.find(
+                                    (item: any) => !order.reviews?.some((r: any) => r.productId === item.variant?.productId)
+                                  );
+
+                                  if (!unreviewedItem) return null;
+
+                                  return (
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      className="h-10 md:h-11 px-6 rounded-xl text-amber-600 border-amber-200 hover:bg-amber-50 text-[13px] font-medium transition-all whitespace-nowrap"
+                                      onClick={() => {
+                                        setSelectedReviewItem(unreviewedItem);
+                                        setSelectedOrderId(order.id);
+                                        setSelectedOrderCode(order.orderCode || "");
+                                      }}
+                                    >
+                                      <MessageSquare className="h-4 w-4 mr-2 text-amber-500" />
+                                      Đánh giá
+                                    </Button>
+                                  );
+                                })()}
+                              </div>
                               <Button
-                                className="h-11 px-10 rounded-2xl bg-primary hover:bg-[#0d47a1] text-white text-[13px] font-semibold shadow-lg shadow-blue-500/10 transition-all active:scale-95"
+                                className="h-10 md:h-11 w-32 md:w-40 rounded-xl bg-primary hover:bg-[#0d47a1] text-white text-[13px] font-semibold shadow-lg shadow-blue-500/10 transition-all active:scale-95 shrink-0"
                                 asChild
                               >
                                 <Link href={`/orders/${order.id}`}>Chi tiết</Link>
                               </Button>
                             </div>
                           </div>
+                          </div>
                         </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })
-            )}
+                      </CardContent>
+                    </Card>
+                  );
+                })
+              )}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+
+      <ReviewModal 
+        isOpen={!!selectedReviewItem}
+        onClose={() => setSelectedReviewItem(null)}
+        productId={selectedReviewItem?.variant?.productId || selectedReviewItem?.productId}
+        orderId={selectedOrderId}
+        orderCode={selectedOrderCode}
+        productName={selectedReviewItem?.productName || selectedReviewItem?.variant?.product?.name}
+        variantName={[selectedReviewItem?.variant?.color, selectedReviewItem?.variant?.size].filter(Boolean).join(", ")}
+        productImage={(() => {
+          const path = (selectedReviewItem?.variantSnapshot as any)?.image || selectedReviewItem?.variant?.product?.images?.[0]?.url || selectedReviewItem?.variant?.images?.[0]?.url;
+          if (!path) return "/placeholder.png";
+          if (path.startsWith('http')) return path;
+          return `/${path.replace(/\\/g, '/').replace(/^\//, '')}`;
+        })()}
+      />
+    </>
   );
 }

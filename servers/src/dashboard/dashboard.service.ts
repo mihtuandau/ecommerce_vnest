@@ -32,6 +32,8 @@ export class DashboardService {
       todayOrders,
       yesterdayOrders,
       lowStockCount,
+      returnRequestedOrders,
+      returnedOrders,
     ] = await Promise.all([
       this.repository.getTotalUsers(),
       this.repository.getTotalProducts(),
@@ -51,6 +53,8 @@ export class DashboardService {
       this.repository.getOrderCountByDate(dayjs().tz('Asia/Ho_Chi_Minh').toDate()),
       this.repository.getOrderCountByDate(dayjs().tz('Asia/Ho_Chi_Minh').subtract(1, 'day').toDate()),
       this.repository.getLowStockCount(10),
+      this.repository.getOrderCountByStatus('RETURN_REQUESTED'),
+      this.repository.getOrderCountByStatus('RETURNED'),
     ]);
 
     const calculateChange = (current: number, previous: number) => {
@@ -80,6 +84,8 @@ export class DashboardService {
         shipped: shippedOrders,
         delivered: deliveredOrders,
         cancelled: cancelledOrders,
+        returned: returnedOrders,
+        returning: returnRequestedOrders,
         today: todayOrders,
         change: calculateChange(todayOrders, yesterdayOrders),
       },
@@ -254,15 +260,24 @@ export class DashboardService {
     orderItems.forEach((item) => {
       const product = item.variant.product;
       const productId = product.id;
+      const order = item.order as any;
+      const returnStatus = order.returnRequest?.status;
+      // Trừ doanh số nếu đơn hàng đã RETURNED hoặc yêu cầu trả hàng đã RECEIVED/COMPLETED
+      const isReturned = order.status === 'RETURNED' || 
+                         returnStatus === 'RECEIVED' || 
+                         returnStatus === 'COMPLETED';
       
+      const quantityEffect = isReturned ? -item.quantity : item.quantity;
       const itemRevenue = Number(item.price) * item.quantity;
+      const revenueEffect = isReturned ? -itemRevenue : itemRevenue;
 
       const existing = productMap.get(productId);
 
       if (existing) {
-        existing.totalQuantity += item.quantity;
-        existing.totalRevenue += itemRevenue;
-        existing.orderCount += 1;
+        existing.totalQuantity += quantityEffect;
+        existing.totalRevenue += revenueEffect;
+        // Only count as an order if not returned, or we could say we subtract 1 order
+        existing.orderCount += isReturned ? -1 : 1;
       } else {
         const thumbnail =
           (product as any).images?.find((img: any) => img.isThumbnail)?.url ||
@@ -271,14 +286,15 @@ export class DashboardService {
         productMap.set(productId, {
           productName: product.name,
           image: thumbnail,
-          totalQuantity: item.quantity,
-          totalRevenue: itemRevenue,
-          orderCount: 1,
+          totalQuantity: quantityEffect,
+          totalRevenue: revenueEffect,
+          orderCount: isReturned ? 0 : 1, // Start with 0 if first encountered is a return (rare but possible in query range)
         });
       }
     });
 
     const topProducts = Array.from(productMap.values())
+      .filter(p => p.totalQuantity > 0) // Only show products with positive net sales
       .sort((a, b) => b.totalQuantity - a.totalQuantity)
       .slice(0, limit);
 

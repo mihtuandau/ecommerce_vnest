@@ -37,7 +37,7 @@ export default function ForgotPasswordPage() {
       <div className="text-center mb-6">
           <Link href="/" className="inline-flex justify-center mb-4">
             <div className="bg-white/80 backdrop-blur-md p-3 rounded-[1rem] shadow-sm border border-white/20">
-              <img src="/logo.png" alt="Vnest Logo" className="h-8 w-auto object-contain" />
+              <img src="/logoMT.png" alt="Minh Tuan Shop Logo" className="h-8 w-auto object-contain" />
             </div>
           </Link>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight drop-shadow-sm">Quên mật khẩu?</h1>

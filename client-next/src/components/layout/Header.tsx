@@ -30,8 +30,14 @@ const NAV_LINKS = [
   { href: "/offers",      label: "Ưu đãi",    icon: Tag },
 ];
 
+const normalizeImagePath = (path: string) => {
+  if (!path) return "";
+  if (path.startsWith('http') || path.startsWith('data:')) return path;
+  return `/${path.replace(/\\/g, '/').replace(/^\//, '')}`;
+};
+
 export function Header() {
-  const { user, clearAuth } = useAuthStore();
+  const { user, clearAuth, logout, isLoading: authLoading } = useAuthStore();
   const { items: wishlistItems } = useWishlistStore();
   const { data: categories } = useCategories();
   const pathname = usePathname();
@@ -46,6 +52,9 @@ export function Header() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isScrolled, setIsScrolled] = useState(false);
   const [mounted, setMounted] = useState(false);
+
+  // Check if we are currently handling a social login redirect
+  const isAuthSuccess = searchParams.get("auth_success") === "true";
 
   useEffect(() => {
     setMounted(true);
@@ -77,8 +86,14 @@ export function Header() {
 
   // Khoá scroll body khi mobile menu mở
   useEffect(() => {
-    document.body.style.overflow = mobileOpen ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
+    if (typeof document !== 'undefined') {
+      document.body.style.overflow = mobileOpen ? "hidden" : "";
+    }
+    return () => { 
+      if (typeof document !== 'undefined') {
+        document.body.style.overflow = ""; 
+      }
+    };
   }, [mobileOpen]);
 
   // Đóng mobile menu khi đổi route
@@ -143,33 +158,32 @@ export function Header() {
               </div>
 
               {/* RIGHT — Cart + User */}
-              <div className="flex shrink-0 items-center justify-end gap-1 min-w-[160px]">
+              <div className="flex shrink-0 items-center justify-end gap-2 sm:gap-3 ml-auto">
                 <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl text-slate-600 hover:text-primary hover:bg-primary/5 transition-all relative" asChild>
                   <Link href={ROUTES.WISHLIST}>
                     <Heart className="h-6 w-6" />
                     {mounted && wishlistItems.length > 0 && (
-                      <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-lg bg-primary text-[10px] font-medium text-white shadow-sm ring-2 ring-white">
+                      <span className="absolute -top-0.5 -right-0.5 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-primary text-[9px] font-bold text-white shadow-sm ring-2 ring-white">
                         {wishlistItems.length}
                       </span>
                     )}
                   </Link>
                 </Button>
                 <CartDropdown />
-                {!mounted ? (
+                {(!mounted || authLoading || (isAuthSuccess && !user)) ? (
                   <Skeleton className="h-10 w-10 rounded-full opacity-50" />
                 ) : user ? (
-                  // ...
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-11 w-11 rounded-full overflow-hidden">
+                      <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full overflow-hidden border border-slate-100 p-0.5">
                         {user.avatar ? (
                           <img 
-                            src={user.avatar} 
+                            src={normalizeImagePath(user.avatar)} 
                             alt={user.name || "User"} 
-                            className="h-10 w-10 rounded-full object-cover shadow-lg shadow-primary/20" 
+                            className="h-full w-full rounded-full object-cover shadow-sm" 
                           />
                         ) : (
-                          <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-base shadow-lg shadow-primary/20">
+                          <div className="h-full w-full rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-sm shadow-sm">
                             {user.name?.charAt(0).toUpperCase()}
                           </div>
                         )}
@@ -196,7 +210,7 @@ export function Header() {
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
                         className="text-destructive focus:bg-destructive/10 focus:text-destructive"
-                        onClick={() => clearAuth()}
+                        onClick={() => logout()}
                       >
                         Đăng xuất
                       </DropdownMenuItem>
@@ -204,7 +218,7 @@ export function Header() {
                   </DropdownMenu>
                 ) : (
                   <div className="flex items-center gap-2">
-                    <Button asChild variant="ghost" className="hidden sm:flex rounded-full px-4 h-9 text-xs font-semibold text-slate-500 hover:text-primary">
+                    <Button asChild variant="ghost" className="hidden sm:flex rounded-full px-4 h-9 text-xs font-semibold text-slate-600 hover:text-primary">
                       <Link href={ROUTES.ORDER_LOOKUP}>Tra cứu</Link>
                     </Button>
                     <Button asChild size="sm" className="rounded-full px-5 h-9 text-sm font-semibold shadow-lg shadow-primary/20 transition-all active:scale-95">
@@ -225,7 +239,6 @@ export function Header() {
 
               {/* Nav links */}
               {NAV_LINKS.map((link) => {
-                // Logic: A specific filtered link takes priority over the general "Cửa hàng" link
                 const isSpecificLink = link.href.includes("?");
                 const otherSpecificActive = NAV_LINKS.some(l => l.href.includes("?") && currentPathWithSearch.includes(l.href));
                 
@@ -398,7 +411,7 @@ export function Header() {
           <div className="mt-4 px-3">
             <button
               onClick={() => setMobileCatOpen(!mobileCatOpen)}
-              className="flex items-center justify-between w-full px-4 py-2 text-xs font-black text-slate-400 uppercase tracking-widest"
+              className="flex items-center justify-between w-full px-4 py-2 text-sm font-semibold text-slate-500"
             >
               Danh mục sản phẩm
               <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-300 ${mobileCatOpen ? "rotate-180" : ""}`} />
@@ -434,7 +447,7 @@ export function Header() {
               <div className="flex items-center gap-3 px-2 py-1">
                 {user.avatar ? (
                   <img 
-                    src={user.avatar} 
+                    src={normalizeImagePath(user.avatar)} 
                     alt={user.name || "User"} 
                     className="h-9 w-9 rounded-full object-cover flex-shrink-0" 
                   />
@@ -460,7 +473,7 @@ export function Header() {
                 </Link>
               </div>
               <button
-                onClick={() => { clearAuth(); setMobileOpen(false); }}
+                onClick={() => { logout(); setMobileOpen(false); }}
                 className="w-full text-xs font-semibold py-2 rounded-xl text-destructive hover:bg-destructive/5 transition-colors"
               >
                 Đăng xuất

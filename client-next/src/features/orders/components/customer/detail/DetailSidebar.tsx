@@ -3,6 +3,7 @@
 import React from "react";
 import { MapPin, CheckCircle2, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { PaymentStatus } from "@/types/enums";
 
 interface DetailSidebarProps {
   shippingSnapshot: any;
@@ -12,6 +13,8 @@ interface DetailSidebarProps {
   paymentStatus: string;
   isPaid: boolean;
   isCancelled: boolean;
+  isReturned?: boolean;
+  isReturning?: boolean;
   shippingCode?: string;
 }
 
@@ -23,6 +26,8 @@ export function DetailSidebar({
   paymentStatus, 
   isPaid, 
   isCancelled, 
+  isReturned,
+  isReturning,
   shippingCode 
 }: DetailSidebarProps) {
   return (
@@ -85,9 +90,23 @@ export function DetailSidebar({
           <div className="flex justify-between items-center">
             <span className="text-slate-500">Trạng thái</span>
             <span
-              className={`font-medium ${isPaid ? "text-emerald-500" : "text-amber-600"}`}
+              className={`font-medium ${
+                paymentStatus === "REFUNDED" || paymentStatus === PaymentStatus.REFUNDED
+                  ? "text-purple-600"
+                  : paymentStatus === "CANCELLED" || paymentStatus === PaymentStatus.CANCELLED
+                    ? "text-rose-600"
+                    : isPaid 
+                      ? "text-emerald-500" 
+                      : "text-amber-600"
+              }`}
             >
-              {isPaid ? "Đã thanh toán" : "Chờ thanh toán"}
+              {paymentStatus === "REFUNDED" || paymentStatus === PaymentStatus.REFUNDED
+                ? "Đã hoàn tiền"
+                : paymentStatus === "CANCELLED" || paymentStatus === PaymentStatus.CANCELLED
+                  ? "Đã hủy thanh toán"
+                  : isPaid 
+                    ? "Đã thanh toán" 
+                    : "Chờ thanh toán"}
             </span>
           </div>
           <div className="border-t border-slate-50 pt-3 flex justify-between items-center">
@@ -103,7 +122,7 @@ export function DetailSidebar({
             </div>
           )}
         </div>
-        {!isPaid && !isCancelled && paymentMethod !== "COD" && (
+        {!isPaid && !isCancelled && !isReturned && !isReturning && paymentMethod !== "COD" && (
           <Button className="w-full h-9 bg-slate-800 hover:bg-slate-900 text-white text-xs font-medium rounded-lg mt-2 uppercase tracking-wider">
             Thanh toán ngay
           </Button>

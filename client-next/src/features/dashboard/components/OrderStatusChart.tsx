@@ -21,7 +21,7 @@ export function OrderStatusChart({ data, isLoading }: OrderStatusChartProps) {
   const statusData = useMemo(() => {
     // If it's the object-based format from DashboardStats
     if (data && typeof data === 'object' && !Array.isArray(data)) {
-      const keys = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
+      const keys = ['pending', 'processing', 'shipped', 'delivered', 'cancelled', 'returned', 'returning'];
       return keys.map(key => {
         const status = key.toUpperCase();
         const statusInfo = STATUS_MAP[status];

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Clock, Package, Truck, CheckCircle2, Loader2 } from "lucide-react";
+import { Clock, Package, Truck, CheckCircle2, Loader2, RotateCcw } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { OrderStatus } from "@/types/enums";
 
@@ -17,6 +17,8 @@ const statusSteps = [
   { key: OrderStatus.PROCESSING, label: "Đang xử lý", icon: Package },
   { key: OrderStatus.SHIPPED, label: "Đang giao", icon: Truck },
   { key: OrderStatus.DELIVERED, label: "Đã giao", icon: CheckCircle2 },
+  { key: OrderStatus.RETURN_REQUESTED, label: "Trả hàng", icon: RotateCcw },
+  { key: OrderStatus.RETURNED, label: "Đã trả", icon: CheckCircle2 },
 ];
 
 export function Stepper({ status, isPending, onUpdateStatus, id }: StepperProps) {

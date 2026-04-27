@@ -2,7 +2,7 @@
  * App-wide configuration constants.
  */
 export const APP_CONFIG = {
-  APP_NAME: "Vnest Store",
+  APP_NAME: "Minh Tuan Shop",
   DEFAULT_LOCALE: "vi-VN",
   CURRENCY: "VND",
   ITEMS_PER_PAGE: 20,

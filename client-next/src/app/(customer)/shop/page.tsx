@@ -4,8 +4,8 @@ import { Suspense } from "react";
 import { Loader2 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Cửa hàng — Vnest Store",
-  description: "Khám phá hàng ngàn sản phẩm công nghệ và gia dụng cao cấp tại Vnest Store.",
+  title: "Cửa hàng — Minh Tuấn Shop",
+  description: "Khám phá hàng ngàn sản phẩm công nghệ và gia dụng cao cấp tại Minh Tuấn Shop.",
 };
 
 import { ShopSkeleton } from "@/features/shop/components/skeletons/ShopSkeleton";

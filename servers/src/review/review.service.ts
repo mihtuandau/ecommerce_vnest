@@ -46,12 +46,18 @@
       // Validate review images
       const validatedImages = await this.validateReviewImages(images || []);
 
+      // Sanitize comment to prevent XSS
+      const sanitizedComment = comment ? require('sanitize-html')(comment, {
+        allowedTags: [], // Strip all tags for simple reviews
+        allowedAttributes: {},
+      }) : null;
+
       const review = await this.repository.create({
         user: { connect: { id: userId } },
         product: { connect: { id: productId } },
         order: { connect: { id: orderId } },
         rating,
-        comment,
+        comment: sanitizedComment,
         images: validatedImages,
       });
 
@@ -62,41 +68,17 @@
       return review;
     }
 
-    private async validateReviewImages(images: any[]): Promise<any[]> {
-      if (!images || images.length === 0) return [];
+    private async validateReviewImages(images: any[]): Promise<string[]> {
+      if (!images || !Array.isArray(images) || images.length === 0) return [];
 
       // Max 5 images
       if (images.length > 5) {
         throw new BadRequestException('Tối đa 5 hình ảnh cho một đánh giá');
       }
 
-      // Allowed image types
-      const allowedMimeTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
-      const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
-      
-      // Max file size: 5MB per image
-      const maxFileSize = 5 * 1024 * 1024; // 5MB
-
       for (const image of images) {
-        // Check file type
-        const mimeType = image.mimetype || image.type;
-        if (!allowedMimeTypes.includes(mimeType?.toLowerCase())) {
-          throw new BadRequestException(`Loại tệp không hợp lệ: ${mimeType}. Chỉ chấp nhận các định dạng ảnh: JPG, PNG, GIF, WebP`);
-        }
-
-        // Check file extension
-        if (image.filename || image.originalname) {
-          const filename = image.filename || image.originalname;
-          const ext = filename.substring(filename.lastIndexOf('.')).toLowerCase();
-          if (!allowedExtensions.includes(ext)) {
-            throw new BadRequestException(`Đuôi tệp không hợp lệ: ${ext}`);
-          }
-        }
-
-        // Check file size
-        const fileSize = image.size || (image.buffer?.length);
-        if (fileSize && fileSize > maxFileSize) {
-          throw new BadRequestException(`Kích thước tệp vượt quá giới hạn (Tối đa 5MB): ${(fileSize / 1024 / 1024).toFixed(2)}MB`);
+        if (typeof image !== 'string') {
+          throw new BadRequestException('Định dạng ảnh không hợp lệ. Vui lòng tải lại trang và thử lại.');
         }
       }
 
@@ -223,9 +205,14 @@
         throw new BadRequestException('Bạn không có quyền sửa đánh giá này');
       }
 
+      const sanitizedComment = dto.comment !== undefined ? (dto.comment ? require('sanitize-html')(dto.comment, {
+        allowedTags: [],
+        allowedAttributes: {},
+      }) : null) : undefined;
+
       const updated = await this.repository.update(reviewId, {
         ...(dto.rating && { rating: dto.rating }),
-        ...(dto.comment !== undefined && { comment: dto.comment }),
+        ...(sanitizedComment !== undefined && { comment: sanitizedComment }),
         ...(dto.images && { images: dto.images }),
       });
 
@@ -270,10 +257,13 @@
       page: number = 1,
       limit: number = 20,
       productId?: number,
+      userId?: number,
     ) {
       const skip = (page - 1) * limit;
 
-      const where = productId ? { productId } : {};
+      const where: any = {};
+      if (productId) where.productId = productId;
+      if (userId) where.userId = userId;
 
       const [reviews, total] = await Promise.all([
         this.repository.findAll(where, skip, limit),

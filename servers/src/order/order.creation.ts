@@ -61,6 +61,7 @@ export class OrderCreation {
     const discount = await this.validateDiscount(
       dto.discountCode,
       originalSubtotal,
+      userId,
     );
     let manualCodeSaving = 0;
     if (discount) {
@@ -97,12 +98,14 @@ export class OrderCreation {
         };
 
     // 5. Tính phí vận chuyển qua GHN
-    let ghnShippingFee = dto.shippingFee !== undefined ? dto.shippingFee : 30000;
-    
-    // Nếu là đơn hàng POS/Mua tại quầy, phí ship mặc định là 0 nếu không được cung cấp
+    // Mặc định phí ship là 30k, trừ khi là đơn POS thì mặc định là 0
     const isPOS = dto.status === 'DELIVERED' || dto.shippingAddress === 'Mua tại quầy';
-    if (isPOS && dto.shippingFee === undefined) {
-      ghnShippingFee = 0;
+    let ghnShippingFee = isPOS ? 0 : 30000;
+    
+    // Chỉ chấp nhận phí ship từ DTO nếu đó là Admin tạo đơn hoặc có lý do đặc biệt (sẽ log lại)
+    // Ở đây chúng ta ưu tiên phí ship từ DTO nếu được cung cấp, nhưng sẽ kiểm tra lại qua GHN
+    if (dto.shippingFee !== undefined) {
+      ghnShippingFee = dto.shippingFee;
     }
 
     try {
@@ -110,37 +113,29 @@ export class OrderCreation {
       if (shippingFeeResult) {
         ghnShippingFee = shippingFeeResult;
       } else {
-        // GHN calculation failed - either missing address or invalid input
-        // Only use fallback if this is optional shipping (COD order)
-        const isOnlinePayment = ['VNPAY', 'PAYOS'].includes(
-          dto.paymentMethod || '',
-        );
+        // GHN calculation failed
+        const isOnlinePayment = ['VNPAY', 'PAYOS'].includes(dto.paymentMethod || '');
         if (isOnlinePayment && !isPOS) {
-          throw new BadRequestException(
-            'Không thể tính phí vận chuyển. Vui lòng kiểm tra lại địa chỉ giao hàng.',
-          );
+          throw new BadRequestException('Không thể tính phí vận chuyển. Vui lòng kiểm tra lại địa chỉ giao hàng.');
+        }
+        // Nếu là COD và GHN fail, chúng ta ép giá tối thiểu 20k nếu user gửi lên 0
+        if (!isPOS && ghnShippingFee < 20000) {
+          ghnShippingFee = 30000; 
         }
       }
     } catch (error) {
-      // GHN service error - strict policy for online payments
-      const isOnlinePayment = ['VNPAY', 'PAYOS'].includes(
-        dto.paymentMethod || '',
-      );
+      const isOnlinePayment = ['VNPAY', 'PAYOS'].includes(dto.paymentMethod || '');
       if (isOnlinePayment && !isPOS) {
-        this.logger.error(
-          'GHN fee calculation failed for online payment:',
-          error,
-        );
-        throw new BadRequestException(
-          'Không thể tính phí vận chuyển qua GHN. Vui lòng thử lại hoặc chọn phương thức thanh toán khác.',
-        );
+        throw new BadRequestException('Không thể tính phí vận chuyển qua GHN. Vui lòng thử lại.');
       }
-      // For COD or POS, log warning but continue
+      
+      // Nếu GHN lỗi, dùng giá mặc định an toàn cho COD
+      if (!isPOS && ghnShippingFee < 20000) {
+        ghnShippingFee = 30000;
+      }
+      
       if (!isPOS) {
-        this.logger.warn(
-          'GHN fee calculation failed, using default:',
-          error.message,
-        );
+        this.logger.warn('GHN fee calculation failed, using fallback:', error.message);
       }
     }
 
@@ -371,8 +366,9 @@ export class OrderCreation {
     return result.data.total;
   }
 
-  private async validateDiscount(discountCode?: string, subtotal?: number) {
+  private async validateDiscount(discountCode?: string, subtotal?: number, userId?: number | null) {
     if (!discountCode) return null;
+    console.log(`[OrderCreation] Validating discount: ${discountCode} for userId: ${userId}`);
     const discount = await this.repository.findDiscountByCode(discountCode);
     if (!discount) throw new BadRequestException('Mã giảm giá không tồn tại');
     if (discount.isFlashSale)
@@ -382,6 +378,16 @@ export class OrderCreation {
       discount.id,
     );
     OrderHelper.validateDiscount(discount, subtotal, usageCount);
+
+    // Kiểm tra giới hạn sử dụng của người dùng (mỗi người dùng 1 lần)
+    if (userId) {
+      const hasUsed = await this.repository.hasUserUsedDiscount(userId, discount.id);
+      console.log(`[OrderCreation] User ${userId} has used discount ${discount.id}: ${hasUsed}`);
+      if (hasUsed) {
+        throw new BadRequestException('Bạn đã sử dụng mã giảm giá này cho đơn hàng trước đó');
+      }
+    }
+
     return discount;
   }
 

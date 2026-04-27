@@ -52,14 +52,14 @@ export function GuestDetailHeader({
       <div className="space-y-2">
         <button 
           onClick={() => router.push("/")}
-          className="flex items-center gap-1.5 text-slate-400 hover:text-slate-600 transition-colors text-xs font-medium"
+          className="flex items-center gap-1.5 text-slate-500 hover:text-slate-700 transition-colors text-xs font-semibold"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
           Về trang chủ
         </button>
         <div className="flex items-center gap-3">
           <h1 className="text-xl font-semibold text-slate-800">Đơn hàng #{orderCode}</h1>
-          <span className={`px-3 py-1.5 rounded-full text-[11px] font-medium border h-fit leading-none flex items-center justify-center ${currentStatus.color}`}>
+          <span className={`px-3 py-1.5 rounded-full text-xs font-semibold border h-fit leading-none flex items-center justify-center ${currentStatus.color}`}>
             {currentStatus.label}
           </span>
         </div>

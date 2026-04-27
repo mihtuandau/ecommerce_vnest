@@ -8,6 +8,7 @@ import {
   Delete,
   Query,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { DiscountService } from './discount.service';
@@ -15,7 +16,7 @@ import { CreateDiscountDto } from './dto/create-discount.dto';
 import { UpdateDiscountDto } from './dto/update-discount.dto';
 import { QueryDiscountDto } from './dto/query-discount.dto';
 import { ValidateDiscountDto } from './dto/validate-discount.dto';
-import { JwtAuthGuard } from '../common/guards/auth.guard';
+import { JwtAuthGuard, OptionalJwtAuthGuard } from '../common/guards/auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
 import { Permissions } from '../common/decorators/permissions.decorator';
@@ -68,8 +69,9 @@ export class DiscountController {
   }
 
   @Post('validate')
-  validate(@Body() validateDto: ValidateDiscountDto) {
-    return this.discountService.validateDiscount(validateDto.code);
+  @UseGuards(OptionalJwtAuthGuard)
+  validate(@Body() validateDto: ValidateDiscountDto, @Req() req: any) {
+    return this.discountService.validateDiscount(validateDto.code, req.user?.userId);
   }
 
   @Get(':id')

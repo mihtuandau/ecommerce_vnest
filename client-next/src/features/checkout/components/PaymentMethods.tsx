@@ -85,7 +85,7 @@ export function PaymentMethods({ paymentMethod, setPaymentMethod }: PaymentMetho
               {paymentMethod === method.id && (
                 <div className="hidden sm:flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-blue-100 text-[#1565C1]">
                   <CheckCircle2 size={10} />
-                  <span className="text-[10px] font-bold uppercase tracking-tight">Đã chọn</span>
+                  <span className="text-xs font-bold">Đã chọn</span>
                 </div>
               )}
             </div>

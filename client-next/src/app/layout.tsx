@@ -9,10 +9,12 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Vnest Store — Mua sắm trực tuyến",
-  description:
-    "Nền tảng thương mại điện tử hiện đại với hàng ngàn sản phẩm chất lượng.",
-  keywords: ["ecommerce", "vnest", "shopping", "online store"],
+  title: "Minh Tuan Shop — Mua sắm trực tuyến",
+  description: "Nền tảng mua sắm trực tuyến hiện đại, tối giản và hiệu quả.",
+  keywords: ["ecommerce", "minh tuan shop", "shopping", "online store"],
+  icons: {
+    icon: "/logoMT.png",
+  },
 };
 
 export default function RootLayout({
@@ -20,6 +22,9 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="vi" suppressHydrationWarning>
+      <head>
+        <link rel="icon" href="/logoMT.png" />
+      </head>
       <body className={`${inter.variable} font-sans antialiased`}>
         <Providers>{children}</Providers>
       </body>

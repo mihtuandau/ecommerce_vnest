@@ -38,23 +38,23 @@ export function FeaturedCategories() {
               <div className="p-1.5 md:p-2 rounded-lg md:rounded-xl shadow-sm bg-slate-100">
                 <LayoutGrid className="h-4 w-4 md:h-5 md:w-5 text-[#1a1a1a]" />
               </div>
-              <span className="text-[10px] md:text-[11px] font-black uppercase tracking-[0.25em] text-slate-400">
-                Explore Ecosystem
+              <span className="text-[10px] md:text-[11px] font-semibold text-slate-500">
+                Khám phá hệ sinh thái
               </span>
             </div>
             
             <div className="space-y-2">
-              <h2 className="text-3xl md:text-5xl font-black text-primary tracking-tighter leading-[1.1]">
+              <h2 className="text-3xl md:text-5xl font-bold text-primary tracking-tighter leading-[1.1]">
                 Danh mục <span className="text-primary/50">nổi bật</span>
               </h2>
-              <p className="text-slate-400 text-xs md:text-base font-medium tracking-tight max-w-xl leading-relaxed">
-                Khám phá hệ sinh thái sản phẩm công nghệ và gia dụng thông minh tại Vnest Store.
+              <p className="text-slate-600 text-xs md:text-base font-normal tracking-tight max-w-xl leading-relaxed">
+                Khám phá hệ sinh thái sản phẩm công nghệ và gia dụng thông minh tại Minh Tuấn Shop.
               </p>
             </div>
           </div>
         </div>
 
-        <Button asChild variant="ghost" className="hidden md:flex rounded-full px-8 h-12 hover:bg-slate-100 font-bold text-xs uppercase tracking-widest text-slate-500 hover:text-slate-900 transition-all group border border-slate-100">
+        <Button asChild variant="ghost" className="hidden md:flex rounded-full px-8 h-12 hover:bg-slate-100 font-semibold text-xs text-slate-600 hover:text-slate-900 transition-all group border border-slate-100">
           <Link href="/shop" className="flex items-center gap-2">
             Xem tất cả <ChevronRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
           </Link>
@@ -108,7 +108,7 @@ export function FeaturedCategories() {
 
               {/* Label Below Circle */}
               <div className="text-center space-y-1.5 px-2">
-                <h3 className="text-[11px] md:text-sm font-black text-slate-900 uppercase tracking-[0.1em] group-hover:text-primary transition-colors duration-500 whitespace-nowrap overflow-hidden text-ellipsis w-full">
+                <h3 className="text-[11px] md:text-sm font-bold text-slate-900 group-hover:text-primary transition-colors duration-500 whitespace-nowrap overflow-hidden text-ellipsis w-full">
                   {category.name}
                 </h3>
                 <div className="h-1 w-0 bg-primary mx-auto rounded-full group-hover:w-8 transition-all duration-500" />

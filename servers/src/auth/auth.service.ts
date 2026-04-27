@@ -94,7 +94,18 @@ export class AuthService {
 
   async validateUser(email: string, pass: string) {
     const u = await this.userService.findByEmail(email);
-    if (!u || !(await bcrypt.compare(pass, u.password)) || u.deletedAt) throw new UnauthorizedException('Thông tin không đúng.');
+    if (!u || u.deletedAt) throw new UnauthorizedException('Thông tin không đúng.');
+    
+    // Nếu là tài khoản mạng xã hội và chưa đặt mật khẩu local
+    if (u.provider !== 'LOCAL' && !u.password) {
+      throw new UnauthorizedException(`Vui lòng đăng nhập bằng ${u.provider}`);
+    }
+
+    // Kiểm tra mật khẩu (đảm bảo u.password không null trước khi so sánh)
+    if (!u.password || !(await bcrypt.compare(pass, u.password))) {
+      throw new UnauthorizedException('Thông tin không đúng.');
+    }
+
     if (u.status === UserStatus.PENDING) throw new UnauthorizedException('Chưa xác thực.');
     const { password: _, ...res } = u; return res;
   }

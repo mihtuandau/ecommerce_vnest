@@ -113,7 +113,7 @@ export function ProductCard({ product, view = "grid" }: ProductCardProps) {
           />
           {discountPercent > 0 && (
             <div className="absolute top-2 left-2 z-10">
-              <span className="bg-[#e85d24] text-white text-[8px] md:text-[9px] font-black px-1.5 py-0.5 rounded-md shadow-sm uppercase tracking-widest">
+              <span className="bg-[#e85d24] text-white text-[8px] md:text-[9px] font-black px-1.5 py-0.5 rounded-md shadow-sm tracking-widest">
                 -{discountPercent}%
               </span>
             </div>
@@ -124,12 +124,12 @@ export function ProductCard({ product, view = "grid" }: ProductCardProps) {
           <div className="space-y-1 md:space-y-2">
             <div className="flex items-center justify-between relative">
               <div className="flex items-center gap-3">
-                <span className="text-[9px] md:text-[10px] font-semibold tracking-wide text-primary/60">
-                  {(product as any).brand?.name || "Vnest"}
+                <span className="text-[9px] md:text-[10px] font-normal tracking-wide text-primary/80">
+              {(product as any).brand?.name || "Minh Tuấn"}
                 </span>
                 <div className="flex items-center gap-1">
                   <Star className="h-2.5 w-2.5 fill-[#f4c300] text-[#f4c300]" />
-                  <span className="text-[10px] font-medium text-slate-400">{rating}</span>
+                  <span className="text-[10px] font-normal text-slate-500">{rating}</span>
                 </div>
               </div>
               <button 
@@ -147,11 +147,11 @@ export function ProductCard({ product, view = "grid" }: ProductCardProps) {
                 {product.name}
               </h3>
             </Link>
-            <div className="flex items-center gap-3 text-[9px] md:text-[10px] font-medium text-slate-400 tracking-tight">
+            <div className="flex items-center gap-3 text-[9px] md:text-[10px] font-normal text-slate-500 tracking-tight">
               {soldCount > 0 && <span>Đã bán {soldCount}</span>}
               {viewCount > 0 && (
                 <div className="flex items-center gap-1">
-                  <Eye className="h-2.5 w-2.5" /> {viewCount}
+                  <Eye className="h-2.5 w-2.5 text-slate-400" /> {viewCount}
                 </div>
               )}
             </div>
@@ -159,11 +159,11 @@ export function ProductCard({ product, view = "grid" }: ProductCardProps) {
 
           <div className="flex items-center justify-between mt-auto pt-2">
             <div className="flex items-baseline gap-2">
-              <span className="text-lg md:text-2xl font-bold text-[#1565C0] tabular-nums">
+              <span className="text-lg md:text-2xl font-bold text-primary tabular-nums">
                 {formatCurrency(price)}
               </span>
               {discountPercent > 0 && (
-                <span className="text-[10px] md:text-sm text-slate-500 line-through font-semibold">
+                <span className="text-[10px] md:text-sm text-slate-400 line-through font-medium">
                   {formatCurrency(originalPrice!)}
                 </span>
               )}
@@ -226,7 +226,7 @@ export function ProductCard({ product, view = "grid" }: ProductCardProps) {
         <div className="space-y-1 flex-1 pt-2">
           {/* Brand Row */}
           <div className="flex items-center justify-between">
-            <span className="text-[8px] md:text-[9px] font-semibold text-slate-400 tracking-wide">
+            <span className="text-[8px] md:text-[9px] font-normal text-slate-500 tracking-wide">
               {(product as any).brand?.name || "Vnest"}
             </span>
           </div>
@@ -253,11 +253,11 @@ export function ProductCard({ product, view = "grid" }: ProductCardProps) {
               </span>
             </div>
 
-            <div className="flex items-center gap-1.5 text-[8px] md:text-[9px] font-medium text-slate-400 tracking-tight flex-wrap justify-end ml-auto min-w-0">
+            <div className="flex items-center gap-1.5 text-[8px] md:text-[9px] font-normal text-slate-500 tracking-tight flex-wrap justify-end ml-auto min-w-0">
               {soldCount > 0 && <span className="truncate">Đã bán {soldCount}</span>}
               {viewCount > 0 && (
                 <div className="flex items-center gap-0.5 shrink-0">
-                  <Eye className="h-2.5 w-2.5" /> <span>{viewCount}</span>
+                  <Eye className="h-2.5 w-2.5 text-slate-300" /> <span>{viewCount}</span>
                 </div>
               )}
             </div>
@@ -266,11 +266,11 @@ export function ProductCard({ product, view = "grid" }: ProductCardProps) {
 
         <div className="flex items-center justify-between pt-1.5 md:pt-2 mt-2 border-t border-slate-50">
           <div className="flex flex-col">
-            <span className="text-[15px] md:text-lg font-bold text-[#1565C0] tabular-nums leading-tight">
+            <span className="text-[15px] md:text-lg font-bold text-primary tabular-nums leading-tight">
               {formatCurrency(price)}
             </span>
             {discountPercent > 0 && (
-              <span className="text-[9px] md:text-[10px] text-slate-500 line-through font-semibold">
+              <span className="text-[9px] md:text-[10px] text-slate-400 line-through font-medium">
                 {formatCurrency(originalPrice!)}
               </span>
             )}

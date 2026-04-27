@@ -22,7 +22,24 @@ export class UserRepository {
         addresses: true,
         orders: {
           orderBy: { createdAt: 'desc' },
-          include: { payment: true }
+          include: { 
+            payment: true,
+            orderItems: {
+              include: {
+                variant: {
+                  include: {
+                    product: {
+                      select: {
+                        id: true,
+                        name: true,
+                        images: true,
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
         },
         reviews: true
       },

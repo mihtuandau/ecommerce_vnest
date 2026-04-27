@@ -8,7 +8,9 @@ export class OrderRepository {
 
   private baseInclude = {
     orderItems: { include: { variant: { include: { product: { include: { images: { select: { url: true }, take: 1 } } }, images: { select: { url: true } } } } } },
-    user: { select: { id: true, email: true, name: true } }, payment: true, address: true, shippingMethod: true
+    user: { select: { id: true, email: true, name: true } }, payment: true, address: true, shippingMethod: true,
+    returnRequest: true,
+    reviews: { select: { productId: true } }
   };
 
   async create(data: Prisma.OrderCreateInput) { return this.prisma.order.create({ data, include: this.baseInclude }); }
@@ -46,23 +48,45 @@ export class OrderRepository {
 
   async createOrderTransactional(orderData: Prisma.OrderCreateInput, items: any[], discountId?: number, discountUsageLimit?: number) {
     return this.prisma.$transaction(async (tx) => {
+      const userId = (orderData.user as any)?.connect?.id;
+      console.log(`[OrderRepository] Processing order for userId: ${userId}, discountId: ${discountId}`);
+
       // Validate discount usage within transaction (prevents race condition)
-      if (discountId && discountUsageLimit) {
-        const currentUsageCount = await tx.order.count({
-          where: {
-            discountId,
-            status: { not: 'CANCELLED' as any }
+      if (discountId) {
+        // 1. Check global usage limit
+        if (discountUsageLimit) {
+          const currentUsageCount = await tx.order.count({
+            where: {
+              discountId,
+              status: { not: 'CANCELLED' as any }
+            }
+          });
+          console.log(`[OrderRepository] Global usage count for discount ${discountId}: ${currentUsageCount}/${discountUsageLimit}`);
+          
+          if (currentUsageCount >= discountUsageLimit) {
+            throw new Error('Mã giảm giá đã hết lượt sử dụng');
           }
-        });
-        
-        if (currentUsageCount >= discountUsageLimit) {
-          throw new Error('Mã giảm giá đã hết lượt sử dụng');
+        }
+
+        // 2. Check per-user usage limit (Each user can use a specific discount only once)
+        if (userId) {
+          const userUsage = await tx.discountUsage.findUnique({
+            where: {
+              userId_discountId: {
+                userId,
+                discountId,
+              },
+            },
+          });
+          console.log(`[OrderRepository] Per-user usage check for user ${userId}, discount ${discountId}: ${userUsage ? 'ALREADY USED' : 'NOT USED'}`);
+          if (userUsage) {
+            throw new Error('Bạn đã sử dụng mã giảm giá này rồi');
+          }
         }
       }
 
       for (const item of items) {
         // Atomic conditional update: chỉ trừ stock khi stock >= quantity
-        // Ngăn race condition: 2 user đặt cùng lúc, chỉ 1 người thành công
         const result = await tx.productVariant.updateMany({
           where: {
             id: item.variantId,
@@ -84,12 +108,75 @@ export class OrderRepository {
           });
         }
       }
-      return tx.order.create({ data: orderData, include: this.baseInclude });
+
+      const order = await tx.order.create({ data: orderData, include: this.baseInclude });
+
+      // 3. Record user discount usage if applicable
+      if (discountId && userId) {
+        await tx.discountUsage.create({
+          data: {
+            userId,
+            discountId,
+            orderId: order.id
+          }
+        });
+      }
+
+      return order;
     });
   }
 
   async restoreOrderStock(id: number) {
-    const o = await this.prisma.order.findUnique({ where: { id }, select: { orderItems: { select: { variantId: true, quantity: true } } } });
-    if (o) await this.prisma.$transaction(o.orderItems.map(i => this.prisma.productVariant.update({ where: { id: i.variantId }, data: { stock: { increment: i.quantity } } })));
+    const o = await this.prisma.order.findUnique({ 
+      where: { id }, 
+      select: { 
+        orderItems: { 
+          select: { 
+            variantId: true, 
+            quantity: true,
+            variant: { select: { productId: true } }
+          } 
+        } 
+      } 
+    });
+
+    if (o && o.orderItems.length > 0) {
+      console.log(`[OrderRepository] Restoring stock for ${o.orderItems.length} items of order ${id}`);
+      
+      await this.prisma.$transaction(async (tx) => {
+        // Hoàn tồn kho cho từng variant
+        for (const item of o.orderItems) {
+          await tx.productVariant.update({
+            where: { id: item.variantId },
+            data: { stock: { increment: item.quantity } }
+          });
+          
+          // Lưu ý: Product model không có trường stock trong DB, 
+          // tồn kho tổng được tính toán ở frontend hoặc query thời gian thực.
+        }
+      });
+      
+      console.log(`[OrderRepository] Stock restoration completed for order ${id}`);
+    } else {
+      console.log(`[OrderRepository] No items found to restore stock for order ${id}`);
+    }
+  }
+
+  async hasUserUsedDiscount(userId: number, discountId: number): Promise<boolean> {
+    const count = await this.prisma.discountUsage.count({
+      where: {
+        userId,
+        discountId,
+      },
+    });
+    return count > 0;
+  }
+
+  async restoreDiscountUsage(orderId: number) {
+    await this.prisma.discountUsage.deleteMany({
+      where: {
+        orderId,
+      },
+    });
   }
 }

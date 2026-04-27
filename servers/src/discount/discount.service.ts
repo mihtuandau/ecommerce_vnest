@@ -179,7 +179,7 @@ export class DiscountService {
     return { ...flashSale, products: formattedProducts };
   }
 
-  async validateDiscount(code: string) {
+  async validateDiscount(code: string, userId?: number) {
     const discount = await this.repository.findByCode(code);
     if (!discount)
       return { isValid: false, message: 'Mã giảm giá không tồn tại' };
@@ -199,6 +199,16 @@ export class DiscountService {
       };
     if (discount.endDate && discount.endDate < now)
       return { isValid: false, message: 'Mã giảm giá đã hết hạn' };
+
+    // Kiểm tra giới hạn sử dụng của người dùng (mỗi người dùng 1 lần)
+    console.log(`[DiscountService] Validating code: ${code} for userId: ${userId}`);
+    if (userId) {
+      const hasUsed = await this.repository.hasUserUsedDiscount(userId, discount.id);
+      console.log(`[DiscountService] User ${userId} has used discount ${discount.id}: ${hasUsed}`);
+      if (hasUsed) {
+        return { isValid: false, message: 'Bạn đã sử dụng mã giảm giá này cho đơn hàng trước đó' };
+      }
+    }
 
     if (discount.usageLimit) {
       const usageCount =

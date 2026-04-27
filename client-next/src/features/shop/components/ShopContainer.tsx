@@ -132,7 +132,7 @@ export function ShopContainer() {
                       <Button
                         variant="outline"
                         size="sm"
-                        className="rounded-xl h-10 px-5 border-slate-200 text-slate-900 font-bold gap-2 bg-slate-50 shadow-sm"
+                        className="rounded-xl h-10 px-5 border-slate-200 text-slate-900 font-semibold gap-2 bg-slate-50 shadow-sm"
                       >
                         <SlidersHorizontal className="h-4 w-4 text-primary" />
                         Bộ lọc
@@ -145,12 +145,12 @@ export function ShopContainer() {
                       <div className="w-12 h-1.5 bg-slate-200 rounded-full mx-auto my-3 shrink-0" />
                       <SheetHeader className="px-6 pb-4 border-b shrink-0">
                         <div className="flex items-center justify-between">
-                          <SheetTitle className="text-left font-black uppercase tracking-widest text-slate-900">
+                          <SheetTitle className="text-left font-bold text-slate-900">
                             Tùy chọn lọc
                           </SheetTitle>
                           <button
                             onClick={() => router.push("/shop")}
-                            className="text-xs font-bold text-primary"
+                            className="text-xs font-semibold text-primary"
                           >
                             Xóa tất cả
                           </button>
@@ -161,7 +161,7 @@ export function ShopContainer() {
                       </div>
                       <div className="absolute bottom-0 left-0 right-0 p-6 bg-white border-t border-slate-100 flex gap-4 z-10">
                         <SheetTrigger asChild>
-                          <Button className="flex-1 rounded-2xl font-black h-12 uppercase tracking-widest shadow-xl shadow-primary/20">
+                          <Button className="flex-1 rounded-2xl font-bold h-12 shadow-xl shadow-primary/20">
                             Xem kết quả
                           </Button>
                         </SheetTrigger>
@@ -188,15 +188,15 @@ export function ShopContainer() {
 
               <div className="flex items-center gap-3 md:gap-6">
                 <div className="flex items-center gap-2">
-                  <span className="hidden xs:inline text-[12px] font-medium text-slate-500">
+                  <span className="hidden xs:inline text-[12px] font-normal text-slate-600">
                     Sắp xếp:
                   </span>
 
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <button className="text-[12px] font-bold text-slate-900 flex items-center gap-1.5 bg-slate-50 sm:bg-transparent px-4 py-2 sm:p-0 rounded-xl border border-slate-100 sm:border-none shadow-sm sm:shadow-none hover:text-primary transition-colors">
+                      <button className="text-[12px] font-semibold text-slate-900 flex items-center gap-1.5 bg-slate-50 sm:bg-transparent px-4 py-2 sm:p-0 rounded-xl border border-slate-100 sm:border-none shadow-sm sm:shadow-none hover:text-primary transition-colors">
                         {activeSortLabel}
-                        <ChevronDown className="h-3.5 w-3.5" />
+                        <ChevronDown className="h-3.5 w-3.5 text-slate-400" />
                       </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
@@ -207,7 +207,7 @@ export function ShopContainer() {
                         <DropdownMenuItem
                           key={opt.value}
                           onClick={() => updateFilters("sortBy", opt.value)}
-                          className={`flex items-center justify-between px-3 py-2.5 rounded-xl cursor-pointer text-[13px] font-medium transition-all ${currentSort === opt.value ? "bg-primary/5 text-primary font-bold" : "text-slate-600 hover:bg-slate-50"}`}
+                          className={`flex items-center justify-between px-3 py-2.5 rounded-xl cursor-pointer text-[13px] font-normal transition-all ${currentSort === opt.value ? "bg-primary/5 text-primary font-semibold" : "text-slate-700 hover:bg-slate-50"}`}
                         >
                           <div className="flex items-center gap-2.5">
                             <opt.icon

@@ -10,12 +10,14 @@ datasource db {
 model User {
   id                   Int            @id @default(autoincrement())
   email                String         @unique // @unique tự tạo index, không cần @@index
-  password             String
+  password             String?        // Bắt buộc với LOCAL, null với SOCIAL
   name                 String?
   phone                String?
   avatar               String?
   role                 Role           @default(CUSTOMER)
   status               UserStatus     @default(PENDING)
+  provider             String         @default("LOCAL") // LOCAL, GOOGLE, etc.
+  providerId           String?        // ID từ provider (VD: sub của google)
   verificationCode     String?
   verificationExpires  DateTime?
   resetPasswordToken   String?
@@ -31,9 +33,13 @@ model User {
   sentMessages         ChatMessage[]  @relation("SentMessages")
   cancelledOrders      Order[]        @relation("CancelledBy") // Orders cancelled by this user/admin
   refreshTokens        RefreshToken[] // Stored token hashes for revocation
+  discountUsages       DiscountUsage[] // Các mã giảm giá đã sử dụng
+  returnRequests       ReturnRequest[] // Các yêu cầu trả hàng
 
   @@index([deletedAt])
   @@index([status])
+  @@index([provider])
+  @@index([providerId])
 }
 
 enum Role {
@@ -294,6 +300,7 @@ model Discount {
   // Relations thay thế Int[] arrays - có referential integrity + queryable
   applicableToCategories DiscountCategory[] // Sử dụng junction table
   applicableToProducts   DiscountProduct[] // Sử dụng junction table
+  discountUsages         DiscountUsage[] // Lịch sử sử dụng của user
   createdAt              DateTime  @default(now())
   updatedAt              DateTime  @updatedAt
 
@@ -402,6 +409,8 @@ model Order {
   cancelledByUser  User?           @relation("CancelledBy", fields: [cancelledBy], references: [id])
   orderItems       OrderItem[]
   reviews          Review[] // Thêm relation với Review
+  discountUsage    DiscountUsage?  // Một đơn hàng có tối đa 1 lượt sử dụng voucher được ghi lại
+  returnRequest    ReturnRequest?
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
 
@@ -416,12 +425,57 @@ model Order {
   @@index([cancelledBy])
 }
 
+model DiscountUsage {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  discountId Int
+  orderId    Int      @unique
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  discount   Discount @relation(fields: [discountId], references: [id], onDelete: Cascade)
+  order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, discountId]) // Một user chỉ được dùng 1 mã 1 lần
+  @@index([userId])
+  @@index([discountId])
+}
+
 enum OrderStatus {
   PENDING
   PROCESSING
   SHIPPED
   DELIVERED
   CANCELLED
+  RETURN_REQUESTED
+  RETURNED
+}
+
+model ReturnRequest {
+  id           Int                @id @default(autoincrement())
+  orderId      Int                @unique
+  userId       Int
+  reason       String             @db.Text
+  details      String?            @db.Text
+  images       String[]           @default([]) // URLs mảng hình ảnh lỗi/trả hàng
+  status       ReturnStatus       @default(PENDING)
+  adminNote    String?            @db.Text
+  order        Order              @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  user         User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+
+  @@index([userId])
+  @@index([orderId])
+  @@index([status])
+}
+
+enum ReturnStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  RETURNING
+  RECEIVED
+  COMPLETED
 }
 
 model Payment {

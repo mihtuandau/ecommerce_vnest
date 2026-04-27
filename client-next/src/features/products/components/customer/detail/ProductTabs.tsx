@@ -39,13 +39,13 @@ export function ProductTabs({ product }: ProductTabsProps) {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                "relative flex items-center gap-2 px-6 py-4 text-[11px] font-semibold uppercase tracking-wider transition-all whitespace-nowrap border-r border-slate-200/60 last:border-r-0",
+                "relative flex items-center gap-2 px-6 py-4 text-sm font-semibold transition-all whitespace-nowrap border-r border-slate-200/60 last:border-r-0",
                 isActive 
                   ? "text-primary bg-white" 
-                  : "text-slate-500 hover:text-slate-800 hover:bg-slate-50/50"
+                  : "text-slate-600 hover:text-slate-800 hover:bg-slate-50/50"
               )}
             >
-              <Icon className={cn("h-3.5 w-3.5", isActive ? "text-primary" : "text-slate-400")} />
+              <Icon className={cn("h-3.5 w-3.5", isActive ? "text-primary" : "text-slate-500")} />
               {tab.label}
               {isActive && (
                 <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-primary" />
@@ -69,7 +69,7 @@ export function ProductTabs({ product }: ProductTabsProps) {
           <div className="divide-y divide-slate-100 border-t border-slate-100 mt-[-2rem]">
             {specs.map((spec, i) => (
               <div key={i} className="flex items-center py-4 gap-8">
-                <span className="w-40 flex-shrink-0 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                <span className="w-40 flex-shrink-0 text-sm font-medium text-slate-500">
                   {spec.label}
                 </span>
                 {spec.label === "Danh mục" ? (

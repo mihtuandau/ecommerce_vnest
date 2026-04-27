@@ -13,7 +13,7 @@ export function ProductBreadcrumbs({ product }: ProductBreadcrumbsProps) {
   return (
     <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 border-b border-slate-50">
       <div className="py-4 md:py-6">
-        <nav className="flex items-center gap-2 text-[11px] font-medium text-slate-500 uppercase tracking-wider overflow-x-auto no-scrollbar scroll-smooth">
+        <nav className="flex items-center gap-2 text-xs font-semibold text-slate-500 overflow-x-auto no-scrollbar scroll-smooth">
           <Link
             href="/"
             className="hover:text-primary transition-all flex items-center gap-1.5 group whitespace-nowrap"

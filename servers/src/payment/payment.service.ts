@@ -146,15 +146,17 @@ export class PaymentService {
       // In production, this would call the actual refund API on the payment gateway
       if (['VNPAY', 'MOMO', 'PAYOS'].includes(payment.method)) {
         // TODO: Implement actual refund API calls for each gateway
-        // For now, just mark payment as refunded
+        // For now, just mark payment as refunded and record the amount
         await this.repository.update(paymentId, {
           status: 'REFUNDED',
+          refundAmount: payment.amount,
         });
         this.logger.log(`Refund initiated for ${payment.method} payment ${paymentId}`);
       } else if (payment.method === 'CASH' || payment.method === 'CARD') {
         // For cash/card, just mark as refunded since no online refund needed
         await this.repository.update(paymentId, {
           status: 'REFUNDED',
+          refundAmount: payment.amount,
         });
         this.logger.log(`Refund marked for ${payment.method} payment ${paymentId}`);
       }

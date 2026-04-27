@@ -43,17 +43,22 @@ export function RecentOrders({ orders, isLoading }: RecentOrdersProps) {
           ) : recentOrders.length > 0 ? (
             recentOrders.slice(0, 5).map((order: any, index: number) => {
               const firstItem = order.orderItems?.[0];
-              const imageUrl = 
-                firstItem?.variant?.product?.images?.[0]?.url || 
-                firstItem?.variant?.images?.[0]?.url ||
-                firstItem?.product?.images?.[0]?.url || 
-                firstItem?.variantSnapshot?.image ||
-                firstItem?.variant?.image;
+              
+              // Safe image resolver
+              const getImageUrl = (item: any) => {
+                const images = item.variant?.images || item.variant?.product?.images || [];
+                if (images.length === 0) return null;
+                const firstImg = images[0];
+                const rawUrl = typeof firstImg === 'string' ? firstImg : firstImg?.url || "";
+                return rawUrl?.startsWith('http') ? rawUrl : `/${rawUrl}`;
+              };
+
+              const imageUrl = getImageUrl(firstItem);
               
               return (
-                <div key={index} className="flex items-center justify-between group p-2 -mx-2 rounded-lg hover:bg-slate-50 transition-colors cursor-pointer">
+                <div key={index} className="flex items-center justify-between group p-2 -mx-2 rounded-xl hover:bg-slate-50 transition-colors cursor-pointer">
                   <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-lg bg-slate-100 flex items-center justify-center font-bold text-[10px] text-slate-500 overflow-hidden">
+                    <div className="h-10 w-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center font-bold text-[10px] text-slate-400 overflow-hidden shrink-0">
                       {imageUrl ? (
                         <img src={imageUrl} alt="Order item" className="w-full h-full object-cover" />
                       ) : (

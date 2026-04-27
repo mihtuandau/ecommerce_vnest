@@ -136,7 +136,7 @@ export function ProductActions({
         {colors.length > 0 && (
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Màu sắc</span>
+              <span className="text-[10px] font-bold text-slate-400 tracking-widest">Màu sắc</span>
               {selectedColor && <span className="text-[10px] font-bold text-primary">{selectedColor}</span>}
             </div>
             <div className="flex flex-wrap gap-2.5">
@@ -162,7 +162,7 @@ export function ProductActions({
         {sizes.length > 0 && (
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Kích thước</span>
+              <span className="text-[10px] font-bold text-slate-400 tracking-widest">Kích thước</span>
               {selectedSize && <span className="text-[10px] font-bold text-primary">{selectedSize}</span>}
             </div>
             <div className="flex flex-wrap gap-2.5">
@@ -188,14 +188,14 @@ export function ProductActions({
       {/* ── Availability ── */}
       <div className="flex items-center gap-2 py-1">
         <div className={cn("h-1.5 w-1.5 rounded-full", currentStock > 0 ? "bg-green-500" : "bg-rose-500")} />
-        <span className={cn("text-[11px] font-bold uppercase tracking-tight", currentStock > 0 ? "text-green-600" : "text-rose-600")}>
+        <span className={cn("text-[11px] font-bold tracking-tight", currentStock > 0 ? "text-green-600" : "text-rose-600")}>
           {currentStock > 0 ? `Còn hàng (${currentStock} sản phẩm)` : "Hết hàng"}
         </span>
       </div>
 
       {/* ── Quantity ── */}
       <div className="flex items-center gap-6 py-1">
-        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest w-16">Số lượng</span>
+        <span className="text-[10px] font-bold text-slate-400 tracking-widest w-16">Số lượng</span>
         <div className="flex items-center bg-slate-50 rounded-xl p-1 border border-slate-100">
           <button
             onClick={() => setQuantity(Math.max(1, quantity - 1))}
@@ -214,31 +214,32 @@ export function ProductActions({
       </div>
 
       {/* ── Action Buttons ── */}
-      <div className="flex items-center gap-3 pt-2">
+      <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
         <button
           onClick={handleAddToCart}
           disabled={currentStock <= 0}
-          className="flex-1 h-12 rounded-2xl border-2 border-primary text-primary font-bold text-xs hover:bg-primary/10 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm active:scale-[0.98]"
+          className="w-full sm:flex-1 h-12 rounded-2xl border-2 border-primary text-primary font-bold text-xs hover:bg-primary/10 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm active:scale-[0.98]"
         >
           <ShoppingCart className="h-4 w-4" /> Thêm vào giỏ
         </button>
         <button 
           onClick={handleBuyNow}
           disabled={currentStock <= 0}
-          className="flex-[1.2] h-12 rounded-2xl bg-primary text-white font-bold text-xs hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-xl shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full sm:flex-[1.2] h-12 rounded-2xl bg-primary text-white font-bold text-xs hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-xl shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Mua ngay
         </button>
         <button 
           onClick={handleToggleWishlist}
           className={cn(
-            "h-12 w-12 rounded-2xl border-2 transition-all flex items-center justify-center group shrink-0",
+            "h-12 w-full sm:w-12 rounded-2xl border-2 transition-all flex items-center justify-center group shrink-0",
             isFavorite 
               ? "border-rose-500 bg-rose-50 text-rose-500" 
               : "border-slate-100 hover:border-rose-500 text-slate-400 hover:text-rose-500"
           )}
         >
           <Heart className={cn("h-4 w-4 transition-transform group-active:scale-90", isFavorite && "fill-current")} />
+          <span className="sm:hidden ml-2 text-xs font-bold">Yêu thích</span>
         </button>
       </div>
 
@@ -250,7 +251,7 @@ export function ProductActions({
           "Đổi trả 30 ngày",
           "Đóng gói cẩn thận"
         ].map((info, i) => (
-          <div key={i} className="text-[10px] font-bold text-slate-400 uppercase tracking-tight flex items-center gap-2">
+          <div key={i} className="text-[10px] font-bold text-slate-400 tracking-tight flex items-center gap-2">
             <div className="h-1 w-1 rounded-full bg-slate-200" />
             {info}
           </div>

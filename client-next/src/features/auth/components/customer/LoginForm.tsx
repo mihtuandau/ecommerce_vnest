@@ -45,16 +45,16 @@ export function LoginForm() {
       <div className="text-center mb-6">
         <Link href="/" className="inline-flex justify-center mb-4">
           <div className="bg-white/80 backdrop-blur-md p-3 rounded-[1rem] shadow-sm border border-white/20">
-            <img src="/logo.png" alt="Vnest Logo" className="h-8 w-auto object-contain" />
+            <img src="/logoMT.png" alt="Minh Tuan Shop Logo" className="h-8 w-auto object-contain" />
           </div>
         </Link>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight drop-shadow-sm">Chào mừng!</h1>
-        <p className="text-slate-200 mt-1 font-medium text-[13px] drop-shadow-sm">Đăng nhập để tiếp tục mua sắm</p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight drop-shadow-sm">Chào mừng!</h1>
+        <p className="text-white/80 mt-1 font-normal text-[13px] drop-shadow-sm">Đăng nhập để tiếp tục mua sắm</p>
       </div>
 
       <form onSubmit={handleLogin} className="space-y-3.5 sm:space-y-4">
         <div className="space-y-1.5">
-          <label className="text-[11px] font-bold text-slate-200 ml-1.5 uppercase tracking-widest drop-shadow-sm">Email</label>
+          <label className="text-xs font-semibold text-white/80 ml-1.5 drop-shadow-sm">Email</label>
           <div className="relative group">
             <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-white transition-colors" />
             <Input
@@ -70,10 +70,10 @@ export function LoginForm() {
 
         <div className="space-y-1.5">
           <div className="flex items-center justify-between ml-1.5">
-            <label className="text-[11px] font-bold text-slate-200 uppercase tracking-widest drop-shadow-sm">Mật khẩu</label>
+            <label className="text-xs font-semibold text-white/80 drop-shadow-sm">Mật khẩu</label>
             <Link
               href={ROUTES.FORGOT_PASSWORD}
-              className="text-[11px] font-bold text-white hover:text-slate-200 transition-colors drop-shadow-sm"
+              className="text-xs font-medium text-white/80 hover:text-white transition-colors drop-shadow-sm"
             >
               Quên mật khẩu?
             </Link>
@@ -107,7 +107,7 @@ export function LoginForm() {
 
         <Button
           type="submit"
-          className="w-full h-12 rounded-[1.25rem] text-base font-bold bg-white text-slate-900 hover:bg-slate-100 shadow-[0_8px_20px_-6px_rgba(255,255,255,0.3)] hover:-translate-y-0.5 transition-all duration-300 mt-2"
+          className="w-full h-12 rounded-[1.25rem] text-base font-semibold bg-white text-slate-900 hover:bg-slate-100 shadow-[0_8px_20px_-6px_rgba(255,255,255,0.3)] hover:-translate-y-0.5 transition-all duration-300 mt-2"
           disabled={isLoggingIn}
         >
           {isLoggingIn ? "Đang xử lý..." : "Đăng nhập ngay"}
@@ -118,7 +118,7 @@ export function LoginForm() {
             <div className="w-full border-t border-white/20"></div>
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-3 bg-transparent text-slate-300 font-bold tracking-wider text-[11px] uppercase drop-shadow-sm">
+            <span className="px-3 bg-transparent text-white/60 font-semibold text-xs drop-shadow-sm">
               Hoặc
             </span>
           </div>
@@ -128,7 +128,7 @@ export function LoginForm() {
           <Button 
             type="button" 
             variant="outline" 
-            className="h-12 rounded-[1rem] gap-2 font-bold text-[14px] border-white/15 bg-white/[0.05] backdrop-blur-md text-white hover:bg-white/15 hover:border-white/30 hover:-translate-y-0.5 shadow-[inset_0_2px_4px_rgba(0,0,0,0.1),0_4px_12px_rgba(0,0,0,0.2)] transition-all duration-300"
+            className="h-12 rounded-[1rem] gap-2 font-semibold text-[14px] border-white/15 bg-white/[0.05] backdrop-blur-md text-white hover:bg-white/15 hover:border-white/30 hover:-translate-y-0.5 shadow-[inset_0_2px_4px_rgba(0,0,0,0.1),0_4px_12px_rgba(0,0,0,0.2)] transition-all duration-300"
             onClick={handleGoogleLogin}
           >
             <svg className="h-5 w-5" viewBox="0 0 24 24">
@@ -142,16 +142,16 @@ export function LoginForm() {
           <Button 
             type="button" 
             variant="outline" 
-            className="h-12 rounded-[1rem] gap-2 font-bold text-[14px] border-white/15 bg-white/[0.05] backdrop-blur-md text-white hover:bg-white/15 hover:border-white/30 hover:-translate-y-0.5 shadow-[inset_0_2px_4px_rgba(0,0,0,0.1),0_4px_12px_rgba(0,0,0,0.2)] transition-all duration-300"
+            className="h-12 rounded-[1rem] gap-2 font-semibold text-[14px] border-white/15 bg-white/[0.05] backdrop-blur-md text-white hover:bg-white/15 hover:border-white/30 hover:-translate-y-0.5 shadow-[inset_0_2px_4px_rgba(0,0,0,0.1),0_4px_12px_rgba(0,0,0,0.2)] transition-all duration-300"
           >
             <Facebook className="h-5 w-5 text-[#1877F2]" />
             Facebook
           </Button>
         </div>
 
-        <p className="text-center text-[13px] text-slate-300 pt-4 font-medium drop-shadow-sm">
+        <p className="text-center text-[13px] text-white/60 pt-4 font-normal drop-shadow-sm">
           Chưa có tài khoản?{" "}
-          <Link href={ROUTES.REGISTER} className="text-white font-extrabold hover:underline transition-all drop-shadow-sm">
+          <Link href={ROUTES.REGISTER} className="text-white font-bold hover:underline transition-all drop-shadow-sm">
             Đăng ký ngay
           </Link>
         </p>

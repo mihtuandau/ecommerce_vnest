@@ -41,7 +41,10 @@ export class OrderManagement {
     await this.handleDeliveredStatus(dto, oldOrder);
 
     if (dto.status === 'CANCELLED') {
+      this.logger.log(`[OrderManagement] Order ${id} is being cancelled. Restoring stock...`);
       await this.repository.restoreOrderStock(id);
+      await this.repository.restoreDiscountUsage(id);
+      this.logger.log(`[OrderManagement] Stock restoration for order ${id} completed.`);
     }
 
     await this.cacheService.clearRelatedCaches(id, order.userId || undefined);
@@ -53,6 +56,13 @@ export class OrderManagement {
     const order = await this.repository.findById(id);
     if (!order) throw new NotFoundException('Order not found');
     
+    // Nếu đơn hàng chưa bị hủy mà lại bị xóa, chúng ta cũng nên hoàn lại tồn kho
+    if (order.status !== 'CANCELLED' && order.status !== 'RETURNED') {
+      this.logger.log(`[OrderManagement] Order ${id} is being deleted without prior cancellation. Restoring stock before deletion...`);
+      await this.repository.restoreOrderStock(id);
+      await this.repository.restoreDiscountUsage(id);
+    }
+
     const removed = await this.repository.delete(id);
     await this.cacheService.clearRelatedCaches(id, order.userId || undefined);
 
@@ -88,7 +98,10 @@ export class OrderManagement {
       await this.paymentService.updateStatus(order.payment.id, { status: 'CANCELLED' });
     }
 
+    this.logger.log(`[OrderManagement] Member order ${orderId} cancelled by user ${userId}. Restoring stock...`);
     await this.repository.restoreOrderStock(orderId);
+    await this.repository.restoreDiscountUsage(orderId);
+    this.logger.log(`[OrderManagement] Stock restoration for member order ${orderId} completed.`);
 
     await this.cacheService.clearRelatedCaches(orderId, userId);
 
@@ -112,7 +125,10 @@ export class OrderManagement {
 
     const cancelled = await this.repository.update(order.id, { status: 'CANCELLED' });
 
+    this.logger.log(`[OrderManagement] Guest order ${order.id} (${orderCode}) cancelled. Restoring stock...`);
     await this.repository.restoreOrderStock(order.id);
+    await this.repository.restoreDiscountUsage(order.id);
+    this.logger.log(`[OrderManagement] Stock restoration for guest order ${order.id} completed.`);
 
     await this.cacheService.clearRelatedCaches(order.id, order.userId || undefined);
 
@@ -185,20 +201,17 @@ export class OrderManagement {
   async lookupGuestOrder(orderCode: string, contact: string): Promise<any> {
     const order: any = await this.repository.findByCode(orderCode);
 
-    if (!order) {
-      throw new NotFoundException('Order not found');
-    }
-
     // Allow lookup even if order belongs to a user, as long as contact info matches
-    const contactMatch = 
+    const contactMatch = order && (
       order.guestEmail === contact || 
       order.guestPhone === contact || 
       order.phone === contact ||
       order.user?.email === contact ||
-      order.user?.phone === contact;
+      order.user?.phone === contact
+    );
 
-    if (!contactMatch) {
-      throw new BadRequestException('Contact information does not match');
+    if (!order || !contactMatch) {
+      throw new NotFoundException('Không tìm thấy đơn hàng hoặc thông tin liên hệ không khớp');
     }
 
     return OrderHelper.serializeOrder(order);

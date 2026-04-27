@@ -96,6 +96,7 @@ export function GuestOrderDetailView() {
             address={order.address}
             paymentMethod={order.paymentMethod}
             isPaid={isPaid}
+            paymentStatus={order.paymentStatus || order.payment?.status}
             shippingCode={order.shippingCode}
           />
         </div>

@@ -43,12 +43,12 @@ export function WishlistView() {
           <div className="space-y-6">
             <Link
               href="/"
-              className="flex items-center gap-2 text-slate-500 hover:text-[#1565C1] transition-all group w-fit"
+              className="flex items-center gap-2 text-slate-600 hover:text-primary transition-all group w-fit"
             >
-              <div className="h-8 w-8 rounded-full border border-slate-200 flex items-center justify-center group-hover:border-[#1565C1] group-hover:bg-blue-50 transition-all">
+              <div className="h-8 w-8 rounded-full border border-slate-200 flex items-center justify-center group-hover:border-primary group-hover:bg-blue-50 transition-all">
                 <ArrowLeft size={14} />
               </div>
-              <span className="text-xs font-bold uppercase tracking-wider">
+              <span className="text-xs font-semibold">
                 Quay lại trang chủ
               </span>
             </Link>
@@ -58,12 +58,12 @@ export function WishlistView() {
                 <h1 className="text-2xl font-bold tracking-tight text-slate-900">
                   Danh sách yêu thích
                 </h1>
-                <p className="text-slate-500 text-sm font-medium">
+                <p className="text-slate-600 text-sm font-normal">
                   Lưu giữ những sản phẩm bạn quan tâm nhất
                 </p>
               </div>
-              <div className="hidden sm:block text-[10px] font-bold text-slate-400 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100">
-                <span className="text-[#1565C1]">{items.length}</span> SẢN PHẨM
+              <div className="hidden sm:block text-[10px] font-semibold text-slate-500 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100">
+                <span className="text-primary">{items.length}</span> sản phẩm
               </div>
             </div>
           </div>
@@ -85,13 +85,13 @@ export function WishlistView() {
               </Button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-6">
               {items.map((item) => (
                 <Card
                   key={item.id}
-                  className="group border-slate-100 hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-500 rounded-[1.5rem] overflow-hidden bg-white"
+                  className="group border-slate-100 hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-500 rounded-2xl sm:rounded-[1.5rem] overflow-hidden bg-white"
                 >
-                  <div className="relative aspect-square overflow-hidden bg-slate-50 p-6">
+                  <div className="relative aspect-square overflow-hidden bg-slate-50 p-3 sm:p-6">
                     <img
                       src={item.imageUrl}
                       alt={item.name}
@@ -99,47 +99,43 @@ export function WishlistView() {
                     />
                     <button
                       onClick={() => removeFromWishlist(item.id)}
-                      className="absolute top-4 right-4 h-9 w-9 rounded-full bg-white/80 backdrop-blur-md shadow-sm flex items-center justify-center text-slate-400 hover:text-rose-500 hover:bg-white transition-all duration-300"
+                      className="absolute top-2 right-2 sm:top-4 sm:right-4 h-7 w-7 sm:h-9 sm:w-9 rounded-full bg-white/80 backdrop-blur-md shadow-sm flex items-center justify-center text-slate-400 hover:text-rose-500 hover:bg-white transition-all duration-300"
                     >
-                      <Trash2 size={16} />
+                      <Trash2 size={14} className="sm:size-4" />
                     </button>
                     {item.originalPrice && item.originalPrice > item.price && (
-                      <div className="absolute top-4 left-4 bg-rose-500 text-white text-[10px] font-bold px-2 py-1 rounded-lg">
-                        -
-                        {Math.round(
-                          ((item.originalPrice - item.price) / item.originalPrice) * 100
-                        )}
-                        %
+                      <div className="absolute top-2 left-2 sm:top-4 sm:left-4 bg-rose-500 text-white text-[8px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-md sm:rounded-lg">
+                        -{Math.round(((item.originalPrice - item.price) / item.originalPrice) * 100)}%
                       </div>
                     )}
                   </div>
 
-                  <div className="p-6 space-y-4">
+                  <div className="p-3 sm:p-5 space-y-3 sm:space-y-4">
                     <div className="space-y-1">
                       <Link
                         href={`/shop/${item.slug}`}
-                        className="text-sm font-bold text-slate-800 hover:text-primary transition-colors line-clamp-1"
+                        className="text-xs sm:text-sm font-semibold text-slate-900 hover:text-primary transition-colors line-clamp-1"
                       >
                         {item.name}
                       </Link>
-                      <div className="flex items-center gap-2">
-                        <span className="text-base font-bold text-primary">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-2">
+                        <span className="text-sm sm:text-base font-bold text-primary">
                           {formatCurrency(item.price)}
                         </span>
                         {item.originalPrice && item.originalPrice > item.price && (
-                          <span className="text-xs text-slate-500 line-through font-semibold">
+                          <span className="text-[10px] sm:text-xs text-slate-400 line-through font-medium">
                             {formatCurrency(item.originalPrice)}
                           </span>
                         )}
                       </div>
                     </div>
 
-                    <div className="pt-2">
+                    <div className="pt-1 sm:pt-2">
                       <Button
                         onClick={() => handleAddToCart(item)}
-                        className="w-full h-11 rounded-xl bg-slate-900 hover:bg-primary text-white text-xs font-bold transition-all flex items-center justify-center gap-2"
+                        className="w-full h-9 sm:h-11 rounded-lg sm:rounded-xl bg-primary hover:bg-[#0d47a1] text-white text-[10px] sm:text-xs font-bold shadow-lg shadow-blue-500/10 transition-all flex items-center justify-center gap-1.5 sm:gap-2"
                       >
-                        <ShoppingCart size={14} />
+                        <ShoppingCart size={12} className="sm:size-3.5" />
                         Thêm vào giỏ
                       </Button>
                     </div>
@@ -154,7 +150,7 @@ export function WishlistView() {
             <div className="pt-10 border-t border-slate-100 flex justify-center">
               <Button
                 variant="ghost"
-                className="text-slate-400 hover:text-primary font-bold text-xs uppercase tracking-widest"
+                className="text-slate-500 hover:text-primary font-semibold text-xs transition-colors"
                 asChild
               >
                 <Link href="/shop" className="flex items-center gap-2">

@@ -11,6 +11,7 @@ import { CustomerOrders } from "@/features/users/components/admin/detail/Custome
 import { CustomerTabs } from "@/features/users/components/admin/detail/CustomerTabs";
 import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { OrderStatus, PaymentStatus } from "@/types/enums";
 
 export default function AdminUserDetailPage() {
   const { id } = useParams() as { id: string };
@@ -36,9 +37,20 @@ export default function AdminUserDetailPage() {
 
   const customer = user as any;
   const orders = customer.orders || [];
-  const totalSpent = orders.reduce((sum: number, order: any) => sum + (order.total || 0), 0);
+  
+  // Stricter logic: Only count orders that are both DELIVERED and PAID/SUCCESS
+  const consumptionOrders = orders.filter((order: any) => {
+    const isDelivered = order.status === OrderStatus.DELIVERED;
+    const isPaid = order.payment?.status === PaymentStatus.SUCCESS || order.payment?.status === "PAID";
+    return isDelivered && isPaid;
+  });
+  
+  const totalSpent = consumptionOrders.reduce((sum: number, order: any) => sum + (order.total || 0), 0);
+  const totalOrders = consumptionOrders.length;
   const totalReviews = customer.reviews?.length || 0;
-  const lastOrderDate = orders.length > 0 ? orders[0].createdAt : undefined;
+  
+  const lastOrder = orders[0];
+  const lastOrderDate = lastOrder?.createdAt;
 
   return (
     <div className="space-y-6 pb-10">
@@ -71,7 +83,7 @@ export default function AdminUserDetailPage() {
         <div className="lg:col-span-2 space-y-6">
           <CustomerStats 
             totalSpent={totalSpent}
-            totalOrders={orders.length}
+            totalOrders={totalOrders}
             totalReviews={totalReviews}
             lastOrderDate={lastOrderDate}
           />

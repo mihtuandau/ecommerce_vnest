@@ -14,7 +14,9 @@ interface OrderTabsProps {
     PROCESSING: number;
     SHIPPED: number;
     DELIVERED: number;
-    CANCELLED: number;  
+    CANCELLED: number;
+    RETURN_REQUESTED: number;
+    RETURNED: number;
   };
 }
 
@@ -26,6 +28,8 @@ export function OrderTabs({ activeTab, onTabChange, counts }: OrderTabsProps) {
     { value: OrderStatus.SHIPPED, label: "Đang giao", count: counts.SHIPPED },
     { value: OrderStatus.DELIVERED, label: "Đã giao", count: counts.DELIVERED },
     { value: OrderStatus.CANCELLED, label: "Đã hủy", count: counts.CANCELLED },
+    { value: OrderStatus.RETURN_REQUESTED, label: "Trả hàng", count: counts.RETURN_REQUESTED },
+    { value: OrderStatus.RETURNED, label: "Đã trả", count: counts.RETURNED },
   ];
 
   return (

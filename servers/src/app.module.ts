@@ -30,6 +30,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { GHNModule } from './ghn/ghn.module';
 import { BrandModule } from './brand/brand.module';
+import { ReturnModule } from './return/return.module';
 
 @Module({
   imports: [
@@ -70,6 +71,7 @@ import { BrandModule } from './brand/brand.module';
     HealthModule,
     BrandModule,
     GHNModule,
+    ReturnModule,
   ],
   controllers: [AppController],
   providers: [

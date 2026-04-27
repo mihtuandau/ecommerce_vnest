@@ -137,12 +137,12 @@ export default function HomeContainer() {
           <div className="absolute bottom-0 right-1/4 w-72 h-72 bg-rose-500/10 rounded-full blur-3xl translate-y-1/2 pointer-events-none" />
 
           <div className="relative z-10 max-w-2xl mx-auto space-y-4 md:space-y-6">
-            <span className="inline-block text-[10px] font-black uppercase tracking-[0.25em] text-primary/80 bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">
-              Vnest Collection 2025
+            <span className="inline-block text-[10px] font-black tracking-[0.25em] text-primary/80 bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">
+              Minh Tuấn Collection 2025
             </span>
             <h2 className="text-2xl md:text-5xl font-black text-white tracking-tight leading-[1.2] md:leading-[1.1]">
               Kiến tạo không gian
-              <br className="hidden sm:block" /> hiện đại cùng Vnest
+              <br className="hidden sm:block" /> hiện đại cùng Minh Tuấn
             </h2>
             <p className="text-slate-400 text-sm md:text-lg max-w-lg mx-auto leading-relaxed font-medium">
               Sở hữu ngay những thiết kế công nghệ và gia dụng đẳng cấp bậc nhất hiện

@@ -245,14 +245,17 @@ export class ReportRepository {
 
     const [todayCount, yesterdayCount] = await Promise.all([
       this.prisma.order.count({
-        where: { createdAt: { gte: startOfToday, lte: endOfToday } }
+        where: { 
+          createdAt: { gte: startOfToday, lte: endOfToday },
+          status: 'DELIVERED',
+          payment: { status: { in: ['SUCCESS', 'REFUNDED'] } }
+        }
       }),
       this.prisma.order.count({
         where: { 
-          createdAt: { 
-            gte: startOfYesterday, 
-            lte: endOfYesterday
-          } 
+          createdAt: { gte: startOfYesterday, lte: endOfYesterday },
+          status: 'DELIVERED',
+          payment: { status: { in: ['SUCCESS', 'REFUNDED'] } }
         }
       })
     ]);

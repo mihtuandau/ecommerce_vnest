@@ -116,6 +116,18 @@ export function AccountView() {
     shippingApi.getProvinces().then(res => setProvinces(res.data || []));
   }, []);
 
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const url = await productsApi.uploadImage(file);
+      updateProfile.mutate({ avatar: url });
+    } catch (err) {
+      toastError("Không thể tải ảnh đại diện lên");
+    }
+  };
+
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     updateProfile.mutate({
@@ -197,10 +209,10 @@ export function AccountView() {
     <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-8 md:py-12">
       <div className="flex flex-col gap-8">
         {/* Breadcrumbs Only */}
-        <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+        <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
           <Link href="/" className="hover:text-primary transition-colors">Trang chủ</Link>
           <span className="text-slate-300">/</span>
-          <span className="text-[#1565C1]">Tài khoản</span>
+          <span className="text-primary font-bold">Tài khoản</span>
         </div>
 
         {/* ── Profile Header ── */}
@@ -214,25 +226,36 @@ export function AccountView() {
               />
             ) : (
               <div className="h-14 w-14 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 text-lg font-medium border border-slate-200">
-                {user.name?.charAt(0).toUpperCase()}
+                {user.name?.charAt(0)}
               </div>
             )}
-            <button className="absolute -bottom-0.5 -right-0.5 h-6 w-6 bg-white border border-slate-200 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 transition-colors shadow-sm">
-              <Camera size={11} />
-            </button>
+            <label 
+              htmlFor="avatar-upload"
+              className="absolute -bottom-0.5 -right-0.5 h-6 w-6 bg-white border border-slate-200 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 transition-colors shadow-sm cursor-pointer"
+            >
+              {updateProfile.isPending ? <Loader2 size={11} className="animate-spin" /> : <Camera size={11} />}
+              <input 
+                id="avatar-upload" 
+                type="file" 
+                className="hidden" 
+                accept="image/*" 
+                onChange={handleAvatarUpload}
+                disabled={updateProfile.isPending}
+              />
+            </label>
           </div>
 
           <div className="flex-1 min-w-0">
             <h1 className="text-base font-semibold text-slate-900 truncate tracking-tight">{user.name}</h1>
-            <p className="text-sm text-slate-400 truncate font-medium">{user.email}</p>
+            <p className="text-sm text-slate-600 truncate font-normal">{user.email}</p>
           </div>
 
           <div className="flex gap-2">
-            <span className="text-[11px] text-slate-500 bg-slate-50 border border-slate-200 px-3 py-1 rounded-full font-medium">
+            <span className="text-[11px] text-slate-600 bg-slate-50 border border-slate-200 px-3 py-1 rounded-full font-medium">
               {user.role === "ADMIN" ? "Quản trị viên" : "Khách hàng"}
             </span>
-            <span className="text-[11px] text-[#1565C1] bg-blue-50 border border-blue-100 px-3 py-1 rounded-full font-medium">
-              Thành viên Vnest
+            <span className="text-[11px] text-primary bg-blue-50 border border-blue-100 px-3 py-1 rounded-full font-medium">
+              Thành viên Minh Tuấn Shop
             </span>
           </div>
         </div>
@@ -246,8 +269,8 @@ export function AccountView() {
               className={[
                 "flex items-center gap-1.5 px-4 py-2.5 text-sm border-b-2 -mb-px transition-colors duration-200 whitespace-nowrap",
                 activeTab === tab.key
-                  ? "border-[#1565C1] text-[#1565C1] font-semibold"
-                  : "border-transparent text-slate-400 hover:text-[#1565C1]",
+                  ? "border-primary text-primary font-semibold"
+                  : "border-transparent text-slate-500 hover:text-primary",
               ].join(" ")}
             >
               {tab.icon}
@@ -261,14 +284,14 @@ export function AccountView() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-in fade-in duration-400">
             <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
               <div className="flex items-center gap-2.5 px-6 py-4 border-b border-slate-50 bg-slate-50/30">
-                <User size={14} className="text-slate-400" />
-                <span className="text-sm font-semibold text-slate-600">Thông tin cá nhân</span>
+                <User size={14} className="text-slate-500" />
+                <span className="text-sm font-semibold text-slate-700">Thông tin cá nhân</span>
               </div>
               <CardContent className="p-6">
                 <form onSubmit={handleUpdateProfile} className="space-y-5">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div className="space-y-1.5">
-                      <label className="text-xs font-semibold text-slate-400 ml-0.5">Họ và tên</label>
+                      <label className="text-xs font-normal text-slate-500 ml-0.5">Họ và tên</label>
                       <Input
                         className="h-10 rounded-xl border-slate-200 text-sm focus-visible:ring-[#1565C1]/10 transition-all font-medium"
                         value={form.name}
@@ -277,7 +300,7 @@ export function AccountView() {
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-xs font-semibold text-slate-400 ml-0.5">Email liên hệ</label>
+                      <label className="text-xs font-normal text-slate-500 ml-0.5">Email liên hệ</label>
                       <Input
                         className="h-10 rounded-xl border-slate-100 bg-slate-50 text-slate-400 cursor-not-allowed text-sm font-medium"
                         value={form.email}
@@ -286,7 +309,7 @@ export function AccountView() {
                     </div>
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-slate-400 ml-0.5">Số điện thoại</label>
+                    <label className="text-xs font-normal text-slate-500 ml-0.5">Số điện thoại</label>
                     <Input
                       className="h-10 rounded-xl border-slate-200 text-sm focus-visible:ring-[#1565C1]/10 transition-all font-medium max-w-[240px]"
                       value={form.phone}
@@ -298,7 +321,7 @@ export function AccountView() {
                     <Button
                       type="submit"
                       disabled={updateProfile.isPending}
-                      className="h-10 px-8 rounded-full text-sm font-bold bg-[#1565C1] hover:bg-[#1153a8] text-white transition-all active:scale-95 shadow-md shadow-blue-500/10"
+                      className="h-10 px-8 rounded-full text-sm font-bold bg-primary hover:bg-[#1153a8] text-white transition-all active:scale-95 shadow-md shadow-blue-500/10"
                     >
                       {updateProfile.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Lưu thay đổi"}
                     </Button>
@@ -314,7 +337,7 @@ export function AccountView() {
                     <ShoppingBag size={18} />
                   </div>
                   <div>
-                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Đơn hàng</p>
+                    <p className="text-xs text-slate-600 font-semibold">Đơn hàng</p>
                     <p className="text-base font-bold text-slate-900 leading-none mt-1">{totalOrders} đơn</p>
                   </div>
                 </div>
@@ -325,7 +348,7 @@ export function AccountView() {
                     <Wallet size={18} />
                   </div>
                   <div>
-                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Chi tiêu</p>
+                    <p className="text-xs text-slate-600 font-semibold">Chi tiêu</p>
                     <p className="text-base font-bold text-slate-900 leading-none mt-1">{formatCurrency(totalSpending)}</p>
                   </div>
                 </div>
@@ -365,7 +388,7 @@ export function AccountView() {
                   </div>
                   <div>
                     <p className="text-base font-bold text-slate-800">Bạn chưa lưu địa chỉ nào</p>
-                    <p className="text-sm text-slate-400 mt-1">Thêm địa chỉ để nhận hàng thuận tiện hơn.</p>
+                    <p className="text-sm text-slate-500 mt-1 font-normal">Thêm địa chỉ để nhận hàng thuận tiện hơn.</p>
                   </div>
                 </div>
               ) : (
@@ -387,7 +410,7 @@ export function AccountView() {
                             <MapPin className="h-5 w-5" />
                           </div>
                           {address.isDefault && (
-                            <Badge className="bg-[#1565C1] text-white text-[9px] font-bold uppercase tracking-wider h-5 px-2 rounded-lg">
+                            <Badge className="bg-[#1565C1] text-white text-[9px] font-semibold tracking-wider h-5 px-2 rounded-lg">
                               Mặc định
                             </Badge>
                           )}
@@ -417,7 +440,7 @@ export function AccountView() {
                             size="sm" 
                             onClick={() => setDefaultAddress.mutate(address.id)}
                             disabled={setDefaultAddress.isPending}
-                            className="h-8 px-3 rounded-lg text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-[#1565C1] hover:bg-blue-50"
+                            className="h-8 px-3 rounded-lg text-[10px] font-semibold text-slate-500 hover:text-primary hover:bg-blue-50"
                           >
                             Thiết lập mặc định
                           </Button>

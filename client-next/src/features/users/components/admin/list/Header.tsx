@@ -15,7 +15,7 @@ export function Header({ totalUsers }: HeaderProps) {
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-slate-900">Người dùng</h1>
         <p className="text-slate-500 text-sm">
-          Quản lý {totalUsers} tài khoản trong hệ thống Vnest.
+          Quản lý {totalUsers} tài khoản trong hệ thống Minh Tuấn Shop.
         </p>
       </div>
       

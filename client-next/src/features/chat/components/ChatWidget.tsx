@@ -12,7 +12,7 @@ export function ChatWidget() {
   const [messages, setMessages] = useState<any[]>([
     {
       role: "bot",
-      content: "Xin chào! Tôi là trợ lý ảo của Vnest. Tôi có thể giúp gì cho bạn?",
+      content: "Xin chào! Tôi là trợ lý ảo của Minh Tuấn Shop. Tôi có thể giúp gì cho bạn?",
       timestamp: new Date().toISOString()
     }
   ]);

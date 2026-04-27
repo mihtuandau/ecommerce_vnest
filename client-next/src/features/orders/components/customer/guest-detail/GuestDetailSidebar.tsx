@@ -10,6 +10,7 @@ interface GuestDetailSidebarProps {
   address?: string;
   paymentMethod: string;
   isPaid: boolean;
+  paymentStatus?: string;
   shippingCode?: string;
 }
 
@@ -20,6 +21,7 @@ export function GuestDetailSidebar({
   address,
   paymentMethod, 
   isPaid, 
+  paymentStatus,
   shippingCode 
 }: GuestDetailSidebarProps) {
   return (
@@ -28,7 +30,7 @@ export function GuestDetailSidebar({
       <div className="border border-slate-100 rounded-xl p-5 space-y-4 bg-white">
         <div className="flex items-center gap-2 text-slate-500">
           <MapPin className="h-4 w-4" />
-          <h3 className="text-xs font-semibold uppercase tracking-wider">Giao nhận</h3>
+          <h3 className="text-xs font-semibold">Giao nhận</h3>
         </div>
         <div className="space-y-3">
           <div className="flex items-start gap-3">
@@ -62,7 +64,7 @@ export function GuestDetailSidebar({
       <div className="border border-slate-100 rounded-xl p-5 space-y-4 bg-white">
         <div className="flex items-center gap-2 text-slate-500">
           <CreditCard className="h-4 w-4" />
-          <h3 className="text-xs font-semibold uppercase tracking-wider">Thanh toán</h3>
+          <h3 className="text-xs font-semibold">Thanh toán</h3>
         </div>
         <div className="space-y-3 text-sm">
           <div className="flex justify-between items-center">
@@ -71,8 +73,24 @@ export function GuestDetailSidebar({
           </div>
           <div className="flex justify-between items-center">
             <span className="text-slate-500">Trạng thái</span>
-            <span className={`font-medium ${isPaid ? "text-emerald-500" : "text-amber-600"}`}>
-              {isPaid ? "Đã thanh toán" : "Chờ thanh toán"}
+            <span
+              className={`font-medium ${
+                paymentStatus === "REFUNDED"
+                  ? "text-purple-600"
+                  : paymentStatus === "CANCELLED"
+                    ? "text-rose-600"
+                    : isPaid 
+                      ? "text-emerald-500" 
+                      : "text-amber-600"
+              }`}
+            >
+              {paymentStatus === "REFUNDED"
+                ? "Đã hoàn tiền"
+                : paymentStatus === "CANCELLED"
+                  ? "Đã hủy thanh toán"
+                  : isPaid 
+                    ? "Đã thanh toán" 
+                    : "Chờ thanh toán"}
             </span>
           </div>
           <div className="border-t border-slate-50 pt-3 flex justify-between items-center">
@@ -90,7 +108,7 @@ export function GuestDetailSidebar({
       
       {/* Support Info */}
       <div className="bg-slate-50/50 rounded-xl p-4 border border-slate-100">
-        <p className="text-xs text-slate-500 leading-relaxed italic">
+        <p className="text-xs text-slate-600 leading-relaxed italic">
           Thời gian giao hàng dự kiến từ 2-4 ngày làm việc tùy thuộc vào địa chỉ của bạn.
         </p>
       </div>

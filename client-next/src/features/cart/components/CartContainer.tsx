@@ -117,8 +117,8 @@ export function CartContainer() {
                 <ChevronLeft size={20} />
               </button>
               <div className="space-y-1">
-                <h1 className="text-2xl md:text-3xl font-semibold text-slate-900 tracking-tight">Giỏ hàng của bạn</h1>
-                <p className="text-slate-500 text-sm font-medium">Bạn có {items.length} sản phẩm trong giỏ hàng</p>
+                <h1 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">Giỏ hàng của bạn</h1>
+                <p className="text-slate-600 text-sm font-normal">Bạn có {items.length} sản phẩm trong giỏ hàng</p>
               </div>
             </div>
           </div>
@@ -147,7 +147,7 @@ export function CartContainer() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-slate-400 hover:text-red-500 hover:bg-red-50 font-medium text-[11px] gap-2"
+                  className="text-slate-500 hover:text-red-500 hover:bg-red-50 font-medium text-[11px] gap-2"
                   onClick={() => clearCart()}
                 >
                   <Trash2 className="h-3.5 w-3.5" />

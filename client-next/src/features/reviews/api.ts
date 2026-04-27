@@ -19,4 +19,9 @@ export const reviewsApi = {
     });
     return response.data;
   },
+
+  getAllReviews: async (params: { page?: number; limit?: number; productId?: number; userId?: number }) => {
+    const response = await api.get("/reviews", { params });
+    return response.data;
+  },
 };

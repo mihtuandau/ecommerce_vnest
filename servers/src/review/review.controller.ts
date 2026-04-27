@@ -121,11 +121,13 @@ export class ReviewController {
     @Query('page') page?: string,
     @Query('limit') limit?: string,
     @Query('productId') productId?: string,
+    @Query('userId') userId?: string,
   ) {
     return this.reviewService.getAllReviews(
       page ? +page : 1,
       limit ? +limit : 20,
       productId ? +productId : undefined,
+      userId ? +userId : undefined,
     );
   }
 }

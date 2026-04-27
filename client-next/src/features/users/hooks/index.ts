@@ -92,9 +92,11 @@ export function useUpdateProfile() {
 // ── Address Hooks ──
 
 export function useAddresses() {
+  const { user } = useAuthStore();
   return useQuery({
     queryKey: ["addresses"],
     queryFn: () => usersApi.getAddresses(),
+    enabled: !!user,
   });
 }
 

@@ -13,7 +13,7 @@ interface ShopBreadcrumbsProps {
 export function ShopBreadcrumbs({ currentCategory, categories }: ShopBreadcrumbsProps) {
   return (
     <div className="py-4 md:py-6 overflow-hidden">
-      <nav className="flex items-center gap-2 text-[11px] font-medium text-slate-500 uppercase tracking-wider overflow-x-auto no-scrollbar scroll-smooth">
+      <nav className="flex items-center gap-2 text-xs font-semibold text-slate-500 overflow-x-auto no-scrollbar scroll-smooth">
         <Link href="/" className="hover:text-primary transition-all flex items-center gap-1 group whitespace-nowrap">
           <Home className="h-3.5 w-3.5 group-hover:scale-110 transition-transform" />
           <span>Trang chủ</span>

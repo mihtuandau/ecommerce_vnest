@@ -1,9 +1,10 @@
 "use client";
 
 import React from "react";
-import { Truck, CreditCard, Package, CheckCircle2, Loader2 } from "lucide-react";
+import { Truck, CreditCard, Package, CheckCircle2, Loader2, RotateCcw, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { OrderStatus, PaymentStatus, PaymentMethod } from "@/types/enums";
+import Link from "next/link";
 
 interface ActionsProps {
   order: any;
@@ -99,7 +100,30 @@ export function Actions({
                 </Button>
             )}
 
-            {(order.status === OrderStatus.DELIVERED || isCancelled) && (
+            {order.status === OrderStatus.RETURN_REQUESTED && (
+                <div className="space-y-3">
+                  <div className="text-center p-3 rounded-lg bg-amber-50 border border-amber-100">
+                      <p className="text-xs font-bold text-amber-600 uppercase tracking-widest flex items-center justify-center gap-2">
+                          <RotateCcw className="h-3.5 w-3.5" /> Đang yêu cầu trả hàng
+                      </p>
+                  </div>
+                  <Button asChild className="w-full font-bold h-10 rounded-lg bg-amber-600 hover:bg-amber-700 text-white shadow-lg shadow-amber-900/10">
+                    <Link href="/admin/returns">
+                      Xử lý yêu cầu <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+                </div>
+            )}
+
+            {order.status === OrderStatus.RETURNED && (
+                <div className="text-center p-3 rounded-lg bg-purple-50 border border-purple-100">
+                    <p className="text-xs font-bold text-purple-600 uppercase tracking-widest">
+                        Đơn hàng đã trả hàng & hoàn tiền
+                    </p>
+                </div>
+            )}
+
+            {(order.status === OrderStatus.DELIVERED || isCancelled) && order.status !== OrderStatus.RETURN_REQUESTED && order.status !== OrderStatus.RETURNED && (
                 <div className="text-center p-3 rounded-lg bg-slate-50 border border-slate-100">
                     <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">
                         {isCancelled ? "Đơn hàng đã hủy" : "Đơn hàng đã hoàn tất"}

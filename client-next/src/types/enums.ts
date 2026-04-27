@@ -19,6 +19,8 @@ export enum OrderStatus {
   SHIPPED = "SHIPPED",
   DELIVERED = "DELIVERED",
   CANCELLED = "CANCELLED",
+  RETURN_REQUESTED = "RETURN_REQUESTED",
+  RETURNED = "RETURNED",
 }
 
 export enum PaymentMethod {
@@ -40,4 +42,13 @@ export enum PaymentStatus {
 export enum DiscountType {
   PERCENTAGE = "PERCENTAGE",
   FIXED = "FIXED",
+}
+
+export enum ReturnStatus {
+  PENDING = "PENDING",
+  APPROVED = "APPROVED",
+  REJECTED = "REJECTED",
+  RETURNING = "RETURNING",
+  RECEIVED = "RECEIVED",
+  COMPLETED = "COMPLETED",
 }

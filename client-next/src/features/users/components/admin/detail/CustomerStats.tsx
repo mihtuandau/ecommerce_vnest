@@ -51,7 +51,11 @@ export function CustomerStats({ totalSpent, totalOrders, totalReviews, lastOrder
         <div>
           <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Lần mua cuối</p>
           <p className="text-lg font-bold text-slate-900">
-            {lastOrderDate ? "10 ngày" : "—"}
+            {lastOrderDate ? (() => {
+              const days = Math.floor((new Date().getTime() - new Date(lastOrderDate).getTime()) / (1000 * 60 * 60 * 24));
+              if (days === 0) return "Hôm nay";
+              return `${days} ngày trước`;
+            })() : "—"}
           </p>
         </div>
       </div>

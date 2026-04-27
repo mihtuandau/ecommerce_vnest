@@ -14,6 +14,8 @@ interface OrderSummaryProps {
   isSubmitting: boolean;
   canSubmit: boolean;
   isCalculatingFee?: boolean;
+  totalOriginal: number;
+  discountChoice: "FLASH_SALE" | "VOUCHER";
   // Discount props
   discountCode: string;
   setDiscountCode: (code: string) => void;
@@ -31,6 +33,8 @@ export function OrderSummary({
   isSubmitting,
   canSubmit,
   isCalculatingFee = false,
+  totalOriginal,
+  discountChoice,
   discountCode,
   setDiscountCode,
   appliedDiscount,
@@ -39,7 +43,12 @@ export function OrderSummary({
   onRemoveDiscount,
   isApplyingDiscount = false,
 }: OrderSummaryProps) {
-  const total = subtotal + shippingFee - discountAmount;
+  const flashSaleDiscount = totalOriginal - subtotal;
+  const isVoucherActive = discountChoice === "VOUCHER" && discountAmount > 0;
+  
+  const displaySubtotal = totalOriginal;
+  const displayDiscount = isVoucherActive ? discountAmount : flashSaleDiscount;
+  const total = totalOriginal + shippingFee - displayDiscount;
 
   return (
     <Card className="sticky top-24 border border-slate-100 shadow-sm rounded-3xl overflow-hidden bg-white">
@@ -55,7 +64,7 @@ export function OrderSummary({
         {/* Items List */}
         <div className="space-y-4 max-h-[350px] overflow-y-auto pr-1 custom-scrollbar border-b border-slate-50 pb-2">
           {items.map((item) => (
-            <div key={item.productId || item.variantId} className="flex gap-4">
+            <div key={item.variantId} className="flex gap-4">
               <div className="h-16 w-16 rounded-2xl bg-slate-50 overflow-hidden shrink-0 border border-slate-100">
                 <img 
                   src={item.imageUrl} 
@@ -65,14 +74,28 @@ export function OrderSummary({
               </div>
               <div className="flex-1 min-w-0 flex flex-col justify-center">
                 <span className="block text-sm font-medium text-slate-800 line-clamp-2 leading-snug">{item.name}</span>
-                <div className="flex items-center justify-between mt-2">
-                  <span className="text-xs text-slate-400 font-medium">Số lượng: {item.quantity}</span>
+                {(item.size || item.color) && (
+                  <div className="flex gap-2 mt-1">
+                    {item.size && (
+                      <span className="text-xs bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded-md font-semibold border border-slate-200">
+                        Size: {item.size}
+                      </span>
+                    )}
+                    {item.color && (
+                      <span className="text-xs bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded-md font-semibold border border-slate-200">
+                        Màu: {item.color}
+                      </span>
+                    )}
+                  </div>
+                )}
+                <div className="flex items-center justify-between mt-1">
+                  <span className="text-xs text-slate-500 font-normal">Số lượng: {item.quantity}</span>
                   <div className="text-right flex flex-col items-end">
                     <span className="text-sm font-bold text-slate-900">
                       {formatCurrency((item.discountedPrice || item.price) * item.quantity)}
                     </span>
                     {(item.discountedPrice || (item.originalPrice && item.originalPrice > item.price)) && (
-                      <span className="text-[10px] text-slate-500 line-through font-semibold">
+                      <span className="text-xs text-slate-400 line-through font-medium">
                         {formatCurrency((item.originalPrice || item.price) * item.quantity)}
                       </span>
                     )}
@@ -93,8 +116,8 @@ export function OrderSummary({
           {appliedDiscount ? (
             <div className="flex items-center justify-between bg-primary/5 border border-primary/20 rounded-2xl px-4 py-3 animate-in fade-in zoom-in-95 duration-300">
               <div className="flex flex-col">
-                <span className="text-sm font-bold text-primary">{appliedDiscount.code}</span>
-                <span className="text-xs text-primary/70 font-medium">Đã áp dụng giảm {formatCurrency(discountAmount)}</span>
+                <span className="text-sm font-semibold text-primary">{appliedDiscount.code}</span>
+                <span className="text-xs text-primary/80 font-normal">Đã áp dụng giảm {formatCurrency(discountAmount)}</span>
               </div>
               <button 
                 type="button"
@@ -111,7 +134,7 @@ export function OrderSummary({
                 value={discountCode}
                 onChange={(e) => setDiscountCode(e.target.value.toUpperCase())}
                 placeholder="Nhập mã tại đây..."
-                className="flex-1 h-11 bg-slate-100 border border-slate-200 rounded-2xl px-4 text-sm font-bold tracking-wider focus:outline-none focus:border-primary/50 transition-all placeholder:text-slate-600"
+                className="flex-1 h-11 bg-slate-100 border border-slate-200 rounded-2xl px-4 text-sm font-semibold focus:outline-none focus:border-primary/50 transition-all placeholder:text-slate-600"
               />
               <Button 
                 type="button"
@@ -127,22 +150,24 @@ export function OrderSummary({
 
         {/* Pricing Breakdown */}
         <div className="space-y-3 pt-2">
-          <div className="flex justify-between items-center text-sm font-medium text-slate-500">
+          <div className="flex justify-between items-center text-sm font-normal text-slate-600">
             <span>Tạm tính</span>
-            <span className="text-slate-900 font-bold">{formatCurrency(subtotal)}</span>
+            <span className="text-slate-900 font-semibold">{formatCurrency(displaySubtotal)}</span>
           </div>
-          <div className="flex justify-between items-center text-sm font-medium text-slate-500">
+          <div className="flex justify-between items-center text-sm font-normal text-slate-600">
             <span>Phí vận chuyển</span>
             {isCalculatingFee ? (
               <span className="text-xs text-primary animate-pulse italic">Đang tính...</span>
             ) : (
-              <span className="text-slate-900 font-bold">{formatCurrency(shippingFee)}</span>
+              <span className="text-slate-900 font-semibold">{formatCurrency(shippingFee)}</span>
             )}
           </div>
-          {discountAmount > 0 && (
+          {displayDiscount > 0 && (
             <div className="flex justify-between items-center text-sm animate-in slide-in-from-right-4 duration-300">
-              <span className="text-primary font-bold">Giảm giá</span>
-              <span className="font-bold text-primary">-{formatCurrency(discountAmount)}</span>
+              <span className="text-primary font-semibold">
+                {isVoucherActive ? `Voucher (${appliedDiscount?.code})` : "Giảm giá Flash Sale"}
+              </span>
+              <span className="font-semibold text-primary">-{formatCurrency(displayDiscount)}</span>
             </div>
           )}
         </div>
@@ -150,12 +175,12 @@ export function OrderSummary({
         {/* Total */}
         <div className="pt-5 border-t border-slate-100">
           <div className="flex justify-between items-center">
-            <span className="text-base font-bold text-slate-900">Tổng cộng</span>
+            <span className="text-base font-semibold text-slate-900">Tổng cộng</span>
             <div className="text-right">
               <span className="text-2xl font-bold text-primary tabular-nums block leading-none">
                 {formatCurrency(total)}
               </span>
-              <p className="text-[10px] text-slate-400 mt-1.5 font-medium">Đã bao gồm VAT</p>
+              <p className="text-xs text-slate-500 mt-1.5 font-medium">Đã bao gồm VAT</p>
             </div>
           </div>
         </div>
@@ -183,10 +208,10 @@ export function OrderSummary({
         <div className="pt-2 space-y-3">
           {[
             { icon: ShieldCheck, text: "Bảo mật thông tin 100%", color: "text-green-600" },
-            { icon: CheckCircle2, text: "Hàng chính hãng Vnest", color: "text-blue-600" },
-            { icon: Truck, text: "Giao hàng nhanh toàn quốc", color: "text-slate-400" },
+            { icon: CheckCircle2, text: "Hàng chính hãng Minh Tuấn Shop", color: "text-blue-600" },
+            { icon: Truck, text: "Giao hàng nhanh toàn quốc", color: "text-slate-500" },
           ].map((info, i) => (
-            <div key={i} className="flex items-center gap-2.5 text-[11px] font-medium text-slate-500">
+            <div key={i} className="flex items-center gap-2.5 text-xs font-medium text-slate-600">
               <info.icon className={cn("h-4 w-4", info.color)} />
               {info.text}
             </div>

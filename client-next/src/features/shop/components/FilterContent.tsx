@@ -30,7 +30,7 @@ export function FilterContent({
   isMobile = false
 }: FilterContentProps) {
   
-  const headerStyle = "text-[11px] font-bold uppercase tracking-[0.2em] text-slate-900 flex items-center gap-2";
+  const headerStyle = "text-sm font-semibold text-slate-900 flex items-center gap-2";
   const itemStyle = "text-[13px] font-medium transition-all px-4 py-2.5 rounded-xl text-left";
   
   return (
@@ -47,7 +47,7 @@ export function FilterContent({
             className={cn(
               itemStyle,
               !currentCategory 
-                ? "bg-primary text-white shadow-lg shadow-primary/20 font-bold" 
+                ? "bg-primary text-white shadow-lg shadow-primary/20 font-semibold" 
                 : "text-slate-700 bg-slate-50 lg:bg-transparent hover:text-primary hover:bg-slate-100"
             )}
           >
@@ -60,7 +60,7 @@ export function FilterContent({
               className={cn(
                 itemStyle,
                 String(cat.id) === currentCategory 
-                  ? "bg-primary text-white shadow-lg shadow-primary/20 font-bold" 
+                  ? "bg-primary text-white shadow-lg shadow-primary/20 font-semibold" 
                   : "text-slate-700 bg-slate-50 lg:bg-transparent hover:text-primary hover:bg-slate-100"
               )}
             >
@@ -85,7 +85,7 @@ export function FilterContent({
                 itemStyle,
                 "border flex items-center justify-between",
                 String(brand.id) === currentBrand 
-                  ? "bg-primary/5 text-primary border-primary/20 font-bold" 
+                  ? "bg-primary/5 text-primary border-primary/20 font-semibold" 
                   : "bg-white lg:bg-transparent border-transparent text-slate-700 hover:bg-slate-50 hover:text-primary"
               )}
             >
@@ -116,7 +116,7 @@ export function FilterContent({
                 itemStyle,
                 "border",
                 (currentMinPrice === range.min && currentMaxPrice === range.max) 
-                  ? "bg-primary/5 text-primary border-primary/20 font-bold" 
+                  ? "bg-primary/5 text-primary border-primary/20 font-semibold" 
                   : "bg-white lg:bg-transparent border-transparent text-slate-700 hover:bg-slate-50 hover:text-primary"
               )}
             >
@@ -141,7 +141,7 @@ export function FilterContent({
                 itemStyle,
                 "border flex items-center gap-2",
                 (currentMinRating === (s ? String(s) : null)) 
-                  ? "bg-primary/5 border-primary/20 font-bold" 
+                  ? "bg-primary/5 border-primary/20 font-semibold" 
                   : "bg-white lg:bg-transparent border-transparent hover:bg-slate-50"
               )}
             >

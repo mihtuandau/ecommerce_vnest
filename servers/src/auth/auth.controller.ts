@@ -187,7 +187,9 @@ export class AuthController {
     const frontendUrl = origins.find(o => o.includes('localhost')) || origins[0];
 
     console.log(`Google Auth Redirecting to: ${frontendUrl}`);
-    return res.redirect(`${frontendUrl}/?auth_success=true`);
+    const role = (req.user as any).role;
+    const redirectPath = role === 'ADMIN' ? '/admin' : '/';
+    return res.redirect(`${frontendUrl}${redirectPath}?auth_success=true`);
   }
 
   @Get('me')

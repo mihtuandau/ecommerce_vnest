@@ -16,16 +16,30 @@ import { TopProducts } from "@/features/dashboard/components/TopProducts";
 import { RecentOrders } from "@/features/dashboard/components/RecentOrders";
 import { usePermission } from "@/hooks/usePermission";
 import { AccessDenied } from "@/components/ui/AccessDenied";
+import { Skeleton } from "@/components/ui/Skeleton";
 
 import dayjs from "@/lib/dayjs";
 
 export default function AdminDashboardPage() {
-  const { can } = usePermission();
+  const { can, isLoading } = usePermission();
   
   const { data: stats, isLoading: isStatsLoading } = useDashboardStats();
   const { data: revenueData, isLoading: isRevenueLoading } = useDashboardRevenue();
   const { data: recentOrders, isLoading: isRecentOrdersLoading } = useDashboardRecentOrders();
   const { data: topProducts, isLoading: isTopProductsLoading } = useDashboardTopProducts();
+
+  if (isLoading) {
+    return (
+      <div className="space-y-8">
+        <Skeleton className="h-12 w-1/3 rounded-xl" />
+        <Skeleton className="h-64 w-full rounded-2xl" />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <Skeleton className="h-80 col-span-2 rounded-2xl" />
+          <Skeleton className="h-80 rounded-2xl" />
+        </div>
+      </div>
+    );
+  }
 
   if (!can("dashboard.view")) {
     return <AccessDenied permission="dashboard.view" />;
@@ -40,7 +54,7 @@ export default function AdminDashboardPage() {
             Tổng quan Dashboard
           </h1>
           <p className="text-slate-500 text-sm">
-            Chào mừng trở lại! Đây là tình hình kinh doanh của Vnest hôm nay.
+            Chào mừng trở lại! Đây là tình hình kinh doanh của Minh Tuấn Shop hôm nay.
           </p>
         </div>
         <div className="flex gap-2">

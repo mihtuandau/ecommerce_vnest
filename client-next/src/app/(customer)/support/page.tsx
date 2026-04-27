@@ -19,10 +19,10 @@ export default function SupportPage() {
     <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-8 md:py-12">
       <div className="flex flex-col gap-8">
         {/* Breadcrumbs - Synchronized with Account Page */}
-        <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+        <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
           <Link href="/" className="hover:text-primary transition-colors">Trang chủ</Link>
           <ChevronRight size={10} className="text-slate-300" />
-          <span className="text-[#1565C1]">Trung tâm hỗ trợ</span>
+          <span className="text-primary">Trung tâm hỗ trợ</span>
         </div>
 
         {/* Main Content Grid */}
@@ -55,15 +55,15 @@ export default function SupportPage() {
               {/* Contact Card */}
               <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
                  <div className="flex items-center gap-4 mb-4">
-                    <div className="h-12 w-12 rounded-xl bg-blue-50 flex items-center justify-center text-[#1565C1]">
+                    <div className="h-12 w-12 rounded-xl bg-blue-50 flex items-center justify-center text-primary">
                        <Phone size={20} />
                     </div>
                     <div>
-                       <p className="text-xs font-semibold text-slate-400">Hotline hỗ trợ</p>
-                       <p className="text-lg font-bold text-[#1565C1]">1900 6789</p>
+                       <p className="text-xs font-semibold text-slate-500">Hotline hỗ trợ</p>
+                       <p className="text-lg font-bold text-primary">1900 6789</p>
                     </div>
                  </div>
-                 <p className="text-xs text-slate-500 leading-relaxed font-medium">
+                 <p className="text-xs text-slate-600 leading-relaxed font-medium">
                     Liên hệ trực tiếp qua số điện thoại nếu bạn cần hỗ trợ xử lý đơn hàng khẩn cấp.
                  </p>
               </div>
@@ -78,7 +78,7 @@ export default function SupportPage() {
               <div className="mt-8 flex items-center justify-center gap-8 opacity-40 grayscale pointer-events-none">
                  <img src="/GHNLogo.png" alt="GHN" className="h-5 w-auto" />
                  <img src="/vnpaylogo.png" alt="VNPay" className="h-3 w-auto" />
-                 <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest">Minh Tuấn Shop Partners</p>
+                 <p className="text-xs font-semibold text-slate-500">Minh Tuấn Shop Partners</p>
               </div>
            </div>
 

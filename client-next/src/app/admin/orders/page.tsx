@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useOrders, useOrderStats } from "@/features/orders/hooks";
+import { useOrders, useUpdateOrderStatus } from "@/features/orders/hooks";
 import { OrderTable } from "@/features/orders/components/admin/OrderTable";
 import { ShoppingBag, Clock, CheckCircle2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/Button";
@@ -14,6 +14,7 @@ import { OrderStatus } from "@/types/enums";
 
 export default function AdminOrdersPage() {
   const { data: orders = [], isLoading, refetch, isFetching } = useOrders({ limit: 1000 });
+  const { mutate: updateStatus } = useUpdateOrderStatus();
   const [searchTerm, setSearchTerm] = React.useState("");
   const [activeTab, setActiveTab] = React.useState("ALL");
 
@@ -24,6 +25,8 @@ export default function AdminOrdersPage() {
     SHIPPED: orders.filter(o => o.status === OrderStatus.SHIPPED).length,
     DELIVERED: orders.filter(o => o.status === OrderStatus.DELIVERED).length,
     CANCELLED: orders.filter(o => o.status === OrderStatus.CANCELLED).length,
+    RETURN_REQUESTED: orders.filter(o => o.status === OrderStatus.RETURN_REQUESTED).length,
+    RETURNED: orders.filter(o => o.status === OrderStatus.RETURNED).length,
   }), [orders]);
 
   const filteredOrders = React.useMemo(() => {
@@ -82,7 +85,10 @@ export default function AdminOrdersPage() {
               </div>
             </div>
           ) : (
-            <OrderTable data={filteredOrders} />
+            <OrderTable 
+              data={filteredOrders} 
+              onUpdateStatus={(id, status) => updateStatus({ id, status })}
+            />
           )}
         </div>
       </div>

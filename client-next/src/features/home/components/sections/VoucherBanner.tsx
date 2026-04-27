@@ -21,20 +21,20 @@ export function VoucherBanner() {
             <div className="space-y-2">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20">
                 <Gift className="h-3 w-3 text-white" />
-                <span className="text-[10px] font-bold text-white uppercase tracking-widest">Quà tặng độc quyền</span>
+                <span className="text-[10px] font-semibold text-white">Quà tặng độc quyền</span>
               </div>
-              <h2 className="text-2xl md:text-4xl font-black text-white uppercase tracking-tighter leading-none">
-                Kho Ưu Đãi <br className="hidden md:block" /> Đang Chờ Bạn
+              <h2 className="text-2xl md:text-4xl font-bold text-white tracking-tighter leading-none">
+                Kho ưu đãi <br className="hidden md:block" /> đang chờ bạn
               </h2>
-              <p className="text-white/60 font-medium text-sm md:text-base max-w-sm">
+              <p className="text-white/80 font-normal text-sm md:text-base max-w-sm">
                 Sở hữu ngay những mã giảm giá lên đến 500k và vô vàn quà tặng hấp dẫn khác.
               </p>
             </div>
           </div>
 
-          <Button asChild className="h-16 px-10 rounded-full bg-white text-primary hover:bg-white hover:scale-105 transition-all duration-500 font-black uppercase tracking-widest text-xs gap-3 shadow-xl">
+          <Button asChild className="h-16 px-10 rounded-full bg-white text-primary hover:bg-white hover:scale-105 transition-all duration-500 font-bold text-xs gap-3 shadow-xl">
             <Link href="/offers">
-              KHÁM PHÁ NGAY <ArrowRight size={18} />
+              Khám phá ngay <ArrowRight size={18} />
             </Link>
           </Button>
         </div>

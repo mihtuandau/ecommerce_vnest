@@ -55,7 +55,7 @@ export function RegisterForm() {
       <div className="text-center mb-6">
         <Link href="/" className="inline-flex justify-center mb-4">
           <div className="bg-white/80 backdrop-blur-md p-3 rounded-[1rem] shadow-sm border border-white/20">
-            <img src="/logo.png" alt="Vnest Logo" className="h-8 w-auto object-contain" />
+            <img src="/logoMT.png" alt="Minh Tuan Shop Logo" className="h-8 w-auto object-contain" />
           </div>
         </Link>
         <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight drop-shadow-sm">Tạo tài khoản</h1>
@@ -65,7 +65,7 @@ export function RegisterForm() {
       <form onSubmit={handleRegister} className="space-y-3.5 sm:space-y-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
           <div className="space-y-1.5">
-            <label className="text-[11px] font-bold text-slate-200 ml-1.5 uppercase tracking-widest drop-shadow-sm">Họ và tên</label>
+            <label className="text-xs font-semibold text-slate-200 ml-1.5 drop-shadow-sm">Họ và tên</label>
             <div className="relative group">
               <User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-white transition-colors" />
               <Input
@@ -79,7 +79,7 @@ export function RegisterForm() {
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-[11px] font-bold text-slate-200 ml-1.5 uppercase tracking-widest drop-shadow-sm">Số điện thoại</label>
+            <label className="text-xs font-semibold text-slate-200 ml-1.5 drop-shadow-sm">Số điện thoại</label>
             <div className="relative group">
               <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-white transition-colors" />
               <Input
@@ -95,7 +95,7 @@ export function RegisterForm() {
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-[11px] font-bold text-slate-200 ml-1.5 uppercase tracking-widest drop-shadow-sm">Email</label>
+          <label className="text-xs font-semibold text-slate-200 ml-1.5 drop-shadow-sm">Email</label>
           <div className="relative group">
             <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-white transition-colors" />
             <Input
@@ -111,7 +111,7 @@ export function RegisterForm() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
           <div className="space-y-1.5">
-            <label className="text-[11px] font-bold text-slate-200 ml-1.5 uppercase tracking-widest drop-shadow-sm">Mật khẩu</label>
+            <label className="text-xs font-semibold text-slate-200 ml-1.5 drop-shadow-sm">Mật khẩu</label>
             <div className="relative group">
               <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-white transition-colors" />
               <Input
@@ -128,7 +128,7 @@ export function RegisterForm() {
             </div>
           </div>
           <div className="space-y-1.5">
-            <label className="text-[11px] font-bold text-slate-200 ml-1.5 uppercase tracking-widest drop-shadow-sm">Xác nhận</label>
+            <label className="text-xs font-semibold text-slate-200 ml-1.5 drop-shadow-sm">Xác nhận</label>
             <div className="relative group">
               <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-white transition-colors" />
               <Input
@@ -166,7 +166,7 @@ export function RegisterForm() {
             <div className="w-full border-t border-white/20"></div>
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-3 bg-transparent text-slate-300 font-bold tracking-wider text-[11px] uppercase drop-shadow-sm">
+            <span className="px-3 bg-transparent text-slate-200 font-semibold text-xs drop-shadow-sm">
               Hoặc
             </span>
           </div>

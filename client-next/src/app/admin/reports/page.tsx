@@ -51,7 +51,7 @@ export default function AdminReportsPage() {
       const link = document.createElement("a");
       link.href = url;
       const dateStr = new Date().toISOString().split('T')[0];
-      link.setAttribute("download", `Bao_cao_Vnest_${timeRange}_${dateStr}.xlsx`);
+      link.setAttribute("download", `Bao_cao_MinhTuanShop_${timeRange}_${dateStr}.xlsx`);
       document.body.appendChild(link);
       link.click();
       setTimeout(() => {

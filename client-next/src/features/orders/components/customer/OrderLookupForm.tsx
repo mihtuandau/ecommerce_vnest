@@ -36,7 +36,7 @@ export function OrderLookupForm() {
           <CardContent className="p-8 md:p-10">
             <form onSubmit={handleLookup} className="space-y-6">
               <div className="space-y-2.5">
-                <label className="text-[10px] font-semibold text-slate-500 uppercase tracking-[0.1em] ml-1">Mã đơn hàng</label>
+                <label className="text-xs font-semibold text-slate-500 ml-1">Mã đơn hàng</label>
                 <div className="relative group">
                   <Package className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-primary transition-colors" />
                   <Input
@@ -50,7 +50,7 @@ export function OrderLookupForm() {
               </div>
 
               <div className="space-y-2.5">
-                <label className="text-[10px] font-semibold text-slate-500 uppercase tracking-[0.1em] ml-1">Số điện thoại / Email</label>
+                <label className="text-xs font-semibold text-slate-500 ml-1">Số điện thoại / Email</label>
                 <div className="relative group">
                   <ShieldCheck className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-primary transition-colors" />
                   <Input

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useParams } from "next/navigation";
 import { useOrderDetail, useCancelOrder } from "@/features/orders/hooks";
 import { Skeleton } from "@/components/ui/Skeleton";
@@ -17,6 +17,10 @@ import { DetailStepper } from "./detail/DetailStepper";
 import { DetailItems } from "./detail/DetailItems";
 import { DetailSidebar } from "./detail/DetailSidebar";
 import { PrintInvoice } from "../admin/detail/PrintInvoice";
+import { RequestReturnModal } from "./detail/RequestReturnModal";
+import { ConfirmReturnModal } from "./detail/ConfirmReturnModal";
+import { useQueryClient } from "@tanstack/react-query";
+import { useUpdateReturnStatus } from "@/features/returns/hooks";
 
 const statusConfig: Record<string, { label: string; color: string; icon: any }> = {
   [OrderStatus.PENDING]: {
@@ -44,6 +48,16 @@ const statusConfig: Record<string, { label: string; color: string; icon: any }> 
     color: "text-rose-600 bg-rose-50 border-rose-100",
     icon: XCircle,
   },
+  [OrderStatus.RETURN_REQUESTED]: {
+    label: "Yêu cầu trả hàng",
+    color: "text-amber-600 bg-amber-50 border-amber-100",
+    icon: AlertCircle,
+  },
+  [OrderStatus.RETURNED]: {
+    label: "Đã trả hàng",
+    color: "text-purple-600 bg-purple-50 border-purple-100",
+    icon: CheckCircle2,
+  },
 };
 
 export function OrderDetailView() {
@@ -52,6 +66,10 @@ export function OrderDetailView() {
   const { mutate: cancelOrder } = useCancelOrder();
   const { addItem } = useCartStore();
   const { success } = useToast();
+  const queryClient = useQueryClient();
+  const [isReturnModalOpen, setIsReturnModalOpen] = useState(false);
+  const [isConfirmReturnOpen, setIsConfirmReturnOpen] = useState(false);
+  const { mutate: updateReturnStatus, isPending: isUpdatingStatus } = useUpdateReturnStatus();
 
   const handleReorder = () => {
     if (!order || !order.orderItems) return;
@@ -74,6 +92,10 @@ export function OrderDetailView() {
     });
 
     success("Đã thêm các sản phẩm vào giỏ hàng");
+  };
+
+  const handleReturnSuccess = () => {
+    queryClient.invalidateQueries({ queryKey: ["order", id] });
   };
 
   if (isLoading) {
@@ -146,17 +168,30 @@ export function OrderDetailView() {
             isCancelled={isCancelled}
             onReorder={handleReorder}
             onCancel={() => confirm("Hủy đơn hàng này?") && cancelOrder(order.id)}
+            onReturn={() => setIsReturnModalOpen(true)}
+            onConfirmReturn={() => {
+              updateReturnStatus({ id: order.returnRequest.id, status: "RETURNING" as any });
+            }}
+            returnStatus={order.returnRequest?.status}
+            isUpdatingReturn={isUpdatingStatus}
             statusConfig={statusConfig}
           />
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-6">
-              <DetailStepper status={order.status} isCancelled={isCancelled} />
+              <DetailStepper 
+                status={order.status} 
+                isCancelled={isCancelled} 
+                returnStatus={order.returnRequest?.status}
+              />
+
               <DetailItems 
                 orderItems={order.orderItems}
                 total={order.total}
                 shippingFee={order.shippingFee}
                 discountAmount={order.discountAmount}
+                status={order.status}
+                orderId={order.id}
               />
             </div>
 
@@ -165,14 +200,24 @@ export function OrderDetailView() {
               user={order.user}
               addressRelation={order.address}
               paymentMethod={order.paymentMethod}
-              paymentStatus={order.paymentStatus}
+              paymentStatus={order.paymentStatus || order.payment?.status}
               isPaid={isPaid}
               isCancelled={isCancelled}
+              isReturned={order.status === OrderStatus.RETURNED}
+              isReturning={order.status === OrderStatus.RETURN_REQUESTED}
               shippingCode={order.shippingCode}
             />
           </div>
         </div>
       </div>
+
+      <RequestReturnModal 
+        isOpen={isReturnModalOpen}
+        onClose={() => setIsReturnModalOpen(false)}
+        orderId={order.id}
+        orderCode={order.orderCode}
+        onSuccess={handleReturnSuccess}
+      />
 
       {/* DEDICATED PRINT COMPONENT */}
       <PrintInvoice order={order} />

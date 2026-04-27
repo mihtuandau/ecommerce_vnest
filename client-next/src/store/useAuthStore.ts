@@ -13,12 +13,13 @@ interface AuthStore {
   setToken: (accessToken: string) => void;
   setTokens: (accessToken: string, refreshToken: string) => void;
   clearAuth: () => void;
+  logout: () => Promise<void>;
   initAuth: () => void;
 }
 
 export const useAuthStore = create<AuthStore>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       user: null,
       accessToken: null,
       refreshToken: null,
@@ -27,13 +28,11 @@ export const useAuthStore = create<AuthStore>()(
       setUser: (user) => set({ user }),
       setToken: (accessToken) => {
         set({ accessToken });
-        Cookies.set("accessToken", accessToken, { expires: 7 });
+        Cookies.set("accessToken", accessToken, { expires: 7, path: "/" });
       },
       setTokens: (accessToken, refreshToken) => {
         set({ accessToken, refreshToken });
-        // Only store accessToken in js-cookie for the axios request interceptor
-        // refreshToken is managed via httpOnly cookie set by backend
-        if (accessToken) Cookies.set("accessToken", accessToken, { expires: 7 });
+        if (accessToken) Cookies.set("accessToken", accessToken, { expires: 7, path: "/" });
       },
       clearAuth: () => {
         set({
@@ -41,8 +40,21 @@ export const useAuthStore = create<AuthStore>()(
           accessToken: null,
           refreshToken: null,
         });
-        Cookies.remove("accessToken");
-        // Note: refresh_token httpOnly cookie is cleared by the backend /auth/logout endpoint
+        // Remove cookie with explicit path and sameSite
+        Cookies.remove("accessToken", { path: "/" });
+      },
+      logout: async () => {
+        try {
+          const { authApi } = await import("@/features/auth/api");
+          await authApi.logout();
+        } catch (error) {
+          console.error("Logout API error:", error);
+        } finally {
+          get().clearAuth();
+          // Optional: clear entire storage if needed
+          localStorage.removeItem("vnest-auth");
+          window.location.href = "/login";
+        }
       },
       initAuth: () => {
         // Sync cookies to store if needed

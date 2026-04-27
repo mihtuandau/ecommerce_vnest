@@ -47,6 +47,11 @@ export function CheckoutContainer() {
     [displayItems]
   );
 
+  const totalOriginal = React.useMemo(
+    () => displayItems.reduce((sum, i) => sum + (i.price || 0) * i.quantity, 0),
+    [displayItems]
+  );
+
   const [provinces, setProvinces] = useState<any[]>([]);
   const [districts, setDistricts] = useState<any[]>([]);
   const [wards, setWards] = useState<any[]>([]);
@@ -59,6 +64,7 @@ export function CheckoutContainer() {
   const [appliedDiscount, setAppliedDiscount] = useState<any>(null);
   const [discountAmount, setDiscountAmount] = useState(0);
   const [isApplyingDiscount, setIsApplyingDiscount] = useState(false);
+  const [discountChoice, setDiscountChoice] = useState<"FLASH_SALE" | "VOUCHER">("FLASH_SALE");
 
   const [form, setForm] = useState({
     fullName: "",
@@ -131,14 +137,14 @@ export function CheckoutContainer() {
   };
 
   useEffect(() => {
-    if (addressData?.addresses && addressData.addresses.length > 0 && mounted && !hasAppliedDefault) {
+    if (user && addressData?.addresses && addressData.addresses.length > 0 && mounted && !hasAppliedDefault) {
       const defaultAddr = addressData.addresses.find((a: any) => a.isDefault) || addressData.addresses[0];
       if (defaultAddr) {
         applySavedAddress(defaultAddr);
         setHasAppliedDefault(true);
       }
     }
-  }, [addressData, mounted, hasAppliedDefault]);
+  }, [addressData, mounted, hasAppliedDefault, user]);
 
   useEffect(() => {
     const timer = setTimeout(async () => {
@@ -172,62 +178,53 @@ export function CheckoutContainer() {
     setIsApplyingDiscount(true);
     try {
       const res = await discountsApi.validateDiscount(codeToValidate);
-      console.log("=== DISCOUNT VALIDATE RESPONSE ===", JSON.stringify(res, null, 2));
-
-      // Backend trả về { isValid, message, discount? }
+      
       if (!res.isValid) {
         warning(res.message || "Mã giảm giá không hợp lệ");
-        setIsApplyingDiscount(false);
         return;
       }
 
       const discount = res.discount;
-      if (!discount) {
-        throw new Error("Mã giảm giá không hợp lệ");
-      }
+      
+      // LOGIC ĐỒNG BỘ VỚI BACKEND: Chọn mức giảm tốt nhất
+      const totalOriginal = displayItems.reduce((sum, i) => sum + (i.price || 0) * i.quantity, 0);
+      const totalFlashSale = displayItems.reduce((sum, i) => sum + (i.discountedPrice || i.price) * i.quantity, 0);
+      const flashSaleSaving = totalOriginal - totalFlashSale;
 
-      console.log("=== DISCOUNT DATA ===", {
-        discountType: discount.discountType,
-        discountValue: discount.discountValue,
-        percentage: discount.percentage,
-        fixedAmount: discount.fixedAmount,
-        maxDiscountAmount: discount.maxDiscountAmount,
-        minOrderAmount: discount.minOrderAmount,
-        subtotal,
-      });
+      let voucherSaving = 0;
+      const isPercentage = discount.discountType === "PERCENTAGE";
+      const val = discount.discountValue || 0;
 
-      // Tính số tiền giảm — hỗ trợ cả 2 format response từ backend
-      const isPercentage = discount.discountType === "PERCENTAGE" || !!discount.percentage;
-      const rawValue = discount.discountValue || discount.percentage || discount.fixedAmount || 0;
-
-      let amount = 0;
       if (isPercentage) {
-        amount = Math.round((subtotal * rawValue) / 100);
-        // Giới hạn giảm tối đa (nếu có)
-        if (discount.maxDiscountAmount && discount.maxDiscountAmount > 0 && amount > discount.maxDiscountAmount) {
-          amount = discount.maxDiscountAmount;
+        voucherSaving = Math.round((totalOriginal * val) / 100);
+        if (discount.maxDiscountAmount && voucherSaving > discount.maxDiscountAmount) {
+          voucherSaving = discount.maxDiscountAmount;
         }
       } else {
-        amount = rawValue;
+        voucherSaving = val;
       }
+      voucherSaving = Math.min(voucherSaving, totalOriginal);
 
-      // Không cho giảm vượt quá tổng đơn
-      amount = Math.min(amount, subtotal);
-
-      console.log("=== CALCULATED DISCOUNT ===", { isPercentage, rawValue, amount });
-
-      if (discount.minOrderAmount && discount.minOrderAmount > 0 && subtotal < discount.minOrderAmount) {
-        warning(`Mã này chỉ áp dụng cho đơn hàng từ ${new Intl.NumberFormat('vi-VN').format(discount.minOrderAmount)}đ`);
-        setIsApplyingDiscount(false);
+      if (discount.minOrderAmount && totalOriginal < discount.minOrderAmount) {
+        warning(`Mã chỉ áp dụng cho đơn từ ${new Intl.NumberFormat('vi-VN').format(discount.minOrderAmount)}đ`);
         return;
       }
 
-      setAppliedDiscount({ ...discount, code: codeToValidate });
-      setDiscountAmount(amount);
-      success(`Đã áp dụng mã giảm giá: -${new Intl.NumberFormat('vi-VN').format(amount)}đ`);
+      // So sánh: Nếu Flash Sale tốt hơn hoặc bằng -> Ưu tiên Flash Sale
+      if (flashSaleSaving >= voucherSaving && flashSaleSaving > 0) {
+        setAppliedDiscount({ ...discount, code: codeToValidate });
+        setDiscountAmount(0); // Không cộng dồn
+        setDiscountChoice("FLASH_SALE");
+        warning("Flash Sale đang có giá tốt hơn mã giảm giá này. Chúng tôi sẽ giữ giá Flash Sale cho bạn.");
+      } else {
+        // Voucher tốt hơn -> Áp dụng Voucher trên GIÁ GỐC
+        setAppliedDiscount({ ...discount, code: codeToValidate });
+        setDiscountAmount(voucherSaving);
+        setDiscountChoice("VOUCHER");
+        success(`Đã áp dụng mã giảm giá: -${new Intl.NumberFormat('vi-VN').format(voucherSaving)}đ`);
+      }
     } catch (err: any) {
-      console.error("Discount Error:", err);
-      error(err?.response?.data?.message || "Mã giảm giá không hợp lệ hoặc đã hết hạn");
+      error(err?.response?.data?.message || "Mã giảm giá không hợp lệ");
       setAppliedDiscount(null);
       setDiscountAmount(0);
     } finally {
@@ -310,8 +307,8 @@ export function CheckoutContainer() {
     if (!form.street) return error("Vui lòng nhập địa chỉ cụ thể (số nhà, tên đường)");
 
     if (isSubmitting) return;
-
     setIsSubmitting(true);
+
     try {
       const isGuest = !user;
       const orderData = {
@@ -350,19 +347,24 @@ export function CheckoutContainer() {
 
       success("Đặt hàng thành công!");
       setIsSuccessRedirecting(true);
-      if (isBuyNow) clearBuyNowItem();
-      else displayItems.forEach((i) => useCartStore.getState().removeItem(i.variantId));
-
+      
       const successParams = new URLSearchParams();
       if (res.orderCode) successParams.set("orderCode", res.orderCode);
       if (res.id) successParams.set("orderId", String(res.id));
       successParams.set("contact", form.phone);
 
+      // Chuyển hướng TRƯỚC khi xoá giỏ hàng để tránh flash UI trống
       router.push(`/checkout/success?${successParams.toString()}`);
+
+      // Xoá giỏ hàng sau khi đã bắt đầu chuyển hướng
+      setTimeout(() => {
+        if (isBuyNow) clearBuyNowItem();
+        else displayItems.forEach((i) => useCartStore.getState().removeItem(i.variantId));
+      }, 100);
+
     } catch (err: any) {
       error(err?.response?.data?.message || err?.message || "Có lỗi xảy ra khi đặt hàng");
-    } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false); // Quan trọng: chỉ tắt khi lỗi để người dùng sửa
     }
   };
 
@@ -389,16 +391,41 @@ export function CheckoutContainer() {
     );
   }
 
-  const showEmpty = mounted && !isBuyNow && !isSuccessRedirecting && items.filter(i => i.selected).length === 0;
-  const showBuyNowEmpty = mounted && isBuyNow && !isSuccessRedirecting && !buyNowItem;
+  // Màn hình xử lý ngay khi nhấn đặt hàng hoặc sau khi thành công (Đơn giản & Đồng bộ)
+  if (isSubmitting || isSuccessRedirecting) {
+    return (
+      <div className="fixed inset-0 z-[100] bg-white/95 backdrop-blur-sm flex flex-col items-center justify-center animate-in fade-in duration-300">
+        <div className="flex flex-col items-center gap-5">
+          <Loader2 className="h-10 w-10 text-primary animate-spin" />
+          <div className="text-center">
+            <h2 className="text-xl font-bold text-slate-900">
+              {isSuccessRedirecting ? "Đặt hàng thành công!" : "Đang xử lý đơn hàng"}
+            </h2>
+            <p className="text-sm text-slate-500 mt-1 font-medium">
+              {isSuccessRedirecting 
+                ? "Vui lòng chờ trong giây lát..." 
+                : "Hệ thống đang xác nhận yêu cầu của bạn"}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const showEmpty = mounted && !isBuyNow && items.filter(i => i.selected).length === 0;
+  const showBuyNowEmpty = mounted && isBuyNow && !buyNowItem;
 
   return (
     <div className="bg-[#fcfdfe] min-h-screen pb-20">
       {(showEmpty || showBuyNowEmpty) ? (
         <div className="bg-white min-h-[70vh] flex flex-col items-center justify-center text-center px-4">
-          <div className="h-20 w-20 rounded-full bg-slate-50 flex items-center justify-center mb-6 border border-slate-100"><Truck className="h-10 w-10 text-slate-200" /></div>
+          <div className="h-20 w-20 rounded-full bg-slate-50 flex items-center justify-center mb-6 border border-slate-100">
+            <Truck className="h-10 w-10 text-slate-200" />
+          </div>
           <h1 className="text-2xl font-bold text-slate-900 mb-2">Chưa có sản phẩm nào để thanh toán</h1>
-          <Button onClick={() => router.push("/shop")} className="rounded-xl px-10 h-12 font-bold uppercase tracking-wider">Quay lại cửa hàng</Button>
+          <Button onClick={() => router.push("/shop")} className="rounded-xl px-10 h-12 font-bold">
+            Quay lại cửa hàng
+          </Button>
         </div>
       ) : (
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -444,6 +471,8 @@ export function CheckoutContainer() {
                 onApplyDiscount={handleApplyDiscount}
                 onRemoveDiscount={handleRemoveDiscount}
                 isApplyingDiscount={isApplyingDiscount}
+                totalOriginal={totalOriginal}
+                discountChoice={discountChoice}
               />
             </div>
           </form>
