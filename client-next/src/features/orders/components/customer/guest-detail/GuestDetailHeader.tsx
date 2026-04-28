@@ -7,11 +7,14 @@ import { useRouter } from "next/navigation";
 import { OrderStatus } from "@/types/enums";
 
 interface GuestDetailHeaderProps {
+  orderId: number;
   orderCode: string;
   createdAt: string;
   status: OrderStatus;
   isPaid: boolean;
   statusConfig: Record<string, { label: string; color: string; icon: any }>;
+  onSuccess?: () => void;
+  contact: string;
 }
 
 const formatDate = (dateString: string) => {
@@ -24,14 +27,20 @@ const formatDate = (dateString: string) => {
   });
 };
 
+import { RequestReturnModal } from "../detail/RequestReturnModal";
+
 export function GuestDetailHeader({ 
+  orderId,
   orderCode, 
   createdAt, 
   status, 
   isPaid, 
-  statusConfig 
+  statusConfig,
+  onSuccess,
+  contact
 }: GuestDetailHeaderProps) {
   const router = useRouter();
+  const [isReturnModalOpen, setIsReturnModalOpen] = React.useState(false);
   
   let currentStatus = statusConfig[status] || {
     label: status,
@@ -46,6 +55,8 @@ export function GuestDetailHeader({
       icon: CheckCircle2,
     };
   }
+
+  const canReturn = status === OrderStatus.DELIVERED;
 
   return (
     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 border-b border-slate-100 pb-6">
@@ -67,10 +78,31 @@ export function GuestDetailHeader({
       </div>
 
       <div className="flex items-center gap-2">
+        {canReturn && (
+          <Button 
+            onClick={() => setIsReturnModalOpen(true)}
+            className="bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold h-9 px-5 rounded-lg shadow-lg shadow-rose-500/10"
+          >
+            Yêu cầu trả hàng
+          </Button>
+        )}
         <Button variant="outline" className="border-slate-200 text-slate-600 text-xs font-medium h-9 px-4 rounded-lg">
           Liên hệ hỗ trợ
         </Button>
       </div>
+
+      <RequestReturnModal 
+        isOpen={isReturnModalOpen}
+        onClose={() => setIsReturnModalOpen(false)}
+        orderId={orderId}
+        orderCode={orderCode}
+        onSuccess={() => {
+          onSuccess?.();
+          setIsReturnModalOpen(false);
+        }}
+        isGuest={true}
+        contact={contact}
+      />
     </div>
   );
 }

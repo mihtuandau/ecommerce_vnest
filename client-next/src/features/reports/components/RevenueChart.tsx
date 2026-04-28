@@ -9,38 +9,23 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  BarChart,
-  Bar,
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { formatCurrency } from "@/utils/formatCurrency";
-
-const data = [
-  { name: "Th 1", revenue: 4000, orders: 240 },
-  { name: "Th 2", revenue: 3000, orders: 139 },
-  { name: "Th 3", revenue: 2000, orders: 980 },
-  { name: "Th 4", revenue: 2780, orders: 390 },
-  { name: "Th 5", revenue: 1890, orders: 480 },
-  { name: "Th 6", revenue: 2390, orders: 380 },
-  { name: "Th 7", revenue: 3490, orders: 430 },
-  { name: "Th 8", revenue: 4200, orders: 550 },
-  { name: "Th 9", revenue: 3800, orders: 480 },
-  { name: "Th 10", revenue: 5100, orders: 620 },
-  { name: "Th 11", revenue: 4600, orders: 580 },
-  { name: "Th 12", revenue: 6300, orders: 750 },
-];
+import { useRevenueReport } from "../hooks";
+import { Loader2 } from "lucide-react";
 
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xl space-y-2">
-        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+        <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest">
           {label}
         </p>
         <div className="flex flex-col gap-1">
           <p className="text-sm font-bold text-slate-900">
             Doanh thu:{" "}
-            <span className="text-blue-600">{formatCurrency(payload[0].value)}</span>
+            <span className="text-primary">{formatCurrency(payload[0].value)}</span>
           </p>
           <p className="text-xs font-medium text-slate-500">
             Đơn hàng:{" "}
@@ -52,9 +37,6 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   }
   return null;
 };
-
-import { useRevenueReport } from "../hooks";
-import { Loader2 } from "lucide-react";
 
 export function RevenueChart({ params }: { params: any }) {
   const { data: reportData, isLoading } = useRevenueReport(params);
@@ -74,25 +56,21 @@ export function RevenueChart({ params }: { params: any }) {
     <Card className="border border-slate-200 shadow-none overflow-hidden bg-white rounded-xl h-full flex flex-col">
       <CardHeader className="p-7 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <CardTitle className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+          <CardTitle className="text-xs font-medium text-slate-500">
             Phân tích doanh thu & Đơn hàng
           </CardTitle>
-          <p className="text-xl font-bold text-slate-900 mt-1">
+          <p className="text-xl font-bold text-slate-900 mt-1 tracking-tight">
             Biểu đồ tăng trưởng {periodLabel}
           </p>
         </div>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-1.5">
-            <div className="h-2 w-2 rounded-full bg-blue-500" />
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-              Doanh thu
-            </span>
+            <div className="h-2 w-2 rounded-full bg-primary" />
+            <span className="text-xs font-medium text-slate-500">Doanh thu</span>
           </div>
           <div className="flex items-center gap-1.5">
             <div className="h-2 w-2 rounded-full bg-slate-200" />
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-              Đơn hàng
-            </span>
+            <span className="text-xs font-medium text-slate-500">Đơn hàng</span>
           </div>
         </div>
       </CardHeader>
@@ -105,8 +83,8 @@ export function RevenueChart({ params }: { params: any }) {
             >
               <defs>
                 <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#2563eb" stopOpacity={0.1} />
-                  <stop offset="95%" stopColor="#2563eb" stopOpacity={0} />
+                  <stop offset="5%" stopColor="#1565C0" stopOpacity={0.1} />
+                  <stop offset="95%" stopColor="#1565C0" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
@@ -114,20 +92,20 @@ export function RevenueChart({ params }: { params: any }) {
                 dataKey="date"
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: "#94a3b8", fontSize: 10, fontWeight: 700 }}
+                tick={{ fill: "#94a3b8", fontSize: 12, fontWeight: 500 }}
                 dy={15}
               />
               <YAxis
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: "#94a3b8", fontSize: 10, fontWeight: 700 }}
+                tick={{ fill: "#94a3b8", fontSize: 12, fontWeight: 500 }}
                 tickFormatter={(value) => `${value / 1000}k`}
               />
               <Tooltip content={<CustomTooltip />} />
               <Area
                 type="monotone"
                 dataKey="revenue"
-                stroke="#2563eb"
+                stroke="#1565C0"
                 strokeWidth={3}
                 fillOpacity={1}
                 fill="url(#colorRevenue)"

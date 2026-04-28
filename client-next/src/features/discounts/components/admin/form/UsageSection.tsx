@@ -23,7 +23,7 @@ export function UsageSection({ form }: UsageSectionProps) {
     <div className="space-y-6 bg-white p-6 rounded-xl border border-slate-200">
       <div className="flex items-center gap-2 mb-2">
         <Settings2 className="h-5 w-5 text-primary" />
-        <h3 className="font-bold text-base text-slate-900">Cấu hình sử dụng</h3>
+        <h3 className="font-semibold text-base text-slate-800">Cấu hình sử dụng</h3>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -32,7 +32,7 @@ export function UsageSection({ form }: UsageSectionProps) {
           name="usageLimit"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="font-bold text-xs uppercase tracking-widest text-muted-foreground">Giới hạn sử dụng</FormLabel>
+              <FormLabel className="font-semibold text-xs tracking-wide text-slate-600">Giới hạn sử dụng</FormLabel>
               <FormControl>
                 <div className="relative">
                   <Input 
@@ -56,7 +56,7 @@ export function UsageSection({ form }: UsageSectionProps) {
           name="startDate"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="font-bold text-xs uppercase tracking-widest text-muted-foreground">Ngày bắt đầu</FormLabel>
+              <FormLabel className="font-semibold text-xs tracking-wide text-slate-600">Ngày bắt đầu</FormLabel>
               <FormControl>
                 <Input 
                   type="datetime-local" 
@@ -75,7 +75,7 @@ export function UsageSection({ form }: UsageSectionProps) {
           name="endDate"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="font-bold text-xs uppercase tracking-widest text-muted-foreground">Ngày kết thúc</FormLabel>
+              <FormLabel className="font-semibold text-xs tracking-wide text-slate-600">Ngày kết thúc</FormLabel>
               <FormControl>
                 <Input 
                   type="datetime-local" 
@@ -97,8 +97,8 @@ export function UsageSection({ form }: UsageSectionProps) {
           render={({ field }) => (
             <FormItem className="flex flex-row items-center justify-between rounded-xl border border-slate-100 p-4 bg-slate-50">
               <div className="space-y-0.5">
-                <FormLabel className="text-sm font-bold text-slate-900">Trạng thái kích hoạt</FormLabel>
-                <FormDescription className="text-[10px] text-slate-500 italic">Mã có hiệu lực ngay sau khi lưu</FormDescription>
+                <FormLabel className="text-sm font-semibold text-slate-800">Trạng thái kích hoạt</FormLabel>
+                <FormDescription className="text-xs text-slate-500 italic">Mã có hiệu lực ngay sau khi lưu</FormDescription>
               </div>
               <FormControl>
                 <Switch
@@ -118,10 +118,10 @@ export function UsageSection({ form }: UsageSectionProps) {
             <FormItem className="flex flex-row items-center justify-between rounded-xl border border-rose-100 p-4 bg-rose-50/10">
               <div className="space-y-0.5">
                 <div className="flex items-center gap-2">
-                  <FormLabel className="text-sm font-bold text-rose-600">Flash Sale</FormLabel>
+                  <FormLabel className="text-sm font-semibold text-rose-600">Flash Sale</FormLabel>
                   <Zap className="h-3.5 w-3.5 text-rose-500 fill-rose-500" />
                 </div>
-                <FormDescription className="text-[10px] text-rose-400 italic">Áp dụng tự động cho sản phẩm</FormDescription>
+                <FormDescription className="text-xs text-rose-400 italic">Áp dụng tự động cho sản phẩm</FormDescription>
               </div>
               <FormControl>
                 <Switch

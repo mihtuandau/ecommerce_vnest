@@ -1,3 +1,5 @@
+import * as Sentry from '@sentry/nestjs';
+import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe, Logger } from '@nestjs/common';
 import helmet from 'helmet';
@@ -11,6 +13,17 @@ import { createCspNonceMiddleware } from './common/middleware/csp-nonce.middlewa
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 
 async function bootstrap() {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN || "https://placeholder@sentry.io/12345", // User should provide real DSN in .env
+    integrations: [
+      nodeProfilingIntegration(),
+    ],
+    // TracesSampleRate 1.0 captures all transactions for performance monitoring.
+    // In production, adjust this to a lower value.
+    tracesSampleRate: 1.0,
+    profilesSampleRate: 1.0,
+  });
+
   const app = await NestFactory.create(AppModule);
 
   const csrfNonce = crypto.randomBytes(16).toString('base64');
@@ -30,7 +43,7 @@ async function bootstrap() {
   app.use(createCspNonceMiddleware());
   app.use(cookieParser());
   app.setGlobalPrefix('api');
-  const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'https://dautuan.com,https://www.dautuan.com').split(',');
+  const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:3000,https://dautuan.com,https://www.dautuan.com').split(',');
   
   app.enableCors({
     origin: allowedOrigins, 

@@ -15,7 +15,7 @@ export const columns: ColumnDef<Banner>[] = [
     id: "stt",
     header: "STT",
     cell: ({ row }) => (
-      <span className="text-[10px] font-bold text-slate-400">
+      <span className="text-xs font-semibold text-slate-500">
         {row.index + 1}
       </span>
     ),
@@ -39,10 +39,10 @@ export const columns: ColumnDef<Banner>[] = [
     header: "Thông tin Banner",
     cell: ({ row }) => (
       <div className="flex flex-col gap-0.5">
-        <span className="font-bold text-slate-900 tracking-tight">{row.getValue("title")}</span>
+        <span className="font-semibold text-slate-800 tracking-tight text-sm">{row.getValue("title")}</span>
         <div className="flex items-center gap-2">
-           <ImageIcon className="h-3 w-3 text-slate-400" />
-           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Thứ tự: {row.original.order || 0}</span>
+           <ImageIcon className="h-3 w-3 text-slate-500" />
+           <span className="text-xs font-medium text-slate-500 tracking-wide">Thứ tự: {row.original.order || 0}</span>
         </div>
       </div>
     ),
@@ -57,12 +57,12 @@ export const columns: ColumnDef<Banner>[] = [
           href={link} 
           target="_blank" 
           rel="noreferrer" 
-          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-50 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all text-[11px] font-bold border border-slate-100"
+          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-50 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all text-xs font-semibold border border-slate-100"
         >
           Truy cập <ExternalLink className="h-3 w-3" />
         </a>
       ) : (
-        <span className="text-slate-300 text-[11px] font-bold italic tracking-wider">CHƯA CẬP NHẬT</span>
+        <span className="text-slate-400 text-xs font-medium italic tracking-wide">Chưa cập nhật</span>
       );
     },
   },
@@ -74,13 +74,13 @@ export const columns: ColumnDef<Banner>[] = [
       return (
         <Badge 
           className={cn(
-            "px-2.5 py-0.5 rounded-lg font-bold text-[10px] border-none",
+            "px-2.5 py-0.5 rounded-lg font-semibold text-xs border-none tracking-wide",
             isActive 
               ? "bg-emerald-50 text-emerald-600 shadow-sm shadow-emerald-100" 
-              : "bg-slate-100 text-slate-500"
+              : "bg-slate-100 text-slate-600"
           )}
         >
-          {isActive ? "ĐANG HIỂN THỊ" : "ĐÃ ẨN"}
+          {isActive ? "Đang hiển thị" : "Đã ẩn"}
         </Badge>
       );
     },
@@ -97,7 +97,7 @@ export const columns: ColumnDef<Banner>[] = [
           <Button 
             variant="ghost" 
             size="icon" 
-            className="h-8 w-8 rounded-lg border border-slate-100 text-slate-400 hover:text-slate-900 hover:bg-white hover:shadow-sm transition-all"
+            className="h-8 w-8 rounded-lg border border-slate-100 text-slate-500 hover:text-slate-900 hover:bg-white hover:shadow-sm transition-all"
             onClick={() => router.push(`/admin/banners/${banner.id}`)}
           >
             <Pencil className="h-3.5 w-3.5" />
@@ -105,7 +105,7 @@ export const columns: ColumnDef<Banner>[] = [
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8 rounded-lg border border-slate-100 text-slate-400 hover:text-red-600 hover:bg-red-50 hover:border-red-100 transition-all"
+            className="h-8 w-8 rounded-lg border border-slate-100 text-slate-500 hover:text-red-600 hover:bg-red-50 hover:border-red-100 transition-all"
             onClick={() => {
               if (confirm(`Xác nhận xóa banner: ${banner.title}?`)) {
                 deleteBanner(banner.id);

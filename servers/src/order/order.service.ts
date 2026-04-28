@@ -21,19 +21,20 @@ export class OrderService {
     private orderManagement: OrderManagement,
   ) {}
 
-  async create(userId: number | null, dto: CreateOrderDto, ipAddr: string = '127.0.0.1'): Promise<any> {
-    return this.orderCreation.create(userId, dto, ipAddr);
+  async create(userId: number | null, dto: CreateOrderDto, requester: { role: string }, ipAddr: string = '127.0.0.1'): Promise<any> {
+    return this.orderCreation.create(userId, dto, requester, ipAddr);
   }
 
   async findAll(query: QueryOrderDto) {
     const { page = 1, limit = 10, status, userId } = query;
     const skip = (page - 1) * limit;
 
-    // Tạm thời vô hiệu hóa Cache để giải quyết lỗi sai lệch giá tiền giữa người dùng và Admin
-    // const cached = await this.cacheService.getOrdersList(query);
-    // if (cached) return cached;
+    // Tạo khóa cache đặc biệt bao gồm cả role và userId để tránh sai lệch dữ liệu
+    const cacheKey = { ...query, requesterId: userId };
+    const cached = await this.cacheService.getOrdersList(cacheKey);
+    if (cached) return cached;
 
-    const where = {};
+    const where: any = {};
     if (status) where['status'] = status;
     if (userId) where['userId'] = userId;
 
@@ -52,7 +53,7 @@ export class OrderService {
       totalPages: Math.ceil(total / limit),
     };
 
-    // await this.cacheService.setOrdersList(query, orders);
+    await this.cacheService.setOrdersList(cacheKey, orders);
     return orders;
   }
 

@@ -30,7 +30,7 @@ export function ValueSection({ form }: ValueSectionProps) {
     <div className="space-y-6 bg-white p-6 rounded-xl border border-slate-200">
       <div className="flex items-center gap-2 mb-2">
         <Banknote className="h-5 w-5 text-primary" />
-        <h3 className="font-bold text-base text-slate-900">Giá trị giảm giá</h3>
+        <h3 className="font-semibold text-base text-slate-800">Giá trị giảm giá</h3>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -39,7 +39,7 @@ export function ValueSection({ form }: ValueSectionProps) {
           name="type"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="font-bold text-xs uppercase tracking-widest text-muted-foreground">Loại giảm giá</FormLabel>
+              <FormLabel className="font-semibold text-xs tracking-wide text-slate-600">Loại giảm giá</FormLabel>
               <Select onValueChange={field.onChange} value={field.value || "PERCENTAGE"}>
                 <FormControl>
                   <SelectTrigger className="h-12 rounded-xl border-slate-200 text-foreground font-medium focus:ring-primary/20">
@@ -61,7 +61,7 @@ export function ValueSection({ form }: ValueSectionProps) {
           name={discountType === "PERCENTAGE" ? "percentage" : "fixedAmount"}
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="font-bold text-xs uppercase tracking-widest text-muted-foreground">
+              <FormLabel className="font-semibold text-xs tracking-wide text-slate-600">
                 Mức giảm {discountType === "PERCENTAGE" ? "(%)" : "(VNĐ)"}
               </FormLabel>
               <FormControl>
@@ -69,7 +69,7 @@ export function ValueSection({ form }: ValueSectionProps) {
                   <Input 
                     type="number" 
                     placeholder={discountType === "PERCENTAGE" ? "Ví dụ: 10" : "Ví dụ: 50.000"} 
-                    className="h-12 rounded-xl border-slate-200 focus:ring-primary/20 font-bold text-primary" 
+                    className="h-12 rounded-xl border-slate-200 focus:ring-primary/20 font-semibold text-primary" 
                     {...field} 
                     value={field.value ?? ""} 
                     onChange={e => field.onChange(e.target.value === "" ? 0 : Number(e.target.value))}
@@ -78,7 +78,7 @@ export function ValueSection({ form }: ValueSectionProps) {
                     {discountType === "PERCENTAGE" ? (
                       <Percent className="h-4 w-4 text-slate-300" />
                     ) : (
-                      <span className="text-xs font-bold text-slate-300">đ</span>
+                      <span className="text-xs font-semibold text-slate-400">đ</span>
                     )}
                   </div>
                 </div>
@@ -95,7 +95,7 @@ export function ValueSection({ form }: ValueSectionProps) {
           name="minOrderAmount"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="font-bold text-xs uppercase tracking-widest text-muted-foreground">Đơn hàng tối thiểu</FormLabel>
+              <FormLabel className="font-semibold text-xs tracking-wide text-slate-600">Đơn hàng tối thiểu</FormLabel>
               <FormControl>
                 <Input 
                   type="number" 
@@ -116,7 +116,7 @@ export function ValueSection({ form }: ValueSectionProps) {
           name="maxDiscountAmount"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="font-bold text-xs uppercase tracking-widest text-muted-foreground">Giảm tối đa (VNĐ)</FormLabel>
+              <FormLabel className="font-semibold text-xs tracking-wide text-slate-600">Giảm tối đa (VNĐ)</FormLabel>
               <FormControl>
                 <Input 
                   type="number" 

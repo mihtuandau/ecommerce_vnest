@@ -31,11 +31,15 @@ export function CartContainer() {
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
 
+  const { user } = useAuthStore();
+
   useEffect(() => {
     setMounted(true);
     
     // Sync cart with server to get latest prices/discounts
     const syncWithServer = async () => {
+      if (!user) return; // Guests use local storage only
+      
       try {
         const cartData = await cartApi.getCart();
         if (cartData && cartData.cartItems) {

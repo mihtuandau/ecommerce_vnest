@@ -14,13 +14,18 @@ export default function CreateOrderPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 text-slate-400 mb-1">
-            <Link href={ROUTES.ADMIN_ORDERS} className="hover:text-primary transition-colors flex items-center gap-1 text-[10px] font-black uppercase tracking-widest">
+            <Link
+              href={ROUTES.ADMIN_ORDERS}
+              className="hover:text-primary transition-colors flex items-center gap-1 text-[10px] font-black uppercase tracking-widest"
+            >
               <ChevronLeft className="h-3 w-3" />
               Đơn hàng
             </Link>
           </div>
           <div className="flex items-center gap-3">
-            <h1 className="text-xl font-black text-slate-900 tracking-tight uppercase">Tạo đơn mới</h1>
+            <h1 className="text-xl font-black text-slate-900 tracking-tight uppercase">
+              Tạo đơn mới
+            </h1>
           </div>
         </div>
       </div>

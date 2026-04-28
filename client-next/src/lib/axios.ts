@@ -42,9 +42,11 @@ api.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
         return api(originalRequest);
       } catch {
-        Cookies.remove("accessToken");
-        Cookies.remove("refreshToken");
-        if (typeof window !== "undefined") {
+        // Import store dynamically to avoid circular dependencies if any
+        const { useAuthStore } = await import("@/store/useAuthStore");
+        useAuthStore.getState().clearAuth();
+        
+        if (typeof window !== "undefined" && !window.location.pathname.includes("/login")) {
           window.location.href = "/login";
         }
       }

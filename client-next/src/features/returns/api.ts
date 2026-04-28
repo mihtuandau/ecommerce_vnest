@@ -6,6 +6,16 @@ export const returnsApi = {
     return response;
   },
 
+  createGuestReturnRequest: async (data: any) => {
+    const { data: response } = await api.post("/returns/guest", data);
+    return response;
+  },
+
+  confirmGuestSent: async (id: number, data: { orderCode: string; contact: string }) => {
+    const { data: response } = await api.post(`/returns/guest/${id}/confirm-sent`, data);
+    return response;
+  },
+
   getMyReturns: async () => {
     const { data: response } = await api.get("/returns/my-returns");
     return response;

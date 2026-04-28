@@ -37,18 +37,16 @@ export const columns: ColumnDef<Order>[] = [
     id: "stt",
     header: "STT",
     cell: ({ row }) => (
-      <span className="text-slate-400 font-medium">
-        {row.index + 1}
-      </span>
+      <span className="text-xs font-semibold text-slate-500">{row.index + 1}</span>
     ),
   },
   {
     accessorKey: "orderCode",
     header: "Mã đơn",
     cell: ({ row }) => (
-      <Link 
+      <Link
         href={`${ROUTES.ADMIN_ORDERS}/${row.original.id}`}
-        className="font-bold text-primary hover:underline"
+        className="font-semibold text-primary hover:underline"
       >
         #{row.getValue("orderCode")}
       </Link>
@@ -68,27 +66,33 @@ export const columns: ColumnDef<Order>[] = [
       const getImageUrl = (item: any) => {
         const normalize = (path: string) => {
           if (!path) return "";
-          if (path.startsWith('http')) return path;
-          return `/${path.replace(/\\/g, '/').replace(/^\//, '')}`;
+          if (path.startsWith("http")) return path;
+          return `/${path.replace(/\\/g, "/").replace(/^\//, "")}`;
         };
 
         // 1. Try variantSnapshot (saved at order time)
         const snapshotImg = (item.variantSnapshot as any)?.image;
-        if (snapshotImg && typeof snapshotImg === 'string' && snapshotImg.length > 5) {
+        if (snapshotImg && typeof snapshotImg === "string" && snapshotImg.length > 5) {
           return normalize(snapshotImg);
         }
 
         // 2. Try variant's own images
         const variantImages = item.variant?.images || [];
         if (variantImages.length > 0) {
-          const url = typeof variantImages[0] === 'string' ? variantImages[0] : variantImages[0]?.url;
+          const url =
+            typeof variantImages[0] === "string"
+              ? variantImages[0]
+              : variantImages[0]?.url;
           if (url) return normalize(url);
         }
 
         // 3. Try product images
         const productImages = item.variant?.product?.images || [];
         if (productImages.length > 0) {
-          const url = typeof productImages[0] === 'string' ? productImages[0] : productImages[0]?.url;
+          const url =
+            typeof productImages[0] === "string"
+              ? productImages[0]
+              : productImages[0]?.url;
           if (url) return normalize(url);
         }
 
@@ -101,24 +105,26 @@ export const columns: ColumnDef<Order>[] = [
       return (
         <div className="flex items-center gap-3 py-1">
           <div className="h-10 w-10 rounded-xl bg-slate-50 border border-slate-100 flex-shrink-0 overflow-hidden p-0.5 flex items-center justify-center">
-            <img 
-              src={imageUrl} 
-              alt="Product" 
-              className="h-full w-full object-cover rounded-lg" 
+            <img
+              src={imageUrl}
+              alt="Product"
+              className="h-full w-full object-cover rounded-lg"
             />
           </div>
           <div className="flex flex-col min-w-0 max-w-[200px]">
-            <span className="text-xs font-bold text-slate-800 truncate">
+            <span className="text-xs font-semibold text-slate-800 truncate">
               {firstItem.productName || firstItem.variant?.product?.name}
             </span>
             <div className="flex items-center gap-2 mt-0.5">
               {(firstItem.variant?.color || firstItem.variant?.size) && (
-                <span className="text-[10px] text-primary font-black uppercase tracking-tighter bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100">
-                  {[firstItem.variant?.color, firstItem.variant?.size].filter(Boolean).join(" / ")}
+                <span className="text-[11px] text-primary font-semibold tracking-tight bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100">
+                  {[firstItem.variant?.color, firstItem.variant?.size]
+                    .filter(Boolean)
+                    .join(" / ")}
                 </span>
               )}
               {otherItemsCount > 0 && (
-                <span className="text-[10px] text-slate-400 font-bold">
+                <span className="text-[11px] text-slate-500 font-semibold">
                   +{otherItemsCount} sản phẩm khác
                 </span>
               )}
@@ -133,13 +139,15 @@ export const columns: ColumnDef<Order>[] = [
     header: "Khách hàng",
     cell: ({ row }) => {
       const order = row.original as any;
-      const name = order.shippingSnapshot?.fullName || order.user?.name || "Khách vãng lai";
-      const phone = order.shippingSnapshot?.phone || order.guestPhone || order.user?.phone || "--";
+      const name =
+        order.shippingSnapshot?.fullName || order.user?.name || "Khách vãng lai";
+      const phone =
+        order.shippingSnapshot?.phone || order.guestPhone || order.user?.phone || "--";
 
       return (
         <div className="flex flex-col">
-          <span className="font-semibold text-slate-900">{name}</span>
-          <span className="text-xs text-slate-500">{phone}</span>
+          <span className="font-semibold text-slate-800">{name}</span>
+          <span className="text-xs text-slate-600">{phone}</span>
         </div>
       );
     },
@@ -151,9 +159,7 @@ export const columns: ColumnDef<Order>[] = [
       const order = row.original as any;
       const amount = order.total || order.totalAmount || 0;
       return (
-        <span className="font-bold text-slate-900">
-          {formatCurrency(amount)}
-        </span>
+        <span className="font-semibold text-slate-800">{formatCurrency(amount)}</span>
       );
     },
   },
@@ -162,18 +168,22 @@ export const columns: ColumnDef<Order>[] = [
     header: "Thanh toán",
     cell: ({ row }) => {
       const order = row.original as any;
-      const paymentStatus = order.paymentStatus || order.payment?.status || PaymentStatus.PENDING;
-      const isPaid = paymentStatus === "PAID" || paymentStatus === PaymentStatus.SUCCESS;
-      const isRefunded = paymentStatus === "REFUNDED" || paymentStatus === PaymentStatus.REFUNDED;
-      const isCancelled = paymentStatus === "CANCELLED" || paymentStatus === PaymentStatus.CANCELLED;
-      
+      const paymentStatus =
+        order.paymentStatus || order.payment?.status || PaymentStatus.PENDING;
+      const isPaid =
+        paymentStatus === "PAID" || paymentStatus === PaymentStatus.SUCCESS;
+      const isRefunded =
+        paymentStatus === "REFUNDED" || paymentStatus === PaymentStatus.REFUNDED;
+      const isCancelled =
+        paymentStatus === "CANCELLED" || paymentStatus === PaymentStatus.CANCELLED;
+
       return (
-        <Badge 
-          variant="outline" 
+        <Badge
+          variant="outline"
           className={cn(
-            "text-[10px] font-bold px-2.5 py-1 rounded-full h-fit leading-none flex items-center justify-center border",
-            isPaid 
-              ? "bg-emerald-50 text-emerald-600 border-emerald-200" 
+            "text-[11px] font-semibold px-2.5 py-1 rounded-full h-fit leading-none flex items-center justify-center border",
+            isPaid
+              ? "bg-emerald-50 text-emerald-600 border-emerald-200"
               : isRefunded
                 ? "bg-purple-50 text-purple-600 border-purple-200"
                 : isCancelled
@@ -181,7 +191,13 @@ export const columns: ColumnDef<Order>[] = [
                   : "bg-amber-50 text-amber-600 border-amber-200"
           )}
         >
-          {isPaid ? "Đã thanh toán" : isRefunded ? "Đã hoàn tiền" : isCancelled ? "Đã hủy" : "Chưa thanh toán"}
+          {isPaid
+            ? "Đã thanh toán"
+            : isRefunded
+              ? "Đã hoàn tiền"
+              : isCancelled
+                ? "Đã hủy"
+                : "Chưa thanh toán"}
         </Badge>
       );
     },
@@ -192,21 +208,48 @@ export const columns: ColumnDef<Order>[] = [
     cell: ({ row }) => {
       const status = row.getValue("status") as OrderStatus;
       const statusMap: Record<OrderStatus, { label: string; class: string }> = {
-        [OrderStatus.PENDING]: { label: "Chờ xử lý", class: "bg-slate-100 text-slate-600 border-slate-200" },
-        [OrderStatus.PROCESSING]: { label: "Đang xử lý", class: "bg-blue-50 text-blue-600 border-blue-200" },
-        [OrderStatus.SHIPPED]: { label: "Đang giao", class: "bg-indigo-50 text-indigo-600 border-indigo-200" },
-        [OrderStatus.DELIVERED]: { label: "Đã giao", class: "bg-emerald-50 text-emerald-600 border-emerald-200" },
-        [OrderStatus.CANCELLED]: { label: "Đã hủy", class: "bg-rose-50 text-rose-600 border-rose-200" },
-        [OrderStatus.RETURN_REQUESTED]: { label: "Yêu cầu trả hàng", class: "bg-amber-50 text-amber-600 border-amber-200" },
-        [OrderStatus.RETURNED]: { label: "Đã trả hàng", class: "bg-purple-50 text-purple-600 border-purple-200" },
+        [OrderStatus.PENDING]: {
+          label: "Chờ xử lý",
+          class: "bg-slate-100 text-slate-600 border-slate-200",
+        },
+        [OrderStatus.PROCESSING]: {
+          label: "Đang xử lý",
+          class: "bg-blue-50 text-blue-600 border-blue-200",
+        },
+        [OrderStatus.SHIPPED]: {
+          label: "Đang giao",
+          class: "bg-indigo-50 text-indigo-600 border-indigo-200",
+        },
+        [OrderStatus.DELIVERED]: {
+          label: "Đã giao",
+          class: "bg-emerald-50 text-emerald-600 border-emerald-200",
+        },
+        [OrderStatus.CANCELLED]: {
+          label: "Đã hủy",
+          class: "bg-rose-50 text-rose-600 border-rose-200",
+        },
+        [OrderStatus.RETURN_REQUESTED]: {
+          label: "Yêu cầu trả hàng",
+          class: "bg-amber-50 text-amber-600 border-amber-200",
+        },
+        [OrderStatus.RETURNED]: {
+          label: "Đã trả hàng",
+          class: "bg-purple-50 text-purple-600 border-purple-200",
+        },
       };
 
-      const config = statusMap[status] || { label: status, class: "bg-slate-100 text-slate-600" };
+      const config = statusMap[status] || {
+        label: status,
+        class: "bg-slate-100 text-slate-600",
+      };
 
       return (
         <Badge
           variant="outline"
-          className={cn("rounded-full px-2.5 py-1 font-bold text-[10px] h-fit leading-none flex items-center justify-center border", config.class)}
+          className={cn(
+            "rounded-full px-2.5 py-1 font-semibold text-[11px] h-fit leading-none flex items-center justify-center border",
+            config.class
+          )}
         >
           {config.label}
         </Badge>
@@ -217,7 +260,7 @@ export const columns: ColumnDef<Order>[] = [
     accessorKey: "createdAt",
     header: "Ngày đặt",
     cell: ({ row }) => (
-      <span className="text-slate-500 text-xs">
+      <span className="text-slate-600 text-xs font-medium">
         {dayjs(row.getValue("createdAt")).format("DD/MM/YYYY HH:mm")}
       </span>
     ),
@@ -237,26 +280,33 @@ export const columns: ColumnDef<Order>[] = [
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48 rounded-lg p-1">
-              <DropdownMenuLabel className="text-[10px] font-bold uppercase tracking-widest text-slate-400 px-2 py-1.5">Thao tác</DropdownMenuLabel>
-              <DropdownMenuItem className="rounded-md cursor-pointer gap-2 py-2" asChild>
+              <DropdownMenuLabel className="text-[11px] font-semibold tracking-wide text-slate-500 px-2 py-1.5">
+                Thao tác
+              </DropdownMenuLabel>
+              <DropdownMenuItem
+                className="rounded-md cursor-pointer gap-2 py-2"
+                asChild
+              >
                 <Link href={`${ROUTES.ADMIN_ORDERS}/${order.id}`}>
-                  <Eye className="h-4 w-4 text-slate-400" />
+                  <Eye className="h-4 w-4 text-slate-500" />
                   Xem chi tiết
                 </Link>
               </DropdownMenuItem>
-              {order.status !== OrderStatus.CANCELLED && order.status !== OrderStatus.RETURNED && order.status !== OrderStatus.DELIVERED && (
-                <DropdownMenuItem 
-                  className="rounded-md cursor-pointer gap-2 py-2 text-rose-600 focus:bg-rose-50 focus:text-rose-600"
-                  onClick={() => {
-                    if (confirm("Bạn có chắc chắn muốn hủy đơn hàng này?")) {
-                      onUpdateStatus?.(String(order.id), OrderStatus.CANCELLED);
-                    }
-                  }}
-                >
-                  <XCircle className="h-4 w-4" />
-                  Hủy đơn hàng
-                </DropdownMenuItem>
-              )}
+              {order.status !== OrderStatus.CANCELLED &&
+                order.status !== OrderStatus.RETURNED &&
+                order.status !== OrderStatus.DELIVERED && (
+                  <DropdownMenuItem
+                    className="rounded-md cursor-pointer gap-2 py-2 text-rose-600 focus:bg-rose-50 focus:text-rose-600"
+                    onClick={() => {
+                      if (confirm("Bạn có chắc chắn muốn hủy đơn hàng này?")) {
+                        onUpdateStatus?.(String(order.id), OrderStatus.CANCELLED);
+                      }
+                    }}
+                  >
+                    <XCircle className="h-4 w-4" />
+                    Hủy đơn hàng
+                  </DropdownMenuItem>
+                )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -272,11 +322,11 @@ interface OrderTableProps {
 
 export function OrderTable({ data, onUpdateStatus }: OrderTableProps) {
   return (
-    <DataTable 
-      columns={columns} 
-      data={data} 
-      searchKey="orderCode" 
-      hideSearch={true} 
+    <DataTable
+      columns={columns}
+      data={data}
+      searchKey="orderCode"
+      hideSearch={true}
       meta={{ onUpdateStatus }}
     />
   );

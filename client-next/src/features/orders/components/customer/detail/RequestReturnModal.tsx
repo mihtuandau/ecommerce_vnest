@@ -25,6 +25,8 @@ interface RequestReturnModalProps {
   orderId: number;
   orderCode: string;
   onSuccess: () => void;
+  isGuest?: boolean;
+  contact?: string;
 }
 
 const REASONS = [
@@ -41,6 +43,8 @@ export function RequestReturnModal({
   orderId,
   orderCode,
   onSuccess,
+  isGuest,
+  contact,
 }: RequestReturnModalProps) {
   const { register, handleSubmit, formState: { errors }, reset } = useForm();
   const [images, setImages] = useState<string[]>([]);
@@ -73,14 +77,33 @@ export function RequestReturnModal({
       return toastError("Vui lòng tải lên ít nhất một hình ảnh bằng chứng");
     }
 
+    console.log("[RequestReturnModal] Submitting return request:", {
+      isGuest,
+      orderId: Number(orderId),
+      orderCode,
+      contact,
+      data
+    });
+    
     setIsSubmitting(true);
     try {
-      await returnsApi.createReturnRequest({
-        orderId,
-        reason: data.reason,
-        details: data.details,
-        images,
-      });
+      if (isGuest) {
+        await returnsApi.createGuestReturnRequest({
+          orderId: Number(orderId),
+          orderCode,
+          contact,
+          reason: data.reason,
+          details: data.details,
+          images,
+        });
+      } else {
+        await returnsApi.createReturnRequest({
+          orderId: Number(orderId),
+          reason: data.reason,
+          details: data.details,
+          images,
+        });
+      }
       success("Yêu cầu trả hàng đã được gửi thành công");
       reset();
       setImages([]);

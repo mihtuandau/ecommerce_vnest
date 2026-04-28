@@ -24,8 +24,7 @@ import {
 } from "@/components/ui/Table";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
-import { cn } from "@/utils/cn";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -43,11 +42,8 @@ export function DataTable<TData, TValue>({
   meta,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  );
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
@@ -80,7 +76,7 @@ export function DataTable<TData, TValue>({
             onChange={(event) =>
               table.getColumn(searchKey)?.setFilterValue(event.target.value)
             }
-            className="max-w-sm rounded-md h-9 text-sm"
+            className="max-w-sm rounded-xl h-10 text-sm"
           />
         </div>
       )}
@@ -91,7 +87,10 @@ export function DataTable<TData, TValue>({
               <TableRow key={headerGroup.id} className="hover:bg-transparent">
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id} className="h-11 px-4 text-xs font-semibold text-slate-600 uppercase">
+                    <TableHead
+                      key={header.id}
+                      className="h-11 px-4 text-xs font-semibold text-slate-600 uppercase"
+                    >
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -114,10 +113,7 @@ export function DataTable<TData, TValue>({
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id} className="px-4 py-3 text-sm">
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
                 </TableRow>
@@ -139,19 +135,19 @@ export function DataTable<TData, TValue>({
       {/* Pagination - Simple */}
       <div className="flex items-center justify-between px-4 py-4 border-t border-slate-100">
         <div className="text-xs text-slate-500">
-          Hiển thị {table.getFilteredRowModel().rows.length} đơn hàng
+          Hiển thị {table.getFilteredRowModel().rows.length} kết quả
         </div>
         <div className="flex items-center space-x-2">
           <Button
             variant="outline"
             size="sm"
-            className="h-8 rounded-md px-2"
+            className="h-9 px-3"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
             <ChevronLeft className="h-4 w-4 mr-1" /> Trước
           </Button>
-          
+
           <div className="text-xs font-semibold px-2">
             Trang {table.getState().pagination.pageIndex + 1}
           </div>
@@ -159,7 +155,7 @@ export function DataTable<TData, TValue>({
           <Button
             variant="outline"
             size="sm"
-            className="h-8 rounded-md px-2"
+            className="h-9 px-3"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >

@@ -39,7 +39,7 @@ export function Header({ order, onUpdateStatus, id }: HeaderProps) {
         </Button>
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-xl font-bold text-slate-900">Chi tiết đơn hàng #{order.orderCode}</h1>
+            <h1 className="text-xl font-semibold text-slate-800">Chi tiết đơn hàng #{order.orderCode}</h1>
             {isCancelled && (
               <Badge variant="outline" className="rounded-full px-3 py-1.5 text-[11px] font-medium bg-rose-50 text-rose-600 border-none h-fit leading-none flex items-center justify-center">
                 Đã hủy
@@ -56,7 +56,7 @@ export function Header({ order, onUpdateStatus, id }: HeaderProps) {
               </Badge>
             )}
           </div>
-          <p className="text-slate-500 text-xs mt-1">
+          <p className="text-slate-600 text-xs mt-1 font-medium">
             Ngày đặt: {dayjs(order.createdAt).format("HH:mm, DD/MM/YYYY")}
           </p>
         </div>
@@ -65,14 +65,14 @@ export function Header({ order, onUpdateStatus, id }: HeaderProps) {
         <Button 
           variant="outline" 
           size="sm" 
-          className="font-semibold gap-2 border-slate-200"
+          className="font-medium gap-2 border-slate-200"
           onClick={() => window.print()}
         >
           <Printer className="h-4 w-4" /> In đơn
         </Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="font-semibold gap-2 border-slate-200">
+            <Button variant="outline" size="sm" className="font-medium gap-2 border-slate-200">
               Thao tác khác
             </Button>
           </DropdownMenuTrigger>

@@ -75,10 +75,10 @@ export function RevenueChart({ data, isLoading }: RevenueChartProps) {
     <Card className="lg:col-span-2 border border-slate-200 shadow-none rounded-xl overflow-hidden bg-white">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <div>
-          <CardTitle className="text-lg font-bold text-slate-900">
+          <CardTitle className="text-lg font-semibold text-slate-800">
             Biểu đồ doanh thu
           </CardTitle>
-          <CardDescription className="text-xs font-medium text-slate-500">
+          <CardDescription className="text-xs font-medium text-slate-600">
             Theo dõi tăng trưởng doanh thu
           </CardDescription>
         </div>
@@ -91,10 +91,10 @@ export function RevenueChart({ data, isLoading }: RevenueChartProps) {
             <button
               key={btn.value}
               onClick={() => setTimeRange(btn.value)}
-              className={`px-3 py-1 rounded-md text-[10px] font-bold uppercase tracking-tight transition-all ${
+              className={`px-3 py-1.5 rounded-md text-xs font-semibold tracking-wide transition-all ${
                 timeRange === btn.value
                   ? "bg-white shadow-none border border-slate-200 text-indigo-600"
-                  : "text-slate-500 hover:text-slate-700"
+                  : "text-slate-600 hover:text-slate-700"
               }`}
             >
               {btn.label}
@@ -126,13 +126,13 @@ export function RevenueChart({ data, isLoading }: RevenueChartProps) {
                   dataKey="name"
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fontSize: 10, fontWeight: 600, fill: "#94a3b8" }}
+                  tick={{ fontSize: 11, fontWeight: 600, fill: "#64748b" }}
                   dy={10}
                 />
                 <YAxis
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fontSize: 10, fontWeight: 600, fill: "#94a3b8" }}
+                  tick={{ fontSize: 11, fontWeight: 600, fill: "#64748b" }}
                   tickFormatter={(value) => {
                     if (value >= 1000000) return `${value / 1000000}Tr`;
                     if (value >= 1000) return `${value / 1000}K`;
@@ -159,9 +159,9 @@ export function RevenueChart({ data, isLoading }: RevenueChartProps) {
               </AreaChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-full w-full bg-muted/20 rounded-2xl border-2 border-dashed flex flex-col items-center justify-center gap-2 text-muted-foreground">
+            <div className="h-full w-full bg-muted/20 rounded-2xl border-2 border-dashed flex flex-col items-center justify-center gap-2 text-slate-500">
               <AlertCircle className="h-8 w-8 opacity-20" />
-              <p className="text-xs font-bold">Chưa có dữ liệu cho thời gian này</p>
+              <p className="text-xs font-medium">Chưa có dữ liệu cho thời gian này</p>
             </div>
           )}
         </div>

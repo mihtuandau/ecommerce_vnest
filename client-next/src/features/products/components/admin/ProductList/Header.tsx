@@ -17,8 +17,12 @@ export function Header({ totalProducts, onRefresh, isFetching }: HeaderProps) {
   return (
     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900">Quản lý sản phẩm</h1>
-        <p className="text-slate-500 text-sm">Tổng cộng {totalProducts} sản phẩm trong hệ thống</p>
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+          Quản lý sản phẩm
+        </h1>
+        <p className="text-slate-500 text-sm">
+          Tổng cộng {totalProducts} sản phẩm trong hệ thống
+        </p>
       </div>
       <div className="flex items-center gap-2">
         <Button
@@ -31,7 +35,11 @@ export function Header({ totalProducts, onRefresh, isFetching }: HeaderProps) {
           <RefreshCw className={cn("h-4 w-4", isFetching && "animate-spin")} />
           {isFetching ? "Đang tải..." : "Làm mới"}
         </Button>
-        <Button asChild size="sm" className="font-bold gap-2 bg-primary text-white hover:bg-slate-800 shadow-sm">
+        <Button
+          asChild
+          size="sm"
+          className="font-bold gap-2 bg-primary text-white hover:bg-slate-800 shadow-sm"
+        >
           <Link href={`${ROUTES.ADMIN_PRODUCTS}/create`}>
             <Plus className="h-4 w-4" /> Thêm sản phẩm
           </Link>

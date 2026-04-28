@@ -68,11 +68,11 @@ export function HomeProductCard({ product, variant }: HomeProductCardProps) {
         </div>
 
         <div className="absolute top-2.5 left-2.5 md:top-4 md:left-4 z-30 flex flex-col gap-1">
-          <span className="bg-[#1565C0] text-white text-[8px] md:text-[9px] font-semibold px-2 py-0.5 md:px-2.5 md:py-1.5 rounded-full shadow-lg tracking-wide">
+          <span className="bg-[#1565C0] text-white text-[10px] md:text-[11px] font-bold px-2 py-0.5 md:px-2.5 md:py-1.5 rounded-full shadow-lg tracking-wide">
             Nổi bật
           </span>
           {discount && (
-            <span className="bg-[#e85d24] text-white text-[8px] md:text-[9px] font-bold px-2 py-0.5 md:px-2.5 md:py-1 rounded-lg shadow-lg tracking-widest">
+            <span className="bg-[#e85d24] text-white text-[10px] md:text-[11px] font-extrabold px-2 py-0.5 md:px-2.5 md:py-1 rounded-lg shadow-lg tracking-wide">
               -{discount}%
             </span>
           )}
@@ -90,7 +90,7 @@ export function HomeProductCard({ product, variant }: HomeProductCardProps) {
                 {formatCurrency(price)}
               </span>
               {originalPrice && originalPrice > price && (
-                <span className="text-[10px] md:text-sm text-white/60 line-through font-semibold">
+                <span className="text-[11px] md:text-sm text-white/60 line-through font-bold">
                   {formatCurrency(originalPrice)}
                 </span>
               )}
@@ -121,11 +121,11 @@ export function HomeProductCard({ product, variant }: HomeProductCardProps) {
             className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-[1.03] mix-blend-multiply"
           />
           <div className="absolute top-1.5 right-1.5 md:top-2 md:right-2 flex flex-col gap-1">
-            <div className="bg-[#1565C0]/10 text-[#1565C0] text-[8px] md:text-[9px] font-semibold px-2 py-0.5 md:px-2.5 md:py-1 rounded-full flex items-center gap-1 shadow-sm border border-[#1565C0]/20 tracking-wide">
+            <div className="bg-[#1565C0]/10 text-[#1565C0] text-[10px] md:text-[11px] font-bold px-2 py-0.5 md:px-2.5 md:py-1 rounded-full flex items-center gap-1 shadow-sm border border-[#1565C0]/20 tracking-wide">
               <TrendingUp className="h-2.5 w-2.5" /> Bán chạy
             </div>
             {discount && (
-              <div className="bg-[#e85d24] text-white text-[8px] md:text-[9px] font-bold px-2 py-0.5 md:px-2.5 md:py-1 rounded-full text-center shadow-sm tracking-widest">
+              <div className="bg-[#e85d24] text-white text-[10px] md:text-[11px] font-extrabold px-2 py-0.5 md:px-2.5 md:py-1 rounded-full text-center shadow-sm tracking-wide">
                 -{discount}%
               </div>
             )}
@@ -142,16 +142,16 @@ export function HomeProductCard({ product, variant }: HomeProductCardProps) {
                 {formatCurrency(price)}
               </span>
               {originalPrice && originalPrice > price && (
-                <span className="text-[9px] md:text-[11px] text-slate-500 line-through font-semibold">
+                <span className="text-[10px] md:text-[12px] text-slate-500 line-through font-bold">
                   {formatCurrency(originalPrice)}
                 </span>
               )}
               <div className="flex items-center gap-2 mt-1">
-                <span className="text-[8px] md:text-[9px] font-medium text-slate-400">
+                <span className="text-[10px] md:text-[11px] font-medium text-slate-400">
                   Đã bán {(product as any).soldCount || 0}
                 </span>
                 <span className="text-slate-200">|</span>
-                <span className="text-[8px] md:text-[9px] font-medium text-slate-400 flex items-center gap-0.5">
+                <span className="text-[10px] md:text-[11px] font-medium text-slate-400 flex items-center gap-0.5">
                   {(product as any).viewCount || 0} lượt xem
                 </span>
               </div>
@@ -185,10 +185,10 @@ export function HomeProductCard({ product, variant }: HomeProductCardProps) {
         <div className="flex-1 space-y-1 md:space-y-2 py-0.5 min-w-0">
           <div className="flex items-center gap-1">
             <Star className="h-2.5 w-2.5 md:h-3 md:w-3 fill-[#f4c300] text-[#f4c300]" />
-            <span className="text-[10px] md:text-xs font-black text-[#1a1a1a]">
+            <span className="text-[11px] md:text-xs font-black text-[#1a1a1a]">
               {(product as any).averageRating || 5.0}
             </span>
-            <span className="text-[8px] md:text-[9px] font-bold text-[#999]">
+            <span className="text-[10px] md:text-[11px] font-bold text-[#999]">
               ({(product as any).reviewCount || 0})
             </span>
           </div>
@@ -201,12 +201,12 @@ export function HomeProductCard({ product, variant }: HomeProductCardProps) {
                 {formatCurrency(price)}
               </span>
               {originalPrice && originalPrice > price && (
-                <span className="text-[9px] md:text-[10px] text-slate-500 line-through font-semibold">
+                <span className="text-[11px] md:text-[12px] text-slate-500 line-through font-bold">
                   {formatCurrency(originalPrice)}
                 </span>
               )}
             </div>
-            <div className="hidden xs:block text-[8px] md:text-[9px] font-semibold text-[#1565C0] bg-[#1565C0]/5 px-2 py-0.5 rounded-full tracking-wide">
+            <div className="hidden xs:block text-[10px] md:text-[11px] font-semibold text-[#1565C0] bg-[#1565C0]/5 px-2 py-0.5 rounded-full tracking-wide">
               Top đánh giá
             </div>
           </div>

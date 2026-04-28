@@ -75,8 +75,8 @@
   --popover: 0 0% 100%;
   --popover-foreground: 0 0% 10%;
 
-  --muted: 0 0% 96%;
-  --muted-foreground: 0 0% 60%; /* #999 approx */
+  --muted: 210 40% 96%;
+  --muted-foreground: 215 16% 47%; /* Darker, clearer slate grey instead of #999 */
 
   /* Borders & Inputs */
   --border: 0 0% 92%;
@@ -84,11 +84,11 @@
   --ring: 212 80% 42%;
 
   /* Radius */
-  --radius: 2rem;
+  --radius: 1rem;
 
   /* Sidebar */
   --sidebar-background: 0 0% 98%;
-  --sidebar-foreground: 240 5.3% 26.1%;
+  --sidebar-foreground: 215 25% 27%; /* Much clearer for sidebar labels */
   --sidebar-primary: 240 5.9% 10%;
   --sidebar-primary-foreground: 0 0% 98%;
   --sidebar-accent: 240 4.8% 95.9%;
@@ -211,7 +211,8 @@
     visibility: hidden !important;
   }
 
-  #print-area, #print-area * {
+  #print-area,
+  #print-area * {
     visibility: visible !important;
   }
 
@@ -227,7 +228,14 @@
   }
 
   /* Force non-print elements to truly disappear */
-  .no-print, nav, aside, footer, header, button, .Sidebar, .AdminTopBar {
+  .no-print,
+  nav,
+  aside,
+  footer,
+  header,
+  button,
+  .Sidebar,
+  .AdminTopBar {
     display: none !important;
   }
 
@@ -240,5 +248,48 @@
   * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
+  }
+}
+.admin-theme {
+  /* Admin Color Palette Overrides */
+  --primary: 222 47% 11%;
+  --primary-foreground: 210 40% 98%;
+
+  /* Force black for common primary classes */
+  .bg-primary {
+    @apply !bg-slate-900;
+  }
+  .text-primary {
+    @apply !text-slate-900;
+  }
+  .border-primary {
+    @apply !border-slate-900;
+  }
+
+  /* 
+     Admin Border Radius Rules:
+     Badge: 4px, Button/Input: 8px, Card: 12px
+  */
+  button,
+  input,
+  [role="button"],
+  .rounded-md {
+    border-radius: 8px !important;
+  }
+
+  .badge,
+  .rounded-sm {
+    border-radius: 4px !important;
+  }
+
+  .card,
+  .rounded-xl,
+  .rounded-2xl {
+    border-radius: 12px !important;
+  }
+
+  /* Force pill for specific elements if absolutely needed, but usually follow the rules */
+  .tabs-trigger-pill {
+    @apply !rounded-full;
   }
 }

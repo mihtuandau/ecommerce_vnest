@@ -17,49 +17,68 @@ import { JwtAuthGuard } from '../common/guards/auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Permissions } from '../common/decorators/permissions.decorator';
 
+import { CreateGuestReturnRequestDto } from './dto/create-guest-return-request.dto';
+
 @ApiTags('Returns')
 @ApiBearerAuth('Authorization')
-@UseGuards(JwtAuthGuard)
 @Controller('returns')
 export class ReturnController {
   constructor(private readonly returnService: ReturnService) {}
+  
+  @Post('guest')
+  @ApiOperation({ summary: 'Khách hàng vãng lai tạo yêu cầu trả hàng' })
+  createGuest(@Body() dto: CreateGuestReturnRequestDto) {
+    return this.returnService.createGuest(dto);
+  }
+
+  @Post('guest/:id/confirm-sent')
+  @ApiOperation({ summary: 'Khách hàng vãng lai xác nhận đã gửi hàng' })
+  confirmGuestSent(
+    @Param('id') id: string,
+    @Body() dto: { orderCode: string; contact: string }
+  ) {
+    return this.returnService.confirmGuestSent(+id, dto);
+  }
 
   @Post()
-  @ApiOperation({ summary: 'Khách hàng tạo yêu cầu trả hàng' })
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Khách hàng đã đăng nhập tạo yêu cầu trả hàng' })
   create(@Req() req: any, @Body() dto: CreateReturnRequestDto) {
     return this.returnService.create(req.user.userId, dto);
   }
 
   @Get('my-returns')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Khách hàng xem danh sách yêu cầu trả hàng của mình' })
   getMyReturns(@Req() req: any) {
     return this.returnService.getMyReturns(req.user.userId);
   }
 
   @Get()
-  @UseGuards(RolesGuard)
-  //@Permissions('order.manage') // Or create specific return.manage permission
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Permissions('return.view')
   @ApiOperation({ summary: 'Admin xem toàn bộ danh sách yêu cầu trả hàng' })
   findAll(@Query() query: any) {
     return this.returnService.findAll(query);
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Xem chi tiết yêu cầu trả hàng' })
-  findOne(@Param('id') id: string) {
-    return this.returnService.findOne(+id);
+  findOne(@Param('id') id: string, @Req() req: any) {
+    return this.returnService.findOne(+id, req.user);
   }
 
   @Patch(':id/status')
-  //@UseGuards(RolesGuard) // Remove RolesGuard if we want customers to also use this
-  //@Permissions('order.manage')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Permissions('return.manage')
   @ApiOperation({ summary: 'Cập nhật trạng thái yêu cầu trả hàng' })
   updateStatus(
     @Param('id') id: string,
     @Body() dto: UpdateReturnRequestDto,
     @Req() req: any,
   ) {
-    const isStaff = ['ADMIN', 'KHO', 'BAN_HANG'].includes(req.user.role);
-    return this.returnService.updateStatus(+id, dto, req.user.userId, isStaff);
+    const isStaff = ['ADMIN', 'KHO', 'BAN_HANG'].includes(req.user?.role);
+    return this.returnService.updateStatus(+id, dto, req.user?.userId, isStaff);
   }
 }

@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Button } from "@/components/ui/Button";
-import { Download, RefreshCcw, Calendar } from "lucide-react";
+import { Download, RefreshCcw } from "lucide-react";
 import { cn } from "@/utils/cn";
 
 interface ReportHeaderProps {
@@ -28,7 +28,7 @@ export function ReportHeader({ onRefresh, onExport, isFetching, timeRange, setTi
             size="sm"
             onClick={onRefresh}
             disabled={isFetching}
-            className="h-10 rounded-xl border-slate-200 font-bold text-[11px] uppercase tracking-wider gap-2 bg-white shadow-none hover:bg-slate-50"
+            className="h-10 border-slate-200 font-bold text-xs gap-2 bg-white shadow-none"
           >
             <RefreshCcw className={cn("h-3.5 w-3.5", isFetching && "animate-spin text-slate-400")} />
             Làm mới
@@ -38,7 +38,7 @@ export function ReportHeader({ onRefresh, onExport, isFetching, timeRange, setTi
             variant="default" 
             size="sm" 
             onClick={onExport}
-            className="h-10 rounded-xl font-bold text-[11px] uppercase tracking-wider gap-2 bg-slate-900 hover:bg-slate-800 shadow-none transition-all active:scale-95"
+            className="h-10 font-bold text-xs gap-2 shadow-none transition-all active:scale-95"
           >
             <Download className="h-4 w-4" />
             Xuất Excel
@@ -56,9 +56,9 @@ export function ReportHeader({ onRefresh, onExport, isFetching, timeRange, setTi
             key={btn.value}
             onClick={() => setTimeRange(btn.value)}
             className={cn(
-              "px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-tight transition-all",
+              "px-4 py-1.5 rounded-lg text-xs font-bold tracking-tight transition-all",
               timeRange === btn.value 
-                ? "bg-white shadow-none border border-slate-200 text-slate-900" 
+                ? "bg-white shadow-sm border border-slate-200 text-slate-900" 
                 : "text-slate-500 hover:text-slate-700"
             )}
           >

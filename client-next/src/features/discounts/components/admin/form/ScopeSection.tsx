@@ -55,9 +55,9 @@ export function ScopeSection({
       <div className="flex items-center justify-between pb-2 border-b border-slate-50">
         <div className="flex items-center gap-2">
           <Package className="h-5 w-5 text-primary" />
-          <h3 className="font-bold text-base text-slate-900">Sản phẩm áp dụng</h3>
+          <h3 className="font-semibold text-base text-slate-800">Sản phẩm áp dụng</h3>
         </div>
-        <Badge variant="secondary" className="rounded-lg font-bold">
+        <Badge variant="secondary" className="rounded-lg font-semibold text-xs px-2 py-1">
           Đã chọn: {selectedProducts.length}
         </Badge>
       </div>
@@ -78,10 +78,10 @@ export function ScopeSection({
             {isLoading ? (
               <div className="p-8 text-center flex flex-col items-center gap-2">
                 <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                <p className="text-xs font-medium text-slate-400">Đang tải...</p>
+                <p className="text-xs font-semibold text-slate-500">Đang tải...</p>
               </div>
             ) : filteredProducts.length === 0 ? (
-              <div className="p-8 text-center text-slate-400 text-xs font-medium italic">
+              <div className="p-8 text-center text-slate-500 text-xs font-semibold italic">
                 Không tìm thấy sản phẩm nào
               </div>
             ) : (
@@ -119,16 +119,16 @@ export function ScopeSection({
                       </div>
 
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-bold text-slate-900 truncate">
+                        <p className="text-sm font-semibold text-slate-800 truncate">
                           {product.name}
                         </p>
-                        <p className="text-[10px] text-slate-400 font-medium">
+                        <p className="text-xs text-slate-500 font-medium mt-0.5">
                           ID: #{product.id}
                         </p>
                       </div>
 
-                      <div className="text-right">
-                        <p className="text-xs font-bold text-slate-900">
+                      <div className="text-right shrink-0">
+                        <p className="text-sm font-bold text-slate-900">
                           {formatCurrency(product.basePrice)}
                         </p>
                       </div>

@@ -27,7 +27,7 @@ import { PaymentModule } from '../payment/payment.module';
     OrderCreation,
     OrderManagement,
   ],
-  exports: [OrderService, OrderRepository],  
+  exports: [OrderService, OrderRepository, OrderCache],  
 })
 export class OrderModule {}
 

@@ -68,7 +68,7 @@ export function ChatSidebar({ selectedRoom, onSelectRoom }: ChatSidebarProps) {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 group-focus-within:text-slate-900 transition-colors" />
           <Input
             placeholder="Tìm theo tên..."
-            className="h-10 pl-9 bg-slate-50 border-none focus-visible:ring-1 focus-visible:ring-slate-100 rounded-xl text-[13px] font-medium placeholder:text-slate-400"
+            className="h-10 pl-9 bg-slate-50 border-none focus-visible:ring-1 focus-visible:ring-slate-100 rounded-xl text-sm font-medium placeholder:text-slate-400"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -120,7 +120,7 @@ export function ChatSidebar({ selectedRoom, onSelectRoom }: ChatSidebarProps) {
                   )}>
                     <User className={cn("h-6 w-6", isActive ? "text-slate-900" : "text-slate-400")} />
                     {room.unreadCount > 0 && (
-                       <span className="absolute -top-1 -right-1 h-5 w-5 bg-red-500 text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-white animate-in zoom-in duration-300">
+                       <span className="absolute -top-1 -right-1 h-5 w-5 bg-red-500 text-white text-xs font-black rounded-full flex items-center justify-center border-2 border-white animate-in zoom-in duration-300">
                           {room.unreadCount}
                        </span>
                     )}
@@ -134,7 +134,7 @@ export function ChatSidebar({ selectedRoom, onSelectRoom }: ChatSidebarProps) {
                       )}>
                         {room.customer?.name || (isCustomerMsg ? sender.name : "Khách hàng")}
                       </p>
-                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter whitespace-nowrap">
+                      <span className="text-xs font-bold text-slate-400 uppercase tracking-tighter whitespace-nowrap">
                         {formatTime(lastMsg.createdAt)}
                       </span>
                     </div>

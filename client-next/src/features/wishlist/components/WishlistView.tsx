@@ -104,7 +104,7 @@ export function WishlistView() {
                       <Trash2 size={14} className="sm:size-4" />
                     </button>
                     {item.originalPrice && item.originalPrice > item.price && (
-                      <div className="absolute top-2 left-2 sm:top-4 sm:left-4 bg-rose-500 text-white text-[8px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-md sm:rounded-lg">
+                      <div className="absolute top-2 left-2 sm:top-4 sm:left-4 bg-rose-500 text-white text-[10px] font-bold px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-md sm:rounded-lg shadow-sm">
                         -{Math.round(((item.originalPrice - item.price) / item.originalPrice) * 100)}%
                       </div>
                     )}
@@ -123,7 +123,7 @@ export function WishlistView() {
                           {formatCurrency(item.price)}
                         </span>
                         {item.originalPrice && item.originalPrice > item.price && (
-                          <span className="text-[10px] sm:text-xs text-slate-400 line-through font-medium">
+                          <span className="text-[11px] sm:text-xs text-slate-400 line-through font-medium">
                             {formatCurrency(item.originalPrice)}
                           </span>
                         )}
@@ -133,9 +133,9 @@ export function WishlistView() {
                     <div className="pt-1 sm:pt-2">
                       <Button
                         onClick={() => handleAddToCart(item)}
-                        className="w-full h-9 sm:h-11 rounded-lg sm:rounded-xl bg-primary hover:bg-[#0d47a1] text-white text-[10px] sm:text-xs font-bold shadow-lg shadow-blue-500/10 transition-all flex items-center justify-center gap-1.5 sm:gap-2"
+                        className="w-full h-9 sm:h-11 rounded-lg sm:rounded-xl bg-primary hover:bg-[#0d47a1] text-white text-[11px] sm:text-xs font-bold shadow-lg shadow-blue-500/10 transition-all flex items-center justify-center gap-1.5 sm:gap-2"
                       >
-                        <ShoppingCart size={12} className="sm:size-3.5" />
+                        <ShoppingCart size={14} className="sm:size-4" />
                         Thêm vào giỏ
                       </Button>
                     </div>

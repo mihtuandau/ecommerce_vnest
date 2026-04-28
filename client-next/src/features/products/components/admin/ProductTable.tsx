@@ -26,7 +26,7 @@ export const columns: ColumnDef<Product>[] = [
     id: "stt",
     header: "STT",
     cell: ({ row }) => (
-      <span className="text-xs font-bold text-muted-foreground">
+      <span className="text-xs font-semibold text-slate-500">
         {row.index + 1}
       </span>
     ),
@@ -55,7 +55,7 @@ export const columns: ColumnDef<Product>[] = [
             )}
           </div>
           <div className="flex flex-col min-w-0 max-w-[200px]">
-            <span className="font-bold text-sm truncate leading-none" title={product.name}>
+            <span className="font-semibold text-sm truncate leading-none text-slate-800" title={product.name}>
               {product.name}
             </span>
           </div>
@@ -70,7 +70,7 @@ export const columns: ColumnDef<Product>[] = [
       const product = row.original as any;
       const categoryName = product.category?.name || product.category?.slug || "—";
       return (
-        <Badge variant="outline" className="text-[10px] h-6 px-2 font-bold bg-muted/50 border-muted-foreground/10 text-muted-foreground uppercase tracking-wider">
+        <Badge variant="outline" className="rounded-lg px-2.5 py-1 font-semibold text-xs bg-slate-50 text-slate-600 border-slate-200">
           {categoryName}
         </Badge>
       );
@@ -86,7 +86,7 @@ export const columns: ColumnDef<Product>[] = [
 
       return (
         <div className="flex items-center gap-2">
-          <Badge variant="outline" className="text-[10px] h-6 px-2 font-bold bg-primary/5 border-primary/20 text-primary uppercase tracking-wider">
+          <Badge variant="outline" className="text-xs h-6 px-2.5 py-1 font-semibold bg-primary/5 border-primary/20 text-primary tracking-wide">
              {variants.length} biến thể
           </Badge>
         </div>
@@ -103,9 +103,9 @@ export const columns: ColumnDef<Product>[] = [
 
       return (
         <div className="flex flex-col">
-          <span className="font-black text-sm text-primary">{formatCurrency(price)}</span>
+          <span className="font-semibold text-sm text-primary">{formatCurrency(price)}</span>
           {originalPrice && originalPrice > 0 && (
-            <span className="text-[10px] text-muted-foreground line-through decoration-destructive/50">
+            <span className="text-xs text-slate-500 line-through decoration-destructive/50 mt-0.5 font-medium">
               {formatCurrency(originalPrice)}
             </span>
           )}
@@ -135,8 +135,8 @@ export const columns: ColumnDef<Product>[] = [
             isOutOfStock ? "bg-destructive" : isLowStock ? "bg-amber-500" : "bg-emerald-500"
           )} />
           <span className={cn(
-            "text-sm font-bold",
-            isOutOfStock ? "text-destructive" : isLowStock ? "text-amber-600" : "text-foreground"
+            "text-sm font-semibold",
+            isOutOfStock ? "text-destructive" : isLowStock ? "text-amber-600" : "text-slate-800"
           )}>
             {stock ?? 0}
           </span>
@@ -149,7 +149,7 @@ export const columns: ColumnDef<Product>[] = [
     header: "Đã bán",
     cell: ({ row }) => {
       const soldCount = (row.original as any).soldCount || 0;
-      return <span className="font-bold text-sm">{soldCount}</span>;
+      return <span className="font-semibold text-sm text-slate-800">{soldCount}</span>;
     },
   },
   {
@@ -159,7 +159,7 @@ export const columns: ColumnDef<Product>[] = [
       const rating = (row.original as any).averageRating || 0;
       return (
         <div className="flex items-center gap-1">
-          <span className="font-bold text-sm">{Number(rating).toFixed(1)}</span>
+          <span className="font-semibold text-sm text-slate-800">{Number(rating).toFixed(1)}</span>
           <span className="text-amber-400">★</span>
         </div>
       );
@@ -169,18 +169,18 @@ export const columns: ColumnDef<Product>[] = [
     accessorKey: "isActive",
     header: "Trạng thái",
     cell: ({ row }) => {
-      const isActive = row.getValue("isActive");
+      const product = row.original as any;
       return (
         <Badge 
           variant="outline" 
           className={cn(
-            "rounded-lg px-2 py-0.5 font-bold text-[10px] uppercase tracking-wider",
-            isActive 
-              ? "bg-emerald-500/10 text-emerald-600 border-emerald-200" 
-              : "bg-muted text-muted-foreground border-muted-foreground/10"
+            "rounded-lg px-2.5 py-1 font-semibold text-xs tracking-wide",
+            product.isActive 
+              ? "bg-emerald-50 text-emerald-700 border-emerald-100" 
+              : "bg-rose-50 text-rose-700 border-rose-100"
           )}
         >
-          {isActive ? "Đang bán" : "Đã ẩn"}
+          {product.isActive ? "Hiển thị" : "Đã ẩn"}
         </Badge>
       );
     },
@@ -189,7 +189,7 @@ export const columns: ColumnDef<Product>[] = [
     accessorKey: "createdAt",
     header: "Ngày tạo",
     cell: ({ row }) => (
-      <span className="text-xs text-muted-foreground font-medium">
+      <span className="text-xs text-slate-500 font-medium">
         {formatDate(row.getValue("createdAt"))}
       </span>
     ),
@@ -204,13 +204,13 @@ export const columns: ColumnDef<Product>[] = [
         <div className="flex justify-end">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-muted transition-colors">
+              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg transition-colors">
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48 rounded-xl p-1 shadow-2xl border-muted/50">
-              <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 py-1.5">Hành động</DropdownMenuLabel>
-              <DropdownMenuItem className="rounded-lg cursor-pointer gap-2 py-2 text-sm focus:bg-primary focus:text-primary-foreground" asChild>
+              <DropdownMenuLabel className="text-xs font-semibold tracking-widest text-slate-500 px-2 py-1.5 uppercase">Hành động</DropdownMenuLabel>
+              <DropdownMenuItem className="rounded-lg cursor-pointer gap-2 py-2 text-sm focus:bg-slate-100 focus:text-slate-900" asChild>
                 <Link href={`${ROUTES.ADMIN_PRODUCTS}/${product.id}`}>
                   <Pencil className="h-3.5 w-3.5" />
                   Chỉnh sửa

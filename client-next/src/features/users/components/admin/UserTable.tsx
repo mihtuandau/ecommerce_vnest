@@ -35,7 +35,7 @@ export const columns: ColumnDef<User>[] = [
     id: "stt",
     header: "STT",
     cell: ({ row }) => (
-      <span className="text-[10px] font-bold text-slate-400">
+      <span className="text-xs font-semibold text-slate-500">
         {row.index + 1}
       </span>
     ),
@@ -51,10 +51,10 @@ export const columns: ColumnDef<User>[] = [
             {user.avatar ? (
               <img src={user.avatar} alt={user.name} className="h-full w-full object-cover" />
             ) : (
-              <span className="text-sm font-bold text-slate-400">{user.name?.charAt(0) || "U"}</span>
+              <span className="text-sm font-semibold text-slate-500">{user.name?.charAt(0) || "U"}</span>
             )}
           </div>
-          <span className="font-bold text-sm text-slate-900 truncate group-hover:text-primary">{user.name || "Chưa đặt tên"}</span>
+          <span className="font-semibold text-sm text-slate-800 truncate group-hover:text-primary">{user.name || "Chưa đặt tên"}</span>
         </Link>
       );
     },
@@ -64,7 +64,7 @@ export const columns: ColumnDef<User>[] = [
     header: "Email",
     cell: ({ row }) => (
       <div className="flex items-center gap-2 text-sm text-slate-600">
-        <Mail className="h-3.5 w-3.5 text-slate-400" />
+        <Mail className="h-3.5 w-3.5 text-slate-500" />
         <span className="truncate">{row.getValue("email")}</span>
       </div>
     ),
@@ -76,8 +76,8 @@ export const columns: ColumnDef<User>[] = [
       const phone = row.original.phone;
       return (
         <div className="flex items-center gap-2 text-sm text-slate-600">
-          <Phone className="h-3.5 w-3.5 text-slate-400" />
-          <span className={cn(!phone && "text-slate-400 italic")}>{phone || "Chưa cập nhật"}</span>
+          <Phone className="h-3.5 w-3.5 text-slate-500" />
+          <span className={cn(!phone && "text-slate-500 italic")}>{phone || "Chưa cập nhật"}</span>
         </div>
       );
     }
@@ -90,7 +90,7 @@ export const columns: ColumnDef<User>[] = [
       const config = roleConfig[role] || { label: role, color: "bg-slate-50 text-slate-500", icon: UserIcon };
       const Icon = config.icon;
       return (
-        <Badge variant="outline" className={cn("rounded-lg px-2 py-0.5 gap-1.5 font-bold text-[10px] uppercase tracking-wider", config.color)}>
+        <Badge variant="outline" className={cn("rounded-lg px-2 py-0.5 gap-1.5 font-semibold text-[12px] tracking-wide", config.color)}>
           <Icon className="h-3 w-3" />
           {config.label}
         </Badge>
@@ -104,7 +104,7 @@ export const columns: ColumnDef<User>[] = [
       const status = row.getValue("status") as UserStatus || UserStatus.ACTIVE;
       const config = statusConfig[status] || statusConfig[UserStatus.ACTIVE];
       return (
-        <Badge variant="outline" className={cn("rounded-full px-2 py-0.5 font-bold text-[10px]", config.color)}>
+        <Badge variant="outline" className={cn("rounded-full px-2 py-0.5 font-semibold text-[12px]", config.color)}>
           {config.label}
         </Badge>
       );
@@ -114,7 +114,7 @@ export const columns: ColumnDef<User>[] = [
     accessorKey: "createdAt",
     header: "Ngày tham gia",
     cell: ({ row }) => (
-      <span className="text-sm text-slate-500 font-medium">
+      <span className="text-sm text-slate-600 font-medium">
         {formatDate(row.getValue("createdAt"))}
       </span>
     ),
@@ -136,7 +136,7 @@ export const columns: ColumnDef<User>[] = [
         <div className="flex justify-end">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-slate-400 hover:text-slate-600">
+              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-slate-500 hover:text-slate-700">
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -145,7 +145,7 @@ export const columns: ColumnDef<User>[] = [
                 className="rounded-lg cursor-pointer gap-2 py-2.5 text-sm font-medium text-slate-600 focus:text-primary"
                 onClick={() => router.push(`/admin/users/${user.id}`)}
               >
-                <Pencil className="h-4 w-4 text-slate-400" />
+                <Pencil className="h-4 w-4 text-slate-500" />
                 Xem chi tiết & Sửa
               </DropdownMenuItem>
               <DropdownMenuItem 

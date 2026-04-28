@@ -52,10 +52,10 @@ export function TrustBadges() {
             <badge.icon className="h-4 w-4 md:h-5 md:w-5" strokeWidth={2.5} />
           </div>
           <div className="min-w-0">
-            <h3 className="font-semibold text-slate-900 text-[11px] md:text-sm leading-tight line-clamp-1">
+            <h3 className="font-bold text-slate-900 text-xs md:text-sm leading-tight line-clamp-1">
               {badge.title}
             </h3>
-            <p className="text-[9px] md:text-xs text-slate-600 mt-0.5 leading-snug line-clamp-2">{badge.desc}</p>
+            <p className="text-[11px] md:text-xs text-slate-500 mt-1 leading-relaxed line-clamp-2">{badge.desc}</p>
           </div>
         </div>
       ))}

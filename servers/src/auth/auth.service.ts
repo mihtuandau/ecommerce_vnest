@@ -141,7 +141,7 @@ export class AuthService {
     try {
       const p = this.jwtService.verify(refreshToken, { secret: process.env.JWT_REFRESH_SECRET });
 
-      // Kiểm tra token có trong DB và chưa bị revoke
+      // 1. Kiểm tra token có trong DB và chưa bị revoke
       const tokenHash = crypto.createHash('sha256').update(refreshToken).digest('hex');
       const stored = await this.prisma.refreshToken.findUnique({ where: { tokenHash } });
 
@@ -149,11 +149,37 @@ export class AuthService {
         throw new UnauthorizedException('Token đã hết hạn hoặc bị thu hồi');
       }
 
+      // 2. TOKEN ROTATION: Revoke token cũ ngay lập tức
+      await this.prisma.refreshToken.update({
+        where: { id: stored.id },
+        data: { revoked: true },
+      });
+
+      // 3. Tạo cặp token mới
       const u = await this.userService.findOne(p.sub);
       if (!u) throw new UnauthorizedException();
 
-      return { accessToken: this.jwtService.sign({ sub: u.id, email: u.email, role: u.role }, { secret: process.env.JWT_SECRET, expiresIn: '2h' }) };
-    } catch { throw new UnauthorizedException(); }
+      const common = { sub: u.id, email: u.email, role: u.role };
+      const newAccessToken = this.jwtService.sign(common, { secret: process.env.JWT_SECRET, expiresIn: '2h' });
+      const newRefreshToken = this.jwtService.sign({ sub: u.id }, { secret: process.env.JWT_REFRESH_SECRET, expiresIn: '7d' });
+
+      // 4. Lưu token mới vào DB
+      const newTokenHash = crypto.createHash('sha256').update(newRefreshToken).digest('hex');
+      await this.prisma.refreshToken.create({
+        data: {
+          userId: u.id,
+          tokenHash: newTokenHash,
+          expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        },
+      });
+
+      return { 
+        accessToken: newAccessToken,
+        refreshToken: newRefreshToken 
+      };
+    } catch { 
+      throw new UnauthorizedException('Phiên đăng nhập không hợp lệ'); 
+    }
   }
 
   async logout(refreshToken?: string) {
@@ -234,8 +260,8 @@ export class AuthService {
   setAuthCookie(res: any, t: string) { 
     res.cookie('access_token', t, { 
       httpOnly: true, 
-      secure: process.env.NODE_ENV === 'production', 
-      sameSite: 'lax',
+      secure: true, 
+      sameSite: 'none',
       path: '/',
       maxAge: 7200000 
     }); 
@@ -243,8 +269,8 @@ export class AuthService {
   setRefreshTokenCookie(res: any, t: string) { 
     res.cookie('refresh_token', t, { 
       httpOnly: true, 
-      secure: process.env.NODE_ENV === 'production', 
-      sameSite: 'lax',
+      secure: true,
+      sameSite: 'none',
       path: '/',
       maxAge: 604800000 
     }); 

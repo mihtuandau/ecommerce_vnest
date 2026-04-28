@@ -21,7 +21,7 @@ export function BasicInfoSection({ form }: BasicInfoSectionProps) {
     <div className="space-y-6 bg-white p-6 rounded-xl border border-slate-200">
       <div className="flex items-center gap-2 mb-2">
         <Hash className="h-5 w-5 text-primary" />
-        <h3 className="font-bold text-base text-slate-900">Thông tin cơ bản</h3>
+        <h3 className="font-semibold text-base text-slate-800">Thông tin cơ bản</h3>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -30,11 +30,11 @@ export function BasicInfoSection({ form }: BasicInfoSectionProps) {
           name="code"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="font-bold text-xs uppercase tracking-widest text-muted-foreground">Mã giảm giá</FormLabel>
+              <FormLabel className="font-semibold text-xs tracking-wide text-slate-600">Mã giảm giá</FormLabel>
               <FormControl>
                 <Input 
                   placeholder="Ví dụ: GIAMGIA50" 
-                  className="h-12 rounded-xl border-slate-200 focus:ring-primary/20 font-bold uppercase" 
+                  className="h-12 rounded-xl border-slate-200 focus:ring-primary/20 font-semibold uppercase" 
                   {...field} 
                   value={field.value ?? ""}
                 />
@@ -49,7 +49,7 @@ export function BasicInfoSection({ form }: BasicInfoSectionProps) {
           name="image"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="font-bold text-xs uppercase tracking-widest text-muted-foreground">Ảnh Banner (URL)</FormLabel>
+              <FormLabel className="font-semibold text-xs tracking-wide text-slate-600">Ảnh Banner (URL)</FormLabel>
               <FormControl>
                 <div className="relative group">
                   <Input 
@@ -72,7 +72,7 @@ export function BasicInfoSection({ form }: BasicInfoSectionProps) {
         name="description"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="font-bold text-xs uppercase tracking-widest text-muted-foreground">Mô tả chương trình</FormLabel>
+            <FormLabel className="font-semibold text-xs tracking-wide text-slate-600">Mô tả chương trình</FormLabel>
             <FormControl>
               <textarea
                 className="w-full min-h-[120px] rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all leading-relaxed text-slate-700 resize-none"

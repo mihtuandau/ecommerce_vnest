@@ -61,7 +61,7 @@ export class ReportService {
       const label = vnTime.format('DD/MM');
 
       const existing = dataMap.get(label);
-      const revenue = (Number(order.subtotal) || 0) - (Number(order.discountAmount) || 0) - (Number(order.payment?.refundAmount) || 0);
+      const revenue = (Number(order.subtotal) || 0) - (Number(order.discountAmount) || 0);
 
       if (existing) {
         existing.revenue += revenue;
@@ -204,10 +204,10 @@ export class ReportService {
     ]) as any[];
 
     const revenueData = revenueReport.data;
-    const totalSubtotal = detailedOrders.reduce((acc: number, curr: any) => acc + Number(curr.subtotal || 0), 0);
+    const totalNetSales = detailedOrders.reduce((acc: number, curr: any) => acc + (Number(curr.subtotal || 0) - Number(curr.discountAmount || 0)), 0);
     const totalDiscount = detailedOrders.reduce((acc: number, curr: any) => acc + Number(curr.discountAmount || 0), 0);
     const totalRefund = detailedOrders.reduce((acc: number, curr: any) => acc + Number(curr.payment?.refundAmount || 0), 0);
-    const totalNetRevenue = totalSubtotal - totalDiscount - totalRefund;
+    const totalNetRevenue = totalNetSales;
     const totalOrders = detailedOrders.length;
     const aov = totalOrders > 0 ? totalNetRevenue / totalOrders : 0;
     const totalItemsSold = topProducts.reduce((acc: number, curr: any) => acc + curr.totalQuantity, 0);
@@ -227,11 +227,10 @@ export class ReportService {
     summarySheet.addRows([
       { metric: 'KHOẢNG THỜI GIAN BÁO CÁO', value: `${start.toLocaleDateString('vi-VN')} - ${end.toLocaleDateString('vi-VN')}` },
       { metric: '', value: '' },
-      { metric: '--- CHỈ SỐ TÀI CHÍNH ---', value: '' },
-      { metric: '1. Doanh thu gộp (Chưa trừ giảm giá/hoàn tiền)', value: fmt(totalSubtotal) },
-      { metric: '2. Tổng giá trị giảm giá (Voucher/Khuyến mãi)', value: fmt(totalDiscount) },
-      { metric: '3. Tổng giá trị hoàn tiền (Refund)', value: fmt(totalRefund) },
-      { metric: '4. DOANH THU THUẦN (Net Revenue)', value: fmt(totalNetRevenue) },
+      { metric: '--- CHỈ SỐ TÀI CHÍNH (Tiền hàng - Giảm giá) ---', value: '' },
+      { metric: '1. Doanh thu thuần (Chưa tính ship)', value: fmt(totalNetSales) },
+      { metric: '2. Tổng giá trị giảm giá đã áp dụng', value: fmt(totalDiscount) },
+      { metric: '3. DOANH THU CUỐI CÙNG', value: fmt(totalNetRevenue) },
       { metric: '5. Giá trị đơn hàng trung bình (AOV)', value: fmt(aov) },
       { metric: '', value: '' },
       { metric: '--- CHỈ SỐ VẬN HÀNH ---', value: '' },
@@ -264,15 +263,19 @@ export class ReportService {
 
     detailedOrders.forEach((order: any) => {
       const netRevenue = Number(order.subtotal) - Number(order.discountAmount) - Number(order.payment?.refundAmount || 0);
+      
+      // Ưu tiên lấy tên từ Member, nếu không có thì lấy từ ShippingSnapshot (khách vãng lai)
+      const customerName = order.user?.name || order.shippingSnapshot?.fullName || order.fullName || 'Khách vãng lai';
+      const customerPhone = order.guestPhone || order.phone || order.shippingSnapshot?.phone || 'N/A';
+
       detailSheet.addRow({
         orderCode: order.orderCode,
         createdAt: new Date(order.createdAt).toLocaleString('vi-VN'),
-        customer: order.user?.name || 'Khách vãng lai',
-        phone: order.guestPhone || 'N/A',
+        customer: customerName,
+        phone: customerPhone,
         subtotal: Number(order.subtotal),
-        discount: Number(order.discountAmount),
-        refund: Number(order.payment?.refundAmount || 0),
-        net: netRevenue,
+        discount: Number(order.discountAmount || 0),
+        net: (Number(order.subtotal) || 0) - (Number(order.discountAmount) || 0),
         method: order.payment?.method || 'N/A',
         status: order.status,
       });

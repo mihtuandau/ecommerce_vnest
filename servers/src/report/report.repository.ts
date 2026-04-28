@@ -18,17 +18,12 @@ export class ReportRepository {
           gte: startDate,
           lte: endDate,
         },
-        status: 'DELIVERED',
-        payment: { status: { in: ['SUCCESS', 'REFUNDED'] } },
+        status: { in: ['DELIVERED', 'RETURN_REQUESTED'] },
+        payment: { status: 'SUCCESS' },
       },
       select: {
         subtotal: true,
         discountAmount: true,
-        payment: {
-          select: {
-            refundAmount: true,
-          }
-        },
         createdAt: true,
       },
       orderBy: { createdAt: 'asc' },
@@ -65,7 +60,7 @@ export class ReportRepository {
         p.name as "productName",
         SUM(oi.quantity)::int as "totalQuantity",
         SUM(
-          (oi.price * oi.quantity) * (1 - (o."discountAmount" / NULLIF(o.subtotal, 0)))
+          (oi.price * oi.quantity) * (NULLIF(o.subtotal - o."discountAmount", 0) / NULLIF(o.subtotal, 0))
         )::float as "totalRevenue",
         (SELECT url FROM "ProductImage" WHERE "productId" = p.id AND "isThumbnail" = true LIMIT 1) as "image"
       FROM "OrderItem" oi
@@ -73,8 +68,8 @@ export class ReportRepository {
       JOIN "Payment" pay ON pay."orderId" = o.id
       JOIN "ProductVariant" pv ON pv.id = oi."variantId"
       JOIN "Product" p ON p.id = pv."productId"
-      WHERE o.status = 'DELIVERED' 
-        AND pay.status IN ('SUCCESS', 'REFUNDED')
+      WHERE o.status IN ('DELIVERED', 'RETURN_REQUESTED') 
+        AND pay.status = 'SUCCESS'
         AND o."createdAt" >= ${startDate}
         AND o."createdAt" <= ${endDate}
       GROUP BY p.id, p.name
@@ -97,7 +92,7 @@ export class ReportRepository {
         c.name as "categoryName",
         COUNT(DISTINCT oi."orderId")::int as "totalOrders",
         SUM(
-          (oi.price * oi.quantity) * (1 - (o."discountAmount" / NULLIF(o.subtotal, 0)))
+          (oi.price * oi.quantity) * (NULLIF(o.subtotal - o."discountAmount", 0) / NULLIF(o.subtotal, 0))
         )::float as "totalRevenue"
       FROM "OrderItem" oi
       JOIN "Order" o ON o.id = oi."orderId"
@@ -105,8 +100,8 @@ export class ReportRepository {
       JOIN "ProductVariant" pv ON pv.id = oi."variantId"
       JOIN "Product" p ON p.id = pv."productId"
       JOIN "Category" c ON c.id = p."categoryId"
-      WHERE o.status = 'DELIVERED' 
-        AND pay.status IN ('SUCCESS', 'REFUNDED')
+      WHERE o.status IN ('DELIVERED', 'RETURN_REQUESTED') 
+        AND pay.status = 'SUCCESS'
         AND o."createdAt" >= ${startDate}
         AND o."createdAt" <= ${endDate}
       GROUP BY p."categoryId", c.name
@@ -146,14 +141,25 @@ export class ReportRepository {
               gte: startDate,
               lte: endDate,
             },
-            status: 'DELIVERED',
+            status: { in: ['DELIVERED', 'RETURNED', 'RETURN_REQUESTED'] },
             payment: { status: { in: ['SUCCESS', 'REFUNDED'] } }
           },
         }),
       ]);
 
+    // 4. Đếm khách vãng lai mới trong kỳ (Dựa trên Email duy nhất chưa từng mua trước đó)
+    const newGuestCount = await this.prisma.order.groupBy({
+      by: ['guestEmail'],
+      where: {
+        userId: null,
+        guestEmail: { not: null },
+        createdAt: { gte: startDate, lte: endDate },
+        status: { in: ['DELIVERED', 'RETURNED', 'RETURN_REQUESTED'] }
+      }
+    }).then(res => res.length);
+
     return {
-      newCustomers,
+      newCustomers: newCustomers + newGuestCount,
       returningCustomers,
       totalOrders: totalOrdersInPeriod,
     };
@@ -205,21 +211,21 @@ export class ReportRepository {
     const [absoluteTotal, currentPeriod, previousPeriod] = await Promise.all([
       this.prisma.order.count({ 
         where: { 
-          status: 'DELIVERED',
+          status: { in: ['DELIVERED', 'RETURN_REQUESTED'] },
           payment: { status: { in: ['SUCCESS', 'REFUNDED'] } }
         } 
       }),
       this.prisma.order.count({
         where: {
           createdAt: { gte: startDate, lte: endDate },
-          status: 'DELIVERED',
+          status: { in: ['DELIVERED', 'RETURN_REQUESTED'] },
           payment: { status: { in: ['SUCCESS', 'REFUNDED'] } }
         },
       }),
       this.prisma.order.count({
         where: {
           createdAt: { gte: previousStart, lte: previousEnd },
-          status: 'DELIVERED',
+          status: { in: ['DELIVERED', 'RETURN_REQUESTED'] },
           payment: { status: { in: ['SUCCESS', 'REFUNDED'] } }
         },
       }),
@@ -247,14 +253,14 @@ export class ReportRepository {
       this.prisma.order.count({
         where: { 
           createdAt: { gte: startOfToday, lte: endOfToday },
-          status: 'DELIVERED',
+          status: { in: ['DELIVERED', 'RETURN_REQUESTED'] },
           payment: { status: { in: ['SUCCESS', 'REFUNDED'] } }
         }
       }),
       this.prisma.order.count({
         where: { 
           createdAt: { gte: startOfYesterday, lte: endOfYesterday },
-          status: 'DELIVERED',
+          status: { in: ['DELIVERED', 'RETURN_REQUESTED'] },
           payment: { status: { in: ['SUCCESS', 'REFUNDED'] } }
         }
       })
@@ -273,80 +279,25 @@ export class ReportRepository {
     const previousStart = new Date(currentStart.getTime() - duration);
     const previousEnd = new Date(currentStart.getTime() - 1);
 
-    const [currentRevenue, previousRevenue, absoluteRevenue] = await Promise.all([
-      this.prisma.order.aggregate({
+    // We need to sum order subtotal - discount instead
+    const getNetSales = async (s: Date, e: Date) => {
+      const d = await this.prisma.order.aggregate({
         where: {
-          createdAt: { gte: currentStart, lte: currentEnd },
-          status: 'DELIVERED',
-          payment: { status: { in: ['SUCCESS', 'REFUNDED'] } }
+          status: { in: ['DELIVERED', 'RETURN_REQUESTED'] },
+          payment: { status: 'SUCCESS' },
+          createdAt: { gte: s, lte: e }
         },
-        _sum: { 
-          subtotal: true,
-          discountAmount: true
-        },
-      }),
-      this.prisma.order.aggregate({
-        where: {
-          createdAt: { gte: previousStart, lte: previousEnd },
-          status: 'DELIVERED',
-          payment: { status: { in: ['SUCCESS', 'REFUNDED'] } }
-        },
-        _sum: { 
-          subtotal: true,
-          discountAmount: true
-        },
-      }),
-      this.prisma.order.aggregate({
-        where: {
-          status: 'DELIVERED',
-          payment: { status: { in: ['SUCCESS', 'REFUNDED'] } }
-        },
-        _sum: { 
-          subtotal: true,
-          discountAmount: true
-        },
-      }),
-    ]);
-
-    // Lấy Refund Amount - chỉ tính hoàn tiền của các đơn hàng đã được tính vào doanh thu (DELIVERED & SUCCESS/REFUNDED)
-    const [currentRefund, previousRefund, absoluteRefund] = await Promise.all([
-      this.prisma.payment.aggregate({
-        where: {
-          order: { 
-            createdAt: { gte: currentStart, lte: currentEnd }, 
-            status: 'DELIVERED' 
-          },
-          status: { in: ['SUCCESS', 'REFUNDED'] }
-        },
-        _sum: { refundAmount: true }
-      }),
-      this.prisma.payment.aggregate({
-        where: {
-          order: { 
-            createdAt: { gte: previousStart, lte: previousEnd }, 
-            status: 'DELIVERED' 
-          },
-          status: { in: ['SUCCESS', 'REFUNDED'] }
-        },
-        _sum: { refundAmount: true }
-      }),
-      this.prisma.payment.aggregate({
-        where: {
-          order: { status: 'DELIVERED' },
-          status: { in: ['SUCCESS', 'REFUNDED'] }
-        },
-        _sum: { refundAmount: true }
-      }),
-    ]);
-
-    const calculateNet = (rev: any, ref: any) => {
-      const gross = (rev._sum?.subtotal || 0) - (rev._sum?.discountAmount || 0);
-      return gross - (ref._sum?.refundAmount || 0);
+        _sum: { subtotal: true, discountAmount: true }
+      });
+      return (Number(d._sum.subtotal) || 0) - (Number(d._sum.discountAmount) || 0);
     };
 
-    const current = calculateNet(currentRevenue, currentRefund);
-    const previous = calculateNet(previousRevenue, previousRefund);
-    const absolute = calculateNet(absoluteRevenue, absoluteRefund);
+    const current = await getNetSales(currentStart, currentEnd);
+    const previous = await getNetSales(previousStart, previousEnd);
+    const absolute = await this.prisma.order.aggregate({
+      where: { status: { in: ['DELIVERED', 'RETURN_REQUESTED'] }, payment: { status: 'SUCCESS' } },
+      _sum: { subtotal: true, discountAmount: true }
+    }).then(d => (Number(d._sum.subtotal) || 0) - (Number(d._sum.discountAmount) || 0));
     const growth = previous > 0 ? ((current - previous) / previous) * 100 : 0;
 
     return {
@@ -364,7 +315,16 @@ export class ReportRepository {
           lte: endDate,
         },
       },
-      include: {
+      select: {
+        guestEmail: true,
+        guestPhone: true,
+        shippingSnapshot: true,
+        orderCode: true,
+        subtotal: true,
+        discountAmount: true,
+        total: true,
+        status: true,
+        createdAt: true,
         user: {
           select: {
             name: true,

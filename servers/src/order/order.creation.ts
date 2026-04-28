@@ -26,8 +26,9 @@ export class OrderCreation {
     private configService: ConfigService,
   ) {}
 
-  async create(userId: number | null, dto: CreateOrderDto, ipAddr: string = '127.0.0.1'): Promise<any> {
-    const itemsToOrder = await this.getItemsToOrder(userId, dto);
+  async create(userId: number | null, dto: CreateOrderDto, requester: { role: string }, ipAddr: string = '127.0.0.1'): Promise<any> {
+    const isStaff = ['ADMIN', 'KHO', 'BAN_HANG'].includes(requester.role);
+    const itemsToOrder = await this.getItemsToOrder(userId, dto, isStaff);
     const variantIds = itemsToOrder.map((i) => i.variantId);
 
     // 1. Auto-apply Flash Sale prices only if NO manual discount code provided
@@ -102,9 +103,8 @@ export class OrderCreation {
     const isPOS = dto.status === 'DELIVERED' || dto.shippingAddress === 'Mua tại quầy';
     let ghnShippingFee = isPOS ? 0 : 30000;
     
-    // Chỉ chấp nhận phí ship từ DTO nếu đó là Admin tạo đơn hoặc có lý do đặc biệt (sẽ log lại)
-    // Ở đây chúng ta ưu tiên phí ship từ DTO nếu được cung cấp, nhưng sẽ kiểm tra lại qua GHN
-    if (dto.shippingFee !== undefined) {
+    // Chỉ chấp nhận phí ship từ DTO nếu đó là Admin tạo đơn
+    if (dto.shippingFee !== undefined && isStaff) {
       ghnShippingFee = dto.shippingFee;
     }
 
@@ -194,9 +194,9 @@ export class OrderCreation {
     };
   }
 
-  private async getItemsToOrder(userId: number | null, dto: CreateOrderDto) {
+  private async getItemsToOrder(userId: number | null, dto: CreateOrderDto, isStaff: boolean) {
     if (dto.items && dto.items.length > 0) {
-      return await this.prepareItemsFromDto(dto.items);
+      return await this.prepareItemsFromDto(dto.items, isStaff);
     } else {
       if (!userId) {
         throw new BadRequestException(
@@ -209,6 +209,7 @@ export class OrderCreation {
 
   private async prepareItemsFromDto(
     items: Array<{ variantId: number; quantity: number; price?: number }>,
+    isStaff: boolean,
   ) {
     const variantIds = items.map((item) => item.variantId);
     const variants = await this.prisma.productVariant.findMany({
@@ -248,10 +249,9 @@ export class OrderCreation {
         variantId: item.variantId,
         productId: variant.productId,
         quantity: item.quantity,
-        // PRIORITY LOGIC:
-        // 1. If Flash Sale active: Selling Price = Discounted, Strikethrough = Normal Variant Price
-        // 2. No Flash Sale: Selling Price = Normal Variant Price, Strikethrough = MSRP (OriginalPrice)
-        price: discountedPrice,
+        // Nếu là Admin/Staff gửi giá lên (thông qua DTO items), chúng ta tôn trọng giá đó
+        // Ngược lại (Khách hàng), chúng ta dùng giá đã tính toán tự động
+        price: (item.price !== undefined && isStaff) ? item.price : discountedPrice,
         originalPrice: isFlashSaleActive 
           ? variant.price 
           : (variant.originalPrice || variant.product?.originalPrice),

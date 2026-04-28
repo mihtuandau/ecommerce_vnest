@@ -113,7 +113,7 @@ export function ProductCard({ product, view = "grid" }: ProductCardProps) {
           />
           {discountPercent > 0 && (
             <div className="absolute top-2 left-2 z-10">
-              <span className="bg-[#e85d24] text-white text-[8px] md:text-[9px] font-black px-1.5 py-0.5 rounded-md shadow-sm tracking-widest">
+              <span className="bg-[#e85d24] text-white text-[10px] font-black px-1.5 py-0.5 rounded-md shadow-sm tracking-wide">
                 -{discountPercent}%
               </span>
             </div>
@@ -124,12 +124,12 @@ export function ProductCard({ product, view = "grid" }: ProductCardProps) {
           <div className="space-y-1 md:space-y-2">
             <div className="flex items-center justify-between relative">
               <div className="flex items-center gap-3">
-                <span className="text-[9px] md:text-[10px] font-normal tracking-wide text-primary/80">
-              {(product as any).brand?.name || "Minh Tuấn"}
+                <span className="text-[10px] font-semibold text-primary/80">
+                  {(product as any).brand?.name || "Minh Tuấn"}
                 </span>
                 <div className="flex items-center gap-1">
-                  <Star className="h-2.5 w-2.5 fill-[#f4c300] text-[#f4c300]" />
-                  <span className="text-[10px] font-normal text-slate-500">{rating}</span>
+                  <Star className="h-3 w-3 fill-[#f4c300] text-[#f4c300]" />
+                  <span className="text-[11px] font-medium text-slate-500">{rating}</span>
                 </div>
               </div>
               <button 
@@ -193,12 +193,12 @@ export function ProductCard({ product, view = "grid" }: ProductCardProps) {
         <div className="absolute top-2 left-2 md:top-3 md:left-3 z-10 flex items-start justify-between w-full pr-4 md:pr-6">
           <div className="flex flex-col gap-1">
             {discountPercent > 0 && (
-              <span className="bg-[#e85d24] text-white text-[8px] md:text-[9px] font-bold px-1.5 py-0.5 md:px-2 md:py-1 rounded-md shadow-sm tracking-wide">
+              <span className="bg-[#e85d24] text-white text-[10px] font-bold px-2 py-0.5 md:py-1 rounded-md shadow-sm tracking-wide">
                 -{discountPercent}%
               </span>
             )}
             {product.isNew && (
-              <span className="bg-primary text-white text-[8px] md:text-[9px] font-bold px-1.5 py-0.5 md:px-2 md:py-1 rounded-md shadow-sm tracking-wide">
+              <span className="bg-primary text-white text-[10px] font-bold px-2 py-0.5 md:py-1 rounded-md shadow-sm tracking-wide">
                 Mới
               </span>
             )}
@@ -226,8 +226,8 @@ export function ProductCard({ product, view = "grid" }: ProductCardProps) {
         <div className="space-y-1 flex-1 pt-2">
           {/* Brand Row */}
           <div className="flex items-center justify-between">
-            <span className="text-[8px] md:text-[9px] font-normal text-slate-500 tracking-wide">
-              {(product as any).brand?.name || "Vnest"}
+            <span className="text-[10px] font-medium text-slate-500 tracking-wide">
+              {(product as any).brand?.name || "Minh Tuấn"}
             </span>
           </div>
 
@@ -253,11 +253,11 @@ export function ProductCard({ product, view = "grid" }: ProductCardProps) {
               </span>
             </div>
 
-            <div className="flex items-center gap-1.5 text-[8px] md:text-[9px] font-normal text-slate-500 tracking-tight flex-wrap justify-end ml-auto min-w-0">
+            <div className="flex items-center gap-1.5 text-[10px] font-normal text-slate-500 tracking-tight flex-wrap justify-end ml-auto min-w-0">
               {soldCount > 0 && <span className="truncate">Đã bán {soldCount}</span>}
               {viewCount > 0 && (
                 <div className="flex items-center gap-0.5 shrink-0">
-                  <Eye className="h-2.5 w-2.5 text-slate-300" /> <span>{viewCount}</span>
+                  <Eye className="h-3 w-3 text-slate-300" /> <span>{viewCount}</span>
                 </div>
               )}
             </div>

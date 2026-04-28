@@ -9,7 +9,7 @@ export class OrderRepository {
   private baseInclude = {
     orderItems: { include: { variant: { include: { product: { include: { images: { select: { url: true }, take: 1 } } }, images: { select: { url: true } } } } } },
     user: { select: { id: true, email: true, name: true } }, payment: true, address: true, shippingMethod: true,
-    returnRequest: true,
+    returnRequests: { include: { returnItems: true } },
     reviews: { select: { productId: true } }
   };
 
@@ -126,7 +126,7 @@ export class OrderRepository {
     });
   }
 
-  async restoreOrderStock(id: number) {
+  async restoreOrderStock(id: number, wasSold: boolean = false) {
     const o = await this.prisma.order.findUnique({ 
       where: { id }, 
       select: { 
@@ -141,18 +141,23 @@ export class OrderRepository {
     });
 
     if (o && o.orderItems.length > 0) {
-      console.log(`[OrderRepository] Restoring stock for ${o.orderItems.length} items of order ${id}`);
+      console.log(`[OrderRepository] Restoring stock for ${o.orderItems.length} items of order ${id}. wasSold: ${wasSold}`);
       
       await this.prisma.$transaction(async (tx) => {
-        // Hoàn tồn kho cho từng variant
         for (const item of o.orderItems) {
+          // 1. Hoàn tồn kho
           await tx.productVariant.update({
             where: { id: item.variantId },
             data: { stock: { increment: item.quantity } }
           });
           
-          // Lưu ý: Product model không có trường stock trong DB, 
-          // tồn kho tổng được tính toán ở frontend hoặc query thời gian thực.
+          // 2. Trừ soldCount nếu đơn đã được tính là thành công trước đó
+          if (wasSold) {
+            await tx.product.update({
+              where: { id: item.variant.productId },
+              data: { soldCount: { decrement: item.quantity } }
+            });
+          }
         }
       });
       
@@ -177,6 +182,20 @@ export class OrderRepository {
       where: {
         orderId,
       },
+    });
+  }
+
+  async findAbandonedOrders(createdBefore: Date) {
+    return this.prisma.order.findMany({
+      where: {
+        status: 'PENDING',
+        createdAt: { lt: createdBefore },
+        // Chỉ xử lý các đơn thanh toán Online vì COD thường được duyệt thủ công
+        paymentMethod: { in: ['VNPAY', 'PAYOS'] }
+      },
+      include: {
+        payment: true
+      }
     });
   }
 }

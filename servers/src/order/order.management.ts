@@ -1,5 +1,6 @@
 
 import { Injectable, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { OrderRepository } from './order.repository';
 import { OrderCache } from './order.cache';
 import { PaymentService } from '../payment/payment.service';
@@ -7,6 +8,7 @@ import { UpdateOrderDto } from './dto/update-order.dto';
 import { ApplyDiscountDto } from './dto/apply-discount.dto';
 import * as OrderHelper from './order.helper';
 import { GHNService } from '../ghn/ghn.service';
+import dayjs from 'dayjs';
 
 @Injectable()
 export class OrderManagement {
@@ -18,6 +20,51 @@ export class OrderManagement {
     private paymentService: PaymentService,
     private ghnService: GHNService,
   ) {}
+
+  /**
+   * Tự động hủy các đơn hàng PENDING quá 30 phút mà chưa thanh toán
+   * Giúp giải phóng tồn kho bị giữ ảo
+   */
+  @Cron('0 */15 * * * *') // Chạy mỗi 15 phút
+  async handleAutoCancelAbandonedOrders() {
+    this.logger.log('[Cron] Checking for abandoned orders...');
+    
+    const thirtyMinsAgo = dayjs().subtract(30, 'minute').toDate();
+    
+    // Tìm các đơn hàng PENDING được tạo từ 30 phút trước
+    const abandonedOrders = await this.repository.findAbandonedOrders(thirtyMinsAgo);
+    
+    if (abandonedOrders.length === 0) {
+      return;
+    }
+
+    this.logger.log(`[Cron] Found ${abandonedOrders.length} abandoned orders. Processing auto-cancel...`);
+
+    for (const order of abandonedOrders) {
+      try {
+        // Chỉ tự động hủy nếu chưa thanh toán (status PENDING/FAILED)
+        const isPaid = order.payment?.status === 'SUCCESS';
+        if (isPaid) continue;
+
+        await this.repository.update(order.id, { status: 'CANCELLED' });
+        
+        // Hoàn tồn kho & mã giảm giá
+        // Với đơn PENDING thì chắc chắn wasSold = false
+        await this.repository.restoreOrderStock(order.id, false);
+        await this.repository.restoreDiscountUsage(order.id);
+
+        // Hủy payment nếu có
+        if (order.payment) {
+          await this.paymentService.updateStatus(order.payment.id, { status: 'CANCELLED' });
+        }
+
+        await this.cacheService.clearRelatedCaches(order.id, order.userId || undefined);
+        this.logger.log(`[Cron] Auto-cancelled abandoned order ${order.orderCode} (ID: ${order.id})`);
+      } catch (err) {
+        this.logger.error(`[Cron] Failed to auto-cancel order ${order.id}:`, err.message);
+      }
+    }
+  }
 
   async update(id: number, dto: UpdateOrderDto): Promise<any> {
 
@@ -41,8 +88,9 @@ export class OrderManagement {
     await this.handleDeliveredStatus(dto, oldOrder);
 
     if (dto.status === 'CANCELLED') {
-      this.logger.log(`[OrderManagement] Order ${id} is being cancelled. Restoring stock...`);
-      await this.repository.restoreOrderStock(id);
+      const wasSold = oldOrder.status === 'DELIVERED' || oldOrder.status === 'RETURN_REQUESTED';
+      this.logger.log(`[OrderManagement] Order ${id} is being cancelled. Restoring stock (wasSold: ${wasSold})...`);
+      await this.repository.restoreOrderStock(id, wasSold);
       await this.repository.restoreDiscountUsage(id);
       this.logger.log(`[OrderManagement] Stock restoration for order ${id} completed.`);
     }
@@ -58,8 +106,9 @@ export class OrderManagement {
     
     // Nếu đơn hàng chưa bị hủy mà lại bị xóa, chúng ta cũng nên hoàn lại tồn kho
     if (order.status !== 'CANCELLED' && order.status !== 'RETURNED') {
-      this.logger.log(`[OrderManagement] Order ${id} is being deleted without prior cancellation. Restoring stock before deletion...`);
-      await this.repository.restoreOrderStock(id);
+      const wasSold = order.status === 'DELIVERED' || order.status === 'RETURN_REQUESTED';
+      this.logger.log(`[OrderManagement] Order ${id} is being deleted without prior cancellation. Restoring stock (wasSold: ${wasSold}) before deletion...`);
+      await this.repository.restoreOrderStock(id, wasSold);
       await this.repository.restoreDiscountUsage(id);
     }
 
@@ -99,7 +148,8 @@ export class OrderManagement {
     }
 
     this.logger.log(`[OrderManagement] Member order ${orderId} cancelled by user ${userId}. Restoring stock...`);
-    await this.repository.restoreOrderStock(orderId);
+    const wasSold = order.status === 'DELIVERED' || order.status === 'RETURN_REQUESTED';
+    await this.repository.restoreOrderStock(orderId, wasSold);
     await this.repository.restoreDiscountUsage(orderId);
     this.logger.log(`[OrderManagement] Stock restoration for member order ${orderId} completed.`);
 
@@ -124,9 +174,21 @@ export class OrderManagement {
     }
 
     const cancelled = await this.repository.update(order.id, { status: 'CANCELLED' });
+    
+    // Initiate refund if guest payment is successful
+    if (order.payment && order.payment.status === 'SUCCESS') {
+      try {
+        await this.paymentService.initiateRefund(order.payment.id);
+      } catch (error) {
+        this.logger.error('Failed to initiate refund during guest order cancellation:', error);
+      }
+    } else if (order.payment && order.payment.status === 'PENDING') {
+      await this.paymentService.updateStatus(order.payment.id, { status: 'CANCELLED' });
+    }
 
     this.logger.log(`[OrderManagement] Guest order ${order.id} (${orderCode}) cancelled. Restoring stock...`);
-    await this.repository.restoreOrderStock(order.id);
+    const wasSold = order.status === 'DELIVERED' || order.status === 'RETURN_REQUESTED';
+    await this.repository.restoreOrderStock(order.id, wasSold);
     await this.repository.restoreDiscountUsage(order.id);
     this.logger.log(`[OrderManagement] Stock restoration for guest order ${order.id} completed.`);
 

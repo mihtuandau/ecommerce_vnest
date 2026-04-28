@@ -3,7 +3,7 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { formatCurrency } from "@/utils/formatCurrency";
-import { ShoppingBag, TrendingUp, Star, Loader2 } from "lucide-react";
+import { ShoppingBag, TrendingUp, Loader2 } from "lucide-react";
 import { useTopProducts } from "../hooks";
 
 export function TopProductsList() {
@@ -22,10 +22,10 @@ export function TopProductsList() {
     <Card className="border-slate-200 shadow-sm overflow-hidden flex flex-col h-full">
       <CardHeader className="p-7 border-b border-slate-100 flex flex-row items-center justify-between">
         <div>
-          <CardTitle className="text-sm font-bold text-slate-900 uppercase tracking-widest">
+          <CardTitle className="text-sm font-semibold text-slate-900">
             Sản phẩm bán chạy
           </CardTitle>
-          <p className="text-[11px] text-slate-500 font-medium mt-1 uppercase tracking-wider">
+          <p className="text-xs text-slate-500 font-medium mt-1">
             Top 5 sản phẩm doanh thu cao nhất
           </p>
         </div>
@@ -52,17 +52,17 @@ export function TopProductsList() {
                 <div className="flex items-center gap-3 mt-1">
                   <div className="flex items-center gap-1">
                     <ShoppingBag className="h-3 w-3 text-slate-400" />
-                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-wider">
+                    <span className="text-xs font-medium text-slate-500">
                       {product.totalQuantity} đã bán
                     </span>
                   </div>
                 </div>
               </div>
               <div className="text-right shrink-0">
-                <p className="text-sm font-black text-slate-900 tracking-tight">
+                <p className="text-sm font-bold text-slate-900 tracking-tight">
                   {formatCurrency(product.totalRevenue)}
                 </p>
-                <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest mt-0.5">
+                <p className="text-xs font-medium text-emerald-600 mt-0.5">
                   Xu hướng tăng
                 </p>
               </div>

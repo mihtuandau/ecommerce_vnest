@@ -33,21 +33,21 @@ export class OrderController {
   @Post()
   @UseGuards(JwtAuthGuard)
   create(@Request() req, @Body() body: CreateOrderDto, @Ip() ip: string) {
-    return this.orderService.create(req.user.userId, body, ip);
+    return this.orderService.create(req.user.userId, body, { role: req.user.role }, ip);
   }
 
   @Post('guest')
   createGuestOrder(@Body() body: CreateOrderDto, @Ip() ip: string) {
-    return this.orderService.create(null, body, ip);
+    return this.orderService.create(null, body, { role: 'GUEST' }, ip);
   }
   
   @Post('admin')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Permissions('order.manage')
   @ApiBearerAuth('Authorization')
-  adminCreate(@Body() body: CreateOrderDto, @Ip() ip: string) {
+  adminCreate(@Request() req, @Body() body: CreateOrderDto, @Ip() ip: string) {
     // Admin có thể truyền userId trực tiếp trong body
-    return this.orderService.create(body.userId || null, body, ip);
+    return this.orderService.create(body.userId || null, body, { role: req.user.role }, ip);
   }
 
   @Get('guest/lookup/:orderCode')

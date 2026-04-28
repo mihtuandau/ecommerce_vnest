@@ -76,7 +76,21 @@ export class ProductRepository {
     });
   }
 
-  async delete(id: number) { return this.prisma.product.delete({ where: { id } }); }
+  async delete(id: number) { 
+    return this.prisma.product.update({ 
+      where: { id }, 
+      data: { 
+        deletedAt: new Date(),
+        isActive: false,
+        variants: {
+          updateMany: {
+            where: { productId: id },
+            data: { deletedAt: new Date(), isActive: false }
+          }
+        }
+      } 
+    }); 
+  }
 
   async findVariantById(id: number) { return this.prisma.productVariant.findUnique({ where: { id }, include: { product: true, images: true } }); }
   async createImages(images: any[]) { return this.prisma.productImage.createMany({ data: images }); }
@@ -97,7 +111,15 @@ export class ProductRepository {
 
   async createVariant(data: any) { return this.prisma.productVariant.create({ data }); }
   async updateVariant(id: number, data: any) { return this.prisma.productVariant.update({ where: { id }, data }); }
-  async deleteVariant(id: number) { return this.prisma.productVariant.delete({ where: { id } }); }
+  async deleteVariant(id: number) { 
+    return this.prisma.productVariant.update({ 
+      where: { id }, 
+      data: { 
+        deletedAt: new Date(),
+        isActive: false 
+      } 
+    }); 
+  }
 
   async findVariantImageById(id: number) { return this.prisma.variantImage.findUnique({ where: { id } }); }
   async findImageById(id: number) { return this.prisma.productImage.findUnique({ where: { id } }); }

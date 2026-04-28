@@ -115,8 +115,7 @@ export class DashboardService {
         const month = vnTime.month();
         const subtotal = Number(item.subtotal) || 0;
         const discount = Number(item.discountAmount) || 0;
-        const refund = Number(item.payment?.refundAmount) || 0;
-        const netRevenue = subtotal - discount - refund;
+        const netRevenue = subtotal - discount;
         
         monthlyData[month].revenue += netRevenue;
         monthlyData[month].orders += 1;
@@ -160,10 +159,9 @@ export class DashboardService {
           dataMap.set(key, { label: key, revenue: 0, orders: 0 });
         }
         const entry = dataMap.get(key);
-        const subtotal = Number(item.subtotal) || 0;
-        const discount = Number(item.discountAmount) || 0;
+        const total = Number(item.total) || 0;
         const refund = Number(item.payment?.refundAmount) || 0;
-        const netRevenue = subtotal - discount - refund;
+        const netRevenue = total - refund;
         
         entry.revenue += netRevenue;
         entry.orders += 1;
@@ -191,8 +189,7 @@ export class DashboardService {
       const entry = dataMap.get(label);
       const subtotal = Number(item.subtotal) || 0;
       const discount = Number(item.discountAmount) || 0;
-      const refund = Number(item.payment?.refundAmount) || 0;
-      const netRevenue = subtotal - discount - refund;
+      const netRevenue = subtotal - discount;
       
       entry.revenue += netRevenue;
       entry.orders += 1;
@@ -229,8 +226,7 @@ export class DashboardService {
       const entry = dataMap.get(label);
       const subtotal = Number(item.subtotal) || 0;
       const discount = Number(item.discountAmount) || 0;
-      const refund = Number(item.payment?.refundAmount) || 0;
-      const netRevenue = subtotal - discount - refund;
+      const netRevenue = subtotal - discount;
       
       entry.revenue += netRevenue;
       entry.orders += 1;
@@ -261,23 +257,25 @@ export class DashboardService {
       const product = item.variant.product;
       const productId = product.id;
       const order = item.order as any;
-      const returnStatus = order.returnRequest?.status;
-      // Trừ doanh số nếu đơn hàng đã RETURNED hoặc yêu cầu trả hàng đã RECEIVED/COMPLETED
-      const isReturned = order.status === 'RETURNED' || 
-                         returnStatus === 'RECEIVED' || 
-                         returnStatus === 'COMPLETED';
       
-      const quantityEffect = isReturned ? -item.quantity : item.quantity;
-      const itemRevenue = Number(item.price) * item.quantity;
-      const revenueEffect = isReturned ? -itemRevenue : itemRevenue;
+      // Tính toán số lượng đã trả cho item này
+      const returnedQty = (order.returnRequests || [])
+        .filter((r: any) => r.status === 'RECEIVED' || r.status === 'COMPLETED')
+        .reduce((sum: number, r: any) => {
+          const rItem = (r.returnItems || []).find((ri: any) => ri.orderItemId === item.id);
+          return sum + (rItem?.quantity || 0);
+        }, 0);
+
+      const netQuantity = item.quantity - returnedQty;
+      const netRevenue = Number(item.price) * netQuantity;
+      
+      if (netQuantity <= 0) return; // Nếu đã trả hết món này thì bỏ qua
 
       const existing = productMap.get(productId);
-
       if (existing) {
-        existing.totalQuantity += quantityEffect;
-        existing.totalRevenue += revenueEffect;
-        // Only count as an order if not returned, or we could say we subtract 1 order
-        existing.orderCount += isReturned ? -1 : 1;
+        existing.totalQuantity += netQuantity;
+        existing.totalRevenue += netRevenue;
+        existing.orderCount += 1;
       } else {
         const thumbnail =
           (product as any).images?.find((img: any) => img.isThumbnail)?.url ||
@@ -286,9 +284,9 @@ export class DashboardService {
         productMap.set(productId, {
           productName: product.name,
           image: thumbnail,
-          totalQuantity: quantityEffect,
-          totalRevenue: revenueEffect,
-          orderCount: isReturned ? 0 : 1, // Start with 0 if first encountered is a return (rare but possible in query range)
+          totalQuantity: netQuantity,
+          totalRevenue: netRevenue,
+          orderCount: 1,
         });
       }
     });

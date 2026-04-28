@@ -66,7 +66,7 @@ export function UserForm({ initialData, onSubmit, isLoading }: UserFormProps) {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Họ và tên</FormLabel>
+                  <FormLabel className="text-xs font-semibold tracking-wide text-slate-600">Họ và tên</FormLabel>
                   <FormControl>
                     <Input placeholder="Ví dụ: Nguyễn Văn A" {...field} className="rounded-xl h-12 border-slate-200 focus:ring-primary/20" />
                   </FormControl>
@@ -79,7 +79,7 @@ export function UserForm({ initialData, onSubmit, isLoading }: UserFormProps) {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Email liên hệ</FormLabel>
+                  <FormLabel className="text-xs font-semibold tracking-wide text-slate-600">Email liên hệ</FormLabel>
                   <FormControl>
                     <Input placeholder="name@example.com" {...field} className="rounded-xl h-12 border-slate-200 focus:ring-primary/20" />
                   </FormControl>
@@ -95,7 +95,7 @@ export function UserForm({ initialData, onSubmit, isLoading }: UserFormProps) {
               name="phone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Số điện thoại</FormLabel>
+                  <FormLabel className="text-xs font-semibold tracking-wide text-slate-600">Số điện thoại</FormLabel>
                   <FormControl>
                     <Input placeholder="0987xxxxxx" {...field} className="rounded-xl h-12 border-slate-200 focus:ring-primary/20" />
                   </FormControl>
@@ -108,7 +108,7 @@ export function UserForm({ initialData, onSubmit, isLoading }: UserFormProps) {
               name="role"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Vai trò</FormLabel>
+                  <FormLabel className="text-xs font-semibold tracking-wide text-slate-600">Vai trò</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                     <FormControl>
                       <SelectTrigger className="rounded-xl h-12 border-slate-200 focus:ring-primary/20">
@@ -131,7 +131,7 @@ export function UserForm({ initialData, onSubmit, isLoading }: UserFormProps) {
               name="status"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Trạng thái</FormLabel>
+                  <FormLabel className="text-xs font-semibold tracking-wide text-slate-600">Trạng thái</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                     <FormControl>
                       <SelectTrigger className="rounded-xl h-12 border-slate-200 focus:ring-primary/20">
@@ -156,7 +156,7 @@ export function UserForm({ initialData, onSubmit, isLoading }: UserFormProps) {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-[10px] font-bold uppercase tracking-widest text-slate-500">
+              <FormLabel className="text-xs font-semibold tracking-wide text-slate-600">
                 Mật khẩu {initialData && "(Để trống nếu không muốn đổi)"}
               </FormLabel>
               <FormControl>
@@ -171,14 +171,14 @@ export function UserForm({ initialData, onSubmit, isLoading }: UserFormProps) {
           <Button
             type="button"
             variant="ghost"
-            className="rounded-xl px-6 h-12 font-bold text-slate-500 hover:bg-slate-50"
+            className="rounded-xl px-6 h-12 font-semibold text-slate-600 hover:bg-slate-50"
             onClick={() => window.history.back()}
           >
             <X className="h-4 w-4 mr-2" /> Hủy
           </Button>
           <Button
             type="submit"
-            className="rounded-xl px-8 h-12 font-bold bg-primary text-white hover:bg-slate-800 shadow-sm gap-2"
+            className="rounded-xl px-8 h-12 font-semibold bg-primary text-white hover:bg-slate-800 shadow-sm gap-2"
             disabled={isLoading}
           >
             {isLoading ? "Đang xử lý..." : (

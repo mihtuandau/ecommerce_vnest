@@ -21,6 +21,8 @@ async function main() {
     { name: 'discount.manage', description: 'Quản lý mã giảm giá và flash sale' },
     { name: 'banner.manage',   description: 'Quản lý banner và giao diện' },
     { name: 'settings.manage', description: 'Cài đặt và phân quyền hệ thống' },
+    { name: 'return.manage',   description: 'Quản lý và xử lý yêu cầu đổi trả hàng' },
+    { name: 'return.view',     description: 'Xem danh sách yêu cầu đổi trả' },
   ];
 
   console.log('--- Creating Permissions ---');
@@ -48,12 +50,16 @@ async function main() {
       'category.manage',
       'inventory.manage',
       'order.view',
+      'return.view',
+      'return.manage',
       'report.view',
     ],
     [Role.BAN_HANG]: [
       'dashboard.view',
       'order.manage',
       'order.view',
+      'return.view',
+      'return.manage',
       'user.view',
       'chat.support',
       'discount.manage',

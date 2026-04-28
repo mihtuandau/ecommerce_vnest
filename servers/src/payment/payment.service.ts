@@ -111,18 +111,6 @@ export class PaymentService {
       payment.order.orderItems,
     );
 
-    if (data.status === 'REFUNDED') {
-      this.logger.log(`Payment ${id} REFUNDED - Restoring stock`);
-      for (const item of payment.order.orderItems) {
-        await this.repository.incrementVariantStock(item.variantId, item.quantity);
-      }
-      if (payment.order.status === 'DELIVERED') {
-        for (const item of payment.order.orderItems) {
-          await this.repository.decrementProductSoldCount(item.variant.productId, item.quantity);
-        }
-      }
-    }
-
     await this.cacheService.clearRelatedCaches(id, payment.orderId);
     return PaymentHelper.serializePayment(updatedPayment);
   }
@@ -131,34 +119,34 @@ export class PaymentService {
    * Initiate refund for a successful payment
    * This should be called when order is cancelled to request refund from payment gateway
    */
-  async initiateRefund(paymentId: number) {
+  async initiateRefund(paymentId: number, amount?: number) {
     const payment = await this.repository.findById(paymentId);
     if (!payment) {
       throw new NotFoundException('Payment not found');
     }
 
-    if (payment.status !== 'SUCCESS') {
-      throw new BadRequestException('Can only refund successful payments');
+    if (payment.status !== 'SUCCESS' && payment.status !== 'REFUNDED') {
+      throw new BadRequestException('Can only refund successful or partially refunded payments');
     }
+
+    const refundValue = amount || payment.amount;
 
     try {
       // For VNPAY/MOMO/PAYOS - mark as REFUNDED
       // In production, this would call the actual refund API on the payment gateway
       if (['VNPAY', 'MOMO', 'PAYOS'].includes(payment.method)) {
         // TODO: Implement actual refund API calls for each gateway
-        // For now, just mark payment as refunded and record the amount
         await this.repository.update(paymentId, {
           status: 'REFUNDED',
-          refundAmount: payment.amount,
+          refundAmount: (payment.refundAmount || 0) + refundValue,
         });
-        this.logger.log(`Refund initiated for ${payment.method} payment ${paymentId}`);
+        this.logger.log(`Refund of ${refundValue} initiated for ${payment.method} payment ${paymentId}`);
       } else if (payment.method === 'CASH' || payment.method === 'CARD') {
-        // For cash/card, just mark as refunded since no online refund needed
         await this.repository.update(paymentId, {
           status: 'REFUNDED',
-          refundAmount: payment.amount,
+          refundAmount: (payment.refundAmount || 0) + refundValue,
         });
-        this.logger.log(`Refund marked for ${payment.method} payment ${paymentId}`);
+        this.logger.log(`Refund of ${refundValue} marked for ${payment.method} payment ${paymentId}`);
       }
 
       await this.cacheService.clearPaymentCaches();

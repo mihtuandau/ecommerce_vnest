@@ -90,7 +90,7 @@ export function ChatWindow({ roomId, customerName }: ChatWindowProps) {
             </h3>
             <div className="flex items-center gap-1.5 mt-0.5">
               <div className={cn("h-1.5 w-1.5 rounded-full", isConnected ? "bg-emerald-500" : "bg-slate-300")} />
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+              <p className="text-xs font-black text-slate-400 uppercase tracking-widest">
                 {isConnected ? "Đang trực tuyến" : "Ngoại tuyến"}
               </p>
             </div>
@@ -106,7 +106,7 @@ export function ChatWindow({ roomId, customerName }: ChatWindowProps) {
         {isLoading ? (
           <div className="flex flex-col items-center justify-center h-full gap-3">
             <Loader2 className="h-6 w-6 animate-spin text-slate-200" />
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Đang tải tin nhắn...</p>
+            <p className="text-xs font-black text-slate-400 uppercase tracking-widest">Đang tải tin nhắn...</p>
           </div>
         ) : (
           messages.map((msg, idx) => {
@@ -125,8 +125,8 @@ export function ChatWindow({ roomId, customerName }: ChatWindowProps) {
               >
                 {!isMe && (
                    <div className={cn(
-                     "h-8 w-8 rounded-full bg-white border border-slate-100 flex items-center justify-center flex-shrink-0 transition-opacity duration-300", 
-                     !showAvatar ? "opacity-0" : "opacity-100"
+                      "h-8 w-8 rounded-full bg-white border border-slate-100 flex items-center justify-center flex-shrink-0 transition-opacity duration-300", 
+                      !showAvatar ? "opacity-0" : "opacity-100"
                    )}>
                       <User className="h-4 w-4 text-slate-300" />
                    </div>
@@ -137,7 +137,7 @@ export function ChatWindow({ roomId, customerName }: ChatWindowProps) {
                   isMe ? "items-end" : "items-start"
                 )}>
                   <div className={cn(
-                    "px-4 py-2.5 text-[13px] font-medium leading-relaxed transition-all duration-200",
+                    "px-4 py-2.5 text-sm font-medium leading-relaxed transition-all duration-200",
                     isMe 
                       ? "bg-slate-900 text-white rounded-2xl rounded-br-none hover:bg-slate-800" 
                       : "bg-white text-slate-700 border border-slate-100 rounded-2xl rounded-bl-none hover:border-slate-200"
@@ -145,7 +145,7 @@ export function ChatWindow({ roomId, customerName }: ChatWindowProps) {
                     {msg.message}
                   </div>
                   {(!isNextMe || showAvatar) && (
-                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-tighter px-1 opacity-70">
+                    <p className="text-xs font-black text-slate-400 uppercase tracking-tighter px-1 opacity-70">
                       {dayjs(msg.createdAt).format("HH:mm")}
                     </p>
                   )}

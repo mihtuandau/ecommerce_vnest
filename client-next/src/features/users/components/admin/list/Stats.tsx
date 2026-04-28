@@ -17,8 +17,8 @@ export function Stats({ total, admins, active }: StatsProps) {
           <Users className="h-5 w-5 text-slate-600" />
         </div>
         <div>
-          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Tổng người dùng</p>
-          <p className="text-xl font-bold text-slate-900">{total}</p>
+          <p className="text-[10px] font-semibold text-slate-600 tracking-wide">Tổng người dùng</p>
+          <p className="text-xl font-semibold text-slate-800">{total}</p>
         </div>
       </div>
       <div className="bg-white p-5 rounded-xl border border-slate-200 flex items-center gap-4">
@@ -26,8 +26,8 @@ export function Stats({ total, admins, active }: StatsProps) {
           <ShieldCheck className="h-5 w-5 text-slate-600" />
         </div>
         <div>
-          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Quản trị viên</p>
-          <p className="text-xl font-bold text-slate-900">{admins}</p>
+          <p className="text-[10px] font-semibold text-slate-600 tracking-wide">Quản trị viên</p>
+          <p className="text-xl font-semibold text-slate-800">{admins}</p>
         </div>
       </div>
       <div className="bg-white p-5 rounded-xl border border-slate-200 flex items-center gap-4">
@@ -35,8 +35,8 @@ export function Stats({ total, admins, active }: StatsProps) {
           <UserCheck className="h-5 w-5 text-slate-600" />
         </div>
         <div>
-          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Đang hoạt động</p>
-          <p className="text-xl font-bold text-slate-900">{active}</p>
+          <p className="text-[10px] font-semibold text-slate-600 tracking-wide">Đang hoạt động</p>
+          <p className="text-xl font-semibold text-slate-800">{active}</p>
         </div>
       </div>
     </div>

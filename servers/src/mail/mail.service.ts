@@ -1,9 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
+import { InjectQueue } from '@nestjs/bullmq';
+import { Queue } from 'bullmq';
 
 @Injectable()
 export class MailService {
-  constructor(private mailerService: MailerService) {}
+  private readonly logger = new Logger(MailService.name);
+
+  constructor(
+    private mailerService: MailerService,
+    @InjectQueue('mail') private mailQueue: Queue,
+  ) {
+    this.logger.log(`MailService initialized with Redis queue: ${JSON.stringify((this.mailQueue as any).opts?.connection || 'default')}`);
+  }
   
   private readonly styles = `
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
@@ -421,13 +430,18 @@ export class MailService {
     `;
 
     try {
-      await this.mailerService.sendMail({
-        to: email,
-        subject: `Xác nhận đơn hàng ${orderCode}`,
-        html: this.baseTemplate(content),
+      await this.mailQueue.add('order-confirmation', {
+        type: 'order-confirmation',
+        data: {
+          email,
+          orderCode,
+          orderDetails,
+          html: this.baseTemplate(content),
+        },
       });
+      this.logger.log(`Queued order confirmation for ${email}`);
     } catch (error) {
-      throw error;
+      this.logger.error(`Failed to queue order confirmation for ${email}:`, error);
     }
   }
 
@@ -459,13 +473,13 @@ export class MailService {
     `;
 
     try {
-      await this.mailerService.sendMail({
-        to: email,
-        subject: 'Đặt lại mật khẩu',
-        html: this.baseTemplate(content),
+      await this.mailQueue.add('reset-password', {
+        type: 'reset-password',
+        data: { email, otp, name: userName },
       });
+      this.logger.log(`Queued password reset for ${email}`);
     } catch (error) {
-      throw error;
+      this.logger.error(`Failed to queue password reset for ${email}:`, error);
     }
   }
 
@@ -490,13 +504,13 @@ export class MailService {
     `;
 
     try {
-      await this.mailerService.sendMail({
-        to: email,
-        subject: 'Xác thực tài khoản của bạn',
-        html: this.baseTemplate(content),
+      await this.mailQueue.add('verification', {
+        type: 'verification',
+        data: { email, otp: code, name: userName },
       });
+      this.logger.log(`Queued verification email for ${email}`);
     } catch (error) {
-      throw error;
+      this.logger.error(`Failed to queue verification email for ${email}:`, error);
     }
   }
 

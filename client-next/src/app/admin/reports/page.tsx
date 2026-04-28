@@ -44,14 +44,17 @@ export default function AdminReportsPage() {
   const handleExport = async () => {
     try {
       const responseData = await reportsApi.exportReport(params);
-      const blob = new Blob([responseData], { 
-        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+      const blob = new Blob([responseData], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       });
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      const dateStr = new Date().toISOString().split('T')[0];
-      link.setAttribute("download", `Bao_cao_MinhTuanShop_${timeRange}_${dateStr}.xlsx`);
+      const dateStr = new Date().toISOString().split("T")[0];
+      link.setAttribute(
+        "download",
+        `Bao_cao_MinhTuanShop_${timeRange}_${dateStr}.xlsx`
+      );
       document.body.appendChild(link);
       link.click();
       setTimeout(() => {
@@ -67,10 +70,10 @@ export default function AdminReportsPage() {
 
   return (
     <div className="space-y-8 pb-10">
-      <ReportHeader 
-        onRefresh={refetch} 
+      <ReportHeader
+        onRefresh={refetch}
         onExport={handleExport}
-        isFetching={isFetching} 
+        isFetching={isFetching}
         timeRange={timeRange}
         setTimeRange={setTimeRange}
       />
@@ -78,7 +81,9 @@ export default function AdminReportsPage() {
       {isLoading ? (
         <div className="h-[400px] flex flex-col items-center justify-center gap-4 bg-white/50 rounded-3xl border border-slate-100 border-dashed">
           <Loader2 className="h-10 w-10 animate-spin text-slate-200" />
-          <p className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em]">Đang phân tích dữ liệu...</p>
+          <p className="text-xs font-bold text-slate-400 uppercase tracking-[0.2em]">
+            Đang phân tích dữ liệu...
+          </p>
         </div>
       ) : (
         <>
@@ -89,9 +94,9 @@ export default function AdminReportsPage() {
               <RevenueChart params={params} />
             </div>
             <div className="lg:col-span-1 h-full">
-              <OrderStatusChart 
-                data={summary?.ordersByStatus || []} 
-                isLoading={isLoading} 
+              <OrderStatusChart
+                data={summary?.ordersByStatus || []}
+                isLoading={isLoading}
               />
             </div>
           </div>

@@ -4,9 +4,21 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  LayoutDashboard, Package, Layers, ShoppingCart, Users,
-  Tag, Image, MessageCircle, BarChart3, ChevronLeft,
-  ChevronRight, Settings, Warehouse, Zap, RotateCcw,
+  LayoutDashboard,
+  Package,
+  Layers,
+  ShoppingCart,
+  Users,
+  Tag,
+  Image,
+  MessageCircle,
+  BarChart3,
+  ChevronLeft,
+  ChevronRight,
+  Settings,
+  Warehouse,
+  Zap,
+  RotateCcw,
 } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { useAuth } from "@/features/auth/hooks/useAuth";
@@ -19,33 +31,95 @@ const navGroups = [
   {
     title: "Tổng quan",
     items: [
-      { label: "Dashboard",   href: "/admin",          icon: LayoutDashboard, permission: "dashboard.view" },
-      { label: "Báo cáo",     href: "/admin/reports",  icon: BarChart3,        permission: "report.view" },
+      {
+        label: "Dashboard",
+        href: "/admin",
+        icon: LayoutDashboard,
+        permission: "dashboard.view",
+      },
+      {
+        label: "Báo cáo",
+        href: "/admin/reports",
+        icon: BarChart3,
+        permission: "report.view",
+      },
     ],
   },
   {
     title: "Quản lý sản phẩm",
     items: [
-      { label: "Sản phẩm",   href: "/admin/products",   icon: Package,   permission: "product.manage" },
-      { label: "Danh mục",   href: "/admin/categories", icon: Layers,    permission: "category.manage" },
-      { label: "Kho hàng",   href: "/admin/inventory",  icon: Warehouse, permission: "inventory.manage" },
-      { label: "Mã giảm giá", href: "/admin/discounts",  icon: Tag,       permission: "discount.manage" },
+      {
+        label: "Sản phẩm",
+        href: "/admin/products",
+        icon: Package,
+        permission: "product.manage",
+      },
+      {
+        label: "Danh mục",
+        href: "/admin/categories",
+        icon: Layers,
+        permission: "category.manage",
+      },
+      {
+        label: "Kho hàng",
+        href: "/admin/inventory",
+        icon: Warehouse,
+        permission: "inventory.manage",
+      },
+      {
+        label: "Mã giảm giá",
+        href: "/admin/discounts",
+        icon: Tag,
+        permission: "discount.manage",
+      },
     ],
   },
   {
     title: "Kinh doanh & Khách hàng",
     items: [
-      { label: "Đơn hàng",    href: "/admin/orders", icon: ShoppingCart, permission: "order.manage", badge: "3" },
-      { label: "Đổi trả",     href: "/admin/returns", icon: RotateCcw,    permission: "order.manage" },
-      { label: "Người dùng",  href: "/admin/users",  icon: Users,        permission: "user.manage" },
-      { label: "Chat",        href: "/admin/chat",   icon: MessageCircle,permission: "chat.support", badge: "New" },
+      {
+        label: "Đơn hàng",
+        href: "/admin/orders",
+        icon: ShoppingCart,
+        permission: "order.manage",
+        badge: "3",
+      },
+      {
+        label: "Đổi trả",
+        href: "/admin/returns",
+        icon: RotateCcw,
+        permission: "order.manage",
+      },
+      {
+        label: "Người dùng",
+        href: "/admin/users",
+        icon: Users,
+        permission: "user.manage",
+      },
+      {
+        label: "Chat",
+        href: "/admin/chat",
+        icon: MessageCircle,
+        permission: "chat.support",
+        badge: "New",
+      },
     ],
   },
   {
     title: "Cài đặt hệ thống",
     items: [
-      { label: "Banner",   href: "/admin/banners",  icon: Image,    permission: "banner.manage" },
-      { label: "Cài đặt", href: "/admin/settings", icon: Settings, permission: "settings.manage" },
+      {
+        label: "Banner",
+        href: "/admin/banners",
+        icon: Image,
+        permission: "banner.manage",
+      },
+      {
+        label: "Cài đặt",
+        href: "/admin/settings",
+        icon: Settings,
+        permission: "settings.manage",
+      },
     ],
   },
 ];
@@ -82,7 +156,9 @@ export function Sidebar() {
             V
           </div>
           {!isCollapsed && (
-            <span className="font-black text-lg tracking-tighter leading-none text-white bg-clip-text text-transparent bg-gradient-to-r from-white to-white/70 uppercase">ADMIN PANEL</span>
+            <span className="font-semibold text-lg tracking-tight leading-none text-white bg-clip-text text-transparent bg-gradient-to-r from-white to-white/80">
+              Admin Panel
+            </span>
           )}
         </Link>
       </div>
@@ -92,52 +168,67 @@ export function Sidebar() {
         {visibleGroups.map((group, groupIdx) => (
           <div key={groupIdx} className="space-y-2">
             {!isCollapsed && (
-              <h4 className="px-3 text-[11px] font-bold uppercase tracking-[0.1em] text-slate-500/80 mb-3 ml-1">
+              <p className="px-3 text-xs font-medium text-slate-500 mb-3 ml-1">
                 {group.title}
-              </h4>
+              </p>
             )}
             <div className="space-y-1">
               {group.items.map((item) => {
-                const isActive = pathname === item.href || (item.href !== "/admin" && pathname.startsWith(item.href));
+                const isActive =
+                  pathname === item.href ||
+                  (item.href !== "/admin" && pathname.startsWith(item.href));
                 return (
                   <Link
                     key={item.href}
                     href={item.href}
                     className={cn(
-                      "group relative flex items-center gap-3 rounded-xl px-3 py-2 text-[13px] font-medium transition-all duration-300",
+                      "group relative flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-all duration-300",
                       isActive
                         ? "bg-white/5 text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)]"
-                        : "text-slate-400 hover:bg-white/[0.02] hover:text-white"
+                        : "text-slate-300 hover:bg-white/[0.02] hover:text-white"
                     )}
                   >
-                    <div className={cn(
-                      "flex items-center justify-center h-8 w-8 rounded-lg transition-all duration-300",
-                      isActive
-                        ? "bg-primary text-white shadow-lg shadow-primary/25"
-                        : "bg-slate-800/30 text-slate-400 group-hover:bg-slate-800/60 group-hover:text-white"
-                    )}>
+                    <div
+                      className={cn(
+                        "flex items-center justify-center h-8 w-8 rounded-lg transition-all duration-300",
+                        isActive
+                          ? "bg-primary text-white shadow-lg shadow-primary/25"
+                          : "bg-slate-800/30 text-slate-300 group-hover:bg-slate-800/60 group-hover:text-white"
+                      )}
+                    >
                       <item.icon className="h-4 w-4 shrink-0" />
                     </div>
 
                     {!isCollapsed && (
-                      <span className={cn("flex-1 truncate transition-all duration-300", isActive ? "text-white" : "group-hover:translate-x-1")}>
+                      <span
+                        className={cn(
+                          "flex-1 truncate transition-all duration-300",
+                          isActive ? "text-white" : "group-hover:translate-x-1"
+                        )}
+                      >
                         {item.label}
                       </span>
                     )}
 
                     {!isCollapsed && item.badge && (
-                      <span className={cn(
-                        "px-1.5 py-0.5 rounded-md text-[10px] font-bold tracking-tight",
-                        item.badge === "New" ? "bg-emerald-500/10 text-emerald-500" : "bg-primary/10 text-primary"
-                      )}>
+                      <span
+                        className={cn(
+                          "px-1.5 py-0.5 rounded-md text-xs font-medium tracking-tight",
+                          item.badge === "New"
+                            ? "bg-emerald-500/10 text-emerald-500"
+                            : "bg-primary/10 text-primary"
+                        )}
+                      >
                         {item.badge}
                       </span>
                     )}
 
-                    {isActive && <div className="absolute left-0 w-1 h-5 bg-primary rounded-r-full" />}
+                    {isActive && (
+                      <div className="absolute left-0 w-1 h-5 bg-primary rounded-r-full" />
+                    )}
 
                     {isCollapsed && (
-                      <div className="absolute left-full ml-6 rounded-lg px-3 py-2 bg-slate-900 text-white text-[11px] font-semibold opacity-0 group-hover:opacity-100 pointer-events-none transition-all translate-x-[-10px] group-hover:translate-x-0 whitespace-nowrap z-50 shadow-2xl border border-white/5">
+                      <div className="absolute left-full ml-6 rounded-lg px-3 py-2 bg-slate-900 text-white text-xs font-normal opacity-0 group-hover:opacity-100 pointer-events-none transition-all translate-x-[-10px] group-hover:translate-x-0 whitespace-nowrap z-50 shadow-2xl border border-white/5">
                         {item.label}
                       </div>
                     )}
@@ -155,17 +246,28 @@ export function Sidebar() {
           <div className="flex items-center gap-3 px-2 py-1.5 rounded-xl transition-all duration-300">
             <div className="h-8 w-8 rounded-full bg-slate-800 flex items-center justify-center border border-white/5 overflow-hidden shrink-0">
               {(user as any).avatar ? (
-                <img src={(user as any).avatar} alt={user.name || "User"} className="h-full w-full object-cover" />
+                <img
+                  src={(user as any).avatar}
+                  alt={user.name || "User"}
+                  className="h-full w-full object-cover"
+                />
               ) : (
-                <div className="h-full w-full flex items-center justify-center text-primary font-bold text-[10px]">
+                <div className="h-full w-full flex items-center justify-center text-primary font-medium text-[10px]">
                   {user.name ? user.name.charAt(0).toUpperCase() : "U"}
                 </div>
               )}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-[12px] font-semibold truncate leading-tight text-white/90">{user.name || "Người dùng"}</p>
-              <p className="text-[10px] text-slate-500 truncate font-medium mt-0.5">
-                {{ ADMIN: "Quản trị viên", KHO: "Quản lý kho", BAN_HANG: "Bán hàng", CUSTOMER: "Khách hàng" }[user.role as string] ?? user.role}
+              <p className="text-xs font-medium truncate leading-tight text-white/90">
+                {user.name || "Người dùng"}
+              </p>
+              <p className="text-xs text-slate-500 font-medium mt-1">
+                {{
+                  ADMIN: "Quản trị viên",
+                  KHO: "Quản lý kho",
+                  BAN_HANG: "Bán hàng",
+                  CUSTOMER: "Khách hàng",
+                }[user.role as string] ?? user.role}
               </p>
             </div>
             {/* Logout */}
@@ -174,8 +276,19 @@ export function Sidebar() {
               title="Đăng xuất"
               className="p-1.5 rounded-lg text-slate-500 hover:text-red-400 hover:bg-red-400/10 transition-all"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-3.5 w-3.5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" y1="12" x2="9" y2="12" />
               </svg>
             </button>
           </div>
@@ -184,14 +297,35 @@ export function Sidebar() {
           <div className="flex flex-col items-center gap-2 py-2">
             <div className="h-8 w-8 rounded-full bg-slate-800 flex items-center justify-center border border-white/5 overflow-hidden">
               {(user as any).avatar ? (
-                <img src={(user as any).avatar} alt={user.name} className="h-full w-full object-cover" />
+                <img
+                  src={(user as any).avatar}
+                  alt={user.name}
+                  className="h-full w-full object-cover"
+                />
               ) : (
-                <span className="text-primary font-bold text-[10px]">{user.name ? user.name.charAt(0).toUpperCase() : "U"}</span>
+                <span className="text-primary font-bold text-xs">
+                  {user.name ? user.name.charAt(0).toUpperCase() : "U"}
+                </span>
               )}
             </div>
-            <button onClick={logout} title="Đăng xuất" className="p-1.5 rounded-lg text-slate-500 hover:text-red-400 hover:bg-red-400/10 transition-all">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+            <button
+              onClick={logout}
+              title="Đăng xuất"
+              className="p-1.5 rounded-lg text-slate-500 hover:text-red-400 hover:bg-red-400/10 transition-all"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-3.5 w-3.5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" y1="12" x2="9" y2="12" />
               </svg>
             </button>
           </div>
@@ -203,7 +337,11 @@ export function Sidebar() {
         onClick={() => setIsCollapsed(!isCollapsed)}
         className="absolute -right-3.5 top-20 h-7 w-7 rounded-lg border border-white/10 bg-[#1e293b] text-slate-400 flex items-center justify-center shadow-xl hover:text-white hover:bg-primary hover:border-primary transition-all duration-300 z-30 group"
       >
-        {isCollapsed ? <ChevronRight className="h-3.5 w-3.5" /> : <ChevronLeft className="h-3.5 w-3.5" />}
+        {isCollapsed ? (
+          <ChevronRight className="h-3.5 w-3.5" />
+        ) : (
+          <ChevronLeft className="h-3.5 w-3.5" />
+        )}
       </button>
     </aside>
   );

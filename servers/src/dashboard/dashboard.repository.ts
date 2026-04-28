@@ -18,7 +18,23 @@ export class DashboardRepository {
 
   
   async getTotalCustomers(): Promise<number> {
-    return this.prisma.user.count({ where: { role: 'CUSTOMER' } });
+    // Đếm user có role CUSTOMER
+    const memberCount = await this.prisma.user.count({ where: { role: 'CUSTOMER' } });
+    
+    // Đếm khách vãng lai (guestEmail không trùng với email của member và duy nhất)
+    const members = await this.prisma.user.findMany({ select: { email: true } });
+    const memberEmails = members.map(m => m.email);
+
+    const guestOrders = await this.prisma.order.groupBy({
+      by: ['guestEmail'],
+      where: {
+        userId: null,
+        guestEmail: { notIn: memberEmails, not: null },
+        status: { in: ['DELIVERED', 'RETURNED', 'RETURN_REQUESTED'] }
+      }
+    });
+
+    return memberCount + guestOrders.length;
   }
 
   
@@ -35,8 +51,8 @@ export class DashboardRepository {
   async getTotalOrders(): Promise<number> {
     return this.prisma.order.count({
       where: {
-        status: 'DELIVERED',
-        payment: { status: { in: ['SUCCESS', 'REFUNDED'] } }
+        status: { in: ['DELIVERED', 'RETURN_REQUESTED'] },
+        payment: { status: 'SUCCESS' }
       }
     });
   }
@@ -50,30 +66,20 @@ export class DashboardRepository {
   async getTotalRevenue(): Promise<number> {
     const data = await this.prisma.order.aggregate({
       where: { 
-        status: { in: ['DELIVERED', 'RETURNED', 'RETURN_REQUESTED'] },
-        payment: { status: { in: ['SUCCESS', 'REFUNDED'] } }
+        status: { in: ['DELIVERED', 'RETURN_REQUESTED'] },
+        payment: { status: 'SUCCESS' }
       },
       _sum: { 
         subtotal: true,
         discountAmount: true
       },
     });
-    
-    // Lấy tổng hoàn tiền từ bảng Payment
-    const refundData = await this.prisma.payment.aggregate({
-      where: {
-        order: { status: { in: ['DELIVERED', 'RETURNED'] } },
-        status: { in: ['SUCCESS', 'REFUNDED'] }
-      },
-      _sum: { refundAmount: true }
-    });
 
-    const net = (Number(data._sum.subtotal) || 0) - (Number(data._sum.discountAmount) || 0);
-    const refund = Number(refundData._sum.refundAmount) || 0;
-    return net - refund;
+    const subtotal = Number(data._sum.subtotal) || 0;
+    const discount = Number(data._sum.discountAmount) || 0;
+    return subtotal - discount;
   }
 
-  
   async getRevenueByDate(date: Date): Promise<number> {
     const vnDate = dayjs(date).tz('Asia/Ho_Chi_Minh');
     const start = vnDate.startOf('day').toDate();
@@ -81,9 +87,9 @@ export class DashboardRepository {
 
     const data = await this.prisma.order.aggregate({
       where: {
-        status: { in: ['DELIVERED', 'RETURNED', 'RETURN_REQUESTED'] },
-        createdAt: { gte: start, lte: end },
-        payment: { status: { in: ['SUCCESS', 'REFUNDED'] } }
+        status: { in: ['DELIVERED', 'RETURN_REQUESTED'] },
+        payment: { status: 'SUCCESS' },
+        createdAt: { gte: start, lte: end }
       },
       _sum: { 
         subtotal: true,
@@ -91,20 +97,9 @@ export class DashboardRepository {
       },
     });
 
-    const refundData = await this.prisma.payment.aggregate({
-      where: {
-        order: {
-          status: { in: ['DELIVERED', 'RETURNED', 'RETURN_REQUESTED'] },
-          createdAt: { gte: start, lte: end }
-        },
-        status: { in: ['SUCCESS', 'REFUNDED'] }
-      },
-      _sum: { refundAmount: true }
-    });
-
-    const net = (Number(data._sum.subtotal) || 0) - (Number(data._sum.discountAmount) || 0);
-    const refund = Number(refundData._sum.refundAmount) || 0;
-    return net - refund;
+    const subtotal = Number(data._sum.subtotal) || 0;
+    const discount = Number(data._sum.discountAmount) || 0;
+    return subtotal - discount;
   }
 
   
@@ -130,8 +125,8 @@ export class DashboardRepository {
     return this.prisma.order.count({
       where: {
         createdAt: { gte: start, lte: end },
-        status: 'DELIVERED',
-        payment: { status: { in: ['SUCCESS', 'REFUNDED'] } }
+        status: { in: ['DELIVERED', 'RETURN_REQUESTED'] },
+        payment: { status: 'SUCCESS' }
       },
     });
   }
@@ -150,8 +145,8 @@ export class DashboardRepository {
 
     return this.prisma.order.findMany({
       where: {
-        status: { in: ['DELIVERED', 'RETURNED', 'RETURN_REQUESTED'] },
-        payment: { status: { in: ['SUCCESS', 'REFUNDED'] } },
+        status: { in: ['DELIVERED', 'RETURN_REQUESTED'] },
+        payment: { status: 'SUCCESS' },
         createdAt: {
           gte: startOfYear,
           lte: endOfYear,
@@ -160,9 +155,6 @@ export class DashboardRepository {
       select: {
         subtotal: true,
         discountAmount: true,
-        payment: {
-          select: { refundAmount: true }
-        },
         createdAt: true
       }
     });
@@ -175,8 +167,8 @@ export class DashboardRepository {
 
     return this.prisma.order.findMany({
       where: {
-        status: { in: ['DELIVERED', 'RETURNED', 'RETURN_REQUESTED'] },
-        payment: { status: { in: ['SUCCESS', 'REFUNDED'] } },
+        status: { in: ['DELIVERED', 'RETURN_REQUESTED'] },
+        payment: { status: 'SUCCESS' },
         createdAt: {
           gte: startOfMonth,
           lte: endOfMonth,
@@ -185,9 +177,6 @@ export class DashboardRepository {
       select: {
         subtotal: true,
         discountAmount: true,
-        payment: {
-          select: { refundAmount: true }
-        },
         createdAt: true
       }
     });
@@ -197,16 +186,13 @@ export class DashboardRepository {
   async getRevenueByDateRange(start: Date, end: Date) {
     return this.prisma.order.findMany({
       where: {
-        status: { in: ['DELIVERED', 'RETURNED', 'RETURN_REQUESTED'] },
+        status: { in: ['DELIVERED', 'RETURN_REQUESTED'] },
         createdAt: { gte: start, lte: end },
-        payment: { status: { in: ['SUCCESS', 'REFUNDED'] } },
+        payment: { status: 'SUCCESS' },
       },
       select: {
         subtotal: true,
         discountAmount: true,
-        payment: {
-          select: { refundAmount: true }
-        },
         createdAt: true
       },
     });
@@ -266,8 +252,11 @@ export class DashboardRepository {
             total: true,
             discountAmount: true,
             status: true,
-            returnRequest: {
-              select: { status: true }
+            returnRequests: {
+              select: { 
+                status: true,
+                returnItems: true
+              }
             }
           },
         },

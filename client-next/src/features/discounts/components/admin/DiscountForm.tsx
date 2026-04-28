@@ -130,7 +130,7 @@ export function DiscountForm({ initialData, onSubmit, isLoading }: DiscountFormP
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-8">
         <div className="flex justify-end mb-6">
-          <Button type="submit" className="h-10 px-8 rounded-lg font-bold gap-2 bg-primary text-white hover:bg-slate-800 shadow-sm" disabled={isLoading}>
+          <Button type="submit" className="h-10 px-8 rounded-lg font-semibold gap-2 bg-primary text-white hover:bg-slate-800 shadow-sm" disabled={isLoading}>
             {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Save className="h-5 w-5" />}
             {initialData ? "Lưu thay đổi" : "Kích hoạt mã"}
           </Button>
@@ -138,10 +138,10 @@ export function DiscountForm({ initialData, onSubmit, isLoading }: DiscountFormP
 
         <Tabs defaultValue="general" className="w-full">
           <TabsList className="bg-slate-100 p-1 rounded-xl border border-slate-200 mb-8">
-            <TabsTrigger value="general" className="rounded-lg px-8 font-bold data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm text-slate-500 transition-all">
+            <TabsTrigger value="general" className="rounded-lg px-8 py-2 text-sm font-semibold data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm text-slate-500 transition-all">
               Thông tin chung
             </TabsTrigger>
-            <TabsTrigger value="usage" className="rounded-lg px-8 font-bold data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm text-slate-500 transition-all">
+            <TabsTrigger value="usage" className="rounded-lg px-8 py-2 text-sm font-semibold data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm text-slate-500 transition-all">
               Cấu hình & Sản phẩm
             </TabsTrigger>
           </TabsList>

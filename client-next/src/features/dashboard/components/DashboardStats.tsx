@@ -1,12 +1,12 @@
 "use client";
 
-import { 
-  Users, 
-  Package, 
-  ShoppingCart, 
+import {
+  Users,
+  Package,
+  ShoppingCart,
   DollarSign,
   ArrowUpRight,
-  ArrowDownRight
+  ArrowDownRight,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/Card";
 import { formatCurrency } from "@/utils/formatCurrency";
@@ -59,22 +59,33 @@ export function DashboardStats({ summary, isLoading }: DashboardStatsProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {stats.map((stat, index) => (
-        <Card key={index} className="border border-slate-200 shadow-none rounded-xl overflow-hidden bg-white">
+        <Card
+          key={index}
+          className="border border-slate-200 shadow-none rounded-xl overflow-hidden bg-white"
+        >
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
-              <div className={`h-10 w-10 rounded-lg ${stat.bg} flex items-center justify-center ${stat.color}`}>
+              <div
+                className={`h-10 w-10 rounded-lg ${stat.bg} flex items-center justify-center ${stat.color}`}
+              >
                 <stat.icon className="h-6 w-6" />
               </div>
-              <div className={`flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-md ${stat.isPositive ? 'bg-emerald-50 text-emerald-600' : 'bg-destructive/10 text-destructive'}`}>
+              <div
+                className={`flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-md ${stat.isPositive ? "bg-emerald-50 text-emerald-600" : "bg-destructive/10 text-destructive"}`}
+              >
                 {stat.change}
-                {stat.isPositive ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
+                {stat.isPositive ? (
+                  <ArrowUpRight className="h-3 w-3" />
+                ) : (
+                  <ArrowDownRight className="h-3 w-3" />
+                )}
               </div>
             </div>
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">{stat.title}</p>
+            <p className="text-xs font-medium text-slate-500 mb-1">{stat.title}</p>
             {isLoading ? (
               <div className="h-8 w-24 bg-muted animate-pulse rounded-lg" />
             ) : (
-              <p className="text-xl font-bold text-slate-900">{stat.value}</p>
+              <p className="text-2xl font-bold text-slate-900">{stat.value}</p>
             )}
           </CardContent>
         </Card>

@@ -22,4 +22,19 @@ export class CreateReturnRequestDto {
   @IsString({ each: true })
   @IsOptional()
   images?: string[];
+
+  @ApiProperty({ 
+    description: 'Danh sách sản phẩm muốn trả', 
+    type: 'array',
+    items: {
+      type: 'object',
+      properties: {
+        orderItemId: { type: 'number' },
+        quantity: { type: 'number' }
+      }
+    }
+  })
+  @IsArray()
+  @IsNotEmpty()
+  items: { orderItemId: number; quantity: number }[];
 }

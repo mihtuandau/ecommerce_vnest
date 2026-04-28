@@ -111,7 +111,15 @@ export class ProductService {
       outOfStock,
     } = q;
     const where: any = { deletedAt: null }; // Filter out soft-deleted products
-    if (search) where.name = { contains: search, mode: 'insensitive' };
+    const searchTrimmed = search?.trim();
+    if (searchTrimmed) {
+      where.OR = [
+        { name: { contains: searchTrimmed, mode: 'insensitive' } },
+        { description: { contains: searchTrimmed, mode: 'insensitive' } },
+        { category: { name: { contains: searchTrimmed, mode: 'insensitive' } } },
+        { brand: { name: { contains: searchTrimmed, mode: 'insensitive' } } },
+      ];
+    }
     if (categoryId) where.categoryId = categoryId;
     if (brandId) where.brandId = brandId;
     if (minPrice || maxPrice)

@@ -1,6 +1,7 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { ChatWidget } from "@/features/chat/components/ChatWidget";
+import { SocialProof } from "@/components/marketing/SocialProof";
 
 export default function CustomerLayout({
   children,
@@ -16,6 +17,7 @@ export default function CustomerLayout({
       <div className="no-print">
         <Footer />
       </div>
+      <SocialProof />
       <ChatWidget />
     </div>
   );

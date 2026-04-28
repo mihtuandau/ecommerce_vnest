@@ -64,6 +64,8 @@ export function AdminOrderForm() {
   const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [orderId, setOrderId] = useState<number | null>(null);
+  const [appliedDiscount, setAppliedDiscount] = useState<any>(null);
+  const [isValidatingDiscount, setIsValidatingDiscount] = useState(false);
   
   // State for quick variant selection
   const [activeProduct, setActiveProduct] = useState<any>(null);
@@ -151,6 +153,65 @@ export function AdminOrderForm() {
 
   const calculateSubtotal = () => items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
+  const handleValidateDiscount = async () => {
+    const code = form.getValues("discountCode");
+    if (!code) {
+      setAppliedDiscount(null);
+      return;
+    }
+
+    try {
+      setIsValidatingDiscount(true);
+      const res = await (await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/discounts/validate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code })
+      })).json();
+
+      if (res.statusCode >= 400 || res.isValid === false) {
+        toast.error(res.message || "Mã không hợp lệ");
+        setAppliedDiscount(null);
+      } else {
+        // Store the nested discount object
+        setAppliedDiscount(res.discount);
+        toast.success(`Đã áp dụng mã: ${res.discount.code}`);
+      }
+    } catch (err) {
+      toast.error("Không thể kiểm tra mã giảm giá");
+    } finally {
+      setIsValidatingDiscount(false);
+    }
+  };
+
+  const calculateDiscountAmount = () => {
+    if (!appliedDiscount) return 0;
+    const subtotal = calculateSubtotal();
+    
+    // Check min order amount
+    if (appliedDiscount.minOrderAmount && subtotal < appliedDiscount.minOrderAmount) {
+      return 0;
+    }
+
+    let amount = 0;
+    if (appliedDiscount.discountType === 'PERCENTAGE') {
+      amount = Math.round((subtotal * appliedDiscount.discountValue) / 100);
+    } else {
+      amount = appliedDiscount.discountValue;
+    }
+
+    if (appliedDiscount.maxDiscountAmount && amount > appliedDiscount.maxDiscountAmount) {
+      amount = appliedDiscount.maxDiscountAmount;
+    }
+
+    return Math.min(amount, subtotal);
+  };
+
+  const calculateTotal = () => {
+    const subtotal = calculateSubtotal();
+    const discount = calculateDiscountAmount();
+    return subtotal - discount;
+  };
+
   const form = useForm<OrderFormValues>({
     resolver: zodResolver(orderFormSchema),
     defaultValues: {
@@ -169,7 +230,6 @@ export function AdminOrderForm() {
     try {
       setIsSubmitting(true);
       
-      // Clean up items: only send variantId, quantity and price to backend
       const cleanItems = (values.items || []).map(item => ({
         variantId: item.variantId,
         quantity: item.quantity,
@@ -190,6 +250,10 @@ export function AdminOrderForm() {
       setIsSubmitting(false);
     }
   };
+
+  const subtotal = calculateSubtotal();
+  const discountAmount = calculateDiscountAmount();
+  const total = calculateTotal();
 
   return (
     <div className="flex h-[calc(100vh-140px)] overflow-hidden bg-white rounded-xl border border-slate-200 shadow-sm font-sans">
@@ -285,7 +349,10 @@ export function AdminOrderForm() {
               <span className="text-xs font-bold text-slate-900 uppercase tracking-tighter">Đơn hàng #{orderId || "..."}</span>
               <button 
                 type="button"
-                onClick={() => form.setValue("items", [])}
+                onClick={() => {
+                  form.setValue("items", []);
+                  setAppliedDiscount(null);
+                }}
                 className="text-[10px] font-bold text-slate-400 hover:text-rose-500 flex items-center gap-1 uppercase"
               >
                 <Trash2 className="h-3 w-3" /> Xóa sạch
@@ -339,25 +406,42 @@ export function AdminOrderForm() {
 
             {/* Footer Summary */}
             <div className="p-4 border-t border-slate-100 space-y-4 shadow-[0_-4px_20px_rgba(0,0,0,0.03)]">
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 gap-2">
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 h-3 w-3 text-slate-400" />
-                  <Input placeholder="SĐT khách" {...form.register("guestPhone")} className="h-9 pl-8 bg-slate-50 border-slate-200 rounded-lg text-xs" />
+                  <Input placeholder="Số điện thoại khách hàng" {...form.register("guestPhone")} className="h-9 pl-8 bg-slate-50 border-slate-200 rounded-lg text-xs" />
                 </div>
-                <div className="relative">
-                  <Ticket className="absolute left-3 top-1/2 -translate-y-1/2 h-3 w-3 text-slate-400" />
-                  <Input placeholder="Mã giảm" {...form.register("discountCode")} className="h-9 pl-8 bg-slate-50 border-slate-200 rounded-lg text-xs" />
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <Ticket className="absolute left-3 top-1/2 -translate-y-1/2 h-3 w-3 text-slate-400" />
+                    <Input placeholder="Mã giảm giá" {...form.register("discountCode")} className="h-9 pl-8 bg-slate-50 border-slate-200 rounded-lg text-xs" />
+                  </div>
+                  <Button 
+                    type="button" 
+                    size="sm" 
+                    onClick={handleValidateDiscount}
+                    disabled={isValidatingDiscount || !form.watch("discountCode")}
+                    className="h-9 px-3 bg-slate-900 text-white text-[10px] font-bold uppercase"
+                  >
+                    {isValidatingDiscount ? <Loader2 className="h-3 w-3 animate-spin" /> : "Áp dụng"}
+                  </Button>
                 </div>
               </div>
 
               <div className="pt-1 space-y-1">
                 <div className="flex justify-between text-[10px] font-bold text-slate-500 uppercase tracking-tighter">
                   <span>Tạm tính</span>
-                  <span className="text-slate-900">{formatCurrency(calculateSubtotal())}</span>
+                  <span className="text-slate-900">{formatCurrency(subtotal)}</span>
                 </div>
+                {discountAmount > 0 && (
+                  <div className="flex justify-between text-[10px] font-bold text-rose-500 uppercase tracking-tighter">
+                    <span>Giảm giá ({appliedDiscount?.code})</span>
+                    <span>-{formatCurrency(discountAmount)}</span>
+                  </div>
+                )}
                 <div className="flex justify-between items-center pt-2 border-t border-slate-100">
                   <span className="text-xs font-bold text-slate-900 uppercase">Tổng trả</span>
-                  <span className="text-lg font-bold text-primary">{formatCurrency(calculateSubtotal())}</span>
+                  <span className="text-lg font-bold text-primary">{formatCurrency(total)}</span>
                 </div>
               </div>
 

@@ -2,7 +2,14 @@
 
 import React from "react";
 import { Card, CardContent } from "@/components/ui/Card";
-import { DollarSign, ShoppingBag, Users, TrendingUp, ArrowUpRight, ArrowDownRight } from "lucide-react";
+import {
+  DollarSign,
+  ShoppingBag,
+  Users,
+  TrendingUp,
+  ArrowUpRight,
+  ArrowDownRight,
+} from "lucide-react";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { cn } from "@/utils/cn";
 
@@ -17,30 +24,49 @@ interface StatCardProps {
   iconBg: string;
 }
 
-function StatCard({ title, value, description, trend, trendValue, icon: Icon, iconColor, iconBg }: StatCardProps) {
+function StatCard({
+  title,
+  value,
+  description,
+  trend,
+  trendValue,
+  icon: Icon,
+  iconColor,
+  iconBg,
+}: StatCardProps) {
   const isPositive = trend === "up";
   return (
     <Card className="border border-slate-200 shadow-none rounded-xl overflow-hidden bg-white group hover:border-slate-300 transition-all duration-300">
       <CardContent className="p-6">
         <div className="flex items-center justify-between mb-4">
-          <div className={cn("h-10 w-10 rounded-lg flex items-center justify-center transition-transform duration-500 group-hover:scale-110", iconBg, iconColor)}>
+          <div
+            className={cn(
+              "h-10 w-10 rounded-lg flex items-center justify-center transition-transform duration-500 group-hover:scale-110",
+              iconBg,
+              iconColor
+            )}
+          >
             <Icon className="h-5 w-5" />
           </div>
-          <div className={cn(
-            "flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-bold",
-            isPositive ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-600"
-          )}>
+          <div
+            className={cn(
+              "flex items-center gap-1 px-2 py-1 rounded-md text-xs font-bold",
+              isPositive ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-600"
+            )}
+          >
             {trendValue}
-            {isPositive ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
+            {isPositive ? (
+              <ArrowUpRight className="h-3 w-3" />
+            ) : (
+              <ArrowDownRight className="h-3 w-3" />
+            )}
           </div>
         </div>
-        
+
         <div className="space-y-1">
-          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{title}</p>
+          <p className="text-xs font-medium text-slate-500">{title}</p>
           <h3 className="text-xl font-bold text-slate-900 tracking-tight">{value}</h3>
-          <p className="text-[11px] text-slate-400 font-medium">
-            {description}
-          </p>
+          <p className="text-xs text-slate-400 font-medium">{description}</p>
         </div>
       </CardContent>
     </Card>

@@ -29,7 +29,7 @@ export const columns: ColumnDef<Discount>[] = [
     id: "stt",
     header: "STT",
     cell: ({ row }) => (
-      <span className="text-[10px] font-bold text-slate-400">{row.index + 1}</span>
+      <span className="text-xs font-semibold text-slate-500">{row.index + 1}</span>
     ),
   },
   {
@@ -38,7 +38,7 @@ export const columns: ColumnDef<Discount>[] = [
     cell: ({ row }) => {
       const discount = row.original;
       return (
-        <Badge className="bg-slate-900 text-white font-mono text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md">
+        <Badge className="bg-slate-800 text-white font-mono text-xs font-semibold tracking-wide px-2.5 py-1 rounded-md">
           {discount.code}
         </Badge>
       );
@@ -48,7 +48,7 @@ export const columns: ColumnDef<Discount>[] = [
     accessorKey: "description",
     header: "Mô tả",
     cell: ({ row }) => (
-      <span className="text-xs text-slate-500 font-medium truncate max-w-[150px]">
+      <span className="text-xs text-slate-600 font-medium truncate max-w-[150px]">
         {row.getValue("description") || "—"}
       </span>
     ),
@@ -62,7 +62,7 @@ export const columns: ColumnDef<Discount>[] = [
         <Badge
           variant="outline"
           className={cn(
-            "text-[9px] font-bold uppercase",
+            "text-xs font-semibold tracking-wide px-2.5 py-1 rounded-lg",
             discount.isFlashSale
               ? "bg-amber-50 text-amber-600 border-amber-100"
               : "bg-slate-50 text-slate-600 border-slate-100"
@@ -83,10 +83,10 @@ export const columns: ColumnDef<Discount>[] = [
 
       return (
         <div className="flex flex-col">
-          <span className="text-sm font-bold text-slate-900">
+          <span className="text-sm font-semibold text-slate-800">
             {isPercentage ? `${value}%` : formatCurrency(value)}
           </span>
-          <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tight">
+          <span className="text-xs font-semibold text-slate-500 tracking-tight mt-0.5">
             {isPercentage ? "Phần trăm" : "Cố định"}
           </span>
         </div>
@@ -104,11 +104,11 @@ export const columns: ColumnDef<Discount>[] = [
 
       return (
         <div className="flex flex-col gap-1 w-24">
-          <div className="flex items-center justify-between text-[9px] font-bold uppercase tracking-tighter">
-            <span className="text-slate-400">
+          <div className="flex items-center justify-between text-xs font-semibold tracking-tight">
+            <span className="text-slate-600">
               {used}/{limit}
             </span>
-            <span className={cn(percent > 90 ? "text-rose-500" : "text-slate-900")}>
+            <span className={cn(percent > 90 ? "text-rose-600" : "text-slate-800")}>
               {Math.round(percent)}%
             </span>
           </div>
@@ -116,7 +116,7 @@ export const columns: ColumnDef<Discount>[] = [
             <div
               className={cn(
                 "h-full transition-all duration-500",
-                percent > 90 ? "bg-rose-500" : "bg-slate-900"
+                percent > 90 ? "bg-rose-500" : "bg-slate-800"
               )}
               style={{ width: `${Math.min(percent, 100)}%` }}
             />
@@ -129,7 +129,7 @@ export const columns: ColumnDef<Discount>[] = [
     accessorKey: "startDate",
     header: "Bắt đầu",
     cell: ({ row }) => (
-      <span className="text-xs font-bold text-slate-700">
+      <span className="text-xs font-semibold text-slate-700">
         {formatDate(row.getValue("startDate"))}
       </span>
     ),
@@ -138,7 +138,7 @@ export const columns: ColumnDef<Discount>[] = [
     accessorKey: "endDate",
     header: "Kết thúc",
     cell: ({ row }) => (
-      <span className="text-xs text-slate-400 font-medium">
+      <span className="text-xs text-slate-500 font-medium">
         {row.getValue("endDate") ? formatDate(row.getValue("endDate")) : "Vô thời hạn"}
       </span>
     ),
@@ -156,7 +156,7 @@ export const columns: ColumnDef<Discount>[] = [
         return (
           <Badge
             variant="outline"
-            className="bg-slate-50 text-slate-400 border-slate-200 rounded-lg px-2 py-0.5 font-bold text-[9px] uppercase"
+            className="bg-slate-50 text-slate-600 border-slate-200 rounded-lg px-2.5 py-1 font-semibold text-xs tracking-wide"
           >
             Hết hạn
           </Badge>
@@ -167,7 +167,7 @@ export const columns: ColumnDef<Discount>[] = [
         <Badge
           variant="outline"
           className={cn(
-            "rounded-lg px-2 py-0.5 font-bold text-[9px] uppercase",
+            "rounded-lg px-2.5 py-1 font-semibold text-xs tracking-wide",
             discount.isActive
               ? "bg-emerald-50 text-emerald-700 border-emerald-100"
               : "bg-rose-50 text-rose-600 border-rose-100"
@@ -192,7 +192,7 @@ export const columns: ColumnDef<Discount>[] = [
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 rounded-lg text-slate-400 hover:text-slate-600"
+                className="h-8 w-8 rounded-lg text-slate-500 hover:text-slate-700"
               >
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
@@ -202,10 +202,10 @@ export const columns: ColumnDef<Discount>[] = [
               className="w-48 rounded-xl p-1 shadow-xl border-slate-200"
             >
               <DropdownMenuItem
-                className="rounded-lg cursor-pointer gap-2 py-2.5 text-sm font-medium text-slate-600 focus:text-primary"
+                className="rounded-lg cursor-pointer gap-2 py-2.5 text-sm font-medium text-slate-600 focus:bg-slate-100 focus:text-slate-900"
                 onClick={() => router.push(`/admin/discounts/${discount.id}`)}
               >
-                <Pencil className="h-4 w-4 text-slate-400" />
+                <Pencil className="h-4 w-4 text-slate-500" />
                 Chỉnh sửa mã
               </DropdownMenuItem>
               <div className="my-1 border-t border-slate-100" />

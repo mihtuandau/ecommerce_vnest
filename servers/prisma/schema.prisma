@@ -410,7 +410,7 @@ model Order {
   orderItems       OrderItem[]
   reviews          Review[] // Thêm relation với Review
   discountUsage    DiscountUsage?  // Một đơn hàng có tối đa 1 lượt sử dụng voucher được ghi lại
-  returnRequest    ReturnRequest?
+  returnRequests   ReturnRequest[]
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
 
@@ -452,21 +452,38 @@ enum OrderStatus {
 
 model ReturnRequest {
   id           Int                @id @default(autoincrement())
-  orderId      Int                @unique
-  userId       Int
+  orderId      Int                // Bỏ @unique để cho phép yêu cầu trả hàng nhiều đợt
+  userId       Int?
   reason       String             @db.Text
   details      String?            @db.Text
-  images       String[]           @default([]) // URLs mảng hình ảnh lỗi/trả hàng
+  images       String[]           @default([]) 
   status       ReturnStatus       @default(PENDING)
   adminNote    String?            @db.Text
+  refundAmount Float              @default(0) // Số tiền dự kiến hoàn cho đợt này
+  
   order        Order              @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  user         User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User?              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  returnItems  ReturnItem[]       // Liên kết với danh sách sản phẩm trả
+  
   createdAt    DateTime           @default(now())
   updatedAt    DateTime           @updatedAt
 
   @@index([userId])
   @@index([orderId])
   @@index([status])
+}
+
+model ReturnItem {
+  id              Int            @id @default(autoincrement())
+  returnRequestId Int
+  orderItemId     Int
+  quantity        Int            // Số lượng trả (phải <= quantity trong OrderItem)
+  
+  returnRequest   ReturnRequest  @relation(fields: [returnRequestId], references: [id], onDelete: Cascade)
+  orderItem       OrderItem      @relation(fields: [orderItemId], references: [id])
+
+  @@index([returnRequestId])
+  @@index([orderItemId])
 }
 
 enum ReturnStatus {
@@ -530,6 +547,7 @@ model OrderItem {
   order            Order           @relation(fields: [orderId], references: [id])
   variant          ProductVariant  @relation(fields: [variantId], references: [id])
   weight           Int?            // Snapshot khối lượng tại thời điểm mua
+  returnItems      ReturnItem[]
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
 

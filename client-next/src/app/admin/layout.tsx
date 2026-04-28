@@ -5,11 +5,7 @@ import { AdminTopBar } from "@/components/layout/AdminTopBar";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Skeleton } from "@/components/ui/Skeleton";
 
-export default function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuthStore();
 
   // Prevent flash of unauthorized content
@@ -20,7 +16,9 @@ export default function AdminLayout({
           <div className="flex justify-center mb-6">
             <div className="h-16 w-16 border-4 border-primary border-t-transparent rounded-full animate-spin" />
           </div>
-          <h2 className="text-xl font-bold text-slate-800">Đang tải dữ liệu quản trị...</h2>
+          <h2 className="text-xl font-bold text-slate-800">
+            Đang tải dữ liệu quản trị...
+          </h2>
           <p className="text-slate-500 text-sm">Vui lòng đợi trong giây lát</p>
         </div>
       </div>
