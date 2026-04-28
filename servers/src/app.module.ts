@@ -54,11 +54,11 @@ import { ReturnModule } from './return/return.module';
     ThrottlerModule.forRoot([{
       name: 'short',
       ttl: 1000,
-      limit: 10, // 10 req / sec
+      limit: 30, // Tăng lên 30 để Chatbot không bị chặn khi load nhiều card
     }, {
       name: 'medium',
       ttl: 60000,
-      limit: 60, // 60 req / min
+      limit: 100, // Tăng lên 100 req / min
     }, {
       name: 'long',
       ttl: 3600000,

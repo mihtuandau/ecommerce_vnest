@@ -124,6 +124,9 @@ export function Header() {
                       <DropdownMenuSeparator className="my-1 bg-slate-50" />
                       <DropdownMenuItem asChild className="rounded-xl p-2.5 focus:bg-primary/5 cursor-pointer"><Link href={ROUTES.ACCOUNT} className="font-semibold text-sm">Tài khoản của tôi</Link></DropdownMenuItem>
                       <DropdownMenuItem asChild className="rounded-xl p-2.5 focus:bg-primary/5 cursor-pointer"><Link href="/orders" className="font-semibold text-sm">Đơn hàng của tôi</Link></DropdownMenuItem>
+                      <DropdownMenuItem asChild className="rounded-xl p-2.5 focus:bg-primary/5 cursor-pointer font-semibold text-sm">
+                        <Link href="/support">Chat với hỗ trợ</Link>
+                      </DropdownMenuItem>
                       {user.role === Role.ADMIN && (
                         <DropdownMenuItem asChild className="rounded-xl p-2.5 focus:bg-primary/5 text-primary font-bold cursor-pointer">
                           <Link href={ROUTES.ADMIN}>Quản trị hệ thống</Link>

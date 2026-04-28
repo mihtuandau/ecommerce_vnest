@@ -35,6 +35,7 @@ model User {
   refreshTokens        RefreshToken[] // Stored token hashes for revocation
   discountUsages       DiscountUsage[] // Các mã giảm giá đã sử dụng
   returnRequests       ReturnRequest[] // Các yêu cầu trả hàng
+  aiConversations      AiConversation[] // Lịch sử chat với AI
 
   @@index([deletedAt])
   @@index([status])
@@ -614,4 +615,27 @@ enum MessageType {
   IMAGE
   FILE
   SYSTEM // Tin nhắn hệ thống
+}
+
+model AiConversation {
+  id        String      @id @default(uuid())
+  userId    Int?
+  messages  AiMessage[]
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  user      User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model AiMessage {
+  id             Int            @id @default(autoincrement())
+  conversationId String
+  role           String         // "user" or "model"
+  content        String         @db.Text
+  productIds     Int[]          @default([]) // Lưu danh sách ID sản phẩm AI gợi ý (Phase 2.2)
+  createdAt      DateTime       @default(now())
+  conversation   AiConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
 }

@@ -32,8 +32,12 @@ export function CustomerChatWindow() {
   }, [roomId]);
 
   useEffect(() => {
-    if (!socket || !roomId) return;
+    if (!socket || !roomId) {
+      console.log("Chat - Socket or RoomId missing:", { hasSocket: !!socket, roomId });
+      return;
+    }
 
+    console.log("Chat - Emitting joinRoom for:", roomId);
     socket.emit("joinRoom", { roomId });
 
     const handleNewMessage = (msg: any) => {
@@ -57,7 +61,12 @@ export function CustomerChatWindow() {
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!inputValue.trim() || !socket || !roomId) return;
+    console.log("Chat - Sending message:", { isConnected, hasSocket: !!socket, roomId });
+    
+    if (!inputValue.trim() || !socket || !roomId) {
+      console.warn("Chat - Send failed requirements:", { hasInput: !!inputValue.trim(), isConnected, hasRoom: !!roomId });
+      return;
+    }
 
     socket.emit("sendMessage", {
       roomId,

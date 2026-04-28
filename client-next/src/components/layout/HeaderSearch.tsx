@@ -1,6 +1,6 @@
 "use client";
 
-import { Search, X, ChevronRight, Mic, MicOff } from "lucide-react";
+import { Search, X, ChevronRight, Mic, MicOff, Sparkles } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -133,6 +133,23 @@ export function HeaderSearch() {
         />
         
         <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-3 z-10">
+          <button
+            type="button"
+            onClick={() => {
+              // Trigger AI Chat (we'll need a way to communicate with ChatWidget)
+              // For now, we can use a custom event or just let the user open it
+              const event = new CustomEvent('open-ai-chat');
+              window.dispatchEvent(event);
+            }}
+            className="p-1.5 text-slate-400 hover:text-primary transition-all flex items-center gap-1.5 hover:bg-primary/5 rounded-lg group/ai"
+            title="hỏi trợ lý ai"
+          >
+            <Sparkles className="h-4 w-4 text-primary/60 group-hover/ai:text-primary transition-colors" />
+            <span className="text-[10px] font-medium text-slate-400 group-hover/ai:text-primary">hỏi ai</span>
+          </button>
+
+          <div className="h-4 w-[1px] bg-slate-100 mx-1" />
+
           {searchQuery && (
             <button
               type="button"

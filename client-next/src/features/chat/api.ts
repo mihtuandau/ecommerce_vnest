@@ -9,8 +9,8 @@ export const chatApi = {
     const { data } = await api.get(`/chat/rooms/${roomId}/messages`);
     return data;
   },
-  chatbotChat: async (message: string) => {
-    const { data } = await api.post("/chatbot/chat", { message });
+  chatbotChat: async (message: string, conversationId?: string) => {
+    const { data } = await api.post("/chatbot/chat", { message, conversationId });
     return data;
   },
   markAsRead: async (roomId: string) => {
