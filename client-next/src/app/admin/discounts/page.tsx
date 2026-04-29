@@ -8,12 +8,13 @@ import { Button } from "@/components/ui/Button";
 import { Plus, RefreshCcw } from "lucide-react";
 import Link from "next/link";
 import { ROUTES } from "@/constants/routes";
+import type { Discount } from "@/types/models";
 
 export default function AdminDiscountsPage() {
   // Lấy TẤT CẢ (cả voucher + flash sale)
   const { data, isLoading, refetch, isFetching } = useAdminDiscounts();
 
-  const discounts = Array.isArray(data) ? data : (data as any)?.data || [];
+  const discounts: Discount[] = Array.isArray(data) ? data : (data as any)?.data || [];
 
   const stats = React.useMemo(() => {
     const now = new Date();

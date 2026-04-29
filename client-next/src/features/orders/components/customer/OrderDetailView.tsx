@@ -6,7 +6,14 @@ import { useOrderDetail, useCancelOrder } from "@/features/orders/hooks";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useCartStore } from "@/store/useCartStore";
 import { useToast } from "@/hooks/useToast";
-import { AlertCircle, Package, Clock, Truck, CheckCircle2, XCircle } from "lucide-react";
+import {
+  AlertCircle,
+  Package,
+  Clock,
+  Truck,
+  CheckCircle2,
+  XCircle,
+} from "lucide-react";
 import { OrderStatus, PaymentStatus } from "@/types/enums";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
@@ -69,7 +76,8 @@ export function OrderDetailView() {
   const queryClient = useQueryClient();
   const [isReturnModalOpen, setIsReturnModalOpen] = useState(false);
   const [isConfirmReturnOpen, setIsConfirmReturnOpen] = useState(false);
-  const { mutate: updateReturnStatus, isPending: isUpdatingStatus } = useUpdateReturnStatus();
+  const { mutate: updateReturnStatus, isPending: isUpdatingStatus } =
+    useUpdateReturnStatus();
 
   const handleReorder = () => {
     if (!order || !order.orderItems) return;
@@ -160,8 +168,9 @@ export function OrderDetailView() {
     <div className="min-h-screen bg-white pb-20 relative">
       <div className="no-print">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <DetailHeader 
+          <DetailHeader
             orderCode={order.orderCode}
+            orderId={order.id}
             createdAt={order.createdAt}
             status={order.status}
             isPaid={isPaid}
@@ -170,7 +179,10 @@ export function OrderDetailView() {
             onCancel={() => confirm("Hủy đơn hàng này?") && cancelOrder(order.id)}
             onReturn={() => setIsReturnModalOpen(true)}
             onConfirmReturn={() => {
-              updateReturnStatus({ id: order.returnRequest.id, status: "RETURNING" as any });
+              updateReturnStatus({
+                id: order.returnRequest.id,
+                status: "RETURNING" as any,
+              });
             }}
             returnStatus={order.returnRequest?.status}
             isUpdatingReturn={isUpdatingStatus}
@@ -179,13 +191,13 @@ export function OrderDetailView() {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-6">
-              <DetailStepper 
-                status={order.status} 
-                isCancelled={isCancelled} 
+              <DetailStepper
+                status={order.status}
+                isCancelled={isCancelled}
                 returnStatus={order.returnRequest?.status}
               />
 
-              <DetailItems 
+              <DetailItems
                 orderItems={order.orderItems}
                 total={order.total}
                 shippingFee={order.shippingFee}
@@ -195,7 +207,7 @@ export function OrderDetailView() {
               />
             </div>
 
-            <DetailSidebar 
+            <DetailSidebar
               shippingSnapshot={order.shippingSnapshot}
               user={order.user}
               addressRelation={order.address}
@@ -211,7 +223,7 @@ export function OrderDetailView() {
         </div>
       </div>
 
-      <RequestReturnModal 
+      <RequestReturnModal
         isOpen={isReturnModalOpen}
         onClose={() => setIsReturnModalOpen(false)}
         orderId={order.id}

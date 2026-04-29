@@ -2,6 +2,7 @@ import {
   Controller, Get, Post, Put, Delete, Body, Param, Query, Request,
   UseGuards, UseInterceptors, UploadedFiles, BadRequestException, HttpCode, HttpStatus
 } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../common/guards/auth.guard';
@@ -45,6 +46,7 @@ export class ProductController {
   }
 
   @Post(':id/view')
+  @Throttle({ default: { limit: 1, ttl: 60000 } }) // 1 view per minute per identifier
   @HttpCode(HttpStatus.NO_CONTENT)
   incrementView(@Param('id') id: string, @Request() req: any) {
 

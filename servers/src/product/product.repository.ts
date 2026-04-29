@@ -27,7 +27,10 @@ export class ProductRepository {
         category: { select: { id: true, name: true, slug: true } },
         brand: { select: { id: true, name: true } },
         images: { orderBy: [{ isThumbnail: 'desc' }, { displayOrder: 'asc' }], take: 1, select: { id: true, url: true, altText: true, isThumbnail: true } },
-        variants: { select: { id: true, price: true, originalPrice: true, stock: true, size: true, color: true, isActive: true } }
+        variants: { 
+          where: { deletedAt: null },
+          select: { id: true, price: true, originalPrice: true, stock: true, size: true, color: true, isActive: true } 
+        }
       }
     });
   }
@@ -39,7 +42,7 @@ export class ProductRepository {
     const variantArgs: any = includeAllVariants 
       ? { include: { images: { orderBy: { displayOrder: 'asc' } } } } 
       : { 
-          where: { isActive: true }, 
+          where: { isActive: true, deletedAt: null }, 
           select: { 
             id: true, size: true, color: true, stock: true, price: true, originalPrice: true, sku: true, isActive: true, 
             images: { select: { id: true, url: true, isPrimary: true }, orderBy: { displayOrder: 'asc' } } 
@@ -47,7 +50,9 @@ export class ProductRepository {
         };
     
     return this.prisma.product.findFirst({
-      where: isNum ? { id: Number(idOrSlug) } : { slug: idOrSlug as string },
+      where: isNum 
+        ? { id: Number(idOrSlug), deletedAt: null } 
+        : { slug: idOrSlug as string, deletedAt: null },
       select: {
         id: true, name: true, slug: true, description: true, basePrice: true, originalPrice: true, categoryId: true, brandId: true,
         soldCount: true, averageRating: true, reviewCount: true, viewCount: true, isActive: true,
@@ -98,6 +103,14 @@ export class ProductRepository {
   async deleteImages(ids: number[]) { return this.prisma.productImage.deleteMany({ where: { id: { in: ids } } }); }
   async deleteVariantImages(ids: number[]) { return this.prisma.variantImage.deleteMany({ where: { id: { in: ids } } }); }
   
+  async findImagesByProductId(productId: number) {
+    return this.prisma.productImage.findMany({ where: { productId } });
+  }
+
+  async findImagesByVariantId(variantId: number) {
+    return this.prisma.variantImage.findMany({ where: { variantId } });
+  }
+  
   async deleteImagesByProductId(productId: number) {
     return this.prisma.productImage.deleteMany({ where: { productId } });
   }
@@ -129,14 +142,18 @@ export class ProductRepository {
   
   async findRelated(id: number, catId: number | null, take: number) {
     return this.prisma.product.findMany({
-      where: { id: { not: id }, categoryId: catId, isActive: true },
+      where: { id: { not: id }, categoryId: catId, isActive: true, deletedAt: null },
       take, orderBy: { soldCount: 'desc' },
       select: { id: true, name: true, slug: true, basePrice: true, images: { take: 1, select: { url: true } } }
     });
   }
 
   async getPriceRange() {
-    const res = await this.prisma.productVariant.aggregate({ _min: { price: true }, _max: { price: true } });
+    const res = await this.prisma.productVariant.aggregate({ 
+      where: { deletedAt: null, product: { deletedAt: null } },
+      _min: { price: true }, 
+      _max: { price: true } 
+    });
     return { minPrice: res._min.price || 0, maxPrice: res._max.price || 100000000 };
   }
 }

@@ -10,6 +10,7 @@ export interface User {
   avatar?: string;
   role: Role;
   status: UserStatus;
+  permissions?: string[];
   createdAt: string;
   updatedAt: string;
 }
@@ -134,4 +135,5 @@ export interface Discount {
   startDate: string;
   endDate: string;
   isActive: boolean;
+  isFlashSale?: boolean;
 }

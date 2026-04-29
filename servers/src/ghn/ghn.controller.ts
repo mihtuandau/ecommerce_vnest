@@ -44,11 +44,4 @@ export class GHNController {
   updateSandbox(@Body() body: { orderCode: string; status: string }) {
     return this.ghnService.updateOrderSandbox(body.orderCode, body.status);
   }
-
-  @ApiOperation({ summary: 'Tiếp nhận Webhook cập nhật trạng thái từ GHN' })
-  @Post('webhook')
-  handleWebhook(@Body() body: any) {
-    console.log('[GHN Webhook] Received status update:', body);
-    return this.ghnService.handleStatusWebhook(body);
-  }
 }

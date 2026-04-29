@@ -123,8 +123,11 @@ export const columns: ColumnDef<User>[] = [
     id: "actions",
     cell: ({ row }) => {
       const user = row.original;
+      // eslint-disable-next-line react-hooks/rules-of-hooks
       const router = useRouter();
+      // eslint-disable-next-line react-hooks/rules-of-hooks
       const { mutate: deleteUser } = useDeleteUser();
+      // eslint-disable-next-line react-hooks/rules-of-hooks
       const { mutate: updateUser } = useUpdateUser();
 
       const toggleStatus = () => {

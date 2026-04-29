@@ -428,16 +428,20 @@ model Order {
 
 model DiscountUsage {
   id         Int      @id @default(autoincrement())
-  userId     Int
+  userId     Int?
+  guestEmail String?
+  guestPhone String?
   discountId Int
   orderId    Int      @unique
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user       User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
   discount   Discount @relation(fields: [discountId], references: [id], onDelete: Cascade)
   order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   createdAt  DateTime @default(now())
 
-  @@unique([userId, discountId]) // Một user chỉ được dùng 1 mã 1 lần
+  // Bỏ @@unique([userId, discountId]) vì không hoạt động chuẩn với null. Xử lý ở Application Level.
   @@index([userId])
+  @@index([guestEmail])
+  @@index([guestPhone])
   @@index([discountId])
 }
 

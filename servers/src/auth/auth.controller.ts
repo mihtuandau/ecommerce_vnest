@@ -45,10 +45,17 @@ export class AuthController {
   @Post('verify-otp')
   @Throttle({ default: { limit: 10, ttl: 60000 } })
   async verifyOtp(
-    @Body() body: { email: string; code: string },
+    @Body() body: { email: string; code?: string; otp?: string },
     @Res() res: Response,
   ) {
-    const result = await this.authService.verifyOtp(body.email, body.code);
+    const code = body.code ?? body.otp;
+    if (!code) {
+      return res
+        .status(HttpStatus.BAD_REQUEST)
+        .json({ message: 'Verification code is required' });
+    }
+
+    const result = await this.authService.verifyOtp(body.email, code);
     
     if (result.accessToken) {
       this.authService.setAuthCookie(res, result.accessToken);
@@ -119,7 +126,8 @@ export class AuthController {
   }
 
   @Post('logout')
-  async logout(@Res() res: Response) {
+  async logout(@Req() req: any, @Res() res: Response) {
+    await this.authService.logout(req.cookies?.refreshToken);
     this.authService.clearAuthCookie(res);
     return res.json({ message: 'Logout successful' });
   }
@@ -127,7 +135,7 @@ export class AuthController {
   @Post('refresh')
   @Throttle({ default: { limit: 10, ttl: 60000 } }) 
   async refreshToken(@Req() req: any, @Res() res: Response) {
-    const token = req.cookies?.refresh_token;
+    const token = req.cookies?.refreshToken;
     if (!token) {
       return res
         .status(HttpStatus.UNAUTHORIZED)
@@ -135,6 +143,7 @@ export class AuthController {
     }
     const result = await this.authService.refreshAccessToken(token);
     this.authService.setAuthCookie(res, result.accessToken);
+    this.authService.setRefreshTokenCookie(res, result.refreshToken);
     return res.json({ accessToken: result.accessToken, message: 'Token refreshed' });
   }
 

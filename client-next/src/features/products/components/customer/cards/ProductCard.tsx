@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { ShoppingCart, Star, Eye, Heart } from "lucide-react";
 import Link from "next/link";
-import { useCartStore } from "@/store/useCartStore";
+import { useCart } from "@/features/cart/hooks";
 import { useWishlistStore } from "@/store/useWishlistStore";
 import { useToast } from "@/hooks/useToast";
 import { cn } from "@/utils/cn";
@@ -19,7 +19,7 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, view = "grid" }: ProductCardProps) {
-  const addItem = useCartStore((state) => state.addItem);
+  const { addItem } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlistStore();
   const { success } = useToast();
   const { data: flashSale } = useFlashSale();

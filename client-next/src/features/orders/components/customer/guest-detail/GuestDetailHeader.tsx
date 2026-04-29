@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { ArrowLeft, Package, Clock, Truck, CheckCircle2, XCircle } from "lucide-react";
+import { ArrowLeft, Package, Clock, Truck, CheckCircle2, Download } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { useRouter } from "next/navigation";
 import { OrderStatus } from "@/types/enums";
@@ -29,19 +29,19 @@ const formatDate = (dateString: string) => {
 
 import { RequestReturnModal } from "../detail/RequestReturnModal";
 
-export function GuestDetailHeader({ 
+export function GuestDetailHeader({
   orderId,
-  orderCode, 
-  createdAt, 
-  status, 
-  isPaid, 
+  orderCode,
+  createdAt,
+  status,
+  isPaid,
   statusConfig,
   onSuccess,
-  contact
+  contact,
 }: GuestDetailHeaderProps) {
   const router = useRouter();
   const [isReturnModalOpen, setIsReturnModalOpen] = React.useState(false);
-  
+
   let currentStatus = statusConfig[status] || {
     label: status,
     color: "text-slate-500 bg-slate-50 border-slate-100",
@@ -61,7 +61,7 @@ export function GuestDetailHeader({
   return (
     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 border-b border-slate-100 pb-6">
       <div className="space-y-2">
-        <button 
+        <button
           onClick={() => router.push("/")}
           className="flex items-center gap-1.5 text-slate-500 hover:text-slate-700 transition-colors text-xs font-semibold"
         >
@@ -69,8 +69,12 @@ export function GuestDetailHeader({
           Về trang chủ
         </button>
         <div className="flex items-center gap-3">
-          <h1 className="text-xl font-semibold text-slate-800">Đơn hàng #{orderCode}</h1>
-          <span className={`px-3 py-1.5 rounded-full text-xs font-semibold border h-fit leading-none flex items-center justify-center ${currentStatus.color}`}>
+          <h1 className="text-xl font-semibold text-slate-800">
+            Đơn hàng #{orderCode}
+          </h1>
+          <span
+            className={`px-3 py-1.5 rounded-full text-xs font-semibold border h-fit leading-none flex items-center justify-center ${currentStatus.color}`}
+          >
             {currentStatus.label}
           </span>
         </div>
@@ -79,19 +83,34 @@ export function GuestDetailHeader({
 
       <div className="flex items-center gap-2">
         {canReturn && (
-          <Button 
+          <Button
             onClick={() => setIsReturnModalOpen(true)}
             className="bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold h-9 px-5 rounded-lg shadow-lg shadow-rose-500/10"
           >
             Yêu cầu trả hàng
           </Button>
         )}
-        <Button variant="outline" className="border-slate-200 text-slate-600 text-xs font-medium h-9 px-4 rounded-lg">
+        <Button
+          variant="outline"
+          className="border-slate-200 text-slate-600 text-xs font-bold h-9 px-4 rounded-lg hover:bg-slate-50 transition-all"
+          onClick={() => window.open('https://zalo.me/0987654321', '_blank')} // Thay số này bằng số Zalo của bạn
+        >
           Liên hệ hỗ trợ
+        </Button>
+        <Button
+          variant="outline"
+          className="border-slate-200 text-slate-600 text-xs font-medium h-9 px-4 rounded-lg flex items-center gap-2"
+          onClick={() => {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+            window.location.href = `${apiUrl}/orders/guest/invoice/${orderCode}?contact=${contact}`;
+          }}
+        >
+          <Download className="h-3.5 w-3.5" />
+          Tải hóa đơn
         </Button>
       </div>
 
-      <RequestReturnModal 
+      <RequestReturnModal
         isOpen={isReturnModalOpen}
         onClose={() => setIsReturnModalOpen(false)}
         orderId={orderId}

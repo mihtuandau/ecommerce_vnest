@@ -58,11 +58,12 @@ export class OrderCreation {
     );
     const autoApplySaving = originalSubtotal - autoApplySubtotal;
 
-    // 3. Kiểm tra mã giảm giá thủ công (Voucher)
     const discount = await this.validateDiscount(
       dto.discountCode,
       originalSubtotal,
       userId,
+      dto.guestEmail,
+      dto.shippingInfo?.phone || dto.guestPhone
     );
     let manualCodeSaving = 0;
     if (discount) {
@@ -366,7 +367,7 @@ export class OrderCreation {
     return result.data.total;
   }
 
-  private async validateDiscount(discountCode?: string, subtotal?: number, userId?: number | null) {
+  private async validateDiscount(discountCode?: string, subtotal?: number, userId?: number | null, guestEmail?: string | null, guestPhone?: string | null) {
     if (!discountCode) return null;
     console.log(`[OrderCreation] Validating discount: ${discountCode} for userId: ${userId}`);
     const discount = await this.repository.findDiscountByCode(discountCode);
@@ -379,13 +380,11 @@ export class OrderCreation {
     );
     OrderHelper.validateDiscount(discount, subtotal, usageCount);
 
-    // Kiểm tra giới hạn sử dụng của người dùng (mỗi người dùng 1 lần)
-    if (userId) {
-      const hasUsed = await this.repository.hasUserUsedDiscount(userId, discount.id);
-      console.log(`[OrderCreation] User ${userId} has used discount ${discount.id}: ${hasUsed}`);
-      if (hasUsed) {
-        throw new BadRequestException('Bạn đã sử dụng mã giảm giá này cho đơn hàng trước đó');
-      }
+    // Kiểm tra giới hạn sử dụng của người dùng/guest (mỗi người dùng 1 lần)
+    const hasUsed = await this.repository.hasUsedDiscount(userId || null, discount.id, guestEmail, guestPhone);
+    console.log(`[OrderCreation] User/Guest has used discount ${discount.id}: ${hasUsed}`);
+    if (hasUsed) {
+      throw new BadRequestException('Bạn đã sử dụng mã giảm giá này cho đơn hàng trước đó');
     }
 
     return discount;

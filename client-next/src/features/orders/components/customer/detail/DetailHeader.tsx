@@ -1,13 +1,22 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { ArrowLeft, ShoppingCart, Package, Truck, CheckCircle2, Printer, AlertCircle } from "lucide-react";
+import {
+  ArrowLeft,
+  ShoppingCart,
+  Package,
+  Truck,
+  CheckCircle2,
+  Download,
+  AlertCircle,
+} from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { useRouter } from "next/navigation";
 import { OrderStatus, ReturnStatus } from "@/types/enums";
 
 interface DetailHeaderProps {
   orderCode: string;
+  orderId: number;
   createdAt: string;
   status: OrderStatus;
   isPaid: boolean;
@@ -31,24 +40,25 @@ const formatDate = (dateString: string) => {
   });
 };
 
-export function DetailHeader({ 
-  orderCode, 
-  createdAt, 
-  status, 
-  isPaid, 
-  isCancelled, 
-  onReorder, 
+export function DetailHeader({
+  orderCode,
+  orderId,
+  createdAt,
+  status,
+  isPaid,
+  isCancelled,
+  onReorder,
   onCancel,
   onReturn,
   onConfirmReturn,
   returnStatus,
   isUpdatingReturn,
-  statusConfig 
+  statusConfig,
 }: DetailHeaderProps) {
   const router = useRouter();
   const [showPopover, setShowPopover] = useState(false);
   const popoverRef = useRef<HTMLDivElement>(null);
-  
+
   // Close popover when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -120,16 +130,16 @@ export function DetailHeader({
                   Bạn chắc chắn đã bàn giao gói hàng cho bưu cục?
                 </p>
                 <div className="flex gap-2">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
+                  <Button
+                    variant="outline"
+                    size="sm"
                     className="flex-1 h-8 text-[11px] font-semibold border-slate-100 text-slate-500 rounded-lg"
                     onClick={() => setShowPopover(false)}
                   >
                     Hủy
                   </Button>
-                  <Button 
-                    size="sm" 
+                  <Button
+                    size="sm"
                     className="flex-1 h-8 text-[11px] font-bold bg-[#1565C1] hover:bg-[#0d47a1] text-white rounded-lg shadow-sm"
                     onClick={() => {
                       onConfirmReturn?.();
@@ -146,15 +156,18 @@ export function DetailHeader({
           </div>
         )}
 
-        {!showConfirmReturn && (
-          <Button
-            onClick={onReorder}
-            className="bg-primary hover:bg-primary/90 text-white text-xs font-medium h-9 px-5 rounded-lg flex items-center gap-2"
-          >
-            <ShoppingCart className="h-3.5 w-3.5" />
-            Mua lại đơn này
-          </Button>
-        )}
+        {[OrderStatus.DELIVERED, OrderStatus.CANCELLED, OrderStatus.RETURNED].includes(
+          status
+        ) &&
+          !showConfirmReturn && (
+            <Button
+              onClick={onReorder}
+              className="bg-primary hover:bg-primary/90 text-white text-xs font-medium h-9 px-5 rounded-lg flex items-center gap-2"
+            >
+              <ShoppingCart className="h-3.5 w-3.5" />
+              Mua lại đơn này
+            </Button>
+          )}
 
         <Button
           variant="outline"
@@ -162,14 +175,17 @@ export function DetailHeader({
         >
           Liên hệ hỗ trợ
         </Button>
-        
+
         <Button
           variant="outline"
           className="border-slate-200 text-slate-600 text-xs font-medium h-9 px-4 rounded-lg flex items-center gap-2"
-          onClick={() => window.print()}
+          onClick={() => {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+            window.location.href = `${apiUrl}/orders/${orderId}/invoice`;
+          }}
         >
-          <Printer className="h-3.5 w-3.5" />
-          In hóa đơn
+          <Download className="h-3.5 w-3.5" />
+          Tải hóa đơn
         </Button>
 
         {!isCancelled && status === OrderStatus.PENDING && (

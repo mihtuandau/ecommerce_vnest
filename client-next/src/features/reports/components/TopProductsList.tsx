@@ -6,8 +6,12 @@ import { formatCurrency } from "@/utils/formatCurrency";
 import { ShoppingBag, TrendingUp, Loader2 } from "lucide-react";
 import { useTopProducts } from "../hooks";
 
-export function TopProductsList() {
-  const { data: reportData, isLoading } = useTopProducts({ limit: 5 });
+type TopProductsListProps = {
+  params?: Record<string, string | undefined>;
+};
+
+export function TopProductsList({ params = {} }: TopProductsListProps) {
+  const { data: reportData, isLoading } = useTopProducts({ ...params, limit: 5 });
 
   const products = reportData?.data || [];
   if (isLoading) {

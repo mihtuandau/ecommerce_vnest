@@ -187,18 +187,16 @@ export class GHNService {
   }
 
   /**
-   * Xử lý Webhook cập nhật trạng thái đơn hàng từ GHN theo tài liệu chuẩn
+   * Phân tích Webhook từ GHN để lấy mã đơn hàng và trạng thái tương ứng
    */
   async handleStatusWebhook(payload: any) {
-    const { Status, OrderCode, Type, Description, Warehouse } = payload;
+    const { Status, OrderCode, Description, Warehouse } = payload;
     
-    this.logger.log(`[GHN Webhook] Received ${Status} for Order ${OrderCode} (Type: ${Type})`);
-
     if (!OrderCode || !Status) {
-      return { success: false, message: 'Invalid payload' };
+      return null;
     }
 
-    // Ánh xạ trạng thái GHN sang trạng thái hệ thống local (dựa trên tài liệu chuẩn)
+    // Ánh xạ trạng thái GHN sang trạng thái hệ thống local
     const statusMapping: Record<string, string> = {
       'ready_to_pick': 'PROCESSING',
       'picking': 'PROCESSING',
@@ -214,7 +212,7 @@ export class GHNService {
       'delivery_fail': 'CANCELLED',
       'waiting_to_return': 'CANCELLED',
       'return': 'CANCELLED',
-      'returned': 'CANCELLED',
+      'returned': 'RETURNED',
       'cancel': 'CANCELLED'
     };
 
@@ -223,35 +221,15 @@ export class GHNService {
 
     if (!newStatus) {
       this.logger.warn(`[GHN Webhook] Status '${Status}' not mapped to any local status`);
-      return { success: true, message: 'Status ignored' }; // Vẫn trả về 200 để GHN không gửi lại
+      return null;
     }
 
-    try {
-      // Tìm đơn hàng theo shippingCode (mã GHN)
-      const order = await this.prisma.order.findFirst({
-        where: { shippingCode: OrderCode }
-      });
-
-      if (!order) {
-        this.logger.warn(`[GHN Webhook] Order not found for GHN Code: ${OrderCode}`);
-        return { success: true, message: 'Order not matched' }; // Trả về 200 theo yêu cầu GHN
-      }
-
-      // Chỉ cập nhật nếu trạng thái thực sự thay đổi hoặc tiến tới
-      const currentStatus = order.status;
-      if (currentStatus !== newStatus && currentStatus !== 'DELIVERED') {
-        await this.prisma.order.update({
-          where: { id: order.id },
-          data: { status: newStatus as any }
-        });
-        this.logger.log(`[GHN Webhook] Updated Order #${order.id} status: ${currentStatus} -> ${newStatus} (${Description || ''} at ${Warehouse || 'N/A'})`);
-      }
-
-      // Lưu ý: GHN yêu cầu trả về Response 200
-      return { code: 200, message: 'Success' };
-    } catch (error) {
-      this.logger.error('[GHN Webhook] Error processing:', error.message);
-      return { code: 200, message: 'Error processed' }; // Vẫn trả về 200 để tránh GHN retry vô ích
-    }
+    return {
+      shippingCode: OrderCode,
+      status: newStatus,
+      description: Description,
+      warehouse: Warehouse,
+      originalStatus: Status
+    };
   }
 }

@@ -12,6 +12,10 @@ import { UpdatePaymentStatusDto } from './dto/update-payment-status.dto';
 import { QueryPaymentDto } from './dto/query-payment.dto';
 import { PaymentCache } from './payment.cache';
 import * as PaymentHelper from './payment.helper';
+import * as OrderHelper from '../order/order.helper';
+import { Payment, Order } from '@prisma/client';
+
+type PaymentWithOrder = Payment & { order: Order };
 
 @Injectable()
 export class PaymentService {
@@ -224,14 +228,45 @@ export class PaymentService {
 
 
 
-  async findOne(id: number) {
-    let payment = await this.cacheService.getPayment(id);
-    if (payment) return PaymentHelper.serializePayment(payment);
+  async findOne(id: number, requester?: { userId: number; role: string }) {
+    // ❌ [SECURITY UPDATE] Bypass hoàn toàn Cache cho Payment Detail vì tính chất Real-time (Tránh lỗi Stale State gây tranh cãi tài chính)
+    const payment = await this.repository.findById(id);
 
-    payment = await this.repository.findById(id);
-    if (payment) await this.cacheService.setPayment(id, payment);
+    if (!payment) {
+      throw new NotFoundException('Payment not found');
+    }
+
+    // Security Check: Only Admin or Owner can view
+    const isAdmin = requester?.role === 'ADMIN';
+    const pWithOrder = payment as unknown as PaymentWithOrder;
+    const isOwner = requester?.userId === pWithOrder.order?.userId;
+
+    if (requester && !isAdmin && !isOwner) {
+      this.logger.warn(`User ${requester.userId} attempted to view payment ${id} belonging to user ${pWithOrder.order?.userId}`);
+      throw new BadRequestException('You do not have permission to view this payment');
+    }
 
     return PaymentHelper.serializePayment(payment);
+  }
+
+  async cancelPayment(id: number, requester: { userId: number; role: string }) {
+    const payment = await this.repository.findById(id);
+    if (!payment) throw new NotFoundException('Payment not found');
+
+    const isAdmin = requester.role === 'ADMIN';
+    const pWithOrder = payment as unknown as PaymentWithOrder;
+    const isOwner = requester.userId === pWithOrder.order?.userId;
+
+    if (!isAdmin && !isOwner) {
+      throw new BadRequestException('You do not have permission to cancel this payment');
+    }
+
+    if (payment.status !== 'PENDING') {
+      throw new BadRequestException('Only pending payments can be cancelled');
+    }
+
+    const updated = await this.updateStatus(id, { status: 'CANCELLED' });
+    return updated;
   }
 
   async findAll(query: QueryPaymentDto) {

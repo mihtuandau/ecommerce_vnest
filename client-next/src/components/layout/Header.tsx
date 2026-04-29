@@ -29,6 +29,7 @@ const NAV_LINKS = [
   { href: "/shop?sortBy=newest", label: "Hàng mới", icon: Sparkles },
   { href: "/flash-sale",  label: "Flash Sale", icon: Zap, activeColor: "text-[#e85d24]", activeBg: "bg-[#e85d24]/5" },
   { href: "/offers",      label: "Ưu đãi",    icon: Tag },
+  { href: "/support",     label: "Hỗ trợ" },
 ];
 
 const normalizeImagePath = (path: any) => {

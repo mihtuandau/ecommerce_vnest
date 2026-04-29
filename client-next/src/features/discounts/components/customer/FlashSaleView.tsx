@@ -9,7 +9,7 @@ import { cn } from "@/utils/cn";
 import { Zap, ChevronLeft, ShoppingCart, ShoppingBag, Heart, Clock } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCartStore } from "@/store/useCartStore";
+import { useCart } from "@/features/cart/hooks";
 import { useWishlistStore } from "@/store/useWishlistStore";
 import { useToast } from "@/hooks/useToast";
 import { Skeleton } from "@/components/ui/Skeleton";
@@ -63,7 +63,7 @@ function Countdown({ endDate }: { endDate: string }) {
 // ── Product Card ───────────────────────────────────────────
 
 function FlashProductCard({ product, discountPercent }: { product: any; discountPercent: number }) {
-  const { addItem } = useCartStore();
+  const { addItem } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlistStore();
   const { success } = useToast();
 

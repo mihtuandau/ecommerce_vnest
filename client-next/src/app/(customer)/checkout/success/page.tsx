@@ -8,6 +8,7 @@ import confetti from "canvas-confetti";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useCartStore } from "@/store/useCartStore";
 
 function SuccessContent() {
   const router = useRouter();
@@ -18,7 +19,17 @@ function SuccessContent() {
 
   const { user } = useAuthStore();
   const isGuest = !user;
+  const { clearCart, clearBuyNowItem } = useCartStore();
 
+  useEffect(() => {
+    // Clear cart locally to ensure UI is in sync
+    const isBuyNow = searchParams.get("buyNow") === "true";
+    if (isBuyNow) {
+      clearBuyNowItem();
+    } else {
+      clearCart();
+    }
+  }, [clearCart, clearBuyNowItem, searchParams]);
   useEffect(() => {
     // Pháo hoa chào mừng đặt hàng thành công
     const duration = 4 * 1000;

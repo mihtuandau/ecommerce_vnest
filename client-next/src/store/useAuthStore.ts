@@ -1,17 +1,15 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { User } from "@/types/models";
-import Cookies from "js-cookie";
 
 interface AuthStore {
   user: User | null;
   accessToken: string | null;
-  refreshToken: string | null;
   isLoading: boolean;
 
   setUser: (user: User) => void;
   setToken: (accessToken: string) => void;
-  setTokens: (accessToken: string, refreshToken: string) => void;
+  setTokens: (accessToken: string, refreshToken?: string) => void;
   clearAuth: () => void;
   logout: () => Promise<void>;
   initAuth: () => void;
@@ -22,26 +20,18 @@ export const useAuthStore = create<AuthStore>()(
     (set, get) => ({
       user: null,
       accessToken: null,
-      refreshToken: null,
       isLoading: true,
 
       setUser: (user) => set({ user }),
-      setToken: (accessToken) => {
+      setToken: (accessToken) => set({ accessToken }),
+      setTokens: (accessToken, _refreshToken) => {
         set({ accessToken });
-        Cookies.set("accessToken", accessToken, { expires: 7, path: "/" });
-      },
-      setTokens: (accessToken, refreshToken) => {
-        set({ accessToken, refreshToken });
-        if (accessToken) Cookies.set("accessToken", accessToken, { expires: 7, path: "/" });
       },
       clearAuth: () => {
         set({
           user: null,
           accessToken: null,
-          refreshToken: null,
         });
-        // Remove cookie with explicit path and sameSite
-        Cookies.remove("accessToken", { path: "/" });
       },
       logout: async () => {
         try {
@@ -57,10 +47,7 @@ export const useAuthStore = create<AuthStore>()(
         }
       },
       initAuth: () => {
-        // Sync cookies to store if needed
-        const accessToken = Cookies.get("accessToken") || null;
-        const refreshToken = Cookies.get("refreshToken") || null;
-        set({ accessToken, refreshToken, isLoading: false });
+        set({ isLoading: false });
       },
     }),
     {

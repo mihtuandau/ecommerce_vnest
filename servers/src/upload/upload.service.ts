@@ -37,6 +37,21 @@ export class UploadService {
       throw error;
     }
   }
+
+  async deleteImage(url: string): Promise<void> {
+    try {
+      // Extract public_id from Cloudinary URL
+      // Example URL: https://res.cloudinary.com/cloud_name/image/upload/v1234567/ecommerce/products/image_id.jpg
+      const parts = url.split('/');
+      const fileName = parts[parts.length - 1];
+      const publicIdWithExtension = parts.slice(parts.indexOf('ecommerce')).join('/');
+      const publicId = publicIdWithExtension.split('.')[0];
+
+      await cloudinary.uploader.destroy(publicId);
+    } catch (error) {
+      console.error('Failed to delete image from Cloudinary:', error);
+    }
+  }
 }
 
 

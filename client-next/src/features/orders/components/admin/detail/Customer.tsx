@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { User, Phone, MapPin } from "lucide-react";
+import { User, Phone, MapPin, Mail } from "lucide-react";
 
 interface CustomerProps {
   order: any;
@@ -37,11 +37,20 @@ export function Customer({ order }: CustomerProps) {
                <p className="text-sm font-semibold text-slate-800">{customerName}</p>
             </div>
          </div>
-         <div className="flex items-start gap-3">
+          <div className="flex items-start gap-3">
             <div className="mt-1"><Phone className="h-4 w-4 text-slate-500" /></div>
             <div className="space-y-0.5">
                <p className="text-[10px] font-medium text-slate-500 tracking-tight">Số điện thoại</p>
                <p className="text-sm font-semibold text-slate-800">{customerPhone}</p>
+            </div>
+         </div>
+         <div className="flex items-start gap-3">
+            <div className="mt-1"><Mail className="h-4 w-4 text-slate-500" /></div>
+            <div className="space-y-0.5">
+               <p className="text-[10px] font-medium text-slate-500 tracking-tight">Email</p>
+               <p className="text-sm font-semibold text-slate-800">
+                  {orderAny.shippingSnapshot?.email || orderAny.guestEmail || orderAny.user?.email || "—"}
+               </p>
             </div>
          </div>
          <div className="flex items-start gap-3">

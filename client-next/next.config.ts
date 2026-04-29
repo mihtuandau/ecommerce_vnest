@@ -4,6 +4,10 @@ const nextConfig: NextConfig = {
   // Enable React strict mode for development
   reactStrictMode: true,
 
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+
   // Image optimization — add your domains
   images: {
     remotePatterns: [

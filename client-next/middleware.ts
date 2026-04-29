@@ -1,10 +1,27 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { decodeJwt } from "jose";
+import { jwtVerify } from "jose";
 
-const publicPaths = ["/login", "/register", "/forgot-password", "/reset-password"];
+type AuthPayload = {
+  role?: string;
+};
 
-export function middleware(request: NextRequest) {
+async function verifyAccessToken(token: string): Promise<AuthPayload | null> {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) return null;
+
+  try {
+    const { payload } = await jwtVerify(
+      token,
+      new TextEncoder().encode(secret)
+    );
+    return payload as AuthPayload;
+  } catch {
+    return null;
+  }
+}
+
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const token = request.cookies.get("accessToken")?.value;
 
@@ -14,12 +31,11 @@ export function middleware(request: NextRequest) {
 
   // 1. Redirect logged-in users away from auth pages
   if (token && isAuthPage) {
-    try {
-      const decoded = decodeJwt(token) as { role: string };
-      return NextResponse.redirect(new URL(decoded.role === "ADMIN" ? "/admin" : "/", request.url));
-    } catch (error) {
-      return NextResponse.next();
+    const payload = await verifyAccessToken(token);
+    if (payload) {
+      return NextResponse.redirect(new URL(payload.role === "ADMIN" ? "/admin" : "/", request.url));
     }
+    return NextResponse.next();
   }
 
   // 2. Protect Admin & Account pages
@@ -30,13 +46,12 @@ export function middleware(request: NextRequest) {
       return NextResponse.redirect(loginUrl);
     }
 
-    try {
-      const decoded = decodeJwt(token) as { role: string };
-      if (isAdminPage && decoded.role !== "ADMIN") {
-        return NextResponse.redirect(new URL("/", request.url));
-      }
-    } catch (error) {
+    const payload = await verifyAccessToken(token);
+    if (!payload) {
       return NextResponse.redirect(new URL("/login", request.url));
+    }
+    if (isAdminPage && payload.role !== "ADMIN") {
+      return NextResponse.redirect(new URL("/", request.url));
     }
   }
 

@@ -42,14 +42,17 @@ export class OrderManagement {
 
     for (const order of abandonedOrders) {
       try {
-        // Chỉ tự động hủy nếu chưa thanh toán (status PENDING/FAILED)
-        const isPaid = order.payment?.status === 'SUCCESS';
-        if (isPaid) continue;
+        // KIỂM TRA LẠI TRẠNG THÁI THỰC TẾ TRONG DB (Tránh Race Condition)
+        const currentOrder = await this.repository.findById(order.id);
+        if (!currentOrder || currentOrder.status !== 'PENDING' || currentOrder.payment?.status === 'SUCCESS') {
+          continue;
+        }
+
+        this.logger.log(`[Cron] Auto-cancelling abandoned order ${order.orderCode} (ID: ${order.id})`);
 
         await this.repository.update(order.id, { status: 'CANCELLED' });
         
         // Hoàn tồn kho & mã giảm giá
-        // Với đơn PENDING thì chắc chắn wasSold = false
         await this.repository.restoreOrderStock(order.id, false);
         await this.repository.restoreDiscountUsage(order.id);
 
@@ -59,7 +62,6 @@ export class OrderManagement {
         }
 
         await this.cacheService.clearRelatedCaches(order.id, order.userId || undefined);
-        this.logger.log(`[Cron] Auto-cancelled abandoned order ${order.orderCode} (ID: ${order.id})`);
       } catch (err) {
         this.logger.error(`[Cron] Failed to auto-cancel order ${order.id}:`, err.message);
       }
@@ -87,12 +89,24 @@ export class OrderManagement {
 
     await this.handleDeliveredStatus(dto, oldOrder);
 
-    if (dto.status === 'CANCELLED') {
-      const wasSold = oldOrder.status === 'DELIVERED' || oldOrder.status === 'RETURN_REQUESTED';
-      this.logger.log(`[OrderManagement] Order ${id} is being cancelled. Restoring stock (wasSold: ${wasSold})...`);
-      await this.repository.restoreOrderStock(id, wasSold);
-      await this.repository.restoreDiscountUsage(id);
-      this.logger.log(`[OrderManagement] Stock restoration for order ${id} completed.`);
+    if (dto.status === 'CANCELLED' || dto.status === 'RETURNED') {
+      // Vì trạng thái CANCELLED đã bị chặn ở đầu hàm (dòng 79), 
+      // nên ở đây chỉ cần kiểm tra xem đơn hàng đã là RETURNED hay chưa.
+      const isAlreadyRestored = oldOrder.status === 'RETURNED';
+      
+      if (!isAlreadyRestored) {
+        const wasSold = oldOrder.status === 'DELIVERED' || oldOrder.status === 'RETURN_REQUESTED';
+        const actionLabel = dto.status === 'CANCELLED' ? 'cancelled' : 'returned';
+        this.logger.log(`[OrderManagement] Order ${id} is being ${actionLabel}. Restoring stock (wasSold: ${wasSold})...`);
+        await this.repository.restoreOrderStock(id, wasSold);
+        
+        if (dto.status === 'CANCELLED') {
+          await this.repository.restoreDiscountUsage(id);
+        }
+        this.logger.log(`[OrderManagement] Stock restoration for order ${id} completed.`);
+      } else {
+        this.logger.log(`[OrderManagement] Order ${id} was already ${oldOrder.status}. Skipping stock restoration.`);
+      }
     }
 
     await this.cacheService.clearRelatedCaches(id, order.userId || undefined);
@@ -260,7 +274,7 @@ export class OrderManagement {
     return { message: 'Discount applied', discount, updatedOrder };
   }
 
-  async lookupGuestOrder(orderCode: string, contact: string): Promise<any> {
+  async lookupGuestOrder(orderCode: string, contact: string, maskPII = true): Promise<any> {
     const order: any = await this.repository.findByCode(orderCode);
 
     // Allow lookup even if order belongs to a user, as long as contact info matches
@@ -276,7 +290,7 @@ export class OrderManagement {
       throw new NotFoundException('Không tìm thấy đơn hàng hoặc thông tin liên hệ không khớp');
     }
 
-    return OrderHelper.serializeOrder(order);
+    return OrderHelper.serializeOrder(order, maskPII);
   }
 
   private async handlePaymentCreation(order: any, oldOrder: any, dto: UpdateOrderDto) {
@@ -420,8 +434,15 @@ export class OrderManagement {
         updatedOrder: updated
       };
     } catch (error) {
+      const ghnErrorMessage = error.response?.data?.message || error.message;
       this.logger.error('Lỗi khi đồng bộ đơn sang GHN:', error.response?.data || error.message);
-      throw new BadRequestException('Không thể tạo vận đơn trên hệ thống GHN: ' + (error.response?.data?.message || error.message));
+      
+      // Bắt lỗi số điện thoại không hợp lệ từ GHN để hiển thị thông báo thân thiện hơn
+      if (ghnErrorMessage.includes('master_data_validate_phone')) {
+        throw new BadRequestException('Số điện thoại của khách hàng không hợp lệ theo quy định của GHN. Vui lòng cập nhật số điện thoại di động (10 số) trước khi tạo vận đơn.');
+      }
+
+      throw new BadRequestException('Không thể tạo vận đơn trên hệ thống GHN: ' + ghnErrorMessage);
     }
   }
 }

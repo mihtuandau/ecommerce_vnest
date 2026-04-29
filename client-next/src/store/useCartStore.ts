@@ -19,11 +19,12 @@ export interface CartItem {
 interface CartStore {
   items: CartItem[];
   buyNowItem: CartItem | null;
-  addItem: (item: CartItem) => void;
+  isDirty: boolean; // Flag to track if guest items need merging
+  addItem: (item: CartItem, isGuest?: boolean) => void;
   removeItem: (variantId: string) => void;
   updateQuantity: (variantId: string, quantity: number) => void;
   clearCart: () => void;
-  setItems: (items: CartItem[]) => void;
+  setItems: (items: CartItem[], isFromServer?: boolean) => void;
   setBuyNowItem: (item: CartItem) => void;
   clearBuyNowItem: () => void;
   toggleSelectItem: (variantId: string) => void;
@@ -38,23 +39,29 @@ export const useCartStore = create<CartStore>()(
     (set, get) => ({
       items: [],
       buyNowItem: null,
+      isDirty: false,
       
-      addItem: (item) =>
+      addItem: (item, isGuest = true) =>
         set((state) => {
           const existing = state.items.find((i) => i.variantId === item.variantId);
           if (existing) {
             return {
+              isDirty: isGuest,
               items: state.items.map((i) =>
                 i.variantId === item.variantId ? { ...i, quantity: i.quantity + item.quantity } : i
               ),
             };
           }
-          return { items: [...state.items, { ...item, selected: true }] };
+          return { 
+            isDirty: isGuest,
+            items: [...state.items, { ...item, selected: true }] 
+          };
         }),
 
       removeItem: (variantId) =>
         set((state) => ({
           items: state.items.filter((i) => i.variantId !== variantId),
+          // We don't necessarily set isDirty here as sync is handled by individual API if logged in
         })),
 
       updateQuantity: (variantId, quantity) =>
@@ -67,9 +74,9 @@ export const useCartStore = create<CartStore>()(
                 ),
         })),
 
-      clearCart: () => set({ items: [] }),
+      clearCart: () => set({ items: [], isDirty: false }),
       
-      setItems: (newItems) =>
+      setItems: (newItems, isFromServer = false) =>
         set((state) => {
           const mergedItems = newItems.map((ni) => {
             const existing = state.items.find((i) => i.variantId === ni.variantId);
@@ -79,12 +86,14 @@ export const useCartStore = create<CartStore>()(
             };
           });
           
-          // Remove potential duplicates by variantId
           const uniqueItems = Array.from(
             new Map(mergedItems.map(item => [item.variantId, item])).values()
           );
           
-          return { items: uniqueItems };
+          return { 
+            items: uniqueItems,
+            isDirty: isFromServer ? false : state.isDirty 
+          };
         }),
 
       setBuyNowItem: (item) => set({ buyNowItem: item }),

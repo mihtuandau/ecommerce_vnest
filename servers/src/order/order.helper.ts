@@ -1,21 +1,49 @@
 import { BadRequestException } from '@nestjs/common';
 
-export function serializeOrder(order: any) {
+export function maskEmail(email?: string) {
+  if (!email || !email.includes('@')) return email;
+  const [name, domain] = email.split('@');
+  if (name.length <= 2) return `${name[0]}***@${domain}`;
+  return `${name[0]}${'*'.repeat(name.length - 2)}${name[name.length - 1]}@${domain}`;
+}
+
+export function maskPhone(phone?: string) {
+  if (!phone || phone.length < 7) return phone;
+  return `${phone.substring(0, 3)}****${phone.substring(phone.length - 3)}`;
+}
+
+export function serializeOrder(order: any, maskPII = false) {
   if (!order) return null;
 
-  if (order.payment) {
-    return {
-      ...order,
-      payment: {
-        ...order.payment,
-        payosOrderCode: order.payment.payosOrderCode
-          ? Number(order.payment.payosOrderCode)
-          : null,
-      },
+  let serialized = { ...order };
+
+  if (maskPII) {
+    if (serialized.guestEmail) serialized.guestEmail = maskEmail(serialized.guestEmail);
+    if (serialized.guestPhone) serialized.guestPhone = maskPhone(serialized.guestPhone);
+    if (serialized.phone) serialized.phone = maskPhone(serialized.phone);
+    if (serialized.user?.email) serialized.user.email = maskEmail(serialized.user.email);
+    if (serialized.user?.phone) serialized.user.phone = maskPhone(serialized.user.phone);
+    
+    if (serialized.shippingSnapshot) {
+      const snap = { ...serialized.shippingSnapshot };
+      if (snap.phone) snap.phone = maskPhone(snap.phone);
+      if (snap.email) snap.email = maskEmail(snap.email);
+      serialized.shippingSnapshot = snap;
+    }
+  }
+
+  if (serialized.payment) {
+    serialized.payment = {
+      ...serialized.payment,
+      payosOrderCode: serialized.payment.payosOrderCode
+        ? Number(serialized.payment.payosOrderCode)
+        : null,
     };
   }
 
-  return order;
+  serialized.isClaimed = !!serialized.userId;
+
+  return serialized;
 }
 
 export async function generateOrderCode(

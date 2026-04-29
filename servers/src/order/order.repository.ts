@@ -16,6 +16,7 @@ export class OrderRepository {
   async create(data: Prisma.OrderCreateInput) { return this.prisma.order.create({ data, include: this.baseInclude }); }
   async findByCode(orderCode: string) { return this.prisma.order.findUnique({ where: { orderCode }, include: this.baseInclude }); }
   async findById(id: number) { return this.prisma.order.findUnique({ where: { id }, include: this.baseInclude }); }
+  async findByShippingCode(shippingCode: string) { return this.prisma.order.findFirst({ where: { shippingCode }, include: this.baseInclude }); }
   async findAll(where: Prisma.OrderWhereInput, skip: number, take: number) { return this.prisma.order.findMany({ where, skip, take, orderBy: { createdAt: 'desc' }, include: this.baseInclude }); }
   async count(where: Prisma.OrderWhereInput) { return this.prisma.order.count({ where }); }
   async update(id: number, data: Prisma.OrderUpdateInput) { return this.prisma.order.update({ where: { id }, data, include: this.baseInclude }); }
@@ -68,17 +69,20 @@ export class OrderRepository {
           }
         }
 
-        // 2. Check per-user usage limit (Each user can use a specific discount only once)
-        if (userId) {
-          const userUsage = await tx.discountUsage.findUnique({
+        // 2. Check per-user/guest usage limit
+        const OR_conditions: any[] = [];
+        if (userId) OR_conditions.push({ userId });
+        if (orderData.guestEmail) OR_conditions.push({ guestEmail: orderData.guestEmail });
+        if (orderData.guestPhone) OR_conditions.push({ guestPhone: orderData.guestPhone });
+
+        if (OR_conditions.length > 0) {
+          const userUsage = await tx.discountUsage.findFirst({
             where: {
-              userId_discountId: {
-                userId,
-                discountId,
-              },
+              discountId,
+              OR: OR_conditions,
             },
           });
-          console.log(`[OrderRepository] Per-user usage check for user ${userId}, discount ${discountId}: ${userUsage ? 'ALREADY USED' : 'NOT USED'}`);
+          console.log(`[OrderRepository] Per-user/guest usage check for discount ${discountId}: ${userUsage ? 'ALREADY USED' : 'NOT USED'}`);
           if (userUsage) {
             throw new Error('Bạn đã sử dụng mã giảm giá này rồi');
           }
@@ -111,15 +115,19 @@ export class OrderRepository {
 
       const order = await tx.order.create({ data: orderData, include: this.baseInclude });
 
-      // 3. Record user discount usage if applicable
-      if (discountId && userId) {
-        await tx.discountUsage.create({
-          data: {
-            userId,
-            discountId,
-            orderId: order.id
-          }
-        });
+      // 3. Record user/guest discount usage if applicable
+      if (discountId) {
+        if (userId || orderData.guestEmail || orderData.guestPhone) {
+          await tx.discountUsage.create({
+            data: {
+              userId,
+              guestEmail: orderData.guestEmail,
+              guestPhone: orderData.guestPhone,
+              discountId,
+              orderId: order.id
+            }
+          });
+        }
       }
 
       return order;
@@ -167,11 +175,18 @@ export class OrderRepository {
     }
   }
 
-  async hasUserUsedDiscount(userId: number, discountId: number): Promise<boolean> {
+  async hasUsedDiscount(userId: number | null, discountId: number, guestEmail?: string | null, guestPhone?: string | null): Promise<boolean> {
+    const OR_conditions: any[] = [];
+    if (userId) OR_conditions.push({ userId });
+    if (guestEmail) OR_conditions.push({ guestEmail });
+    if (guestPhone) OR_conditions.push({ guestPhone });
+
+    if (OR_conditions.length === 0) return false;
+
     const count = await this.prisma.discountUsage.count({
       where: {
-        userId,
         discountId,
+        OR: OR_conditions,
       },
     });
     return count > 0;

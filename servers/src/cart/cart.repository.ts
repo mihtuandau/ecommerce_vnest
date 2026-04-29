@@ -1,4 +1,4 @@
-﻿import { Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Cart, CartItem, Prisma } from '@prisma/client';
 
@@ -30,11 +30,26 @@ export class CartRepository {
   }
 
   
-  async upsertCart(userId: number): Promise<Cart> {
+  async upsertCart(userId: number): Promise<any> {
     return this.prisma.cart.upsert({
       where: { userId },
       update: {},
       create: { userId },
+      include: {
+        cartItems: {
+          include: {
+            variant: {
+              include: {
+                product: {
+                  include: {
+                    images: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     });
   }
 

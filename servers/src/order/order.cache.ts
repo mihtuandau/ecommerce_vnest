@@ -1,4 +1,4 @@
-﻿
+
 import { Injectable, Inject, Logger } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
@@ -17,9 +17,10 @@ export class OrderCache {
   }
 
   
-  async setOrder(id: number, order: any, ttl = 1800) {
+  async setOrder(id: number, order: any, ttl = 10) {
     const cacheKey = `order:${id}`;
-    await this.cacheManager.set(cacheKey, order, ttl);
+    // ⚠️ Order Detail is volatile, keep TTL very short (10s) just to prevent instant frontend re-render DDoS
+    await this.cacheManager.set(cacheKey, order, ttl * 1000);
   }
 
   
@@ -35,9 +36,10 @@ export class OrderCache {
   }
 
   
-  async setOrdersList(query: any, data: any, ttl = 3600) {
+  async setOrdersList(query: any, data: any, ttl = 60) {
     const cacheKey = buildCacheKey('orders', query);
-    await this.cacheManager.set(cacheKey, data, ttl);
+    // ⚠️ Order List can change often, keep TTL short (1 minute)
+    await this.cacheManager.set(cacheKey, data, ttl * 1000);
   }
 
   

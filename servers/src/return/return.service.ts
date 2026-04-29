@@ -87,6 +87,11 @@ export class ReturnService {
     
     if (!order) throw new NotFoundException('Không tìm thấy đơn hàng');
 
+    // BẢO MẬT: Nếu đơn hàng đã thuộc về thành viên, bắt buộc phải đăng nhập
+    if (order.userId) {
+      throw new BadRequestException('Đơn hàng này đã được liên kết với một tài khoản thành viên. Vui lòng đăng nhập để thực hiện yêu cầu trả hàng.');
+    }
+
     const normalize = (s: string | null | undefined) => s?.trim().toLowerCase() || '';
     if (normalize(order.orderCode) !== normalize(dto.orderCode) || 
         (normalize(dto.contact) !== normalize(order.guestEmail) && normalize(dto.contact) !== normalize(order.guestPhone))) {

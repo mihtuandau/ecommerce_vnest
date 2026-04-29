@@ -257,33 +257,36 @@ export class AuthService {
     return { message: 'Success' };
   }
 
-  setAuthCookie(res: any, t: string) { 
-    res.cookie('access_token', t, { 
-      httpOnly: true, 
-      secure: true, 
-      sameSite: 'none',
+  private getCookieOptions(maxAge: number) {
+    const isProduction = process.env.NODE_ENV === 'production';
+    return {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
       path: '/',
-      maxAge: 7200000 
+      maxAge,
+    } as const;
+  }
+
+  setAuthCookie(res: any, t: string) { 
+    res.cookie('accessToken', t, { 
+      ...this.getCookieOptions(7200000),
     }); 
   }
   setRefreshTokenCookie(res: any, t: string) { 
-    res.cookie('refresh_token', t, { 
-      httpOnly: true, 
-      secure: true,
-      sameSite: 'none',
-      path: '/',
-      maxAge: 604800000 
+    res.cookie('refreshToken', t, { 
+      ...this.getCookieOptions(604800000),
     }); 
   }
   clearAuthCookie(res: any) { 
-    // Xóa tất cả các biến thể tên để đảm bảo không bị sót
     const cookiesToClear = ['access_token', 'accessToken', 'refresh_token', 'refreshToken'];
+    const isProduction = process.env.NODE_ENV === 'production';
     cookiesToClear.forEach(c => res.cookie(c, '', { 
       maxAge: 0, 
       path: '/',
       httpOnly: true,
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production'
+      sameSite: isProduction ? 'none' : 'lax',
+      secure: isProduction,
     })); 
   }
 

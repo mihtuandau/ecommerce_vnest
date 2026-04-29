@@ -150,6 +150,7 @@ export function GuestOrderDetailView() {
             shippingSnapshot={order.shippingSnapshot}
             fullName={order.fullName}
             phone={order.phone}
+            email={order.guestEmail || order.user?.email}
             address={order.address}
             paymentMethod={order.paymentMethod}
             isPaid={isPaid}

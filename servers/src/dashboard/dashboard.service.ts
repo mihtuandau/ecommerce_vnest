@@ -254,20 +254,28 @@ export class DashboardService {
     >();
 
     orderItems.forEach((item) => {
-      const product = item.variant.product;
+      const variant = item.variant;
+      if (!variant) return; // Skip if variant no longer exists
+      
+      const product = variant.product;
+      if (!product) return; // Skip if product no longer exists
+      
       const productId = product.id;
       const order = item.order as any;
+      if (!order) return;
       
       // Tính toán số lượng đã trả cho item này
       const returnedQty = (order.returnRequests || [])
         .filter((r: any) => r.status === 'RECEIVED' || r.status === 'COMPLETED')
         .reduce((sum: number, r: any) => {
-          const rItem = (r.returnItems || []).find((ri: any) => ri.orderItemId === item.id);
+          const rItems = (r.returnItems || []);
+          const rItem = rItems.find((ri: any) => ri.orderItemId === item.id);
           return sum + (rItem?.quantity || 0);
         }, 0);
 
-      const netQuantity = item.quantity - returnedQty;
-      const netRevenue = Number(item.price) * netQuantity;
+      const netQuantity = (item.quantity || 0) - returnedQty;
+      const price = Number(item.price) || 0;
+      const netRevenue = price * netQuantity;
       
       if (netQuantity <= 0) return; // Nếu đã trả hết món này thì bỏ qua
 
@@ -277,12 +285,13 @@ export class DashboardService {
         existing.totalRevenue += netRevenue;
         existing.orderCount += 1;
       } else {
+        const images = (product as any).images || [];
         const thumbnail =
-          (product as any).images?.find((img: any) => img.isThumbnail)?.url ||
-          (product as any).images?.[0]?.url || "";
+          images.find((img: any) => img.isThumbnail)?.url ||
+          images[0]?.url || "";
 
         productMap.set(productId, {
-          productName: product.name,
+          productName: product.name || "N/A",
           image: thumbnail,
           totalQuantity: netQuantity,
           totalRevenue: netRevenue,

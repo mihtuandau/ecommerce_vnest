@@ -20,17 +20,17 @@ export class CartService {
     private repository: CartRepository,
     private prisma: PrismaService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
-  ) {}
+  ) {
+    console.log('[CartService] Initialized');
+  }
 
   async getCart(userId: number): Promise<any> {
     const cacheKey = `cart:${userId}`;
     let cart: any = await this.cacheManager.get(cacheKey);
 
     if (!cart) {
-      cart = await this.repository.findByUserId(userId);
+      cart = await this.repository.upsertCart(userId);
     }
-
-    if (!cart) throw new NotFoundException('Cart not found');
 
     // Fetch active automatic discounts (Flash Sales)
     const now = new Date();
@@ -61,8 +61,8 @@ export class CartService {
     };
 
     // Filter items and calculate totals with real-time pricing
-    const processedItems = cart.cartItems
-      .filter((item: any) => item.variant && item.variant.isActive && !item.variant.product.deletedAt)
+    const processedItems = (cart.cartItems || [])
+      .filter((item: any) => item && item.variant && item.variant.isActive && item.variant.product && !item.variant.product.deletedAt)
       .map((item: any) => {
         const discountedPrice = calculateDiscount(item);
         return {
@@ -75,24 +75,31 @@ export class CartService {
     const total = processedItems.reduce((sum: number, item: any) => sum + item.subtotal, 0);
     const cartWithTotal = { ...cart, cartItems: processedItems, total };
 
-    await this.cacheManager.set(cacheKey, cartWithTotal, 300);
+    await this.cacheManager.set(cacheKey, cartWithTotal, 300 * 1000); // 5 minutes in ms
     return cartWithTotal;
   }
 
   async sync(userId: number, items: Array<{ variantId: number; quantity: number }>): Promise<any> {
     const cart = await this.repository.upsertCart(userId);
     
-    // Clear existing items and add new ones
-    await this.repository.deleteAllCartItems(cart.id);
-    
     if (items.length > 0) {
       for (const item of items) {
         try {
-          await this.repository.createCartItem({
-            cart: { connect: { id: cart.id } },
-            variant: { connect: { id: item.variantId } },
-            quantity: item.quantity,
-          });
+          const existingItem = await this.repository.findCartItem(cart.id, item.variantId);
+          if (existingItem) {
+            // Merge: Add quantities
+            await this.repository.updateCartItem(
+              existingItem.id,
+              existingItem.quantity + item.quantity
+            );
+          } else {
+            // New item
+            await this.repository.createCartItem({
+              cart: { connect: { id: cart.id } },
+              variant: { connect: { id: item.variantId } },
+              quantity: item.quantity,
+            });
+          }
         } catch (error) {
           // Skip invalid variants or other errors during sync
         }

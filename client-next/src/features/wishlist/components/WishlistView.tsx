@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useWishlistStore } from "@/store/useWishlistStore";
-import { useCartStore } from "@/store/useCartStore";
+import { useCart } from "@/features/cart/hooks";
 import { useToast } from "@/hooks/useToast";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { Button } from "@/components/ui/Button";
@@ -12,7 +12,7 @@ import { Card } from "@/components/ui/Card";
 
 export function WishlistView() {
   const { items, removeFromWishlist } = useWishlistStore();
-  const { addItem } = useCartStore();
+  const { addItem } = useCart();
   const { success } = useToast();
   const [mounted, setMounted] = useState(false);
 

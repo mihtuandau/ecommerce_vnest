@@ -5,7 +5,7 @@ import { formatCurrency } from "@/utils/formatCurrency";
 import { Button } from "@/components/ui/Button";
 import { ShoppingCart, Star, TrendingUp, Sparkles, Award } from "lucide-react";
 import Link from "next/link";
-import { useCartStore } from "@/store/useCartStore";
+import { useCart } from "@/features/cart/hooks";
 import { useToast } from "@/hooks/useToast";
 import { useUIStore } from "@/store/useUIStore";
 
@@ -15,7 +15,7 @@ interface HomeProductCardProps {
 }
 
 export function HomeProductCard({ product, variant }: HomeProductCardProps) {
-  const { addItem } = useCartStore();
+  const { addItem } = useCart();
   const { success } = useToast();
 
   const parsePrice = (val: any) => {

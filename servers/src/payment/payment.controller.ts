@@ -39,6 +39,12 @@ export class PaymentController {
     return this.paymentService.handleVNPayReturn(query);
   }
 
+  @Get('vnpay-ipn')
+  @ApiOperation({ summary: 'Xử lý thông báo thanh toán tức thời từ VNPay (IPN)' })
+  async handleVNPayIPN(@Query() query: any) {
+    return this.paymentService.handleVNPayIPN(query);
+  }
+
   // Khôi phục endpoint sync để không lỗi Frontend Admin
   @Post(':id/sync')
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -56,16 +62,16 @@ export class PaymentController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('Authorization')
   @ApiOperation({ summary: 'Hủy thanh toán' })
-  async cancelPayment(@Param('id') id: string) {
-    return this.paymentService.updateStatus(+id, { status: 'CANCELLED' });
+  async cancelPayment(@Param('id') id: string, @Req() req: any) {
+    return this.paymentService.cancelPayment(+id, req.user);
   }
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('Authorization')
   @ApiOperation({ summary: 'Lấy thông tin payment theo ID' })
-  findOne(@Param('id') id: string) {
-    return this.paymentService.findOne(+id);
+  findOne(@Param('id') id: string, @Req() req: any) {
+    return this.paymentService.findOne(+id, req.user);
   }
 
   @Put(':id/status')

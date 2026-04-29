@@ -12,7 +12,7 @@ import {
   Link2,
 } from "lucide-react";
 import { cn } from "@/utils/cn";
-import { useCartStore } from "@/store/useCartStore";
+import { useCart } from "@/features/cart/hooks";
 import { useWishlistStore } from "@/store/useWishlistStore";
 import { useToast } from "@/hooks/useToast";
 import { useRouter } from "next/navigation";
@@ -41,7 +41,7 @@ export function ProductActions({
   selectedVariant,
 }: ProductActionsProps) {
   const [quantity, setQuantity] = useState(1);
-  const { addItem, setBuyNowItem } = useCartStore();
+  const { addItem, setBuyNowItem } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlistStore();
   const { success, error } = useToast();
   const router = useRouter();

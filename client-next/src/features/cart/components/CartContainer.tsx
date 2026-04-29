@@ -9,11 +9,14 @@ import { ROUTES } from "@/constants/routes";
 import { cn } from "@/utils/cn";
 import { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { useAuthStore } from "@/store/useAuthStore";
 
 // Sub-components
 import { EmptyCart } from "./EmptyCart";
 import { CartItem } from "./CartItem";
 import { CartSummary } from "./CartSummary";
+import { CartItem as ICartItem } from "@/store/useCartStore";
+import { useCart } from "../hooks";
 import { cartApi } from "../api";
 import { toast } from "sonner";
 
@@ -23,10 +26,9 @@ export function CartContainer() {
     updateQuantity,
     removeItem,
     clearCart,
-    setItems,
-    toggleSelectItem,
-    toggleSelectAll,
-  } = useCartStore();
+  } = useCart();
+  
+  const { setItems, toggleSelectItem, toggleSelectAll } = useCartStore();
 
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
@@ -35,36 +37,6 @@ export function CartContainer() {
 
   useEffect(() => {
     setMounted(true);
-    
-    // Sync cart with server to get latest prices/discounts
-    const syncWithServer = async () => {
-      if (!user) return; // Guests use local storage only
-      
-      try {
-        const cartData = await cartApi.getCart();
-        if (cartData && cartData.cartItems) {
-          const mappedItems = cartData.cartItems.map((item: any) => ({
-            productId: item.variant.productId,
-            variantId: item.variantId,
-            name: item.variant.product.name,
-            price: Number(item.variant.price),
-            discountedPrice: item.discountedPrice ? Number(item.discountedPrice) : undefined,
-            originalPrice: (item.variant.originalPrice || item.variant.product.originalPrice) ? Number(item.variant.originalPrice || item.variant.product.originalPrice) : undefined,
-            quantity: item.quantity,
-            imageUrl: item.variant.images?.[0]?.url || item.variant.product.images?.[0]?.url,
-            slug: item.variant.product.slug,
-            color: item.variant.color,
-            size: item.variant.size,
-          }));
-          setItems(mappedItems);
-        }
-      } catch (error) {
-        console.error("Failed to sync cart:", error);
-        // Don't show toast on 401 as it's expected for guests
-      }
-    };
-    
-    syncWithServer();
   }, []);
 
   // Calculate derived state in component for better reactivity
@@ -152,7 +124,7 @@ export function CartContainer() {
                   variant="ghost"
                   size="sm"
                   className="text-slate-500 hover:text-red-500 hover:bg-red-50 font-medium text-[11px] gap-2"
-                  onClick={() => clearCart()}
+                  onClick={clearCart}
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                   Xóa tất cả

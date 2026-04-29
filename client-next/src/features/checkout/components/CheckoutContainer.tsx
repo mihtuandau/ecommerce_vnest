@@ -21,6 +21,40 @@ import { ShippingForm } from "./ShippingForm";
 import { PaymentMethods } from "./PaymentMethods";
 import { OrderSummary } from "./OrderSummary";
 
+type AddressOption = {
+  fullName?: string;
+  phone?: string;
+  email?: string;
+  street?: string;
+  provinceCode?: string | number | null;
+  districtCode?: string | number | null;
+  wardCode?: string | number | null;
+  isDefault?: boolean;
+};
+
+type Province = {
+  ProvinceID: number;
+  ProvinceName: string;
+};
+
+type District = {
+  DistrictID: number;
+  DistrictName: string;
+};
+
+type Ward = {
+  WardCode: string;
+  WardName: string;
+};
+
+type CheckoutDiscount = {
+  code?: string;
+  discountType?: "PERCENTAGE" | "FIXED";
+  discountValue?: number;
+  maxDiscountAmount?: number;
+  minOrderAmount?: number;
+};
+
 
 export function CheckoutContainer() {
   const { items, buyNowItem, clearBuyNowItem } = useCartStore();
@@ -52,16 +86,16 @@ export function CheckoutContainer() {
     [displayItems]
   );
 
-  const [provinces, setProvinces] = useState<any[]>([]);
-  const [districts, setDistricts] = useState<any[]>([]);
-  const [wards, setWards] = useState<any[]>([]);
+  const [provinces, setProvinces] = useState<Province[]>([]);
+  const [districts, setDistricts] = useState<District[]>([]);
+  const [wards, setWards] = useState<Ward[]>([]);
   const [shippingFee, setShippingFee] = useState(0);
   const [isCalculatingFee, setIsCalculatingFee] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Discount states
   const [discountCode, setDiscountCode] = useState("");
-  const [appliedDiscount, setAppliedDiscount] = useState<any>(null);
+  const [appliedDiscount, setAppliedDiscount] = useState<CheckoutDiscount | null>(null);
   const [discountAmount, setDiscountAmount] = useState(0);
   const [isApplyingDiscount, setIsApplyingDiscount] = useState(false);
   const [discountChoice, setDiscountChoice] = useState<"FLASH_SALE" | "VOUCHER">("FLASH_SALE");
@@ -86,19 +120,17 @@ export function CheckoutContainer() {
       setForm((prev) => ({
         ...prev,
         fullName: user.name || "",
-        phone: (user as any).phone || "",
+        phone: user.phone || "",
         email: user.email || "",
       }));
     }
   }, [user]);
 
-  const applySavedAddress = async (addr: any) => {
+  const applySavedAddress = async (addr: AddressOption) => {
     try {
       const provinceId = addr.provinceCode ? String(addr.provinceCode) : "";
       const districtId = addr.districtCode ? String(addr.districtCode) : "";
       let wardCode = addr.wardCode ? String(addr.wardCode) : "";
-
-      console.log("=== Áp dụng địa chỉ lưu sẵn:", { provinceId, districtId, wardCode });
 
       // Tải dữ liệu Quận và Phường trước khi cập nhật form
       if (provinceId) {
@@ -130,15 +162,16 @@ export function CheckoutContainer() {
         street: addr.street || "",
       }));
 
-      console.log("=== Đã cập nhật xong form:", { provinceId, districtId, wardCode });
-    } catch (err) {
-      console.error("Lỗi khi áp dụng địa chỉ:", err);
+    } catch {
+      error("Không thể áp dụng địa chỉ đã lưu");
     }
   };
 
   useEffect(() => {
     if (user && addressData?.addresses && addressData.addresses.length > 0 && mounted && !hasAppliedDefault) {
-      const defaultAddr = addressData.addresses.find((a: any) => a.isDefault) || addressData.addresses[0];
+      const defaultAddr =
+        addressData.addresses.find((a: AddressOption) => a.isDefault) ||
+        addressData.addresses[0];
       if (defaultAddr) {
         applySavedAddress(defaultAddr);
         setHasAppliedDefault(true);
@@ -158,7 +191,7 @@ export function CheckoutContainer() {
             weight: totalWeight,
           });
           setShippingFee(res.data?.total || 30000);
-        } catch (err) {
+        } catch {
           setShippingFee(30000);
         } finally {
           setIsCalculatingFee(false);
@@ -223,8 +256,8 @@ export function CheckoutContainer() {
         setDiscountChoice("VOUCHER");
         success(`Đã áp dụng mã giảm giá: -${new Intl.NumberFormat('vi-VN').format(voucherSaving)}đ`);
       }
-    } catch (err: any) {
-      error(err?.response?.data?.message || "Mã giảm giá không hợp lệ");
+    } catch (err: unknown) {
+      error("Mã giảm giá không hợp lệ");
       setAppliedDiscount(null);
       setDiscountAmount(0);
     } finally {
@@ -253,9 +286,7 @@ export function CheckoutContainer() {
         const res = await shippingApi.getDistricts(Number(id));
         const data = res.data || [];
         setDistricts(data);
-        console.log(`=== Tải được ${data.length} Quận/Huyện cho Tỉnh ${id} ===`);
-      } catch (err) {
-        console.error("Lỗi khi tải Quận/Huyện:", err);
+      } catch {
         error("Không thể tải danh sách Quận/Huyện");
       } finally {
         setIsLoadingDistricts(false);
@@ -273,14 +304,11 @@ export function CheckoutContainer() {
         const res = await shippingApi.getWards(Number(id));
         const data = res.data || [];
         setWards(data);
-        console.log(`=== Tải được ${data.length} Phường/Xã cho Quận ${id} ===`);
-        
         // Tự động chọn phường đầu tiên nếu có dữ liệu để tránh lỗi "chưa chọn"
         if (data.length > 0) {
           setForm(prev => ({ ...prev, wardCode: data[0].WardCode }));
         }
-      } catch (err) {
-        console.error("Lỗi khi tải Phường/Xã:", err);
+      } catch {
         error("Không thể tải danh sách Phường/Xã");
       } finally {
         setIsLoadingWards(false);
@@ -290,7 +318,6 @@ export function CheckoutContainer() {
 
   const handleWardChange = (code: string) => {
     if (!code) return; // Chặn việc reset về rỗng do lỗi component
-    console.log("=== Đã chọn Phường/Xã mã:", code);
     setForm((prev) => ({ ...prev, wardCode: code }));
   };
 
@@ -299,7 +326,14 @@ export function CheckoutContainer() {
 
     // Kiểm tra từng trường và báo lỗi cụ thể
     if (!form.fullName) return error("Vui lòng nhập họ và tên người nhận");
+    
+    // Kiểm tra số điện thoại (Regex cho di động Việt Nam)
+    const phoneRegex = /^(03|05|07|08|09)\d{8}$/;
     if (!form.phone) return error("Vui lòng nhập số điện thoại");
+    if (!phoneRegex.test(form.phone.replace(/\s/g, ""))) {
+      return error("Số điện thoại không hợp lệ. Vui lòng nhập số di động 10 số (ví dụ: 0912345678)");
+    }
+
     if (!form.email) return error("Vui lòng nhập email nhận thông báo");
     if (!form.provinceId) return error("Vui lòng chọn Tỉnh / Thành phố");
     if (!form.districtId) return error("Vui lòng chọn Quận / Huyện");
@@ -362,9 +396,9 @@ export function CheckoutContainer() {
         else displayItems.forEach((i) => useCartStore.getState().removeItem(i.variantId));
       }, 100);
 
-    } catch (err: any) {
-      error(err?.response?.data?.message || err?.message || "Có lỗi xảy ra khi đặt hàng");
-      setIsSubmitting(false); // Quan trọng: chỉ tắt khi lỗi để người dùng sửa
+    } catch (err: unknown) {
+      error("Có lỗi xảy ra khi đặt hàng. Vui lòng kiểm tra lại thông tin.");
+      setIsSubmitting(false); 
     }
   };
 

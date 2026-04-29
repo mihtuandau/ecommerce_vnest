@@ -14,6 +14,6 @@ export interface RegisterPayload {
 
 export interface AuthResponse {
   accessToken: string;
-  refreshToken: string;
+  refreshToken?: string;
   user: User;
 }

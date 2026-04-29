@@ -161,7 +161,7 @@ export class ProductService {
       total,
       totalPages: Math.ceil(total / limit),
     };
-    await this.cache.set(key, res, 3600);
+    await this.cache.set(key, res, 3600 * 1000); // v5+ expects ms
     return res;
   }
 
@@ -178,7 +178,7 @@ export class ProductService {
       throw new NotFoundException('Sản phẩm hiện không khả dụng');
     }
 
-    if (p) await this.cache.set(`product:${id}`, p, 1800);
+    if (p) await this.cache.set(`product:${id}`, p, 1800 * 1000); // v5+ expects ms
     return p;
   }
 
@@ -219,6 +219,12 @@ export class ProductService {
     // This is a simplified implementation: delete existing and create new
     // to match the frontend state 1:1.
     if (images && Array.isArray(images)) {
+      // Fetch existing images to delete from Cloudinary
+      const existingImages = await this.repo.findImagesByProductId(id);
+      for (const img of existingImages) {
+        await this.uploadService.deleteImage(img.url);
+      }
+      
       // Clear existing images and create new ones
       await this.repo.deleteImagesByProductId(id);
       prismaData.images = {
@@ -265,8 +271,14 @@ export class ProductService {
           };
 
           if (v.image) {
+            // Fetch old variant images to delete from Cloudinary
+            const oldVImages = await this.repo.findImagesByVariantId(existing.id);
+            for (const img of oldVImages) {
+              await this.uploadService.deleteImage(img.url);
+            }
+
             updateData.images = {
-              deleteMany: {}, // Clear old images for this variant
+              deleteMany: {}, // Clear old images in DB
               create: [
                 {
                   url: typeof v.image === 'string' ? v.image : v.image.url,
@@ -368,6 +380,9 @@ export class ProductService {
   }
 
   async uploadProductImages(id: number, files: any[], meta: any) {
+    const product = await this.repo.findById(id);
+    if (!product) throw new NotFoundException('Sản phẩm không tồn tại');
+
     const urls = await this.uploadService.uploadImages(files);
     if (meta.isThumbnail) await this.repo.updateThumbnailStatus(id, false);
     await this.repo.createImages(
@@ -384,7 +399,7 @@ export class ProductService {
 
   async uploadVariantImages(vId: number, files: any[], meta: any) {
     const v = await this.repo.findVariantById(vId);
-    if (!v) throw new NotFoundException();
+    if (!v) throw new NotFoundException('Biến thể sản phẩm không tồn tại');
     const urls = await this.uploadService.uploadImages(files);
     await this.repo.createVariantImages(
       urls.map((u, i) => ({
@@ -401,6 +416,10 @@ export class ProductService {
   async deleteProductImage(id: number) {
     const img = await this.repo.findImageById(id);
     if (!img) throw new NotFoundException();
+    
+    // Delete from Cloudinary
+    await this.uploadService.deleteImage(img.url);
+    
     await this.repo.deleteImages([id]);
     await this.cache.del(`product:${img.productId}`);
     return { id };
@@ -409,6 +428,10 @@ export class ProductService {
   async deleteVariantImage(id: number) {
     const img = await this.repo.findVariantImageById(id);
     if (!img) throw new NotFoundException();
+
+    // Delete from Cloudinary
+    await this.uploadService.deleteImage(img.url);
+
     await this.repo.deleteVariantImages([id]);
     const v = await this.repo.findVariantById(img.variantId);
     if (v) await this.cache.del(`product:${v.productId}`);

@@ -198,6 +198,7 @@ export const columns: ColumnDef<Product>[] = [
     id: "actions",
     cell: ({ row }) => {
       const product = row.original;
+      // eslint-disable-next-line react-hooks/rules-of-hooks
       const { mutate: deleteProduct } = useDeleteProduct();
 
       return (

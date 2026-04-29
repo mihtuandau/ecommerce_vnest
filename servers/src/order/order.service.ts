@@ -9,6 +9,8 @@ import { UpdateOrderDto } from './dto/update-order.dto';
 import { QueryOrderDto } from './dto/query-order.dto';
 import { ApplyDiscountDto } from './dto/apply-discount.dto';
 import * as OrderHelper from './order.helper';
+import { PrismaService } from '../prisma/prisma.service';
+import { GHNService } from '../ghn/ghn.service';
 
 @Injectable()
 export class OrderService {
@@ -19,6 +21,8 @@ export class OrderService {
     private cacheService: OrderCache,
     private orderCreation: OrderCreation,
     private orderManagement: OrderManagement,
+    private prisma: PrismaService,
+    private ghnService: GHNService,
   ) {}
 
   async create(userId: number | null, dto: CreateOrderDto, requester: { role: string }, ipAddr: string = '127.0.0.1'): Promise<any> {
@@ -97,11 +101,34 @@ export class OrderService {
     return this.orderManagement.applyDiscount(orderId, dto, requester);
   }
 
-  async lookupGuestOrder(orderCode: string, contact: string): Promise<any> {
-    return this.orderManagement.lookupGuestOrder(orderCode, contact);
+  async syncToGHN(id: number) {
+    return this.orderManagement.syncToGHN(id);
   }
 
-  async syncToGHN(id: number): Promise<any> {
-    return this.orderManagement.syncToGHN(id);
+  async lookupGuestOrder(orderCode: string, contact: string, ip?: string, ua?: string, maskPII = true): Promise<any> {
+    // Log tracking for audit
+    this.logger.log(`Guest lookup attempt: Order ${orderCode} | Contact ${contact} | IP: ${ip} | UA: ${ua}`);
+    return this.orderManagement.lookupGuestOrder(orderCode, contact, maskPII);
+  }
+
+  async handleGHNWebhook(payload: any) {
+    const analysis = await this.ghnService.handleStatusWebhook(payload);
+    if (!analysis) return { success: true, message: 'Status ignored' };
+
+    const { shippingCode, status, description } = analysis;
+    const order = await this.repository.findByShippingCode(shippingCode);
+
+    if (!order) {
+      this.logger.warn(`[GHN Webhook] Order not found for shipping code: ${shippingCode}`);
+      return { success: true, message: 'Order not found' };
+    }
+
+    // Chỉ cập nhật nếu trạng thái thực sự thay đổi
+    if (order.status !== status && order.status !== 'DELIVERED') {
+      this.logger.log(`[GHN Webhook] Updating order #${order.id} status: ${order.status} -> ${status} (${description || ''})`);
+      await this.orderManagement.update(order.id, { status: status as any });
+    }
+
+    return { code: 200, message: 'Success' };
   }
 }
