@@ -56,9 +56,19 @@ export function Header({ order, onUpdateStatus, id }: HeaderProps) {
               </Badge>
             )}
           </div>
-          <p className="text-slate-600 text-xs mt-1 font-medium">
-            Ngày đặt: {dayjs(order.createdAt).format("HH:mm, DD/MM/YYYY")}
-          </p>
+          <div className="flex items-center gap-3 mt-1.5 text-xs font-medium">
+            <span className="text-slate-600">
+              Ngày đặt: {dayjs(order.createdAt).format("HH:mm, DD/MM/YYYY")}
+            </span>
+            {order.deliveredAt && (
+              <>
+                <span className="w-1 h-1 bg-slate-300 rounded-full" />
+                <span className="text-emerald-600 font-semibold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
+                  Giao hàng: {dayjs(order.deliveredAt).format("HH:mm, DD/MM/YYYY")}
+                </span>
+              </>
+            )}
+          </div>
         </div>
       </div>
       <div className="flex items-center gap-2 no-print">

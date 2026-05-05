@@ -23,7 +23,7 @@ export function ProductSection({
   subtitle,
   products,
   icon: Icon,
-  iconColor = "text-[#1a1a1a]",
+  iconColor = "text-foreground",
   iconBg = "bg-slate-100",
   variant = "bestseller",
   viewAllLink,

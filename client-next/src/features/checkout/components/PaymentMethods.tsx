@@ -51,7 +51,7 @@ export function PaymentMethods({ paymentMethod, setPaymentMethod }: PaymentMetho
               <div className={cn(
                 "h-4 w-4 rounded-full border-2 flex items-center justify-center transition-all",
                 paymentMethod === method.id 
-                  ? "border-[#1565C1] bg-[#1565C1]" 
+                  ? "border-primary bg-primary" 
                   : "border-slate-300 bg-white group-hover:border-slate-400"
               )}>
                 {paymentMethod === method.id && (
@@ -75,7 +75,7 @@ export function PaymentMethods({ paymentMethod, setPaymentMethod }: PaymentMetho
               <div className="flex-1 min-w-0">
                 <p className={cn(
                   "text-sm font-semibold transition-colors",
-                  paymentMethod === method.id ? "text-[#1565C1]" : "text-slate-600"
+                  paymentMethod === method.id ? "text-primary" : "text-slate-600"
                 )}>
                   {method.name}
                 </p>
@@ -83,7 +83,7 @@ export function PaymentMethods({ paymentMethod, setPaymentMethod }: PaymentMetho
 
               {/* Status Badge */}
               {paymentMethod === method.id && (
-                <div className="hidden sm:flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-blue-100 text-[#1565C1]">
+                <div className="hidden sm:flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-blue-100 text-primary">
                   <CheckCircle2 size={10} />
                   <span className="text-xs font-bold">Đã chọn</span>
                 </div>

@@ -76,6 +76,7 @@ export function GuestOrderDetailView() {
           orderId={order.id}
           orderCode={order.orderCode}
           createdAt={order.createdAt}
+          deliveredAt={order.deliveredAt}
           status={order.status}
           isPaid={isPaid}
           statusConfig={statusConfig}

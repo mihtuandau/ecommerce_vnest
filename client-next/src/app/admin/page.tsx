@@ -5,6 +5,7 @@ import {
   useDashboardRevenue,
   useDashboardTopProducts,
   useDashboardRecentOrders,
+  useDashboardPendingReviews,
 } from "@/features/dashboard/hooks";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
@@ -14,6 +15,7 @@ import { RevenueChart } from "@/features/dashboard/components/RevenueChart";
 import { OrderStatusChart } from "@/features/dashboard/components/OrderStatusChart";
 import { TopProducts } from "@/features/dashboard/components/TopProducts";
 import { RecentOrders } from "@/features/dashboard/components/RecentOrders";
+import { PendingReviews } from "@/features/dashboard/components/PendingReviews";
 import { usePermission } from "@/hooks/usePermission";
 import { AccessDenied } from "@/components/ui/AccessDenied";
 import { Skeleton } from "@/components/ui/Skeleton";
@@ -27,6 +29,7 @@ export default function AdminDashboardPage() {
   const { data: revenueData, isLoading: isRevenueLoading } = useDashboardRevenue();
   const { data: recentOrders, isLoading: isRecentOrdersLoading } = useDashboardRecentOrders();
   const { data: topProducts, isLoading: isTopProductsLoading } = useDashboardTopProducts();
+  const { data: pendingReviews, isLoading: isPendingReviewsLoading } = useDashboardPendingReviews();
 
   if (isLoading) {
     return (
@@ -79,11 +82,20 @@ export default function AdminDashboardPage() {
         <OrderStatusChart data={stats?.orders} isLoading={isStatsLoading} />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Top Selling Products */}
-        <TopProducts products={topProducts} isLoading={isTopProductsLoading} />
+        <div className="lg:col-span-2">
+          <TopProducts products={topProducts} isLoading={isTopProductsLoading} />
+        </div>
 
-        {/* Recent Orders */}
+        {/* Pending Reviews Section */}
+        <div className="lg:col-span-1">
+          <PendingReviews reviews={pendingReviews} isLoading={isPendingReviewsLoading} />
+        </div>
+      </div>
+
+      {/* Recent Orders - Full Width at Bottom */}
+      <div className="w-full">
         <RecentOrders orders={recentOrders} isLoading={isRecentOrdersLoading} />
       </div>
     </div>

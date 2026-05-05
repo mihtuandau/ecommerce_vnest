@@ -65,7 +65,7 @@ export function OrderLookupForm() {
 
               <Button 
                 type="submit" 
-                className="w-full h-13 rounded-xl bg-primary hover:bg-[#0d47a1] text-white font-semibold text-sm shadow-lg shadow-primary/10 transition-all active:scale-[0.98] group"
+                className="w-full h-13 rounded-xl bg-primary hover:bg-[#0d47a1] text-white font-semibold text-sm shadow-lg shadow-primary/10 transition-all active:scale-95 group"
               >
                 Tra cứu ngay
                 <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />

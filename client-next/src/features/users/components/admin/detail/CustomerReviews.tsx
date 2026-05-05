@@ -93,9 +93,9 @@ export function CustomerReviews({ userId }: CustomerReviewsProps) {
 
               {review.images && review.images.length > 0 && (
                 <div className="flex gap-2 pt-1">
-                  {review.images.map((img: string, idx: number) => (
+                  {review.images.map((img: any, idx: number) => (
                     <img 
-                      key={idx} 
+                      key={img.id || idx} 
                       src={getImageUrl(img)} 
                       alt="Review" 
                       className="h-14 w-14 object-cover rounded-2xl border border-slate-200" 

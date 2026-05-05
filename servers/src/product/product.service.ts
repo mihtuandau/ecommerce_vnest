@@ -1,17 +1,36 @@
-import { Injectable, Inject, NotFoundException } from '@nestjs/common';
+import { Injectable, Inject, NotFoundException, OnModuleInit } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
 import { ProductRepository } from './product.repository';
 import { UploadService } from '../upload/upload.service';
 import { buildCacheKey } from '../common/utils/cache-key.util';
+import { createClient } from 'redis';
 
 @Injectable()
-export class ProductService {
+export class ProductService implements OnModuleInit {
+  private redisClient: any;
   constructor(
     private repo: ProductRepository,
     @Inject(CACHE_MANAGER) private cache: Cache,
     private uploadService: UploadService,
   ) {}
+
+  async onModuleInit() {
+    try {
+      this.redisClient = createClient({
+        username: process.env.REDIS_USERNAME || 'default',
+        password: process.env.REDIS_PASSWORD || undefined,
+        socket: {
+          host: process.env.REDIS_HOST || 'localhost',
+          port: parseInt(process.env.REDIS_PORT || '6379', 10),
+        },
+      });
+      await this.redisClient.connect();
+      console.log('✅ [ProductService] Trực tiếp kết nối Redis để làm nhiệm vụ dọn Cache (Wildcard Deletion)');
+    } catch (err) {
+      console.error('❌ [ProductService] Không thể kết nối Redis trực tiếp:', err.message);
+    }
+  }
 
   private slugify(text: string): string {
     return text
@@ -24,6 +43,31 @@ export class ProductService {
       .replace(/(\s+)/g, '-')
       .replace(/-+/g, '-')
       .replace(/^-+|-+$/g, '');
+  }
+
+  private async clearProductCaches(productId?: number, slug?: string) {
+    try {
+      if (this.redisClient) {
+        let cursor = '0';
+        const pattern = '*products*';
+        do {
+          const reply = await this.redisClient.scan(cursor, 'MATCH', pattern, 'COUNT', 100);
+          cursor = typeof reply === 'string' ? '0' : reply[0];
+          const keys = typeof reply === 'string' ? [] : reply[1];
+          
+          if (keys && keys.length > 0) {
+            await this.redisClient.del(keys);
+          }
+        } while (cursor !== '0');
+      } else {
+        await this.cache.del('products:all'); 
+      }
+    } catch (err) {
+      console.error('Error clearing product caches:', err.message);
+    }
+    
+    if (productId) await this.cache.del(`product:${productId}`);
+    if (slug) await this.cache.del(`product:${slug}`);
   }
 
   async create(data: any) {
@@ -88,14 +132,21 @@ export class ProductService {
       };
     }
 
-    await this.cache.del('products:all');
+    await this.clearProductCaches();
     return this.repo.create(prismaData);
   }
 
   async findAll(q: any) {
     const key = buildCacheKey('products', q);
-    const cached = await this.cache.get(key);
-    if (cached) return cached;
+    
+    // BỎ QUA CACHE ĐỐI VỚI ADMIN (Admin luôn cần dữ liệu realtime)
+    // Dấu hiệu nhận biết Admin: status = 'all' hoặc limit quá lớn
+    const isAdmin = q.status === 'all' || Number(q.limit) >= 100;
+
+    if (!isAdmin) {
+      const cached = await this.cache.get(key);
+      if (cached) return cached;
+    }
     const {
       page = 1,
       limit = 10,
@@ -161,7 +212,11 @@ export class ProductService {
       total,
       totalPages: Math.ceil(total / limit),
     };
-    await this.cache.set(key, res, 3600 * 1000); // v5+ expects ms
+    
+    // Chỉ lưu Cache cho người dùng (Customer)
+    if (!isAdmin) {
+      await this.cache.set(key, res, 3600 * 1000); // v5+ expects ms
+    }
     return res;
   }
 
@@ -219,13 +274,16 @@ export class ProductService {
     // This is a simplified implementation: delete existing and create new
     // to match the frontend state 1:1.
     if (images && Array.isArray(images)) {
-      // Fetch existing images to delete from Cloudinary
+      const incomingUrls = images.map((img: any) => typeof img === 'string' ? img : img.url);
+      // Fetch existing images to delete from Cloudinary ONLY IF they are removed
       const existingImages = await this.repo.findImagesByProductId(id);
       for (const img of existingImages) {
-        await this.uploadService.deleteImage(img.url);
+        if (!incomingUrls.includes(img.url)) {
+          await this.uploadService.deleteImage(img.url);
+        }
       }
       
-      // Clear existing images and create new ones
+      // Clear existing images in DB and create new ones
       await this.repo.deleteImagesByProductId(id);
       prismaData.images = {
         create: images.map((img: any, i: number) => ({
@@ -271,10 +329,13 @@ export class ProductService {
           };
 
           if (v.image) {
-            // Fetch old variant images to delete from Cloudinary
+            const incomingUrl = typeof v.image === 'string' ? v.image : v.image.url;
+            // Fetch old variant images to delete from Cloudinary ONLY IF changed
             const oldVImages = await this.repo.findImagesByVariantId(existing.id);
             for (const img of oldVImages) {
-              await this.uploadService.deleteImage(img.url);
+              if (img.url !== incomingUrl) {
+                await this.uploadService.deleteImage(img.url);
+              }
             }
 
             updateData.images = {
@@ -333,31 +394,15 @@ export class ProductService {
 
     const p = await this.repo.update(id, prismaData);
 
-    // Comprehensive cache invalidation
-    const cacheKeys = ['products:all', `product:${id}`];
-
-    if (p.slug) {
-      cacheKeys.push(`product:${p.slug}`);
-    }
-
-    // Attempt to clear all list caches (keys starting with products:)
-    // Since default cache manager might not support wildcards, we at least clear the common ones
-    // or we can use a more global clear if the store allows it.
-
-    await Promise.all(cacheKeys.map((key) => this.cache.del(key)));
-
-    // Optional: If we want to be safe and clear everything related to products
-    // await this.cache.reset(); // Too aggressive, but safe
+    // Xóa sạch sẽ toàn bộ Cache liên quan đến sản phẩm này để Admin thấy ngay lập tức
+    await this.clearProductCaches(id, p.slug || undefined);
 
     return p;
   }
 
   async remove(id: number) {
     const p = await this.repo.delete(id);
-    await Promise.all([
-      this.cache.del('products:all'),
-      this.cache.del(`product:${id}`),
-    ]);
+    await this.clearProductCaches(id, p.slug || undefined);
     return p;
   }
 

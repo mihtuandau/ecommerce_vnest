@@ -24,7 +24,7 @@ export function Customer({ order }: CustomerProps) {
   const customerAddress = snapshot?.addressString || snapshotAddress || "—";
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+    <div className="bg-white rounded-2xl border-none p-6 shadow-sm">
       <div className="flex items-center gap-2 mb-6 border-b border-slate-50 pb-3">
          <User className="h-4 w-4 text-slate-500" />
          <h3 className="font-semibold text-sm text-slate-800">Thông tin khách hàng</h3>

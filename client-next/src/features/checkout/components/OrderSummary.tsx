@@ -140,7 +140,7 @@ export function OrderSummary({
                 type="button"
                 onClick={onApplyDiscount}
                 disabled={!discountCode || isApplyingDiscount}
-                className="h-11 px-6 rounded-2xl text-sm font-semibold bg-[#1565C1] hover:bg-slate-900 text-white transition-all shadow-sm"
+                className="h-11 px-6 rounded-2xl text-sm font-semibold bg-primary hover:bg-slate-900 text-white transition-all shadow-sm"
               >
                 {isApplyingDiscount ? <Loader2 size={16} className="animate-spin" /> : "Áp dụng"}
               </Button>
@@ -190,7 +190,7 @@ export function OrderSummary({
           type="submit" 
           disabled={isSubmitting || !canSubmit}
           className={cn(
-            "w-full h-14 rounded-2xl text-base font-semibold transition-all active:scale-[0.98] shadow-lg",
+            "w-full h-14 rounded-2xl text-base font-semibold transition-all active:scale-95 shadow-lg",
             !canSubmit ? "bg-slate-100 text-slate-400 shadow-none cursor-not-allowed" : "bg-primary text-white hover:bg-primary/90 shadow-primary/20"
           )}
         >

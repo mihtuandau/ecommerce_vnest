@@ -31,25 +31,35 @@ export function RevenueChart({ data, isLoading }: RevenueChartProps) {
   const [timeRange, setTimeRange] = useState("30_days");
 
   const params = useMemo(() => {
-    const now = new Date();
+    const vnNow = dayjs().tz("Asia/Ho_Chi_Minh");
+    
     switch (timeRange) {
       case "7_days": {
-        const start = new Date();
-        start.setDate(now.getDate() - 7);
-        return { startDate: start.toISOString(), endDate: now.toISOString() };
+        const start = vnNow.subtract(7, "day").startOf("day");
+        const end = vnNow.endOf("day");
+        return { 
+          startDate: start.toISOString(), 
+          endDate: end.toISOString() 
+        };
       }
       case "30_days": {
-        const start = new Date();
-        start.setDate(now.getDate() - 30);
-        return { startDate: start.toISOString(), endDate: now.toISOString() };
+        const start = vnNow.subtract(30, "day").startOf("day");
+        const end = vnNow.endOf("day");
+        return { 
+          startDate: start.toISOString(), 
+          endDate: end.toISOString() 
+        };
       }
       case "3_months": {
-        const start = new Date();
-        start.setMonth(now.getMonth() - 3);
-        return { startDate: start.toISOString(), endDate: now.toISOString() };
+        const start = vnNow.subtract(3, "month").startOf("day");
+        const end = vnNow.endOf("day");
+        return { 
+          startDate: start.toISOString(), 
+          endDate: end.toISOString() 
+        };
       }
       case "năm": {
-        return { year: now.getFullYear() };
+        return { year: vnNow.year() };
       }
       default:
         return {};
@@ -72,17 +82,17 @@ export function RevenueChart({ data, isLoading }: RevenueChartProps) {
   const displayLoading = isLoading || isFilteredLoading;
 
   return (
-    <Card className="lg:col-span-2 border border-slate-200 shadow-none rounded-xl overflow-hidden bg-white">
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
+    <Card className="lg:col-span-2 border-none shadow-sm rounded-2xl overflow-hidden bg-white">
+      <CardHeader className="flex flex-row items-center justify-between pb-4 px-6 border-b border-slate-50">
         <div>
-          <CardTitle className="text-lg font-semibold text-slate-800">
+          <CardTitle className="text-base font-semibold text-slate-900">
             Biểu đồ doanh thu
           </CardTitle>
-          <CardDescription className="text-xs font-medium text-slate-600">
-            Theo dõi tăng trưởng doanh thu
+          <CardDescription className="text-xs font-medium text-slate-500">
+            Theo dõi tăng trưởng doanh thu theo thời gian
           </CardDescription>
         </div>
-        <div className="flex gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200">
+        <div className="flex gap-1 bg-slate-50 p-1 rounded-xl border border-slate-100">
           {[
             { label: "7 ngày", value: "7_days" },
             { label: "30 ngày", value: "30_days" },
@@ -93,7 +103,7 @@ export function RevenueChart({ data, isLoading }: RevenueChartProps) {
               onClick={() => setTimeRange(btn.value)}
               className={`px-3 py-1.5 rounded-md text-xs font-semibold tracking-wide transition-all ${
                 timeRange === btn.value
-                  ? "bg-white shadow-none border border-slate-200 text-indigo-600"
+                  ? "bg-white shadow-none border border-slate-200 text-primary"
                   : "text-slate-600 hover:text-slate-700"
               }`}
             >

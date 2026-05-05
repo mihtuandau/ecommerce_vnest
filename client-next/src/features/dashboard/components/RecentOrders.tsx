@@ -1,19 +1,27 @@
 "use client";
 
-import { Clock } from "lucide-react";
+import { Eye, ChevronRight } from "lucide-react";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from "@/components/ui/Card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/Table";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
 import { ROUTES } from "@/constants/routes";
 import { formatCurrency } from "@/utils/formatCurrency";
 import dayjs from "@/lib/dayjs";
 import { STATUS_MAP } from "../constants";
+import { Skeleton } from "@/components/ui/Skeleton";
 
 interface RecentOrdersProps {
   orders: any[];
@@ -25,108 +33,132 @@ export function RecentOrders({ orders, isLoading }: RecentOrdersProps) {
     (Array.isArray(orders) ? orders : (orders as any))?.data || orders || [];
 
   return (
-    <Card className="border border-slate-200 shadow-none rounded-xl overflow-hidden flex flex-col bg-white">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0">
-        <div>
-          <CardTitle className="text-lg font-semibold text-slate-800">
-            Đơn hàng mới
-          </CardTitle>
-          <CardDescription className="text-xs font-medium text-slate-600">
-            Giao dịch gần đây nhất
-          </CardDescription>
-        </div>
+    <Card className="border-none shadow-sm rounded-2xl overflow-hidden bg-white">
+      <CardHeader className="flex flex-row items-center justify-between pb-4 px-6 border-b border-slate-50">
+        <CardTitle className="text-base font-semibold text-slate-900">
+          Đơn hàng gần đây
+        </CardTitle>
         <Button
-          variant="ghost"
-          className="h-8 px-2 text-xs font-semibold tracking-wide text-primary hover:bg-primary/5"
+          variant="link"
+          className="text-primary font-medium text-sm flex items-center gap-1 hover:no-underline p-0"
           asChild
         >
-          <Link href={ROUTES.ADMIN_ORDERS}>Xem tất cả</Link>
+          <Link href={ROUTES.ADMIN_ORDERS}>
+            Xem tất cả <ChevronRight className="h-4 w-4" />
+          </Link>
         </Button>
       </CardHeader>
-      <CardContent className="flex-1">
-        <div className="space-y-6">
-          {isLoading ? (
-            Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="flex items-center gap-3 animate-pulse">
-                <div className="h-10 w-10 rounded-xl bg-muted" />
-                <div className="flex-1 space-y-2">
-                  <div className="h-3 w-24 bg-muted rounded" />
-                  <div className="h-2 w-16 bg-muted rounded" />
-                </div>
-              </div>
-            ))
-          ) : recentOrders.length > 0 ? (
-            recentOrders.slice(0, 5).map((order: any, index: number) => {
-              const firstItem = order.orderItems?.[0];
-
-              // Safe image resolver
-              const getImageUrl = (item: any) => {
-                const images =
-                  item.variant?.images || item.variant?.product?.images || [];
-                if (images.length === 0) return null;
-                const firstImg = images[0];
-                const rawUrl =
-                  typeof firstImg === "string" ? firstImg : firstImg?.url || "";
-                return rawUrl?.startsWith("http") ? rawUrl : `/${rawUrl}`;
-              };
-
-              const imageUrl = getImageUrl(firstItem);
-
-              return (
-                <div
-                  key={index}
-                  className="flex items-center justify-between group p-2 -mx-2 rounded-xl hover:bg-slate-50 transition-colors cursor-pointer"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center font-bold text-[10px] text-slate-400 overflow-hidden shrink-0">
-                      {imageUrl ? (
-                        <img
-                          src={imageUrl}
-                          alt="Order item"
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        order.orderCode?.slice(-3) || "ORD"
-                      )}
+      <CardContent className="p-0">
+        <Table>
+          <TableHeader className="bg-slate-50/50">
+            <TableRow className="hover:bg-transparent border-slate-100">
+              <TableHead className="text-xs font-medium text-slate-500 py-4 pl-6">
+                Mã đơn
+              </TableHead>
+              <TableHead className="text-xs font-medium text-slate-500 py-4">
+                Khách hàng
+              </TableHead>
+              <TableHead className="text-xs font-medium text-slate-500 py-4">
+                Sản phẩm
+              </TableHead>
+              <TableHead className="text-xs font-medium text-slate-500 py-4">
+                Tổng tiền
+              </TableHead>
+              <TableHead className="text-xs font-medium text-slate-500 py-4">
+                Thanh toán
+              </TableHead>
+              <TableHead className="text-xs font-medium text-slate-500 py-4">
+                Trạng thái
+              </TableHead>
+              <TableHead className="text-xs font-medium text-slate-500 py-4">
+                Thời gian
+              </TableHead>
+              <TableHead className="py-4 pr-6 text-right w-[50px]"></TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {isLoading ? (
+              Array.from({ length: 5 }).map((_, i) => (
+                <TableRow key={i} className="border-slate-50">
+                  <TableCell className="pl-6"><Skeleton className="h-4 w-20" /></TableCell>
+                  <TableCell><Skeleton className="h-8 w-32" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-16" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                  <TableCell><Skeleton className="h-6 w-16" /></TableCell>
+                  <TableCell><Skeleton className="h-6 w-20" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                  <TableCell className="pr-6"><Skeleton className="h-8 w-8 rounded-full ml-auto" /></TableCell>
+                </TableRow>
+              ))
+            ) : recentOrders.length > 0 ? (
+              recentOrders.slice(0, 6).map((order: any) => (
+                <TableRow key={order.id} className="hover:bg-slate-50/50 transition-colors border-slate-50">
+                  <TableCell className="py-4 pl-6">
+                    <Link 
+                      href={`${ROUTES.ADMIN_ORDERS}/${order.id}`}
+                      className="text-xs font-bold text-primary hover:underline"
+                    >
+                      {order.orderCode || `#${order.id}`}
+                    </Link>
+                  </TableCell>
+                  <TableCell className="py-4">
+                    <div className="flex flex-col">
+                      <span className="text-sm font-semibold text-slate-900">
+                        {order.user?.name || order.shippingSnapshot?.fullName || "Khách lẻ"}
+                      </span>
+                      <span className="text-xs text-slate-500">
+                        {order.user?.email || order.guestEmail || "N/A"}
+                      </span>
                     </div>
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <p className="text-sm font-semibold text-slate-800 leading-none line-clamp-1">
-                          {order.user?.name ||
-                            order.shippingSnapshot?.fullName ||
-                            "Khách lẻ"}
-                        </p>
-                        {(order.guestPhone || order.user?.phone) && (
-                          <span className="text-xs font-semibold text-primary px-2 py-0.5 bg-primary/5 rounded">
-                            {order.guestPhone || order.user?.phone}
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-xs text-slate-600 font-medium flex items-center gap-1">
-                        <Clock className="h-3 w-3" />
-                        {dayjs(order.createdAt).fromNow()}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm font-semibold text-slate-800 mb-1">
+                  </TableCell>
+                  <TableCell className="py-4">
+                    <span className="text-xs font-medium text-slate-600">
+                      {order.orderItems?.length || 0} sản phẩm
+                    </span>
+                  </TableCell>
+                  <TableCell className="py-4">
+                    <span className="text-sm font-semibold text-slate-900">
                       {formatCurrency(order.total)}
-                    </p>
+                    </span>
+                  </TableCell>
+                  <TableCell className="py-4">
+                    <span className="px-2 py-0.5 rounded text-[10px] font-medium uppercase bg-slate-100 text-slate-500 border border-slate-200">
+                      {order.paymentMethod || "CASH"}
+                    </span>
+                  </TableCell>
+                  <TableCell className="py-4">
                     <div
-                      className={`text-xs font-semibold tracking-wide px-2.5 py-1 rounded-md inline-block ${STATUS_MAP[order.status]?.bg} ${STATUS_MAP[order.status]?.color}`}
+                      className={`text-[10px] font-medium px-2.5 py-1 rounded-full inline-block ${STATUS_MAP[order.status]?.bg} ${STATUS_MAP[order.status]?.color}`}
                     >
                       {STATUS_MAP[order.status]?.label || order.status}
                     </div>
-                  </div>
-                </div>
-              );
-            })
-          ) : (
-            <div className="text-center py-12 text-muted-foreground italic text-xs font-medium">
-              Chưa có đơn hàng nào
-            </div>
-          )}
-        </div>
+                  </TableCell>
+                  <TableCell className="py-4 text-xs text-slate-500">
+                    {dayjs(order.createdAt).format("DD/MM/YYYY")}
+                  </TableCell>
+                  <TableCell className="py-4 pr-6 text-right">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-slate-300 hover:text-slate-600 rounded-full"
+                      asChild
+                    >
+                      <Link href={`${ROUTES.ADMIN_ORDERS}/${order.id}`}>
+                        <Eye className="h-4 w-4" />
+                      </Link>
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={8} className="text-center py-10 text-slate-400 italic text-sm">
+                  Chưa có đơn hàng nào
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
       </CardContent>
     </Card>
   );

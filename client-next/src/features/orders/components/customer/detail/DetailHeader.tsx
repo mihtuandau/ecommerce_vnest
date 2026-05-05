@@ -28,6 +28,7 @@ interface DetailHeaderProps {
   returnStatus?: ReturnStatus;
   isUpdatingReturn?: boolean;
   statusConfig: Record<string, { label: string; color: string; icon: any }>;
+  deliveredAt?: string;
 }
 
 const formatDate = (dateString: string) => {
@@ -54,6 +55,7 @@ export function DetailHeader({
   returnStatus,
   isUpdatingReturn,
   statusConfig,
+  deliveredAt,
 }: DetailHeaderProps) {
   const router = useRouter();
   const [showPopover, setShowPopover] = useState(false);
@@ -91,7 +93,7 @@ export function DetailHeader({
       <div className="flex items-center gap-4">
         <button
           onClick={() => router.push("/orders")}
-          className="h-10 w-10 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:text-[#1565C1] hover:border-[#1565C1] hover:bg-blue-50 transition-all shrink-0"
+          className="h-10 w-10 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:text-primary hover:border-primary hover:bg-blue-50 transition-all shrink-0"
         >
           <ArrowLeft size={18} />
         </button>
@@ -108,6 +110,11 @@ export function DetailHeader({
           </div>
           <p className="text-sm text-slate-500 font-medium">
             Ngày đặt: {formatDate(createdAt)}
+            {status === OrderStatus.DELIVERED && deliveredAt && (
+              <span className="ml-3 text-emerald-600">
+                • Giao lúc: {formatDate(deliveredAt)}
+              </span>
+            )}
           </p>
         </div>
       </div>
@@ -118,7 +125,7 @@ export function DetailHeader({
             <Button
               onClick={() => setShowPopover(!showPopover)}
               disabled={isUpdatingReturn}
-              className="bg-[#1565C1] hover:bg-[#0d47a1] text-white text-xs font-semibold h-10 px-6 rounded-xl flex items-center gap-2 shadow-sm transition-all active:scale-95"
+              className="bg-primary hover:bg-[#0d47a1] text-white text-xs font-semibold h-10 px-6 rounded-xl flex items-center gap-2 shadow-sm transition-all active:scale-95"
             >
               <Truck className="h-4 w-4" />
               Xác nhận đã gửi hàng
@@ -140,7 +147,7 @@ export function DetailHeader({
                   </Button>
                   <Button
                     size="sm"
-                    className="flex-1 h-8 text-[11px] font-bold bg-[#1565C1] hover:bg-[#0d47a1] text-white rounded-lg shadow-sm"
+                    className="flex-1 h-8 text-[11px] font-bold bg-primary hover:bg-[#0d47a1] text-white rounded-lg shadow-sm"
                     onClick={() => {
                       onConfirmReturn?.();
                       setShowPopover(false);

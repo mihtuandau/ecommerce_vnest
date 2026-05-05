@@ -51,7 +51,7 @@ export default function AdminDiscountsPage() {
           </Button>
           <Button
             asChild
-            className="h-9 px-4 rounded-lg bg-slate-900 text-white hover:bg-slate-800 font-bold text-xs gap-2"
+            className="h-9 px-4 rounded-lg bg-primary text-white hover:bg-slate-800 font-bold text-xs gap-2"
           >
             <Link href={`${ROUTES.ADMIN_DISCOUNTS}/create`}>
               <Plus className="h-4 w-4" /> Tạo mới
@@ -62,7 +62,7 @@ export default function AdminDiscountsPage() {
 
       <DiscountStats {...stats} />
 
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+      <div className="bg-white rounded-2xl border-none shadow-sm overflow-hidden">
         {isLoading ? (
           <div className="flex h-96 items-center justify-center">
             <div className="flex flex-col items-center gap-3">

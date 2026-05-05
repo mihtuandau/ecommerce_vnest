@@ -30,3 +30,10 @@ export function useDashboardTopProducts() {
     queryFn: () => dashboardApi.getTopProducts(),
   });
 }
+
+export function useDashboardPendingReviews() {
+  return useQuery({
+    queryKey: ["dashboard", "pending-reviews"],
+    queryFn: () => dashboardApi.getPendingReviews(),
+  });
+}

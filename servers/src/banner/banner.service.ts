@@ -1,4 +1,4 @@
-﻿import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Banner } from '@prisma/client';
 import { CreateBannerDto } from './dto/create-banner.dto';
@@ -16,7 +16,7 @@ export class BannerService {
     const where = activeOnly ? { isActive: true } : {};
     return this.prisma.banner.findMany({ 
       where,
-      orderBy: { order: 'asc' }
+      orderBy: { displayOrder: 'asc' }
     });
   }
 
@@ -42,13 +42,7 @@ export class BannerService {
     await this.findOne(bannerId);
     return this.prisma.banner.update({
       where: { id: bannerId },
-      data: { order: newOrder }
+      data: { displayOrder: newOrder }
     });
   }
 }
-
-
-
-
-
-

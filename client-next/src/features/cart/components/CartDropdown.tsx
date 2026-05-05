@@ -195,7 +195,7 @@ export function CartDropdown() {
                     e.preventDefault();
                     handleCheckout();
                   }} 
-                  className="w-full rounded-xl h-12 bg-primary hover:bg-[#0d47a1] text-white font-semibold text-xs shadow-xl shadow-primary/10 group active:scale-[0.98] transition-all"
+                  className="w-full rounded-full h-12 bg-primary hover:bg-primary/90 text-white font-semibold text-xs shadow-xl shadow-primary/10 group active:scale-95 transition-all"
                 >
                   Thanh toán ngay
                   <ArrowRight className="ml-2 w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />

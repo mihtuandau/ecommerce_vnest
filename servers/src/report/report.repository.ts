@@ -14,19 +14,22 @@ export class ReportRepository {
   async getRawOrdersForRevenue(startDate: Date, endDate: Date) {
     return this.prisma.order.findMany({
       where: {
-        createdAt: {
-          gte: startDate,
-          lte: endDate,
-        },
         status: { in: ['DELIVERED', 'RETURN_REQUESTED'] },
-        payment: { status: 'SUCCESS' },
+        payment: {
+          status: 'SUCCESS',
+          updatedAt: {
+            gte: startDate,
+            lte: endDate,
+          },
+        },
       },
       select: {
         subtotal: true,
         discountAmount: true,
         createdAt: true,
+        payment: { select: { updatedAt: true } },
       },
-      orderBy: { createdAt: 'asc' },
+      orderBy: { payment: { updatedAt: 'asc' } },
     });
   }
 
@@ -70,8 +73,8 @@ export class ReportRepository {
       JOIN "Product" p ON p.id = pv."productId"
       WHERE o.status IN ('DELIVERED', 'RETURN_REQUESTED') 
         AND pay.status = 'SUCCESS'
-        AND o."createdAt" >= ${startDate}
-        AND o."createdAt" <= ${endDate}
+        AND pay."updatedAt" >= ${startDate}
+        AND pay."updatedAt" <= ${endDate}
       GROUP BY p.id, p.name
       ORDER BY "totalRevenue" DESC
       LIMIT ${limit}
@@ -102,8 +105,8 @@ export class ReportRepository {
       JOIN "Category" c ON c.id = p."categoryId"
       WHERE o.status IN ('DELIVERED', 'RETURN_REQUESTED') 
         AND pay.status = 'SUCCESS'
-        AND o."createdAt" >= ${startDate}
-        AND o."createdAt" <= ${endDate}
+        AND pay."updatedAt" >= ${startDate}
+        AND pay."updatedAt" <= ${endDate}
       GROUP BY p."categoryId", c.name
       ORDER BY "totalRevenue" DESC
       LIMIT ${limit}
@@ -142,21 +145,23 @@ export class ReportRepository {
               lte: endDate,
             },
             status: { in: ['DELIVERED', 'RETURNED', 'RETURN_REQUESTED'] },
-            payment: { status: { in: ['SUCCESS', 'REFUNDED'] } }
+            payment: { status: { in: ['SUCCESS', 'REFUNDED'] } },
           },
         }),
       ]);
 
     // 4. Đếm khách vãng lai mới trong kỳ (Dựa trên Email duy nhất chưa từng mua trước đó)
-    const newGuestCount = await this.prisma.order.groupBy({
-      by: ['guestEmail'],
-      where: {
-        userId: null,
-        guestEmail: { not: null },
-        createdAt: { gte: startDate, lte: endDate },
-        status: { in: ['DELIVERED', 'RETURNED', 'RETURN_REQUESTED'] }
-      }
-    }).then(res => res.length);
+    const newGuestCount = await this.prisma.order
+      .groupBy({
+        by: ['guestEmail'],
+        where: {
+          userId: null,
+          guestEmail: { not: null },
+          createdAt: { gte: startDate, lte: endDate },
+          status: { in: ['DELIVERED', 'RETURNED', 'RETURN_REQUESTED'] },
+        },
+      })
+      .then((res) => res.length);
 
     return {
       newCustomers: newCustomers + newGuestCount,
@@ -194,7 +199,10 @@ export class ReportRepository {
       }),
     ]);
 
-    const growth = previousPeriod > 0 ? ((currentPeriod - previousPeriod) / previousPeriod) * 100 : 0;
+    const growth =
+      previousPeriod > 0
+        ? ((currentPeriod - previousPeriod) / previousPeriod) * 100
+        : 0;
 
     return {
       total: absoluteTotal,
@@ -209,31 +217,36 @@ export class ReportRepository {
     const previousEnd = new Date(startDate.getTime() - 1);
 
     const [absoluteTotal, currentPeriod, previousPeriod] = await Promise.all([
-      this.prisma.order.count({ 
-        where: { 
+      this.prisma.order.count({
+        where: {
           status: { in: ['DELIVERED', 'RETURN_REQUESTED'] },
-          payment: { status: { in: ['SUCCESS', 'REFUNDED'] } }
-        } 
+          payment: { status: { in: ['SUCCESS', 'REFUNDED'] } },
+        },
       }),
       this.prisma.order.count({
         where: {
           createdAt: { gte: startDate, lte: endDate },
           status: { in: ['DELIVERED', 'RETURN_REQUESTED'] },
-          payment: { status: { in: ['SUCCESS', 'REFUNDED'] } }
+          payment: { status: { in: ['SUCCESS', 'REFUNDED'] } },
         },
       }),
       this.prisma.order.count({
         where: {
           createdAt: { gte: previousStart, lte: previousEnd },
           status: { in: ['DELIVERED', 'RETURN_REQUESTED'] },
-          payment: { status: { in: ['SUCCESS', 'REFUNDED'] } }
+          payment: { status: { in: ['SUCCESS', 'REFUNDED'] } },
         },
       }),
     ]);
 
-    console.log(`[ReportDebug] Orders count: Total=${absoluteTotal}, Period=${currentPeriod}`);
+    console.log(
+      `[ReportDebug] Orders count: Total=${absoluteTotal}, Period=${currentPeriod}`,
+    );
 
-    const growth = previousPeriod > 0 ? ((currentPeriod - previousPeriod) / previousPeriod) * 100 : 0;
+    const growth =
+      previousPeriod > 0
+        ? ((currentPeriod - previousPeriod) / previousPeriod) * 100
+        : 0;
 
     return {
       total: absoluteTotal,
@@ -251,26 +264,29 @@ export class ReportRepository {
 
     const [todayCount, yesterdayCount] = await Promise.all([
       this.prisma.order.count({
-        where: { 
+        where: {
           createdAt: { gte: startOfToday, lte: endOfToday },
           status: { in: ['DELIVERED', 'RETURN_REQUESTED'] },
-          payment: { status: { in: ['SUCCESS', 'REFUNDED'] } }
-        }
+          payment: { status: { in: ['SUCCESS', 'REFUNDED'] } },
+        },
       }),
       this.prisma.order.count({
-        where: { 
+        where: {
           createdAt: { gte: startOfYesterday, lte: endOfYesterday },
           status: { in: ['DELIVERED', 'RETURN_REQUESTED'] },
-          payment: { status: { in: ['SUCCESS', 'REFUNDED'] } }
-        }
-      })
+          payment: { status: { in: ['SUCCESS', 'REFUNDED'] } },
+        },
+      }),
     ]);
 
-    const change = yesterdayCount > 0 ? ((todayCount - yesterdayCount) / yesterdayCount) * 100 : 0;
+    const change =
+      yesterdayCount > 0
+        ? ((todayCount - yesterdayCount) / yesterdayCount) * 100
+        : 0;
 
     return {
       today: todayCount,
-      change: parseFloat(change.toFixed(1))
+      change: parseFloat(change.toFixed(1)),
     };
   }
 
@@ -284,20 +300,32 @@ export class ReportRepository {
       const d = await this.prisma.order.aggregate({
         where: {
           status: { in: ['DELIVERED', 'RETURN_REQUESTED'] },
-          payment: { status: 'SUCCESS' },
-          createdAt: { gte: s, lte: e }
+          payment: {
+            status: 'SUCCESS',
+            updatedAt: { gte: s, lte: e },
+          },
         },
-        _sum: { subtotal: true, discountAmount: true }
+        _sum: { subtotal: true, discountAmount: true },
       });
-      return (Number(d._sum.subtotal) || 0) - (Number(d._sum.discountAmount) || 0);
+      return (
+        (Number(d._sum.subtotal) || 0) - (Number(d._sum.discountAmount) || 0)
+      );
     };
 
     const current = await getNetSales(currentStart, currentEnd);
     const previous = await getNetSales(previousStart, previousEnd);
-    const absolute = await this.prisma.order.aggregate({
-      where: { status: { in: ['DELIVERED', 'RETURN_REQUESTED'] }, payment: { status: 'SUCCESS' } },
-      _sum: { subtotal: true, discountAmount: true }
-    }).then(d => (Number(d._sum.subtotal) || 0) - (Number(d._sum.discountAmount) || 0));
+    const absolute = await this.prisma.order
+      .aggregate({
+        where: {
+          status: { in: ['DELIVERED', 'RETURN_REQUESTED'] },
+          payment: { status: 'SUCCESS' },
+        },
+        _sum: { subtotal: true, discountAmount: true },
+      })
+      .then(
+        (d) =>
+          (Number(d._sum.subtotal) || 0) - (Number(d._sum.discountAmount) || 0),
+      );
     const growth = previous > 0 ? ((current - previous) / previous) * 100 : 0;
 
     return {
@@ -329,7 +357,7 @@ export class ReportRepository {
           select: {
             name: true,
             email: true,
-          }
+          },
         },
         payment: {
           select: {
@@ -337,16 +365,10 @@ export class ReportRepository {
             status: true,
             refundAmount: true,
             transactionId: true,
-          }
+          },
         },
       },
       orderBy: { createdAt: 'desc' },
     });
   }
 }
-
-
-
-
-
-

@@ -10,6 +10,7 @@ export class ReviewRepository {
     return this.prisma.review.create({
       data,
       include: {
+        images: true,
         user: {
           select: {
             id: true,
@@ -41,6 +42,7 @@ export class ReviewRepository {
   async findById(id: number): Promise<Review | null> {
     return this.prisma.review.findUnique({
       where: { id },
+      include: { images: true }
     });
   }
 
@@ -104,6 +106,7 @@ export class ReviewRepository {
     return this.prisma.review.findMany({
       where: { productId },
       include: {
+        images: true,
         user: {
           select: {
             id: true,
@@ -128,6 +131,7 @@ export class ReviewRepository {
       where: { id },
       data,
       include: {
+        images: true,
         user: {
           select: {
             id: true,
@@ -170,6 +174,7 @@ export class ReviewRepository {
     return this.prisma.review.findMany({
       where,
       include: {
+        images: true,
         user: {
           select: {
             id: true,

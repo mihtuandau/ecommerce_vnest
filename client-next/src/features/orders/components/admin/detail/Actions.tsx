@@ -3,8 +3,9 @@
 import React from "react";
 import { Truck, CreditCard, Package, CheckCircle2, Loader2, RotateCcw, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { OrderStatus, PaymentStatus, PaymentMethod } from "@/types/enums";
+import { OrderStatus, PaymentStatus } from "@/types/enums";
 import Link from "next/link";
+import dayjs from "dayjs";
 
 interface ActionsProps {
   order: any;
@@ -31,7 +32,7 @@ export function Actions({
   const isUpdatingPayment = isPending;
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-6">
+    <div className="bg-white rounded-2xl border-none p-6 shadow-sm">
       <div className="flex items-center gap-2 mb-6">
          <Truck className="h-4 w-4 text-slate-500" />
          <h3 className="font-semibold text-sm text-slate-800">Vận chuyển & Thanh toán</h3>
@@ -42,6 +43,11 @@ export function Actions({
             <div>
                <p className="text-[10px] font-semibold text-slate-500 tracking-wide">Thanh toán</p>
                <p className="text-sm font-semibold text-slate-800">{order.paymentMethod === "CASH" ? "Thanh toán COD" : "Chuyển khoản / Online"}</p>
+               {orderAny.payment?.status === PaymentStatus.SUCCESS && orderAny.payment?.updatedAt && (
+                  <p className="text-[10px] text-emerald-600 font-medium mt-0.5">
+                    Đã thanh toán lúc: {dayjs(orderAny.payment.updatedAt).format("HH:mm, DD/MM/YYYY")}
+                  </p>
+               )}
             </div>
          </div>
           <div>
@@ -125,13 +131,18 @@ export function Actions({
                  </div>
             )}
 
-            {(order.status === OrderStatus.DELIVERED || isCancelled) && order.status !== OrderStatus.RETURN_REQUESTED && order.status !== OrderStatus.RETURNED && (
-                 <div className="text-center p-3 rounded-lg bg-slate-50 border border-slate-100">
-                     <p className="text-xs font-semibold text-slate-500 tracking-wide">
-                         {isCancelled ? "Đơn hàng đã hủy" : "Đơn hàng đã hoàn tất"}
-                     </p>
-                 </div>
-            )}
+             {(order.status === OrderStatus.DELIVERED || isCancelled) && order.status !== OrderStatus.RETURN_REQUESTED && order.status !== OrderStatus.RETURNED && (
+                  <div className="text-center p-3 rounded-lg bg-slate-50 border border-slate-100">
+                      <p className="text-xs font-semibold text-slate-500 tracking-wide">
+                          {isCancelled ? "Đơn hàng đã hủy" : "Đơn hàng đã hoàn tất"}
+                      </p>
+                      {order.status === OrderStatus.DELIVERED && order.deliveredAt && (
+                        <p className="text-[10px] text-slate-400 mt-1">
+                          Giao lúc: {dayjs(order.deliveredAt).format("HH:mm, DD/MM/YYYY")}
+                        </p>
+                      )}
+                  </div>
+             )}
          </div>
       </div>
     </div>

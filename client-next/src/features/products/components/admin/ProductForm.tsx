@@ -191,7 +191,7 @@ export function ProductForm({ initialData, onSubmit, isLoading }: ProductFormPro
         <input type="file" ref={variantFileInputRef} className="hidden" accept="image/*" onChange={handleVariantFileChange} />
 
         {categories.length === 0 ? (
-          <div className="flex h-64 items-center justify-center bg-white rounded-xl border border-slate-200">
+          <div className="flex h-64 items-center justify-center bg-white rounded-2xl border-none shadow-sm">
             <div className="flex flex-col items-center gap-2">
               <Loader2 className="h-6 w-6 animate-spin text-primary" />
               <p className="text-xs font-medium text-slate-400">Đang chuẩn bị dữ liệu...</p>
@@ -200,7 +200,7 @@ export function ProductForm({ initialData, onSubmit, isLoading }: ProductFormPro
         ) : (
           <Tabs defaultValue="general" className="w-full">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-              <TabsList className="bg-slate-100 p-1 rounded-xl border border-slate-200">
+              <TabsList className="bg-slate-100 p-1 rounded-2xl border-none shadow-sm">
                 <TabsTrigger value="general" className="rounded-lg px-6 font-bold data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm text-slate-500">
                   Thông tin chung
                 </TabsTrigger>

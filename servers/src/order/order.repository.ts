@@ -7,8 +7,25 @@ export class OrderRepository {
   constructor(private prisma: PrismaService) {}
 
   private baseInclude = {
-    orderItems: { include: { variant: { include: { product: { include: { images: { select: { url: true }, take: 1 } } }, images: { select: { url: true } } } } } },
-    user: { select: { id: true, email: true, name: true } }, payment: true, address: true, shippingMethod: true,
+    orderItems: { 
+      include: { 
+        variant: { 
+          include: { 
+            product: { include: { images: { select: { url: true }, take: 1 } } }, 
+            images: { select: { url: true } } 
+          } 
+        },
+        returnItems: {
+          include: {
+            returnRequest: true
+          }
+        }
+      } 
+    },
+    user: { select: { id: true, email: true, name: true } }, 
+    payment: true, 
+    address: true, 
+    shippingMethod: true,
     returnRequests: { include: { returnItems: true } },
     reviews: { select: { productId: true } }
   };
@@ -67,6 +84,12 @@ export class OrderRepository {
           if (currentUsageCount >= discountUsageLimit) {
             throw new Error('Mã giảm giá đã hết lượt sử dụng');
           }
+
+          // Atomic increment for cached count
+          await tx.discount.update({
+            where: { id: discountId },
+            data: { usageCount: { increment: 1 } }
+          });
         }
 
         // 2. Check per-user/guest usage limit
@@ -95,6 +118,7 @@ export class OrderRepository {
           where: {
             id: item.variantId,
             isActive: true,
+            deletedAt: null,
             stock: { gte: item.quantity },
           },
           data: { stock: { decrement: item.quantity } },
@@ -134,47 +158,6 @@ export class OrderRepository {
     });
   }
 
-  async restoreOrderStock(id: number, wasSold: boolean = false) {
-    const o = await this.prisma.order.findUnique({ 
-      where: { id }, 
-      select: { 
-        orderItems: { 
-          select: { 
-            variantId: true, 
-            quantity: true,
-            variant: { select: { productId: true } }
-          } 
-        } 
-      } 
-    });
-
-    if (o && o.orderItems.length > 0) {
-      console.log(`[OrderRepository] Restoring stock for ${o.orderItems.length} items of order ${id}. wasSold: ${wasSold}`);
-      
-      await this.prisma.$transaction(async (tx) => {
-        for (const item of o.orderItems) {
-          // 1. Hoàn tồn kho
-          await tx.productVariant.update({
-            where: { id: item.variantId },
-            data: { stock: { increment: item.quantity } }
-          });
-          
-          // 2. Trừ soldCount nếu đơn đã được tính là thành công trước đó
-          if (wasSold) {
-            await tx.product.update({
-              where: { id: item.variant.productId },
-              data: { soldCount: { decrement: item.quantity } }
-            });
-          }
-        }
-      });
-      
-      console.log(`[OrderRepository] Stock restoration completed for order ${id}`);
-    } else {
-      console.log(`[OrderRepository] No items found to restore stock for order ${id}`);
-    }
-  }
-
   async hasUsedDiscount(userId: number | null, discountId: number, guestEmail?: string | null, guestPhone?: string | null): Promise<boolean> {
     const OR_conditions: any[] = [];
     if (userId) OR_conditions.push({ userId });
@@ -193,10 +176,59 @@ export class OrderRepository {
   }
 
   async restoreDiscountUsage(orderId: number) {
+    const order = await this.prisma.order.findUnique({
+      where: { id: orderId },
+      select: { discountId: true }
+    });
+
+    if (order?.discountId) {
+      await this.prisma.discount.update({
+        where: { id: order.discountId },
+        data: { usageCount: { decrement: 1 } }
+      });
+    }
+
     await this.prisma.discountUsage.deleteMany({
       where: {
         orderId,
       },
+    });
+  }
+
+  async restoreOrderStock(id: number) {
+    return this.prisma.$transaction(async (tx) => {
+      const order = await tx.order.findUnique({
+        where: { id },
+        include: {
+          orderItems: {
+            include: {
+              returnItems: {
+                include: { returnRequest: true }
+              }
+            }
+          }
+        }
+      });
+
+      if (!order) return;
+
+      for (const item of order.orderItems) {
+        // Tính tổng số lượng đã được trả về kho qua hệ thống Return (trạng thái RECEIVED hoặc COMPLETED)
+        const alreadyRestored = item.returnItems?.reduce((sum: number, ri: any) => {
+          const status = ri.returnRequest?.status;
+          return (status === 'RECEIVED' || status === 'COMPLETED') ? sum + ri.quantity : sum;
+        }, 0) || 0;
+
+        const quantityToRestore = item.quantity - alreadyRestored;
+
+        if (quantityToRestore > 0) {
+          await tx.productVariant.update({
+            where: { id: item.variantId },
+            data: { stock: { increment: quantityToRestore } }
+          });
+          console.log(`[OrderRepository] Restored ${quantityToRestore} stock for variant ${item.variantId} (Order #${id})`);
+        }
+      }
     });
   }
 
@@ -211,6 +243,101 @@ export class OrderRepository {
       include: {
         payment: true
       }
+    });
+  }
+
+  async cancelAndRestore(id: number, paymentId?: number) {
+    return this.prisma.$transaction(async (tx) => {
+      // 1. Get order with return items
+      const order = await tx.order.findUnique({
+        where: { id },
+        include: {
+          orderItems: {
+            include: {
+              returnItems: { include: { returnRequest: true } }
+            }
+          }
+        }
+      });
+
+      if (!order) throw new Error('Order not found');
+
+      // 2. Update order status
+      await tx.order.update({
+        where: { id },
+        data: { status: 'CANCELLED' }
+      });
+
+      // 3. Restore stock (Partial return aware)
+      for (const item of order.orderItems) {
+        const alreadyRestored = item.returnItems?.reduce((sum: number, ri: any) => {
+          const status = ri.returnRequest?.status;
+          return (status === 'RECEIVED' || status === 'COMPLETED') ? sum + ri.quantity : sum;
+        }, 0) || 0;
+
+        const quantityToRestore = item.quantity - alreadyRestored;
+
+        if (quantityToRestore > 0) {
+          await tx.productVariant.update({
+            where: { id: item.variantId },
+            data: { stock: { increment: quantityToRestore } }
+          });
+        }
+      }
+
+      // 4. Restore discount usage (Atomic decrement + usage record deletion)
+      const discountUsage = await tx.discountUsage.findFirst({
+        where: { orderId: id }
+      });
+      
+      if (discountUsage) {
+        await tx.discount.update({
+          where: { id: discountUsage.discountId },
+          data: { usageCount: { decrement: 1 } }
+        });
+        await tx.discountUsage.delete({
+          where: { id: discountUsage.id }
+        });
+        console.log(`[OrderRepository] Restored discount usage for ${discountUsage.discountId} (Order #${id})`);
+      }
+
+      // 5. Update payment status if provided
+      if (paymentId) {
+        await tx.payment.update({
+          where: { id: paymentId },
+          data: { status: 'CANCELLED' }
+        });
+      }
+
+      return order;
+    });
+  }
+
+  async applyDiscountTransactional(orderId: number, discount: any, totals: any) {
+    return this.prisma.$transaction(async (tx) => {
+      // 1. Re-validate usage limit inside transaction
+      const currentUsageCount = await tx.order.count({
+        where: {
+          discountId: discount.id,
+          status: { not: 'CANCELLED' as any }
+        }
+      });
+
+      if (discount.usageLimit && currentUsageCount >= discount.usageLimit) {
+        throw new Error('Mã giảm giá đã hết lượt sử dụng');
+      }
+
+      // 2. Update order
+      return tx.order.update({
+        where: { id: orderId },
+        data: {
+          subtotal: totals.totalItems,
+          discountAmount: totals.discountAmount,
+          total: totals.discountedTotal,
+          discount: { connect: { id: discount.id } },
+        },
+        include: this.baseInclude
+      });
     });
   }
 }

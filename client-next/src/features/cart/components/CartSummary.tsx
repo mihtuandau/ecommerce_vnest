@@ -50,7 +50,7 @@ export function CartSummary({ selectedCount, selectedTotalPrice }: CartSummaryPr
           <Button 
             asChild 
             className={cn(
-              "w-full h-12 rounded-xl text-white text-sm font-semibold transition-all active:scale-[0.98]",
+              "w-full h-12 rounded-xl text-white text-sm font-semibold transition-all active:scale-95",
               selectedCount > 0 ? "bg-primary hover:bg-[#0d47a1]" : "bg-slate-300 cursor-not-allowed pointer-events-none"
             )}
           >

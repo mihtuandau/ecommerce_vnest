@@ -22,7 +22,11 @@ export class ReturnService {
       where: { id: dto.orderId },
       include: { 
         orderItems: {
-          include: { returnItems: true }
+          include: { 
+            returnItems: {
+              include: { returnRequest: true }
+            } 
+          }
         },
         returnRequests: true 
       }
@@ -79,7 +83,11 @@ export class ReturnService {
       where: { id: dto.orderId },
       include: { 
         orderItems: {
-          include: { returnItems: true }
+          include: { 
+            returnItems: {
+              include: { returnRequest: true }
+            } 
+          }
         },
         returnRequests: true 
       }

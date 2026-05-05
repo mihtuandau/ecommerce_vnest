@@ -44,7 +44,7 @@ export function ShippingForm({
     <Card className="border-none shadow-sm rounded-3xl overflow-hidden bg-white">
       <div className="px-6 py-5 border-b border-slate-50 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-[#1565C1]/5 flex items-center justify-center text-[#1565C1]">
+          <div className="h-10 w-10 rounded-xl bg-primary/5 flex items-center justify-center text-primary">
             <MapPin className="h-5 w-5" />
           </div>
           <h2 className="text-lg font-semibold text-slate-900">Thông tin nhận hàng</h2>
@@ -53,7 +53,7 @@ export function ShippingForm({
         {user && (
           <Link 
             href="/account?tab=address" 
-            className="text-xs font-bold text-[#1565C1] hover:underline flex items-center gap-1.5 bg-blue-50 px-3 py-1.5 rounded-full transition-all hover:bg-blue-100"
+            className="text-xs font-bold text-primary hover:underline flex items-center gap-1.5 bg-blue-50 px-3 py-1.5 rounded-full transition-all hover:bg-blue-100"
           >
             <Settings size={12} />
             Thay đổi địa chỉ

@@ -62,8 +62,8 @@ export default function AdminOrdersPage() {
         isFetching={isFetching} 
       />
 
-      {/* Main Table Container - Simple Border, No Shadow */}
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      {/* Main Table Container - Rounded & Shadow */}
+      <div className="bg-white rounded-2xl border-none shadow-sm overflow-hidden">
         <OrderTabs 
           activeTab={activeTab} 
           onTabChange={setActiveTab} 
@@ -81,7 +81,7 @@ export default function AdminOrdersPage() {
             <div className="flex h-96 items-center justify-center">
               <div className="flex flex-col items-center gap-3">
                 <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
-                <p className="text-sm font-semibold text-slate-400">Đang tải dữ liệu...</p>
+                <p className="text-sm font-semibold text-primary">Đang tải dữ liệu...</p>
               </div>
             </div>
           ) : (

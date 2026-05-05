@@ -33,10 +33,16 @@ export class OrderService {
     const { page = 1, limit = 10, status, userId } = query;
     const skip = (page - 1) * limit;
 
-    // Tạo khóa cache đặc biệt bao gồm cả role và userId để tránh sai lệch dữ liệu
+    // BỎ QUA CACHE ĐỐI VỚI ADMIN
+    // Dấu hiệu: userId không có (tức là Admin đang xem toàn bộ đơn) hoặc limit >= 100
+    const isAdmin = !userId || Number(limit) >= 100;
+
     const cacheKey = { ...query, requesterId: userId };
-    const cached = await this.cacheService.getOrdersList(cacheKey);
-    if (cached) return cached;
+    
+    if (!isAdmin) {
+      const cached = await this.cacheService.getOrdersList(cacheKey);
+      if (cached) return cached;
+    }
 
     const where: any = {};
     if (status) where['status'] = status;
@@ -57,7 +63,9 @@ export class OrderService {
       totalPages: Math.ceil(total / limit),
     };
 
-    await this.cacheService.setOrdersList(cacheKey, orders);
+    if (!isAdmin) {
+      await this.cacheService.setOrdersList(cacheKey, orders);
+    }
     return orders;
   }
 

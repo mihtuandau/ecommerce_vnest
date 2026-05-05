@@ -94,11 +94,14 @@ export class CartService {
             );
           } else {
             // New item
-            await this.repository.createCartItem({
-              cart: { connect: { id: cart.id } },
-              variant: { connect: { id: item.variantId } },
-              quantity: item.quantity,
-            });
+            const variant = await this.repository.findVariantById(item.variantId);
+            if (variant && variant.isActive && variant.stock >= item.quantity) {
+              await this.repository.createCartItem({
+                cart: { connect: { id: cart.id } },
+                variant: { connect: { id: item.variantId } },
+                quantity: item.quantity,
+              });
+            }
           }
         } catch (error) {
           // Skip invalid variants or other errors during sync
@@ -124,9 +127,13 @@ export class CartService {
     
     let updatedItem;
     if (existingItem) {
+      const totalRequested = existingItem.quantity + dto.quantity;
+      if (variant.stock < totalRequested) {
+        throw new BadRequestException(`Insufficient stock. You already have ${existingItem.quantity} in cart, and the warehouse only has ${variant.stock} left.`);
+      }
       updatedItem = await this.repository.updateCartItem(
         existingItem.id,
-        existingItem.quantity + dto.quantity,
+        totalRequested,
       );
     } else {
       updatedItem = await this.repository.createCartItem({

@@ -17,4 +17,8 @@ export const dashboardApi = {
     const { data } = await api.get("/dashboard/top-products");
     return data;
   },
+  getPendingReviews: async () => {
+    const { data } = await api.get("/dashboard/pending-reviews");
+    return data;
+  },
 };

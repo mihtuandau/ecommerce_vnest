@@ -39,6 +39,12 @@ export class DashboardController {
   getTopProducts() {
     return this.dashboardService.getTopProducts();
   }
+
+  @Get('pending-reviews')
+  @Permissions('dashboard.view')
+  getPendingReviews() {
+    return this.dashboardService.getPendingReviews();
+  }
 }
 
 

@@ -37,11 +37,13 @@ import {
 } from "@/components/ui/Select";
 
 import { useSearchParams } from "next/navigation";
+import { productsApi } from "@/features/products/api";
 
 type Tab = "info" | "address" | "security";
 
 export function AccountView() {
   const { user } = useAuthStore();
+  const { toast } = useToast();
   const searchParams = useSearchParams();
   const [mounted, setMounted] = useState(false);
   const [activeTab, setActiveTab] = useState<Tab>("info");
@@ -124,7 +126,7 @@ export function AccountView() {
       const url = await productsApi.uploadImage(file);
       updateProfile.mutate({ avatar: url });
     } catch (err) {
-      toastError("Không thể tải ảnh đại diện lên");
+      toast({ title: "Lỗi", description: "Không thể tải ảnh đại diện lên", variant: "destructive" });
     }
   };
 
@@ -293,7 +295,7 @@ export function AccountView() {
                     <div className="space-y-1.5">
                       <label className="text-xs font-normal text-slate-500 ml-0.5">Họ và tên</label>
                       <Input
-                        className="h-10 rounded-xl border-slate-200 text-sm focus-visible:ring-[#1565C1]/10 transition-all font-medium"
+                        className="h-11 rounded-xl border-slate-200 text-sm focus-visible:ring-primary/10 transition-all font-medium"
                         value={form.name}
                         onChange={(e) => setForm({ ...form, name: e.target.value })}
                         disabled={updateProfile.isPending}
@@ -311,7 +313,7 @@ export function AccountView() {
                   <div className="space-y-1.5">
                     <label className="text-xs font-normal text-slate-500 ml-0.5">Số điện thoại</label>
                     <Input
-                      className="h-10 rounded-xl border-slate-200 text-sm focus-visible:ring-[#1565C1]/10 transition-all font-medium max-w-[240px]"
+                      className="h-11 rounded-xl border-slate-200 text-sm focus-visible:ring-primary/10 transition-all font-medium max-w-[240px]"
                       value={form.phone}
                       onChange={(e) => setForm({ ...form, phone: e.target.value })}
                       disabled={updateProfile.isPending}
@@ -321,7 +323,7 @@ export function AccountView() {
                     <Button
                       type="submit"
                       disabled={updateProfile.isPending}
-                      className="h-10 px-8 rounded-full text-sm font-bold bg-primary hover:bg-[#1153a8] text-white transition-all active:scale-95 shadow-md shadow-blue-500/10"
+                      className="h-10 px-8 rounded-full text-sm font-bold bg-primary hover:bg-primary/90 text-white transition-all active:scale-95 shadow-md shadow-blue-500/10"
                     >
                       {updateProfile.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Lưu thay đổi"}
                     </Button>
@@ -333,7 +335,7 @@ export function AccountView() {
             <div className="flex flex-col gap-4">
               <div className="bg-white rounded-2xl border border-slate-100 p-5 shadow-sm">
                 <div className="flex items-center gap-4">
-                  <div className="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center text-[#1565C1]">
+                  <div className="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center text-primary">
                     <ShoppingBag size={18} />
                   </div>
                   <div>
@@ -344,7 +346,7 @@ export function AccountView() {
               </div>
               <div className="bg-white rounded-2xl border border-slate-100 p-5 shadow-sm">
                 <div className="flex items-center gap-4">
-                  <div className="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center text-[#1565C1]">
+                  <div className="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center text-primary">
                     <Wallet size={18} />
                   </div>
                   <div>
@@ -369,7 +371,7 @@ export function AccountView() {
                 onClick={() => setIsAddModalOpen(true)}
                 variant="outline"
                 size="sm"
-                className="h-9 px-6 text-xs rounded-full border-slate-200 text-slate-600 hover:bg-[#1565C1] hover:text-white font-bold transition-all shadow-sm"
+                className="h-9 px-6 text-xs rounded-full border-slate-200 text-slate-600 hover:bg-primary hover:text-white font-bold transition-all shadow-sm"
               >
                 <Plus size={14} className="mr-1.5" /> Thêm địa chỉ mới
               </Button>
@@ -398,19 +400,19 @@ export function AccountView() {
                       key={address.id} 
                       className={cn(
                         "group bg-white p-5 rounded-2xl border transition-all duration-200 flex flex-col justify-between gap-4 h-full",
-                        address.isDefault ? "border-[#1565C1] bg-blue-50/20" : "border-slate-100"
+                        address.isDefault ? "border-primary bg-blue-50/20" : "border-slate-100"
                       )}
                     >
                       <div className="space-y-3 flex-1">
                         <div className="flex items-start justify-between gap-3">
                           <div className={cn(
                             "h-10 w-10 rounded-xl flex items-center justify-center shrink-0 border",
-                            address.isDefault ? "bg-[#1565C1] border-[#1565C1] text-white" : "bg-slate-50 border-slate-100 text-slate-400"
+                            address.isDefault ? "bg-primary border-primary text-white" : "bg-slate-50 border-slate-100 text-slate-400"
                           )}>
                             <MapPin className="h-5 w-5" />
                           </div>
                           {address.isDefault && (
-                            <Badge className="bg-[#1565C1] text-white text-[9px] font-semibold tracking-wider h-5 px-2 rounded-lg">
+                            <Badge className="bg-primary text-white text-[9px] font-semibold tracking-wider h-5 px-2 rounded-lg">
                               Mặc định
                             </Badge>
                           )}
@@ -475,7 +477,7 @@ export function AccountView() {
                 <div className="space-y-1.5">
                   <label className="text-xs font-semibold text-slate-400 ml-0.5">Mật khẩu hiện tại</label>
                   <Input
-                    className="h-10 rounded-xl border-slate-200 text-sm focus-visible:ring-[#1565C1]/10 transition-all font-medium"
+                    className="h-11 rounded-xl border-slate-200 text-sm focus-visible:ring-primary/10 transition-all font-medium"
                     type="password"
                     placeholder="••••••••"
                   />
@@ -484,7 +486,7 @@ export function AccountView() {
                   <div className="space-y-1.5">
                     <label className="text-xs font-semibold text-slate-400 ml-0.5">Mật khẩu mới</label>
                     <Input
-                      className="h-10 rounded-xl border-slate-200 text-sm focus-visible:ring-[#1565C1]/10 transition-all font-medium"
+                      className="h-11 rounded-xl border-slate-200 text-sm focus-visible:ring-primary/10 transition-all font-medium"
                       type="password"
                       placeholder="••••••••"
                     />
@@ -492,7 +494,7 @@ export function AccountView() {
                   <div className="space-y-1.5">
                     <label className="text-xs font-semibold text-slate-400 ml-0.5">Xác nhận mật khẩu</label>
                     <Input
-                      className="h-10 rounded-xl border-slate-200 text-sm focus-visible:ring-[#1565C1]/10 transition-all font-medium"
+                      className="h-11 rounded-xl border-slate-200 text-sm focus-visible:ring-primary/10 transition-all font-medium"
                       type="password"
                       placeholder="••••••••"
                     />
@@ -501,7 +503,7 @@ export function AccountView() {
                 <div className="pt-2">
                   <Button
                     type="submit"
-                    className="h-10 px-10 rounded-full text-sm font-bold bg-[#1565C1] hover:bg-[#1153a8] text-white transition-all active:scale-95 shadow-md shadow-blue-500/10"
+                    className="h-10 px-10 rounded-full text-sm font-bold bg-primary hover:bg-primary/90 text-white transition-all active:scale-95 shadow-md shadow-blue-500/10"
                   >
                     Cập nhật mật khẩu
                   </Button>
@@ -518,7 +520,7 @@ export function AccountView() {
         <DialogContent className="sm:max-w-[600px] rounded-3xl p-0 overflow-hidden border-none shadow-2xl">
           <DialogHeader className="px-8 py-6 bg-slate-50/50 border-b border-slate-100">
             <DialogTitle className="text-lg font-bold text-slate-900 flex items-center gap-2">
-              <MapPin size={20} className="text-[#1565C1]" />
+              <MapPin size={20} className="text-primary" />
               Thêm địa chỉ giao hàng mới
             </DialogTitle>
           </DialogHeader>
@@ -531,7 +533,7 @@ export function AccountView() {
                   <Input 
                     required
                     placeholder="Nguyễn Văn A"
-                    className="h-11 rounded-xl border-slate-200 focus:ring-[#1565C1]/10"
+                    className="h-11 rounded-xl border-slate-200 focus:ring-primary/10"
                     value={newAddress.fullName}
                     onChange={e => setNewAddress({...newAddress, fullName: e.target.value})}
                   />
@@ -541,7 +543,7 @@ export function AccountView() {
                   <Input 
                     required
                     placeholder="09xx xxx xxx"
-                    className="h-11 rounded-xl border-slate-200 focus:ring-[#1565C1]/10"
+                    className="h-11 rounded-xl border-slate-200 focus:ring-primary/10"
                     value={newAddress.phone}
                     onChange={e => setNewAddress({...newAddress, phone: e.target.value})}
                   />
@@ -609,7 +611,7 @@ export function AccountView() {
                 <Input 
                   required
                   placeholder="Số nhà, tên đường..."
-                  className="h-11 rounded-xl border-slate-200 focus:ring-[#1565C1]/10"
+                  className="h-11 rounded-xl border-slate-200 focus:ring-primary/10"
                   value={newAddress.street}
                   onChange={e => setNewAddress({...newAddress, street: e.target.value})}
                 />
@@ -619,7 +621,7 @@ export function AccountView() {
                 <input 
                   type="checkbox" 
                   id="isDefault" 
-                  className="h-4 w-4 rounded border-slate-300 text-[#1565C1] focus:ring-[#1565C1]/10"
+                  className="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary/10"
                   checked={newAddress.isDefault}
                   onChange={e => setNewAddress({...newAddress, isDefault: e.target.checked})}
                 />
@@ -639,7 +641,7 @@ export function AccountView() {
               <Button 
                 type="submit" 
                 disabled={createAddress.isPending}
-                className="h-11 px-10 rounded-full bg-[#1565C1] hover:bg-[#1153a8] text-white font-bold shadow-lg shadow-blue-500/10 active:scale-95 transition-all"
+                className="h-11 px-10 rounded-full bg-primary hover:bg-primary/90 text-white font-bold shadow-lg shadow-blue-500/10 active:scale-95 transition-all"
               >
                 {createAddress.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Thêm địa chỉ"}
               </Button>

@@ -1,4 +1,4 @@
-﻿import { 
+import { 
   Controller, 
   Get, 
   Post, 
@@ -79,7 +79,7 @@ export class BannerController {
           type: 'boolean',
           example: true
         },
-        order: {
+        displayOrder: {
           type: 'number',
           example: 1
         }
@@ -102,7 +102,7 @@ export class BannerController {
       link: body.link || '/products',
       buttonText: body.buttonText || 'Mua ngay',
       isActive: body.isActive === 'true' || body.isActive === true,
-      order: body.order ? parseInt(body.order) : 0
+      displayOrder: body.displayOrder ? parseInt(body.displayOrder) : (body.order ? parseInt(body.order) : 0)
     };
     
     return this.bannerService.create(createBannerDto);
@@ -171,7 +171,7 @@ export class BannerController {
           type: 'boolean',
           example: true
         },
-        order: {
+        displayOrder: {
           type: 'number',
           example: 1
         }
@@ -190,7 +190,7 @@ export class BannerController {
       link: body.link,
       buttonText: body.buttonText,
       isActive: body.isActive === 'true' || body.isActive === true,
-      order: body.order ? parseInt(body.order) : undefined
+      displayOrder: body.displayOrder ? parseInt(body.displayOrder) : (body.order ? parseInt(body.order) : undefined)
     };
 
     if (file) {
@@ -205,8 +205,8 @@ export class BannerController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   @ApiBearerAuth('Authorization')
-  reorder(@Param('id') id: string, @Body('order') order: number) {
-    return this.bannerService.reorder(+id, order);
+  reorder(@Param('id') id: string, @Body('order') displayOrder: number) {
+    return this.bannerService.reorder(+id, displayOrder);
   }
 
   @Delete(':id')

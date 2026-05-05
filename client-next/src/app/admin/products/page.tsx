@@ -61,7 +61,7 @@ export default function AdminProductsPage() {
         isFetching={isFetching} 
       />
 
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <div className="bg-white rounded-2xl border-none shadow-sm overflow-hidden">
         <Tabs 
           activeTab={activeTab} 
           onTabChange={setActiveTab} 

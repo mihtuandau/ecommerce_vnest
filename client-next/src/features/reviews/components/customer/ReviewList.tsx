@@ -190,13 +190,13 @@ export function ReviewList({ productId, product }: ReviewListProps) {
                     
                     {review.images && review.images.length > 0 && (
                       <div className="flex gap-2 pt-2">
-                        {review.images.map((img: string, idx: number) => (
+                        {review.images.map((img: any, idx: number) => (
                           <img 
-                            key={idx} 
-                            src={img} 
+                            key={img.id || idx} 
+                            src={typeof img === 'string' ? img : img.url} 
                             alt="Review" 
                             className="h-20 w-20 object-cover rounded-xl border border-slate-200 cursor-pointer hover:opacity-90 transition-opacity shadow-sm" 
-                            onClick={() => setPreviewImage(img)}
+                            onClick={() => setPreviewImage(typeof img === 'string' ? img : img.url)}
                           />
                         ))}
                       </div>

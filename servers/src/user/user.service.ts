@@ -9,9 +9,14 @@ import { QueryUserDto } from './dto/query-user.dto';
 import { UpdateUserResetDto } from '../user/dto/user-reset.dto';
 import * as bcrypt from 'bcrypt';
 
+import { UploadService } from '../upload/upload.service';
+
 @Injectable()
 export class UserService {
-  constructor(private repository: UserRepository) {}
+  constructor(
+    private repository: UserRepository,
+    private uploadService: UploadService,
+  ) {}
 
   async create(data: any): Promise<User> {
     return this.repository.create({
@@ -134,7 +139,14 @@ export class UserService {
     if (data.email) updateData.email = data.email;
     if (data.role) updateData.role = data.role;
     if (data.phone) updateData.phone = data.phone;
-    if (data.avatar) updateData.avatar = data.avatar;
+    if (data.avatar) {
+      // Dọn dẹp ảnh cũ để tránh rác storage
+      const oldUser = await this.repository.findById(id);
+      if (oldUser?.avatar && oldUser.avatar !== data.avatar) {
+        await this.uploadService.deleteImage(oldUser.avatar).catch(() => {});
+      }
+      updateData.avatar = data.avatar;
+    }
     if ((data as any).provider) updateData.provider = (data as any).provider;
     if ((data as any).providerId) updateData.providerId = (data as any).providerId;
     if (data.password) {

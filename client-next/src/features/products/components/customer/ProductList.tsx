@@ -49,8 +49,8 @@ export function ProductList({
     enabled: !initialProducts,
   });
 
-  const products = initialProducts || data?.data || [];
-  const totalPages = data?.totalPages || 0;
+  const products = initialProducts || (data as any)?.data || [];
+  const totalPages = (data as any)?.totalPages || 0;
 
   if (isLoading && !initialProducts) {
     return (
@@ -103,7 +103,7 @@ export function ProductList({
 
   if (products.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-32 text-center space-y-6 animate-in fade-in duration-700">
+      <div className="flex flex-col items-center justify-center py-32 text-center space-y-6 animate-in fade-in duration-500">
         <div className="h-24 w-24 rounded-[2rem] bg-slate-50 flex items-center justify-center text-slate-200">
           <PackageSearch className="h-12 w-12" />
         </div>

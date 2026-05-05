@@ -88,7 +88,7 @@ export function CartContainer() {
               <button 
                 type="button"
                 onClick={() => router.back()}
-                className="h-11 w-11 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:text-[#1565C1] hover:border-[#1565C1] hover:bg-blue-50 transition-all shrink-0 shadow-sm"
+                className="h-11 w-11 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:text-primary hover:border-primary hover:bg-blue-50 transition-all shrink-0 shadow-sm"
               >
                 <ChevronLeft size={20} />
               </button>

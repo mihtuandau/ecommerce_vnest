@@ -9,11 +9,7 @@ import { ConfigService } from '@nestjs/config';
       isGlobal: true,
       useFactory: async (configService: ConfigService) => {
         const store = await redisStore({
-          socket: {
-            host: configService.get<string>('REDIS_HOST', 'localhost'),
-            port: parseInt(configService.get<string>('REDIS_PORT', '6379'), 10),
-          },
-          password: configService.get<string>('REDIS_PASSWORD'),
+          url: `redis://${configService.get<string>('REDIS_USERNAME', 'default')}:${configService.get<string>('REDIS_PASSWORD')}@${configService.get<string>('REDIS_HOST')}:${configService.get<string>('REDIS_PORT')}`,
           ttl: parseInt(configService.get<string>('REDIS_CACHE_EXPIRATION', '3600'), 10) * 1000, // cache-manager v5+ uses milliseconds
         });
         

@@ -19,7 +19,7 @@ export function Items({ order }: ItemsProps) {
   const subtotal = orderAny.subtotal || (totalAmount - shippingFee + discountAmount);
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+    <div className="bg-white rounded-2xl border-none shadow-sm overflow-hidden">
       <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/30">
         <h3 className="font-semibold text-sm text-slate-800 flex items-center gap-2">
           <Package className="h-4 w-4 text-slate-500" /> Danh sách sản phẩm

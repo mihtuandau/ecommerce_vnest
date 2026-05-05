@@ -33,7 +33,7 @@ export function ConfirmReturnModal({ isOpen, onClose, onConfirm, isLoading }: Co
           <Button
             onClick={onConfirm}
             disabled={isLoading}
-            className="flex-1 rounded-xl h-10 bg-[#1565C1] hover:bg-[#0d47a1] text-white font-semibold text-[13px] shadow-sm"
+            className="flex-1 rounded-xl h-10 bg-primary hover:bg-[#0d47a1] text-white font-semibold text-[13px] shadow-sm"
           >
             {isLoading ? "Đang xử lý..." : "Xác nhận"}
           </Button>

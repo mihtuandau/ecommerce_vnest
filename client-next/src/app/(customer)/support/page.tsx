@@ -33,14 +33,14 @@ export default function SupportPage() {
               {/* Quick Contact Card */}
               <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 space-y-5">
                  <h2 className="text-sm font-bold text-slate-800 flex items-center gap-2">
-                    <HelpCircle size={18} className="text-[#1565C1]" />
+                    <HelpCircle size={18} className="text-[#1565C0]" />
                     Trợ giúp nhanh
                  </h2>
                  
                  <div className="grid grid-cols-1 gap-2">
                     {FAQ_SHORTCUTS.map((item, idx) => (
                        <button key={idx} className="flex items-center gap-4 p-4 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-100 transition-all text-left group">
-                          <div className="h-10 w-10 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 group-hover:text-[#1565C1] group-hover:bg-blue-50 transition-colors shrink-0">
+                          <div className="h-10 w-10 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 group-hover:text-[#1565C0] group-hover:bg-blue-50 transition-colors shrink-0">
                              {item.icon}
                           </div>
                           <div>

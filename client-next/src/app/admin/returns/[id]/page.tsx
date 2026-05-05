@@ -115,7 +115,7 @@ export default function AdminReturnDetailPage() {
               <Button 
                 onClick={() => handleUpdateStatus(ReturnStatus.APPROVED)}
                 disabled={isSubmitting}
-                className="h-10 rounded-lg px-5 font-semibold bg-[#1565C1] hover:bg-slate-800 shadow-sm text-[13px]"
+                className="h-10 rounded-lg px-5 font-semibold bg-[#1565C0] hover:bg-slate-800 shadow-sm text-[13px]"
               >
                 <CheckCircle2 className="mr-2 h-4 w-4" /> Phê duyệt
               </Button>

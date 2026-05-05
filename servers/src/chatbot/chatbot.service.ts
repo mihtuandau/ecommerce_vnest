@@ -250,8 +250,8 @@ ai trả lời:
   private async saveMessage(convId: string, userMsg: string, aiMsg: string, ids: number[]) {
     try {
       await this.prisma.$transaction([
-        this.prisma.aiMessage.create({ data: { conversationId: convId, role: 'user', content: userMsg } }),
-        this.prisma.aiMessage.create({ data: { conversationId: convId, role: 'model', content: aiMsg, productIds: ids } })
+        this.prisma.aiMessage.create({ data: { conversationId: convId, role: 'USER', content: userMsg } }),
+        this.prisma.aiMessage.create({ data: { conversationId: convId, role: 'MODEL', content: aiMsg, productIds: ids } })
       ]);
       await this.prisma.aiConversation.update({ where: { id: convId }, data: { updatedAt: new Date() } });
     } catch (e) {

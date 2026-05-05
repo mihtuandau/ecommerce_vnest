@@ -30,7 +30,7 @@ export function GeneralInfo({ form, categories }: GeneralInfoProps) {
   return (
     <div className="space-y-8 focus-visible:outline-none">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="space-y-6 bg-white p-6 rounded-xl border border-slate-200">
+        <div className="space-y-6 bg-white p-6 rounded-2xl border-none shadow-sm">
           <div className="flex items-center gap-2 mb-2">
             <FileText className="h-5 w-5 text-primary" />
             <h3 className="font-bold text-base text-slate-900">Thông tin cơ bản</h3>
@@ -112,7 +112,7 @@ export function GeneralInfo({ form, categories }: GeneralInfoProps) {
           </div>
         </div>
 
-        <div className="space-y-6 bg-white p-6 rounded-xl border border-slate-200">
+        <div className="space-y-6 bg-white p-6 rounded-2xl border-none shadow-sm">
           <div className="flex items-center gap-2 mb-2">
             <DollarSign className="h-5 w-5 text-primary" />
             <h3 className="font-bold text-base text-slate-900">Giá niêm yết</h3>
@@ -184,7 +184,7 @@ export function GeneralInfo({ form, categories }: GeneralInfoProps) {
           />
         </div>
 
-        <div className="lg:col-span-2 space-y-6 bg-white p-6 rounded-xl border border-slate-200">
+        <div className="lg:col-span-2 space-y-6 bg-white p-6 rounded-2xl border-none shadow-sm">
           <div className="flex items-center gap-2 mb-2">
             <FileText className="h-5 w-5 text-primary" />
             <h3 className="font-bold text-base text-slate-900">Mô tả sản phẩm</h3>

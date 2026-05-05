@@ -90,7 +90,7 @@ export function OrderHistoryView() {
         <div className="flex items-center gap-4 border-b border-slate-100 pb-8">
           <Link
             href="/"
-            className="h-10 w-10 rounded-full border border-slate-200 flex items-center justify-center text-slate-400 hover:text-[#1565C1] hover:border-[#1565C1] hover:bg-blue-50 transition-all shrink-0"
+            className="h-10 w-10 rounded-full border border-slate-200 flex items-center justify-center text-slate-400 hover:text-primary hover:border-primary hover:bg-blue-50 transition-all shrink-0"
           >
             <ArrowLeft size={18} />
           </Link>

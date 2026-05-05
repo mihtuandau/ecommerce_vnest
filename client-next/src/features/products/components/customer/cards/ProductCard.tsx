@@ -96,7 +96,7 @@ export function ProductCard({ product, view = "grid" }: ProductCardProps) {
 
   const soldCount = product.soldCount || (product as any).soldCount || 0;
   const viewCount = (product as any).viewCount || 0;
-  const rating = (product as any).averageRating || 5.0;
+  const rating = (product as any).averageRating || 0;
 
   // ── LIST VIEW VARIANT ──
   if (view === "list") {
@@ -109,12 +109,12 @@ export function ProductCard({ product, view = "grid" }: ProductCardProps) {
           <img
             src={imageUrl}
             alt={product.name}
-            className="max-h-full max-w-full object-contain transition-transform duration-700 ease-out group-hover:scale-110 mix-blend-multiply"
+            className="max-h-full max-w-full object-contain transition-transform duration-500 ease-out group-hover:scale-110 mix-blend-multiply"
           />
-          {discountPercent > 0 && (
+          {discountPercent > 0 && !product.isNew && (
             <div className="absolute top-2 left-2 z-10">
-              <span className="bg-[#e85d24] text-white text-[10px] font-black px-1.5 py-0.5 rounded-md shadow-sm tracking-wide">
-                -{discountPercent}%
+              <span className="text-[22px] md:text-[26px] leading-none drop-shadow-sm hover:scale-110 transition-transform">
+                🔥
               </span>
             </div>
           )}
@@ -129,7 +129,7 @@ export function ProductCard({ product, view = "grid" }: ProductCardProps) {
                 </span>
                 <div className="flex items-center gap-1">
                   <Star className="h-3 w-3 fill-[#f4c300] text-[#f4c300]" />
-                  <span className="text-[11px] font-medium text-slate-500">{rating}</span>
+                  <span className="text-[11px] font-medium text-slate-500">{rating > 0 ? rating.toFixed(1) : "Chưa có"}</span>
                 </div>
               </div>
               <button 
@@ -162,10 +162,15 @@ export function ProductCard({ product, view = "grid" }: ProductCardProps) {
               <span className="text-lg md:text-2xl font-bold text-primary tabular-nums">
                 {formatCurrency(price)}
               </span>
-              {discountPercent > 0 && (
-                <span className="text-[10px] md:text-sm text-slate-400 line-through font-medium">
-                  {formatCurrency(originalPrice!)}
-                </span>
+              {originalPrice && originalPrice > price && (
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-slate-500 line-through font-medium">
+                    {formatCurrency(originalPrice)}
+                  </span>
+                  <span className="bg-destructive/10 text-destructive text-[10px] font-bold px-1.5 py-0.5 rounded-sm">
+                    -{discountPercent}%
+                  </span>
+                </div>
               )}
             </div>
 
@@ -192,26 +197,28 @@ export function ProductCard({ product, view = "grid" }: ProductCardProps) {
       >
         <div className="absolute top-2 left-2 md:top-3 md:left-3 z-10 flex items-start justify-between w-full pr-4 md:pr-6">
           <div className="flex flex-col gap-1">
-            {discountPercent > 0 && (
-              <span className="bg-[#e85d24] text-white text-[10px] font-bold px-2 py-0.5 md:py-1 rounded-md shadow-sm tracking-wide">
-                -{discountPercent}%
-              </span>
-            )}
             {product.isNew && (
               <span className="bg-primary text-white text-[10px] font-bold px-2 py-0.5 md:py-1 rounded-md shadow-sm tracking-wide">
                 Mới
               </span>
             )}
-          </div>
-          <button 
-            onClick={handleToggleWishlist}
-            className={cn(
-              "h-7 w-7 md:h-9 md:w-9 rounded-full backdrop-blur-md flex items-center justify-center transition-all duration-300",
-              isFavorite ? "text-rose-500 bg-white/90 shadow-sm" : "text-slate-400 bg-white/60 hover:text-rose-500 hover:bg-white shadow-sm"
+            {discountPercent > 0 && !product.isNew && (
+              <span className="text-[22px] md:text-[26px] leading-none mt-0.5 drop-shadow-sm hover:scale-110 transition-transform">
+                🔥
+              </span>
             )}
-          >
-            <Heart size={14} className={cn(isFavorite && "fill-current")} />
-          </button>
+          </div>
+          <div className="flex flex-col items-end gap-1.5">
+            <button 
+              onClick={handleToggleWishlist}
+              className={cn(
+                "h-7 w-7 md:h-9 md:w-9 rounded-full backdrop-blur-md flex items-center justify-center transition-all duration-300",
+                isFavorite ? "text-rose-500 bg-white/90 shadow-sm" : "text-slate-400 bg-white/60 hover:text-rose-500 hover:bg-white shadow-sm"
+              )}
+            >
+              <Heart size={14} className={cn(isFavorite && "fill-current")} />
+            </button>
+          </div>
         </div>
 
         <img
@@ -248,7 +255,7 @@ export function ProductCard({ product, view = "grid" }: ProductCardProps) {
                   />
                 ))}
               </div>
-              <span className="text-[8px] md:text-[9px] font-bold text-slate-400">
+              <span className="text-[8px] md:text-[9px] font-medium text-slate-400">
                 ({product.reviewCount || 0})
               </span>
             </div>
@@ -270,16 +277,21 @@ export function ProductCard({ product, view = "grid" }: ProductCardProps) {
               {formatCurrency(price)}
             </span>
             {discountPercent > 0 && (
-              <span className="text-[9px] md:text-[10px] text-slate-400 line-through font-medium">
-                {formatCurrency(originalPrice!)}
-              </span>
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <span className="text-[9px] md:text-[10px] text-slate-400 line-through font-medium">
+                  {formatCurrency(originalPrice!)}
+                </span>
+                <span className="bg-destructive/10 text-destructive text-[9px] md:text-[10px] font-bold px-1.5 py-0.5 rounded-sm">
+                  -{discountPercent}%
+                </span>
+              </div>
             )}
           </div>
 
           <Button
             onClick={handleAddToCart}
             size="icon"
-            className="h-8 w-8 md:h-9 md:w-9 rounded-xl bg-primary hover:bg-[#0d47a1] text-white shadow-lg shadow-blue-500/10 transition-transform active:scale-90"
+            className="h-8 w-8 md:h-9 md:w-9 rounded-xl bg-primary hover:bg-[#0d47a1] text-white shadow-lg shadow-blue-500/10 transition-transform active:scale-95"
           >
             <ShoppingCart className="h-3.5 w-3.5 md:h-4 md:w-4" />
           </Button>

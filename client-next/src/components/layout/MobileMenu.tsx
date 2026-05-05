@@ -187,12 +187,12 @@ export function MobileMenu({ user, categories, wishlistCount, onClose, mounted }
         ) : (
           <div className="grid grid-cols-2 gap-3">
             <Link href={ROUTES.LOGIN} onClick={onClose}>
-              <button className="w-full py-2.5 rounded-xl text-sm font-bold text-slate-600 bg-white border border-slate-200">
+              <button className="w-full py-2.5 rounded-full text-sm font-bold text-slate-600 bg-white border border-slate-200">
                 Đăng nhập
               </button>
             </Link>
             <Link href={ROUTES.REGISTER} onClick={onClose}>
-              <button className="w-full py-2.5 rounded-xl text-sm font-bold text-white bg-primary shadow-lg shadow-primary/20">
+              <button className="w-full py-2.5 rounded-full text-sm font-bold text-white bg-primary shadow-lg shadow-primary/20">
                 Đăng ký
               </button>
             </Link>

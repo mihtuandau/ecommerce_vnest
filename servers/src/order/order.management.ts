@@ -50,16 +50,8 @@ export class OrderManagement {
 
         this.logger.log(`[Cron] Auto-cancelling abandoned order ${order.orderCode} (ID: ${order.id})`);
 
-        await this.repository.update(order.id, { status: 'CANCELLED' });
-        
-        // Hoàn tồn kho & mã giảm giá
-        await this.repository.restoreOrderStock(order.id, false);
-        await this.repository.restoreDiscountUsage(order.id);
-
-        // Hủy payment nếu có
-        if (order.payment) {
-          await this.paymentService.updateStatus(order.payment.id, { status: 'CANCELLED' });
-        }
+        // Sử dụng Transaction để đảm bảo tính nguyên tử
+        await this.repository.cancelAndRestore(order.id, order.payment?.id);
 
         await this.cacheService.clearRelatedCaches(order.id, order.userId || undefined);
       } catch (err) {
@@ -83,26 +75,44 @@ export class OrderManagement {
     }
 
 
-    const order = await this.repository.update(id, dto);
+    // Handle deliveredAt timestamp
+    const updateData: any = { ...dto };
+    
+    if (dto.status === 'DELIVERED' && oldOrder.status !== 'DELIVERED') {
+      updateData.deliveredAt = new Date();
+      this.logger.log(`[OrderManagement] Marking order ${id} as delivered at ${updateData.deliveredAt}`);
+    } else if (oldOrder.status === 'DELIVERED' && dto.status && dto.status !== 'DELIVERED') {
+      updateData.deliveredAt = null;
+    }
+
+    const order = await this.repository.update(id, updateData);
 
     await this.handlePaymentCreation(order, oldOrder, dto);
 
     await this.handleDeliveredStatus(dto, oldOrder);
 
     if (dto.status === 'CANCELLED' || dto.status === 'RETURNED') {
-      // Vì trạng thái CANCELLED đã bị chặn ở đầu hàm (dòng 79), 
-      // nên ở đây chỉ cần kiểm tra xem đơn hàng đã là RETURNED hay chưa.
       const isAlreadyRestored = oldOrder.status === 'RETURNED';
       
       if (!isAlreadyRestored) {
-        const wasSold = oldOrder.status === 'DELIVERED' || oldOrder.status === 'RETURN_REQUESTED';
         const actionLabel = dto.status === 'CANCELLED' ? 'cancelled' : 'returned';
-        this.logger.log(`[OrderManagement] Order ${id} is being ${actionLabel}. Restoring stock (wasSold: ${wasSold})...`);
-        await this.repository.restoreOrderStock(id, wasSold);
+        this.logger.log(`[OrderManagement] Order ${id} is being ${actionLabel}. Restoring stock...`);
+        await this.repository.restoreOrderStock(id);
         
         if (dto.status === 'CANCELLED') {
           await this.repository.restoreDiscountUsage(id);
         }
+
+        // Tự động hoàn tiền nếu admin đánh dấu RETURNED cho đơn hàng đã thanh toán Online
+        if (dto.status === 'RETURNED' && order.payment && order.payment.status === 'SUCCESS') {
+          try {
+            this.logger.log(`[OrderManagement] Initiating full refund for manually RETURNED order ${id}`);
+            await this.paymentService.initiateRefund(order.payment.id);
+          } catch (error) {
+            this.logger.error('Failed to initiate refund for manual RETURNED status:', error);
+          }
+        }
+
         this.logger.log(`[OrderManagement] Stock restoration for order ${id} completed.`);
       } else {
         this.logger.log(`[OrderManagement] Order ${id} was already ${oldOrder.status}. Skipping stock restoration.`);
@@ -120,10 +130,24 @@ export class OrderManagement {
     
     // Nếu đơn hàng chưa bị hủy mà lại bị xóa, chúng ta cũng nên hoàn lại tồn kho
     if (order.status !== 'CANCELLED' && order.status !== 'RETURNED') {
-      const wasSold = order.status === 'DELIVERED' || order.status === 'RETURN_REQUESTED';
-      this.logger.log(`[OrderManagement] Order ${id} is being deleted without prior cancellation. Restoring stock (wasSold: ${wasSold}) before deletion...`);
-      await this.repository.restoreOrderStock(id, wasSold);
+      this.logger.log(`[OrderManagement] Order ${id} is being deleted without prior cancellation. Restoring stock before deletion...`);
+      await this.repository.restoreOrderStock(id);
       await this.repository.restoreDiscountUsage(id);
+      
+      // Nếu đơn hàng đã giao hoặc đang yêu cầu trả hàng (nghĩa là đã tính vào soldCount), phải trừ soldCount
+      if (order.status === 'DELIVERED' || order.status === 'RETURN_REQUESTED') {
+        for (const item of order.orderItems) {
+          // Tính toán số lượng chưa được hoàn trả trước đó để trừ soldCount chính xác
+          const alreadyReturned = (item as any).returnItems?.reduce((sum: number, ri: any) => 
+            (ri.returnRequest?.status === 'RECEIVED' || ri.returnRequest?.status === 'COMPLETED') ? sum + ri.quantity : sum, 0) || 0;
+          
+          const quantityToDecrement = item.quantity - alreadyReturned;
+          
+          if (quantityToDecrement > 0) {
+            await this.repository.decrementProductSoldCount(item.variant.productId, quantityToDecrement).catch(() => {});
+          }
+        }
+      }
     }
 
     const removed = await this.repository.delete(id);
@@ -146,25 +170,19 @@ export class OrderManagement {
       throw new BadRequestException('Cannot cancel order with status: ' + order.status);
     }
 
-    const cancelled = await this.repository.update(orderId, { status: 'CANCELLED' });
+    this.logger.log(`[OrderManagement] Member order ${orderId} cancelled by user ${userId}. Restoring stock...`);
+    
+    const paymentIdToCancel = (order.payment && order.payment.status === 'PENDING') ? order.payment.id : undefined;
+    const cancelled = await this.repository.cancelAndRestore(orderId, paymentIdToCancel);
 
-    // Initiate refund if payment is successful
+    // Initiate refund separately as it's an external API call
     if (order.payment && order.payment.status === 'SUCCESS') {
       try {
         await this.paymentService.initiateRefund(order.payment.id);
       } catch (error) {
         this.logger.error('Failed to initiate refund during order cancellation:', error);
-        // Don't fail the cancellation, but log for manual review
       }
-    } else if (order.payment && order.payment.status === 'PENDING') {
-      // Just cancel pending payments
-      await this.paymentService.updateStatus(order.payment.id, { status: 'CANCELLED' });
     }
-
-    this.logger.log(`[OrderManagement] Member order ${orderId} cancelled by user ${userId}. Restoring stock...`);
-    const wasSold = order.status === 'DELIVERED' || order.status === 'RETURN_REQUESTED';
-    await this.repository.restoreOrderStock(orderId, wasSold);
-    await this.repository.restoreDiscountUsage(orderId);
     this.logger.log(`[OrderManagement] Stock restoration for member order ${orderId} completed.`);
 
     await this.cacheService.clearRelatedCaches(orderId, userId);
@@ -187,23 +205,19 @@ export class OrderManagement {
       throw new BadRequestException('Cannot cancel order with status: ' + order.status);
     }
 
-    const cancelled = await this.repository.update(order.id, { status: 'CANCELLED' });
+    this.logger.log(`[OrderManagement] Guest order ${order.id} (${orderCode}) cancelled. Restoring stock...`);
     
-    // Initiate refund if guest payment is successful
+    const paymentIdToCancel = (order.payment && order.payment.status === 'PENDING') ? order.payment.id : undefined;
+    const cancelled = await this.repository.cancelAndRestore(order.id, paymentIdToCancel);
+    
+    // Initiate refund separately
     if (order.payment && order.payment.status === 'SUCCESS') {
       try {
         await this.paymentService.initiateRefund(order.payment.id);
       } catch (error) {
-        this.logger.error('Failed to initiate refund during guest order cancellation:', error);
+        this.logger.error('Failed to refund guest order:', error);
       }
-    } else if (order.payment && order.payment.status === 'PENDING') {
-      await this.paymentService.updateStatus(order.payment.id, { status: 'CANCELLED' });
     }
-
-    this.logger.log(`[OrderManagement] Guest order ${order.id} (${orderCode}) cancelled. Restoring stock...`);
-    const wasSold = order.status === 'DELIVERED' || order.status === 'RETURN_REQUESTED';
-    await this.repository.restoreOrderStock(order.id, wasSold);
-    await this.repository.restoreDiscountUsage(order.id);
     this.logger.log(`[OrderManagement] Stock restoration for guest order ${order.id} completed.`);
 
     await this.cacheService.clearRelatedCaches(order.id, order.userId || undefined);
@@ -262,16 +276,13 @@ export class OrderManagement {
       },
     );
     
-    const updatedOrder = await this.repository.update(orderId, {
-      subtotal: totals.totalItems,
-      discountAmount: totals.discountAmount,
-      total: totals.discountedTotal,
-      discount: { connect: { id: discount.id } },
-    });
-    
-    await this.cacheService.clearRelatedCaches(orderId, order.userId || undefined);
-
-    return { message: 'Discount applied', discount, updatedOrder };
+    try {
+      const updatedOrder = await this.repository.applyDiscountTransactional(orderId, discount, totals);
+      await this.cacheService.clearRelatedCaches(orderId, order.userId || undefined);
+      return { message: 'Discount applied', discount, updatedOrder };
+    } catch (err) {
+      throw new BadRequestException(err.message || 'Không thể áp dụng mã giảm giá');
+    }
   }
 
   async lookupGuestOrder(orderCode: string, contact: string, maskPII = true): Promise<any> {
@@ -331,10 +342,18 @@ export class OrderManagement {
       }
     } else {
       // If status is changed FROM DELIVERED to something else (e.g. back to PROCESSING or CANCELLED)
-      if (oldOrder.status === 'DELIVERED') {
+      if (oldOrder.status === 'DELIVERED' || oldOrder.status === 'RETURN_REQUESTED') {
         for (const item of oldOrder.orderItems) {
           try {
-            await this.repository.decrementProductSoldCount(item.variant.productId, item.quantity);
+            // Chỉ trừ số lượng sản phẩm THỰC TẾ đang được tính là đã bán (loại trừ phần đã trả hàng)
+            const alreadyReturned = item.returnItems?.reduce((sum: number, ri: any) => 
+              (ri.returnRequest?.status === 'RECEIVED' || ri.returnRequest?.status === 'COMPLETED') ? sum + ri.quantity : sum, 0) || 0;
+            
+            const quantityToDecrement = item.quantity - alreadyReturned;
+            
+            if (quantityToDecrement > 0) {
+              await this.repository.decrementProductSoldCount(item.variant.productId, quantityToDecrement);
+            }
           } catch (error) {
             this.logger.error(`Failed to decrement soldCount for product ${item.variant.productId}:`, error);
           }

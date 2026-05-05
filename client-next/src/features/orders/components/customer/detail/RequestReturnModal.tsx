@@ -183,7 +183,7 @@ export function RequestReturnModal({
             <Button type="button" variant="ghost" onClick={onClose} disabled={isSubmitting} className="h-10 rounded-lg font-semibold text-slate-500 text-[13px]">
               Hủy bỏ
             </Button>
-            <Button type="submit" disabled={isSubmitting || isUploading} className="h-10 rounded-lg px-6 font-semibold bg-[#1565C1] hover:bg-slate-800 shadow-sm transition-all text-[13px]">
+            <Button type="submit" disabled={isSubmitting || isUploading} className="h-10 rounded-lg px-6 font-semibold bg-primary hover:bg-slate-800 shadow-sm transition-all text-[13px]">
               {isSubmitting ? <Loader2 size={16} className="animate-spin mr-2" /> : null}
               Gửi yêu cầu
             </Button>

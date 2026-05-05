@@ -173,6 +173,8 @@ export class AuthService {
         },
       });
 
+      await this.cleanupOldTokens(u.id);
+
       return { 
         accessToken: newAccessToken,
         refreshToken: newRefreshToken 

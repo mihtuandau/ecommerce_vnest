@@ -31,7 +31,7 @@ import { cn } from "@/utils/cn";
 const bannerSchema = z.object({
   title: z.string().min(3, "Tiêu đề phải có ít nhất 3 ký tự"),
   link: z.string().optional(),
-  order: z.coerce.number().min(0).default(0),
+  displayOrder: z.coerce.number().min(0).default(0),
   isActive: z.boolean().default(true),
 });
 
@@ -53,7 +53,7 @@ export function BannerForm({ initialData, onSubmit, isLoading }: BannerFormProps
     defaultValues: {
       title: "",
       link: "",
-      order: 0,
+      displayOrder: 0,
       isActive: true,
     },
   });
@@ -63,7 +63,7 @@ export function BannerForm({ initialData, onSubmit, isLoading }: BannerFormProps
       form.reset({
         title: initialData.title || "",
         link: initialData.link || "",
-        order: initialData.order || 0,
+        displayOrder: initialData.displayOrder || initialData.order || 0,
         isActive: initialData.isActive ?? true,
       });
       if (initialData.image) {
@@ -85,7 +85,7 @@ export function BannerForm({ initialData, onSubmit, isLoading }: BannerFormProps
     const formData = new FormData();
     formData.append("title", values.title);
     if (values.link) formData.append("link", values.link);
-    formData.append("order", String(values.order));
+    formData.append("displayOrder", String(values.displayOrder));
     formData.append("isActive", String(values.isActive));
     
     if (selectedFile) {
@@ -238,7 +238,7 @@ export function BannerForm({ initialData, onSubmit, isLoading }: BannerFormProps
               <div className="space-y-6">
                 <FormField
                   control={form.control}
-                  name="order"
+                  name="displayOrder"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-[11px] font-bold text-slate-500 tracking-wider">Thứ tự hiển thị</FormLabel>

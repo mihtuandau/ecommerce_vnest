@@ -22,14 +22,25 @@ export class ProductRepository {
     return this.prisma.product.findMany({
       where, skip, take, orderBy,
       select: {
-        id: true, name: true, slug: true, basePrice: true, originalPrice: true, soldCount: true, viewCount: true,
-        averageRating: true, reviewCount: true, isActive: true, createdAt: true,
-        category: { select: { id: true, name: true, slug: true } },
-        brand: { select: { id: true, name: true } },
-        images: { orderBy: [{ isThumbnail: 'desc' }, { displayOrder: 'asc' }], take: 1, select: { id: true, url: true, altText: true, isThumbnail: true } },
+        id: true, 
+        name: true, 
+        slug: true, 
+        basePrice: true, 
+        originalPrice: true, 
+        soldCount: true,
+        averageRating: true, 
+        reviewCount: true, 
+        isActive: true,
+        category: { select: { name: true } },
+        images: { 
+          where: { isThumbnail: true }, 
+          take: 1, 
+          select: { url: true } 
+        },
         variants: { 
-          where: { deletedAt: null },
-          select: { id: true, price: true, originalPrice: true, stock: true, size: true, color: true, isActive: true } 
+          where: { isActive: true, deletedAt: null },
+          take: 1,
+          select: { stock: true } 
         }
       }
     });

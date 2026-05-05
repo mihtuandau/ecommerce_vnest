@@ -8,6 +8,7 @@ import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { PrismaService } from './prisma/prisma.service';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { TimeoutInterceptor } from './common/interceptors/timeout.interceptor';
+import { AuditInterceptor } from './common/interceptors/audit.interceptor';
 import { AuthModule } from './auth/auth.module';  
 import { UserModule } from './user/user.module';  
 import { ProductModule } from './product/product.module';  
@@ -33,6 +34,7 @@ import { AppService } from './app.service';
 import { GHNModule } from './ghn/ghn.module';
 import { BrandModule } from './brand/brand.module';
 import { ReturnModule } from './return/return.module';
+import { MaintenanceModule } from './common/maintenance/maintenance.module';
 
 @Module({
   imports: [
@@ -87,6 +89,7 @@ import { ReturnModule } from './return/return.module';
     BrandModule,
     GHNModule,
     ReturnModule,
+    MaintenanceModule,
   ],
   controllers: [AppController],
   providers: [
@@ -103,6 +106,10 @@ import { ReturnModule } from './return/return.module';
     {
       provide: APP_INTERCEPTOR,
       useClass: TimeoutInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: AuditInterceptor,
     },
   ],
   exports: [PrismaService],

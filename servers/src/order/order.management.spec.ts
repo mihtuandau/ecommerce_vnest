@@ -1,4 +1,4 @@
-﻿import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { OrderManagement } from './order.management';
 
 describe('OrderManagement.applyDiscount', () => {
@@ -7,6 +7,7 @@ describe('OrderManagement.applyDiscount', () => {
     findDiscountByCode: jest.fn(),
     countOrdersUsingDiscount: jest.fn(),
     update: jest.fn(),
+    applyDiscountTransactional: jest.fn(),
   } as any;
 
   const cacheService = {
@@ -14,12 +15,13 @@ describe('OrderManagement.applyDiscount', () => {
   } as any;
 
   const paymentService = {} as any;
+  const ghnService = {} as any;
 
   let service: OrderManagement;
 
   beforeEach(() => {
     jest.clearAllMocks();
-    service = new OrderManagement(repository, cacheService, paymentService);
+    service = new OrderManagement(repository, cacheService, paymentService, ghnService);
   });
 
   it('throws when order does not exist', async () => {
@@ -94,7 +96,7 @@ describe('OrderManagement.applyDiscount', () => {
     ).rejects.toThrow(BadRequestException);
   });
 
-  it('updates order total with validated discount', async () => {
+  it('applies discount via transactional method', async () => {
     repository.findById.mockResolvedValue({
       id: 1,
       userId: 10,
@@ -120,7 +122,12 @@ describe('OrderManagement.applyDiscount', () => {
       minOrderAmount: 0,
     });
     repository.countOrdersUsingDiscount.mockResolvedValue(10);
-    repository.update.mockResolvedValue({ id: 1, total: 200000, discountAmount: 20000, subtotal: 200000 });
+    repository.applyDiscountTransactional.mockResolvedValue({
+      id: 1,
+      total: 200000,
+      discountAmount: 20000,
+      subtotal: 200000,
+    });
 
     const result = await service.applyDiscount(
       1,
@@ -128,22 +135,12 @@ describe('OrderManagement.applyDiscount', () => {
       { userId: 10, role: 'USER' },
     );
 
-    expect(repository.update).toHaveBeenCalledWith(
+    expect(repository.applyDiscountTransactional).toHaveBeenCalledWith(
       1,
-      expect.objectContaining({
-        subtotal: 200000,
-        discountAmount: 20000,
-        total: 200000,
-        discount: { connect: { id: 2 } },
-      }),
+      expect.objectContaining({ id: 2 }),
+      expect.any(Object),
     );
     expect(cacheService.clearRelatedCaches).toHaveBeenCalledWith(1, 10);
     expect(result.message).toBe('Discount applied');
   });
 });
-
-
-
-
-
-

@@ -4,8 +4,11 @@ import React from "react";
 import { MapPin, CheckCircle2, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { PaymentStatus } from "@/types/enums";
+import { useToast } from "@/hooks/useToast";
+import { paymentsApi } from "@/features/payments/api";
 
 interface DetailSidebarProps {
+  orderId: number;
   shippingSnapshot: any;
   user: any;
   addressRelation: any;
@@ -19,6 +22,7 @@ interface DetailSidebarProps {
 }
 
 export function DetailSidebar({ 
+  orderId,
   shippingSnapshot, 
   user, 
   addressRelation, 
@@ -30,6 +34,26 @@ export function DetailSidebar({
   isReturning,
   shippingCode 
 }: DetailSidebarProps) {
+  const [isPaying, setIsPaying] = React.useState(false);
+  const { error } = useToast();
+
+  const handlePayNow = async () => {
+    if (isPaying) return;
+    setIsPaying(true);
+    try {
+      const res = await paymentsApi.createPayment(orderId, paymentMethod);
+      if (res.paymentLink) {
+        window.location.href = res.paymentLink;
+      } else {
+        throw new Error("Không tìm thấy liên kết thanh toán");
+      }
+    } catch (err: any) {
+      error(err.message || "Không thể khởi tạo thanh toán. Vui lòng thử lại sau.");
+    } finally {
+      setIsPaying(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Shipping Info */}
@@ -123,8 +147,12 @@ export function DetailSidebar({
           )}
         </div>
         {!isPaid && !isCancelled && !isReturned && !isReturning && paymentMethod !== "COD" && (
-          <Button className="w-full h-9 bg-slate-800 hover:bg-slate-900 text-white text-xs font-medium rounded-lg mt-2 uppercase tracking-wider">
-            Thanh toán ngay
+          <Button 
+            onClick={handlePayNow}
+            disabled={isPaying}
+            className="w-full h-9 bg-slate-800 hover:bg-slate-900 text-white text-xs font-medium rounded-lg mt-2 uppercase tracking-wider disabled:opacity-50"
+          >
+            {isPaying ? "Đang xử lý..." : "Thanh toán ngay"}
           </Button>
         )}
       </div>

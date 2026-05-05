@@ -35,7 +35,7 @@ export const bannersApi = {
     await api.delete(`/banners/${id}`);
   },
 
-  reorderBanner: async (id: string, position: number): Promise<void> => {
-    await api.put(`/banners/${id}/reorder`, { position });
+  reorderBanner: async (id: string, displayOrder: number): Promise<void> => {
+    await api.put(`/banners/${id}/reorder`, { displayOrder });
   },
 };

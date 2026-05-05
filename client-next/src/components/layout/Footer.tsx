@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/Button";
 
 export function Footer() {
   return (
-    <footer className="bg-[#1565C0] text-white">
+    <footer className="bg-primary text-white">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
         <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5">
           <div className="lg:col-span-2 space-y-8">
@@ -70,8 +70,8 @@ export function Footer() {
                 <span className="text-[13px] font-normal text-white">1900 8888</span>
               </li>
               <li className="flex gap-3 items-center">
-                <Mail className="h-4 w-4 shrink-0 text-white/80" />
-                <span className="text-sm font-medium text-white">support@minhtuanshop.com</span>
+                <Mail className="h-4 w-4 shrink-0 text-white/60" />
+                <span className="text-[13px] font-normal text-white/90">support@minhtuanshop.com</span>
               </li>
             </ul>
           </div>

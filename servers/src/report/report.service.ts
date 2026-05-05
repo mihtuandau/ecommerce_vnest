@@ -15,18 +15,18 @@ export class ReportService {
 
   private getDateRange(startDate?: string, endDate?: string) {
     const vnNow = dayjs().tz('Asia/Ho_Chi_Minh');
-    
-    const start = startDate 
-      ? dayjs(startDate).tz('Asia/Ho_Chi_Minh').startOf('day') 
+
+    const start = startDate
+      ? dayjs(startDate).tz('Asia/Ho_Chi_Minh').startOf('day')
       : vnNow.subtract(30, 'day').startOf('day');
-      
-    const end = endDate 
-      ? dayjs(endDate).tz('Asia/Ho_Chi_Minh').endOf('day') 
+
+    const end = endDate
+      ? dayjs(endDate).tz('Asia/Ho_Chi_Minh').endOf('day')
       : vnNow.endOf('day');
 
-    return { 
-      start: start.toDate(), 
-      end: end.toDate() 
+    return {
+      start: start.toDate(),
+      end: end.toDate(),
     };
   }
 
@@ -35,12 +35,21 @@ export class ReportService {
 
     const rawOrders = await this.repository.getRawOrdersForRevenue(start, end);
 
-    const dataMap = new Map<string, { label: string; revenue: number; total: number; orders: number; sortKey: number }>();
+    const dataMap = new Map<
+      string,
+      {
+        label: string;
+        revenue: number;
+        total: number;
+        orders: number;
+        sortKey: number;
+      }
+    >();
 
     // Initialize the map with all dates in the range
     let current = dayjs(start).tz('Asia/Ho_Chi_Minh');
     const endDay = dayjs(end).tz('Asia/Ho_Chi_Minh');
-    
+
     while (current.isBefore(endDay) || current.isSame(endDay, 'day')) {
       const label = current.format('DD/MM');
       const sortKey = current.valueOf();
@@ -50,18 +59,21 @@ export class ReportService {
         revenue: 0,
         total: 0,
         orders: 0,
-        sortKey
+        sortKey,
       });
 
       current = current.add(1, 'day');
     }
 
     rawOrders.forEach((order) => {
-      const vnTime = dayjs(order.createdAt).tz('Asia/Ho_Chi_Minh');
+      const vnTime = dayjs.utc(
+        order.payment?.updatedAt || order.createdAt,
+      ).tz('Asia/Ho_Chi_Minh');
       const label = vnTime.format('DD/MM');
 
       const existing = dataMap.get(label);
-      const revenue = (Number(order.subtotal) || 0) - (Number(order.discountAmount) || 0);
+      const revenue =
+        (Number(order.subtotal) || 0) - (Number(order.discountAmount) || 0);
 
       if (existing) {
         existing.revenue += revenue;
@@ -72,11 +84,11 @@ export class ReportService {
 
     const data = Array.from(dataMap.values())
       .sort((a, b) => a.sortKey - b.sortKey)
-      .map(item => ({
+      .map((item) => ({
         date: item.label,
         revenue: item.revenue,
         total: item.total,
-        orders: item.orders
+        orders: item.orders,
       }));
 
     return {
@@ -113,7 +125,11 @@ export class ReportService {
   async getTopCategoriesReport(query: ReportQueryDto) {
     const { start, end } = this.getDateRange(query.startDate, query.endDate);
     const limit = query.limit || 10;
-    const topCategories = await this.repository.getTopCategories(start, end, limit);
+    const topCategories = await this.repository.getTopCategories(
+      start,
+      end,
+      limit,
+    );
 
     return {
       startDate: start,
@@ -157,8 +173,14 @@ export class ReportService {
     ]);
 
     // Đảm bảo tổng trong kỳ khớp 100% với biểu đồ
-    const periodRevenue = revenueReport.data.reduce((sum: number, item: any) => sum + item.revenue, 0);
-    const periodOrders = revenueReport.data.reduce((sum: number, item: any) => sum + item.orders, 0);
+    const periodRevenue = revenueReport.data.reduce(
+      (sum: number, item: any) => sum + item.revenue,
+      0,
+    );
+    const periodOrders = revenueReport.data.reduce(
+      (sum: number, item: any) => sum + item.orders,
+      0,
+    );
 
     return {
       period: {
@@ -194,27 +216,40 @@ export class ReportService {
       topCategories,
       customerStats,
       detailedOrders,
-    ] = await Promise.all([
+    ] = (await Promise.all([
       this.getRevenueByPeriod(query),
       this.repository.getOrdersByStatus(start, end),
       this.repository.getTopProducts(start, end, 20),
       this.repository.getTopCategories(start, end, 10),
       this.repository.getCustomerStats(start, end),
       this.repository.getDetailedOrders(start, end),
-    ]) as any[];
+    ])) as any[];
 
     const revenueData = revenueReport.data;
-    const totalNetSales = detailedOrders.reduce((acc: number, curr: any) => acc + (Number(curr.subtotal || 0) - Number(curr.discountAmount || 0)), 0);
-    const totalDiscount = detailedOrders.reduce((acc: number, curr: any) => acc + Number(curr.discountAmount || 0), 0);
-    const totalRefund = detailedOrders.reduce((acc: number, curr: any) => acc + Number(curr.payment?.refundAmount || 0), 0);
+    const totalNetSales = detailedOrders.reduce(
+      (acc: number, curr: any) =>
+        acc + (Number(curr.subtotal || 0) - Number(curr.discountAmount || 0)),
+      0,
+    );
+    const totalDiscount = detailedOrders.reduce(
+      (acc: number, curr: any) => acc + Number(curr.discountAmount || 0),
+      0,
+    );
+    const totalRefund = detailedOrders.reduce(
+      (acc: number, curr: any) => acc + Number(curr.payment?.refundAmount || 0),
+      0,
+    );
     const totalNetRevenue = totalNetSales;
     const totalOrders = detailedOrders.length;
     const aov = totalOrders > 0 ? totalNetRevenue / totalOrders : 0;
-    const totalItemsSold = topProducts.reduce((acc: number, curr: any) => acc + curr.totalQuantity, 0);
+    const totalItemsSold = topProducts.reduce(
+      (acc: number, curr: any) => acc + curr.totalQuantity,
+      0,
+    );
 
     const workbook = new ExcelJS.Workbook();
     workbook.creator = 'Vnest E-Commerce';
-    
+
     // Summary Sheet
     const summarySheet = workbook.addWorksheet('Tổng Quan');
     summarySheet.columns = [
@@ -222,26 +257,45 @@ export class ReportService {
       { header: 'Giá Trị Thống Kê', key: 'value', width: 30 },
     ];
 
-    const fmt = (val: number) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val);
+    const fmt = (val: number) =>
+      new Intl.NumberFormat('vi-VN', {
+        style: 'currency',
+        currency: 'VND',
+      }).format(val);
 
     summarySheet.addRows([
-      { metric: 'KHOẢNG THỜI GIAN BÁO CÁO', value: `${start.toLocaleDateString('vi-VN')} - ${end.toLocaleDateString('vi-VN')}` },
+      {
+        metric: 'KHOẢNG THỜI GIAN BÁO CÁO',
+        value: `${start.toLocaleDateString('vi-VN')} - ${end.toLocaleDateString('vi-VN')}`,
+      },
       { metric: '', value: '' },
       { metric: '--- CHỈ SỐ TÀI CHÍNH (Tiền hàng - Giảm giá) ---', value: '' },
-      { metric: '1. Doanh thu thuần (Chưa tính ship)', value: fmt(totalNetSales) },
-      { metric: '2. Tổng giá trị giảm giá đã áp dụng', value: fmt(totalDiscount) },
+      {
+        metric: '1. Doanh thu thuần (Chưa tính ship)',
+        value: fmt(totalNetSales),
+      },
+      {
+        metric: '2. Tổng giá trị giảm giá đã áp dụng',
+        value: fmt(totalDiscount),
+      },
       { metric: '3. DOANH THU CUỐI CÙNG', value: fmt(totalNetRevenue) },
       { metric: '5. Giá trị đơn hàng trung bình (AOV)', value: fmt(aov) },
       { metric: '', value: '' },
       { metric: '--- CHỈ SỐ VẬN HÀNH ---', value: '' },
       { metric: '6. Tổng số đơn hàng trong kỳ', value: totalOrders },
       { metric: '7. Tổng số lượng sản phẩm đã bán', value: totalItemsSold },
-      { metric: '8. Tổng số khách hàng mới', value: customerStats.newCustomers },
-      { metric: '9. Tổng số khách hàng quay lại', value: customerStats.returningCustomers },
+      {
+        metric: '8. Tổng số khách hàng mới',
+        value: customerStats.newCustomers,
+      },
+      {
+        metric: '9. Tổng số khách hàng quay lại',
+        value: customerStats.returningCustomers,
+      },
     ]);
 
     // Apply bold to headers and category labels
-    [1, 3, 7, 10].forEach(rowNum => {
+    [1, 3, 7, 10].forEach((rowNum) => {
       summarySheet.getRow(rowNum).font = { bold: true };
     });
     summarySheet.getRow(7).font = { bold: true, color: { argb: 'FF000000' } }; // Net Revenue highlight
@@ -262,11 +316,22 @@ export class ReportService {
     ];
 
     detailedOrders.forEach((order: any) => {
-      const netRevenue = Number(order.subtotal) - Number(order.discountAmount) - Number(order.payment?.refundAmount || 0);
-      
+      const netRevenue =
+        Number(order.subtotal) -
+        Number(order.discountAmount) -
+        Number(order.payment?.refundAmount || 0);
+
       // Ưu tiên lấy tên từ Member, nếu không có thì lấy từ ShippingSnapshot (khách vãng lai)
-      const customerName = order.user?.name || order.shippingSnapshot?.fullName || order.fullName || 'Khách vãng lai';
-      const customerPhone = order.guestPhone || order.phone || order.shippingSnapshot?.phone || 'N/A';
+      const customerName =
+        order.user?.name ||
+        order.shippingSnapshot?.fullName ||
+        order.fullName ||
+        'Khách vãng lai';
+      const customerPhone =
+        order.guestPhone ||
+        order.phone ||
+        order.shippingSnapshot?.phone ||
+        'N/A';
 
       detailSheet.addRow({
         orderCode: order.orderCode,
@@ -275,14 +340,15 @@ export class ReportService {
         phone: customerPhone,
         subtotal: Number(order.subtotal),
         discount: Number(order.discountAmount || 0),
-        net: (Number(order.subtotal) || 0) - (Number(order.discountAmount) || 0),
+        net:
+          (Number(order.subtotal) || 0) - (Number(order.discountAmount) || 0),
         method: order.payment?.method || 'N/A',
         status: order.status,
       });
     });
 
     // Formatting currency columns
-    ['E', 'F', 'G', 'H'].forEach(col => {
+    ['E', 'F', 'G', 'H'].forEach((col) => {
       detailSheet.getColumn(col).numFmt = '#,##0 "₫"';
     });
 
@@ -327,9 +393,3 @@ export class ReportService {
     return Buffer.from(buffer);
   }
 }
-
-
-
-
-
-

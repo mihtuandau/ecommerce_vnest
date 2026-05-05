@@ -172,6 +172,7 @@ export function OrderDetailView() {
             orderCode={order.orderCode}
             orderId={order.id}
             createdAt={order.createdAt}
+            deliveredAt={order.deliveredAt}
             status={order.status}
             isPaid={isPaid}
             isCancelled={isCancelled}
@@ -208,6 +209,7 @@ export function OrderDetailView() {
             </div>
 
             <DetailSidebar
+              orderId={order.id}
               shippingSnapshot={order.shippingSnapshot}
               user={order.user}
               addressRelation={order.address}

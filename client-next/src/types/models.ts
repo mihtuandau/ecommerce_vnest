@@ -54,37 +54,46 @@ export interface ProductVariant {
 }
 
 export interface Category {
-  id: string;
+  id: number;
   name: string;
   slug: string;
-  parentId?: string;
+  parentId?: number | null;
   image?: string;
+  displayOrder?: number;
   products?: Product[];
 }
 
 export interface Order {
-  id: string;
+  id: number;
   orderCode: string;
-  userId: string;
-  items: OrderItem[];
-  totalAmount: number;
+  userId: number | null;
+  orderItems: OrderItem[];
+  subtotal: number;
+  total: number;
+  discountAmount: number;
   shippingFee: number;
   status: OrderStatus;
-  paymentMethod: PaymentMethod;
-  paymentStatus: PaymentStatus;
-  shippingAddress: Address;
+  paymentMethod: string;
+  shippingAddressId?: number;
+  address?: Address;
+  shippingSnapshot?: any;
   note?: string;
+  payment?: any; // Simple any for now to fix errors
+  reviews?: any[];
   createdAt: string;
   updatedAt: string;
 }
 
 export interface OrderItem {
-  id: string;
-  productId: string;
-  product?: Product;
+  id: number;
+  orderId: number;
+  variantId: number;
   quantity: number;
   price: number;
-  originalPrice?: number | null;
+  variant?: ProductVariant;
+  productName?: string;
+  variantSnapshot?: any;
+  returnItems?: any[];
 }
 
 export interface Address {
@@ -100,6 +109,12 @@ export interface Address {
   isDefault: boolean;
 }
 
+export interface ReviewImage {
+  id: number;
+  reviewId: number;
+  url: string;
+}
+
 export interface Review {
   id: string;
   userId: string;
@@ -108,7 +123,7 @@ export interface Review {
   orderId: string;
   rating: number;
   comment: string;
-  images?: string[];
+  images?: ReviewImage[];
   createdAt: string;
 }
 
@@ -119,7 +134,7 @@ export interface Banner {
   image: string;
   imageUrl?: string;
   link?: string;
-  order: number;
+  displayOrder: number;
   isActive: boolean;
 }
 

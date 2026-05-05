@@ -18,7 +18,6 @@ interface OrderStatusChartProps {
 
 export function OrderStatusChart({ data, isLoading }: OrderStatusChartProps) {
   const statusData = useMemo(() => {
-    // If it's the object-based format from DashboardStats
     if (data && typeof data === "object" && !Array.isArray(data)) {
       const keys = [
         "pending",
@@ -57,13 +56,13 @@ export function OrderStatusChart({ data, isLoading }: OrderStatusChartProps) {
   }, [data]);
 
   return (
-    <Card className="border border-slate-200 shadow-none rounded-xl overflow-hidden bg-white h-full flex flex-col">
-      <CardHeader>
-        <CardTitle className="text-lg font-semibold text-slate-800">
+    <Card className="border-none shadow-sm rounded-2xl overflow-hidden bg-white h-full flex flex-col">
+      <CardHeader className="border-b border-slate-50 px-6 py-4">
+        <CardTitle className="text-base font-semibold text-slate-900">
           Trạng thái đơn hàng
         </CardTitle>
-        <CardDescription className="text-xs font-medium text-slate-600">
-          Phân bổ theo trạng thái
+        <CardDescription className="text-xs font-medium text-slate-500">
+          Phân bổ đơn hàng theo trạng thái hệ thống
         </CardDescription>
       </CardHeader>
       <CardContent className="flex-1">

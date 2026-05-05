@@ -36,7 +36,7 @@ export function FeaturedCategories() {
           <div className="flex flex-col gap-2 md:gap-3">
             <div className="flex items-center gap-2">
               <div className="p-1.5 md:p-2 rounded-lg md:rounded-xl shadow-sm bg-slate-100">
-                <LayoutGrid className="h-4 w-4 md:h-5 md:w-5 text-[#1a1a1a]" />
+                <LayoutGrid className="h-4 w-4 md:h-5 md:w-5 text-foreground" />
               </div>
               <span className="text-[10px] md:text-[11px] font-semibold text-slate-500">
                 Khám phá hệ sinh thái
@@ -88,7 +88,7 @@ export function FeaturedCategories() {
               className="group flex flex-col items-center space-y-5 w-[140px] md:w-[180px] shrink-0"
             >
               {/* Circular Image Container */}
-              <div className="relative w-full aspect-square rounded-full overflow-hidden bg-white border-2 border-slate-100 p-2 group-hover:border-primary group-hover:shadow-2xl group-hover:shadow-primary/20 transition-all duration-700">
+              <div className="relative w-full aspect-square rounded-full overflow-hidden bg-white border-2 border-slate-100 p-2 group-hover:border-primary group-hover:shadow-2xl group-hover:shadow-primary/20 transition-all duration-500">
                 <div className="w-full h-full rounded-full overflow-hidden bg-slate-50 relative">
                   {category.image ? (
                     <img 

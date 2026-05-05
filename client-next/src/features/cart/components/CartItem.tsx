@@ -71,7 +71,7 @@ export function CartItem({ item, updateQuantity, removeItem, toggleSelectItem }:
               <div className="text-right shrink-0">
                 {item.discountedPrice && item.discountedPrice < item.price ? (
                   <div className="flex flex-col items-end">
-                    <p className="text-sm sm:text-lg font-bold text-[#1565C0] tabular-nums">
+                    <p className="text-sm sm:text-lg font-bold text-primary tabular-nums">
                       {formatCurrency(item.discountedPrice)}
                     </p>
                     <p className="text-[10px] sm:text-xs text-slate-500 line-through font-semibold tabular-nums">
@@ -80,7 +80,7 @@ export function CartItem({ item, updateQuantity, removeItem, toggleSelectItem }:
                   </div>
                 ) : item.originalPrice && item.originalPrice > item.price ? (
                   <div className="flex flex-col items-end">
-                    <p className="text-sm sm:text-lg font-bold text-[#1565C0] tabular-nums">
+                    <p className="text-sm sm:text-lg font-bold text-primary tabular-nums">
                       {formatCurrency(item.price)}
                     </p>
                     <p className="text-[10px] sm:text-xs text-slate-500 line-through font-semibold tabular-nums">
@@ -88,7 +88,7 @@ export function CartItem({ item, updateQuantity, removeItem, toggleSelectItem }:
                     </p>
                   </div>
                 ) : (
-                  <p className="text-sm sm:text-lg font-bold text-[#1565C0] tabular-nums">
+                  <p className="text-sm sm:text-lg font-bold text-primary tabular-nums">
                     {formatCurrency(item.price)}
                   </p>
                 )}
@@ -119,7 +119,7 @@ export function CartItem({ item, updateQuantity, removeItem, toggleSelectItem }:
 
               <div className="flex items-center gap-3 sm:gap-4">
                 <div className="text-right hidden xs:block">
-                  <p className="text-xs sm:text-sm font-bold text-[#1565C0] tabular-nums">
+                  <p className="text-xs sm:text-sm font-bold text-primary tabular-nums">
                     {formatCurrency((item.discountedPrice || item.price) * item.quantity)}
                   </p>
                 </div>

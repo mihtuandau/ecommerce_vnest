@@ -36,6 +36,7 @@ model User {
   discountUsages       DiscountUsage[] // Các mã giảm giá đã sử dụng
   returnRequests       ReturnRequest[] // Các yêu cầu trả hàng
   aiConversations      AiConversation[] // Lịch sử chat với AI
+  auditLogs            AuditLog[]       // Nhật ký hoạt động (Camera an ninh)
 
   @@index([deletedAt])
   @@index([status])
@@ -164,8 +165,8 @@ model Product {
   metaDesc      String? // SEO description
   images        ProductImage[]
   variants      ProductVariant[]
-  reviews       Review[] // Thêm relation với Review
-  discountProducts DiscountProduct[] // Discount liên kết qua junction table
+  reviews       Review[] 
+  discountProducts DiscountProduct[] 
   category      Category?           @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   brand         Brand?              @relation(fields: [brandId], references: [id])
   createdAt     DateTime            @default(now())
@@ -227,10 +228,10 @@ model ProductVariant {
   cartItems         CartItem[]
   orderItems        OrderItem[]
   wishlistItems     WishlistItem[]
-  weight            Int            @default(200) // Khối lượng (gram)
-  length            Int            @default(10)  // Chiều dài (cm)
-  width             Int            @default(10)  // Chiều rộng (cm)
-  height            Int            @default(10)  // Chiều cao (cm)
+  weight            Int?            // Khối lượng (gram)
+  length            Int?            // Chiều dài (cm)
+  width             Int?            // Chiều rộng (cm)
+  height            Int?            // Chiều cao (cm)
   createdAt         DateTime       @default(now())
   updatedAt         DateTime       @updatedAt
 
@@ -336,29 +337,35 @@ model DiscountProduct {
 }
 
 model Review {
-  id        Int      @id @default(autoincrement())
+  id        Int           @id @default(autoincrement())
   userId    Int
   productId Int
-  orderId   Int // Gắn review với đơn hàng cụ thể
-  rating    Int // 1-5 sao
-  comment   String?  @db.Text
-  images    String[] // Mảng URLs hình ảnh review - cân nhắc tách thành ReviewImage model nếu cần metadata
-  verified  Boolean  @default(false) // Admin đã xác minh chưa
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  orderId   Int           // Gắn review với đơn hàng cụ thể
+  rating    Int           // 1-5 sao
+  comment   String?       @db.Text
+  images    ReviewImage[]
+  verified  Boolean       @default(false)
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product   Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
+  order     Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
 
-  // NOTE: Application MUST validate orderId thực sự chứa productId này
-  // Schema không thể enforce constraint này - cần business logic validation
-  @@unique([userId, productId, orderId]) // 1 user chỉ review 1 product 1 lần trong 1 đơn hàng
+  @@unique([userId, productId, orderId])
   @@index([userId])
   @@index([productId])
   @@index([orderId])
   @@index([rating])
-  @@index([productId, rating])
   @@index([verified])
+}
+
+model ReviewImage {
+  id       Int    @id @default(autoincrement())
+  reviewId Int
+  url      String
+  review   Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+
+  @@index([reviewId])
 }
 
 model ShippingMethod {
@@ -394,6 +401,7 @@ model Order {
   status           OrderStatus     @default(PENDING)
   statusHistory    Json[]          @default([]) // Lịch sử thay đổi trạng thái [{status, changedAt, changedBy, note}]
   cancelledAt      DateTime? // Thời gian hủy đơn
+  deliveredAt      DateTime? // Thời gian giao hàng thành công
   cancelledBy      Int? // User ID hoặc Admin ID hủy đơn - must be valid userId
   cancelReason     String? // Lý do hủy
   shippingCode     String? // Mã vận đơn từ GHN/GHTK
@@ -569,7 +577,7 @@ model Banner {
   link      String?
   buttonText String? @default("Mua ngay")
   isActive  Boolean @default(true)
-  order     Int     @default(0)
+  displayOrder Int     @default(0)
   deletedAt DateTime? // Soft delete nếu cần audit trail
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -632,14 +640,42 @@ model AiConversation {
   @@index([userId])
 }
 
+enum AiRole {
+  USER
+  MODEL
+  SYSTEM
+}
+
 model AiMessage {
   id             Int            @id @default(autoincrement())
   conversationId String
-  role           String         // "user" or "model"
+  role           AiRole         // USER or MODEL
   content        String         @db.Text
-  productIds     Int[]          @default([]) // Lưu danh sách ID sản phẩm AI gợi ý (Phase 2.2)
+  productIds     Int[]          @default([]) 
   createdAt      DateTime       @default(now())
   conversation   AiConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 
   @@index([conversationId])
+}
+
+// =======================================================
+// HỆ THỐNG AUDIT LOG (NHẬT KÝ HOẠT ĐỘNG)
+// =======================================================
+model AuditLog {
+  id         Int      @id @default(autoincrement())
+  userId     Int      // ID của nhân viên/admin vừa thao tác
+  action     String   // CREATE, UPDATE, DELETE
+  entityName String   // Tên bảng (VD: Product, Order, User...)
+  entityId   String   // ID của dữ liệu bị thay đổi
+  oldData    Json?    // Dữ liệu cũ trước khi sửa (Bằng chứng 1)
+  newData    Json?    // Dữ liệu mới vừa sửa xong (Bằng chứng 2)
+  ipAddress  String?  // Địa chỉ IP của nhân viên
+  createdAt  DateTime @default(now())
+  
+  user       User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([action])
+  @@index([entityName, entityId])
+  @@index([createdAt])
 }

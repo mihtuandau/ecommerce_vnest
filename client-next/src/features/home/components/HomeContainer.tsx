@@ -84,7 +84,7 @@ export default function HomeContainer() {
               subtitle="Sản phẩm được yêu thích nhất."
               products={bestSellingProducts} 
               icon={TrendingUp}
-              iconColor="text-[#1a1a1a]"
+              iconColor="text-foreground"
               iconBg="bg-slate-100"
               variant="bestseller"
               viewAllLink="/shop?sortBy=sold"
@@ -102,7 +102,7 @@ export default function HomeContainer() {
               subtitle="Gợi ý dành riêng cho bạn."
               products={featuredProducts} 
               icon={Sparkles}
-              iconColor="text-[#1a1a1a]"
+              iconColor="text-foreground"
               iconBg="bg-slate-100"
               variant="featured"
               viewAllLink="/shop?sortBy=newest"
@@ -120,7 +120,7 @@ export default function HomeContainer() {
               subtitle="Những sản phẩm chất lượng nhất."
               products={topRatedProducts} 
               icon={Star}
-              iconColor="text-[#1a1a1a]"
+              iconColor="text-foreground"
               iconBg="bg-slate-100"
               variant="toprated"
               viewAllLink="/shop?sortBy=rating"

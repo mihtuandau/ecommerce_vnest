@@ -218,14 +218,14 @@ export function ProductActions({
         <button
           onClick={handleAddToCart}
           disabled={currentStock <= 0}
-          className="w-full sm:flex-1 h-12 rounded-2xl border-2 border-primary text-primary font-bold text-xs hover:bg-primary/10 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm active:scale-[0.98]"
+          className="w-full sm:flex-1 h-12 rounded-2xl border-2 border-primary text-primary font-bold text-xs hover:bg-primary/10 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm active:scale-95"
         >
           <ShoppingCart className="h-4 w-4" /> Thêm vào giỏ
         </button>
         <button 
           onClick={handleBuyNow}
           disabled={currentStock <= 0}
-          className="w-full sm:flex-[1.2] h-12 rounded-2xl bg-primary text-white font-bold text-xs hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-xl shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full sm:flex-[1.2] h-12 rounded-2xl bg-primary text-white font-bold text-xs hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-2 shadow-xl shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Mua ngay
         </button>
@@ -238,7 +238,7 @@ export function ProductActions({
               : "border-slate-100 hover:border-rose-500 text-slate-400 hover:text-rose-500"
           )}
         >
-          <Heart className={cn("h-4 w-4 transition-transform group-active:scale-90", isFavorite && "fill-current")} />
+          <Heart className={cn("h-4 w-4 transition-transform group-active:scale-95", isFavorite && "fill-current")} />
           <span className="sm:hidden ml-2 text-xs font-bold">Yêu thích</span>
         </button>
       </div>

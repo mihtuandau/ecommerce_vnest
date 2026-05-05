@@ -3,18 +3,71 @@
     BadRequestException,
     NotFoundException,
     Inject,
+    OnModuleInit,
+    Logger,
   } from '@nestjs/common';
   import { CACHE_MANAGER } from '@nestjs/cache-manager';
   import type { Cache } from 'cache-manager';
   import { ReviewRepository } from './review.repository';
   import { CreateReviewDto, UpdateReviewDto } from './dto/review.dto';
+  import { createClient } from 'redis';
 
   @Injectable()
-  export class ReviewService {
+  export class ReviewService implements OnModuleInit {
+    private redisClient: any;
+    private readonly logger = new Logger(ReviewService.name);
+
     constructor(
       private repository: ReviewRepository,
       @Inject(CACHE_MANAGER) private cacheManager: Cache,
     ) {}
+
+    async onModuleInit() {
+      try {
+        this.redisClient = createClient({
+          username: process.env.REDIS_USERNAME || 'default',
+          password: process.env.REDIS_PASSWORD || undefined,
+          socket: {
+            host: process.env.REDIS_HOST || 'localhost',
+            port: parseInt(process.env.REDIS_PORT || '6379', 10),
+          },
+        });
+        await this.redisClient.connect();
+      } catch (err) {
+        this.logger.warn('Redis client không khả dụng cho cache wildcard deletion');
+      }
+    }
+
+    /**
+     * Xóa tất cả cache danh sách sản phẩm khi rating/reviewCount thay đổi.
+     * Đảm bảo trang "Tất cả sản phẩm" hiển thị dữ liệu mới nhất.
+     */
+    private async clearProductListCaches(productId: number) {
+      try {
+        // Xóa cache sản phẩm đơn lẻ
+        await this.cacheManager.del(`product:${productId}`);
+
+        // Xóa tất cả cache danh sách sản phẩm (wildcard) bằng SCAN để không làm chậm server
+        if (this.redisClient) {
+          let cursor = '0';
+          const pattern = '*products*';
+          do {
+            const reply = await (this.redisClient as any).scan(cursor, 'MATCH', pattern, 'COUNT', 100);
+            cursor = typeof reply === 'string' ? '0' : reply[0];
+            const keys = typeof reply === 'string' ? [] : reply[1];
+            
+            if (keys && keys.length > 0) {
+              await this.redisClient.del(keys);
+            }
+          } while (cursor !== '0');
+          this.logger.debug(`Đã hoàn tất dọn dẹp cache wildcard cho products`);
+        } else {
+          await this.cacheManager.del('products:all');
+        }
+      } catch (err) {
+        this.logger.warn('Lỗi khi xóa product list caches:', err.message);
+      }
+    }
 
     async createReview(userId: number, dto: CreateReviewDto) {
       const { productId, orderId, rating, comment, images } = dto;
@@ -58,12 +111,14 @@
         order: { connect: { id: orderId } },
         rating,
         comment: sanitizedComment,
-        images: validatedImages,
+        images: {
+          create: validatedImages.map(url => ({ url }))
+        },
       });
 
       await this.updateProductRating(productId);
 
-      await this.cacheManager.del(`product:${productId}`);
+      await this.clearProductListCaches(productId);
 
       return review;
     }
@@ -213,12 +268,17 @@
       const updated = await this.repository.update(reviewId, {
         ...(dto.rating && { rating: dto.rating }),
         ...(sanitizedComment !== undefined && { comment: sanitizedComment }),
-        ...(dto.images && { images: dto.images }),
+        ...(dto.images && { 
+          images: {
+            deleteMany: {},
+            create: dto.images.map(url => ({ url }))
+          } 
+        }),
       });
 
       await this.updateProductRating(review.productId);
 
-      await this.cacheManager.del(`product:${review.productId}`);
+      await this.clearProductListCaches(review.productId);
 
       return updated;
     }
@@ -238,7 +298,7 @@
 
       await this.updateProductRating(review.productId);
 
-      await this.cacheManager.del(`product:${review.productId}`);
+      await this.clearProductListCaches(review.productId);
 
       return { message: 'Xóa đánh giá thành công' };
     }

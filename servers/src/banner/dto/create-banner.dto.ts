@@ -1,4 +1,4 @@
-﻿import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsString, IsOptional, IsBoolean, IsInt, IsUrl } from 'class-validator';
 
 export class CreateBannerDto {
@@ -40,7 +40,7 @@ export class CreateBannerDto {
   @ApiPropertyOptional({ example: 1, description: 'Display order', default: 0 })
   @IsInt()
   @IsOptional()
-  order?: number;
+  displayOrder?: number;
 }
 
 

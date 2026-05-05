@@ -15,6 +15,7 @@ interface GuestDetailHeaderProps {
   statusConfig: Record<string, { label: string; color: string; icon: any }>;
   onSuccess?: () => void;
   contact: string;
+  deliveredAt?: string;
 }
 
 const formatDate = (dateString: string) => {
@@ -38,6 +39,7 @@ export function GuestDetailHeader({
   statusConfig,
   onSuccess,
   contact,
+  deliveredAt,
 }: GuestDetailHeaderProps) {
   const router = useRouter();
   const [isReturnModalOpen, setIsReturnModalOpen] = React.useState(false);
@@ -78,7 +80,14 @@ export function GuestDetailHeader({
             {currentStatus.label}
           </span>
         </div>
-        <p className="text-sm text-slate-500">Ngày đặt: {formatDate(createdAt)}</p>
+        <p className="text-sm text-slate-500">
+          Ngày đặt: {formatDate(createdAt)}
+          {status === OrderStatus.DELIVERED && deliveredAt && (
+            <span className="ml-3 text-emerald-600 font-medium italic">
+              • Giao lúc: {formatDate(deliveredAt)}
+            </span>
+          )}
+        </p>
       </div>
 
       <div className="flex items-center gap-2">

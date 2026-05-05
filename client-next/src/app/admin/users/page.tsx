@@ -39,7 +39,7 @@ export default function AdminUsersPage() {
         active={stats.active} 
       />
 
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <div className="bg-white rounded-2xl border-none shadow-sm overflow-hidden">
         <Toolbar 
           searchTerm={searchTerm} 
           onSearchChange={setSearchTerm} 

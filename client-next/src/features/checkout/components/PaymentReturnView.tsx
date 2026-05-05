@@ -85,7 +85,7 @@ export function PaymentReturnView() {
                 )}
 
                 <div className="flex flex-col w-full gap-3 pt-2">
-                  <Button asChild className="w-full h-14 rounded-2xl bg-primary hover:bg-[#0d47a1] text-white border-none shadow-xl shadow-primary/10 transition-all active:scale-[0.98]">
+                  <Button asChild className="w-full h-14 rounded-2xl bg-primary hover:bg-[#0d47a1] text-white border-none shadow-xl shadow-primary/10 transition-all active:scale-95">
                     <Link href={order?.userId ? `/orders/${order.id}` : `/orders/guest/lookup/${order.orderCode}?contact=${order.guestPhone || order.phone}`}>
                       Kiểm tra đơn hàng
                     </Link>
@@ -111,7 +111,7 @@ export function PaymentReturnView() {
                 </div>
 
                 <div className="flex flex-col w-full gap-3 pt-6">
-                  <Button asChild className="w-full h-14 rounded-2xl bg-rose-500 hover:bg-rose-600 text-white border-none shadow-lg shadow-rose-100 transition-all active:scale-[0.98]">
+                  <Button asChild className="w-full h-14 rounded-2xl bg-rose-500 hover:bg-rose-600 text-white border-none shadow-lg shadow-rose-100 transition-all active:scale-95">
                     <Link href={ROUTES.CHECKOUT}>Thực hiện lại thanh toán</Link>
                   </Button>
                   <Button asChild variant="ghost" className="w-full h-12 rounded-2xl text-slate-500 hover:text-slate-900 hover:bg-slate-50 transition-colors">

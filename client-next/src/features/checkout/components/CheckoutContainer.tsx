@@ -375,6 +375,10 @@ export function CheckoutContainer() {
       }
 
       if (paymentLink) {
+        // Clear cart BEFORE redirecting to prevent duplicate orders
+        if (isBuyNow) clearBuyNowItem();
+        else displayItems.forEach((i) => useCartStore.getState().removeItem(i.variantId));
+        
         window.location.href = paymentLink;
         return;
       }
@@ -465,7 +469,7 @@ export function CheckoutContainer() {
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 border-b border-slate-100 pb-8 mb-10">
             <div className="flex items-center gap-5">
-              <button type="button" onClick={() => router.back()} className="h-11 w-11 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:text-[#1565C1] hover:border-[#1565C1] hover:bg-blue-50 transition-all shrink-0 shadow-sm"><ArrowLeft size={20} /></button>
+              <button type="button" onClick={() => router.back()} className="h-11 w-11 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:text-primary hover:border-primary hover:bg-blue-50 transition-all shrink-0 shadow-sm"><ArrowLeft size={20} /></button>
               <div className="space-y-1">
                 <h1 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">Thanh toán</h1>
                 <p className="text-slate-500 text-sm font-medium">Hoàn tất thông tin để đặt hàng của bạn</p>
