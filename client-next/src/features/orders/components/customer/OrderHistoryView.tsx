@@ -8,10 +8,12 @@ import { Card, CardContent } from "@/components/ui/Card";
 import { Package, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs";
+import Image from "next/image";
 import { OrderStatus, PaymentStatus } from "@/types/enums";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { ReviewModal } from "@/features/reviews/components/customer/ReviewModal";
 import { MessageSquare } from "lucide-react";
+import { getImageUrl } from "@/utils/image";
 
 const formatDate = (dateString: string) => {
   return new Date(dateString).toLocaleString("vi-VN", {
@@ -197,9 +199,9 @@ export function OrderHistoryView() {
               filteredOrders.map((order) => {
                 const isPaid =
                   order.paymentStatus === "PAID" ||
-                  order.paymentStatus === PaymentStatus.SUCCESS ||
+                  (order.paymentStatus as any) === PaymentStatus.SUCCESS ||
                   order.payment?.status === "PAID" ||
-                  order.payment?.status === PaymentStatus.SUCCESS;
+                  (order.payment?.status as any) === PaymentStatus.SUCCESS;
 
                 let displayStatus = statusConfig[order.status] || {
                   label: order.status,
@@ -250,21 +252,19 @@ export function OrderHistoryView() {
                       <div className="p-4 sm:p-8">
                         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 sm:gap-10">
                           <div className="flex flex-1 gap-4 sm:gap-8 items-center">
-                            <div className="h-20 w-20 rounded-2xl border border-slate-100 overflow-hidden shrink-0 bg-slate-50/50 p-2 group-hover:border-primary/20 transition-colors">
+                            <div className="h-20 w-20 rounded-2xl border border-slate-100 overflow-hidden shrink-0 bg-slate-50/50 p-2 group-hover:border-primary/20 transition-colors relative">
                               {(() => {
-                                const normalize = (path: string) => {
-                                  if (!path) return "";
-                                  if (path.startsWith('http')) return path;
-                                  return `/${path.replace(/\\/g, '/').replace(/^\//, '')}`;
-                                };
+                                const getUrl = (img: any) => typeof img === 'string' ? img : img?.url;
                                 const imgSrc = (order.orderItems[0]?.variantSnapshot as any)?.image ||
-                                              order.orderItems[0]?.variant?.images?.[0]?.url ||
-                                              order.orderItems[0]?.variant?.product?.images?.[0]?.url;
+                                              getUrl(order.orderItems[0]?.variant?.images?.[0]) ||
+                                              getUrl(order.orderItems[0]?.variant?.product?.images?.[0]);
                                 return (
-                                  <img
-                                    src={imgSrc ? normalize(imgSrc) : "/placeholder.png"}
+                                  <Image
+                                    src={getImageUrl(imgSrc)}
                                     alt="Product"
-                                    className="h-full w-full object-contain mix-blend-multiply"
+                                    fill
+                                    className="object-contain mix-blend-multiply p-2"
+                                    sizes="80px"
                                   />
                                 );
                               })()}
@@ -320,18 +320,18 @@ export function OrderHistoryView() {
                                       className={`px-2 py-0.5 rounded-md text-[9px] font-semibold border ${
                                         isPaid
                                           ? "bg-emerald-50 text-emerald-600 border-emerald-100"
-                                          : (order.payment?.status === "REFUNDED" || order.paymentStatus === "REFUNDED")
+                                          : (order.payment?.status === "REFUNDED" || order.paymentStatus === "REFUNDED" || (order.payment?.status as any) === PaymentStatus.REFUNDED || (order.paymentStatus as any) === PaymentStatus.REFUNDED)
                                             ? "bg-purple-50 text-purple-600 border-purple-200"
-                                            : (order.payment?.status === "CANCELLED" || order.paymentStatus === "CANCELLED")
+                                            : (order.payment?.status === "CANCELLED" || order.paymentStatus === "CANCELLED" || (order.payment?.status as any) === PaymentStatus.CANCELLED || (order.paymentStatus as any) === PaymentStatus.CANCELLED)
                                               ? "bg-rose-50 text-rose-600 border-rose-100"
                                               : "bg-amber-50 text-amber-600 border-amber-100"
                                       }`}
                                     >
                                       {isPaid 
                                         ? "Đã thanh toán" 
-                                        : (order.payment?.status === "REFUNDED" || order.paymentStatus === "REFUNDED")
+                                        : (order.payment?.status === "REFUNDED" || order.paymentStatus === "REFUNDED" || (order.payment?.status as any) === PaymentStatus.REFUNDED || (order.paymentStatus as any) === PaymentStatus.REFUNDED)
                                           ? "Đã hoàn tiền"
-                                          : (order.payment?.status === "CANCELLED" || order.paymentStatus === "CANCELLED")
+                                          : (order.payment?.status === "CANCELLED" || order.paymentStatus === "CANCELLED" || (order.payment?.status as any) === PaymentStatus.CANCELLED || (order.paymentStatus as any) === PaymentStatus.CANCELLED)
                                             ? "Đã hủy thanh toán"
                                             : "Chờ thanh toán"}
                                     </div>
@@ -362,7 +362,7 @@ export function OrderHistoryView() {
                                       if (
                                         confirm("Bạn có chắc chắn muốn hủy đơn hàng này?")
                                       ) {
-                                        cancelOrder(order.id);
+                                        cancelOrder(String(order.id));
                                       }
                                     }}
                                   >
@@ -418,16 +418,15 @@ export function OrderHistoryView() {
       <ReviewModal 
         isOpen={!!selectedReviewItem}
         onClose={() => setSelectedReviewItem(null)}
-        productId={selectedReviewItem?.variant?.productId || selectedReviewItem?.productId}
+        productId={Number(selectedReviewItem?.variant?.productId || selectedReviewItem?.productId)}
         orderId={selectedOrderId}
         orderCode={selectedOrderCode}
         productName={selectedReviewItem?.productName || selectedReviewItem?.variant?.product?.name}
         variantName={[selectedReviewItem?.variant?.color, selectedReviewItem?.variant?.size].filter(Boolean).join(", ")}
         productImage={(() => {
-          const path = (selectedReviewItem?.variantSnapshot as any)?.image || selectedReviewItem?.variant?.product?.images?.[0]?.url || selectedReviewItem?.variant?.images?.[0]?.url;
-          if (!path) return "/placeholder.png";
-          if (path.startsWith('http')) return path;
-          return `/${path.replace(/\\/g, '/').replace(/^\//, '')}`;
+          const getUrl = (img: any) => typeof img === 'string' ? img : img?.url;
+          const path = (selectedReviewItem?.variantSnapshot as any)?.image || getUrl(selectedReviewItem?.variant?.product?.images?.[0]) || getUrl(selectedReviewItem?.variant?.images?.[0]);
+          return getImageUrl(path);
         })()}
       />
     </>

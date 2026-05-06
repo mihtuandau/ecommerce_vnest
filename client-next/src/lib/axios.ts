@@ -47,7 +47,8 @@ api.interceptors.response.use(
 
         if (
           typeof window !== "undefined" &&
-          !window.location.pathname.includes("/login")
+          !window.location.pathname.includes("/login") &&
+          (window.location.pathname.startsWith("/admin") || window.location.pathname.startsWith("/account"))
         ) {
           window.location.href = "/login";
         }

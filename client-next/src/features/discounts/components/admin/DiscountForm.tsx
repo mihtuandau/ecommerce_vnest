@@ -13,49 +13,29 @@ import { useProducts } from "@/features/products/hooks";
 import { Product } from "@/types/models";
 
 // Sub-components
-import { 
-  BasicInfoSection, 
-  ValueSection, 
-  UsageSection, 
-  ScopeSection 
-} from "./form";
+import { BasicInfoSection, ValueSection, UsageSection, ScopeSection } from "./form";
 
-const discountSchema = z
-  .object({
-    code: z.string().min(3, "Mã phải có ít nhất 3 ký tự").toUpperCase(),
-    description: z.string().optional(),
-    image: z.string().optional(),
-    isFlashSale: z.boolean().default(false),
-    isActive: z.boolean().default(true),
-    type: z.enum(["PERCENTAGE", "FIXED"]),
-    percentage: z.coerce.number().min(0).max(100).optional(),
-    fixedAmount: z.coerce.number().min(0).optional(),
-    minOrderAmount: z.coerce.number().min(0).default(0),
-    maxDiscountAmount: z.coerce.number().min(0).optional(),
-    usageLimit: z.coerce.number().min(1).optional(),
-    startDate: z.string().min(1, "Vui lòng chọn ngày bắt đầu"),
-    endDate: z.string().optional(),
-    applicableToProducts: z.array(z.number()).default([]),
-  })
-  .refine(
-    (data) => {
-      if (data.type === "PERCENTAGE" && !data.percentage) return false;
-      if (data.type === "FIXED" && !data.fixedAmount) return false;
-      return true;
-    },
-    {
-      message: "Vui lòng nhập giá trị giảm giá",
-      path: ["percentage"],
-    }
-  );
+const discountSchema = z.object({
+  code: z.string().min(3, "Mã phải có ít nhất 3 ký tự").toUpperCase(),
+  description: z.string().optional(),
+  image: z.string().optional(),
+  isFlashSale: z.boolean().default(false),
+  isActive: z.boolean().default(true),
+  type: z.enum(["PERCENTAGE", "FIXED"]),
+  value: z.coerce.number().min(1, "Vui lòng nhập giá trị giảm giá"),
+  minOrderAmount: z.coerce.number().min(0).default(0),
+  maxDiscountAmount: z.coerce.number().min(0).optional(),
+  usageLimit: z.coerce.number().min(1).optional(),
+  startDate: z.string().min(1, "Vui lòng chọn ngày bắt đầu"),
+  endDate: z.string().optional(),
+  applicableToProducts: z.array(z.string()).default([]),
+});
 
 export type DiscountFormValues = z.infer<typeof discountSchema>;
 
 interface DiscountFormProps {
-  initialData?: Partial<DiscountFormValues> & { 
-    applicableToProducts?: { productId?: number }[] | number[];
-  };
-  onSubmit: (data: Partial<DiscountFormValues>) => void;
+  initialData?: any;
+  onSubmit: (data: any) => void;
   isLoading?: boolean;
 }
 
@@ -66,8 +46,8 @@ export function DiscountForm({ initialData, onSubmit, isLoading }: DiscountFormP
     limit: 100,
   });
 
-  const form = useForm<DiscountFormValues>({
-    resolver: zodResolver(discountSchema),
+  const form = useForm<any>({
+    resolver: zodResolver(discountSchema) as any,
     defaultValues: {
       code: "",
       description: "",
@@ -75,8 +55,7 @@ export function DiscountForm({ initialData, onSubmit, isLoading }: DiscountFormP
       isFlashSale: false,
       isActive: true,
       type: "PERCENTAGE",
-      percentage: 0,
-      fixedAmount: 0,
+      value: 0,
       minOrderAmount: 0,
       maxDiscountAmount: 0,
       usageLimit: 100,
@@ -100,28 +79,23 @@ export function DiscountForm({ initialData, onSubmit, isLoading }: DiscountFormP
         image: initialData.image || "",
         isFlashSale: !!initialData.isFlashSale,
         isActive: initialData.isActive ?? true,
-        type: initialData.percentage ? "PERCENTAGE" : "FIXED",
-        percentage: initialData.percentage || 0,
-        fixedAmount: initialData.fixedAmount || 0,
-        minOrderAmount: initialData.minOrderAmount || 0,
-        maxDiscountAmount: initialData.maxDiscountAmount || 0,
+        type: initialData.type || "PERCENTAGE",
+        value: initialData.value || 0,
+        minOrderAmount: initialData.minOrderValue || initialData.minOrderAmount || 0,
+        maxDiscountAmount:
+          initialData.maxDiscount || initialData.maxDiscountAmount || 0,
         usageLimit: initialData.usageLimit || 100,
         startDate: formatDateForInput(initialData.startDate),
         endDate: formatDateForInput(initialData.endDate),
-          initialData.applicableToProducts?.map((p: { productId?: number } | number) => typeof p === 'number' ? p : p.productId).filter(Boolean) as number[] || [],
+        applicableToProducts: (initialData.applicableToProducts || []).map((p: any) =>
+          String(p.productId || p)
+        ),
       });
     }
   }, [initialData, form]);
 
   const onFormSubmit = (values: DiscountFormValues) => {
-    const submitData = { ...values };
-    if (values.type === "PERCENTAGE") {
-      delete submitData.fixedAmount;
-    } else {
-      delete submitData.percentage;
-    }
-    delete (submitData as { type?: string }).type;
-    onSubmit(submitData);
+    onSubmit(values);
   };
 
   const products = Array.isArray(productsData)
@@ -132,18 +106,32 @@ export function DiscountForm({ initialData, onSubmit, isLoading }: DiscountFormP
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-8">
         <div className="flex justify-end mb-6">
-          <Button type="submit" className="h-10 px-8 rounded-lg font-semibold gap-2 bg-primary text-white hover:bg-slate-800 shadow-sm" disabled={isLoading}>
-            {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Save className="h-5 w-5" />}
+          <Button
+            type="submit"
+            className="h-10 px-8 rounded-lg font-semibold gap-2 bg-primary text-white hover:bg-slate-800 shadow-sm"
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <Loader2 className="h-5 w-5 animate-spin" />
+            ) : (
+              <Save className="h-5 w-5" />
+            )}
             {initialData ? "Lưu thay đổi" : "Kích hoạt mã"}
           </Button>
         </div>
 
         <Tabs defaultValue="general" className="w-full">
           <TabsList className="bg-slate-100 p-1 rounded-xl border border-slate-200 mb-8">
-            <TabsTrigger value="general" className="rounded-lg px-8 py-2 text-sm font-semibold data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm text-slate-500 transition-all">
+            <TabsTrigger
+              value="general"
+              className="rounded-lg px-8 py-2 text-sm font-semibold data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm text-slate-500 transition-all"
+            >
               Thông tin chung
             </TabsTrigger>
-            <TabsTrigger value="usage" className="rounded-lg px-8 py-2 text-sm font-semibold data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm text-slate-500 transition-all">
+            <TabsTrigger
+              value="usage"
+              className="rounded-lg px-8 py-2 text-sm font-semibold data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm text-slate-500 transition-all"
+            >
               Cấu hình & Sản phẩm
             </TabsTrigger>
           </TabsList>
@@ -161,9 +149,9 @@ export function DiscountForm({ initialData, onSubmit, isLoading }: DiscountFormP
                 <UsageSection form={form} />
               </div>
               <div className="lg:col-span-7">
-                <ScopeSection 
-                  form={form} 
-                  products={products} 
+                <ScopeSection
+                  form={form}
+                  products={products}
                   isLoading={isLoadingProducts}
                   searchQuery={searchQuery}
                   onSearchChange={setSearchQuery}

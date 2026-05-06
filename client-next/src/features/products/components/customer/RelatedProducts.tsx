@@ -7,7 +7,7 @@ import { Product } from "@/types/models";
 
 interface RelatedProductsProps {
   categoryId: number | null | undefined;
-  currentProductId: number;
+  currentProductId: string | number;
 }
 
 export function RelatedProducts({ categoryId, currentProductId }: RelatedProductsProps) {
@@ -18,7 +18,7 @@ export function RelatedProducts({ categoryId, currentProductId }: RelatedProduct
 
   // Filter out current product
   const related = Array.isArray(products?.data) 
-    ? products.data.filter((p: Product) => p.id !== currentProductId) 
+    ? products.data.filter((p: Product) => String(p.id) !== String(currentProductId)) 
     : [];
 
   if (isLoading) {

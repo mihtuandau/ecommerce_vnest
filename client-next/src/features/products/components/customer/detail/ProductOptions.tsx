@@ -34,7 +34,7 @@ export function ProductOptions({
   const availableSizes = useMemo(() => {
     if (!selectedColor || !product?.variants) return sizes;
     return sizes.filter((size) =>
-      product.variants.some(
+      product?.variants?.some(
         (v: ProductVariant) => v.size === size && v.color === selectedColor && (v.stock || 0) > 0
       )
     );
@@ -43,7 +43,7 @@ export function ProductOptions({
   const availableColors = useMemo(() => {
     if (!selectedSize || !product?.variants) return colors;
     return colors.filter((color) =>
-      product.variants.some(
+      product?.variants?.some(
         (v: ProductVariant) => v.color === color && v.size === selectedSize && (v.stock || 0) > 0
       )
     );

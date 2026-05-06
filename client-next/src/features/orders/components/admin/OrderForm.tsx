@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { 
   Form, 
 } from "@/components/ui/Form";
@@ -45,7 +46,7 @@ const orderFormSchema = z.object({
   shippingFee: z.number().default(0),
   discountCode: z.string().optional(),
   items: z.array(z.object({
-    variantId: z.number(),
+    variantId: z.string(),
     quantity: z.number().min(1),
     productName: z.string(),
     price: z.number(),
@@ -65,7 +66,7 @@ export function AdminOrderForm() {
   const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [orderId, setOrderId] = useState<number | null>(null);
-  const [appliedDiscount, setAppliedDiscount] = useState<Record<string, unknown> | null>(null);
+  const [appliedDiscount, setAppliedDiscount] = useState<any>(null);
   const [isValidatingDiscount, setIsValidatingDiscount] = useState(false);
   
   // State for quick variant selection
@@ -122,7 +123,7 @@ export function AdminOrderForm() {
       return;
     }
     const currentItems = form.getValues("items") || [];
-    const existingIndex = currentItems.findIndex(i => i.variantId === variant.id);
+    const existingIndex = currentItems.findIndex((i: any) => i.variantId === variant.id);
     const variantLabel = [variant.size, variant.color].filter(Boolean).join(" • ") || "Mặc định";
     const productName = `${product.name} (${variantLabel})`;
 
@@ -132,11 +133,11 @@ export function AdminOrderForm() {
       form.setValue("items", [
         ...currentItems,
         {
-          variantId: variant.id,
+          variantId: String(variant.id),
           quantity: 1,
           productName,
           price: variant.price,
-          image: variant.images?.[0]?.url || product.images?.[0]?.url,
+          image: (variant.images?.[0] as any)?.url || (product.images?.[0] as any)?.url,
           stock: variant.stock
         }
       ]);
@@ -152,7 +153,7 @@ export function AdminOrderForm() {
     if (next >= 1 && next <= stock) form.setValue(`items.${index}.quantity`, next);
   };
 
-  const calculateSubtotal = () => items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const calculateSubtotal = () => items.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0);
 
   const handleValidateDiscount = async () => {
     const code = form.getValues("discountCode");
@@ -188,20 +189,23 @@ export function AdminOrderForm() {
     if (!appliedDiscount) return 0;
     const subtotal = calculateSubtotal();
     
-    // Check min order amount
-    if (appliedDiscount.minOrderAmount && subtotal < appliedDiscount.minOrderAmount) {
+    const minOrder = Number(appliedDiscount.minOrderAmount || appliedDiscount.minOrderValue || 0);
+    const maxDiscount = Number(appliedDiscount.maxDiscountAmount || appliedDiscount.maxDiscount || 0);
+    const discountVal = Number(appliedDiscount.discountValue || appliedDiscount.value || 0);
+
+    if (minOrder && subtotal < minOrder) {
       return 0;
     }
 
     let amount = 0;
-    if (appliedDiscount.discountType === 'PERCENTAGE') {
-      amount = Math.round((subtotal * appliedDiscount.discountValue) / 100);
+    if (appliedDiscount.discountType === 'PERCENTAGE' || appliedDiscount.type === 'PERCENTAGE') {
+      amount = Math.round((subtotal * discountVal) / 100);
     } else {
-      amount = appliedDiscount.discountValue;
+      amount = discountVal;
     }
 
-    if (appliedDiscount.maxDiscountAmount && amount > appliedDiscount.maxDiscountAmount) {
-      amount = appliedDiscount.maxDiscountAmount;
+    if (maxDiscount && amount > maxDiscount) {
+      amount = maxDiscount;
     }
 
     return Math.min(amount, subtotal);
@@ -213,8 +217,8 @@ export function AdminOrderForm() {
     return subtotal - discount;
   };
 
-  const form = useForm<OrderFormValues>({
-    resolver: zodResolver(orderFormSchema),
+  const form = useForm<any>({
+    resolver: zodResolver(orderFormSchema) as any,
     defaultValues: {
       paymentMethod: "CASH",
       status: "DELIVERED",
@@ -242,7 +246,7 @@ export function AdminOrderForm() {
         items: cleanItems
       };
 
-      const res = await ordersApi.createAdminOrder(payload);
+      const res = await ordersApi.createAdminOrder(payload as any);
       toast.success("Tạo đơn hàng thành công");
       router.push(`/admin/orders/${res.id || res.orderCode}`);
     } catch (error: { response?: { data?: { message?: string } } } | unknown) {
@@ -320,8 +324,14 @@ export function AdminOrderForm() {
                       className="bg-white border border-slate-100 rounded-xl overflow-hidden flex flex-col hover:border-primary/50 hover:shadow-md transition-all cursor-pointer group"
                     >
                       <div className="aspect-square bg-slate-50 overflow-hidden relative border-b border-slate-50">
-                        {product.images?.[0]?.url ? (
-                          <img src={product.images[0].url} alt={product.name} className="h-full w-full object-cover group-hover:scale-105 transition-transform" />
+                        {(product.images?.[0] as any)?.url ? (
+                          <Image 
+                            src={(product.images[0] as any).url} 
+                            alt={product.name} 
+                            fill
+                            className="h-full w-full object-cover group-hover:scale-105 transition-transform" 
+                            sizes="200px"
+                          />
                         ) : <div className="h-full w-full flex items-center justify-center text-[10px] text-slate-200">NO IMAGE</div>}
                         
                         {product.variants && product.variants.length > 1 && (
@@ -368,10 +378,18 @@ export function AdminOrderForm() {
                   <p className="text-[10px] font-bold uppercase tracking-widest">Đang chờ món...</p>
                 </div>
               ) : (
-                items.map((item, index) => (
+                items.map((item: any, index: number) => (
                   <div key={index} className="bg-white border border-slate-100 rounded-xl p-3 flex items-center gap-3 relative shadow-sm">
-                    <div className="h-10 w-10 bg-slate-50 rounded-lg overflow-hidden shrink-0 border border-slate-50">
-                      {item.image ? <img src={item.image} className="h-full w-full object-cover" /> : <div className="h-full w-full flex items-center justify-center text-[10px]">IMG</div>}
+                    <div className="h-10 w-10 bg-slate-50 rounded-lg overflow-hidden shrink-0 border border-slate-50 relative">
+                      {item.image ? (
+                        <Image 
+                          src={item.image} 
+                          alt={item.productName}
+                          fill
+                          className="h-full w-full object-cover"
+                          sizes="40px"
+                        />
+                      ) : <div className="h-full w-full flex items-center justify-center text-[10px]">IMG</div>}
                     </div>
                     <div className="flex-1 min-w-0">
                       <h4 className="text-[11px] font-bold text-slate-900 truncate pr-6 leading-tight" title={item.productName.split('(')[0].trim()}>
@@ -395,7 +413,7 @@ export function AdminOrderForm() {
                     </div>
                     <button 
                       type="button" 
-                      onClick={() => form.setValue("items", items.filter((_, i) => i !== index))}
+                      onClick={() => form.setValue("items", items.filter((_: any, i: number) => i !== index))}
                       className="absolute right-1 top-1 h-6 w-6 flex items-center justify-center text-slate-200 hover:text-rose-500"
                     >
                       <X className="h-4 w-4" />
@@ -489,9 +507,15 @@ export function AdminOrderForm() {
         <DialogContent className="max-w-xl rounded-2xl p-0 overflow-hidden border-none shadow-2xl">
           <DialogHeader className="p-6 border-b border-slate-100 bg-slate-50/50">
             <div className="flex items-center gap-4">
-              <div className="h-16 w-16 bg-white rounded-xl border border-slate-200 overflow-hidden shrink-0 shadow-sm">
-                {activeProduct?.images?.[0]?.url && (
-                  <img src={activeProduct.images[0].url} alt="" className="h-full w-full object-cover" />
+              <div className="h-16 w-16 bg-white rounded-xl border border-slate-200 overflow-hidden shrink-0 shadow-sm relative">
+                {activeProduct?.images?.[0] && (
+                  <Image 
+                    src={(activeProduct.images[0] as any).url} 
+                    alt={activeProduct.name} 
+                    fill
+                    className="h-full w-full object-cover"
+                    sizes="64px"
+                  />
                 )}
               </div>
               <div>

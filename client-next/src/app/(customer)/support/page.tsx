@@ -1,8 +1,9 @@
 "use client";
 
+import Image from "next/image";
 import { CustomerChatWindow } from "@/features/chat/components/CustomerChatWindow";
 import { 
-  ShieldCheck, Clock, Headset, 
+  ShieldCheck, 
   HelpCircle, FileText, Truck, RefreshCw, Phone, ChevronRight
 } from "lucide-react";
 import Link from "next/link";
@@ -76,8 +77,8 @@ export default function SupportPage() {
               </div>
               
               <div className="mt-8 flex items-center justify-center gap-8 opacity-40 grayscale pointer-events-none">
-                 <img src="/GHNLogo.png" alt="GHN" className="h-5 w-auto" />
-                 <img src="/vnpaylogo.png" alt="VNPay" className="h-3 w-auto" />
+                  <Image src="/GHNLogo.png" alt="GHN" width={100} height={20} className="h-5 w-auto" />
+                  <Image src="/vnpaylogo.png" alt="VNPay" width={80} height={12} className="h-3 w-auto" />
                  <p className="text-xs font-semibold text-slate-500">Minh Tuấn Shop Partners</p>
               </div>
            </div>

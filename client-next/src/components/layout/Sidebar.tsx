@@ -10,7 +10,7 @@ import {
   ShoppingCart,
   Users,
   Tag,
-  Image,
+  Image as ImageIcon,
   MessageCircle,
   BarChart3,
   ChevronLeft,
@@ -24,6 +24,7 @@ import { cn } from "@/utils/cn";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { useAuthStore } from "@/store/useAuthStore";
 import { handleAvatarError } from "@/utils/avatar";
+import Image from "next/image";
 import { usePermission } from "@/hooks/usePermission";
 
 // Each item declares which permission is required.
@@ -112,7 +113,7 @@ const navGroups = [
       {
         label: "Banner",
         href: "/admin/banners",
-        icon: Image,
+        icon: ImageIcon,
         permission: "banner.manage",
       },
       {
@@ -247,12 +248,13 @@ export function Sidebar() {
           <div className="flex items-center gap-3 px-2 py-1.5 rounded-xl transition-all duration-300">
             <div className="h-8 w-8 rounded-full bg-slate-800 flex items-center justify-center border border-white/5 overflow-hidden shrink-0">
               {(user as any).avatar ? (
-                <img
+                <Image
                   src={(user as any).avatar}
                   alt={user.name || "User"}
-                  referrerPolicy="no-referrer"
+                  width={32}
+                  height={32}
                   className="h-full w-full object-cover"
-                  onError={(e) => handleAvatarError(e, user.name, user.email)}
+                  onError={(e) => handleAvatarError(e as any, user.name, user.email)}
                 />
               ) : (
                 <div className="h-full w-full flex items-center justify-center text-primary font-medium text-[10px]">
@@ -300,12 +302,13 @@ export function Sidebar() {
           <div className="flex flex-col items-center gap-2 py-2">
             <div className="h-8 w-8 rounded-full bg-slate-800 flex items-center justify-center border border-white/5 overflow-hidden">
               {(user as any).avatar ? (
-                <img
+                <Image
                   src={(user as any).avatar}
-                  alt={user.name}
-                  referrerPolicy="no-referrer"
+                  alt={user.name || "User"}
+                  width={32}
+                  height={32}
                   className="h-full w-full object-cover"
-                  onError={(e) => handleAvatarError(e, user.name, user.email)}
+                  onError={(e) => handleAvatarError(e as any, user.name, user.email)}
                 />
               ) : (
                 <span className="text-primary font-bold text-xs">

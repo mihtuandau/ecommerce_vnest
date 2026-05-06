@@ -89,9 +89,8 @@ export function RequestReturnModal({
     try {
       if (isGuest) {
         await returnsApi.createGuestReturnRequest({
-          orderId: Number(orderId),
           orderCode,
-          contact,
+          contact: contact || "",
           reason: data.reason,
           details: data.details,
           images,

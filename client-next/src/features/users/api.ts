@@ -3,13 +3,20 @@ import type { User, Address } from "@/types/models";
 import type { PaginatedResponse } from "@/types/api";
 
 export const usersApi = {
-  getUsers: async (params?: Record<string, string | number>): Promise<User[]> => {
-    const { data: body } = await api.get<{ data?: User[]; users?: User[] } | User[]>("/users", { params });
-    // Support various response formats
-    if (Array.isArray(body)) return body;
-    if (body?.data && Array.isArray(body.data)) return body.data;
-    if (body?.users && Array.isArray(body.users)) return body.users;
-    return [];
+  getUsers: async (params?: Record<string, string | number>): Promise<PaginatedResponse<User>> => {
+    const { data: body } = await api.get<any>("/users", { params });
+    
+    const data = Array.isArray(body) ? body : (body.data || body.users || []);
+    const meta = {
+      total: body.meta?.total || body.total || data.length,
+      page: body.meta?.page || body.page || 1,
+      limit: body.meta?.limit || body.limit || 10,
+      totalPages: body.meta?.totalPages || body.totalPages || 1,
+      hasNextPage: body.meta?.hasNextPage || false,
+      hasPrevPage: body.meta?.hasPrevPage || false,
+    };
+
+    return { data, meta };
   },
 
   getUser: async (id: string): Promise<User> => {
@@ -23,7 +30,7 @@ export const usersApi = {
   },
 
   updateUser: async (id: string, userData: Partial<User>): Promise<User> => {
-    const { data } = await api.put<{ user?: User } | User>(`/users/${id}`, userData);
+    const { data } = await api.put<any>(`/users/${id}`, userData);
     return data.user || data;
   },
 
@@ -32,12 +39,12 @@ export const usersApi = {
   },
 
   getProfile: async (): Promise<User> => {
-    const { data } = await api.get<{ user?: User } | User>("/users/profile");
+    const { data } = await api.get<any>("/users/profile");
     return data.user || data;
   },
 
   updateProfile: async (profileData: Partial<User>): Promise<User> => {
-    const { data } = await api.put<{ user?: User } | User>("/users/profile", profileData);
+    const { data } = await api.put<any>("/users/profile", profileData);
     return data.user || data;
   },
 
@@ -69,5 +76,9 @@ export const usersApi = {
   setDefaultAddress: async (id: string): Promise<{ address: Address }> => {
     const { data } = await api.patch(`/addresses/${id}/set-default`);
     return data;
+  },
+
+  resetPassword: async (id: string): Promise<void> => {
+    await api.post(`/users/${id}/reset-password`);
   },
 };

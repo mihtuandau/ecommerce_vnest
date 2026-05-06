@@ -27,5 +27,6 @@ export const ROUTES = {
   ADMIN_BANNERS: "/admin/banners",
   ADMIN_CHAT: "/admin/chat",
   ADMIN_REPORTS: "/admin/reports",
+  ADMIN_REVIEWS: "/admin/reviews",
   ADMIN_SETTINGS: "/admin/settings",
 } as const;

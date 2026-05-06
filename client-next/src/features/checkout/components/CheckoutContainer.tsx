@@ -212,7 +212,7 @@ export function CheckoutContainer() {
     
     setIsApplyingDiscount(true);
     try {
-      const res = await discountsApi.validateDiscount(codeToValidate);
+      const res: any = await discountsApi.validateDiscount(codeToValidate);
       
       if (!res.isValid) {
         warning(res.message || "Mã giảm giá không hợp lệ");

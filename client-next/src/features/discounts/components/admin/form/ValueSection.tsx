@@ -22,7 +22,7 @@ import { Banknote, Percent } from "lucide-react";
 import { DiscountFormValues } from "../DiscountForm";
 
 interface ValueSectionProps {
-  form: UseFormReturn<DiscountFormValues>;
+  form: UseFormReturn<any>;
 }
 
 export function ValueSection({ form }: ValueSectionProps) {
@@ -60,7 +60,7 @@ export function ValueSection({ form }: ValueSectionProps) {
 
         <FormField
           control={form.control}
-          name={discountType === "PERCENTAGE" ? "percentage" : "fixedAmount"}
+          name="value"
           render={({ field }) => (
             <FormItem>
               <FormLabel className="font-semibold text-xs tracking-wide text-slate-600">

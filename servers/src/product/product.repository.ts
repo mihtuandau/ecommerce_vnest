@@ -39,8 +39,7 @@ export class ProductRepository {
         },
         variants: { 
           where: { isActive: true, deletedAt: null },
-          take: 1,
-          select: { id: true, stock: true } 
+          select: { id: true, stock: true, size: true, color: true, price: true, originalPrice: true } 
         }
       }
     });

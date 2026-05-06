@@ -8,7 +8,7 @@ import { OrderStatus, PaymentStatus } from "@/types/enums";
 
 export function useOrders(params?: Record<string, string | number>) {
   return useQuery({
-    queryKey: queryKeys.orders.list(params),
+    queryKey: queryKeys.orders.list(params as any),
     queryFn: () => ordersApi.getOrders(params as Record<string, string>),
     staleTime: 0,
     refetchOnWindowFocus: true,
@@ -17,7 +17,7 @@ export function useOrders(params?: Record<string, string | number>) {
 
 export function useMyOrders(params?: Record<string, string | number>) {
   return useQuery({
-    queryKey: [...queryKeys.orders.list(params), "my-orders"],
+    queryKey: [...queryKeys.orders.list(params as any), "my-orders"],
     queryFn: () => ordersApi.getMyOrders(params as Record<string, string>),
     staleTime: 0,
     refetchOnWindowFocus: true,
@@ -115,13 +115,11 @@ export function useUpdatePaymentStatus() {
       ordersApi.updatePaymentStatus(paymentId, status),
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.orders.list() });
-      // Dùng orderId từ variables nếu có, fallback sang data.orderId
       const targetId = variables.orderId || String(data.orderId || "");
       if (targetId) {
         queryClient.invalidateQueries({ queryKey: queryKeys.orders.detail(targetId) });
         queryClient.refetchQueries({ queryKey: queryKeys.orders.detail(targetId) });
       } else {
-        // Nếu không biết id cụ thể, refetch toàn bộ orders
         queryClient.refetchQueries({ queryKey: queryKeys.orders.all });
       }
       success("Cập nhật trạng thái thanh toán thành công");

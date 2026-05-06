@@ -4,23 +4,37 @@ import type { PaginatedResponse } from "@/types/api";
 
 export const productsApi = {
   getProducts: async (
-    params?: Record<string, string>
-  ): Promise<{ data: Product[]; total?: number; totalPages?: number; page?: number }> => {
-    const { data: body } = await api.get<{ data?: Product[]; products?: Product[] } | Product[]>("/products", {
+    params?: Record<string, string | number | boolean | undefined>
+  ): Promise<PaginatedResponse<Product>> => {
+    const { data: body } = await api.get<any>("/products", {
       params,
     });
-    // Support various backend response structures
-    if (Array.isArray(body)) return { data: body };
-    if (body?.data && Array.isArray(body.data)) return body;
-    if (body?.products && Array.isArray(body.products)) return { data: body.products };
-    return body || { data: [] };
+
+    const data = Array.isArray(body) ? body : body.data || body.products || [];
+    const meta = {
+      total: body.meta?.total || body.total || data.length,
+      page: body.meta?.page || body.page || 1,
+      limit: body.meta?.limit || body.limit || 10,
+      totalPages:
+        body.meta?.totalPages ||
+        body.totalPages ||
+        Math.ceil((body.total || data.length) / (body.limit || 10)) ||
+        1,
+      hasNextPage: body.meta?.hasNextPage || body.hasNextPage || false,
+      hasPrevPage: body.meta?.hasPrevPage || body.hasPrevPage || false,
+    };
+
+    return { data, meta };
   },
 
   getProduct: async (slugOrId: string, allVariants = false): Promise<Product> => {
-    const { data: body } = await api.get<{ data?: Product } | Product>(`/products/${slugOrId}`, {
-      params: allVariants ? { allVariants: 'true' } : {}
-    });
-    return body?.data || body;
+    const { data: body } = await api.get<{ data?: Product } | Product>(
+      `/products/${slugOrId}`,
+      {
+        params: allVariants ? { allVariants: "true" } : {},
+      }
+    );
+    return (body as any)?.data || body;
   },
 
   createProduct: async (productData: Partial<Product>): Promise<Product> => {
@@ -28,7 +42,10 @@ export const productsApi = {
     return data;
   },
 
-  updateProduct: async (id: string, productData: Partial<Product>): Promise<Product> => {
+  updateProduct: async (
+    id: string,
+    productData: Partial<Product>
+  ): Promise<Product> => {
     const { data } = await api.put<Product>(`/products/${id}`, productData);
     return data;
   },
@@ -43,12 +60,18 @@ export const productsApi = {
 
   // ── Variant Management ──
 
-  addVariant: async (productId: string, variantData: Partial<Product["variants"] extends Array<infer V> ? V : unknown>): Promise<Product["variants"] extends Array<infer V> ? V : unknown> => {
+  addVariant: async (
+    productId: string,
+    variantData: Partial<Product["variants"] extends Array<infer V> ? V : unknown>
+  ): Promise<Product["variants"] extends Array<infer V> ? V : unknown> => {
     const { data } = await api.post(`/products/${productId}/variant`, variantData);
     return data;
   },
 
-  updateVariant: async (variantId: string, variantData: Partial<Product["variants"] extends Array<infer V> ? V : unknown>): Promise<Product["variants"] extends Array<infer V> ? V : unknown> => {
+  updateVariant: async (
+    variantId: string,
+    variantData: Partial<Product["variants"] extends Array<infer V> ? V : unknown>
+  ): Promise<Product["variants"] extends Array<infer V> ? V : unknown> => {
     const { data } = await api.put(`/products/variant/${variantId}`, variantData);
     return data;
   },
@@ -89,11 +112,10 @@ export const productsApi = {
     const { data } = await api.post("/upload/images", formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
-    return data.urls?.[0] || data[0]; 
+    return data.urls?.[0] || data[0];
   },
 
   incrementView: async (id: string): Promise<void> => {
     await api.post(`/products/${id}/view`);
   },
 };
-

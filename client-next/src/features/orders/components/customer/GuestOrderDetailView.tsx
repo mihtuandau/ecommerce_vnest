@@ -66,7 +66,11 @@ export function GuestOrderDetailView() {
     );
   }
 
-  const isPaid = order.paymentStatus === 'PAID' || order.paymentStatus === PaymentStatus.SUCCESS || order.payment?.status === 'PAID' || order.payment?.status === PaymentStatus.SUCCESS;
+  const isPaid = 
+    order.paymentStatus === 'PAID' || 
+    (order.paymentStatus as any) === PaymentStatus.SUCCESS || 
+    order.payment?.status === 'PAID' || 
+    (order.payment?.status as any) === PaymentStatus.SUCCESS;
   const isCancelled = order.status === OrderStatus.CANCELLED;
 
   return (
@@ -100,7 +104,7 @@ export function GuestOrderDetailView() {
                     </div>
                     <div>
                       <h3 className="text-sm font-bold text-slate-900">Yêu cầu trả hàng</h3>
-                      <p className="text-[11px] text-slate-500 font-medium">Cập nhật lúc: {new Date(order.returnRequest.updatedAt).toLocaleString("vi-VN")}</p>
+                      <p className="text-[11px] text-slate-500 font-medium">Cập nhật lúc: {new Date(order.returnRequest?.updatedAt || order.updatedAt).toLocaleString("vi-VN")}</p>
                     </div>
                   </div>
                   {order.returnRequest.status === "APPROVED" && (
@@ -130,7 +134,7 @@ export function GuestOrderDetailView() {
                     <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Lý do trả hàng</p>
                     <p className="text-sm text-slate-700 font-semibold">{order.returnRequest.reason}</p>
                   </div>
-                  {order.returnRequest.adminNote && (
+                  {order.returnRequest?.adminNote && (
                     <div className="space-y-1">
                       <p className="text-[11px] font-bold text-amber-500 uppercase tracking-wider">Phản hồi từ Shop</p>
                       <p className="text-sm text-slate-700 font-semibold italic">"{order.returnRequest.adminNote}"</p>
@@ -148,14 +152,14 @@ export function GuestOrderDetailView() {
           </div>
 
           <GuestDetailSidebar 
-            shippingSnapshot={order.shippingSnapshot}
-            fullName={order.fullName}
-            phone={order.phone}
-            email={order.guestEmail || order.user?.email}
+            shippingSnapshot={order.shippingSnapshot || {}}
+            fullName={(order as any).fullName}
+            phone={(order as any).phone}
+            email={(order as any).guestEmail || order.user?.email}
             address={order.address}
             paymentMethod={order.paymentMethod}
             isPaid={isPaid}
-            paymentStatus={order.paymentStatus || order.payment?.status}
+            paymentStatus={order.paymentStatus || (order as any).payment?.status || ""}
             shippingCode={order.shippingCode}
           />
         </div>

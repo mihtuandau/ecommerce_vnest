@@ -109,6 +109,7 @@ export function Variants({
                         placeholder="M, L, XL..."
                         className="h-11 rounded-xl border-slate-200 bg-white focus:ring-primary/20"
                         {...field}
+                        value={field.value ?? ""}
                       />
                     </FormControl>
                   </FormItem>
@@ -127,6 +128,7 @@ export function Variants({
                         placeholder="Trắng, Đen..."
                         className="h-11 rounded-xl border-slate-200 bg-white focus:ring-primary/20"
                         {...field}
+                        value={field.value ?? ""}
                       />
                     </FormControl>
                   </FormItem>
@@ -185,6 +187,7 @@ export function Variants({
                         type="number"
                         className="h-11 rounded-xl border-slate-200 bg-white font-bold text-slate-900 focus:ring-primary/20"
                         {...field}
+                        value={field.value ?? 0}
                       />
                     </FormControl>
                   </FormItem>

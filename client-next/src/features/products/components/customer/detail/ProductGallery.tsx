@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import { cn } from "@/utils/cn";
 import {
   Dialog,
@@ -9,6 +10,7 @@ import {
   DialogClose,
 } from "@/components/ui/Dialog";
 import { X } from "lucide-react";
+import { getImageUrl } from "@/utils/image";
 
 interface ProductGalleryProps {
   images: { url: string }[];
@@ -24,13 +26,7 @@ export function ProductGallery({ images, name }: ProductGalleryProps) {
     setSelectedImage(0);
   }, [images]);
 
-  const getImageUrl = (img: { url: string } | string | undefined) => {
-    if (!img) return "/placeholder.png";
-    const rawUrl = typeof img === 'string' ? img : img.url;
-    return rawUrl?.startsWith('http') ? rawUrl : `/${rawUrl}`;
-  };
-
-  const currentImage = getImageUrl(images?.[selectedImage]);
+  const currentImage = getImageUrl(images?.[selectedImage] ? (typeof images[selectedImage] === 'string' ? images[selectedImage] : images[selectedImage].url) : null);
 
   return (
     <div className="flex flex-col md:flex-row gap-4 items-start">
@@ -45,7 +41,13 @@ export function ProductGallery({ images, name }: ProductGalleryProps) {
               selectedImage === i ? "border-slate-900 shadow-sm" : "border-slate-100 hover:border-slate-300"
             )}
           >
-            <img src={getImageUrl(img)} alt="" className="h-full w-full object-cover" />
+            <Image 
+              src={getImageUrl(img ? (typeof img === 'string' ? img : img.url) : null)} 
+              alt={`${name} thumbnail ${i + 1}`} 
+              fill
+              className="object-cover"
+              sizes="64px"
+            />
           </button>
         ))}
       </div>
@@ -55,14 +57,17 @@ export function ProductGallery({ images, name }: ProductGalleryProps) {
         className="flex-1 relative aspect-square max-h-[600px] overflow-hidden flex items-center justify-center p-0 cursor-zoom-in group"
         onClick={() => setIsPreviewOpen(true)}
       >
-        <img
+        <Image
           src={currentImage}
           alt={name}
-          className="max-h-full max-w-full object-contain transition-transform duration-500 group-hover:scale-105"
+          fill
+          priority
+          className="object-contain transition-transform duration-500 group-hover:scale-105"
+          sizes="(max-width: 768px) 100vw, 800px"
         />
         
         {/* Zoom Hint */}
-        <div className="absolute bottom-4 right-4 bg-white/80 backdrop-blur-sm p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-sm border border-slate-100">
+        <div className="absolute bottom-4 right-4 bg-white/80 backdrop-blur-sm p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-sm border border-slate-100 z-10">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-slate-600"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
         </div>
       </div>
@@ -78,7 +83,13 @@ export function ProductGallery({ images, name }: ProductGalleryProps) {
               selectedImage === i ? "border-slate-900 shadow-sm" : "border-slate-100"
             )}
           >
-            <img src={getImageUrl(img)} alt="" className="h-full w-full object-cover" />
+            <Image 
+              src={getImageUrl(img ? (typeof img === 'string' ? img : img.url) : null)} 
+              alt={`${name} thumbnail ${i + 1}`} 
+              fill
+              className="object-cover"
+              sizes="56px"
+            />
           </button>
         ))}
       </div>
@@ -93,11 +104,15 @@ export function ProductGallery({ images, name }: ProductGalleryProps) {
           <DialogClose className="fixed top-12 right-6 sm:top-6 sm:right-6 z-50 h-10 w-10 rounded-full bg-black/50 backdrop-blur-md border border-white/20 text-white flex items-center justify-center hover:bg-black/70 transition-all">
             <X className="h-6 w-6" />
           </DialogClose>
-          <img 
-            src={currentImage} 
-            alt={name} 
-            className="max-w-full max-h-[90vh] object-contain rounded-sm shadow-xl"
-          />
+          <div className="relative w-full h-[90vh]">
+            <Image 
+              src={currentImage} 
+              alt={name} 
+              fill
+              className="object-contain"
+              sizes="95vw"
+            />
+          </div>
         </DialogContent>
       </Dialog>
     </div>

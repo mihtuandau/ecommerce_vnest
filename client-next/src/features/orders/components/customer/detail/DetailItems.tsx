@@ -42,12 +42,13 @@ export function DetailItems({
               <div className="h-14 w-14 rounded-lg bg-slate-50 p-1.5 border border-slate-100 shrink-0">
                 <img
                   src={(() => {
-                    const path = (item.variantSnapshot as { image?: string })?.image || item.variant?.images?.[0]?.url || item.variant?.product?.images?.[0]?.url;
+                    const getUrl = (img: any) => typeof img === 'string' ? img : img?.url;
+                    const path = (item.variantSnapshot as { image?: string })?.image || getUrl(item.variant?.images?.[0]) || getUrl(item.variant?.product?.images?.[0]);
                     if (!path) return "/placeholder.png";
                     if (path.startsWith('http')) return path;
                     return `/${path.replace(/\\/g, '/').replace(/^\//, '')}`;
                   })()}
-                  alt={item.productName}
+                  alt={item.productName || item.variantSnapshot?.productName}
                   className="h-full w-full object-contain mix-blend-multiply"
                 />
               </div>
@@ -129,7 +130,8 @@ export function DetailItems({
         orderId={orderId || 0}
         productName={selectedItem?.productName || selectedItem?.variant?.product?.name || ""}
         productImage={(() => {
-          const path = (selectedItem?.variantSnapshot as { image?: string })?.image || selectedItem?.variant?.images?.[0]?.url || selectedItem?.variant?.product?.images?.[0]?.url;
+          const getUrl = (img: any) => typeof img === 'string' ? img : img?.url;
+          const path = (selectedItem?.variantSnapshot as { image?: string })?.image || getUrl(selectedItem?.variant?.images?.[0]) || getUrl(selectedItem?.variant?.product?.images?.[0]);
           if (!path) return "/placeholder.png";
           if (path.startsWith('http')) return path;
           return `/${path.replace(/\\/g, '/').replace(/^\//, '')}`;

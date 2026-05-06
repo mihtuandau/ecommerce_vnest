@@ -4,41 +4,11 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Banner } from "@/types/models";
 import { DataTable } from "@/components/ui/DataTable";
 import { Button } from "@/components/ui/Button";
-import { Pencil, Trash, ExternalLink, Image as ImageIcon, MoreHorizontal } from "lucide-react";
+import { Pencil, Trash, ExternalLink, Image as ImageIcon } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { useDeleteBanner } from "../../hooks";
 import { cn } from "@/utils/cn";
 import { useRouter } from "next/navigation";
-
-function BannerActions({ banner }: { banner: Banner }) {
-  const router = useRouter();
-  const { mutate: deleteBanner } = useDeleteBanner();
-
-  return (
-    <div className="flex items-center justify-end gap-2">
-      <Button
-        variant="ghost"
-        size="icon"
-        className="h-8 w-8 rounded-lg border border-slate-100 text-slate-500 hover:text-slate-900 hover:bg-white hover:shadow-sm transition-all"
-        onClick={() => router.push(`/admin/banners/${banner.id}`)}
-      >
-        <Pencil className="h-3.5 w-3.5" />
-      </Button>
-      <Button
-        variant="ghost"
-        size="icon"
-        className="h-8 w-8 rounded-lg border border-slate-100 text-slate-500 hover:text-red-600 hover:bg-red-50 hover:border-red-100 transition-all"
-        onClick={() => {
-          if (confirm(`XÃ¡c nháº­n xÃ³a banner: ${banner.title}?`)) {
-            deleteBanner(banner.id);
-          }
-        }}
-      >
-        <Trash className="h-3.5 w-3.5" />
-      </Button>
-    </div>
-  );
-}
 
 export const columns: ColumnDef<Banner>[] = [
   {
@@ -72,7 +42,7 @@ export const columns: ColumnDef<Banner>[] = [
         <span className="font-semibold text-slate-800 tracking-tight text-sm">{row.getValue("title")}</span>
         <div className="flex items-center gap-2">
            <ImageIcon className="h-3 w-3 text-slate-500" />
-           <span className="text-xs font-medium text-slate-500 tracking-wide">Thứ tự: {row.original.order || 0}</span>
+           <span className="text-xs font-medium text-slate-500 tracking-wide">Thứ tự: {row.original.displayOrder || 0}</span>
         </div>
       </div>
     ),

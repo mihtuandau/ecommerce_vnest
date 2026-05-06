@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useParams } from "next/navigation";
 import { useOrderDetail, useCancelOrder } from "@/features/orders/hooks";
 import { Skeleton } from "@/components/ui/Skeleton";
-import { useCartStore } from "@/store/useCartStore";
+import { useCart } from "@/features/cart/hooks";
 import { useToast } from "@/hooks/useToast";
 import {
   AlertCircle,
@@ -83,15 +83,17 @@ export function OrderDetailView() {
     if (!order || !order.orderItems) return;
 
     order.orderItems.forEach((item) => {
+      const getUrl = (img: any) => typeof img === 'string' ? img : img?.url;
       addItem({
-        productId: String(item.variant?.productId || ""),
+        productId: String(item.variant?.productId || item.productId || ""),
         variantId: String(item.variantId),
-        name: item.productName || item.variant?.product?.name || "Sản phẩm",
+        name: item.productName || item.variantSnapshot?.productName || item.variant?.product?.name || "Sản phẩm",
         price: item.price,
         quantity: item.quantity,
         imageUrl:
-          (typeof item.variant?.product?.images?.[0] === 'string' ? item.variant?.product?.images?.[0] : item.variant?.product?.images?.[0]?.url) ||
-          (typeof item.variant?.images?.[0] === 'string' ? item.variant?.images?.[0] : item.variant?.images?.[0]?.url) ||
+          getUrl(item.variantSnapshot?.image) ||
+          getUrl(item.variant?.images?.[0]) ||
+          getUrl(item.variant?.product?.images?.[0]) ||
           "/placeholder.png",
         slug: item.variant?.product?.slug || "",
         color: item.variant?.color,
@@ -159,9 +161,9 @@ export function OrderDetailView() {
 
   const isPaid =
     order.paymentStatus === "PAID" ||
-    order.paymentStatus === PaymentStatus.SUCCESS ||
+    (order.paymentStatus as any) === PaymentStatus.SUCCESS ||
     order.payment?.status === "PAID" ||
-    order.payment?.status === PaymentStatus.SUCCESS;
+    (order.payment?.status as any) === PaymentStatus.SUCCESS;
   const isCancelled = order.status === OrderStatus.CANCELLED;
 
   return (
@@ -177,7 +179,7 @@ export function OrderDetailView() {
             isPaid={isPaid}
             isCancelled={isCancelled}
             onReorder={handleReorder}
-            onCancel={() => confirm("Hủy đơn hàng này?") && cancelOrder(order.id)}
+            onCancel={() => confirm("Hủy đơn hàng này?") && cancelOrder(String(order.id))}
             onReturn={() => setIsReturnModalOpen(true)}
             onConfirmReturn={() => {
               updateReturnStatus({
@@ -210,11 +212,11 @@ export function OrderDetailView() {
 
             <DetailSidebar
               orderId={order.id}
-              shippingSnapshot={order.shippingSnapshot}
+              shippingSnapshot={order.shippingSnapshot || {}}
               user={order.user}
               addressRelation={order.address}
               paymentMethod={order.paymentMethod}
-              paymentStatus={order.paymentStatus || order.payment?.status}
+              paymentStatus={order.paymentStatus || order.payment?.status || ""}
               isPaid={isPaid}
               isCancelled={isCancelled}
               isReturned={order.status === OrderStatus.RETURNED}

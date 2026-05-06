@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useCategories, useBrands } from "@/features/products/hooks";
+import { Category, Brand } from "@/types/models";
 import { useSearchParams, useRouter } from "next/navigation";
 import {
   Sheet,
@@ -69,10 +70,10 @@ export function ShopContainer() {
   const currentSort = searchParams.get("sortBy") || "newest";
   const currentPage = parseInt(searchParams.get("page") || "1");
 
-  const categories = Array.isArray(categoryData)
+  const categories = (Array.isArray(categoryData)
     ? categoryData
-    : categoryData?.data || [];
-  const brands = Array.isArray(brandData) ? brandData : brandData?.data || [];
+    : (categoryData as any)?.data || []) as Category[];
+  const brands = (Array.isArray(brandData) ? brandData : (brandData as any)?.data || []) as Brand[];
 
   const updateFilters = (key: string, value: string | null) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -139,9 +140,9 @@ export function ShopContainer() {
                 {/* Compact Suggestions - Desktop only */}
                 <div className="hidden md:flex items-center gap-2">
                   {categories
-                    .filter(c => c.name.toLowerCase().includes(searchParams.get("search")!.toLowerCase()))
+                    .filter((c: Category) => c.name.toLowerCase().includes(searchParams.get("search")!.toLowerCase()))
                     .slice(0, 2)
-                    .map(cat => (
+                    .map((cat: Category) => (
                       <Link 
                         key={cat.id}
                         href={`/shop?categoryId=${cat.id}`}
@@ -165,13 +166,13 @@ export function ShopContainer() {
             </div>
 
             {/* Mobile Suggestions Row */}
-            {(categories.filter(c => c.name.toLowerCase().includes(searchParams.get("search")!.toLowerCase())).length > 0 || 
-              brands.filter(b => b.name.toLowerCase().includes(searchParams.get("search")!.toLowerCase())).length > 0) && (
+            {(categories.filter((c: Category) => c.name.toLowerCase().includes(searchParams.get("search")!.toLowerCase())).length > 0 || 
+              brands.filter((b: Brand) => b.name.toLowerCase().includes(searchParams.get("search")!.toLowerCase())).length > 0) && (
               <div className="md:hidden flex flex-wrap items-center gap-2 mt-3 px-2">
                 {categories
-                  .filter(c => c.name.toLowerCase().includes(searchParams.get("search")!.toLowerCase()))
+                  .filter((c: Category) => c.name.toLowerCase().includes(searchParams.get("search")!.toLowerCase()))
                   .slice(0, 2)
-                  .map(cat => (
+                  .map((cat: Category) => (
                     <Link 
                       key={cat.id}
                       href={`/shop?categoryId=${cat.id}`}

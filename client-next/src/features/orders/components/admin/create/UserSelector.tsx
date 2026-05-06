@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { usersApi } from "@/features/users/api";
 import { Search, User, Loader2, Mail, Phone, Check } from "lucide-react";
+import Image from "next/image";
 import { handleAvatarError } from "@/utils/avatar";
 
 interface UserSelectorProps {
@@ -28,7 +29,7 @@ export function UserSelector({ onSelect }: UserSelectorProps) {
     try {
       setIsLoading(true);
       const res = await usersApi.getUsers({ search: query, limit: 10 });
-      setUsers(res || []);
+      setUsers(res?.data || []);
     } catch (error) {
       console.error("Failed to fetch users", error);
     } finally {
@@ -94,12 +95,13 @@ export function UserSelector({ onSelect }: UserSelectorProps) {
                   <div className="flex items-center gap-4">
                     <div className="h-12 w-12 bg-slate-100 rounded-full flex items-center justify-center font-bold text-slate-400 overflow-hidden border-2 border-white shadow-sm">
                       {user.avatar ? (
-                        <img
+                        <Image
                           src={user.avatar}
-                          alt={user.fullName}
-                          referrerPolicy="no-referrer"
+                          alt={user.fullName || "User"}
+                          width={48}
+                          height={48}
                           className="h-full w-full object-cover"
-                          onError={(e) => handleAvatarError(e, user.fullName || user.name, user.email)}
+                          onError={(e) => handleAvatarError(e as any, user.fullName || user.name, user.email)}
                         />
                       ) : (
                         user.fullName?.charAt(0).toUpperCase() || <User className="h-6 w-6" />

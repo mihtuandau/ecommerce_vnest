@@ -29,6 +29,7 @@ import { productsApi } from "@/features/products/api";
 import { usersApi } from "@/features/users/api";
 import { cn } from "@/utils/cn";
 import { useToast } from "@/hooks/useToast";
+import Image from "next/image";
 import { Role } from "@/types/enums";
 
 const profileSchema = z.object({
@@ -160,12 +161,14 @@ export default function ProfilePage() {
           <Card className="border-none shadow-xl shadow-slate-200/50 overflow-hidden bg-white">
             <CardContent className="pt-8 pb-6 text-center">
               <div className="relative inline-block group">
-                <div className="h-32 w-32 rounded-[2.5rem] bg-primary/5 flex items-center justify-center border-2 border-primary/10 overflow-hidden shadow-2xl shadow-primary/5 mx-auto transition-all duration-500 group-hover:scale-105 group-hover:border-primary/30 group-hover:bg-primary/10">
+                <div className="h-32 w-32 rounded-[2.5rem] bg-primary/5 flex items-center justify-center border-2 border-primary/10 overflow-hidden shadow-2xl shadow-primary/5 mx-auto transition-all duration-500 group-hover:scale-105 group-hover:border-primary/30 group-hover:bg-primary/10 relative">
                   {form.watch("avatar") ? (
-                    <img
+                    <Image
                       src={form.watch("avatar")!}
                       alt={user.name || "User"}
-                      className="h-full w-full object-cover"
+                      fill
+                      className="object-cover"
+                      sizes="128px"
                     />
                   ) : (
                     <div className="h-full w-full flex items-center justify-center text-primary/40 bg-gradient-to-br from-primary/5 to-primary/10">

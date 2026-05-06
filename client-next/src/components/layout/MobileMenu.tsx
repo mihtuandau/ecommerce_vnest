@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Search, X, ChevronRight, Heart, Sparkles, Zap, Tag } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { ROUTES } from "@/constants/routes";
@@ -113,9 +114,11 @@ export function MobileMenu({ user, categories, wishlistCount, onClose, mounted }
                       className="flex items-center gap-3 p-2 hover:bg-slate-50 rounded-xl transition-all"
                     >
                       <div className="h-12 w-12 rounded-lg bg-slate-50 overflow-hidden flex-shrink-0 border border-slate-100">
-                        <img 
+                        <Image 
                           src={normalizeImagePath(product.images?.[0]?.url || product.images?.[0] || product.image)} 
                           alt={product.name}
+                          width={48}
+                          height={48}
                           className="h-full w-full object-contain"
                         />
                       </div>

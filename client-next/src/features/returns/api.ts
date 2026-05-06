@@ -1,12 +1,12 @@
 import { api } from "@/lib/axios";
 
 export const returnsApi = {
-  createReturnRequest: async (data: { orderId: number; reason: string; items: Record<string, unknown>[] }) => {
+  createReturnRequest: async (data: { orderId: number; reason: string; items?: Record<string, unknown>[]; details?: string; images?: string[] }) => {
     const { data: response } = await api.post("/returns", data);
     return response;
   },
 
-  createGuestReturnRequest: async (data: { orderCode: string; contact: string; reason: string; items: Record<string, unknown>[] }) => {
+  createGuestReturnRequest: async (data: { orderCode: string; contact: string; reason: string; items?: Record<string, unknown>[]; details?: string; images?: string[] }) => {
     const { data: response } = await api.post("/returns/guest", data);
     return response;
   },
@@ -27,7 +27,7 @@ export const returnsApi = {
   },
 
   // Admin endpoints
-  getAllReturns: async (params: Record<string, string | number>) => {
+  getAllReturns: async (params: Record<string, string | number | undefined>) => {
     const { data: response } = await api.get("/returns", { params });
     return response;
   },

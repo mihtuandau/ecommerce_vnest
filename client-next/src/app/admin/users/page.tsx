@@ -7,12 +7,13 @@ import { Header } from "@/features/users/components/admin/list/Header";
 import { Stats } from "@/features/users/components/admin/list/Stats";
 import { Toolbar } from "@/features/users/components/admin/list/Toolbar";
 import { Role } from "@/types/enums";
+import { User } from "@/types/models";
 
 export default function AdminUsersPage() {
   const { data, isLoading } = useUsers();
   const [searchTerm, setSearchTerm] = React.useState("");
 
-  const users = React.useMemo(() => data || [], [data]);
+  const users: User[] = React.useMemo(() => (data as any)?.data || [], [data]);
 
   const stats = React.useMemo(() => ({
     total: users.length,

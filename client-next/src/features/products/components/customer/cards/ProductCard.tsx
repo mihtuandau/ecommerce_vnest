@@ -13,6 +13,11 @@ import { useToast } from "@/hooks/useToast";
 import { cn } from "@/utils/cn";
 import { useFlashSale } from "@/features/discounts/hooks";
 import { useUIStore } from "@/store/useUIStore";
+import Image from "next/image";
+import { getImageUrl } from "@/utils/image";
+import { QuickAddModal } from "./QuickAddModal";
+import { animateFlyToCart } from "@/utils/animateCart";
+
 
 interface ProductCardProps {
   product: Product;
@@ -24,6 +29,8 @@ export const ProductCard = React.memo(function ProductCard({ product, view = "gr
   const { toggleWishlist, isInWishlist } = useWishlistStore();
   const { success } = useToast();
   const { data: flashSale } = useFlashSale();
+  const [isQuickAddOpen, setIsQuickAddOpen] = React.useState(false);
+
 
   const isFavorite = isInWishlist(String(product.id));
 
@@ -69,14 +76,40 @@ export const ProductCard = React.memo(function ProductCard({ product, view = "gr
       ? parsePrice(originalPriceVal)
       : null;
 
-  const rawImage = product.images?.[0];
-  const imageUrl =
-    typeof rawImage === "string" ? rawImage : rawImage?.url || "/placeholder.png";
+  // Handle case where product.images might be a JSON string from backend
+  let images = product.images;
+  if (typeof images === 'string') {
+    try {
+      images = JSON.parse(images);
+    } catch (e) {
+      images = [];
+    }
+  }
+
+  const rawImage = Array.isArray(images) ? images[0] : null;
+  const imageUrl = getImageUrl(typeof rawImage === "string" ? rawImage : (rawImage as any)?.url);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
-    const variantId = product.variants?.[0]?.id || product.id;
-    
+    e.stopPropagation();
+
+    const variants = product.variants || [];
+    const hasMultipleVariants = variants.length > 1;
+
+    // Check if the product has any options like size or color across variants
+    const hasOptions = variants.some(v => v.size || v.color);
+
+    if (hasMultipleVariants || hasOptions) {
+      setIsQuickAddOpen(true);
+      return;
+    }
+
+    // Trigger fly-to-cart animation
+    animateFlyToCart(e, imageUrl);
+
+    const variantId = variants?.[0]?.id;
+    if (!variantId) return;
+
     addItem({
       productId: String(product.id),
       variantId: String(variantId),
@@ -87,8 +120,9 @@ export const ProductCard = React.memo(function ProductCard({ product, view = "gr
       slug: product.slug,
       quantity: 1,
     });
-    success(`Đã thêm ${product.name} vào giỏ hàng`);
   };
+
+
 
   const discountPercent =
     originalPrice && originalPrice > price
@@ -110,10 +144,12 @@ export const ProductCard = React.memo(function ProductCard({ product, view = "gr
           href={`/shop/${product.slug}`}
           className="relative w-1/3 md:w-1/4 h-full bg-slate-50/50 p-2 md:p-4 flex items-center justify-center shrink-0 border-r border-slate-100"
         >
-          <img
+          <Image
             src={imageUrl}
             alt={product.name}
-            className="max-h-full max-w-full object-contain transition-transform duration-500 ease-out group-hover:scale-110 mix-blend-multiply"
+            fill
+            className="object-contain transition-transform duration-500 ease-out group-hover:scale-110 mix-blend-multiply"
+            sizes="(max-width: 768px) 33vw, 25vw"
           />
           {discountPercent > 0 && !product.isNew && (
             <div className="absolute top-2 left-2 z-10">
@@ -237,10 +273,13 @@ export const ProductCard = React.memo(function ProductCard({ product, view = "gr
           </div>
         </div>
 
-        <img
+        <Image
           src={imageUrl}
           alt={product.name}
-          className="max-h-[95%] max-w-[95%] object-contain transition-transform duration-500 ease-out group-hover:scale-110 mix-blend-multiply"
+          fill
+          className="object-contain transition-transform duration-500 ease-out group-hover:scale-110 mix-blend-multiply"
+          sizes="(max-width: 768px) 50vw, 25vw"
+          priority={product.isNew}
         />
       </Link>
 
@@ -323,6 +362,15 @@ export const ProductCard = React.memo(function ProductCard({ product, view = "gr
           </Button>
         </div>
       </CardContent>
+
+      <QuickAddModal
+        product={product}
+        isOpen={isQuickAddOpen}
+        onClose={() => setIsQuickAddOpen(false)}
+        price={price}
+        originalPrice={originalPrice}
+      />
     </Card>
   );
 });
+

@@ -8,7 +8,7 @@ interface GuestDetailSidebarProps {
   fullName?: string;
   phone?: string;
   email?: string;
-  address?: string;
+  address?: any;
   paymentMethod: string;
   isPaid: boolean;
   paymentStatus?: string;
@@ -79,7 +79,9 @@ export function GuestDetailSidebar({
                   shippingSnapshot?.district, 
                   shippingSnapshot?.province
                 ].filter(Boolean).join(", ") || 
-                address || "—"}
+                (typeof address === 'object' ? 
+                  [address?.street, address?.ward, address?.district, address?.province || address?.city].filter(Boolean).join(", ") 
+                  : address) || "—"}
             </p>
           </div>
         </div>

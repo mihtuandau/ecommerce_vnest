@@ -8,13 +8,12 @@ import { Tabs } from "@/features/products/components/admin/ProductList/Tabs";
 import { Toolbar } from "@/features/products/components/admin/ProductList/Toolbar";
 
 export default function AdminProductsPage() {
-  const { data, isLoading, refetch, isFetching } = useProducts({ limit: 200, status: 'all' });
+  const { data, isLoading, refetch, isFetching } = useProducts({ limit: 200, status: 'all', sortBy: 'newest' });
   const [searchTerm, setSearchTerm] = React.useState("");
   const [activeTab, setActiveTab] = React.useState("ALL");
 
   const products = React.useMemo(() => {
-    const raw = Array.isArray(data) ? data : (data as any)?.data || [];
-    return raw;
+    return data?.data || [];
   }, [data]);
 
   const counts = React.useMemo(() => ({

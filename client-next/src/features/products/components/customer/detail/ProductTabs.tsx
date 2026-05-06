@@ -91,7 +91,7 @@ export function ProductTabs({ product }: ProductTabsProps) {
         )}
 
         {activeTab === "reviews" && (
-          <ReviewList productId={product.id} product={product} />
+          <ReviewList productId={Number(product.id)} product={product} />
         )}
       </div>
     </div>

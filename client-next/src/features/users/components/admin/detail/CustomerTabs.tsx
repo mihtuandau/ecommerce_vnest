@@ -67,7 +67,7 @@ export function CustomerTabs({ user, activeTab, onTabChange, onUpdate, isUpdatin
           </TabsContent>
 
           <TabsContent value="reviews" className="mt-0 focus-visible:outline-none">
-            <CustomerReviews userId={user.id} />
+            <CustomerReviews userId={Number(user.id)} />
           </TabsContent>
 
           <TabsContent value="settings" className="mt-0 focus-visible:outline-none">

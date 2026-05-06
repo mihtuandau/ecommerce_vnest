@@ -15,6 +15,8 @@ import { useWishlistStore } from "@/store/useWishlistStore";
 import { useToast } from "@/hooks/useToast";
 import { Skeleton } from "@/components/ui/Skeleton";
 
+import { QuickAddModal } from "@/features/products/components/customer/cards/QuickAddModal";
+
 function pad(n: number) {
   return String(n).padStart(2, "0");
 }
@@ -66,12 +68,12 @@ function Countdown({ endDate }: { endDate: string }) {
 function FlashProductCard({ product, discountPercent }: { product: Product; discountPercent: number }) {
   const { addItem } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlistStore();
-  const { success } = useToast();
+  const { success, error } = useToast();
+  const [isQuickAddOpen, setIsQuickAddOpen] = useState(false);
 
   const isFavorite = isInWishlist(String(product.id));
   const imageUrl =
-    product.image ||
-    (typeof product.images?.[0] === "string" ? product.images[0] : product.images?.[0]?.url) ||
+    (typeof product.images?.[0] === "string" ? product.images[0] : (product.images?.[0] as any)?.url) ||
     "/placeholder.png";
 
   const originalPrice = product.basePrice || 0;
@@ -83,16 +85,37 @@ function FlashProductCard({ product, discountPercent }: { product: Product; disc
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
+    e.stopPropagation();
+
+    const variants = product.variants || [];
+    const hasMultipleVariants = variants.length > 1;
+    const hasOptions = variants.some((v: any) => v.size || v.color);
+
+    if (hasMultipleVariants || hasOptions) {
+      setIsQuickAddOpen(true);
+      return;
+    }
+
+    const variantId = variants?.[0]?.id;
+    if (!variantId) {
+      error("Phiên bản này hiện không khả dụng");
+      return;
+    }
+
+    import("@/utils/animateCart").then(({ animateFlyToCart }) => {
+      animateFlyToCart(e, imageUrl);
+    });
+
     addItem({
       productId: String(product.id),
-      variantId: String(product.id),
+      variantId: String(variantId),
       name: product.name,
       price: salePrice,
+      originalPrice: originalPrice || undefined,
       imageUrl,
       slug: product.slug,
       quantity: 1,
     });
-    success(`Đã thêm vào giỏ hàng`);
   };
 
   const handleToggleWishlist = (e: React.MouseEvent) => {
@@ -187,6 +210,13 @@ function FlashProductCard({ product, discountPercent }: { product: Product; disc
           </button>
         </div>
       </div>
+      <QuickAddModal
+        product={product}
+        isOpen={isQuickAddOpen}
+        onClose={() => setIsQuickAddOpen(false)}
+        price={salePrice}
+        originalPrice={originalPrice}
+      />
     </div>
   );
 }

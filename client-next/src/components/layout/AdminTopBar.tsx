@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/DropdownMenu";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import Image from "next/image";
 
 import { useState, useEffect } from "react";
 
@@ -68,9 +69,11 @@ export function AdminTopBar() {
             >
               <div className="h-9 w-9 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20 shadow-sm">
                 {user?.avatar ? (
-                  <img
+                  <Image
                     src={user.avatar}
                     alt={user.name || "User"}
+                    width={36}
+                    height={36}
                     className="h-full w-full object-cover rounded-xl"
                   />
                 ) : (
@@ -84,12 +87,14 @@ export function AdminTopBar() {
                   {user?.name || "Người dùng"}
                 </p>
                 <p className="text-xs text-slate-500 font-medium mt-1">
-                  {{
-                    ADMIN: "Quản trị viên",
-                    KHO: "Quản lý kho",
-                    BAN_HANG: "Bán hàng",
-                    CUSTOMER: "Khách hàng",
-                  }[(user as any)?.role] ??
+                  {(
+                    {
+                      ADMIN: "Quản trị viên",
+                      KHO: "Quản lý kho",
+                      BAN_HANG: "Bán hàng",
+                      CUSTOMER: "Khách hàng",
+                    } as Record<string, string>
+                  )[(user as any)?.role] ??
                     (user as any)?.role ??
                     "Người dùng"}
                 </p>

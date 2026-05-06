@@ -59,6 +59,7 @@ export function CartDropdown() {
       {/* Trigger */}
       <Link href={ROUTES.CART}>
         <Button 
+          id="cart-icon"
           variant="ghost" 
           size="icon" 
           className={cn(
@@ -66,6 +67,7 @@ export function CartDropdown() {
             isOpen ? "text-primary bg-primary/5" : "text-slate-600 hover:text-primary hover:bg-primary/5"
           )}
         >
+
           <ShoppingCart className="h-6 w-6" />
           {totalCount > 0 && (
             <span className="absolute -top-0.5 -right-0.5 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-primary text-[9px] font-bold text-white shadow-sm ring-2 ring-white">

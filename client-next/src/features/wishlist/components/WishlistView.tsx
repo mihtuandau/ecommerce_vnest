@@ -22,10 +22,10 @@ export function WishlistView() {
 
   if (!mounted) return null;
 
-  const handleAddToCart = (item: { id: number; name: string; price: number; imageUrl: string; slug: string }) => {
+  const handleAddToCart = (item: any) => {
     addItem({
-      productId: item.id,
-      variantId: item.id, // Giả sử dùng ID sản phẩm nếu chưa chọn variant
+      productId: String(item.id),
+      variantId: String(item.id), // Assuming product ID if no variant selected
       name: item.name,
       price: item.price,
       imageUrl: item.imageUrl,

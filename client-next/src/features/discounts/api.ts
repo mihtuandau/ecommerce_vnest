@@ -12,18 +12,19 @@ export const discountsApi = {
     // Không gửi "manage" lên server (server không biết field này)
     const { manage, ...serverParams } = params || {};
 
-    const { data: body } = await api.get<{ data?: Discount[] } | Discount[]>(endpoint, {
+    const { data: body } = await api.get<any>(endpoint, {
       params: serverParams,
     });
 
-    // Robust unwrapping
     if (Array.isArray(body)) return { data: body };
-    if (body?.data && Array.isArray(body.data)) return body;
-    return body;
+    if (body && typeof body === 'object' && Array.isArray(body.data)) {
+      return { data: body.data, total: body.total };
+    }
+    return { data: [] };
   },
 
   getDiscount: async (id: string): Promise<Discount> => {
-    const { data: body } = await api.get<{ data?: Discount } | Discount>(`/discounts/${id}`);
+    const { data: body } = await api.get<any>(`/discounts/${id}`);
     return body?.data || body;
   },
 
@@ -52,7 +53,7 @@ export const discountsApi = {
   },
 
   getFlashSale: async () => {
-    const { data: body } = await api.get<{ data?: Discount } | Discount>("/discounts/flash-sale");
+    const { data: body } = await api.get<any>("/discounts/flash-sale");
     return body?.data || body;
   },
 };

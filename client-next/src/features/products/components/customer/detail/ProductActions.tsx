@@ -85,47 +85,52 @@ export function ProductActions({
       error("Vui lòng chọn màu sắc");
       return false;
     }
-    if (!selectedVariant && product.variants?.length > 0) {
+    if (!selectedVariant) {
       error("Phiên bản này hiện không khả dụng");
       return false;
     }
     return true;
   };
 
+  const getImageUrl = (img: any) => {
+    if (!img) return "/placeholder.png";
+    return typeof img === "string" ? img : img.url || "/placeholder.png";
+  };
+
   const handleAddToCart = () => {
-    if (!validateSelection()) return;
+    if (!validateSelection() || !selectedVariant) return;
 
     addItem({
       productId: String(product.id),
-      variantId: String(selectedVariant?.id || product.id),
+      variantId: String(selectedVariant.id),
       name: product.name,
       price: finalPrice,
-      originalPrice: finalOriginalPrice,
-      imageUrl: selectedVariant?.images?.[0]?.url || product.images?.[0]?.url || product.images?.[0] || "/placeholder.png",
+      originalPrice: finalOriginalPrice || undefined,
+      imageUrl: getImageUrl(selectedVariant.images?.[0] || product.images?.[0]),
       slug: product.slug,
       quantity: quantity,
-      color: selectedVariant?.color,
-      size: selectedVariant?.size,
+      color: selectedVariant.color,
+      size: selectedVariant.size,
     });
     success(`Đã thêm ${product.name} vào giỏ hàng`);
   };
 
   const handleBuyNow = () => {
-    if (!validateSelection()) return;
+    if (!validateSelection() || !selectedVariant) return;
 
     setBuyNowItem({
       productId: String(product.id),
-      variantId: String(selectedVariant?.id || product.id),
+      variantId: String(selectedVariant.id),
       name: product.name,
       price: finalPrice,
-      originalPrice: finalOriginalPrice,
-      imageUrl: selectedVariant?.images?.[0]?.url || product.images?.[0]?.url || product.images?.[0] || "/placeholder.png",
+      originalPrice: finalOriginalPrice || undefined,
+      imageUrl: getImageUrl(selectedVariant.images?.[0] || product.images?.[0]),
       slug: product.slug,
       quantity: quantity,
-      color: selectedVariant?.color,
-      size: selectedVariant?.size,
+      color: selectedVariant.color,
+      size: selectedVariant.size,
     });
-    
+
     router.push("/checkout?buyNow=true");
   };
 

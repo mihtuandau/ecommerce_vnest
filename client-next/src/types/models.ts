@@ -1,6 +1,11 @@
-import { Role, UserStatus, OrderStatus, PaymentMethod, PaymentStatus, DiscountType } from "./enums";
-
-// ── Domain models — synced with Prisma schema ──
+import {
+  Role,
+  UserStatus,
+  OrderStatus,
+  PaymentMethod,
+  PaymentStatus,
+  DiscountType,
+} from "./enums";
 
 export interface User {
   id: string;
@@ -34,10 +39,10 @@ export interface Product {
   slug: string;
   description: string;
   basePrice: number;
-  price?: number; 
+  price?: number;
   originalPrice?: number | null;
   images: ProductImage[] | string[];
-  categoryId: string;
+  categoryId: number;
   category?: Category;
   brandId?: string;
   brand?: Brand;
@@ -65,6 +70,7 @@ export interface ProductVariant {
   stock: number;
   isActive: boolean;
   images?: ProductImage[] | string[];
+  product?: Product;
 }
 
 export interface Category {
@@ -93,7 +99,7 @@ export interface Order {
   id: number;
   orderCode: string;
   userId: number | null;
-  user?: Pick<User, "id" | "name" | "email">;
+  user?: Pick<User, "id" | "name" | "email" | "phone">;
   orderItems: OrderItem[];
   subtotal: number;
   total: number;
@@ -112,8 +118,17 @@ export interface Order {
     street: string;
   };
   note?: string;
-  payment?: Payment;
-  reviews?: Review[];
+  fullName?: string;
+  phone?: string;
+  guestPhone?: string;
+  guestEmail?: string;
+  totalAmount?: number;
+  paymentStatus?: string;
+  payment?: any;
+  deliveredAt?: string;
+  shippingCode?: string;
+  reviews?: any[];
+  returnRequest?: any;
   createdAt: string;
   updatedAt: string;
 }
@@ -124,13 +139,16 @@ export interface OrderItem {
   variantId: number;
   quantity: number;
   price: number;
-  variant?: ProductVariant;
   productName?: string;
+  variant?: ProductVariant;
+  productId?: string | number;
+  originalPrice?: number | string | null;
   variantSnapshot?: {
     productName: string;
     size?: string;
     color?: string;
     imageUrl?: string;
+    image?: string;
   };
   returnItems?: any[]; // Keep any for now as return system is complex
 }
@@ -146,6 +164,9 @@ export interface Address {
   ward: string;
   street: string;
   isDefault: boolean;
+  provinceCode?: string | number;
+  districtCode?: string | number;
+  wardCode?: string | number;
 }
 
 export interface ReviewImage {

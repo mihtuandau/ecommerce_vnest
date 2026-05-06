@@ -132,7 +132,7 @@ export function ChatSidebar({ selectedRoom, onSelectRoom }: ChatSidebarProps) {
                         "text-sm font-black truncate",
                         isActive ? "text-slate-900" : "text-slate-600"
                       )}>
-                        {room.customer?.name || (isCustomerMsg ? sender.name : "Khách hàng")}
+                        {(room as any).customer?.name || (isCustomerMsg ? sender.name : "Khách hàng")}
                       </p>
                       <span className="text-xs font-bold text-slate-400 uppercase tracking-tighter whitespace-nowrap">
                         {formatTime(lastMsg.createdAt)}

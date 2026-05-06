@@ -4,8 +4,8 @@ import React from "react";
 import { Info, Shield } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
+import { Role } from "@/types/enums";
 import { ROLE_CONFIG } from "../constants";
-import { cn } from "@/utils/cn";
 
 interface RoleInfoCardProps {
   activeRole: string;
@@ -14,7 +14,7 @@ interface RoleInfoCardProps {
 }
 
 export function RoleInfoCard({ activeRole, activePermsCount, totalPermsCount }: RoleInfoCardProps) {
-  const roleConf = ROLE_CONFIG[activeRole];
+  const roleConf = ROLE_CONFIG[activeRole as Role] || ROLE_CONFIG[Role.CUSTOMER];
 
   return (
     <Card className="border-none shadow-sm rounded-2xl bg-slate-50/50 font-sans">

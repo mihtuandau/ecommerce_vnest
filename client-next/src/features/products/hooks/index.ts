@@ -5,10 +5,10 @@ import type { Product } from "@/types/models";
 import { queryKeys } from "@/constants/queryKeys";
 import { useToast } from "@/hooks/useToast";
 
-export function useProducts(params?: Record<string, string | number>, options?: { enabled?: boolean }) {
+export function useProducts(params?: Record<string, string | number | boolean | undefined>, options?: { enabled?: boolean }) {
   return useQuery({
-    queryKey: queryKeys.products.list(params),
-    queryFn: () => productsApi.getProducts(params as Record<string, string>),
+    queryKey: queryKeys.products.list(params as Record<string, string>),
+    queryFn: () => productsApi.getProducts(params),
     ...options,
   });
 }

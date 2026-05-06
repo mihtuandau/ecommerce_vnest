@@ -110,8 +110,8 @@ export function ReviewModal({
             setRating(5);
             setSelectedFiles([]);
           },
-          onError: (err: { response?: { data?: { message?: string } } }) => {
-            toastError(err.response?.data?.message || "Không thể gửi đánh giá. Vui lòng thử lại.");
+          onError: (err: any) => {
+            toastError(err.response?.data?.message || err.message || "Không thể gửi đánh giá. Vui lòng thử lại.");
           },
         }
       );

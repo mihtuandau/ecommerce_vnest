@@ -11,6 +11,7 @@ import {
   ArrowLeft, RotateCcw, Calendar, User, ShoppingBag, 
   CheckCircle2, XCircle, Loader2, MessageSquare, Image as ImageIcon 
 } from "lucide-react";
+import Image from "next/image";
 import { ReturnStatus } from "@/types/enums";
 import { Textarea } from "@/components/ui/Textarea";
 import { Label } from "@/components/ui/Label";
@@ -186,12 +187,14 @@ export default function AdminReturnDetailPage() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {request.images?.length > 0 ? (
                 request.images.map((url: string, i: number) => (
-                  <div key={i} className="aspect-square rounded-xl overflow-hidden border border-slate-100 group cursor-zoom-in shadow-sm">
-                    <img 
+                  <div key={i} className="aspect-square rounded-xl overflow-hidden border border-slate-100 group cursor-zoom-in shadow-sm relative">
+                    <Image 
                       src={url} 
                       alt={`Evidence ${i+1}`} 
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
                       onClick={() => window.open(url, "_blank")}
+                      sizes="200px"
                     />
                   </div>
                 ))

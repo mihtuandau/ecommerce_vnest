@@ -21,7 +21,7 @@ export class DiscountService {
         discount.endDate,
         discount.isActive,
       ),
-      usageCount: discount._count?.orders || 0,
+      usageCount: discount.usageCount ?? 0,
     };
   }
 
@@ -167,7 +167,7 @@ export class DiscountService {
       basePrice: p.basePrice,
       originalPrice: p.basePrice,
       price: p.variants?.[0]?.price || p.basePrice,
-      image: p.variants?.[0]?.images?.[0]?.url || p.images?.[0]?.url || null,
+      images: p.images || [],
       soldCount: p.soldCount,
       averageRating: p.averageRating,
       reviewCount: p.reviewCount,
@@ -211,9 +211,7 @@ export class DiscountService {
     }
 
     if (discount.usageLimit) {
-      const usageCount =
-        await this.repository.countEffectiveOrdersUsingDiscount(discount.id);
-      if (usageCount >= discount.usageLimit)
+      if ((discount.usageCount || 0) >= discount.usageLimit)
         return { isValid: false, message: 'Đã đạt giới hạn số lần sử dụng' };
     }
 

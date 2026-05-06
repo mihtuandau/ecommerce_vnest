@@ -38,7 +38,7 @@ export default function AdminReturnsPage() {
       const res = await returnsApi.getAllReturns({ 
         status: filterStatus || undefined,
         limit: 100 
-      });
+      } as any);
       setReturns(res.data || []);
     } catch (err) {
       error("Không thể tải danh sách yêu cầu trả hàng");

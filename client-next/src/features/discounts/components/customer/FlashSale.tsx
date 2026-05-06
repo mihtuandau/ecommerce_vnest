@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { Zap, ChevronRight } from "lucide-react";
 import { formatCurrency } from "@/utils/formatCurrency";
@@ -8,6 +9,7 @@ import { Product } from "@/types/models";
 import { getTimeLeft } from "@/utils/formatDate";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/utils/cn";
+import { getImageUrl } from "@/utils/image";
 
 function pad(n: number) {
   return String(n).padStart(2, "0");
@@ -46,10 +48,25 @@ function CountdownTimer({ endDate }: { endDate: string }) {
   );
 }
 
-function FlashProductCard({ product, discountPercent }: { product: Product; discountPercent: number }) {
-  const imageUrl = product.image || 
-    (typeof product.images?.[0] === "string" ? product.images[0] : product.images?.[0]?.url) || 
-    "/placeholder.png";
+function FlashProductCard({ product: rawProduct, discountPercent }: { product: any; discountPercent: number }) {
+  // Handle nested product object if the API returns a relation object
+  const product = rawProduct.product || rawProduct;
+  // Handle case where product.images might be a JSON string from backend
+  let images = product.images;
+  if (typeof images === 'string') {
+    try {
+      images = JSON.parse(images);
+    } catch (e) {
+      images = [];
+    }
+  }
+
+  const rawImage = Array.isArray(images) ? images[0] : (product.image || null);
+  const rawPath = typeof rawImage === "string" 
+    ? rawImage 
+    : (rawImage as any)?.url || (rawImage as any)?.image || (rawImage as any)?.imageUrl;
+  
+  const imageUrl = getImageUrl(rawPath);
 
   const originalPrice = product.basePrice || 0;
   const salePrice = Math.round(originalPrice * (1 - discountPercent / 100));
@@ -62,7 +79,7 @@ function FlashProductCard({ product, discountPercent }: { product: Product; disc
   return (
     <Link
       href={`/shop/${product.slug}`}
-      className="group bg-white rounded-xl overflow-hidden flex flex-col h-full border border-slate-100 hover:shadow-md transition-all duration-300"
+      className="group bg-white rounded-xl overflow-hidden flex flex-col h-full border border-slate-100 hover:shadow-md transition-all duration-300 relative"
     >
       {/* Badge */}
       <div className="absolute top-2 left-2 z-10">
@@ -73,10 +90,12 @@ function FlashProductCard({ product, discountPercent }: { product: Product; disc
 
       {/* Image */}
       <div className="relative aspect-square bg-slate-50 flex items-center justify-center p-4 shrink-0">
-        <img
+        <Image
           src={imageUrl}
           alt={product.name}
-          className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
+          fill
+          className="object-contain transition-transform duration-500 group-hover:scale-105"
+          sizes="(max-width: 768px) 50vw, 25vw"
         />
       </div>
 

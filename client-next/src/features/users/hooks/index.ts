@@ -5,6 +5,7 @@ import { usersApi } from "../api";
 import { useAuthStore } from "@/store/useAuthStore";
 import { queryKeys } from "@/constants/queryKeys";
 import { useToast } from "@/hooks/useToast";
+import { User, Address } from "@/types/models";
 
 export function useUsers(params?: Record<string, string | number>) {
   return useQuery({
@@ -161,6 +162,20 @@ export function useSetDefaultAddress() {
     },
     onError: (err: { response?: { data?: { message?: string } } }) => {
       error(err?.response?.data?.message || "Lỗi khi thiết lập mặc định");
+    },
+  });
+}
+
+export function useResetPassword() {
+  const { success, error } = useToast();
+
+  return useMutation({
+    mutationFn: (id: string) => usersApi.resetPassword(id),
+    onSuccess: () => {
+      success("Đã reset mật khẩu về mặc định (123456)");
+    },
+    onError: (err: { response?: { data?: { message?: string } } }) => {
+      error(err?.response?.data?.message || "Lỗi khi reset mật khẩu");
     },
   });
 }

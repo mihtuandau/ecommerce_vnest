@@ -268,7 +268,7 @@ export class OrderManagement {
 
     const totals = OrderHelper.calculateOrderTotal(
       order.orderItems.map((item) => ({ quantity: item.quantity, price: item.price })),
-      order.total - order.subtotal,
+      order.shippingFee,
       {
         percentage: discount.percentage || undefined,
         fixedAmount: discount.fixedAmount || undefined,

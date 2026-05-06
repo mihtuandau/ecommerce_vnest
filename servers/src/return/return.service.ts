@@ -295,11 +295,8 @@ export class ReturnService {
             data: { stock: { increment: rItem.quantity } }
           });
 
-          // Trừ soldCount của product
-          await tx.product.update({
-            where: { id: rItem.orderItem.variant.productId },
-            data: { soldCount: { decrement: rItem.quantity } }
-          });
+          // Trừ soldCount của product (GREATEST để tránh âm)
+          await tx.$executeRaw`UPDATE "Product" SET "soldCount" = GREATEST(0, "soldCount" - ${rItem.quantity}) WHERE "id" = ${rItem.orderItem.variant.productId}`;
         }
       }
 

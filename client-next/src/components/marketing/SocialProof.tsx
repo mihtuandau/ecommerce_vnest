@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 import React, { useState, useEffect } from "react";
 import { ShoppingBag, X, CheckCircle2, Clock } from "lucide-react";
@@ -48,15 +49,14 @@ export function SocialProof() {
       const randomCustomer = CUSTOMERS[Math.floor(Math.random() * CUSTOMERS.length)];
       const randomTime = TIMES[Math.floor(Math.random() * TIMES.length)];
 
+      const firstImage = randomProduct.images?.[0] as any;
+      const imageUrl = typeof firstImage === "string" ? firstImage : firstImage?.url;
+
       setCurrentOrder({
         name: randomCustomer.name,
         location: randomCustomer.location,
         productName: randomProduct.name,
-        image: normalizeImagePath(
-          randomProduct.images?.[0]?.url ||
-            randomProduct.image ||
-            randomProduct.images?.[0]
-        ),
+        image: normalizeImagePath(imageUrl || (randomProduct as any).image),
         time: randomTime,
       });
 
@@ -113,9 +113,11 @@ export function SocialProof() {
         </button>
 
         <div className="h-12 w-12 rounded-xl bg-slate-50 flex-shrink-0 overflow-hidden border border-slate-50 flex items-center justify-center relative">
-          <img
+          <Image
             src={currentOrder.image}
             alt="product"
+            width={48}
+            height={48}
             className="h-full w-full object-contain p-1"
           />
           <div className="absolute -bottom-0.5 -right-0.5 bg-green-500 text-white p-0.5 rounded-full border border-white shadow-sm">

@@ -42,6 +42,21 @@ import { Order, Address } from "@/types/models";
 
 type Tab = "info" | "address" | "security";
 
+interface Province {
+  ProvinceID: number;
+  ProvinceName: string;
+}
+
+interface District {
+  DistrictID: number;
+  DistrictName: string;
+}
+
+interface Ward {
+  WardCode: string;
+  WardName: string;
+}
+
 export function AccountView() {
   const { user } = useAuthStore();
   const { success, error } = useToast();
@@ -98,9 +113,9 @@ export function AccountView() {
     isDefault: false
   });
 
-  const [provinces, setProvinces] = useState<Record<string, unknown>[]>([]);
-  const [districts, setDistricts] = useState<Record<string, unknown>[]>([]);
-  const [wards, setWards] = useState<Record<string, unknown>[]>([]);
+  const [provinces, setProvinces] = useState<Province[]>([]);
+  const [districts, setDistricts] = useState<District[]>([]);
+  const [wards, setWards] = useState<Ward[]>([]);
 
   // Sync user data to form when user is available
   useEffect(() => {
@@ -155,9 +170,9 @@ export function AccountView() {
   const handleAddAddress = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const provinceName = provinces.find(p => String(p.ProvinceID) === String(newAddress.provinceId))?.ProvinceName as string | undefined;
-    const districtName = districts.find(d => String(d.DistrictID) === String(newAddress.districtId))?.DistrictName as string | undefined;
-    const wardName = wards.find(w => w.WardCode === newAddress.wardCode)?.WardName as string | undefined;
+    const provinceName = provinces.find(p => String(p.ProvinceID) === String(newAddress.provinceId))?.ProvinceName;
+    const districtName = districts.find(d => String(d.DistrictID) === String(newAddress.districtId))?.DistrictName;
+    const wardName = wards.find(w => String(w.WardCode) === String(newAddress.wardCode))?.WardName;
 
     createAddress.mutate({
       fullName: newAddress.fullName,
@@ -602,7 +617,7 @@ export function AccountView() {
                     </SelectTrigger>
                     <SelectContent className="rounded-xl">
                       {wards.map(w => (
-                        <SelectItem key={w.WardCode} value={w.WardCode}>
+                        <SelectItem key={w.WardCode} value={String(w.WardCode)}>
                           {w.WardName}
                         </SelectItem>
                       ))}

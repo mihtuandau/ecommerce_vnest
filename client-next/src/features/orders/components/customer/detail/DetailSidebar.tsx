@@ -19,8 +19,13 @@ interface DetailSidebarProps {
     district?: string;
     province?: string;
   };
-  user: User;
-  addressRelation: string | null;
+  user?: {
+    id: string;
+    name: string;
+    email: string;
+    phone?: string;
+  };
+  addressRelation?: any;
   paymentMethod: string;
   paymentStatus: string;
   isPaid: boolean;
@@ -99,7 +104,9 @@ export function DetailSidebar({
                   shippingSnapshot?.district, 
                   shippingSnapshot?.province
                 ].filter(Boolean).join(", ") || 
-                addressRelation || "—"}
+                (typeof addressRelation === 'object' ? 
+                  [addressRelation?.street, addressRelation?.ward, addressRelation?.district, addressRelation?.province || addressRelation?.city].filter(Boolean).join(", ") 
+                  : addressRelation) || "—"}
             </p>
           </div>
         </div>

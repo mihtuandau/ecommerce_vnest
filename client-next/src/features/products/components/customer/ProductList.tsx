@@ -31,7 +31,7 @@ export function ProductList({
   const maxPrice = searchParams?.get("maxPrice");
   const minRating = searchParams?.get("minRating");
   const search = searchParams?.get("search");
-  const sortBy = searchParams?.get("sortBy");
+  const sortBy = searchParams?.get("sortBy") || "newest";
 
   const queryParams = {
     page,
@@ -49,8 +49,8 @@ export function ProductList({
     enabled: !initialProducts,
   });
 
-  const products = (initialProducts !== undefined) ? initialProducts : ((data as { data?: Product[] })?.data || []);
-  const totalPages = (data as { totalPages?: number })?.totalPages || 0;
+  const products = (initialProducts !== undefined) ? initialProducts : (data?.data || []);
+  const totalPages = data?.meta?.totalPages || 0;
 
   if (isLoading && !initialProducts) {
     return (

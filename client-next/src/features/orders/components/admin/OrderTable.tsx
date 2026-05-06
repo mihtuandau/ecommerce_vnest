@@ -113,7 +113,7 @@ export const columns: ColumnDef<Order>[] = [
           </div>
           <div className="flex flex-col min-w-0 max-w-[200px]">
             <span className="text-xs font-semibold text-slate-800 truncate">
-              {firstItem.productName || firstItem.variant?.product?.name}
+              {(firstItem as any).productName || (firstItem.variantSnapshot as any)?.productName || firstItem.variant?.product?.name}
             </span>
             <div className="flex items-center gap-2 mt-0.5">
               {(firstItem.variant?.color || firstItem.variant?.size) && (
@@ -142,7 +142,7 @@ export const columns: ColumnDef<Order>[] = [
       const name =
         order.shippingSnapshot?.fullName || order.user?.name || "Khách vãng lai";
       const phone =
-        order.shippingSnapshot?.phone || order.guestPhone || order.user?.phone || "--";
+        order.shippingSnapshot?.phone || (order as any).guestPhone || order.user?.phone || "--";
 
       return (
         <div className="flex flex-col">
@@ -157,7 +157,7 @@ export const columns: ColumnDef<Order>[] = [
     header: "Tổng tiền",
     cell: ({ row }) => {
       const order = row.original;
-      const amount = order.total || order.totalAmount || 0;
+      const amount = order.total || (order as any).totalAmount || 0;
       return (
         <span className="font-semibold text-slate-800">{formatCurrency(amount)}</span>
       );

@@ -9,6 +9,8 @@ import { useCategories } from "@/features/categories/hooks";
 import { useBrands } from "@/features/products/hooks";
 import { productsApi } from "@/features/products/api";
 import { formatCurrency } from "@/utils/formatCurrency";
+import { Category, Brand } from "@/types/models";
+import Image from "next/image";
 
 const normalizeImagePath = (path: any) => {
   if (typeof path !== 'string' || !path) return "/placeholder.png";
@@ -18,9 +20,10 @@ const normalizeImagePath = (path: any) => {
 
 export function HeaderSearch() {
   const router = useRouter();
-  const { data: categories } = useCategories();
+  const { data: categoriesData } = useCategories();
   const { data: brandsData } = useBrands();
-  const brands = brandsData || [];
+  const categories = (categoriesData as Category[]) || [];
+  const brands = (brandsData as Brand[]) || [];
 
   const [searchQuery, setSearchQuery] = useState("");
   const [liveResults, setLiveResults] = useState<any[]>([]);
@@ -75,7 +78,7 @@ export function HeaderSearch() {
           const res = await productsApi.getProducts({ 
             search: searchQuery.trim(),
             limit: 5 
-          });
+          } as any);
           setLiveResults(res.data || []);
         } catch (error) {
           console.error("Live search failed:", error);
@@ -177,7 +180,7 @@ export function HeaderSearch() {
           <div className="p-2">
             {/* Quick Match Categories/Brands */}
             {(categories?.some(c => c.name.toLowerCase().includes(searchQuery.toLowerCase())) || 
-              brands.some(b => b.name.toLowerCase().includes(searchQuery.toLowerCase()))) && (
+              brands.some((b: Brand) => b.name.toLowerCase().includes(searchQuery.toLowerCase()))) && (
               <div className="p-3 bg-slate-50/50 rounded-xl mb-2 border border-slate-100/50">
                 <p className="text-xs font-medium text-slate-900 mb-3 px-1">Gợi ý tìm kiếm</p>
                 <div className="flex flex-wrap gap-2">
@@ -239,14 +242,12 @@ export function HeaderSearch() {
                       onClick={() => setShowLiveSearch(false)}
                       className="flex items-center gap-4 p-3 hover:bg-slate-50 rounded-xl transition-all group border border-transparent hover:border-slate-100"
                     >
-                      <div className="h-16 w-16 rounded-xl bg-slate-50 overflow-hidden flex-shrink-0 border border-slate-100 p-1">
-                        <img 
+                      <div className="h-16 w-16 rounded-xl bg-slate-50 overflow-hidden flex-shrink-0 border border-slate-100 p-1 relative">
+                        <Image 
                           src={normalizeImagePath(product.images?.[0]?.url || product.images?.[0] || product.image)} 
                           alt={product.name}
-                          className="h-full w-full object-contain group-hover:scale-105 transition-transform"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).src = "/placeholder.png";
-                          }}
+                          fill
+                          className="object-contain group-hover:scale-105 transition-transform"
                         />
                       </div>
                       <div className="flex-1 min-w-0">

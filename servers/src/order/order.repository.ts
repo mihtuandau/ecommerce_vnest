@@ -61,7 +61,7 @@ export class OrderRepository {
   async countOrdersUsingDiscount(discountId: number) { return this.prisma.order.count({ where: { discountId, status: { not: 'CANCELLED' as any } } }); }
   async findGuestOrderByCodeAndContact(code: string, contact: string) { return this.prisma.order.findFirst({ where: { orderCode: code, OR: [{ guestEmail: contact }, { guestPhone: contact }], userId: null }, include: this.baseInclude }); }
   async incrementProductSoldCount(productId: number, quantity: number) { return this.prisma.product.update({ where: { id: productId }, data: { soldCount: { increment: quantity } } }); }
-  async decrementProductSoldCount(productId: number, quantity: number) { return this.prisma.product.update({ where: { id: productId }, data: { soldCount: { decrement: quantity } } }); }
+  async decrementProductSoldCount(productId: number, quantity: number) { return this.prisma.$executeRaw`UPDATE "Product" SET "soldCount" = GREATEST(0, "soldCount" - ${quantity}) WHERE "id" = ${productId}`; }
   async clearUserCart(userId: number) { await this.prisma.cartItem.deleteMany({ where: { cart: { userId } } }); }
 
   async createOrderTransactional(orderData: Prisma.OrderCreateInput, items: any[], discountId?: number, discountUsageLimit?: number) {
@@ -192,10 +192,7 @@ export class OrderRepository {
     });
 
     if (order?.discountId) {
-      await this.prisma.discount.update({
-        where: { id: order.discountId },
-        data: { usageCount: { decrement: 1 } }
-      });
+      await this.prisma.$executeRaw`UPDATE "Discount" SET "usageCount" = GREATEST(0, "usageCount" - 1) WHERE "id" = ${order.discountId}`;
     }
 
     await this.prisma.discountUsage.deleteMany({
@@ -309,10 +306,7 @@ export class OrderRepository {
       //    (DiscountUsage chỉ được tạo khi có userId/guestEmail/guestPhone; nếu không có
       //     thì usageCount vẫn đã được increment nên cần decrement khi hủy.)
       if (order.discountId) {
-        await tx.discount.update({
-          where: { id: order.discountId },
-          data: { usageCount: { decrement: 1 } }
-        });
+        await tx.$executeRaw`UPDATE "Discount" SET "usageCount" = GREATEST(0, "usageCount" - 1) WHERE "id" = ${order.discountId}`;
         await tx.discountUsage.deleteMany({
           where: { orderId: id }
         });
@@ -363,10 +357,7 @@ export class OrderRepository {
       // 2. Nếu order trước đó đã có discount khác, decrement usageCount của discount cũ
       //    và xóa record DiscountUsage cũ để giữ tính nhất quán.
       if (existingOrder.discountId && existingOrder.discountId !== discount.id) {
-        await tx.discount.update({
-          where: { id: existingOrder.discountId },
-          data: { usageCount: { decrement: 1 } },
-        });
+        await tx.$executeRaw`UPDATE "Discount" SET "usageCount" = GREATEST(0, "usageCount" - 1) WHERE "id" = ${existingOrder.discountId}`;
         await tx.discountUsage.deleteMany({
           where: { orderId, discountId: existingOrder.discountId },
         });

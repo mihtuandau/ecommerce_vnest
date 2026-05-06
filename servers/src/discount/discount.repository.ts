@@ -142,9 +142,7 @@ export class DiscountRepository {
         minOrderAmount: true,
         maxDiscountAmount: true,
         usageLimit: true,
-        _count: {
-          select: { orders: true }
-        },
+        usageCount: true,
         startDate: true,
         endDate: true,
         isFlashSale: true,

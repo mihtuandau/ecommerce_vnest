@@ -18,7 +18,7 @@ export function PermissionsContainer() {
   const { mutate: updateRole, isPending } = useUpdateRolePermissions();
 
   const [localPerms, setLocalPerms] = useState<Record<string, Set<number>>>({});
-  const [activeRole, setActiveRole] = useState<string>(Role.ADMIN);
+  const [activeRole, setActiveRole] = useState<Role>(Role.ADMIN);
   const [dirtyRoles, setDirtyRoles] = useState<Set<string>>(new Set());
 
   useEffect(() => {
@@ -82,7 +82,7 @@ export function PermissionsContainer() {
         onRefresh={() => { refetchPerms(); refetchRoles(); }}
       />
 
-      <Tabs value={activeRole} onValueChange={setActiveRole} className="w-full">
+      <Tabs value={activeRole} onValueChange={(val) => setActiveRole(val as Role)} className="w-full">
         <RoleTabsList dirtyRoles={dirtyRoles} />
 
         <TabsContent value={activeRole} className="mt-0">

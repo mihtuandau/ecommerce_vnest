@@ -17,7 +17,7 @@ import { Product } from "@/types/models";
 import { DiscountFormValues } from "../DiscountForm";
 
 interface ScopeSectionProps {
-  form: UseFormReturn<DiscountFormValues>;
+  form: UseFormReturn<any>;
   products: Product[];
   isLoading: boolean;
   searchQuery: string;
@@ -41,7 +41,20 @@ export function ScopeSection({
     );
   }, [products, searchQuery]);
 
-  const toggleProduct = (productId: number) => {
+  const getImageUrl = (p: Product) => {
+    const firstImg = p.images?.[0];
+    if (typeof firstImg === "string") return firstImg;
+    if (firstImg?.url) return firstImg.url;
+    
+    // Check variant
+    const firstVariantImg = p.variants?.[0]?.images?.[0];
+    if (typeof firstVariantImg === "string") return firstVariantImg;
+    if (firstVariantImg?.url) return firstVariantImg.url;
+    
+    return "/placeholder.png";
+  };
+
+  const toggleProduct = (productId: string) => {
     const current = [...selectedProducts];
     if (current.includes(productId)) {
       form.setValue(
@@ -90,7 +103,7 @@ export function ScopeSection({
             ) : (
               <div className="divide-y divide-slate-50">
                 {filteredProducts.map((product: Product) => {
-                  const isSelected = selectedProducts.includes(product.id);
+                  const isSelected = selectedProducts.includes(String(product.id));
                   return (
                     <div
                       key={product.id}
@@ -98,7 +111,7 @@ export function ScopeSection({
                         "p-3 flex items-center gap-4 cursor-pointer hover:bg-slate-50 transition-colors group",
                         isSelected && "bg-slate-50"
                       )}
-                      onClick={() => toggleProduct(product.id)}
+                      onClick={() => toggleProduct(String(product.id))}
                     >
                       <div className={cn(
                         "h-5 w-5 rounded border flex items-center justify-center transition-all",
@@ -111,11 +124,7 @@ export function ScopeSection({
 
                       <div className="h-10 w-10 rounded-lg bg-white overflow-hidden border border-slate-100 shrink-0">
                         <img
-                          src={
-                            product.images?.[0]?.url ||
-                            product.variants?.[0]?.images?.[0]?.url ||
-                            "/placeholder.png"
-                          }
+                          src={getImageUrl(product)}
                           alt={product.name}
                           className="h-full w-full object-contain"
                         />

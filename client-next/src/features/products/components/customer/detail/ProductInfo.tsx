@@ -19,7 +19,7 @@ interface ProductInfoProps {
     products: { id: number | string }[];
   } | null;
   finalPrice: number;
-  finalOriginalPrice: number | null;
+  finalOriginalPrice?: number | null;
 }
 
 function pad(n: number) {

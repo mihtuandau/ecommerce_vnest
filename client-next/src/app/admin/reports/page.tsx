@@ -16,7 +16,7 @@ export default function AdminReportsPage() {
   const { can } = usePermission();
   const [timeRange, setTimeRange] = useState("30_days");
 
-  const params = useMemo(() => {
+  const params = useMemo<Record<string, string | undefined> | undefined>(() => {
     const now = new Date();
     switch (timeRange) {
       case "30_days": {
@@ -35,7 +35,7 @@ export default function AdminReportsPage() {
         return { startDate: start.toISOString(), endDate: now.toISOString() };
       }
       default:
-        return {};
+        return undefined;
     }
   }, [timeRange]);
 

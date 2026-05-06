@@ -145,6 +145,6 @@ export class PaymentRepository {
   }
 
   async decrementProductSoldCount(productId: number, quantity: number) {
-    return this.prisma.product.update({ where: { id: productId }, data: { soldCount: { decrement: quantity } } });
+    return this.prisma.$executeRaw`UPDATE "Product" SET "soldCount" = GREATEST(0, "soldCount" - ${quantity}) WHERE "id" = ${productId}`;
   }
 }

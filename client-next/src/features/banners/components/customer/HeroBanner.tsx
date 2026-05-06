@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Button } from "@/components/ui/Button";
@@ -34,10 +35,13 @@ export function HeroBanner({ banners }: HeroBannerProps) {
           }`}
         >
           {/* Background Image */}
-          <img
-            src={banner.image || banner.imageUrl}
+          <Image
+            src={banner.image || banner.imageUrl || "/placeholder.png"}
             alt={banner.title}
-            className="h-full w-full object-cover transition-transform duration-[10000ms] ease-out scale-100 group-hover:scale-110"
+            fill
+            className="object-cover transition-transform duration-[10000ms] ease-out scale-100 group-hover:scale-110"
+            priority={index === 0}
+            sizes="100vw"
           />
           
           {/* Cinematic Gradient Overlay */}

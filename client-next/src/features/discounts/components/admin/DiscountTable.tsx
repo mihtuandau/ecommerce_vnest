@@ -78,8 +78,8 @@ export const columns: ColumnDef<Discount>[] = [
     header: "Giảm giá",
     cell: ({ row }) => {
       const discount = row.original;
-      const isPercentage = !!discount.percentage;
-      const value = discount.percentage || discount.fixedAmount || 0;
+      const isPercentage = discount.type === "PERCENTAGE";
+      const value = discount.value || 0;
 
       return (
         <div className="flex flex-col">
@@ -98,7 +98,7 @@ export const columns: ColumnDef<Discount>[] = [
     header: "Đã dùng",
     cell: ({ row }) => {
       const discount = row.original;
-      const used = discount.usageCount || 0;
+      const used = discount.usedCount || 0;
       const limit = discount.usageLimit || 0;
       const percent = limit > 0 ? (used / limit) * 100 : 0;
 

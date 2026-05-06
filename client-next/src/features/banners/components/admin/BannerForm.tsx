@@ -31,8 +31,8 @@ import { cn } from "@/utils/cn";
 const bannerSchema = z.object({
   title: z.string().min(3, "Tiêu đề phải có ít nhất 3 ký tự"),
   link: z.string().optional(),
-  displayOrder: z.coerce.number().min(0).default(0),
-  isActive: z.boolean().default(true),
+  displayOrder: z.coerce.number().min(0),
+  isActive: z.boolean(),
 });
 
 type BannerFormValues = z.infer<typeof bannerSchema>;
@@ -48,8 +48,8 @@ export function BannerForm({ initialData, onSubmit, isLoading }: BannerFormProps
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const form = useForm<BannerFormValues>({
-    resolver: zodResolver(bannerSchema),
+  const form = useForm<any>({
+    resolver: zodResolver(bannerSchema) as any,
     defaultValues: {
       title: "",
       link: "",

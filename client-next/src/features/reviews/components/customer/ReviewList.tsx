@@ -113,11 +113,12 @@ export function ReviewList({ productId, product }: ReviewListProps) {
   // Our current backend 'can-review' requires an orderId.
   // For now, let's just focus on the visible button.
   
-  const reviews = Array.isArray(reviewsData) 
-    ? reviewsData 
-    : (reviewsData?.reviews || reviewsData?.data || []);
+  const body = reviewsData as any;
+  const reviews = Array.isArray(body) 
+    ? body 
+    : (body?.reviews || body?.data || []);
     
-  const total = reviewsData?.total || reviews.length || 0;
+  const total = body?.total || reviews.length || 0;
 
   if (isLoading) {
     return (
@@ -206,7 +207,7 @@ export function ReviewList({ productId, product }: ReviewListProps) {
                       <div className="flex gap-2 pt-2">
                         {review.images.map((img, idx: number) => (
                           <img 
-                            key={img.id || idx} 
+                            key={(img as any).id || idx} 
                             src={typeof img === 'string' ? img : img.url} 
                             alt="Review" 
                             className="h-20 w-20 object-cover rounded-xl border border-slate-200 cursor-pointer hover:opacity-90 transition-opacity shadow-sm" 

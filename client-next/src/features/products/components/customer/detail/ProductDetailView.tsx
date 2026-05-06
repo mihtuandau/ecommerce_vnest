@@ -49,27 +49,32 @@ export function ProductDetailView({ slug }: ProductDetailViewProps) {
   // ── Combine All Images (Main + Variants) ──
   const allAvailableImages = useMemo(() => {
     if (!product) return [];
+    const getUrl = (img: any) => (typeof img === "string" ? img : img?.url || "");
+    
     const mainImages = product.images || [];
-    const variantImages: { url: string }[] = [];
+    const variantImages: any[] = [];
     
     product.variants?.forEach((v) => {
       v.images?.forEach((img) => {
-        // Tránh trùng lặp URL
-        if (!variantImages.some(vi => vi.url === img.url) && !mainImages.some(mi => mi.url === img.url)) {
+        const url = getUrl(img);
+        if (
+          !variantImages.some((vi) => getUrl(vi) === url) && 
+          !mainImages.some((mi) => getUrl(mi) === url)
+        ) {
           variantImages.push(img);
         }
       });
     });
 
+    let combined = [...mainImages, ...variantImages];
+
     if (selectedVariant?.images && selectedVariant.images.length > 0) {
-      // Nếu đã chọn biến thể, đưa ảnh biến thể đó lên đầu
-      const otherImages = [...mainImages, ...variantImages].filter(
-        img => !selectedVariant.images!.some((svi) => svi.url === img.url)
-      );
-      return [...selectedVariant.images, ...otherImages];
+      const variantUrls = selectedVariant.images.map(img => getUrl(img));
+      const otherImages = combined.filter(img => !variantUrls.includes(getUrl(img)));
+      combined = [...selectedVariant.images, ...otherImages];
     }
 
-    return [...mainImages, ...variantImages];
+    return combined.map(img => ({ url: getUrl(img) }));
   }, [product, selectedVariant]);
 
   if (isLoading) {
@@ -102,7 +107,7 @@ export function ProductDetailView({ slug }: ProductDetailViewProps) {
     );
   }
 
-  const isFlashSale = flashSale?.products?.some((p) => String(p.id) === String(product.id));
+  const isFlashSale = flashSale?.products?.some((p: any) => String(p.id) === String(product.id));
   const flashSalePercent = isFlashSale ? (flashSale!.percentage || 0) : 0;
   
   const currentBasePrice = selectedVariant?.price || product.price || product.basePrice || 0;
@@ -151,7 +156,7 @@ export function ProductDetailView({ slug }: ProductDetailViewProps) {
               setSelectedSize={setSelectedSize}
               selectedColor={selectedColor}
               setSelectedColor={setSelectedColor}
-              selectedVariant={selectedVariant}
+              selectedVariant={selectedVariant || null}
             />
           </div>
         </div>
@@ -163,7 +168,7 @@ export function ProductDetailView({ slug }: ProductDetailViewProps) {
 
         {/* Related Products */}
         <div className="mt-20">
-          <RelatedProducts categoryId={product.categoryId} currentProductId={product.id} />
+          <RelatedProducts categoryId={product.categoryId} currentProductId={String(product.id)} />
         </div>
       </div>
     </div>

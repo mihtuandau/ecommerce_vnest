@@ -17,7 +17,7 @@ import { Settings2, Users, Zap } from "lucide-react";
 import { DiscountFormValues } from "../DiscountForm";
 
 interface UsageSectionProps {
-  form: UseFormReturn<DiscountFormValues>;
+  form: UseFormReturn<any>;
 }
 
 export function UsageSection({ form }: UsageSectionProps) {

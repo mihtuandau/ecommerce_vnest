@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { useToast } from "@/hooks/useToast";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -37,7 +38,13 @@ export default function ForgotPasswordPage() {
       <div className="text-center mb-6">
           <Link href="/" className="inline-flex justify-center mb-4">
             <div className="bg-white/80 backdrop-blur-md p-3 rounded-[1rem] shadow-sm border border-white/20">
-              <img src="/logoMT.png" alt="Minh Tuan Shop Logo" className="h-8 w-auto object-contain" />
+              <Image 
+                src="/logoMT.png" 
+                alt="Minh Tuan Shop Logo" 
+                width={32}
+                height={32}
+                className="h-8 w-auto object-contain" 
+              />
             </div>
           </Link>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight drop-shadow-sm">Quên mật khẩu?</h1>
