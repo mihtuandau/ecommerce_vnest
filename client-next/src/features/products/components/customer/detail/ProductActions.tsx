@@ -16,9 +16,10 @@ import { useCart } from "@/features/cart/hooks";
 import { useWishlistStore } from "@/store/useWishlistStore";
 import { useToast } from "@/hooks/useToast";
 import { useRouter } from "next/navigation";
+import { Product, ProductVariant } from "@/types/models";
 
 interface ProductActionsProps {
-  product: any;
+  product: Product;
   finalPrice: number;
   finalOriginalPrice?: number | null;
   currentStock: number;
@@ -26,7 +27,7 @@ interface ProductActionsProps {
   setSelectedSize: (size: string | null) => void;
   selectedColor: string | null;
   setSelectedColor: (color: string | null) => void;
-  selectedVariant: any;
+  selectedVariant: ProductVariant | null;
 }
 
 export function ProductActions({
@@ -51,13 +52,13 @@ export function ProductActions({
   // Extract unique sizes and colors
   const sizes = useMemo(() => {
     const s = new Set<string>();
-    product.variants?.forEach((v: any) => v.isActive && v.size && s.add(v.size));
+    product.variants?.forEach((v) => v.isActive && v.size && s.add(v.size));
     return Array.from(s);
   }, [product.variants]);
 
   const colors = useMemo(() => {
     const c = new Set<string>();
-    product.variants?.forEach((v: any) => v.isActive && v.color && c.add(v.color));
+    product.variants?.forEach((v) => v.isActive && v.color && c.add(v.color));
     return Array.from(c);
   }, [product.variants]);
 

@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { Product } from "@/types/models";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { Card, CardContent } from "@/components/ui/Card";
@@ -18,7 +19,7 @@ interface ProductCardProps {
   view?: "grid" | "list";
 }
 
-export function ProductCard({ product, view = "grid" }: ProductCardProps) {
+export const ProductCard = React.memo(function ProductCard({ product, view = "grid" }: ProductCardProps) {
   const { addItem } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlistStore();
   const { success } = useToast();
@@ -35,24 +36,24 @@ export function ProductCard({ product, view = "grid" }: ProductCardProps) {
       originalPrice: originalPrice || undefined,
       imageUrl: imageUrl,
       slug: product.slug,
-      stock: (product as any).stock || 0,
+      stock: product.stock || 0,
     });
     if (!isFavorite) {
       success(`Đã thêm ${product.name} vào danh sách yêu thích`);
     }
   };
 
-  const parsePrice = (val: any): number => {
+  const parsePrice = (val: string | number | undefined | null): number => {
     let num = 0;
     if (typeof val === "number") num = val;
     else if (typeof val === "string") num = parseFloat(val.replace(/[^\d.]/g, ""));
     return isNaN(num) ? 0 : num;
   };
 
-  const basePrice = parsePrice(product.price || (product as any).basePrice);
+  const basePrice = parsePrice(product.price || product.basePrice);
 
   // Check if product is in flash sale
-  const isFlashSale = flashSale?.products?.some((p: any) => p.id === product.id);
+  const isFlashSale = flashSale?.products?.some((p: { id: number | string }) => String(p.id) === String(product.id));
   const flashSalePercent = isFlashSale ? flashSale.percentage || 0 : 0;
 
   // Calculate final price based on flash sale
@@ -61,7 +62,7 @@ export function ProductCard({ product, view = "grid" }: ProductCardProps) {
     : basePrice;
 
   // Set original price if on sale
-  const originalPriceVal = product.variants?.[0]?.originalPrice || product.originalPrice || (product as any).oldPrice;
+  const originalPriceVal = product.variants?.[0]?.originalPrice || product.originalPrice;
   const originalPrice = isFlashSale
     ? basePrice
     : originalPriceVal
@@ -74,11 +75,11 @@ export function ProductCard({ product, view = "grid" }: ProductCardProps) {
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
-    const defaultVariantId = product.variants?.[0]?.id || product.id;
+    const variantId = product.variants?.[0]?.id || product.id;
     
     addItem({
       productId: String(product.id),
-      variantId: String(defaultVariantId),
+      variantId: String(variantId),
       name: product.name,
       price: price,
       originalPrice: originalPrice || undefined,
@@ -94,9 +95,12 @@ export function ProductCard({ product, view = "grid" }: ProductCardProps) {
       ? Math.round(((originalPrice - price) / originalPrice) * 100)
       : 0;
 
-  const soldCount = product.soldCount || (product as any).soldCount || 0;
-  const viewCount = (product as any).viewCount || 0;
-  const rating = (product as any).averageRating || 0;
+  const soldCount = product.soldCount || 0;
+  const viewCount = product.viewCount || 0;
+  const rating = product.averageRating || 0;
+  const firstVariant = product.variants?.[0];
+  const stock = firstVariant?.stock ?? product.stock ?? 0;
+  const isOutOfStock = stock <= 0 || !firstVariant;
 
   // ── LIST VIEW VARIANT ──
   if (view === "list") {
@@ -125,7 +129,7 @@ export function ProductCard({ product, view = "grid" }: ProductCardProps) {
             <div className="flex items-center justify-between relative">
               <div className="flex items-center gap-3">
                 <span className="text-[10px] font-semibold text-primary/80">
-                  {(product as any).brand?.name || "Minh Tuấn"}
+                  {product.brand?.name || "Minh Tuấn"}
                 </span>
                 <div className="flex items-center gap-1">
                   <Star className="h-3 w-3 fill-[#f4c300] text-[#f4c300]" />
@@ -176,10 +180,22 @@ export function ProductCard({ product, view = "grid" }: ProductCardProps) {
 
             <Button
               onClick={handleAddToCart}
-              className="h-8 md:h-11 px-4 md:px-8 rounded-xl bg-primary hover:bg-[#0d47a1] text-white shadow-lg shadow-blue-500/10 font-semibold text-[10px] md:text-xs tracking-wide gap-2"
+              disabled={isOutOfStock}
+              className={cn(
+                "h-8 md:h-11 px-4 md:px-8 rounded-xl font-semibold text-[10px] md:text-xs tracking-wide gap-2 shadow-lg transition-all",
+                isOutOfStock 
+                  ? "bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed shadow-none" 
+                  : "bg-primary hover:bg-[#0d47a1] text-white shadow-blue-500/10"
+              )}
             >
-              <ShoppingCart className="h-4 w-4" />
-              <span className="hidden sm:inline">Thêm vào giỏ</span>
+              {isOutOfStock ? (
+                "Hết hàng"
+              ) : (
+                <>
+                  <ShoppingCart className="h-4 w-4" />
+                  <span className="hidden sm:inline">Thêm vào giỏ</span>
+                </>
+              )}
             </Button>
           </div>
         </div>
@@ -234,7 +250,7 @@ export function ProductCard({ product, view = "grid" }: ProductCardProps) {
           {/* Brand Row */}
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-medium text-slate-500 tracking-wide">
-              {(product as any).brand?.name || "Minh Tuấn"}
+              {product.brand?.name || "Minh Tuấn"}
             </span>
           </div>
 
@@ -291,12 +307,22 @@ export function ProductCard({ product, view = "grid" }: ProductCardProps) {
           <Button
             onClick={handleAddToCart}
             size="icon"
-            className="h-8 w-8 md:h-9 md:w-9 rounded-xl bg-primary hover:bg-[#0d47a1] text-white shadow-lg shadow-blue-500/10 transition-transform active:scale-95"
+            disabled={isOutOfStock}
+            className={cn(
+              "h-8 w-8 md:h-9 md:w-9 rounded-xl transition-all active:scale-95 shadow-lg",
+              isOutOfStock
+                ? "bg-slate-100 text-slate-300 border-slate-200 cursor-not-allowed shadow-none"
+                : "bg-primary hover:bg-[#0d47a1] text-white shadow-blue-500/10"
+            )}
           >
-            <ShoppingCart className="h-3.5 w-3.5 md:h-4 md:w-4" />
+            {isOutOfStock ? (
+              <span className="text-[8px] font-bold">Hết</span>
+            ) : (
+              <ShoppingCart className="h-3.5 w-3.5 md:h-4 md:w-4" />
+            )}
           </Button>
         </div>
       </CardContent>
     </Card>
   );
-}
+});

@@ -12,8 +12,10 @@ import {
 import { Input } from "@/components/ui/Input";
 import { Hash, ImagePlus } from "lucide-react";
 
+import { DiscountFormValues } from "../DiscountForm";
+
 interface BasicInfoSectionProps {
-  form: UseFormReturn<any>;
+  form: UseFormReturn<DiscountFormValues>;
 }
 
 export function BasicInfoSection({ form }: BasicInfoSectionProps) {

@@ -10,6 +10,14 @@ type TopProductsListProps = {
   params?: Record<string, string | undefined>;
 };
 
+interface TopProduct {
+  productId: number | string;
+  productName: string;
+  image: string;
+  totalQuantity: number;
+  totalRevenue: number;
+}
+
 export function TopProductsList({ params = {} }: TopProductsListProps) {
   const { data: reportData, isLoading } = useTopProducts({ ...params, limit: 5 });
 
@@ -37,7 +45,7 @@ export function TopProductsList({ params = {} }: TopProductsListProps) {
       </CardHeader>
       <CardContent className="p-0 flex-1 overflow-y-auto">
         <div className="divide-y divide-slate-100">
-          {products.map((product: any) => (
+          {products.map((product: TopProduct) => (
             <div
               key={product.productId}
               className="p-5 flex items-center gap-4 hover:bg-slate-50/50 transition-colors group"

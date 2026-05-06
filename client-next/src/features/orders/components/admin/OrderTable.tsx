@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { Order } from "@/types/models";
+import { Order, OrderItem } from "@/types/models";
 import { DataTable } from "@/components/ui/DataTable";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { formatDate } from "@/utils/formatDate";
@@ -56,14 +56,14 @@ export const columns: ColumnDef<Order>[] = [
     id: "products",
     header: "Sản phẩm",
     cell: ({ row }) => {
-      const order = row.original as any;
+      const order = row.original;
       const firstItem = order.orderItems?.[0];
       const otherItemsCount = (order.orderItems?.length || 1) - 1;
 
       if (!firstItem) return <span className="text-slate-400">--</span>;
 
       // Safe image resolver - try multiple sources
-      const getImageUrl = (item: any) => {
+      const getImageUrl = (item: OrderItem) => {
         const normalize = (path: string) => {
           if (!path) return "";
           if (path.startsWith("http")) return path;
@@ -71,7 +71,7 @@ export const columns: ColumnDef<Order>[] = [
         };
 
         // 1. Try variantSnapshot (saved at order time)
-        const snapshotImg = (item.variantSnapshot as any)?.image;
+        const snapshotImg = (item.variantSnapshot as { image?: string; imageUrl?: string })?.image || (item.variantSnapshot as { image?: string; imageUrl?: string })?.imageUrl;
         if (snapshotImg && typeof snapshotImg === "string" && snapshotImg.length > 5) {
           return normalize(snapshotImg);
         }
@@ -138,7 +138,7 @@ export const columns: ColumnDef<Order>[] = [
     accessorKey: "shippingAddress",
     header: "Khách hàng",
     cell: ({ row }) => {
-      const order = row.original as any;
+      const order = row.original;
       const name =
         order.shippingSnapshot?.fullName || order.user?.name || "Khách vãng lai";
       const phone =
@@ -156,7 +156,7 @@ export const columns: ColumnDef<Order>[] = [
     accessorKey: "total",
     header: "Tổng tiền",
     cell: ({ row }) => {
-      const order = row.original as any;
+      const order = row.original;
       const amount = order.total || order.totalAmount || 0;
       return (
         <span className="font-semibold text-slate-800">{formatCurrency(amount)}</span>
@@ -167,7 +167,7 @@ export const columns: ColumnDef<Order>[] = [
     accessorKey: "paymentStatus",
     header: "Thanh toán",
     cell: ({ row }) => {
-      const order = row.original as any;
+      const order = row.original;
       const paymentStatus =
         order.paymentStatus || order.payment?.status || PaymentStatus.PENDING;
       const isPaid =
@@ -269,7 +269,8 @@ export const columns: ColumnDef<Order>[] = [
     id: "actions",
     cell: ({ row, table }) => {
       const order = row.original;
-      const { onUpdateStatus } = table.options.meta as any;
+      const meta = table.options.meta as { onUpdateStatus?: (id: string, status: OrderStatus) => void };
+      const onUpdateStatus = meta?.onUpdateStatus;
 
       return (
         <div className="flex justify-end">

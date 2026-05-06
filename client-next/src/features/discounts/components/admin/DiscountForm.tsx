@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs";
 import { Loader2, Save } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useProducts } from "@/features/products/hooks";
+import { Product } from "@/types/models";
 
 // Sub-components
 import { 
@@ -48,11 +49,13 @@ const discountSchema = z
     }
   );
 
-type DiscountFormValues = z.infer<typeof discountSchema>;
+export type DiscountFormValues = z.infer<typeof discountSchema>;
 
 interface DiscountFormProps {
-  initialData?: any;
-  onSubmit: (data: any) => void;
+  initialData?: Partial<DiscountFormValues> & { 
+    applicableToProducts?: { productId?: number }[] | number[];
+  };
+  onSubmit: (data: Partial<DiscountFormValues>) => void;
   isLoading?: boolean;
 }
 
@@ -85,7 +88,7 @@ export function DiscountForm({ initialData, onSubmit, isLoading }: DiscountFormP
 
   useEffect(() => {
     if (initialData) {
-      const formatDateForInput = (date: any) => {
+      const formatDateForInput = (date: string | Date | undefined) => {
         if (!date) return "";
         const d = new Date(date);
         return d.toISOString().slice(0, 16);
@@ -105,8 +108,7 @@ export function DiscountForm({ initialData, onSubmit, isLoading }: DiscountFormP
         usageLimit: initialData.usageLimit || 100,
         startDate: formatDateForInput(initialData.startDate),
         endDate: formatDateForInput(initialData.endDate),
-        applicableToProducts:
-          initialData.applicableToProducts?.map((p: any) => p.productId || p) || [],
+          initialData.applicableToProducts?.map((p: { productId?: number } | number) => typeof p === 'number' ? p : p.productId).filter(Boolean) as number[] || [],
       });
     }
   }, [initialData, form]);
@@ -118,13 +120,13 @@ export function DiscountForm({ initialData, onSubmit, isLoading }: DiscountFormP
     } else {
       delete submitData.percentage;
     }
-    delete (submitData as any).type;
+    delete (submitData as { type?: string }).type;
     onSubmit(submitData);
   };
 
   const products = Array.isArray(productsData)
     ? productsData
-    : (productsData as any)?.data || [];
+    : (productsData as { data?: Product[] })?.data || [];
 
   return (
     <Form {...form}>

@@ -4,14 +4,16 @@ import React from "react";
 import { Box, Filter, Zap, Star, Check } from "lucide-react";
 import { cn } from "@/utils/cn";
 
+import { Category, Brand } from "@/types/models";
+
 interface FilterContentProps {
   currentCategory: string | null;
   currentBrand: string | null;
   currentMinPrice: string | null;
   currentMaxPrice: string | null;
   currentMinRating: string | null;
-  categories: any[];
-  brands: any[];
+  categories: Category[];
+  brands: Brand[];
   updateFilters: (key: string, value: string | null) => void;
   updatePriceFilter: (min: string | null, max: string | null) => void;
   isMobile?: boolean;
@@ -53,7 +55,7 @@ export function FilterContent({
           >
             Tất cả sản phẩm
           </button>
-          {categories.map((cat: any) => (
+          {categories.map((cat) => (
             <button
               key={cat.id}
               onClick={() => updateFilters('categoryId', String(cat.id))}
@@ -77,7 +79,7 @@ export function FilterContent({
           Thương hiệu
         </h3>
         <div className={cn("flex flex-wrap lg:flex-col gap-2", !isMobile && "flex-col")}>
-          {brands.map((brand: any) => (
+          {brands.map((brand) => (
             <button
               key={brand.id}
               onClick={() => updateFilters('brandId', String(brand.id))}

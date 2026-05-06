@@ -16,7 +16,12 @@ interface CartItemProps {
   toggleSelectItem: (id: string) => void;
 }
 
-export function CartItem({ item, updateQuantity, removeItem, toggleSelectItem }: CartItemProps) {
+export const CartItem = React.memo(function CartItem({ 
+  item, 
+  updateQuantity, 
+  removeItem, 
+  toggleSelectItem 
+}: CartItemProps) {
   return (
     <Card className={cn(
       "overflow-hidden border transition-all duration-300 rounded-3xl",
@@ -138,4 +143,4 @@ export function CartItem({ item, updateQuantity, removeItem, toggleSelectItem }:
       </CardContent>
     </Card>
   );
-}
+});

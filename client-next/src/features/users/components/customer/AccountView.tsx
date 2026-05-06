@@ -38,12 +38,13 @@ import {
 
 import { useSearchParams } from "next/navigation";
 import { productsApi } from "@/features/products/api";
+import { Order, Address } from "@/types/models";
 
 type Tab = "info" | "address" | "security";
 
 export function AccountView() {
   const { user } = useAuthStore();
-  const { toast } = useToast();
+  const { success, error } = useToast();
   const searchParams = useSearchParams();
   const [mounted, setMounted] = useState(false);
   const [activeTab, setActiveTab] = useState<Tab>("info");
@@ -67,7 +68,7 @@ export function AccountView() {
 
   // Stats
   // Lọc ra các đơn hàng thành công (Đã giao VÀ Đã thanh toán)
-  const completedOrders = myOrders?.filter((order: any) => {
+  const completedOrders = myOrders?.filter((order: Order) => {
     const isPaid = order.paymentStatus === 'PAID' || order.paymentStatus === 'SUCCESS' || order.payment?.status === 'PAID' || order.payment?.status === 'SUCCESS';
     const isDelivered = order.status === 'DELIVERED';
     return isDelivered && isPaid && order.status !== 'CANCELLED';
@@ -77,7 +78,7 @@ export function AccountView() {
   const totalOrders = completedOrders.length;
   
   // Tổng chi tiêu: Tổng tiền của đơn thành công
-  const totalSpending = completedOrders.reduce((acc: number, order: any) => acc + (order.total || 0), 0);
+  const totalSpending = completedOrders.reduce((acc: number, order: Order) => acc + ((order as { total?: number }).total || 0), 0);
 
   // Profile Form State
   const [form, setForm] = useState({
@@ -97,9 +98,9 @@ export function AccountView() {
     isDefault: false
   });
 
-  const [provinces, setProvinces] = useState<any[]>([]);
-  const [districts, setDistricts] = useState<any[]>([]);
-  const [wards, setWards] = useState<any[]>([]);
+  const [provinces, setProvinces] = useState<Record<string, unknown>[]>([]);
+  const [districts, setDistricts] = useState<Record<string, unknown>[]>([]);
+  const [wards, setWards] = useState<Record<string, unknown>[]>([]);
 
   // Sync user data to form when user is available
   useEffect(() => {
@@ -107,7 +108,7 @@ export function AccountView() {
       setForm({
         name: user.name || "",
         email: user.email || "",
-        phone: (user as any).phone || "",
+        phone: (user as { phone?: string }).phone || "",
       });
     }
   }, [user]);
@@ -126,7 +127,7 @@ export function AccountView() {
       const url = await productsApi.uploadImage(file);
       updateProfile.mutate({ avatar: url });
     } catch (err) {
-      toast({ title: "Lỗi", description: "Không thể tải ảnh đại diện lên", variant: "destructive" });
+      error("Không thể tải ảnh đại diện lên");
     }
   };
 
@@ -154,9 +155,9 @@ export function AccountView() {
   const handleAddAddress = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const provinceName = provinces.find(p => String(p.ProvinceID) === String(newAddress.provinceId))?.ProvinceName;
-    const districtName = districts.find(d => String(d.DistrictID) === String(newAddress.districtId))?.DistrictName;
-    const wardName = wards.find(w => w.WardCode === newAddress.wardCode)?.WardName;
+    const provinceName = provinces.find(p => String(p.ProvinceID) === String(newAddress.provinceId))?.ProvinceName as string | undefined;
+    const districtName = districts.find(d => String(d.DistrictID) === String(newAddress.districtId))?.DistrictName as string | undefined;
+    const wardName = wards.find(w => w.WardCode === newAddress.wardCode)?.WardName as string | undefined;
 
     createAddress.mutate({
       fullName: newAddress.fullName,
@@ -224,7 +225,11 @@ export function AccountView() {
               <img 
                 src={user.avatar} 
                 alt={user.name || "User"} 
+                referrerPolicy="no-referrer"
                 className="h-14 w-14 rounded-full object-cover border-2 border-white shadow-md" 
+                onError={(e) => {
+                  e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || user.email || "User")}&background=0D8ABC&color=fff&size=128`;
+                }}
               />
             ) : (
               <div className="h-14 w-14 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 text-lg font-medium border border-slate-200">
@@ -395,7 +400,7 @@ export function AccountView() {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {addresses.map((address: any) => (
+                  {addresses.map((address: Address) => (
                     <div 
                       key={address.id} 
                       className={cn(

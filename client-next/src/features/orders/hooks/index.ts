@@ -6,19 +6,19 @@ import { queryKeys } from "@/constants/queryKeys";
 import { useToast } from "@/hooks/useToast";
 import { OrderStatus, PaymentStatus } from "@/types/enums";
 
-export function useOrders(params?: Record<string, any>) {
+export function useOrders(params?: Record<string, string | number>) {
   return useQuery({
     queryKey: queryKeys.orders.list(params),
-    queryFn: () => ordersApi.getOrders(params),
+    queryFn: () => ordersApi.getOrders(params as Record<string, string>),
     staleTime: 0,
     refetchOnWindowFocus: true,
   });
 }
 
-export function useMyOrders(params?: Record<string, any>) {
+export function useMyOrders(params?: Record<string, string | number>) {
   return useQuery({
     queryKey: [...queryKeys.orders.list(params), "my-orders"],
-    queryFn: () => ordersApi.getMyOrders(params),
+    queryFn: () => ordersApi.getMyOrders(params as Record<string, string>),
     staleTime: 0,
     refetchOnWindowFocus: true,
   });
@@ -48,7 +48,7 @@ export function useUpdateOrderStatus() {
       queryClient.refetchQueries({ queryKey: queryKeys.orders.detail(String(variables.id)) });
       success("Cập nhật trạng thái đơn hàng thành công");
     },
-    onError: (err: any) => {
+    onError: (err: { response?: { data?: { message?: string } } }) => {
       error(err?.response?.data?.message || "Lỗi khi cập nhật đơn hàng");
     },
   });
@@ -66,7 +66,7 @@ export function useCancelOrder() {
       queryClient.refetchQueries({ queryKey: queryKeys.orders.detail(String(variables)) });
       success("Đã hủy đơn hàng thành công");
     },
-    onError: (err: any) => {
+    onError: (err: { response?: { data?: { message?: string } } }) => {
       error(err?.response?.data?.message || "Lỗi khi hủy đơn hàng");
     },
   });
@@ -91,7 +91,7 @@ export function useSyncToGHN() {
       queryClient.refetchQueries({ queryKey: queryKeys.orders.detail(String(variables)) });
       success("Đã đồng bộ đơn hàng sang GHN thành công");
     },
-    onError: (err: any) => {
+    onError: (err: { response?: { data?: { message?: string } } }) => {
       error(err?.response?.data?.message || "Lỗi khi đồng bộ sang GHN");
     },
   });
@@ -126,7 +126,7 @@ export function useUpdatePaymentStatus() {
       }
       success("Cập nhật trạng thái thanh toán thành công");
     },
-    onError: (err: any) => {
+    onError: (err: { response?: { data?: { message?: string } } }) => {
       error(err?.response?.data?.message || "Lỗi khi cập nhật thanh toán");
     },
   });

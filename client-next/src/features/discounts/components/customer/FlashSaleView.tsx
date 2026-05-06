@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useFlashSale } from "@/features/discounts/hooks";
 import { formatCurrency } from "@/utils/formatCurrency";
+import { Product } from "@/types/models";
 import { getTimeLeft } from "@/utils/formatDate";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/utils/cn";
@@ -62,7 +63,7 @@ function Countdown({ endDate }: { endDate: string }) {
 
 // ── Product Card ───────────────────────────────────────────
 
-function FlashProductCard({ product, discountPercent }: { product: any; discountPercent: number }) {
+function FlashProductCard({ product, discountPercent }: { product: Product; discountPercent: number }) {
   const { addItem } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlistStore();
   const { success } = useToast();
@@ -276,7 +277,7 @@ export function FlashSaleView() {
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
-          {flashSale.products.map((product: any, idx: number) => (
+          {flashSale.products.map((product: Product, idx: number) => (
             <div 
               key={product.id} 
               className="animate-in fade-in slide-in-from-bottom-4 duration-500"

@@ -12,9 +12,23 @@ import {
   DialogClose,
 } from "@/components/ui/Dialog";
 
+import { Product } from "@/types/models";
+
 interface ReviewListProps {
   productId: number;
-  product: any;
+  product: Product;
+}
+
+interface Review {
+  id: number;
+  rating: number;
+  comment: string;
+  createdAt: string;
+  user?: {
+    name?: string;
+    avatar?: string;
+  };
+  images?: (string | { id?: number | string; url: string })[];
 }
 
 const Stars = ({ rating, size = 14 }: { rating: number; size?: number }) => (
@@ -34,7 +48,7 @@ const Stars = ({ rating, size = 14 }: { rating: number; size?: number }) => (
   </div>
 );
 
-const RatingSummary = ({ reviews, product }: { reviews: any[]; product: any }) => {
+const RatingSummary = ({ reviews, product }: { reviews: Review[]; product: Product }) => {
   const calculatedAvg = reviews.length > 0 ? reviews.reduce((acc, r) => acc + (r.rating || 0), 0) / reviews.length : 0;
   const avg = product?.averageRating || calculatedAvg || 0;
   const total = product?.reviewCount || reviews.length || 0;
@@ -161,7 +175,7 @@ export function ReviewList({ productId, product }: ReviewListProps) {
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-4">
-          {reviews.map((review: any) => {
+          {reviews.map((review: Review) => {
             const initial = (review.user?.name || "N")[0].toUpperCase();
             return (
               <div key={review.id} className="bg-slate-50/50 rounded-2xl p-6 border border-slate-100 transition-all hover:bg-white hover:shadow-md">
@@ -190,7 +204,7 @@ export function ReviewList({ productId, product }: ReviewListProps) {
                     
                     {review.images && review.images.length > 0 && (
                       <div className="flex gap-2 pt-2">
-                        {review.images.map((img: any, idx: number) => (
+                        {review.images.map((img, idx: number) => (
                           <img 
                             key={img.id || idx} 
                             src={typeof img === 'string' ? img : img.url} 

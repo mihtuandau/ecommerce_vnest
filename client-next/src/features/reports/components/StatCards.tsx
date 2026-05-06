@@ -73,8 +73,21 @@ function StatCard({
   );
 }
 
+interface ReportStat {
+  total: number;
+  periodTotal: number;
+  growth: number;
+  absoluteTotal?: number;
+}
+
+interface ReportSummary {
+  revenue?: ReportStat;
+  orders?: ReportStat;
+  users?: ReportStat;
+}
+
 interface StatCardsProps {
-  summary: any;
+  summary: ReportSummary;
 }
 
 export function StatCards({ summary }: StatCardsProps) {

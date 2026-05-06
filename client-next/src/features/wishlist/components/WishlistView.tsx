@@ -22,7 +22,7 @@ export function WishlistView() {
 
   if (!mounted) return null;
 
-  const handleAddToCart = (item: any) => {
+  const handleAddToCart = (item: { id: number; name: string; price: number; imageUrl: string; slug: string }) => {
     addItem({
       productId: item.id,
       variantId: item.id, // Giả sử dùng ID sản phẩm nếu chưa chọn variant

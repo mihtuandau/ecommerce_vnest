@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { Product } from "@/types/models";
+import { Product, ProductVariant } from "@/types/models";
 import { DataTable } from "@/components/ui/DataTable";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { formatDate } from "@/utils/formatDate";
@@ -35,14 +35,14 @@ export const columns: ColumnDef<Product>[] = [
     accessorKey: "name",
     header: "Sản phẩm",
     cell: ({ row }) => {
-      const product = row.original as any;
+      const product = row.original;
       const images = product.images || [];
-      const imageUrl = images[0]?.url || images[0] || "";
+      const imageUrl = (images[0] as { url?: string })?.url || images[0] || "";
 
       return (
         <div className="flex items-center gap-4">
           <div className="h-12 w-12 rounded-xl bg-muted overflow-hidden border border-muted-foreground/10 shrink-0 shadow-sm">
-            {imageUrl ? (
+            {imageUrl && typeof imageUrl === 'string' ? (
               <img
                 src={imageUrl}
                 alt={product.name}
@@ -67,7 +67,7 @@ export const columns: ColumnDef<Product>[] = [
     accessorKey: "category",
     header: "Danh mục",
     cell: ({ row }) => {
-      const product = row.original as any;
+      const product = row.original;
       const categoryName = product.category?.name || product.category?.slug || "—";
       return (
         <Badge variant="outline" className="rounded-lg px-2.5 py-1 font-semibold text-xs bg-slate-50 text-slate-600 border-slate-200">
@@ -80,7 +80,7 @@ export const columns: ColumnDef<Product>[] = [
     accessorKey: "variants",
     header: "Biến thể",
     cell: ({ row }) => {
-      const product = row.original as any;
+      const product = row.original;
       const variants = product.variants || [];
       if (variants.length === 0) return <span className="text-xs text-muted-foreground italic">Không có</span>;
 
@@ -97,7 +97,7 @@ export const columns: ColumnDef<Product>[] = [
     accessorKey: "basePrice",
     header: "Giá bán",
     cell: ({ row }) => {
-      const product = row.original as any;
+      const product = row.original;
       const price = product.basePrice || 0;
       const originalPrice = product.originalPrice;
 
@@ -117,16 +117,16 @@ export const columns: ColumnDef<Product>[] = [
     accessorKey: "stock",
     header: "Tồn kho",
     cell: ({ row }) => {
-      const product = row.original as any;
+      const product = row.original;
       let stock = product.stock;
       
       // Calculate total stock from variants if available
       if (Array.isArray(product.variants) && product.variants.length > 0) {
-        stock = product.variants.reduce((sum: number, v: any) => sum + (v.stock || 0), 0);
+        stock = product.variants.reduce((sum: number, v: ProductVariant) => sum + (v.stock || 0), 0);
       }
 
-      const isLowStock = stock < 10 && stock > 0;
-      const isOutOfStock = stock <= 0;
+      const isLowStock = stock !== undefined && stock < 10 && stock > 0;
+      const isOutOfStock = stock !== undefined && stock <= 0;
 
       return (
         <div className="flex items-center gap-2">
@@ -148,7 +148,7 @@ export const columns: ColumnDef<Product>[] = [
     accessorKey: "soldCount",
     header: "Đã bán",
     cell: ({ row }) => {
-      const soldCount = (row.original as any).soldCount || 0;
+      const soldCount = (row.original as { soldCount?: number }).soldCount || 0;
       return <span className="font-semibold text-sm text-slate-800">{soldCount}</span>;
     },
   },
@@ -156,7 +156,7 @@ export const columns: ColumnDef<Product>[] = [
     accessorKey: "rating",
     header: "Đánh giá",
     cell: ({ row }) => {
-      const rating = (row.original as any).averageRating || 0;
+      const rating = (row.original as { averageRating?: number }).averageRating || 0;
       return (
         <div className="flex items-center gap-1">
           <span className="font-semibold text-sm text-slate-800">{Number(rating).toFixed(1)}</span>
@@ -169,7 +169,7 @@ export const columns: ColumnDef<Product>[] = [
     accessorKey: "isActive",
     header: "Trạng thái",
     cell: ({ row }) => {
-      const product = row.original as any;
+      const product = row.original;
       return (
         <Badge 
           variant="outline" 

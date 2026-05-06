@@ -39,7 +39,7 @@ const productSchema = z.object({
   })).optional(),
 });
 
-type ProductFormValues = z.infer<typeof productSchema>;
+export type ProductFormValues = z.infer<typeof productSchema>;
 
 interface ProductFormProps {
   initialData?: Product | null;
@@ -73,26 +73,25 @@ export function ProductForm({ initialData, onSubmit, isLoading }: ProductFormPro
 
   useEffect(() => {
     if (initialData && categories.length > 0) {
-      const data = initialData as any;
-      const catId = Number(data.categoryId || data.category?.id || (typeof data.category === 'number' ? data.category : 0) || 0);
+      const catId = Number(initialData.categoryId || (initialData as Product & { category?: { id?: number } | number }).category?.id || (typeof (initialData as Product & { category?: { id?: number } | number }).category === 'number' ? (initialData as Product & { category?: { id?: number } | number }).category : 0) || 0);
       
       form.reset({
-        name: data.name,
-        slug: data.slug,
-        description: data.description || "",
-        basePrice: data.basePrice || data.price || 0,
-        originalPrice: data.originalPrice || 0,
+        name: initialData.name,
+        slug: initialData.slug,
+        description: initialData.description || "",
+        basePrice: initialData.basePrice || 0,
+        originalPrice: initialData.originalPrice || 0,
         categoryId: catId,
-        status: data.status || (data.isActive ? "active" : "inactive"),
-        images: data.images?.map((img: any) => typeof img === "string" ? img : img.url) || [],
-        variants: (data.variants || []).map((v: any) => ({
+        status: (initialData as Product & { status?: string }).status || (initialData.isActive ? "active" : "inactive"),
+        images: initialData.images?.map((img: string | { url: string }) => typeof img === "string" ? img : img.url) || [],
+        variants: (initialData.variants || []).map((v) => ({
           ...v,
           price: v.price || 0,
           stock: v.stock || 0,
-          image: v.image?.url || v.image || (v.images?.[0]?.url || v.images?.[0] || "")
+          image: typeof v.image === 'string' ? v.image : (v.image as { url?: string } | null | undefined)?.url || ""
         })),
       });
-      setImages(data.images?.map((img: any) => typeof img === "string" ? img : img.url) || []);
+      setImages(initialData.images?.map((img: string | { url: string }) => typeof img === "string" ? img : img.url) || []);
       
       // Force set categoryId again just in case reset didn't catch it for the Select component
       if (catId > 0) {
@@ -112,7 +111,7 @@ export function ProductForm({ initialData, onSubmit, isLoading }: ProductFormPro
   const onFormSubmit = (data: ProductFormValues) => {
     console.log("Form values validated successfully:", data);
     
-    const cleanNumber = (val: any) => {
+    const cleanNumber = (val: string | number | undefined | null) => {
       if (typeof val === 'string') {
         // Remove all dots and commas for VND
         const cleaned = val.replace(/[.,\s]/g, '');
@@ -123,7 +122,7 @@ export function ProductForm({ initialData, onSubmit, isLoading }: ProductFormPro
 
     const basePrice = cleanNumber(data.basePrice || 0);
     const originalPrice = cleanNumber(data.originalPrice);
-    const cleanedVariants = (data.variants || []).map((v: any) => ({
+    const cleanedVariants = (data.variants || []).map((v) => ({
       ...v,
       price: cleanNumber(v.price) > 0 ? cleanNumber(v.price) : basePrice,
       originalPrice: v.originalPrice ? cleanNumber(v.originalPrice) : null,
@@ -141,10 +140,10 @@ export function ProductForm({ initialData, onSubmit, isLoading }: ProductFormPro
       status: data.status || "active",
     };
 
-    onSubmit(payload as any);
+    onSubmit(payload as ProductFormValues);
   };
 
-  const onInvalid = (errors: any) => {
+  const onInvalid = (errors: Record<string, any>) => {
     console.error("Form validation failed:", errors);
   };
 

@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { usersApi } from "@/features/users/api";
 import { Search, User, Loader2, Mail, Phone, Check } from "lucide-react";
+import { handleAvatarError } from "@/utils/avatar";
 
 interface UserSelectorProps {
   onSelect: (user: any) => void;
@@ -93,7 +94,13 @@ export function UserSelector({ onSelect }: UserSelectorProps) {
                   <div className="flex items-center gap-4">
                     <div className="h-12 w-12 bg-slate-100 rounded-full flex items-center justify-center font-bold text-slate-400 overflow-hidden border-2 border-white shadow-sm">
                       {user.avatar ? (
-                        <img src={user.avatar} alt={user.fullName} className="h-full w-full object-cover" />
+                        <img
+                          src={user.avatar}
+                          alt={user.fullName}
+                          referrerPolicy="no-referrer"
+                          className="h-full w-full object-cover"
+                          onError={(e) => handleAvatarError(e, user.fullName || user.name, user.email)}
+                        />
                       ) : (
                         user.fullName?.charAt(0).toUpperCase() || <User className="h-6 w-6" />
                       )}

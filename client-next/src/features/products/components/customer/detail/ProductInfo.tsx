@@ -7,9 +7,17 @@ import { getTimeLeft } from "@/utils/formatDate";
 import { cn } from "@/utils/cn";
 import Link from "next/link";
 
+import { Product } from "@/types/models";
+
 interface ProductInfoProps {
-  product: any;
-  flashSale?: any;
+  product: Product;
+  flashSale?: {
+    id: number;
+    name: string;
+    percentage: number;
+    endDate: string;
+    products: { id: number | string }[];
+  } | null;
   finalPrice: number;
   finalOriginalPrice: number | null;
 }
@@ -51,8 +59,8 @@ function ProductCountdown({ endDate }: { endDate: string }) {
 }
 
 export function ProductInfo({ product, flashSale, finalPrice, finalOriginalPrice }: ProductInfoProps) {
-  const isFlashSale = flashSale?.products?.some((p: any) => String(p.id) === String(product.id));
-  const flashSalePercent = isFlashSale ? (flashSale.percentage || 0) : 0;
+  const isFlashSale = flashSale?.products?.some((p) => String(p.id) === String(product.id));
+  const flashSalePercent = isFlashSale ? (flashSale!.percentage || 0) : 0;
 
   return (
     <div className="space-y-5">

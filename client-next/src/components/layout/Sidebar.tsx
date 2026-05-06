@@ -23,6 +23,7 @@ import {
 import { cn } from "@/utils/cn";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { useAuthStore } from "@/store/useAuthStore";
+import { handleAvatarError } from "@/utils/avatar";
 import { usePermission } from "@/hooks/usePermission";
 
 // Each item declares which permission is required.
@@ -249,7 +250,9 @@ export function Sidebar() {
                 <img
                   src={(user as any).avatar}
                   alt={user.name || "User"}
+                  referrerPolicy="no-referrer"
                   className="h-full w-full object-cover"
+                  onError={(e) => handleAvatarError(e, user.name, user.email)}
                 />
               ) : (
                 <div className="h-full w-full flex items-center justify-center text-primary font-medium text-[10px]">
@@ -300,7 +303,9 @@ export function Sidebar() {
                 <img
                   src={(user as any).avatar}
                   alt={user.name}
+                  referrerPolicy="no-referrer"
                   className="h-full w-full object-cover"
+                  onError={(e) => handleAvatarError(e, user.name, user.email)}
                 />
               ) : (
                 <span className="text-primary font-bold text-xs">

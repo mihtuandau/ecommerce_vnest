@@ -3,18 +3,18 @@ import type { Order } from "@/types/models";
 import { OrderStatus, PaymentStatus } from "@/types/enums";
 
 export const ordersApi = {
-  createOrder: async (orderData: any, isGuest = false): Promise<any> => {
+  createOrder: async (orderData: Partial<Order> & { shippingInfo?: any; guestEmail?: string; guestPhone?: string }, isGuest = false): Promise<any> => {
     const endpoint = isGuest ? "/orders/guest" : "/orders";
     const { data } = await api.post(endpoint, orderData);
     return data;
   },
 
-  createAdminOrder: async (orderData: any): Promise<any> => {
+  createAdminOrder: async (orderData: Partial<Order>): Promise<any> => {
     const { data } = await api.post("/orders/admin", orderData);
     return data;
   },
 
-  getOrders: async (params?: Record<string, any>): Promise<Order[]> => {
+  getOrders: async (params?: Record<string, string | number>): Promise<Order[]> => {
     // Dùng cho Admin - xem tất cả đơn hàng
     const { data: body } = await api.get<any>("/orders", { params });
     if (Array.isArray(body)) return body;
@@ -23,7 +23,7 @@ export const ordersApi = {
     return [];
   },
 
-  getMyOrders: async (params?: Record<string, any>): Promise<Order[]> => {
+  getMyOrders: async (params?: Record<string, string | number>): Promise<Order[]> => {
     // Dùng cho Khách hàng - chỉ xem đơn hàng cá nhân
     const { data: body } = await api.get<any>("/orders/my-orders", { params });
     if (Array.isArray(body)) return body;

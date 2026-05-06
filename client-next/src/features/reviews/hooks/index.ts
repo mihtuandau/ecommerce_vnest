@@ -11,7 +11,13 @@ export const useProductReviews = (productId: number, page = 1, limit = 10) => {
 
 export const useCreateReview = () => {
   return useMutation({
-    mutationFn: (data: any) => reviewsApi.createReview(data),
+    mutationFn: (data: { 
+      productId: number; 
+      orderId?: number; 
+      rating: number; 
+      comment: string; 
+      images?: string[] 
+    }) => reviewsApi.createReview(data),
   });
 };
 

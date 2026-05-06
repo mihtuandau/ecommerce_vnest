@@ -3,8 +3,8 @@ import type { User, Address } from "@/types/models";
 import type { PaginatedResponse } from "@/types/api";
 
 export const usersApi = {
-  getUsers: async (params?: Record<string, any>): Promise<User[]> => {
-    const { data: body } = await api.get<any>("/users", { params });
+  getUsers: async (params?: Record<string, string | number>): Promise<User[]> => {
+    const { data: body } = await api.get<{ data?: User[]; users?: User[] } | User[]>("/users", { params });
     // Support various response formats
     if (Array.isArray(body)) return body;
     if (body?.data && Array.isArray(body.data)) return body.data;
@@ -17,13 +17,13 @@ export const usersApi = {
     return data;
   },
 
-  createUser: async (userData: any): Promise<User> => {
+  createUser: async (userData: Partial<User>): Promise<User> => {
     const { data } = await api.post<User>("/users", userData);
     return data;
   },
 
-  updateUser: async (id: string, userData: any): Promise<User> => {
-    const { data } = await api.put<any>(`/users/${id}`, userData);
+  updateUser: async (id: string, userData: Partial<User>): Promise<User> => {
+    const { data } = await api.put<{ user?: User } | User>(`/users/${id}`, userData);
     return data.user || data;
   },
 
@@ -32,12 +32,12 @@ export const usersApi = {
   },
 
   getProfile: async (): Promise<User> => {
-    const { data } = await api.get<any>("/users/profile");
+    const { data } = await api.get<{ user?: User } | User>("/users/profile");
     return data.user || data;
   },
 
-  updateProfile: async (profileData: any): Promise<User> => {
-    const { data } = await api.put<any>("/users/profile", profileData);
+  updateProfile: async (profileData: Partial<User>): Promise<User> => {
+    const { data } = await api.put<{ user?: User } | User>("/users/profile", profileData);
     return data.user || data;
   },
 
@@ -52,12 +52,12 @@ export const usersApi = {
     return data;
   },
 
-  createAddress: async (addressData: any): Promise<{ address: Address }> => {
+  createAddress: async (addressData: Partial<Address>): Promise<{ address: Address }> => {
     const { data } = await api.post("/addresses", addressData);
     return data;
   },
 
-  updateAddress: async (id: string, addressData: any): Promise<{ address: Address }> => {
+  updateAddress: async (id: string, addressData: Partial<Address>): Promise<{ address: Address }> => {
     const { data } = await api.patch(`/addresses/${id}`, addressData);
     return data;
   },

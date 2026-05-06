@@ -1,12 +1,12 @@
 import { api } from "@/lib/axios";
 
 export const returnsApi = {
-  createReturnRequest: async (data: any) => {
+  createReturnRequest: async (data: { orderId: number; reason: string; items: Record<string, unknown>[] }) => {
     const { data: response } = await api.post("/returns", data);
     return response;
   },
 
-  createGuestReturnRequest: async (data: any) => {
+  createGuestReturnRequest: async (data: { orderCode: string; contact: string; reason: string; items: Record<string, unknown>[] }) => {
     const { data: response } = await api.post("/returns/guest", data);
     return response;
   },
@@ -27,12 +27,12 @@ export const returnsApi = {
   },
 
   // Admin endpoints
-  getAllReturns: async (params: any) => {
+  getAllReturns: async (params: Record<string, string | number>) => {
     const { data: response } = await api.get("/returns", { params });
     return response;
   },
 
-  updateReturnStatus: async (id: number, data: any) => {
+  updateReturnStatus: async (id: number, data: { status: string; adminNote?: string }) => {
     const { data: response } = await api.patch(`/returns/${id}/status`, data);
     return response;
   },

@@ -79,13 +79,22 @@ export class PaymentRepository {
       if (status === 'SUCCESS') {
         const currentOrder = await prisma.order.findUnique({
           where: { id: orderId },
-          select: { status: true },
+          select: { status: true, userId: true },
         });
 
         if (currentOrder && currentOrder.status === 'PENDING') {
           await prisma.order.update({
             where: { id: orderId },
             data: { status: 'PROCESSING' },
+          });
+        }
+
+        // Clear giỏ hàng của user sau khi thanh toán online thành công.
+        // (Khi tạo order online, ta cố tình KHÔNG clear cart để user còn cứu vãn
+        //  được giỏ nếu bỏ thanh toán giữa chừng - xem OrderCreation.clearUserCartIfNeeded)
+        if (currentOrder?.userId) {
+          await prisma.cartItem.deleteMany({
+            where: { cart: { userId: currentOrder.userId } },
           });
         }
       }

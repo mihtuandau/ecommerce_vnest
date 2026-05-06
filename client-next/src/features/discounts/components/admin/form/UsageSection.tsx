@@ -14,8 +14,10 @@ import { Input } from "@/components/ui/Input";
 import { Switch } from "@/components/ui/Switch";
 import { Settings2, Users, Zap } from "lucide-react";
 
+import { DiscountFormValues } from "../DiscountForm";
+
 interface UsageSectionProps {
-  form: UseFormReturn<any>;
+  form: UseFormReturn<DiscountFormValues>;
 }
 
 export function UsageSection({ form }: UsageSectionProps) {

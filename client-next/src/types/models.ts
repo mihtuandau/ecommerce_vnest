@@ -15,6 +15,19 @@ export interface User {
   updatedAt: string;
 }
 
+export interface ProductImage {
+  id: string;
+  url: string;
+  isMain?: boolean;
+}
+
+export interface Brand {
+  id: string;
+  name: string;
+  slug: string;
+  logo?: string;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -23,11 +36,11 @@ export interface Product {
   basePrice: number;
   price?: number; 
   originalPrice?: number | null;
-  images: any[];
+  images: ProductImage[] | string[];
   categoryId: string;
   category?: Category;
   brandId?: string;
-  brand?: any;
+  brand?: Brand;
   variants?: ProductVariant[];
   stock: number;
   rating: number;
@@ -38,6 +51,7 @@ export interface Product {
   isNew?: boolean;
   createdAt: string;
   updatedAt: string;
+  averageRating?: number; // Add for consistency
 }
 
 export interface ProductVariant {
@@ -50,7 +64,7 @@ export interface ProductVariant {
   originalPrice?: number | null;
   stock: number;
   isActive: boolean;
-  images?: any[];
+  images?: ProductImage[] | string[];
 }
 
 export interface Category {
@@ -63,10 +77,23 @@ export interface Category {
   products?: Product[];
 }
 
+export interface Payment {
+  id: number;
+  orderId: number;
+  method: PaymentMethod;
+  status: PaymentStatus;
+  amount: number;
+  transactionId?: string;
+  paymentLink?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Order {
   id: number;
   orderCode: string;
   userId: number | null;
+  user?: Pick<User, "id" | "name" | "email">;
   orderItems: OrderItem[];
   subtotal: number;
   total: number;
@@ -76,10 +103,17 @@ export interface Order {
   paymentMethod: string;
   shippingAddressId?: number;
   address?: Address;
-  shippingSnapshot?: any;
+  shippingSnapshot?: {
+    fullName: string;
+    phone: string;
+    province: string;
+    district: string;
+    ward: string;
+    street: string;
+  };
   note?: string;
-  payment?: any; // Simple any for now to fix errors
-  reviews?: any[];
+  payment?: Payment;
+  reviews?: Review[];
   createdAt: string;
   updatedAt: string;
 }
@@ -92,8 +126,13 @@ export interface OrderItem {
   price: number;
   variant?: ProductVariant;
   productName?: string;
-  variantSnapshot?: any;
-  returnItems?: any[];
+  variantSnapshot?: {
+    productName: string;
+    size?: string;
+    color?: string;
+    imageUrl?: string;
+  };
+  returnItems?: any[]; // Keep any for now as return system is complex
 }
 
 export interface Address {

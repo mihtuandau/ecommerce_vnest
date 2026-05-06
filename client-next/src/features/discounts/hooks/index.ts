@@ -6,7 +6,7 @@ import { queryKeys } from "@/constants/queryKeys";
 import { useToast } from "@/hooks/useToast";
 
 // ── Customer: chỉ lấy voucher (không Flash Sale) ──
-export function useDiscounts(params?: Record<string, any>) {
+export function useDiscounts(params?: Record<string, string | number | boolean>) {
   return useQuery({
     queryKey: [...queryKeys.discounts.all, "public", params],
     queryFn: () => discountsApi.getDiscounts(params),
@@ -14,7 +14,7 @@ export function useDiscounts(params?: Record<string, any>) {
 }
 
 // ── Admin: lấy TẤT CẢ mã giảm giá (bao gồm cả Flash Sale) ──
-export function useAdminDiscounts(params?: Record<string, any>) {
+export function useAdminDiscounts(params?: Record<string, string | number | boolean>) {
   return useQuery({
     queryKey: [...queryKeys.discounts.all, "admin", params],
     queryFn: () => discountsApi.getDiscounts({ ...params, manage: true }),
@@ -34,12 +34,12 @@ export function useCreateDiscount() {
   const { success, error } = useToast();
 
   return useMutation({
-    mutationFn: (data: any) => discountsApi.createDiscount(data),
+    mutationFn: (data: { code: string; name: string; discountType: "PERCENTAGE" | "FIXED"; discountValue: number; startDate: string; endDate: string; minOrderAmount?: number; maxDiscountAmount?: number; usageLimit?: number; isActive?: boolean }) => discountsApi.createDiscount(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.discounts.all });
       success("Tạo chương trình thành công");
     },
-    onError: (err: any) => {
+    onError: (err: { response?: { data?: { message?: string } } }) => {
       error(err?.response?.data?.message || "Lỗi khi tạo chương trình");
     },
   });
@@ -50,14 +50,14 @@ export function useUpdateDiscount() {
   const { success, error } = useToast();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: any }) =>
+    mutationFn: ({ id, data }: { id: string; data: { code: string; name: string; discountType: "PERCENTAGE" | "FIXED"; discountValue: number; startDate: string; endDate: string; minOrderAmount?: number; maxDiscountAmount?: number; usageLimit?: number; isActive?: boolean } }) =>
       discountsApi.updateDiscount(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.discounts.all });
       success("Cập nhật thành công");
     },
-    onError: (err: any) => {
-      error(err?.response?.data?.message || "Lỗi khi cập nhật");
+    onError: (err: { response?: { data?: { message?: string } } }) => {
+      error(err.response?.data?.message || "Tạo mã giảm giá thất bại");
     },
   });
 }
@@ -72,7 +72,7 @@ export function useDeleteDiscount() {
       queryClient.invalidateQueries({ queryKey: queryKeys.discounts.all });
       success("Đã xóa chương trình");
     },
-    onError: (err: any) => {
+    onError: (err: { response?: { data?: { message?: string } } }) => {
       error(err?.response?.data?.message || "Lỗi khi xóa");
     },
   });

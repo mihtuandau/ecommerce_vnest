@@ -1,19 +1,19 @@
 import { api } from "@/lib/axios";
 
 export const reportsApi = {
-  getSummary: async (params?: Record<string, any>) => {
+  getSummary: async (params?: Record<string, string | number>) => {
     const { data } = await api.get("/reports/summary", { params });
     return data;
   },
-  getRevenue: async (params?: Record<string, any>) => {
+  getRevenue: async (params?: Record<string, string | number>) => {
     const { data } = await api.get("/reports/revenue", { params });
     return data;
   },
-  getTopProducts: async (params?: Record<string, any>) => {
+  getTopProducts: async (params?: Record<string, string | number>) => {
     const { data } = await api.get("/reports/top-products", { params });
     return data;
   },
-  exportReport: async (params?: Record<string, any>) => {
+  exportReport: async (params?: Record<string, string | number>) => {
     const { data } = await api.get("/reports/export", {
       params,
       responseType: "blob",

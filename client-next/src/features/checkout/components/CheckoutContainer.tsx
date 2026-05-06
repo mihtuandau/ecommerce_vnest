@@ -22,6 +22,7 @@ import { PaymentMethods } from "./PaymentMethods";
 import { OrderSummary } from "./OrderSummary";
 
 type AddressOption = {
+  id?: string | number;
   fullName?: string;
   phone?: string;
   email?: string;
@@ -48,6 +49,7 @@ type Ward = {
 };
 
 type CheckoutDiscount = {
+  id?: number;
   code?: string;
   discountType?: "PERCENTAGE" | "FIXED";
   discountValue?: number;
@@ -177,7 +179,7 @@ export function CheckoutContainer() {
         setHasAppliedDefault(true);
       }
     }
-  }, [addressData, mounted, hasAppliedDefault, user]);
+  }, [addressData, mounted, hasAppliedDefault, user, applySavedAddress]);
 
   useEffect(() => {
     const timer = setTimeout(async () => {
@@ -275,7 +277,7 @@ export function CheckoutContainer() {
   const [isLoadingDistricts, setIsLoadingDistricts] = useState(false);
   const [isLoadingWards, setIsLoadingWards] = useState(false);
 
-  const handleProvinceChange = async (id: string) => {
+  const handleProvinceChange = React.useCallback(async (id: string) => {
     setForm((prev) => ({ ...prev, provinceId: id, districtId: "", wardCode: "" }));
     setDistricts([]);
     setWards([]);
@@ -292,9 +294,9 @@ export function CheckoutContainer() {
         setIsLoadingDistricts(false);
       }
     }
-  };
+  }, [error]);
 
-  const handleDistrictChange = async (id: string) => {
+  const handleDistrictChange = React.useCallback(async (id: string) => {
     setForm((prev) => ({ ...prev, districtId: id, wardCode: "" }));
     setWards([]);
     
@@ -314,12 +316,12 @@ export function CheckoutContainer() {
         setIsLoadingWards(false);
       }
     }
-  };
+  }, [error]);
 
-  const handleWardChange = (code: string) => {
+  const handleWardChange = React.useCallback((code: string) => {
     if (!code) return; // Chặn việc reset về rỗng do lỗi component
     setForm((prev) => ({ ...prev, wardCode: code }));
-  };
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

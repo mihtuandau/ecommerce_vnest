@@ -13,12 +13,35 @@ import {
 } from "@/components/ui/Select";
 import Link from "next/link";
 
+type Province = {
+  ProvinceID: number;
+  ProvinceName: string;
+};
+
+type District = {
+  DistrictID: number;
+  DistrictName: string;
+};
+
+type Ward = {
+  WardCode: string;
+  WardName: string;
+};
+
 interface ShippingFormProps {
-  form: any;
+  form: {
+    fullName: string;
+    phone: string;
+    email: string;
+    provinceId: string;
+    districtId: string;
+    wardCode: string;
+    street: string;
+  };
   setForm: (form: any) => void;
-  provinces: any[];
-  districts: any[];
-  wards: any[];
+  provinces: Province[];
+  districts: District[];
+  wards: Ward[];
   handleProvinceChange: (id: string) => void;
   handleDistrictChange: (id: string) => void;
   handleWardChange: (code: string) => void;
@@ -27,7 +50,7 @@ interface ShippingFormProps {
   user?: any;
 }
 
-export function ShippingForm({
+export const ShippingForm = React.memo(function ShippingForm({
   form,
   setForm,
   provinces,
@@ -175,4 +198,4 @@ export function ShippingForm({
       </CardContent>
     </Card>
   );
-}
+});

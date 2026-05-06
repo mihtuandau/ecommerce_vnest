@@ -21,9 +21,12 @@ import {
 import { FileText, DollarSign } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 
+import { Category } from "@/types/models";
+import { ProductFormValues } from "../ProductForm";
+
 interface GeneralInfoProps {
-  form: UseFormReturn<any>;
-  categories: any[];
+  form: UseFormReturn<ProductFormValues>;
+  categories: Category[];
 }
 
 export function GeneralInfo({ form, categories }: GeneralInfoProps) {
@@ -94,7 +97,7 @@ export function GeneralInfo({ form, categories }: GeneralInfoProps) {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent className="rounded-xl border-slate-200">
-                      {categories?.map((cat: any) => (
+                      {categories?.map((cat: Category) => (
                         <SelectItem
                           key={cat.id}
                           value={String(cat.id)}

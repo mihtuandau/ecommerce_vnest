@@ -12,10 +12,13 @@ import { Badge } from "@/components/ui/Badge";
 import { Package, Search, Loader2, Check } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { formatCurrency } from "@/utils/formatCurrency";
+import { Product } from "@/types/models";
+
+import { DiscountFormValues } from "../DiscountForm";
 
 interface ScopeSectionProps {
-  form: UseFormReturn<any>;
-  products: any[];
+  form: UseFormReturn<DiscountFormValues>;
+  products: Product[];
   isLoading: boolean;
   searchQuery: string;
   onSearchChange: (value: string) => void;
@@ -33,7 +36,7 @@ export function ScopeSection({
   const filteredProducts = useMemo(() => {
     const prods = Array.isArray(products) ? products : [];
     if (!searchQuery) return prods;
-    return prods.filter((p: any) =>
+    return prods.filter((p: Product) =>
       p.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [products, searchQuery]);
@@ -86,7 +89,7 @@ export function ScopeSection({
               </div>
             ) : (
               <div className="divide-y divide-slate-50">
-                {filteredProducts.map((product: any) => {
+                {filteredProducts.map((product: Product) => {
                   const isSelected = selectedProducts.includes(product.id);
                   return (
                     <div

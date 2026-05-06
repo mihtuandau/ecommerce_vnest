@@ -40,7 +40,7 @@ export function ProductDetailView({ slug }: ProductDetailViewProps) {
   // Find Selected Variant
   const selectedVariant = useMemo(() => {
     if (!product?.variants) return null;
-    return product.variants.find((v: any) => 
+    return product.variants.find((v) => 
       (!selectedSize || v.size === selectedSize) && 
       (!selectedColor || v.color === selectedColor)
     );
@@ -50,10 +50,10 @@ export function ProductDetailView({ slug }: ProductDetailViewProps) {
   const allAvailableImages = useMemo(() => {
     if (!product) return [];
     const mainImages = product.images || [];
-    const variantImages: any[] = [];
+    const variantImages: { url: string }[] = [];
     
-    product.variants?.forEach((v: any) => {
-      v.images?.forEach((img: any) => {
+    product.variants?.forEach((v) => {
+      v.images?.forEach((img) => {
         // Tránh trùng lặp URL
         if (!variantImages.some(vi => vi.url === img.url) && !mainImages.some(mi => mi.url === img.url)) {
           variantImages.push(img);
@@ -61,10 +61,10 @@ export function ProductDetailView({ slug }: ProductDetailViewProps) {
       });
     });
 
-    if (selectedVariant?.images?.length > 0) {
+    if (selectedVariant?.images && selectedVariant.images.length > 0) {
       // Nếu đã chọn biến thể, đưa ảnh biến thể đó lên đầu
       const otherImages = [...mainImages, ...variantImages].filter(
-        img => !selectedVariant.images.some((svi: any) => svi.url === img.url)
+        img => !selectedVariant.images!.some((svi) => svi.url === img.url)
       );
       return [...selectedVariant.images, ...otherImages];
     }
@@ -102,16 +102,16 @@ export function ProductDetailView({ slug }: ProductDetailViewProps) {
     );
   }
 
-  const isFlashSale = flashSale?.products?.some((p: any) => String(p.id) === String(product.id));
-  const flashSalePercent = isFlashSale ? (flashSale.percentage || 0) : 0;
+  const isFlashSale = flashSale?.products?.some((p) => String(p.id) === String(product.id));
+  const flashSalePercent = isFlashSale ? (flashSale!.percentage || 0) : 0;
   
-  const currentBasePrice = selectedVariant?.price || product.price || (product as any).basePrice || 0;
+  const currentBasePrice = selectedVariant?.price || product.price || product.basePrice || 0;
   
   const finalPrice = isFlashSale 
     ? Math.round(currentBasePrice * (1 - flashSalePercent / 100))
     : currentBasePrice;
     
-  const originalPriceVal = selectedVariant?.originalPrice || product.originalPrice || (product as any).oldPrice;
+  const originalPriceVal = selectedVariant?.originalPrice || product.originalPrice;
   const finalOriginalPrice = isFlashSale 
     ? currentBasePrice 
     : originalPriceVal;

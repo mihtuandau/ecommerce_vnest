@@ -5,8 +5,8 @@ import type { PaginatedResponse } from "@/types/api";
 export const productsApi = {
   getProducts: async (
     params?: Record<string, string>
-  ): Promise<any> => {
-    const { data: body } = await api.get<any>("/products", {
+  ): Promise<{ data: Product[]; total?: number; totalPages?: number; page?: number }> => {
+    const { data: body } = await api.get<{ data?: Product[]; products?: Product[] } | Product[]>("/products", {
       params,
     });
     // Support various backend response structures
@@ -17,18 +17,18 @@ export const productsApi = {
   },
 
   getProduct: async (slugOrId: string, allVariants = false): Promise<Product> => {
-    const { data: body } = await api.get<any>(`/products/${slugOrId}`, {
+    const { data: body } = await api.get<{ data?: Product } | Product>(`/products/${slugOrId}`, {
       params: allVariants ? { allVariants: 'true' } : {}
     });
     return body?.data || body;
   },
 
-  createProduct: async (productData: any): Promise<Product> => {
+  createProduct: async (productData: Partial<Product>): Promise<Product> => {
     const { data } = await api.post<Product>("/products", productData);
     return data;
   },
 
-  updateProduct: async (id: string, productData: any): Promise<Product> => {
+  updateProduct: async (id: string, productData: Partial<Product>): Promise<Product> => {
     const { data } = await api.put<Product>(`/products/${id}`, productData);
     return data;
   },
@@ -43,12 +43,12 @@ export const productsApi = {
 
   // ── Variant Management ──
 
-  addVariant: async (productId: string, variantData: any) => {
+  addVariant: async (productId: string, variantData: Partial<Product["variants"] extends Array<infer V> ? V : unknown>): Promise<Product["variants"] extends Array<infer V> ? V : unknown> => {
     const { data } = await api.post(`/products/${productId}/variant`, variantData);
     return data;
   },
 
-  updateVariant: async (variantId: string, variantData: any) => {
+  updateVariant: async (variantId: string, variantData: Partial<Product["variants"] extends Array<infer V> ? V : unknown>): Promise<Product["variants"] extends Array<infer V> ? V : unknown> => {
     const { data } = await api.put(`/products/variant/${variantId}`, variantData);
     return data;
   },

@@ -30,8 +30,8 @@ export function useCreateBanner() {
       queryClient.invalidateQueries({ queryKey: queryKeys.banners.all });
       success("Thêm banner thành công");
     },
-    onError: (err: any) => {
-      error(err?.response?.data?.message || "Lỗi khi thêm banner");
+    onError: (err: { response?: { data?: { message?: string } } }) => {
+      error(err.response?.data?.message || "Thêm banner thất bại");
     },
   });
 }

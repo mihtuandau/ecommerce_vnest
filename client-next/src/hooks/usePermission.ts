@@ -6,7 +6,7 @@ import { useAuthStore } from "@/store/useAuthStore";
  */
 export function usePermission() {
   const { user, isLoading } = useAuthStore();
-  const permissions: string[] = (user as any)?.permissions ?? [];
+  const permissions: string[] = user?.permissions ?? [];
 
   /** Check if user has a specific permission, e.g. "dashboard.view" */
   function can(permission: string): boolean {

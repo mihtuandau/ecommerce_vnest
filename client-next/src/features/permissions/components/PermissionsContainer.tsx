@@ -24,8 +24,8 @@ export function PermissionsContainer() {
   useEffect(() => {
     const map: Record<string, Set<number>> = {};
     MANAGED_ROLES.forEach((r) => { map[r] = new Set<number>(); });
-    rolesData.forEach((r: any) => {
-      map[r.role] = new Set<number>((r.permissions ?? []).map((p: any) => Number(p.id)));
+    rolesData.forEach((r: { role: string; permissions: { id: number }[] }) => {
+      map[r.role] = new Set<number>((r.permissions ?? []).map((p: { id: number }) => Number(p.id)));
     });
     setLocalPerms(map);
     setDirtyRoles(new Set());

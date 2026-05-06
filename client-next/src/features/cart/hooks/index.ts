@@ -1,23 +1,23 @@
 "use client";
 
+import React from "react";
 import { useCartStore, CartItem } from "@/store/useCartStore";
 import { useAuthStore } from "@/store/useAuthStore";
 import { cartApi } from "../api";
 
 export function useCart() {
-  const { 
-    items, 
-    addItem: storeAddItem, 
-    removeItem: storeRemoveItem, 
-    updateQuantity: storeUpdateQuantity, 
-    clearCart: storeClearCart, 
-    setBuyNowItem,
-    clearBuyNowItem,
-    totalPrice 
-  } = useCartStore();
-  const { user } = useAuthStore();
+  const items = useCartStore((state) => state.items);
+  const storeAddItem = useCartStore((state) => state.addItem);
+  const storeRemoveItem = useCartStore((state) => state.removeItem);
+  const storeUpdateQuantity = useCartStore((state) => state.updateQuantity);
+  const storeClearCart = useCartStore((state) => state.clearCart);
+  const setBuyNowItem = useCartStore((state) => state.setBuyNowItem);
+  const clearBuyNowItem = useCartStore((state) => state.clearBuyNowItem);
+  const storeTotalPrice = useCartStore((state) => state.totalPrice);
+  
+  const user = useAuthStore((state) => state.user);
 
-  const addItem = async (item: CartItem) => {
+  const addItem = React.useCallback(async (item: CartItem) => {
     storeAddItem(item, !user);
     if (user) {
       try {
@@ -26,9 +26,9 @@ export function useCart() {
         console.error("Failed to sync addItem:", err);
       }
     }
-  };
+  }, [user, storeAddItem]);
 
-  const removeItem = async (variantId: string) => {
+  const removeItem = React.useCallback(async (variantId: string) => {
     storeRemoveItem(variantId);
     if (user) {
       try {
@@ -37,20 +37,24 @@ export function useCart() {
         console.error("Failed to sync removeItem:", err);
       }
     }
-  };
+  }, [user, storeRemoveItem]);
 
-  const updateQuantity = async (variantId: string, quantity: number) => {
+  const updateQuantity = React.useCallback(async (variantId: string, quantity: number) => {
     storeUpdateQuantity(variantId, quantity);
     if (user) {
       try {
-        await cartApi.updateQuantity(Number(variantId), quantity);
+        if (quantity <= 0) {
+          await cartApi.removeItem(Number(variantId));
+        } else {
+          await cartApi.updateQuantity(Number(variantId), quantity);
+        }
       } catch (err) {
         console.error("Failed to sync updateQuantity:", err);
       }
     }
-  };
+  }, [user, storeUpdateQuantity]);
 
-  const clearCart = async () => {
+  const clearCart = React.useCallback(async () => {
     storeClearCart();
     if (user) {
       try {
@@ -59,9 +63,15 @@ export function useCart() {
         console.error("Failed to sync clearCart:", err);
       }
     }
-  };
+  }, [user, storeClearCart]);
 
-  return {
+  const itemCount = React.useMemo(() => 
+    items.reduce((sum, item) => sum + item.quantity, 0),
+  [items]);
+
+  const totalPrice = React.useMemo(() => storeTotalPrice(), [storeTotalPrice, items]);
+
+  return React.useMemo(() => ({
     items,
     addItem,
     removeItem,
@@ -69,30 +79,55 @@ export function useCart() {
     clearCart,
     setBuyNowItem,
     clearBuyNowItem,
-    totalPrice: totalPrice(),
-    itemCount: items.reduce((sum, item) => sum + item.quantity, 0),
-  };
+    totalPrice,
+    itemCount,
+  }), [items, addItem, removeItem, updateQuantity, clearCart, setBuyNowItem, clearBuyNowItem, totalPrice, itemCount]);
 }
 
 export function useSyncCart() {
-  const { items, setItems, clearCart } = useCartStore();
-  const { user, isAuthenticated } = useAuthStore();
+  const { items, setItems, isDirty } = useCartStore();
+  const { user } = useAuthStore();
   const [synced, setSynced] = React.useState(false);
 
   React.useEffect(() => {
     const sync = async () => {
-      if (isAuthenticated && user && items.length > 0 && !synced) {
+      if (user && !synced) {
         try {
-          console.log("[useSyncCart] Syncing local items to server...", items);
-          const syncItems = items.map(item => ({
-            variantId: Number(item.variantId),
-            quantity: item.quantity
-          }));
+          let result;
           
-          const result = await cartApi.syncCart(syncItems);
+          if (isDirty && items.length > 0) {
+            console.log("[useSyncCart] Dirty cart detected. Merging guest items to server...", items);
+            const syncItems = items.map(item => ({
+              variantId: Number(item.variantId),
+              quantity: item.quantity
+            }));
+            result = await cartApi.syncCart(syncItems);
+          } else {
+            console.log("[useSyncCart] Local cart is clean or fresh login. Fetching server state...");
+            result = await cartApi.getCart();
+          }
           
           if (result && result.cartItems) {
-            const mappedItems = result.cartItems.map((item: any) => ({
+            const mappedItems = result.cartItems.map((item: {
+              variantId: number;
+              quantity: number;
+              discountedPrice?: number;
+              variant: {
+                id: number;
+                productId: string;
+                price: number;
+                originalPrice?: number | null;
+                color?: string;
+                size?: string;
+                images?: { url: string }[];
+                product: {
+                  name: string;
+                  slug: string;
+                  originalPrice?: number | null;
+                  images?: { url: string }[];
+                }
+              }
+            }) => ({
               productId: item.variant.productId,
               variantId: String(item.variantId),
               name: item.variant.product.name,
@@ -107,8 +142,7 @@ export function useSyncCart() {
               selected: true
             }));
             
-            setItems(mappedItems);
-            console.log("[useSyncCart] Sync completed and store updated.");
+            setItems(mappedItems, true);
           }
           setSynced(true);
         } catch (error) {
@@ -118,7 +152,13 @@ export function useSyncCart() {
     };
 
     sync();
-  }, [isAuthenticated, user, synced]);
+  }, [user, synced, isDirty]);
+
+  React.useEffect(() => {
+    if (!user) {
+      setSynced(false);
+    }
+  }, [user]);
 
   return { synced };
 }

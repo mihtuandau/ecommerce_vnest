@@ -71,7 +71,7 @@ export function OrderDetailView() {
   const { id } = useParams() as { id: string };
   const { data: order, isLoading } = useOrderDetail(id);
   const { mutate: cancelOrder } = useCancelOrder();
-  const { addItem } = useCartStore();
+  const { addItem } = useCart();
   const { success } = useToast();
   const queryClient = useQueryClient();
   const [isReturnModalOpen, setIsReturnModalOpen] = useState(false);
@@ -82,18 +82,18 @@ export function OrderDetailView() {
   const handleReorder = () => {
     if (!order || !order.orderItems) return;
 
-    order.orderItems.forEach((item: any) => {
+    order.orderItems.forEach((item) => {
       addItem({
-        productId: String(item.variant?.productId || item.productId),
+        productId: String(item.variant?.productId || ""),
         variantId: String(item.variantId),
-        name: item.productName || item.variant?.product?.name,
+        name: item.productName || item.variant?.product?.name || "Sản phẩm",
         price: item.price,
         quantity: item.quantity,
         imageUrl:
-          item.variant?.product?.images?.[0]?.url ||
-          item.variant?.images?.[0]?.url ||
+          (typeof item.variant?.product?.images?.[0] === 'string' ? item.variant?.product?.images?.[0] : item.variant?.product?.images?.[0]?.url) ||
+          (typeof item.variant?.images?.[0] === 'string' ? item.variant?.images?.[0] : item.variant?.images?.[0]?.url) ||
           "/placeholder.png",
-        slug: item.variant?.product?.slug || item.slug || "",
+        slug: item.variant?.product?.slug || "",
         color: item.variant?.color,
         size: item.variant?.size,
       });

@@ -59,10 +59,10 @@ export const useAuthStore = create<AuthStore>()(
           id: state.user.id,
           name: state.user.name,
           email: state.user.email,
-          phone: (state.user as any).phone,
-          avatar: (state.user as any).avatar,
+          phone: state.user.phone,
+          avatar: state.user.avatar,
           role: state.user.role,
-          permissions: (state.user as any).permissions,
+          permissions: state.user.permissions,
         } : null,
       }),
     }

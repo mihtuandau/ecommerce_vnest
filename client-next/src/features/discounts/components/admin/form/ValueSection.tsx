@@ -19,8 +19,10 @@ import {
 } from "@/components/ui/Select";
 import { Banknote, Percent } from "lucide-react";
 
+import { DiscountFormValues } from "../DiscountForm";
+
 interface ValueSectionProps {
-  form: UseFormReturn<any>;
+  form: UseFormReturn<DiscountFormValues>;
 }
 
 export function ValueSection({ form }: ValueSectionProps) {

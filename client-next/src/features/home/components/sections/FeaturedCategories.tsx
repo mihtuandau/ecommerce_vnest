@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { useCategories } from "@/features/products/hooks";
+import { Category } from "@/types/models";
 import { ChevronRight, LayoutGrid } from "lucide-react";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Button } from "@/components/ui/Button";
@@ -81,7 +82,7 @@ export function FeaturedCategories() {
             },
           }}
         >
-          {displayCategories.map((category: any, i: number) => (
+          {displayCategories.map((category: Category, i: number) => (
             <Link
               key={`${category.id}-${i}`}
               href={`/shop?categoryId=${category.id}`}

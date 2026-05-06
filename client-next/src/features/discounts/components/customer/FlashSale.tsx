@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Zap, ChevronRight } from "lucide-react";
 import { formatCurrency } from "@/utils/formatCurrency";
+import { Product } from "@/types/models";
 import { getTimeLeft } from "@/utils/formatDate";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/utils/cn";
@@ -45,7 +46,7 @@ function CountdownTimer({ endDate }: { endDate: string }) {
   );
 }
 
-function FlashProductCard({ product, discountPercent }: { product: any; discountPercent: number }) {
+function FlashProductCard({ product, discountPercent }: { product: Product; discountPercent: number }) {
   const imageUrl = product.image || 
     (typeof product.images?.[0] === "string" ? product.images[0] : product.images?.[0]?.url) || 
     "/placeholder.png";
@@ -113,7 +114,11 @@ function FlashProductCard({ product, discountPercent }: { product: any; discount
 }
 
 interface FlashSaleProps {
-  data: any;
+  data: {
+    percentage: number;
+    endDate: string;
+    products: Product[];
+  } | null;
 }
 
 export function FlashSale({ data }: FlashSaleProps) {
@@ -151,7 +156,7 @@ export function FlashSale({ data }: FlashSaleProps) {
 
         {/* Products */}
         <div className="relative z-10 grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-          {data.products.slice(0, 4).map((product: any) => (
+          {data.products.slice(0, 4).map((product: Product) => (
             <FlashProductCard
               key={product.id}
               product={product}

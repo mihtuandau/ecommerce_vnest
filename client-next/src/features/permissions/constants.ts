@@ -20,7 +20,7 @@ export const PERMISSION_GROUPS: Record<string, { label: string; icon: React.Elem
   settings:  { label: "Cài đặt",    icon: Settings,      color: "text-slate-600",  bg: "bg-slate-50" },
 };
 
-export const ROLE_CONFIG: Record<Role, { label: string; desc: string; color: string; border: string; bg: string; icon: any }> = {
+export const ROLE_CONFIG: Record<Role, { label: string; desc: string; color: string; border: string; bg: string; icon: React.ElementType }> = {
   [Role.ADMIN]:    { label: "Quản trị viên", desc: "Toàn quyền truy cập",     color: "text-rose-600",    border: "border-rose-200",    bg: "bg-rose-50",    icon: ShieldCheck },
   [Role.KHO]:      { label: "Quản lý kho",   desc: "Quản lý xuất nhập tồn",   color: "text-amber-600",   border: "border-amber-200",   bg: "bg-amber-50",   icon: Warehouse },
   [Role.BAN_HANG]: { label: "Bán hàng",      desc: "Xử lý đơn & khách hàng",  color: "text-sky-600",     border: "border-sky-200",     bg: "bg-sky-50",     icon: ShoppingCart },

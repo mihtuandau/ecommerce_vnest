@@ -11,7 +11,7 @@ import {
 import { X } from "lucide-react";
 
 interface ProductGalleryProps {
-  images: any[];
+  images: { url: string }[];
   name: string;
 }
 
@@ -24,8 +24,9 @@ export function ProductGallery({ images, name }: ProductGalleryProps) {
     setSelectedImage(0);
   }, [images]);
 
-  const getImageUrl = (img: any) => {
-    const rawUrl = typeof img === 'string' ? img : img?.url || "";
+  const getImageUrl = (img: { url: string } | string | undefined) => {
+    if (!img) return "/placeholder.png";
+    const rawUrl = typeof img === 'string' ? img : img.url;
     return rawUrl?.startsWith('http') ? rawUrl : `/${rawUrl}`;
   };
 
@@ -35,7 +36,7 @@ export function ProductGallery({ images, name }: ProductGalleryProps) {
     <div className="flex flex-col md:flex-row gap-4 items-start">
       {/* Vertical Thumbnails (Desktop) */}
       <div className="hidden md:flex flex-col gap-3 w-16 shrink-0">
-        {images?.map((img: any, i: number) => (
+        {images?.map((img, i) => (
           <button
             key={i}
             onClick={() => setSelectedImage(i)}
@@ -68,7 +69,7 @@ export function ProductGallery({ images, name }: ProductGalleryProps) {
 
       {/* Mobile Thumbnails */}
       <div className="flex md:hidden gap-2 mt-4 overflow-x-auto pb-2 scrollbar-hide w-full">
-        {images?.map((img: any, i: number) => (
+        {images?.map((img, i) => (
           <button
             key={i}
             onClick={() => setSelectedImage(i)}

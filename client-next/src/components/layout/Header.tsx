@@ -109,7 +109,15 @@ export function Header() {
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full overflow-hidden border border-slate-100 p-0.5">
                         {user.avatar ? (
-                          <img src={normalizeImagePath(user.avatar)} alt={user.name} className="h-full w-full rounded-full object-cover shadow-sm" />
+                          <img
+                            src={normalizeImagePath(user.avatar)}
+                            alt={user.name}
+                            referrerPolicy="no-referrer"
+                            className="h-full w-full rounded-full object-cover shadow-sm"
+                            onError={(e) => {
+                              e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || user.email || "User")}&background=0D8ABC&color=fff&size=128`;
+                            }}
+                          />
                         ) : (
                           <div className="h-full w-full rounded-full bg-primary flex items-center justify-center text-white font-bold text-sm shadow-sm">
                             {user.name?.charAt(0).toUpperCase()}

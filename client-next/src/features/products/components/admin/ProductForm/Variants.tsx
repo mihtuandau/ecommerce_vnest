@@ -8,8 +8,10 @@ import { Tag, Plus, Trash, ImagePlus, Loader2 } from "lucide-react";
 import { UseFormReturn, useFieldArray } from "react-hook-form";
 import { cn } from "@/utils/cn";
 
+import { ProductFormValues } from "../ProductForm";
+
 interface VariantsProps {
-  form: UseFormReturn<any>;
+  form: UseFormReturn<ProductFormValues>;
   variantUploadingIndex: number | null;
   onVariantImageClick: (index: number) => void;
 }

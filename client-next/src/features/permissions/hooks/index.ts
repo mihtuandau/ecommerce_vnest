@@ -32,7 +32,7 @@ export function useUpdateRolePermissions() {
       queryClient.invalidateQueries({ queryKey: KEYS.rolesPermissions });
       success(`Đã cập nhật quyền cho vai trò ${role}`);
     },
-    onError: (err: any) => {
+    onError: (err: { response?: { data?: { message?: string } } }) => {
       error(err?.response?.data?.message || "Lỗi khi cập nhật quyền");
     },
   });

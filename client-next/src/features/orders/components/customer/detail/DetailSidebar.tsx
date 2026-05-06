@@ -6,12 +6,21 @@ import { Button } from "@/components/ui/Button";
 import { PaymentStatus } from "@/types/enums";
 import { useToast } from "@/hooks/useToast";
 import { paymentsApi } from "@/features/payments/api";
+import { User } from "@/types/models";
 
 interface DetailSidebarProps {
   orderId: number;
-  shippingSnapshot: any;
-  user: any;
-  addressRelation: any;
+  shippingSnapshot: {
+    fullName?: string;
+    phone?: string;
+    addressString?: string;
+    street?: string;
+    ward?: string;
+    district?: string;
+    province?: string;
+  };
+  user: User;
+  addressRelation: string | null;
   paymentMethod: string;
   paymentStatus: string;
   isPaid: boolean;
@@ -47,7 +56,7 @@ export function DetailSidebar({
       } else {
         throw new Error("Không tìm thấy liên kết thanh toán");
       }
-    } catch (err: any) {
+    } catch (err: { message?: string } | any) {
       error(err.message || "Không thể khởi tạo thanh toán. Vui lòng thử lại sau.");
     } finally {
       setIsPaying(false);

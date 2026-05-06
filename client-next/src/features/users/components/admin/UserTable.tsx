@@ -1,3 +1,4 @@
+import React from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { User } from "@/types/models";
 import { DataTable } from "@/components/ui/DataTable";
@@ -16,8 +17,9 @@ import { cn } from "@/utils/cn";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Role, UserStatus } from "@/types/enums";
+import { handleAvatarError } from "@/utils/avatar";
 
-const roleConfig: Record<string, { label: string; color: string; icon: any }> = {
+const roleConfig: Record<string, { label: string; color: string; icon: React.ElementType }> = {
   [Role.ADMIN]: { label: "Quản trị viên", color: "bg-slate-900 text-white border-slate-900", icon: Shield },
   [Role.CUSTOMER]: { label: "Khách hàng", color: "bg-blue-50 text-blue-600 border-blue-100", icon: UserIcon },
   [Role.KHO]: { label: "Kho", color: "bg-amber-50 text-amber-700 border-amber-100", icon: Warehouse },
@@ -49,7 +51,13 @@ export const columns: ColumnDef<User>[] = [
         <Link href={`/admin/users/${user.id}`} className="flex items-center gap-3 hover:opacity-70 transition-opacity group">
           <div className="h-10 w-10 rounded-xl bg-slate-100 flex items-center justify-center border border-slate-200 overflow-hidden shrink-0 group-hover:border-primary/30">
             {user.avatar ? (
-              <img src={user.avatar} alt={user.name} className="h-full w-full object-cover" />
+              <img
+                src={user.avatar}
+                alt={user.name}
+                referrerPolicy="no-referrer"
+                className="h-full w-full object-cover"
+                onError={(e) => handleAvatarError(e, user.name, user.email)}
+              />
             ) : (
               <span className="text-sm font-semibold text-slate-500">{user.name?.charAt(0) || "U"}</span>
             )}

@@ -1,12 +1,14 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { productsApi } from "../api";
+import type { Product } from "@/types/models";
+
 import { queryKeys } from "@/constants/queryKeys";
 import { useToast } from "@/hooks/useToast";
 
-export function useProducts(params?: Record<string, any>, options?: any) {
+export function useProducts(params?: Record<string, string | number>, options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: queryKeys.products.list(params),
-    queryFn: () => productsApi.getProducts(params as any),
+    queryFn: () => productsApi.getProducts(params as Record<string, string>),
     ...options,
   });
 }
@@ -26,12 +28,12 @@ export function useCreateProduct() {
   const { success, error } = useToast();
 
   return useMutation({
-    mutationFn: (data: any) => productsApi.createProduct(data),
+    mutationFn: (data: Partial<Product>) => productsApi.createProduct(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.products.all });
       success("Thêm sản phẩm thành công");
     },
-    onError: (err: any) => {
+    onError: (err: { response?: { data?: { message?: string } } }) => {
       error(err?.response?.data?.message || "Lỗi khi thêm sản phẩm");
     },
   });
@@ -42,7 +44,7 @@ export function useUpdateProduct() {
   const { success, error } = useToast();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: any }) =>
+    mutationFn: ({ id, data }: { id: string; data: Partial<Product> }) =>
       productsApi.updateProduct(id, data),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.products.all });
@@ -56,7 +58,7 @@ export function useUpdateProduct() {
       }
       success("Cập nhật sản phẩm thành công");
     },
-    onError: (err: any) => {
+    onError: (err: { response?: { data?: { message?: string } } }) => {
       error(err?.response?.data?.message || "Lỗi khi cập nhật sản phẩm");
     },
   });
@@ -72,7 +74,7 @@ export function useDeleteProduct() {
       queryClient.invalidateQueries({ queryKey: queryKeys.products.all });
       success("Xóa sản phẩm thành công");
     },
-    onError: (err: any) => {
+    onError: (err: { response?: { data?: { message?: string } } }) => {
       error(err?.response?.data?.message || "Lỗi khi xóa sản phẩm");
     },
   });
@@ -88,7 +90,7 @@ export function useBulkDeleteProducts() {
       queryClient.invalidateQueries({ queryKey: queryKeys.products.all });
       success("Xóa các sản phẩm đã chọn thành công");
     },
-    onError: (err: any) => {
+    onError: (err: { response?: { data?: { message?: string } } }) => {
       error(err?.response?.data?.message || "Lỗi khi xóa sản phẩm");
     },
   });
@@ -113,4 +115,3 @@ export function useIncrementView() {
     mutationFn: (id: string) => productsApi.incrementView(id),
   });
 }
-

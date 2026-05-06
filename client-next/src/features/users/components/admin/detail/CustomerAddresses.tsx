@@ -50,7 +50,7 @@ export function CustomerAddresses({ addresses }: CustomerAddressesProps) {
                 )}
               </div>
               <p className="text-sm text-slate-500 leading-relaxed truncate">
-                {address.street}, {address.ward || ""}, {(address as any).state || ""}, {(address as any).city || ""}
+                {address.street}, {address.ward || ""}, {(address as Address & { state?: string }).state || ""}, {(address as Address & { city?: string }).city || ""}
               </p>
             </div>
           </div>

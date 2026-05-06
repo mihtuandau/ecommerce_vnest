@@ -33,6 +33,7 @@ import { formatCurrency } from "@/utils/formatCurrency";
 import { cn } from "@/utils/cn";
 import { Badge } from "@/components/ui/Badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/Dialog";
+import { Category, Product, ProductVariant, Discount } from "@/types/models";
 
 const orderFormSchema = z.object({
   userId: z.number().optional(),
@@ -58,17 +59,17 @@ type OrderFormValues = z.infer<typeof orderFormSchema>;
 export function AdminOrderForm() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [categories, setCategories] = useState<any[]>([]);
-  const [products, setProducts] = useState<any[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [selectedCat, setSelectedCat] = useState<number | null>(null);
   const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [orderId, setOrderId] = useState<number | null>(null);
-  const [appliedDiscount, setAppliedDiscount] = useState<any>(null);
+  const [appliedDiscount, setAppliedDiscount] = useState<Record<string, unknown> | null>(null);
   const [isValidatingDiscount, setIsValidatingDiscount] = useState(false);
   
   // State for quick variant selection
-  const [activeProduct, setActiveProduct] = useState<any>(null);
+  const [activeProduct, setActiveProduct] = useState<Product | null>(null);
 
   useEffect(() => {
     setOrderId(Math.floor(1000 + Math.random() * 9000));
@@ -85,7 +86,7 @@ export function AdminOrderForm() {
   const fetchProducts = useCallback(async (q: string, catId: number | null) => {
     try {
       setIsLoading(true);
-      const params: any = { search: q, limit: 40 };
+      const params: Record<string, string | number> = { search: q, limit: 40 };
       if (catId) params.categoryId = catId.toString();
       const res = await productsApi.getProducts(params);
       setProducts(res.data || []);
@@ -100,8 +101,8 @@ export function AdminOrderForm() {
     return () => clearTimeout(timer);
   }, [search, selectedCat, fetchProducts]);
 
-  const handleProductClick = (product: any) => {
-    const activeVariants = product.variants?.filter((v: any) => v.isActive) || [];
+  const handleProductClick = (product: Product) => {
+    const activeVariants = product.variants?.filter((v: ProductVariant) => v.isActive) || [];
     
     if (activeVariants.length === 0) {
       toast.error("Sản phẩm hiện không có biến thể nào khả dụng");
@@ -115,7 +116,7 @@ export function AdminOrderForm() {
     }
   };
 
-  const addVariantToCart = (product: any, variant: any) => {
+  const addVariantToCart = (product: Product, variant: ProductVariant) => {
     if (variant.stock <= 0) {
       toast.error("Sản phẩm đã hết hàng");
       return;
@@ -244,8 +245,8 @@ export function AdminOrderForm() {
       const res = await ordersApi.createAdminOrder(payload);
       toast.success("Tạo đơn hàng thành công");
       router.push(`/admin/orders/${res.id || res.orderCode}`);
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Lỗi khi tạo đơn hàng");
+    } catch (error: { response?: { data?: { message?: string } } } | unknown) {
+      toast.error((error as any).response?.data?.message || "Lỗi khi tạo đơn hàng");
     } finally {
       setIsSubmitting(false);
     }
@@ -508,7 +509,7 @@ export function AdminOrderForm() {
               <PackageSearch className="h-4 w-4 text-primary" /> Vui lòng chọn phân loại sản phẩm
             </p>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-[350px] overflow-y-auto p-1 scrollbar-thin">
-              {activeProduct?.variants?.filter((v: any) => v.isActive).map((variant: any) => (
+              {activeProduct?.variants?.filter((v: ProductVariant) => v.isActive).map((variant: ProductVariant) => (
                 <button
                   key={variant.id}
                   type="button"

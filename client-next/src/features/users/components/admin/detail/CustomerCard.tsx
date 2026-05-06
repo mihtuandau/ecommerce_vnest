@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { formatDate } from "@/utils/formatDate";
 import { cn } from "@/utils/cn";
+import { handleAvatarError } from "@/utils/avatar";
 
 interface CustomerCardProps {
   user: User;
@@ -27,7 +28,13 @@ export function CustomerCard({ user }: CustomerCardProps) {
         <div className="relative inline-block">
           <div className="h-20 w-20 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-200 mx-auto text-3xl font-bold text-slate-300 overflow-hidden">
             {user.avatar ? (
-              <img src={user.avatar} alt={user.name} className="h-full w-full object-cover" />
+              <img
+                src={user.avatar}
+                alt={user.name}
+                referrerPolicy="no-referrer"
+                className="h-full w-full object-cover"
+                onError={(e) => handleAvatarError(e, user.name, user.email)}
+              />
             ) : (
               user.name?.charAt(0) || "U"
             )}

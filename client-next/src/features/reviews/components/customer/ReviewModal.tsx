@@ -110,12 +110,12 @@ export function ReviewModal({
             setRating(5);
             setSelectedFiles([]);
           },
-          onError: (err: any) => {
+          onError: (err: { response?: { data?: { message?: string } } }) => {
             toastError(err.response?.data?.message || "Không thể gửi đánh giá. Vui lòng thử lại.");
           },
         }
       );
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
       toastError("Có lỗi xảy ra khi tải ảnh lên, vui lòng thử lại sau.");
     } finally {

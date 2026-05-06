@@ -9,13 +9,14 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  TooltipProps,
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { useRevenueReport } from "../hooks";
 import { Loader2 } from "lucide-react";
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xl space-y-2">
@@ -38,7 +39,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   return null;
 };
 
-export function RevenueChart({ params }: { params: any }) {
+export function RevenueChart({ params }: { params: Record<string, string | undefined> }) {
   const { data: reportData, isLoading } = useRevenueReport(params);
 
   const chartData = reportData?.data || [];

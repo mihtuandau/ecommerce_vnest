@@ -2,11 +2,12 @@ import { useState } from "react";
 import Link from "next/link";
 import { cn } from "@/utils/cn";
 import { Shield, MessageSquare, BarChart2 } from "lucide-react";
+import { Product } from "@/types/models";
 
 import { ReviewList } from "@/features/reviews/components/customer/ReviewList";
 
 interface ProductTabsProps {
-  product: any;
+  product: Product;
 }
 
 export function ProductTabs({ product }: ProductTabsProps) {

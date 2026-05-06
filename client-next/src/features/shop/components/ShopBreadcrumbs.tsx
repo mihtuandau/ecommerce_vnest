@@ -5,9 +5,11 @@ import Link from "next/link";
 import { Home, ChevronRight } from "lucide-react";
 import { cn } from "@/utils/cn";
 
+import { Category } from "@/types/models";
+
 interface ShopBreadcrumbsProps {
   currentCategory: string | null;
-  categories: any[];
+  categories: Category[];
 }
 
 export function ShopBreadcrumbs({ currentCategory, categories }: ShopBreadcrumbsProps) {
@@ -26,7 +28,7 @@ export function ShopBreadcrumbs({ currentCategory, categories }: ShopBreadcrumbs
           <>
             <ChevronRight className="h-3 w-3 opacity-30 shrink-0" />
             <span className="text-primary font-bold whitespace-nowrap">
-              {categories.find((c: any) => String(c.id) === currentCategory)?.name}
+              {categories.find((c: Category) => String(c.id) === currentCategory)?.name}
             </span>
           </>
         )}

@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { ShoppingCart, Trash2, Plus, Minus, ArrowRight, ShoppingBag, ShoppingBasket } from "lucide-react";
+import { useCart } from "@/features/cart/hooks";
 import { useCartStore } from "@/store/useCartStore";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { Button } from "@/components/ui/Button";
@@ -11,7 +12,8 @@ import { ROUTES } from "@/constants/routes";
 import { cn } from "@/utils/cn";
 
 export function CartDropdown() {
-  const { items, updateQuantity, removeItem, totalPrice, toggleSelectAll } = useCartStore();
+  const { items, updateQuantity, removeItem, totalPrice } = useCart();
+  const { toggleSelectAll } = useCartStore();
   const [mounted, setMounted] = React.useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
@@ -186,7 +188,7 @@ export function CartDropdown() {
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-semibold text-slate-500">Tạm tính:</span>
                 <span className="text-xl font-bold text-slate-900 tabular-nums tracking-tighter">
-                  {formatCurrency(totalPrice())}
+                  {formatCurrency(totalPrice)}
                 </span>
               </div>
               <div className="flex flex-col gap-2.5">

@@ -263,8 +263,8 @@ export class OrderManagement {
       0,
     );
 
-    const usageCount = await this.repository.countOrdersUsingDiscount(discount.id);
-    OrderHelper.validateDiscount(discount, subtotal, usageCount);
+    // Single source of truth: dùng Discount.usageCount field
+    OrderHelper.validateDiscount(discount, subtotal, discount.usageCount);
 
     const totals = OrderHelper.calculateOrderTotal(
       order.orderItems.map((item) => ({ quantity: item.quantity, price: item.price })),
@@ -407,7 +407,7 @@ export class OrderManagement {
       to_address: address.street || "Địa chỉ khách hàng",
       to_ward_code: address.wardCode,
       to_district_id: Number(address.districtCode),
-      cod_amount: (order.paymentMethod === 'CASH' || order.paymentMethod === 'COD' || order.payment?.method === 'CASH') && order.payment?.status !== 'SUCCESS' 
+      cod_amount: (order.payment?.status !== 'SUCCESS' && ['CASH', 'COD'].includes((order.paymentMethod || order.payment?.method || '') as string))
         ? Math.round(order.total) 
         : 0,
       content: `Đơn hàng ${order.orderCode}`,

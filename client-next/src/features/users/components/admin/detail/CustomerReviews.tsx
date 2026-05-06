@@ -5,6 +5,7 @@ import { Star, Package } from "lucide-react";
 import { useAllReviews } from "@/features/reviews/hooks";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { cn } from "@/utils/cn";
+import { Review } from "@/types/models";
 
 interface CustomerReviewsProps {
   userId: number;
@@ -35,7 +36,7 @@ export function CustomerReviews({ userId }: CustomerReviewsProps) {
     );
   }
 
-  const getImageUrl = (img: any) => {
+  const getImageUrl = (img: { url?: string } | string | null | undefined) => {
     if (!img) return "";
     const rawUrl = typeof img === 'string' ? img : img?.url || "";
     return rawUrl?.startsWith('http') ? rawUrl : `/${rawUrl}`;
@@ -43,7 +44,7 @@ export function CustomerReviews({ userId }: CustomerReviewsProps) {
 
   return (
     <div className="space-y-3">
-      {reviews.map((review: any) => {
+      {reviews.map((review: Review & { product?: { name: string; images?: ({ url?: string } | string)[] }; images?: ({ id?: number | string; url?: string } | string)[] }) => {
         const productImg = review.product?.images?.[0];
         const productImgUrl = getImageUrl(productImg);
 
@@ -93,9 +94,9 @@ export function CustomerReviews({ userId }: CustomerReviewsProps) {
 
               {review.images && review.images.length > 0 && (
                 <div className="flex gap-2 pt-1">
-                  {review.images.map((img: any, idx: number) => (
+                  {review.images.map((img: { id?: number | string; url?: string } | string, idx: number) => (
                     <img 
-                      key={img.id || idx} 
+                      key={typeof img === 'object' && img !== null ? img.id : idx} 
                       src={getImageUrl(img)} 
                       alt="Review" 
                       className="h-14 w-14 object-cover rounded-2xl border border-slate-200" 

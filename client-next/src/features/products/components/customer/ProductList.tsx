@@ -24,14 +24,14 @@ export function ProductList({
 }: ProductListProps) {
   const searchParams = useSearchParams();
 
-  // Extract filters from URL
-  const categoryId = searchParams.get("categoryId");
-  const brandId = searchParams.get("brandId");
-  const minPrice = searchParams.get("minPrice");
-  const maxPrice = searchParams.get("maxPrice");
-  const minRating = searchParams.get("minRating");
-  const search = searchParams.get("search");
-  const sortBy = searchParams.get("sortBy");
+  // Extract filters from URL safely
+  const categoryId = searchParams?.get("categoryId");
+  const brandId = searchParams?.get("brandId");
+  const minPrice = searchParams?.get("minPrice");
+  const maxPrice = searchParams?.get("maxPrice");
+  const minRating = searchParams?.get("minRating");
+  const search = searchParams?.get("search");
+  const sortBy = searchParams?.get("sortBy");
 
   const queryParams = {
     page,
@@ -49,8 +49,8 @@ export function ProductList({
     enabled: !initialProducts,
   });
 
-  const products = initialProducts || (data as any)?.data || [];
-  const totalPages = (data as any)?.totalPages || 0;
+  const products = (initialProducts !== undefined) ? initialProducts : ((data as { data?: Product[] })?.data || []);
+  const totalPages = (data as { totalPages?: number })?.totalPages || 0;
 
   if (isLoading && !initialProducts) {
     return (
@@ -134,7 +134,7 @@ export function ProductList({
           view === "grid" ? "grid-cols-2 lg:grid-cols-3" : "grid-cols-1"
         )}
       >
-        {products.map((product: any) => (
+        {products.map((product: Product) => (
           <ProductCard key={product.id} product={product} view={view} />
         ))}
       </div>

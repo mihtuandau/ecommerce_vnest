@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/Badge";
 import { useRouter } from "next/navigation";
 import { formatDate } from "@/utils/formatDate";
 import { cn } from "@/utils/cn";
+import { handleAvatarError } from "@/utils/avatar";
 
 interface CustomerHeaderProps {
   user: User;
@@ -43,7 +44,13 @@ export function CustomerHeader({ user }: CustomerHeaderProps) {
           <div className="relative shrink-0 group">
             <div className="h-28 w-28 rounded-[2rem] bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center border-4 border-white shadow-xl text-4xl font-black text-slate-400 overflow-hidden transition-transform duration-500 group-hover:scale-105">
               {user.avatar ? (
-                <img src={user.avatar} alt={user.name} className="h-full w-full object-cover" />
+                <img
+                  src={user.avatar}
+                  alt={user.name}
+                  referrerPolicy="no-referrer"
+                  className="h-full w-full object-cover"
+                  onError={(e) => handleAvatarError(e, user.name, user.email)}
+                />
               ) : (
                 user.name?.charAt(0) || "U"
               )}

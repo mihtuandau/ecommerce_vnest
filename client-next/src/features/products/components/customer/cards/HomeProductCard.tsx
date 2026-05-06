@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { Product } from "@/types/models";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { Button } from "@/components/ui/Button";
@@ -9,27 +10,31 @@ import { useCart } from "@/features/cart/hooks";
 import { useToast } from "@/hooks/useToast";
 import { useUIStore } from "@/store/useUIStore";
 import { useFlashSale } from "@/features/discounts/hooks";
+import { cn } from "@/utils/cn";
 
 interface HomeProductCardProps {
   product: Product;
   variant: "featured" | "bestseller" | "toprated";
 }
 
-export function HomeProductCard({ product, variant }: HomeProductCardProps) {
+export const HomeProductCard = React.memo(function HomeProductCard({ product, variant }: HomeProductCardProps) {
   const { addItem } = useCart();
   const { success } = useToast();
   const { data: flashSale } = useFlashSale();
+  const firstVariant = product.variants?.[0];
+  const stock = firstVariant?.stock ?? product.stock ?? 0;
+  const isOutOfStock = stock <= 0 || !firstVariant;
 
-  const parsePrice = (val: any) => {
+  const parsePrice = (val: string | number | undefined | null) => {
     if (typeof val === 'number') return val;
     if (typeof val === 'string') return parseFloat(val.replace(/[^\d.]/g, '')) || 0;
     return 0;
   };
 
-  const basePrice = parsePrice(product.price || (product as any).basePrice);
+  const basePrice = parsePrice(product.price || product.basePrice);
 
   // Check if product is in flash sale
-  const isFlashSale = flashSale?.products?.some((p: any) => p.id === product.id);
+  const isFlashSale = flashSale?.products?.some((p: { id: number | string }) => String(p.id) === String(product.id));
   const flashSalePercent = isFlashSale ? flashSale.percentage || 0 : 0;
 
   // Calculate final price based on flash sale
@@ -38,7 +43,7 @@ export function HomeProductCard({ product, variant }: HomeProductCardProps) {
     : basePrice;
 
   // Calculate regular discount if not in flash sale
-  const originalPriceVal = product.originalPrice || (product as any).oldPrice;
+  const originalPriceVal = product.originalPrice;
   const regularOriginalPrice = originalPriceVal ? parsePrice(originalPriceVal) : null;
   const hasRegularDiscount = regularOriginalPrice && regularOriginalPrice > basePrice;
 
@@ -47,15 +52,15 @@ export function HomeProductCard({ product, variant }: HomeProductCardProps) {
     : (hasRegularDiscount ? regularOriginalPrice : null);
 
   const rawImage = product.images?.[0];
-  const imageUrl = typeof rawImage === "string" ? rawImage : (rawImage as any)?.url || "/placeholder.png";
+  const imageUrl = typeof rawImage === "string" ? rawImage : (rawImage as { url?: string })?.url || "/placeholder.png";
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
-    const defaultVariantId = product.variants?.[0]?.id || product.id;
+    const variantId = product.variants?.[0]?.id || product.id;
 
     addItem({
       productId: String(product.id),
-      variantId: String(defaultVariantId),
+      variantId: String(variantId),
       name: product.name,
       price: price,
       originalPrice: originalPrice || undefined,
@@ -117,9 +122,19 @@ export function HomeProductCard({ product, variant }: HomeProductCardProps) {
             </div>
             <button
               onClick={handleAddToCart}
-              className="rounded-full h-7 w-7 md:h-9 md:w-9 shadow-xl bg-white text-primary hover:bg-primary hover:text-white transition-all border-none flex items-center justify-center shrink-0"
+              disabled={isOutOfStock}
+              className={cn(
+                "rounded-full h-7 w-7 md:h-9 md:w-9 shadow-xl transition-all border-none flex items-center justify-center shrink-0",
+                isOutOfStock
+                  ? "bg-slate-100 text-slate-300 cursor-not-allowed shadow-none"
+                  : "bg-white text-primary hover:bg-primary hover:text-white"
+              )}
             >
-              <ShoppingCart className="h-3 w-3 md:h-4 md:w-4" />
+              {isOutOfStock ? (
+                <span className="text-[7px] md:text-[8px] font-bold">Hết</span>
+              ) : (
+                <ShoppingCart className="h-3 w-3 md:h-4 md:w-4" />
+              )}
             </button>
           </div>
         </div>
@@ -177,19 +192,29 @@ export function HomeProductCard({ product, variant }: HomeProductCardProps) {
               )}
               <div className="flex items-center gap-2 mt-1">
                 <span className="text-[10px] md:text-[11px] font-medium text-slate-400">
-                  Đã bán {(product as any).soldCount || 0}
+                  Đã bán {product.soldCount || 0}
                 </span>
                 <span className="text-slate-200">|</span>
                 <span className="text-[10px] md:text-[11px] font-medium text-slate-400 flex items-center gap-0.5">
-                  {(product as any).viewCount || 0} lượt xem
+                  {product.viewCount || 0} lượt xem
                 </span>
               </div>
             </div>
             <button
               onClick={handleAddToCart}
-              className="rounded-full h-7 w-7 md:h-9 md:w-9 bg-slate-50 text-primary hover:bg-primary hover:text-white shadow-sm border border-slate-100 flex items-center justify-center transition-all shrink-0"
+              disabled={isOutOfStock}
+              className={cn(
+                "rounded-full h-7 w-7 md:h-9 md:w-9 shadow-sm border flex items-center justify-center transition-all shrink-0",
+                isOutOfStock
+                  ? "bg-slate-50 text-slate-200 border-slate-100 cursor-not-allowed shadow-none"
+                  : "bg-slate-50 text-primary hover:bg-primary hover:text-white border-slate-100"
+              )}
             >
-              <ShoppingCart className="h-3 w-3 md:h-4 md:w-4" />
+              {isOutOfStock ? (
+                <span className="text-[7px] md:text-[8px] font-bold">Hết</span>
+              ) : (
+                <ShoppingCart className="h-3 w-3 md:h-4 md:w-4" />
+              )}
             </button>
           </div>
         </div>
@@ -215,10 +240,10 @@ export function HomeProductCard({ product, variant }: HomeProductCardProps) {
           <div className="flex items-center gap-1">
             <Star className="h-2.5 w-2.5 md:h-3 md:w-3 fill-[#f4c300] text-[#f4c300]" />
             <span className="text-[11px] md:text-xs font-bold text-foreground">
-              {(product as any).averageRating || 0}
+              {product.averageRating || 0}
             </span>
             <span className="text-[10px] md:text-[11px] font-medium text-muted-foreground">
-              ({(product as any).reviewCount || 0})
+              ({product.reviewCount || 0})
             </span>
           </div>
           <h3 className="font-bold text-[11px] md:text-sm text-foreground line-clamp-1 md:line-clamp-2 leading-tight">
@@ -250,4 +275,4 @@ export function HomeProductCard({ product, variant }: HomeProductCardProps) {
       </div>
     </Link>
   );
-}
+});

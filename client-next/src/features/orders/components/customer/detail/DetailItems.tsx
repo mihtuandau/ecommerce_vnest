@@ -7,9 +7,10 @@ import { ReviewModal } from "@/features/reviews/components/customer/ReviewModal"
 import { OrderStatus } from "@/types/enums";
 import { MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { OrderItem } from "@/types/models";
 
 interface DetailItemsProps {
-  orderItems: any[];
+  orderItems: OrderItem[];
   total: number;
   shippingFee: number;
   discountAmount: number;
@@ -25,7 +26,7 @@ export function DetailItems({
   status,
   orderId
 }: DetailItemsProps) {
-  const [selectedItem, setSelectedItem] = React.useState<any>(null);
+  const [selectedItem, setSelectedItem] = React.useState<OrderItem | null>(null);
 
   return (
     <div className="border border-slate-100 rounded-xl overflow-hidden bg-white">
@@ -35,13 +36,13 @@ export function DetailItems({
         </h3>
       </div>
       <div className="divide-y divide-slate-50">
-        {orderItems?.map((item: any) => (
+        {orderItems?.map((item) => (
           <div key={item.id} className="p-4 flex flex-col sm:flex-row sm:items-center gap-4 group">
             <div className="flex items-center gap-4 flex-1 min-w-0">
               <div className="h-14 w-14 rounded-lg bg-slate-50 p-1.5 border border-slate-100 shrink-0">
                 <img
                   src={(() => {
-                    const path = (item.variantSnapshot as any)?.image || item.variant?.images?.[0]?.url || item.variant?.product?.images?.[0]?.url;
+                    const path = (item.variantSnapshot as { image?: string })?.image || item.variant?.images?.[0]?.url || item.variant?.product?.images?.[0]?.url;
                     if (!path) return "/placeholder.png";
                     if (path.startsWith('http')) return path;
                     return `/${path.replace(/\\/g, '/').replace(/^\//, '')}`;
@@ -124,11 +125,11 @@ export function DetailItems({
       <ReviewModal 
         isOpen={!!selectedItem}
         onClose={() => setSelectedItem(null)}
-        productId={selectedItem?.variant?.productId || selectedItem?.productId}
+        productId={Number(selectedItem?.variant?.productId || selectedItem?.productId)}
         orderId={orderId || 0}
-        productName={selectedItem?.productName || selectedItem?.variant?.product?.name}
+        productName={selectedItem?.productName || selectedItem?.variant?.product?.name || ""}
         productImage={(() => {
-          const path = (selectedItem?.variantSnapshot as any)?.image || selectedItem?.variant?.images?.[0]?.url || selectedItem?.variant?.product?.images?.[0]?.url;
+          const path = (selectedItem?.variantSnapshot as { image?: string })?.image || selectedItem?.variant?.images?.[0]?.url || selectedItem?.variant?.product?.images?.[0]?.url;
           if (!path) return "/placeholder.png";
           if (path.startsWith('http')) return path;
           return `/${path.replace(/\\/g, '/').replace(/^\//, '')}`;

@@ -13,7 +13,20 @@ import { Skeleton } from "@/components/ui/Skeleton";
 
 // ── Voucher Card (Still & Minimalist) ───────────────────────────
 
-function VoucherCard({ voucher }: { voucher: any }) {
+interface OfferVoucher {
+  id: string | number;
+  code: string;
+  name?: string;
+  description?: string;
+  percentage?: number;
+  fixedAmount?: number;
+  minOrderAmount: number;
+  startDate: string;
+  endDate?: string;
+  isActive: boolean;
+}
+
+function VoucherCard({ voucher }: { voucher: OfferVoucher }) {
   const { success } = useToast();
   
   const copyToClipboard = (code: string) => {
@@ -108,11 +121,11 @@ export function OffersView() {
 
   const rawData = React.useMemo(() => {
     if (!discountsData) return [];
-    const items = (discountsData as any)?.data || (Array.isArray(discountsData) ? discountsData : []);
+    const items: OfferVoucher[] = (discountsData as { data?: OfferVoucher[] })?.data || (Array.isArray(discountsData) ? discountsData : []);
     return items;
   }, [discountsData]);
   
-  const vouchers = rawData.filter((d: any) => d.code);
+  const vouchers = rawData.filter((d: OfferVoucher) => d.code);
 
   if (isLoading) {
     return (
@@ -176,7 +189,7 @@ export function OffersView() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-10">
-            {vouchers.map((voucher: any) => (
+            {vouchers.map((voucher: OfferVoucher) => (
               <VoucherCard key={voucher.id} voucher={voucher} />
             ))}
           </div>

@@ -8,7 +8,13 @@ export const reviewsApi = {
     return response.data;
   },
   
-  createReview: async (data: any) => {
+  createReview: async (data: { 
+    productId: number; 
+    orderId?: number; 
+    rating: number; 
+    comment: string; 
+    images?: string[] 
+  }) => {
     const response = await api.post("/reviews", data);
     return response.data;
   },

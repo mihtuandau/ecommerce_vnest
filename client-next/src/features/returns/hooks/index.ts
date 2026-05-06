@@ -18,7 +18,7 @@ export function useUpdateReturnStatus() {
       queryClient.invalidateQueries({ queryKey: ["returns"] });
       success("Cập nhật tiến trình thành công");
     },
-    onError: (err: any) => {
+    onError: (err: { response?: { data?: { message?: string } } }) => {
       error(err?.response?.data?.message || "Lỗi khi cập nhật tiến trình");
     },
   });

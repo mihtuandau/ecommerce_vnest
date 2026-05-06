@@ -7,18 +7,18 @@ import { CustomerOrders } from "./CustomerOrders";
 import { CustomerAddresses } from "./CustomerAddresses";
 import { CustomerReviews } from "./CustomerReviews";
 import { UserForm } from "../UserForm";
-import { User } from "@/types/models";
+import { User, Order, Address } from "@/types/models";
 
 interface CustomerTabsProps {
   user: User;
   activeTab: string;
   onTabChange: (value: string) => void;
-  onUpdate: (data: any) => void;
+  onUpdate: (data: Partial<User>) => void;
   isUpdating: boolean;
 }
 
 export function CustomerTabs({ user, activeTab, onTabChange, onUpdate, isUpdating }: CustomerTabsProps) {
-  const customer = user as any;
+  const customer = user as User & { orders?: Order[]; addresses?: Address[] };
   const orders = customer.orders || [];
 
   return (

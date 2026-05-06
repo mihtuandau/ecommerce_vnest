@@ -73,19 +73,20 @@ export class OrderRepository {
       if (discountId) {
         // 1. Check global usage limit
         if (discountUsageLimit) {
-          const currentUsageCount = await tx.order.count({
-            where: {
-              discountId,
-              status: { not: 'CANCELLED' as any }
-            }
+          // Atomic increment with condition: only update if usageCount < limit
+          const updateResult = await tx.discount.updateMany({
+            where: { 
+              id: discountId,
+              usageCount: { lt: discountUsageLimit }
+            },
+            data: { usageCount: { increment: 1 } }
           });
-          console.log(`[OrderRepository] Global usage count for discount ${discountId}: ${currentUsageCount}/${discountUsageLimit}`);
           
-          if (currentUsageCount >= discountUsageLimit) {
+          if (updateResult.count === 0) {
             throw new Error('Mã giảm giá đã hết lượt sử dụng');
           }
-
-          // Atomic increment for cached count
+        } else {
+          // Atomic increment for cached count without limit
           await tx.discount.update({
             where: { id: discountId },
             data: { usageCount: { increment: 1 } }
@@ -140,17 +141,26 @@ export class OrderRepository {
       const order = await tx.order.create({ data: orderData, include: this.baseInclude });
 
       // 3. Record user/guest discount usage if applicable
+      //    DB có partial unique index trên (userId, discountId), (guestEmail, discountId),
+      //    (guestPhone, discountId) → chống race condition. Bắt P2002 để báo lỗi rõ ràng.
       if (discountId) {
         if (userId || orderData.guestEmail || orderData.guestPhone) {
-          await tx.discountUsage.create({
-            data: {
-              userId,
-              guestEmail: orderData.guestEmail,
-              guestPhone: orderData.guestPhone,
-              discountId,
-              orderId: order.id
+          try {
+            await tx.discountUsage.create({
+              data: {
+                userId,
+                guestEmail: orderData.guestEmail,
+                guestPhone: orderData.guestPhone,
+                discountId,
+                orderId: order.id
+              }
+            });
+          } catch (e: any) {
+            if (e?.code === 'P2002') {
+              throw new Error('Bạn đã sử dụng mã giảm giá này rồi');
             }
-          });
+            throw e;
+          }
         }
       }
 
@@ -261,12 +271,21 @@ export class OrderRepository {
       });
 
       if (!order) throw new Error('Order not found');
+      
+      // Prevent double-restoration if already cancelled
+      if (order.status === 'CANCELLED') {
+        return null;
+      }
 
-      // 2. Update order status
-      await tx.order.update({
-        where: { id },
+      // 2. Update order status with concurrency guard: only update if not already changed
+      const updateResult = await tx.order.updateMany({
+        where: { id, status: order.status },
         data: { status: 'CANCELLED' }
       });
+
+      if (updateResult.count === 0) {
+        return null; // Another process (like manual admin cancel) already changed this order!
+      }
 
       // 3. Restore stock (Partial return aware)
       for (const item of order.orderItems) {
@@ -286,19 +305,18 @@ export class OrderRepository {
       }
 
       // 4. Restore discount usage (Atomic decrement + usage record deletion)
-      const discountUsage = await tx.discountUsage.findFirst({
-        where: { orderId: id }
-      });
-      
-      if (discountUsage) {
+      //    Lấy discountId trực tiếp từ Order, độc lập với việc có DiscountUsage record hay không.
+      //    (DiscountUsage chỉ được tạo khi có userId/guestEmail/guestPhone; nếu không có
+      //     thì usageCount vẫn đã được increment nên cần decrement khi hủy.)
+      if (order.discountId) {
         await tx.discount.update({
-          where: { id: discountUsage.discountId },
+          where: { id: order.discountId },
           data: { usageCount: { decrement: 1 } }
         });
-        await tx.discountUsage.delete({
-          where: { id: discountUsage.id }
+        await tx.discountUsage.deleteMany({
+          where: { orderId: id }
         });
-        console.log(`[OrderRepository] Restored discount usage for ${discountUsage.discountId} (Order #${id})`);
+        console.log(`[OrderRepository] Restored discount usage for ${order.discountId} (Order #${id})`);
       }
 
       // 5. Update payment status if provided
@@ -315,20 +333,47 @@ export class OrderRepository {
 
   async applyDiscountTransactional(orderId: number, discount: any, totals: any) {
     return this.prisma.$transaction(async (tx) => {
-      // 1. Re-validate usage limit inside transaction
-      const currentUsageCount = await tx.order.count({
-        where: {
-          discountId: discount.id,
-          status: { not: 'CANCELLED' as any }
-        }
+      // 0. Lấy order hiện tại để check xem đã từng áp discount nào chưa
+      const existingOrder = await tx.order.findUnique({
+        where: { id: orderId },
+        select: { id: true, discountId: true, userId: true, guestEmail: true, guestPhone: true }
       });
+      if (!existingOrder) throw new Error('Order not found');
 
-      if (discount.usageLimit && currentUsageCount >= discount.usageLimit) {
-        throw new Error('Mã giảm giá đã hết lượt sử dụng');
+      // 1. Atomic increment Discount.usageCount với điều kiện < usageLimit
+      //    (Single source of truth: dùng field usageCount thay vì count Order).
+      if (discount.usageLimit) {
+        const updateResult = await tx.discount.updateMany({
+          where: {
+            id: discount.id,
+            usageCount: { lt: discount.usageLimit },
+          },
+          data: { usageCount: { increment: 1 } },
+        });
+        if (updateResult.count === 0) {
+          throw new Error('Mã giảm giá đã hết lượt sử dụng');
+        }
+      } else {
+        await tx.discount.update({
+          where: { id: discount.id },
+          data: { usageCount: { increment: 1 } },
+        });
       }
 
-      // 2. Update order
-      return tx.order.update({
+      // 2. Nếu order trước đó đã có discount khác, decrement usageCount của discount cũ
+      //    và xóa record DiscountUsage cũ để giữ tính nhất quán.
+      if (existingOrder.discountId && existingOrder.discountId !== discount.id) {
+        await tx.discount.update({
+          where: { id: existingOrder.discountId },
+          data: { usageCount: { decrement: 1 } },
+        });
+        await tx.discountUsage.deleteMany({
+          where: { orderId, discountId: existingOrder.discountId },
+        });
+      }
+
+      // 3. Update order
+      const updated = await tx.order.update({
         where: { id: orderId },
         data: {
           subtotal: totals.totalItems,
@@ -338,6 +383,41 @@ export class OrderRepository {
         },
         include: this.baseInclude
       });
+
+      // 3b. Đồng bộ Payment.amount khi order.total thay đổi.
+      //     Tránh trường hợp VNPay IPN reject (RspCode 04 - Invalid amount) do
+      //     payment.amount cũ không khớp order.total mới sau khi áp voucher.
+      //     Chỉ sync khi payment vẫn ở trạng thái PENDING (chưa thanh toán/chưa
+      //     có link VNPay đã được khách trả).
+      await tx.payment.updateMany({
+        where: { orderId, status: 'PENDING' },
+        data: {
+          amount: totals.discountedTotal,
+          // Vô hiệu link VNPay cũ vì amount nhúng trong link không còn đúng;
+          // FE sẽ phải gọi lại endpoint tạo payment để lấy link mới.
+          paymentLink: null,
+        },
+      });
+
+      // 4. Ghi nhận DiscountUsage cho user/guest (chỉ khi chưa có cùng discount này)
+      if (existingOrder.discountId !== discount.id) {
+        const userIdForUsage = existingOrder.userId ?? undefined;
+        const guestEmail = existingOrder.guestEmail ?? undefined;
+        const guestPhone = existingOrder.guestPhone ?? undefined;
+        if (userIdForUsage || guestEmail || guestPhone) {
+          await tx.discountUsage.create({
+            data: {
+              userId: userIdForUsage,
+              guestEmail,
+              guestPhone,
+              discountId: discount.id,
+              orderId,
+            },
+          });
+        }
+      }
+
+      return updated;
     });
   }
 }

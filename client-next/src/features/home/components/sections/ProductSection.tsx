@@ -7,10 +7,12 @@ import { Button } from "@/components/ui/Button";
 import Link from "next/link";
 import { cn } from "@/utils/cn";
 
+import { Product } from "@/types/models";
+
 interface ProductSectionProps {
   title: string;
   subtitle: string;
-  products: any[];
+  products: Product[];
   icon: LucideIcon;
   iconColor?: string;
   iconBg?: string;

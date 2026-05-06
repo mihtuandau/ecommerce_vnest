@@ -40,7 +40,7 @@ export class ProductRepository {
         variants: { 
           where: { isActive: true, deletedAt: null },
           take: 1,
-          select: { stock: true } 
+          select: { id: true, stock: true } 
         }
       }
     });

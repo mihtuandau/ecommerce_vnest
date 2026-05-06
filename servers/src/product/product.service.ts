@@ -171,11 +171,14 @@ export class ProductService implements OnModuleInit {
         { brand: { name: { contains: searchTrimmed, mode: 'insensitive' } } },
       ];
     }
-    if (categoryId) where.categoryId = categoryId;
-    if (brandId) where.brandId = brandId;
-    if (minPrice || maxPrice)
-      where.basePrice = { gte: minPrice, lte: maxPrice };
-    if (minRating) where.averageRating = { gte: minRating };
+    if (categoryId) where.categoryId = Number(categoryId);
+    if (brandId) where.brandId = Number(brandId);
+    if (minPrice || maxPrice) {
+      where.basePrice = {};
+      if (minPrice) where.basePrice.gte = Number(minPrice);
+      if (maxPrice) where.basePrice.lte = Number(maxPrice);
+    }
+    if (minRating) where.averageRating = { gte: Number(minRating) };
     if (status) {
       if (status !== 'all') {
         where.isActive = status === 'active';

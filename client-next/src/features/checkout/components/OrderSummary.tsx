@@ -6,9 +6,19 @@ import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
 import { ShoppingBag, ShieldCheck, CheckCircle2, Truck, Tag, X, Loader2 } from "lucide-react";
 import { cn } from "@/utils/cn";
+import { CartItem } from "@/store/useCartStore";
+
+type CheckoutDiscount = {
+  id?: number;
+  code?: string;
+  discountType?: "PERCENTAGE" | "FIXED";
+  discountValue?: number;
+  maxDiscountAmount?: number;
+  minOrderAmount?: number;
+};
 
 interface OrderSummaryProps {
-  items: any[];
+  items: CartItem[];
   subtotal: number;
   shippingFee: number;
   isSubmitting: boolean;
@@ -19,7 +29,7 @@ interface OrderSummaryProps {
   // Discount props
   discountCode: string;
   setDiscountCode: (code: string) => void;
-  appliedDiscount: any;
+  appliedDiscount: CheckoutDiscount | null;
   discountAmount: number;
   onApplyDiscount: () => void;
   onRemoveDiscount: () => void;
