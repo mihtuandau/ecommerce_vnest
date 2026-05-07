@@ -214,25 +214,22 @@ export const ProductCard = React.memo(function ProductCard({ product, view = "gr
               )}
             </div>
 
-            <Button
+            <button
               onClick={handleAddToCart}
               disabled={isOutOfStock}
               className={cn(
-                "h-8 md:h-11 px-4 md:px-8 rounded-xl font-semibold text-[10px] md:text-xs tracking-wide gap-2 shadow-lg transition-all",
+                "h-10 w-10 rounded-full flex items-center justify-center transition-all hover:scale-110 active:scale-95 shadow-sm",
                 isOutOfStock 
-                  ? "bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed shadow-none" 
-                  : "bg-primary hover:bg-[#0d47a1] text-white shadow-blue-500/10"
+                  ? "bg-slate-50 text-slate-200 border border-slate-100 cursor-not-allowed" 
+                  : "bg-primary text-white"
               )}
             >
               {isOutOfStock ? (
-                "Hết hàng"
+                <span className="text-[10px] font-bold">Hết</span>
               ) : (
-                <>
-                  <ShoppingCart className="h-4 w-4" />
-                  <span className="hidden sm:inline">Thêm vào giỏ</span>
-                </>
+                <ShoppingCart size={18} />
               )}
-            </Button>
+            </button>
           </div>
         </div>
       </Card>

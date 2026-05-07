@@ -226,7 +226,7 @@ export class ProductService implements OnModuleInit {
   async findOne(id: any, full = false) {
     if (full) return this.repo.findByIdOrSlug(id, true);
     
-    const cached = await this.cache.get(`product:${id}`);
+    const cached = await this.cache.get(`product:${id}`) as any;
     if (cached) return cached;
     
     const p = await this.repo.findByIdOrSlug(id, false);
@@ -235,7 +235,7 @@ export class ProductService implements OnModuleInit {
     if (!full && p && !p.isActive) {
       throw new NotFoundException('Sản phẩm hiện không khả dụng');
     }
-
+    
     if (p) await this.cache.set(`product:${id}`, p, 1800 * 1000); // v5+ expects ms
     return p;
   }
@@ -489,9 +489,14 @@ export class ProductService implements OnModuleInit {
   async incrementViewCount(id: number, identifier: string) {
     const key = `viewed:${id}:${identifier}`;
     if (!(await this.cache.get(key))) {
-      await this.repo.incrementViewCount(id);
-      await this.cache.set(key, true, 86400 * 1000);
-      await this.cache.del(`product:${id}`);
+      const p = await this.repo.findById(id);
+      if (p) {
+        await this.repo.incrementViewCount(id);
+        await this.cache.set(key, true, 86400 * 1000);
+        
+        // Xóa toàn bộ cache liên quan (cả id, slug và danh sách)
+        await this.clearProductCaches(id, p.slug || undefined);
+      }
     }
   }
 

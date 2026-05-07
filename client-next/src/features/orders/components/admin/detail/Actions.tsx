@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Truck, CreditCard, Package, CheckCircle2, Loader2, RotateCcw, ArrowRight } from "lucide-react";
+import { Truck, CreditCard, Package, CheckCircle2, Loader2, RotateCcw, ArrowRight, Banknote } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { OrderStatus, PaymentStatus } from "@/types/enums";
 import Link from "next/link";
@@ -39,10 +39,19 @@ export function Actions({
       </div>
       <div className="space-y-4">
          <div className="flex items-start gap-3">
-            <div className="mt-0.5"><CreditCard className="h-4 w-4 text-slate-400" /></div>
+             <div className="mt-0.5">
+               {(order.paymentMethod === "CASH" || order.paymentMethod === "COD") 
+                 ? <Banknote className="h-4 w-4 text-emerald-500" /> 
+                 : <CreditCard className="h-4 w-4 text-blue-500" />
+               }
+             </div>
             <div>
                <p className="text-[10px] font-semibold text-slate-500 tracking-wide">Thanh toán</p>
-               <p className="text-sm font-semibold text-slate-800">{order.paymentMethod === "CASH" ? "Thanh toán COD" : "Chuyển khoản / Online"}</p>
+                               <p className="text-sm font-semibold text-slate-800">
+                   {(order.paymentMethod === "CASH" || order.paymentMethod === "COD") 
+                     ? "Thanh toán khi nhận hàng (COD)" 
+                     : "Chuyển khoản / Online"}
+                </p>
                {orderAny.payment?.status === PaymentStatus.SUCCESS && orderAny.payment?.updatedAt && (
                   <p className="text-[10px] text-emerald-600 font-medium mt-0.5">
                     Đã thanh toán lúc: {dayjs(orderAny.payment.updatedAt).format("HH:mm, DD/MM/YYYY")}

@@ -8,7 +8,7 @@ import { discountsApi } from "@/features/discounts/api";
 import { useToast } from "@/hooks/useToast";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ROUTES } from "@/constants/routes";
-import { Truck, Loader2, ArrowLeft } from "lucide-react";
+import { Truck, Loader2, ArrowLeft, CheckCircle2 } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Button } from "@/components/ui/Button";
@@ -369,7 +369,11 @@ export function CheckoutContainer() {
         guestPhone: form.phone,
       };
 
-      const res = await ordersApi.createOrder(orderData, isGuest);
+      // Ép độ trễ tối thiểu 1.5s để người dùng cảm nhận được quá trình xử lý chuyên nghiệp
+      const [res] = await Promise.all([
+        ordersApi.createOrder(orderData, isGuest),
+        new Promise(resolve => setTimeout(resolve, 1500))
+      ]);
       const paymentLink = res.paymentLink || res.payment?.paymentLink;
 
       if (form.paymentMethod === "VNPAY" && !paymentLink) {
@@ -431,19 +435,25 @@ export function CheckoutContainer() {
     );
   }
 
-  // Màn hình xử lý ngay khi nhấn đặt hàng hoặc sau khi thành công (Đơn giản & Đồng bộ)
+  // Màn hình xử lý ngay khi nhấn đặt hàng hoặc sau khi thành công
   if (isSubmitting || isSuccessRedirecting) {
     return (
       <div className="fixed inset-0 z-[100] bg-white/95 backdrop-blur-sm flex flex-col items-center justify-center animate-in fade-in duration-300">
         <div className="flex flex-col items-center gap-5">
-          <Loader2 className="h-10 w-10 text-primary animate-spin" />
+          {isSuccessRedirecting ? (
+            <div className="bg-green-50 p-4 rounded-full animate-in zoom-in duration-500">
+              <CheckCircle2 className="h-12 w-12 text-green-500" />
+            </div>
+          ) : (
+            <Loader2 className="h-10 w-10 text-primary animate-spin" />
+          )}
           <div className="text-center">
             <h2 className="text-xl font-bold text-slate-900">
               {isSuccessRedirecting ? "Đặt hàng thành công!" : "Đang xử lý đơn hàng"}
             </h2>
             <p className="text-sm text-slate-500 mt-1 font-medium">
               {isSuccessRedirecting 
-                ? "Vui lòng chờ trong giây lát..." 
+                ? "Hệ thống đang chuyển hướng..." 
                 : "Hệ thống đang xác nhận yêu cầu của bạn"}
             </p>
           </div>

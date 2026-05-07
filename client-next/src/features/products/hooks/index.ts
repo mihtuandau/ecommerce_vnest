@@ -18,8 +18,8 @@ export function useProductDetail(slugOrId: string, allVariants = false) {
     queryKey: [...queryKeys.products.detail(String(slugOrId)), allVariants],
     queryFn: () => productsApi.getProduct(slugOrId, allVariants),
     enabled: !!slugOrId,
-    staleTime: 5 * 60 * 1000, // Dữ liệu được coi là mới trong 5 phút
-    gcTime: 10 * 60 * 1000,  // Lưu trong bộ nhớ đệm 10 phút
+    staleTime: 0, // Luôn lấy dữ liệu mới khi vào trang chi tiết
+    gcTime: 5 * 60 * 1000,  // Lưu trong bộ nhớ đệm 5 phút
   });
 }
 
@@ -111,7 +111,12 @@ export function useBrands() {
 }
 
 export function useIncrementView() {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => productsApi.incrementView(id),
+    onSuccess: (_, id) => {
+      // Invalidate both the list and the detail to show the new view count
+      queryClient.invalidateQueries({ queryKey: queryKeys.products.all });
+    },
   });
 }

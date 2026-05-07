@@ -1,4 +1,4 @@
-﻿import { RefreshCw, UploadCloud, Trash2, Image as ImageIcon, Flame, Ticket, Percent, DollarSign, Tag } from 'lucide-react';
+import { RefreshCw, UploadCloud, Trash2, Image as ImageIcon, Flame, Ticket, Percent, DollarSign, Tag } from 'lucide-react';
 
 const Field = ({ label, hint, required, error, children }) => (
   <div className="space-y-1">

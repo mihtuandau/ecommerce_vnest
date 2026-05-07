@@ -66,11 +66,11 @@ export function Header() {
 
   return (
     <>
-      <header className={`w-full relative z-40 transition-all duration-500 border-b ${isScrolled ? "bg-white/95 backdrop-blur-xl shadow-lg border-slate-200/50" : "bg-white border-transparent"}`}>
+      <header className={`w-full relative z-40 transition-all duration-300 border-b ${isScrolled ? "bg-white/95 backdrop-blur-xl shadow-sm border-slate-200/50" : "bg-white border-transparent"}`}>
         {/* ── TOP BAR ── */}
-        <div className="border-b border-slate-100">
+        <div className="border-b border-slate-100 py-3 lg:py-0">
           <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex h-18 items-center gap-4 py-3 lg:py-0">
+            <div className="flex h-18 items-center gap-4">
               {/* LEFT — Logo */}
               <div className="flex shrink-0 items-center gap-2 min-w-[160px]">
                 <button onClick={() => setMobileOpen(true)} className="lg:hidden p-2 -ml-2 rounded-full text-slate-500 hover:bg-slate-100 transition-colors">
@@ -129,11 +129,6 @@ export function Header() {
                             referrerPolicy="no-referrer"
                             className="rounded-full object-cover shadow-sm"
                             sizes="40px"
-                            onError={(e) => {
-                              // Image component doesn't support setting src directly on error like this easily
-                              // but we'll leave it as is or handle it via a state if needed.
-                              // For now, let's assume the avatar is valid.
-                            }}
                           />
                         ) : (
                           <div className="h-full w-full rounded-full bg-primary flex items-center justify-center text-white font-bold text-sm shadow-sm">
@@ -178,7 +173,7 @@ export function Header() {
         </div>
 
         {/* ── BOTTOM BAR: Navigation ── */}
-        <div className="hidden lg:block border-b border-slate-100">
+        <div className="hidden lg:block border-b border-slate-100 bg-white/50 backdrop-blur-sm">
           <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
             <nav className="flex items-center h-12 gap-1">
               {NAV_LINKS.map((link) => {

@@ -28,6 +28,7 @@ export class ProductRepository {
         basePrice: true, 
         originalPrice: true, 
         soldCount: true,
+        viewCount: true,
         averageRating: true, 
         reviewCount: true, 
         isActive: true,

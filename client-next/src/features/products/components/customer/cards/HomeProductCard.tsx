@@ -31,7 +31,7 @@ export const HomeProductCard = React.memo(function HomeProductCard({
   const isOutOfStock = stock <= 0 || !firstVariant;
 
   const isFlashSale = flashSale?.products?.some(
-    (p) => String(p.id) === String(product.id)
+    (p: any) => String(p.id) === String(product.id)
   );
 
   const flashSalePercent = isFlashSale ? flashSale?.percentage || 0 : 0;
@@ -223,16 +223,16 @@ export const HomeProductCard = React.memo(function HomeProductCard({
                 onClick={handleAddToCart}
                 disabled={isOutOfStock}
                 className={cn(
-                  "rounded-full h-7 w-7 md:h-9 md:w-9 shadow-sm border flex items-center justify-center transition-all shrink-0",
+                  "h-10 w-10 rounded-full flex items-center justify-center transition-all hover:scale-110 active:scale-95 shadow-sm",
                   isOutOfStock
-                    ? "bg-slate-50 text-slate-200 border-slate-100 cursor-not-allowed shadow-none"
-                    : "bg-slate-50 text-primary hover:bg-primary hover:text-white border-slate-100"
+                    ? "bg-slate-50 text-slate-200 border border-slate-100 cursor-not-allowed"
+                    : "bg-primary text-white"
                 )}
               >
                 {isOutOfStock ? (
-                  <span className="text-[7px] md:text-[8px] font-bold">Hết</span>
+                  <span className="text-[10px] font-bold">Hết</span>
                 ) : (
-                  <ShoppingCart className="h-3 w-3 md:h-4 md:w-4" />
+                  <ShoppingCart size={18} />
                 )}
               </button>
             </div>
