@@ -44,7 +44,7 @@ export function CartDropdown() {
 
   if (!mounted) {
     return (
-      <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl text-slate-600">
+      <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full text-slate-600">
         <ShoppingCart className="h-6 w-6" />
       </Button>
     );
@@ -63,7 +63,7 @@ export function CartDropdown() {
           variant="ghost" 
           size="icon" 
           className={cn(
-            "relative h-10 w-10 rounded-xl transition-all duration-300",
+            "relative h-10 w-10 rounded-full transition-all duration-300",
             isOpen ? "text-primary bg-primary/5" : "text-slate-600 hover:text-primary hover:bg-primary/5"
           )}
         >
@@ -124,6 +124,20 @@ export function CartDropdown() {
                         <h4 className="text-xs font-semibold text-slate-900 line-clamp-1 group-hover:text-primary transition-colors leading-snug">
                           {item.name}
                         </h4>
+                        {(item.color || item.size) && (
+                          <div className="flex items-center gap-2 mt-0.5">
+                            {item.color && (
+                              <span className="text-[9px] font-medium text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded-md">
+                                Màu: {item.color}
+                              </span>
+                            )}
+                            {item.size && (
+                              <span className="text-[9px] font-medium text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded-md">
+                                Size: {item.size}
+                              </span>
+                            )}
+                          </div>
+                        )}
                         <div className="flex items-center justify-between">
                           <div className="flex flex-col">
                             <p className="text-[11px] font-bold text-primary">{formatCurrency(item.discountedPrice || item.price)}</p>
@@ -207,7 +221,7 @@ export function CartDropdown() {
                 <Link 
                   href={ROUTES.CART} 
                   onClick={() => setIsOpen(false)}
-                  className="w-full rounded-xl h-10 text-slate-500 hover:text-primary hover:bg-primary/5 flex items-center justify-center text-[12px] font-medium transition-all"
+                  className="w-full rounded-full h-10 text-slate-500 hover:text-primary hover:bg-primary/5 flex items-center justify-center text-[12px] font-medium transition-all"
                 >
                   Xem chi tiết giỏ hàng
                 </Link>

@@ -119,6 +119,8 @@ export const ProductCard = React.memo(function ProductCard({ product, view = "gr
       imageUrl: imageUrl,
       slug: product.slug,
       quantity: 1,
+      color: variants?.[0]?.color,
+      size: variants?.[0]?.size,
     });
   };
 
@@ -291,7 +293,7 @@ export const ProductCard = React.memo(function ProductCard({ product, view = "gr
           </div>
 
           <Link href={`/shop/${product.slug}`} className="block group/title">
-            <h3 className="font-semibold text-slate-900 text-[11px] md:text-[13px] leading-tight line-clamp-2 group-hover/title:text-primary transition-colors min-h-[28px] md:min-h-[32px]">
+            <h3 className="font-bold text-slate-900 text-[12px] md:text-[14px] leading-tight line-clamp-2 group-hover/title:text-primary transition-colors min-h-[32px] md:min-h-[40px]">
               {product.name}
             </h3>
           </Link>
@@ -345,7 +347,7 @@ export const ProductCard = React.memo(function ProductCard({ product, view = "gr
             size="icon"
             disabled={isOutOfStock}
             className={cn(
-              "h-8 w-8 md:h-9 md:w-9 rounded-xl transition-all active:scale-95 shadow-lg",
+              "h-10 w-10 rounded-full transition-all active:scale-95 shadow-md hover:scale-110",
               isOutOfStock
                 ? "bg-slate-100 text-slate-300 border-slate-200 cursor-not-allowed shadow-none"
                 : "bg-primary hover:bg-[#0d47a1] text-white shadow-blue-500/10"

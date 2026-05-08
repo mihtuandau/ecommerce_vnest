@@ -514,6 +514,91 @@ export class MailService {
     }
   }
 
+  async sendOrderDelivered(email: string, orderCode: string, customerName: string) {
+    const content = `
+      <p class="section-label">Thông báo giao hàng</p>
+      <h1 style="color: #10b981;">Giao hàng thành công</h1>
+      <p class="subtitle">Xin chào ${customerName}, đơn hàng <strong>${orderCode}</strong> đã được giao thành công đến bạn.</p>
+
+      <div class="order-code-block" style="background: #ecfdf5; border-color: #a7f3d0;">
+        <div class="order-code-label">Mã đơn hàng</div>
+        <div class="order-code-value" style="color: #065f46;">${orderCode}</div>
+        <span class="order-badge" style="background:#d1fae5; border-color:#6ee7b7; color:#047857;">Hoàn tất</span>
+      </div>
+
+      <p>Cảm ơn bạn đã tin tưởng và mua sắm tại cửa hàng của chúng tôi. Hy vọng bạn hài lòng với sản phẩm đã nhận được!</p>
+
+      <div class="divider"></div>
+
+      <div class="btn-center">
+        <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/account/orders" class="btn">
+          Đánh giá sản phẩm
+        </a>
+      </div>
+    `;
+
+    try {
+      await this.mailQueue.add('order-delivered', {
+        type: 'order-delivered',
+        data: {
+          email,
+          orderCode,
+          customerName,
+          html: this.baseTemplate(content),
+        },
+      });
+      this.logger.log(`Queued order delivered email for ${email}`);
+    } catch (error) {
+      this.logger.error(`Failed to queue order delivered email for ${email}:`, error);
+    }
+  }
+
+  async sendOrderCancelled(email: string, orderCode: string, customerName: string, reason?: string) {
+    const content = `
+      <p class="section-label">Thông báo đơn hàng</p>
+      <h1 style="color: #ef4444;">Đơn hàng đã bị hủy</h1>
+      <p class="subtitle">Xin chào ${customerName}, chúng tôi rất tiếc phải thông báo đơn hàng <strong>${orderCode}</strong> của bạn đã bị hủy.</p>
+
+      <div class="order-code-block" style="background: #fef2f2; border-color: #fecaca;">
+        <div class="order-code-label">Mã đơn hàng</div>
+        <div class="order-code-value" style="color: #991b1b;">${orderCode}</div>
+        <span class="order-badge" style="background:#fee2e2; border-color:#fca5a5; color:#b91c1c;">Đã hủy</span>
+      </div>
+
+      ${reason ? `
+      <div class="notice warning">
+        <div class="notice-title">Lý do hủy</div>
+        <p>${reason}</p>
+      </div>
+      ` : ''}
+
+      <p>Nếu có bất kỳ thắc mắc nào hoặc bạn không thực hiện yêu cầu này, vui lòng liên hệ bộ phận hỗ trợ của chúng tôi ngay lập tức.</p>
+
+      <div class="divider"></div>
+
+      <div class="btn-center">
+        <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/products" class="btn">
+          Tiếp tục mua sắm
+        </a>
+      </div>
+    `;
+
+    try {
+      await this.mailQueue.add('order-cancelled', {
+        type: 'order-cancelled',
+        data: {
+          email,
+          orderCode,
+          customerName,
+          html: this.baseTemplate(content),
+        },
+      });
+      this.logger.log(`Queued order cancelled email for ${email}`);
+    } catch (error) {
+      this.logger.error(`Failed to queue order cancelled email for ${email}:`, error);
+    }
+  }
+
   private formatCurrency(amount: number): string {
     return new Intl.NumberFormat('vi-VN', {
       style: 'currency',

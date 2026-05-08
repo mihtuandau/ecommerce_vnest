@@ -8,6 +8,7 @@ import { UpdateOrderDto } from './dto/update-order.dto';
 import { ApplyDiscountDto } from './dto/apply-discount.dto';
 import * as OrderHelper from './order.helper';
 import { GHNService } from '../ghn/ghn.service';
+import { MailService } from '../mail/mail.service';
 import dayjs from 'dayjs';
 
 @Injectable()
@@ -19,6 +20,7 @@ export class OrderManagement {
     private cacheService: OrderCache,
     private paymentService: PaymentService,
     private ghnService: GHNService,
+    private mailService: MailService,
   ) {}
 
   /**
@@ -101,6 +103,17 @@ export class OrderManagement {
         
         if (dto.status === 'CANCELLED') {
           await this.repository.restoreDiscountUsage(id);
+          
+          // Gửi email thông báo hủy đơn
+          const email = order.guestEmail || order.user?.email;
+          if (email) {
+            this.mailService.sendOrderCancelled(
+              email, 
+              order.orderCode, 
+              order.fullName || order.user?.name || "Khách hàng",
+              (dto as any).cancelReason || "Đơn hàng bị hủy bởi hệ thống hoặc quản trị viên"
+            ).catch(e => this.logger.error("Failed to send cancellation email:", e));
+          }
         }
 
         // Tự động hoàn tiền nếu admin đánh dấu RETURNED cho đơn hàng đã thanh toán Online
@@ -338,6 +351,17 @@ export class OrderManagement {
           } catch (error) {
             this.logger.error(`Failed to increment soldCount for product ${item.variant.productId}:`, error);
           }
+        }
+      }
+      // 3. Send email notification
+      if (oldOrder.status !== 'DELIVERED') {
+        const email = oldOrder.guestEmail || oldOrder.user?.email;
+        if (email) {
+          this.mailService.sendOrderDelivered(
+            email, 
+            oldOrder.orderCode, 
+            oldOrder.fullName || oldOrder.user?.name || "Khách hàng"
+          ).catch(e => this.logger.error("Failed to send delivery success email:", e));
         }
       }
     } else {

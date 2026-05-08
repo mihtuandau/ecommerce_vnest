@@ -132,19 +132,17 @@ export function HeaderSearch() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onFocus={() => searchQuery.trim().length >= 2 && setShowLiveSearch(true)}
-          className={`w-full pl-12 pr-24 h-12 rounded-2xl bg-white border border-slate-100 focus-visible:bg-white focus-visible:border-primary/40 focus-visible:ring-4 focus-visible:ring-primary/10 text-sm transition-all shadow-sm font-normal ${isListening ? "placeholder:text-rose-500" : ""}`}
+          className={`w-full pl-12 pr-24 h-12 rounded-full bg-white border border-slate-100 focus-visible:bg-white focus-visible:border-primary/40 focus-visible:ring-4 focus-visible:ring-primary/10 text-sm transition-all shadow-sm font-normal ${isListening ? "placeholder:text-rose-500" : ""}`}
         />
         
         <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-3 z-10">
           <button
             type="button"
             onClick={() => {
-              // Trigger AI Chat (we'll need a way to communicate with ChatWidget)
-              // For now, we can use a custom event or just let the user open it
               const event = new CustomEvent('open-ai-chat');
               window.dispatchEvent(event);
             }}
-            className="p-1.5 text-slate-400 hover:text-primary transition-all flex items-center gap-1.5 hover:bg-primary/5 rounded-lg group/ai"
+            className="p-1.5 px-2.5 text-slate-400 hover:text-primary transition-all flex items-center gap-1.5 hover:bg-primary/5 rounded-full group/ai"
             title="hỏi trợ lý ai"
           >
             <Sparkles className="h-4 w-4 text-primary/60 group-hover/ai:text-primary transition-colors" />

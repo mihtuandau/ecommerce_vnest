@@ -101,7 +101,7 @@ export function Header() {
 
               {/* RIGHT — Actions */}
               <div className="flex shrink-0 items-center justify-end gap-2 sm:gap-3 ml-auto">
-                <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl text-slate-600 hover:text-primary hover:bg-primary/5 transition-all relative" asChild>
+                <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full text-slate-600 hover:text-primary hover:bg-primary/5 transition-all relative" asChild>
                   <Link href={ROUTES.WISHLIST}>
                     <Heart className="h-6 w-6" />
                     {mounted && wishlistItems.length > 0 && (
@@ -192,7 +192,7 @@ export function Header() {
                   <Link 
                     key={link.label} 
                     href={link.href} 
-                    className={`flex items-center gap-2 px-5 py-2 text-sm transition-all duration-300 rounded-xl
+                    className={`flex items-center gap-2 px-5 py-2 text-sm transition-all duration-300 rounded-full
                       ${isActive 
                         ? (isColored ? `${link.activeColor} ${link.activeBg}` : "text-primary font-bold bg-primary/5") 
                         : (isColored ? `hover:${link.activeBg} ${link.activeColor}` : "text-slate-500 hover:text-primary hover:bg-slate-50 font-semibold")}`}
@@ -208,7 +208,7 @@ export function Header() {
               <div className="relative" ref={catRef}>
                 <button 
                   onClick={() => setCatOpen(!catOpen)} 
-                  className={`flex items-center gap-2 px-5 py-2 text-sm transition-all duration-300 rounded-xl
+                  className={`flex items-center gap-2 px-5 py-2 text-sm transition-all duration-300 rounded-full
                     ${catOpen ? "text-primary font-bold bg-primary/5" : "text-slate-500 hover:text-primary hover:bg-slate-50 font-semibold"}`}
                 >
                   Danh mục
