@@ -122,7 +122,7 @@ export const useCartStore = create<CartStore>()(
       selectedCount: () => get().items.filter((i) => i.selected).length,
     }),
     {
-      name: "vnest-cart-storage",
+      name: "minhtuan-cart-storage",
       storage: createJSONStorage(() => localStorage),
     }
   )

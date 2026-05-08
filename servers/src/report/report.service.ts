@@ -248,7 +248,7 @@ export class ReportService {
     );
 
     const workbook = new ExcelJS.Workbook();
-    workbook.creator = 'Vnest E-Commerce';
+    workbook.creator = 'Minh Tuấn Shop';
 
     // Summary Sheet
     const summarySheet = workbook.addWorksheet('Tổng Quan');

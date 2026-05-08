@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Facebook, Instagram, Twitter, Mail, Phone, MapPin } from "lucide-react";
+import { Facebook, Instagram, Twitter, Mail, Phone, MapPin, Send } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 
 export function Footer() {
@@ -52,9 +52,11 @@ export function Footer() {
             <h3 className="text-sm font-bold text-white mb-6">Hỗ trợ</h3>
             <ul className="space-y-4">
               <li><Link href="/about" className="text-[13px] font-normal text-white/80 hover:text-white transition-colors">Về Minh Tuấn Shop</Link></li>
+              <li><Link href="/support/faq" className="text-[13px] font-normal text-white/80 hover:text-white transition-colors">Câu hỏi thường gặp (FAQ)</Link></li>
               <li><Link href="/policy/shipping" className="text-[13px] font-normal text-white/80 hover:text-white transition-colors">Chính sách giao hàng</Link></li>
               <li><Link href="/policy/return" className="text-[13px] font-normal text-white/80 hover:text-white transition-colors">Đổi trả & Hoàn tiền</Link></li>
               <li><Link href="/policy/privacy" className="text-[13px] font-normal text-white/80 hover:text-white transition-colors">Bảo mật thông tin</Link></li>
+              <li><Link href="/policy/terms" className="text-[13px] font-normal text-white/80 hover:text-white transition-colors">Điều khoản dịch vụ</Link></li>
             </ul>
           </div>
 
@@ -71,7 +73,12 @@ export function Footer() {
               </li>
               <li className="flex gap-3 items-center">
                 <Mail className="h-4 w-4 shrink-0 text-white/60" />
-                <span className="text-[13px] font-normal text-white/90">support@minhtuanshop.com</span>
+                <span className="text-[13px] font-normal text-white/90">support@minhtuan.vn</span>
+              </li>
+              <li className="pt-2">
+                <Link href="/contact" className="inline-flex items-center gap-2 px-5 py-2 bg-white/10 hover:bg-white hover:text-primary rounded-full text-xs font-bold transition-all border border-white/10">
+                  Gửi lời nhắn <Send className="h-3 w-3" />
+                </Link>
               </li>
             </ul>
           </div>

@@ -78,7 +78,7 @@ export class UpdateProductDto {
   status?: string;
 
   @ApiProperty({
-    example: 'Áo thun nam - Vnest',
+    example: 'Áo thun nam - Minh Tuấn Shop',
     description: 'SEO meta title (tùy chọn)',
     required: false,
   })

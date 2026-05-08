@@ -22,7 +22,7 @@ export class MailProcessor extends WorkerHost {
         case 'verification':
           await this.mailerService.sendMail({
             to: data.email,
-            subject: 'Mã xác thực tài khoản E-Co Vnest',
+            subject: 'Mã xác thực tài khoản Minh Tuấn Shop',
             html: `
               <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #eee; padding: 20px;">
                 <h2 style="color: #333;">Chào ${data.name || 'bạn'},</h2>
@@ -41,7 +41,7 @@ export class MailProcessor extends WorkerHost {
         case 'reset-password':
           await this.mailerService.sendMail({
             to: data.email,
-            subject: 'Mã đặt lại mật khẩu E-Co Vnest',
+            subject: 'Mã đặt lại mật khẩu Minh Tuấn Shop',
             html: `
               <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #eee; padding: 20px;">
                 <h2 style="color: #333;">Yêu cầu đặt lại mật khẩu</h2>

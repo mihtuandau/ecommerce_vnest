@@ -142,8 +142,8 @@ export function ProductActions({
         {colors.length > 0 && (
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-bold text-slate-400 tracking-widest">Màu sắc</span>
-              {selectedColor && <span className="text-[10px] font-bold text-primary">{selectedColor}</span>}
+              <span className="text-xs font-semibold text-slate-500">Màu sắc</span>
+              {selectedColor && <span className="text-xs font-bold text-primary">{selectedColor}</span>}
             </div>
             <div className="flex flex-wrap gap-2.5">
               {colors.map((color) => (
@@ -151,7 +151,7 @@ export function ProductActions({
                   key={color}
                   onClick={() => setSelectedColor(color === selectedColor ? null : color)}
                   className={cn(
-                    "px-5 py-2.5 rounded-full text-xs font-bold transition-all border-2",
+                    "px-5 py-2.5 rounded-full text-xs font-medium transition-all border-2",
                     selectedColor === color 
                       ? "bg-primary border-primary text-white shadow-lg shadow-primary/20" 
                       : "bg-slate-50 border-slate-100 text-slate-500 hover:border-slate-200 hover:bg-white"
@@ -168,8 +168,8 @@ export function ProductActions({
         {sizes.length > 0 && (
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-bold text-slate-400 tracking-widest">Kích thước</span>
-              {selectedSize && <span className="text-[10px] font-bold text-primary">{selectedSize}</span>}
+              <span className="text-xs font-semibold text-slate-500">Kích thước</span>
+              {selectedSize && <span className="text-xs font-bold text-primary">{selectedSize}</span>}
             </div>
             <div className="flex flex-wrap gap-2.5">
               {sizes.map((size) => (
@@ -177,7 +177,7 @@ export function ProductActions({
                   key={size}
                   onClick={() => setSelectedSize(size === selectedSize ? null : size)}
                   className={cn(
-                    "min-w-[3.5rem] px-5 py-2.5 rounded-full text-xs font-bold transition-all border-2",
+                    "min-w-[3.5rem] px-5 py-2.5 rounded-full text-xs font-medium transition-all border-2",
                     selectedSize === size 
                       ? "bg-primary border-primary text-white shadow-lg shadow-primary/20" 
                       : "bg-slate-50 border-slate-100 text-slate-500 hover:border-slate-200 hover:bg-white"
@@ -194,14 +194,14 @@ export function ProductActions({
       {/* ── Availability ── */}
       <div className="flex items-center gap-2 py-1">
         <div className={cn("h-1.5 w-1.5 rounded-full", currentStock > 0 ? "bg-green-500" : "bg-rose-500")} />
-        <span className={cn("text-[11px] font-bold tracking-tight", currentStock > 0 ? "text-green-600" : "text-rose-600")}>
+        <span className={cn("text-xs font-semibold", currentStock > 0 ? "text-green-600" : "text-rose-600")}>
           {currentStock > 0 ? `Còn hàng (${currentStock} sản phẩm)` : "Hết hàng"}
         </span>
       </div>
 
       {/* ── Quantity ── */}
       <div className="flex items-center gap-6 py-1">
-        <span className="text-[10px] font-bold text-slate-400 tracking-widest w-16">Số lượng</span>
+        <span className="text-xs font-semibold text-slate-500 w-16">Số lượng</span>
         <div className="flex items-center bg-slate-50 rounded-full p-1 border border-slate-100">
           <button
             onClick={() => setQuantity(Math.max(1, quantity - 1))}
@@ -257,7 +257,7 @@ export function ProductActions({
           "Đổi trả 30 ngày",
           "Đóng gói cẩn thận"
         ].map((info, i) => (
-          <div key={i} className="text-[10px] font-bold text-slate-400 tracking-tight flex items-center gap-2">
+          <div key={i} className="text-[11px] font-medium text-slate-400 flex items-center gap-2">
             <div className="h-1 w-1 rounded-full bg-slate-200" />
             {info}
           </div>

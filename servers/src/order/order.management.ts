@@ -109,8 +109,8 @@ export class OrderManagement {
           if (email) {
             this.mailService.sendOrderCancelled(
               email, 
-              order.orderCode, 
-              order.fullName || order.user?.name || "Khách hàng",
+              order.orderCode || '', 
+              order.address?.fullName || (order.shippingSnapshot as any)?.fullName || order.user?.name || "Khách hàng",
               (dto as any).cancelReason || "Đơn hàng bị hủy bởi hệ thống hoặc quản trị viên"
             ).catch(e => this.logger.error("Failed to send cancellation email:", e));
           }
@@ -359,8 +359,8 @@ export class OrderManagement {
         if (email) {
           this.mailService.sendOrderDelivered(
             email, 
-            oldOrder.orderCode, 
-            oldOrder.fullName || oldOrder.user?.name || "Khách hàng"
+            oldOrder.orderCode || '', 
+            oldOrder.address?.fullName || (oldOrder.shippingSnapshot as any)?.fullName || oldOrder.user?.name || "Khách hàng"
           ).catch(e => this.logger.error("Failed to send delivery success email:", e));
         }
       }
@@ -423,7 +423,7 @@ export class OrderManagement {
 
     const ghnData = {
       payment_type_id: paymentTypeId,
-      note: "Hàng TMĐT E-Co Vnest",
+      note: "Hàng TMĐT Minh Tuấn Shop",
       required_note: "KHONGCHOXEMHANG",
       client_order_code: order.orderCode,
       to_name: address.fullName || "Khách hàng",

@@ -42,7 +42,7 @@ export const useAuthStore = create<AuthStore>()(
         } finally {
           get().clearAuth();
           // Optional: clear entire storage if needed
-          localStorage.removeItem("vnest-auth");
+          localStorage.removeItem("minhtuan-auth");
           window.location.href = "/login";
         }
       },
@@ -51,7 +51,7 @@ export const useAuthStore = create<AuthStore>()(
       },
     }),
     {
-      name: "vnest-auth",
+      name: "minhtuan-auth",
       // Only persist user profile for UI — tokens are managed via httpOnly cookies set by the backend
       partialize: (state) => ({
         // Only store UI-needed fields — strip internal backend fields

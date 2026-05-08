@@ -13,7 +13,7 @@ export class OrderInvoice {
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader(
       'Content-Disposition',
-      `attachment; filename=HoaDon_Vnest_${order.orderCode}.pdf`,
+      `attachment; filename=HoaDon_MinhTuanShop_${order.orderCode}.pdf`,
     );
 
     doc.pipe(res);
@@ -180,7 +180,7 @@ export class OrderInvoice {
     // Footer
     const footerY = 750;
     doc.font(regFont).fontSize(10).text('Cảm ơn quý khách đã mua sắm tại Minh Tuấn Shop!', 50, footerY, { align: 'center', width: 500 });
-    doc.fontSize(8).text('Hóa đơn điện tử được tạo tự động bởi hệ thống E-Co Vnest.', 50, footerY + 15, { align: 'center', width: 500 });
+    doc.fontSize(8).text('Hóa đơn điện tử được tạo tự động bởi hệ thống Minh Tuấn Shop.', 50, footerY + 15, { align: 'center', width: 500 });
 
     doc.end();
   }

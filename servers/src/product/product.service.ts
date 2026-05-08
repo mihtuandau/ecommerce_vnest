@@ -51,9 +51,13 @@ export class ProductService implements OnModuleInit {
         let cursor = '0';
         const pattern = '*products*';
         do {
-          const reply = await this.redisClient.scan(cursor, 'MATCH', pattern, 'COUNT', 100);
-          cursor = typeof reply === 'string' ? '0' : reply[0];
-          const keys = typeof reply === 'string' ? [] : reply[1];
+          const reply = await this.redisClient.scan(cursor, {
+            MATCH: pattern,
+            COUNT: 100,
+          });
+          
+          cursor = reply.cursor;
+          const keys = reply.keys;
           
           if (keys && keys.length > 0) {
             await this.redisClient.del(keys);
