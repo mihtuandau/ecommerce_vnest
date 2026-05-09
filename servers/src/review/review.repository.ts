@@ -199,6 +199,24 @@ export class ReviewRepository {
   async count(where: Prisma.ReviewWhereInput): Promise<number> {
     return this.prisma.review.count({ where });
   }
+
+  async findCommentsByProduct(productId: number) {
+    return this.prisma.review.findMany({
+      where: { 
+        productId, 
+        AND: [
+          { comment: { not: null } },
+          { comment: { not: '' } }
+        ]
+      },
+      select: { 
+        comment: true, 
+        rating: true 
+      },
+      take: 50,
+      orderBy: { createdAt: 'desc' },
+    });
+  }
 }
 
 

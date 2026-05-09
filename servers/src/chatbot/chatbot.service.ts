@@ -293,4 +293,39 @@ ai trả lời:
   getAIStatus() {
     return { available: this.aiAvailable, provider: 'Gemini 3.1 Flash Lite' };
   }
+
+  async generateReviewSummary(reviews: { comment: string, rating: number }[]): Promise<string> {
+    if (!this.aiAvailable) {
+      await this.initializeGemini();
+      if (!this.aiAvailable) return 'AI hiện không khả dụng để phân tích đánh giá.';
+    }
+
+    const reviewText = reviews.map(r => `- [${r.rating} sao] ${r.comment}`).join('\n');
+    const prompt = `Bạn là một chuyên gia phân tích dữ liệu mua sắm. 
+Dưới đây là danh sách các đánh giá thực tế từ khách hàng cho một sản phẩm:
+${reviewText}
+
+Hãy tóm tắt các đánh giá này một cách khách quan, ngắn gọn và trình bày theo cấu trúc JSON sau:
+{
+  "pros": ["ưu điểm 1", "ưu điểm 2", ...],
+  "cons": ["nhược điểm 1", "nhược điểm 2", ...],
+  "verdict": "Lời khuyên tổng kết ngắn gọn (khoảng 20-30 từ)"
+}
+
+Yêu cầu:
+1. Chỉ trả về JSON, không thêm văn bản thừa.
+2. Nếu không đủ dữ liệu đánh giá, hãy trả về JSON với các mảng rỗng và verdict "Chưa đủ dữ liệu để đánh giá".
+3. Ngôn ngữ: Tiếng Việt.`;
+
+    try {
+      const result = await this.model.generateContent(prompt);
+      let text = result.response.text();
+      // Clean up potential markdown code blocks
+      text = text.replace(/```json/g, '').replace(/```/g, '').trim();
+      return text;
+    } catch (error) {
+      this.logger.error('Review Summary AI Error:', error.message);
+      return JSON.stringify({ pros: [], cons: [], verdict: 'Lỗi khi phân tích dữ liệu AI.' });
+    }
+  }
 }

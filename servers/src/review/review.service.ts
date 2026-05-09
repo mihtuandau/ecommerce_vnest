@@ -11,6 +11,7 @@
   import { ReviewRepository } from './review.repository';
   import { CreateReviewDto, UpdateReviewDto } from './dto/review.dto';
   import { createClient } from 'redis';
+  import { ChatbotService } from '../chatbot/chatbot.service';
 
   @Injectable()
   export class ReviewService implements OnModuleInit {
@@ -20,6 +21,7 @@
     constructor(
       private repository: ReviewRepository,
       @Inject(CACHE_MANAGER) private cacheManager: Cache,
+      private chatbotService: ChatbotService,
     ) {}
 
     async onModuleInit() {
@@ -48,24 +50,30 @@
         await this.cacheManager.del(`product:${productId}`);
 
         // Xóa tất cả cache danh sách sản phẩm (wildcard) bằng SCAN để không làm chậm server
-        if (this.redisClient) {
-          let cursor = '0';
+        if (this.redisClient && typeof this.redisClient.scan === 'function') {
+          let cursor = 0;
           const pattern = '*products*';
           do {
-            const reply = await (this.redisClient as any).scan(cursor, 'MATCH', pattern, 'COUNT', 100);
-            cursor = typeof reply === 'string' ? '0' : reply[0];
-            const keys = typeof reply === 'string' ? [] : reply[1];
+            // Cú pháp mới cho node-redis v4/v5
+            const reply = await this.redisClient.scan(cursor, {
+              MATCH: pattern,
+              COUNT: 100,
+            });
+            
+            cursor = reply.cursor;
+            const keys = reply.keys;
             
             if (keys && keys.length > 0) {
               await this.redisClient.del(keys);
             }
-          } while (cursor !== '0');
+          } while (cursor !== 0);
           this.logger.debug(`Đã hoàn tất dọn dẹp cache wildcard cho products`);
         } else {
+          // Fallback nếu không có redisClient trực tiếp
           await this.cacheManager.del('products:all');
         }
       } catch (err) {
-        this.logger.warn('Lỗi khi xóa product list caches:', err.message);
+        this.logger.warn(`Lỗi khi xóa product list caches: ${err.message}`);
       }
     }
 
@@ -336,6 +344,38 @@
         page,
         totalPages: Math.ceil(total / limit),
       };
+    }
+
+    async getAiReviewSummary(productId: number) {
+      const cacheKey = `ai_summary:${productId}`;
+      
+      try {
+        const cached = await this.cacheManager.get(cacheKey);
+        if (cached) return JSON.parse(cached as string);
+      } catch (e) {
+        this.logger.warn(`Cache AI summary fail: ${e.message}`);
+      }
+
+      const reviews = await this.repository.findCommentsByProduct(productId);
+      
+      if (reviews.length < 3) {
+        return {
+          pros: [],
+          cons: [],
+          verdict: 'Chưa đủ dữ liệu (tối thiểu 3 đánh giá) để AI thực hiện phân tích tổng quan.'
+        };
+      }
+
+      const summaryStr = await this.chatbotService.generateReviewSummary(reviews as { comment: string, rating: number }[]);
+      
+      try {
+        // Cache for 24 hours
+        await this.cacheManager.set(cacheKey, summaryStr, 24 * 3600 * 1000);
+      } catch (e) {
+        this.logger.warn(`Failed to set AI summary cache: ${e.message}`);
+      }
+
+      return JSON.parse(summaryStr);
     }
   }
 

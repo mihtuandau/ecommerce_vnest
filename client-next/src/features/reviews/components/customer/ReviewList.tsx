@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { Star, X, MessageSquarePlus } from "lucide-react";
 import { cn } from "@/utils/cn";
 import Link from "next/link";
@@ -103,6 +104,8 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { Button } from "@/components/ui/Button";
 import { ReviewModal } from "./ReviewModal";
 
+import { ReviewAISummary } from "./ReviewAISummary";
+
 export function ReviewList({ productId, product }: ReviewListProps) {
   const { data: reviewsData, isLoading } = useProductReviews(productId);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
@@ -144,6 +147,9 @@ export function ReviewList({ productId, product }: ReviewListProps) {
   return (
     <div className="animate-in fade-in duration-700">
       <RatingSummary reviews={reviews} product={product} />
+      
+      {/* AI Review Summary Section */}
+      <ReviewAISummary productId={productId} />
 
       <div className="flex items-center justify-between mb-8">
         <div className="space-y-1">
@@ -206,10 +212,12 @@ export function ReviewList({ productId, product }: ReviewListProps) {
                     {review.images && review.images.length > 0 && (
                       <div className="flex gap-2 pt-2">
                         {review.images.map((img, idx: number) => (
-                          <img 
+                          <Image 
                             key={(img as any).id || idx} 
                             src={typeof img === 'string' ? img : img.url} 
                             alt="Review" 
+                            width={80}
+                            height={80}
                             className="h-20 w-20 object-cover rounded-xl border border-slate-200 cursor-pointer hover:opacity-90 transition-opacity shadow-sm" 
                             onClick={() => setPreviewImage(typeof img === 'string' ? img : img.url)}
                           />
@@ -234,11 +242,15 @@ export function ReviewList({ productId, product }: ReviewListProps) {
             <X className="h-6 w-6" />
           </DialogClose>
           {previewImage && (
-            <img 
-              src={previewImage} 
-              alt="Review preview" 
-              className="max-w-full max-h-[85vh] object-contain rounded-none shadow-md"
-            />
+            <div className="relative w-full h-[85vh]">
+              <Image 
+                src={previewImage} 
+                alt="Review preview" 
+                fill
+                className="object-contain rounded-none shadow-md" 
+                unoptimized
+              />
+            </div>
           )}
         </DialogContent>
       </Dialog>
