@@ -80,8 +80,8 @@ export function DiscountForm({ initialData, onSubmit, isLoading }: DiscountFormP
         image: initialData.image || "",
         isFlashSale: !!initialData.isFlashSale,
         isActive: initialData.isActive ?? true,
-        type: initialData.type || "PERCENTAGE",
-        value: initialData.value || 0,
+        type: initialData.percentage ? "PERCENTAGE" : initialData.fixedAmount ? "FIXED" : (initialData.type || "PERCENTAGE"),
+        value: initialData.percentage || initialData.fixedAmount || initialData.value || 0,
         minOrderAmount: initialData.minOrderValue || initialData.minOrderAmount || 0,
         maxDiscountAmount:
           initialData.maxDiscount || initialData.maxDiscountAmount || 0,

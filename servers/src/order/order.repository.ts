@@ -41,20 +41,63 @@ export class OrderRepository {
 
   async findAutoApplyPricesForVariants(vIds: number[]) {
     const now = new Date();
-    const variants = await this.prisma.productVariant.findMany({ where: { id: { in: vIds } }, include: { product: { select: { categoryId: true } } } });
-    const discounts = await this.prisma.discount.findMany({
-      where: { isActive: true, startDate: { lte: now }, AND: [{ OR: [{ endDate: null }, { endDate: { gte: now } }] }, { OR: [{ code: "" }, { isFlashSale: true }] }] },
-      include: { applicableToProducts: true, applicableToCategories: true }, orderBy: [{ percentage: 'desc' }, { fixedAmount: 'desc' }]
+    const variants = await this.prisma.productVariant.findMany({
+      where: { id: { in: vIds } },
+      include: { product: { select: { categoryId: true } } },
     });
+    const discounts = await this.prisma.discount.findMany({
+      where: {
+        isActive: true,
+        startDate: { lte: now },
+        AND: [
+          { OR: [{ endDate: null }, { endDate: { gte: now } }] },
+          { OR: [{ code: "" }, { isFlashSale: true }] },
+        ],
+      },
+      include: { applicableToProducts: true, applicableToCategories: true },
+      orderBy: [{ percentage: "desc" }, { fixedAmount: "desc" }],
+    });
+
     const result = new Map<number, number>();
+    let appliedDiscountId: number | undefined;
+    let maxTotalSaving = 0;
+    const discountSavings = new Map<number, number>();
+
     for (const v of variants) {
-      const best = discounts.find(d => !d.applicableToProducts.length && !d.applicableToCategories.length || d.applicableToProducts.some(ap => ap.productId === v.productId) || d.applicableToCategories.some(ac => ac.categoryId === v.product.categoryId));
+      const best = discounts.find(
+        (d) =>
+          (!d.applicableToProducts.length && !d.applicableToCategories.length) ||
+          d.applicableToProducts.some((ap) => ap.productId === v.productId) ||
+          d.applicableToCategories.some((ac) => ac.categoryId === v.product.categoryId)
+      );
+
       if (best) {
-        const p = best.percentage ? Math.round(v.price * (1 - best.percentage / 100)) : Math.max(0, v.price - (best.fixedAmount || 0));
-        if (p < v.price) result.set(v.id, p);
+        const discountedPrice = best.percentage
+          ? Math.round(v.price * (1 - best.percentage / 100))
+          : Math.max(0, v.price - (best.fixedAmount || 0));
+
+        if (discountedPrice < v.price) {
+          result.set(v.id, discountedPrice);
+          const saving = v.price - discountedPrice;
+          discountSavings.set(best.id, (discountSavings.get(best.id) || 0) + saving);
+        }
       }
     }
-    return result;
+
+    // Find the discount that provided the most total savings
+    let topDiscountId: number | undefined;
+    let topSaving = -1;
+    for (const [id, s] of discountSavings.entries()) {
+      if (s > topSaving) {
+        topSaving = s;
+        topDiscountId = id;
+      }
+    }
+
+    return {
+      priceMap: result,
+      discountId: topDiscountId,
+    };
   }
 
   async findDiscountByCode(code: string) { return this.prisma.discount.findUnique({ where: { code: code.toUpperCase() } }); }

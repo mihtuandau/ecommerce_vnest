@@ -144,11 +144,11 @@ export function CartDropdown() {
                           <div className="flex flex-col">
                             <p className="text-[11px] font-bold text-primary">{formatCurrency(item.discountedPrice || item.price)}</p>
                             {item.discountedPrice && item.discountedPrice < item.price ? (
-                              <span className="text-[9px] text-slate-600 line-through font-normal">
+                              <span className="text-[9px] text-slate-600 line-through font-normal tabular-nums">
                                 {formatCurrency(item.price)}
                               </span>
-                            ) : item.originalPrice && item.originalPrice > item.price ? (
-                              <span className="text-[9px] text-slate-600 line-through font-normal">
+                            ) : (item.originalPrice && item.originalPrice > (item.discountedPrice || item.price)) ? (
+                              <span className="text-[9px] text-slate-600 line-through font-normal tabular-nums">
                                 {formatCurrency(item.originalPrice)}
                               </span>
                             ) : null}

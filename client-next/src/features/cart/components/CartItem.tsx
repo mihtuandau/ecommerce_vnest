@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Trash2, Plus, Minus, Check } from "lucide-react";
+import { Trash2, Plus, Minus, Check, ChevronDown, X } from "lucide-react";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
@@ -37,9 +37,7 @@ export const CartItem = React.memo(function CartItem({
           )}
         >
           {item.selected && (
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
+            <Check size={12} strokeWidth={4} />
           )}
         </button>
 
@@ -71,10 +69,19 @@ export const CartItem = React.memo(function CartItem({
                   {item.size && <span>{item.size}</span>}
                 </div>
 
-                <div className="pt-1 flex items-center gap-3">
+                <div className="pt-1 flex items-baseline gap-3">
                   <p className="text-base font-semibold text-primary">
                     {formatCurrency(item.discountedPrice || item.price)}
                   </p>
+                  {item.discountedPrice && item.discountedPrice < item.price ? (
+                    <span className="text-[11px] text-slate-400 line-through font-medium tabular-nums">
+                      {formatCurrency(item.price)}
+                    </span>
+                  ) : (item.originalPrice && item.originalPrice > (item.discountedPrice || item.price)) ? (
+                    <span className="text-[11px] text-slate-400 line-through font-medium tabular-nums">
+                      {formatCurrency(item.originalPrice)}
+                    </span>
+                  ) : null}
                 </div>
               </div>
 
@@ -91,9 +98,7 @@ export const CartItem = React.memo(function CartItem({
                     ))}
                   </select>
                   <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-300">
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="m6 9 6 6 6-6"/>
-                    </svg>
+                    <ChevronDown size={14} strokeWidth={3} />
                   </div>
                 </div>
 
@@ -101,9 +106,7 @@ export const CartItem = React.memo(function CartItem({
                   onClick={() => removeItem(item.variantId)}
                   className="text-slate-300 hover:text-rose-500 transition-colors p-1"
                 >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M18 6 6 18M6 6l12 12"/>
-                  </svg>
+                  <X size={20} />
                 </button>
               </div>
             </div>

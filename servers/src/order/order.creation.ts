@@ -31,12 +31,11 @@ export class OrderCreation {
     const variantIds = itemsToOrder.map((i) => i.variantId);
 
     // 1. Luôn tính Flash Sale (auto-apply) để có dữ liệu so sánh với voucher.
-    //    `itemsToOrder` lúc này chứa giá GỐC (variant.price); auto-apply tính riêng.
-    const autoDiscountPriceMap = await this.repository.findAutoApplyPricesForVariants(variantIds);
+    const { priceMap, discountId: autoDiscountId } = await this.repository.findAutoApplyPricesForVariants(variantIds);
 
     // 2. Chuẩn bị danh sách items với giá đã giảm (nếu có)
     const itemsWithDiscounts = itemsToOrder.map((item) => {
-      const discountedPrice = autoDiscountPriceMap.get(item.variantId);
+      const discountedPrice = priceMap.get(item.variantId);
       return {
         ...item,
         price:
@@ -56,7 +55,7 @@ export class OrderCreation {
     );
     const autoApplySaving = originalSubtotal - autoApplySubtotal;
 
-    const discount = await this.validateDiscount(
+    const manualDiscount = await this.validateDiscount(
       dto.discountCode,
       originalSubtotal,
       userId,
@@ -64,19 +63,19 @@ export class OrderCreation {
       dto.shippingInfo?.phone || dto.guestPhone
     );
     let manualCodeSaving = 0;
-    if (discount) {
-      if (discount.percentage) {
+    if (manualDiscount) {
+      if (manualDiscount.percentage) {
         manualCodeSaving = Math.round(
-          (originalSubtotal * discount.percentage) / 100,
+          (originalSubtotal * manualDiscount.percentage) / 100,
         );
-      } else if (discount.fixedAmount) {
-        manualCodeSaving = discount.fixedAmount;
+      } else if (manualDiscount.fixedAmount) {
+        manualCodeSaving = manualDiscount.fixedAmount;
       }
       if (
-        discount.maxDiscountAmount &&
-        manualCodeSaving > discount.maxDiscountAmount
+        manualDiscount.maxDiscountAmount &&
+        manualCodeSaving > manualDiscount.maxDiscountAmount
       ) {
-        manualCodeSaving = discount.maxDiscountAmount;
+        manualCodeSaving = manualDiscount.maxDiscountAmount;
       }
       manualCodeSaving = Math.min(manualCodeSaving, originalSubtotal);
     }
@@ -84,8 +83,16 @@ export class OrderCreation {
     // 4. Quyết định dùng Flash Sale hay Voucher (cái nào lợi hơn cho khách)
     const useAutoApply =
       autoApplySaving > 0 && autoApplySaving >= manualCodeSaving;
+    
+    // Tìm đối tượng discount cuối cùng để connect với Order
+    let finalDiscount: any = null;
+    if (useAutoApply && autoDiscountId) {
+      finalDiscount = await this.prisma.discount.findUnique({ where: { id: autoDiscountId } });
+    } else if (!useAutoApply && manualDiscount) {
+      finalDiscount = manualDiscount;
+    }
+
     const finalItems = useAutoApply ? itemsWithDiscounts : itemsToOrder;
-    const finalDiscount = useAutoApply ? null : discount;
 
     const discountData = finalDiscount
       ? {
@@ -94,7 +101,7 @@ export class OrderCreation {
           maxDiscountAmount: finalDiscount.maxDiscountAmount || undefined,
         }
       : {
-          fixedAmount: useAutoApply ? autoApplySaving : 0,
+          fixedAmount: 0,
         };
 
     // 5. Tính phí vận chuyển qua GHN

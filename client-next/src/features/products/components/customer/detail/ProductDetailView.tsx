@@ -11,6 +11,9 @@ import { ProductBreadcrumbs } from "./ProductBreadcrumbs";
 import { ProductGallery } from "./ProductGallery";
 import { ProductInfo } from "./ProductInfo";
 import { ProductActions } from "./ProductActions";
+import { ProductTrustBadges } from "./ProductTrustBadges";
+import { RecentlyViewedProducts } from "../RecentlyViewedProducts";
+import { useRecentlyViewed } from "@/features/products/hooks/useRecentlyViewed";
 import { ProductTabs } from "./ProductTabs";
 import { RelatedProducts } from "../RelatedProducts";
 
@@ -22,20 +25,23 @@ export function ProductDetailView({ slug }: ProductDetailViewProps) {
   const { data: product, isLoading, error } = useProductDetail(slug);
   const { data: flashSale } = useFlashSale();
   const { mutate: incrementView } = useIncrementView();
+  const { addProduct } = useRecentlyViewed();
   
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
 
-  // Increment view count with 3s delay to ensure meaningful engagement
+  // Track Recently Viewed & Increment view count
   useEffect(() => {
     if (product?.id) {
+      addProduct(product);
+      
       const timer = setTimeout(() => {
         incrementView(String(product.id));
-      }, 3000); // 3 seconds delay
+      }, 3000);
 
-      return () => clearTimeout(timer); // Cleanup if user leaves early
+      return () => clearTimeout(timer);
     }
-  }, [product?.id, incrementView]);
+  }, [product, addProduct, incrementView]);
 
   // Find Selected Variant
   const selectedVariant = useMemo(() => {
@@ -158,6 +164,8 @@ export function ProductDetailView({ slug }: ProductDetailViewProps) {
               setSelectedColor={setSelectedColor}
               selectedVariant={selectedVariant || null}
             />
+
+            <ProductTrustBadges />
           </div>
         </div>
 
@@ -170,6 +178,9 @@ export function ProductDetailView({ slug }: ProductDetailViewProps) {
         <div className="mt-20">
           <RelatedProducts categoryId={product.categoryId} currentProductId={String(product.id)} />
         </div>
+
+        {/* Recently Viewed Products */}
+        <RecentlyViewedProducts currentProductId={String(product.id)} />
       </div>
     </div>
   );

@@ -124,7 +124,7 @@ export function ScopeSection({
                         {isSelected && <Check className="h-3 w-3 text-white" />}
                       </div>
 
-                      <div className="h-10 w-10 rounded-lg bg-white overflow-hidden border border-slate-100 shrink-0">
+                      <div className="h-10 w-10 relative rounded-lg bg-white overflow-hidden border border-slate-100 shrink-0">
                         <Image
                           src={getImageUrl(product)}
                           alt={product.name}

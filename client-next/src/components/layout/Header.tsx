@@ -66,7 +66,7 @@ export function Header({ initialHasToken }: { initialHasToken?: boolean }) {
 
   return (
     <>
-      <header className={`w-full relative z-40 transition-all duration-300 border-b ${isScrolled ? "bg-white/95 backdrop-blur-xl shadow-sm border-slate-200/50" : "bg-white border-transparent"}`}>
+      <header className={`w-full sticky top-0 z-50 transition-all duration-500 ${isScrolled ? "bg-white/70 backdrop-blur-2xl shadow-[0_4px_30px_rgba(0,0,0,0.03)] border-b border-white/20" : "bg-white border-b border-transparent"}`}>
         {/* ── TOP BAR ── */}
         <div className="border-b border-slate-100 py-3 lg:py-0">
           <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">

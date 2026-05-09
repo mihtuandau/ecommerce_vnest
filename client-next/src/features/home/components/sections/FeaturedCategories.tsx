@@ -35,24 +35,13 @@ export function FeaturedCategories() {
     <div className="space-y-12 md:space-y-16 py-4 overflow-hidden">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-4 sm:px-6 lg:px-8 mb-8 md:mb-12">
         <div className="space-y-4">
-          <div className="flex flex-col gap-2 md:gap-3">
-            <div className="flex items-center gap-2">
-              <div className="p-1.5 md:p-2 rounded-lg md:rounded-xl shadow-sm bg-slate-100">
-                <LayoutGrid className="h-4 w-4 md:h-5 md:w-5 text-foreground" />
-              </div>
-              <span className="text-[10px] md:text-[11px] font-semibold text-slate-500">
-                Khám phá hệ sinh thái
-              </span>
-            </div>
-            
-            <div className="space-y-2">
-              <h2 className="text-3xl md:text-5xl font-bold text-primary tracking-tighter leading-[1.1]">
-                Danh mục <span className="text-primary/50">nổi bật</span>
-              </h2>
-              <p className="text-slate-600 text-xs md:text-base font-normal tracking-tight max-w-xl leading-relaxed">
-                Khám phá hệ sinh thái sản phẩm công nghệ và gia dụng thông minh tại Minh Tuấn Shop.
-              </p>
-            </div>
+          <div className="space-y-4">
+            <h2 className="text-3xl md:text-5xl font-bold text-primary tracking-tighter leading-[1.1]">
+              Danh mục <span className="text-primary/50">nổi bật</span>
+            </h2>
+            <p className="text-slate-600 text-xs md:text-base font-normal tracking-tight max-w-xl leading-relaxed">
+              Khám phá hệ sinh thái sản phẩm công nghệ và gia dụng thông minh tại Minh Tuấn Shop.
+            </p>
           </div>
         </div>
 

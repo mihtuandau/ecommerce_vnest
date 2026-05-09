@@ -34,7 +34,15 @@ export function useCreateDiscount() {
   const { success, error } = useToast();
 
   return useMutation({
-    mutationFn: (data: { code: string; name: string; discountType: "PERCENTAGE" | "FIXED"; discountValue: number; startDate: string; endDate: string; minOrderAmount?: number; maxDiscountAmount?: number; usageLimit?: number; isActive?: boolean }) => discountsApi.createDiscount(data),
+    mutationFn: (values: any) => {
+      const { type, value, ...rest } = values;
+      const data = {
+        ...rest,
+        percentage: type === "PERCENTAGE" ? value : undefined,
+        fixedAmount: type === "FIXED" ? value : undefined,
+      };
+      return discountsApi.createDiscount(data);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.discounts.all });
       success("Tạo chương trình thành công");
@@ -50,14 +58,21 @@ export function useUpdateDiscount() {
   const { success, error } = useToast();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: { code: string; name: string; discountType: "PERCENTAGE" | "FIXED"; discountValue: number; startDate: string; endDate: string; minOrderAmount?: number; maxDiscountAmount?: number; usageLimit?: number; isActive?: boolean } }) =>
-      discountsApi.updateDiscount(id, data),
+    mutationFn: ({ id, data: values }: { id: string; data: any }) => {
+      const { type, value, ...rest } = values;
+      const data = {
+        ...rest,
+        percentage: type === "PERCENTAGE" ? value : undefined,
+        fixedAmount: type === "FIXED" ? value : undefined,
+      };
+      return discountsApi.updateDiscount(id, data);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.discounts.all });
       success("Cập nhật thành công");
     },
     onError: (err: { response?: { data?: { message?: string } } }) => {
-      error(err.response?.data?.message || "Tạo mã giảm giá thất bại");
+      error(err.response?.data?.message || "Cập nhật thất bại");
     },
   });
 }

@@ -53,14 +53,29 @@ export function BasicInfoSection({ form }: BasicInfoSectionProps) {
             <FormItem>
               <FormLabel className="font-semibold text-xs tracking-wide text-slate-600">Ảnh Banner (URL)</FormLabel>
               <FormControl>
-                <div className="relative group">
-                  <Input 
-                    placeholder="https://example.com/banner.jpg" 
-                    className="h-12 rounded-xl border-slate-200 focus:ring-primary/20" 
-                    {...field} 
-                    value={field.value ?? ""}
-                  />
-                  <ImagePlus className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300 group-focus-within:text-primary transition-colors" />
+                <div className="space-y-3">
+                  <div className="relative group">
+                    <Input 
+                      placeholder="https://example.com/banner.jpg" 
+                      className="h-12 rounded-xl border-slate-200 focus:ring-primary/20" 
+                      {...field} 
+                      value={field.value ?? ""}
+                    />
+                    <ImagePlus className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300 group-focus-within:text-primary transition-colors" />
+                  </div>
+                  
+                  {field.value && (
+                    <div className="relative aspect-[21/9] w-full rounded-xl overflow-hidden border border-slate-100 bg-slate-50">
+                      <img 
+                        src={field.value} 
+                        alt="Banner Preview" 
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = "/placeholder.png";
+                        }}
+                      />
+                    </div>
+                  )}
                 </div>
               </FormControl>
               <FormMessage />

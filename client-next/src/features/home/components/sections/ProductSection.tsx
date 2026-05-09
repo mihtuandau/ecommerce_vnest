@@ -32,30 +32,17 @@ export function ProductSection({
 }: ProductSectionProps) {
   if (!products || products.length === 0) return null;
 
-  const sectionLabel = variant === "featured" ? "New Arrivals" : variant === "bestseller" ? "Best Selling" : "Top Rated";
-
   return (
     <div className="space-y-6 md:space-y-10">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 md:mb-12">
         <div className="space-y-4">
-          <div className="flex flex-col gap-2 md:gap-3">
-             <div className="flex items-center gap-2">
-                <div className={cn("p-1.5 md:p-2 rounded-lg md:rounded-xl shadow-sm", iconBg)}>
-                  <Icon className={cn("h-4 w-4 md:h-5 md:w-5", iconColor)} />
-                </div>
-                <span className="text-[10px] md:text-[11px] font-black uppercase tracking-[0.25em] text-slate-400">
-                  {sectionLabel}
-                </span>
-             </div>
-             
-             <div className="space-y-2">
-                <h2 className="text-3xl md:text-5xl font-black text-primary tracking-tighter leading-[1.1]">
-                  {title}
-                </h2>
-                <p className="text-slate-400 text-xs md:text-base font-medium tracking-tight max-w-xl leading-relaxed">
-                  {subtitle}
-                </p>
-             </div>
+          <div className="space-y-2">
+            <h2 className="text-3xl md:text-5xl font-black text-primary tracking-tighter leading-[1.1]">
+              {title}
+            </h2>
+            <p className="text-slate-400 text-xs md:text-base font-medium tracking-tight max-w-xl leading-relaxed">
+              {subtitle}
+            </p>
           </div>
         </div>
 

@@ -21,7 +21,8 @@ export class DiscountService {
         discount.endDate,
         discount.isActive,
       ),
-      usageCount: discount.usageCount ?? 0,
+      usageCount: discount.usageCount ?? discount._count?.orders ?? 0,
+      usedCount: discount._count?.orders ?? discount.usageCount ?? 0,
     };
   }
 
