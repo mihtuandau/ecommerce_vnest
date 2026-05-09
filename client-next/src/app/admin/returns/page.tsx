@@ -11,8 +11,9 @@ import { Badge } from "@/components/ui/Badge";
 import { useToast } from "@/hooks/useToast";
 import { 
   RotateCcw, Eye, CheckCircle2, XCircle, Search, 
-  Filter, Calendar, ArrowUpRight, Loader2, AlertCircle 
+  Filter, Calendar, ArrowUpRight, AlertCircle 
 } from "lucide-react";
+import { Spinner } from "@/components/ui/Spinner";
 import { ReturnStatus } from "@/types/enums";
 import Link from "next/link";
 import { cn } from "@/utils/cn";
@@ -114,7 +115,7 @@ export default function AdminReturnsPage() {
               <TableRow>
                 <TableCell colSpan={7} className="h-64 text-center">
                   <div className="flex flex-col items-center justify-center gap-2">
-                    <Loader2 className="h-7 w-7 animate-spin text-primary/50" />
+                    <Spinner size="lg" />
                     <p className="text-[13px] font-medium text-slate-400">Đang tải dữ liệu...</p>
                   </div>
                 </TableCell>

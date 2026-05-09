@@ -1,6 +1,7 @@
 "use client";
 
-import { TrendingUp, AlertCircle, Loader2 } from "lucide-react";
+import { TrendingUp, AlertCircle } from "lucide-react";
+import { Spinner } from "@/components/ui/Spinner";
 import React, { useState, useMemo } from "react";
 import {
   Card,
@@ -116,7 +117,7 @@ export function RevenueChart({ data, isLoading }: RevenueChartProps) {
         <div className="h-[350px] w-full">
           {displayLoading ? (
             <div className="h-full w-full bg-muted/20 animate-pulse rounded-2xl flex items-center justify-center">
-              <Loader2 className="h-8 w-8 animate-spin text-primary/30" />
+              <Spinner size="lg" />
             </div>
           ) : chartData.length > 0 ? (
             <ResponsiveContainer width="100%" height="100%">

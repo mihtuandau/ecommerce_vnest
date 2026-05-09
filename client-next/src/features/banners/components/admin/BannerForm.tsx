@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -19,14 +20,13 @@ import {
   Image as ImageIcon, 
   Link as LinkIcon, 
   Hash, 
-  Zap, 
-  Loader2, 
-  Save, 
-  Upload, 
+  Zap,
+  Save,
+  Upload,
   X,
   Type
 } from "lucide-react";
-import { cn } from "@/utils/cn";
+import { Spinner } from "@/components/ui/Spinner";
 
 const bannerSchema = z.object({
   title: z.string().min(3, "Tiêu đề phải có ít nhất 3 ký tự"),
@@ -175,10 +175,11 @@ export function BannerForm({ initialData, onSubmit, isLoading }: BannerFormProps
                 
                 {previewUrl ? (
                   <div className="relative group rounded-2xl overflow-hidden border border-slate-200 bg-slate-50 aspect-[21/9]">
-                    <img
+                    <Image
                       src={previewUrl}
                       alt="Preview"
-                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      fill
+                      className="object-cover transition-transform duration-700 group-hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
                       <Button
@@ -296,7 +297,7 @@ export function BannerForm({ initialData, onSubmit, isLoading }: BannerFormProps
                   disabled={isLoading}
                 >
                   {isLoading ? (
-                    <Loader2 className="h-5 w-5 animate-spin" />
+                    <Spinner size="sm" variant="white" />
                   ) : (
                     <Save className="h-5 w-5" />
                   )}

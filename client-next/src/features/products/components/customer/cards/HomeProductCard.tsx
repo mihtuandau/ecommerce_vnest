@@ -161,83 +161,73 @@ export const HomeProductCard = React.memo(function HomeProductCard({
   // ── BESTSELLER VARIANT ──
   if (variant === "bestseller") {
     return (
-      <div className="h-full w-full">
-        <Link
-          href={`/shop/${product.slug}`}
-          className="group block space-y-2 md:space-y-3 p-2 md:p-3 rounded-2xl bg-white border border-slate-100 transition-all hover:shadow-xl hover:border-primary/20 h-full"
-        >
-          <div className="relative aspect-square rounded-xl md:rounded-2xl overflow-hidden bg-white flex items-center justify-center p-2.5 md:p-4 transition-all">
+      <div className="group relative flex flex-col h-full cursor-pointer bg-white rounded-2xl">
+        {/* Card-wide Link */}
+        <Link href={`/shop/${product.slug}`} className="absolute inset-0 z-20">
+          <span className="sr-only">Xem chi tiết {product.name}</span>
+        </Link>
+
+        {/* ── IMAGE SECTION ── */}
+        <div className="relative z-10 aspect-square w-full overflow-hidden rounded-2xl bg-slate-50/50">
+          <div className="relative h-full w-full overflow-hidden">
             <Image
               src={imageUrl}
               alt={product.name}
               fill
-              className="object-contain transition-transform duration-500 group-hover:scale-[1.03] mix-blend-multiply p-2.5 md:p-4"
+              className="h-full w-full object-cover object-center transition-all duration-700 ease-in-out group-hover:scale-110 group-hover:rotate-1"
               sizes="(max-width: 768px) 50vw, 25vw"
             />
-            <div className="absolute top-1.5 left-1.5 md:top-2 md:left-2 flex flex-col gap-1 z-10">
-              {discount && (
-                <div className="text-[22px] md:text-[26px] leading-none pl-1 pt-0.5 drop-shadow-sm hover:scale-110 transition-transform">
-                  🔥
-                </div>
-              )}
-            </div>
-            <div className="absolute top-1.5 right-1.5 md:top-2 md:right-2 flex flex-col gap-1 z-10">
-              <div className="bg-primary/10 text-primary text-[10px] md:text-[11px] font-bold px-2 py-0.5 md:px-2.5 md:py-1 rounded-full flex items-center gap-1 shadow-sm border border-primary/20 tracking-wide">
-                <TrendingUp className="h-2.5 w-2.5" /> Bán chạy
-              </div>
+            {/* Hover Overlay */}
+            <div className="absolute inset-0 bg-black/[0.02] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          </div>
+          
+          <div className="absolute top-3 left-3 flex flex-col gap-2 z-30">
+            <div className="bg-white/90 backdrop-blur-sm text-primary text-[10px] font-bold px-2 py-1 rounded shadow-sm flex items-center gap-1 uppercase tracking-wider">
+              <TrendingUp className="h-2.5 w-2.5" /> Bán chạy
             </div>
           </div>
+        </div>
 
-          <div className="space-y-1.5 md:space-y-2 px-0.5">
-            <h3 className="font-bold text-[11px] md:text-sm text-foreground line-clamp-2 min-h-[30px] md:min-h-[40px] leading-snug">
+        {/* ── CONTENT SECTION ── */}
+        <div className="relative z-10 mt-4 flex-1 flex flex-col px-1">
+          <div className="flex justify-between items-start gap-4">
+            <h3 className="text-sm font-medium text-gray-900 line-clamp-2 min-h-[2.5rem] flex-1">
               {product.name}
             </h3>
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex flex-col">
-                <span className="text-[15px] md:text-xl font-bold text-primary tabular-nums leading-tight">
-                  {formatCurrency(price)}
-                </span>
-                {originalPrice && originalPrice > price && (
-                  <div className="flex items-center gap-1.5 mt-0.5">
-                    <span className="text-[10px] md:text-[12px] text-slate-500 line-through font-bold">
-                      {formatCurrency(originalPrice)}
-                    </span>
-                    {discount && (
-                      <span className="bg-destructive/10 text-destructive text-[9px] md:text-[10px] font-bold px-1.5 py-0.5 rounded-sm">
-                        -{discount}%
-                      </span>
-                    )}
-                  </div>
-                )}
-                <div className="flex items-center gap-2 mt-1">
-                  <span className="text-[10px] md:text-[11px] font-medium text-slate-400">
-                    Đã bán {product.soldCount || 0}
-                  </span>
-                  <span className="text-slate-200">|</span>
-                  <span className="text-[10px] md:text-[11px] font-medium text-slate-400 flex items-center gap-0.5">
-                    {product.viewCount || 0} lượt xem
-                  </span>
-                </div>
-              </div>
-              <button
-                onClick={handleAddToCart}
-                disabled={isOutOfStock}
-                className={cn(
-                  "h-10 w-10 rounded-full flex items-center justify-center transition-all hover:scale-110 active:scale-95 shadow-sm",
-                  isOutOfStock
-                    ? "bg-slate-50 text-slate-200 border border-slate-100 cursor-not-allowed"
-                    : "bg-primary text-white"
-                )}
-              >
-                {isOutOfStock ? (
-                  <span className="text-[10px] font-bold">Hết</span>
-                ) : (
-                  <ShoppingCart size={18} />
-                )}
-              </button>
+            <div className="flex flex-col items-end shrink-0">
+              <p className="text-sm font-bold text-gray-900 tabular-nums">
+                {formatCurrency(price)}
+              </p>
+              {originalPrice && originalPrice > price && (
+                <p className="text-[11px] text-gray-400 line-through">
+                  {formatCurrency(originalPrice)}
+                </p>
+              )}
             </div>
           </div>
-        </Link>
+          
+          <div className="mt-auto pt-2 flex items-center justify-between">
+            <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1">
+                <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                <span className="text-[11px] text-gray-900 font-medium">
+                  {product.averageRating || "5.0"}
+                </span>
+              </div>
+              <span className="text-[11px] text-gray-300">|</span>
+              <span className="text-[11px] text-gray-500">
+                Đã bán {product.soldCount || 0}
+              </span>
+            </div>
+
+            {discount && (
+              <span className="text-[11px] text-rose-500 font-bold bg-rose-50 px-1.5 py-0.5 rounded">
+                -{discount}%
+              </span>
+            )}
+          </div>
+        </div>
+
         <QuickAddModal
           product={product}
           isOpen={isQuickAddOpen}
@@ -251,57 +241,56 @@ export const HomeProductCard = React.memo(function HomeProductCard({
 
   // ── TOP RATED VARIANT ──
   return (
-    <Link
-      href={`/shop/${product.slug}`}
-      className="group block relative p-2.5 md:p-4 rounded-xl md:rounded-2xl bg-slate-50 border border-transparent transition-all hover:bg-white hover:shadow-xl hover:border-slate-100"
-    >
-      <div className="flex gap-3 md:gap-4">
-        <div className="relative h-14 w-14 md:h-20 md:w-20 rounded-xl overflow-hidden bg-white flex-shrink-0 shadow-sm border border-slate-100 flex items-center justify-center p-1.5 md:p-2">
+    <div className="group relative p-3 rounded-2xl bg-slate-50/50 hover:bg-white transition-all duration-300 cursor-pointer border border-transparent hover:border-slate-100 hover:shadow-xl">
+      {/* Card-wide Link */}
+      <Link href={`/shop/${product.slug}`} className="absolute inset-0 z-20">
+        <span className="sr-only">Xem chi tiết {product.name}</span>
+      </Link>
+
+      <div className="relative z-10 flex gap-4">
+        <div className="relative h-20 w-20 rounded-xl overflow-hidden bg-white shrink-0 shadow-sm border border-slate-50">
           <Image
             src={imageUrl}
             alt={product.name}
             fill
-            className="object-contain p-1.5 md:p-2"
+            className="object-contain p-2 transition-transform duration-500 group-hover:scale-110"
             sizes="80px"
           />
         </div>
-        <div className="flex-1 space-y-1 md:space-y-2 py-0.5 min-w-0">
-          <div className="flex items-center gap-1">
-            <Star className="h-2.5 w-2.5 md:h-3 md:w-3 fill-[#f4c300] text-[#f4c300]" />
-            <span className="text-[11px] md:text-xs font-bold text-foreground">
-              {product.averageRating || 0}
-            </span>
-            <span className="text-[10px] md:text-[11px] font-medium text-muted-foreground">
-              ({product.reviewCount || 0})
-            </span>
+        
+        <div className="flex-1 flex flex-col justify-between py-0.5">
+          <div className="space-y-1">
+            <div className="flex items-center gap-1">
+              <Star className="h-2.5 w-2.5 fill-yellow-400 text-yellow-400" />
+              <span className="text-[11px] font-bold text-gray-900">
+                {product.averageRating || "5.0"}
+              </span>
+              <span className="text-[10px] text-gray-400">
+                ({product.reviewCount || 0})
+              </span>
+            </div>
+            <h3 className="text-sm font-medium text-gray-900 line-clamp-1 group-hover:text-primary transition-colors">
+              {product.name}
+            </h3>
           </div>
-          <h3 className="font-bold text-[11px] md:text-sm text-foreground line-clamp-1 md:line-clamp-2 leading-tight">
-            {product.name}
-          </h3>
-          <div className="flex items-center justify-between pt-1">
+
+          <div className="flex items-center justify-between">
             <div className="flex flex-col">
-              <span className="text-[15px] md:text-lg font-bold text-primary tabular-nums">
+              <span className="text-sm font-bold text-gray-900 tabular-nums">
                 {formatCurrency(price)}
               </span>
               {originalPrice && originalPrice > price && (
-                <div className="flex items-center gap-1.5 mt-0.5">
-                  <span className="text-[9px] md:text-[11px] text-slate-400 line-through font-medium">
-                    {formatCurrency(originalPrice)}
-                  </span>
-                  {discount && (
-                    <span className="bg-destructive/10 text-destructive text-[9px] font-bold px-1 py-0.5 rounded-sm">
-                      -{discount}%
-                    </span>
-                  )}
-                </div>
+                <span className="text-[10px] text-gray-400 line-through">
+                  {formatCurrency(originalPrice)}
+                </span>
               )}
             </div>
-            <div className="hidden xs:block text-[10px] md:text-[11px] font-semibold text-primary bg-primary/5 px-2 py-0.5 rounded-full tracking-wide">
-              Top đánh giá
+            <div className="text-[10px] font-bold text-primary bg-primary/5 px-2 py-0.5 rounded-full uppercase tracking-wider">
+              Top Rate
             </div>
           </div>
         </div>
       </div>
-    </Link>
-  );
+    </div>
+  )
 });

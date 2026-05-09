@@ -7,6 +7,7 @@ import { Category } from "@/types/models";
 import { ChevronRight, LayoutGrid } from "lucide-react";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Button } from "@/components/ui/Button";
+import Image from "next/image";
 import { cn } from "@/utils/cn";
 
 import { motion } from "framer-motion";
@@ -92,10 +93,11 @@ export function FeaturedCategories() {
               <div className="relative w-full aspect-square rounded-full overflow-hidden bg-white border-2 border-slate-100 p-2 group-hover:border-primary group-hover:shadow-2xl group-hover:shadow-primary/20 transition-all duration-500">
                 <div className="w-full h-full rounded-full overflow-hidden bg-slate-50 relative">
                   {category.image ? (
-                    <img 
+                    <Image 
                       src={category.image} 
                       alt={category.name}
-                      className="w-full h-full object-cover group-hover:scale-115 transition-transform duration-1000"
+                      fill
+                      className="object-cover group-hover:scale-115 transition-transform duration-1000"
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">

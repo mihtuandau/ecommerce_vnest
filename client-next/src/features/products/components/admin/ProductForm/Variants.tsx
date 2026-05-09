@@ -1,10 +1,12 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { FormControl, FormField, FormItem, FormLabel } from "@/components/ui/Form";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
-import { Tag, Plus, Trash, ImagePlus, Loader2 } from "lucide-react";
+import { Tag, Plus, Trash, ImagePlus } from "lucide-react";
+import { Spinner } from "@/components/ui/Spinner";
 import { UseFormReturn, useFieldArray } from "react-hook-form";
 import { cn } from "@/utils/cn";
 
@@ -69,17 +71,14 @@ export function Variants({
                         onClick={() => onVariantImageClick(index)}
                       >
                         {variantUploadingIndex === index ? (
-                          <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                          <Spinner size="sm" />
                         ) : field.value ? (
-                          <img
+                          <Image
                             key={field.value}
                             src={field.value}
-                            className="h-full w-full object-cover"
+                            fill
+                            className="object-cover"
                             alt="Variant"
-                            onError={(e) => {
-                              // Fallback if image fails to load
-                              (e.target as HTMLImageElement).src = "";
-                            }}
                           />
                         ) : (
                           <ImagePlus className="h-4 w-4 text-slate-300" />

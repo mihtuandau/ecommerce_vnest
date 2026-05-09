@@ -6,7 +6,7 @@ import { CategoryTable } from "@/features/categories/components/admin/CategoryTa
 import { CategoryListHeader } from "@/features/categories/components/admin/ListHeader";
 import { CategoryTabs } from "@/features/categories/components/admin/Tabs";
 import { CategoryListToolbar } from "@/features/categories/components/admin/ListToolbar";
-import { Loader2 } from "lucide-react";
+import { Spinner } from "@/components/ui/Spinner";
 
 export default function AdminCategoriesPage() {
   const { data, isLoading, refetch, isFetching } = useCategories();
@@ -56,7 +56,7 @@ export default function AdminCategoriesPage() {
           {isLoading ? (
             <div className="flex h-96 items-center justify-center">
               <div className="flex flex-col items-center gap-3">
-                <Loader2 className="h-8 w-8 animate-spin text-slate-200" />
+                <Spinner size="lg" />
                 <p className="text-sm font-semibold text-slate-400">Đang tải dữ liệu...</p>
               </div>
             </div>

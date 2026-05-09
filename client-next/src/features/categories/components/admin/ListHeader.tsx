@@ -3,6 +3,7 @@
 import React from "react";
 import { Button } from "@/components/ui/Button";
 import { Plus, RefreshCcw, FolderTree } from "lucide-react";
+import { Spinner } from "@/components/ui/Spinner";
 import Link from "next/link";
 import { ROUTES } from "@/constants/routes";
 import { cn } from "@/utils/cn";
@@ -31,7 +32,7 @@ export function CategoryListHeader({ totalCategories, onRefresh, isFetching }: C
             disabled={isFetching}
             className="h-9 rounded-lg border-slate-200 font-bold text-xs uppercase tracking-wider gap-2 bg-white"
           >
-            <RefreshCcw className={cn("h-3.5 w-3.5", isFetching && "animate-spin")} />
+            {isFetching ? <Spinner size="sm" /> : <RefreshCcw className="h-3.5 w-3.5" />}
             Làm mới
           </Button>
           <Button asChild size="sm" className="h-9 rounded-lg bg-slate-900 text-white hover:bg-slate-800 font-bold text-xs uppercase tracking-wider gap-2 px-4 shadow-sm">

@@ -3,7 +3,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Input } from "@/components/ui/Input";
 import { productsApi } from "@/features/products/api";
-import { Search, Loader2, Plus, ShoppingCart } from "lucide-react";
+import { Search, Plus, ShoppingCart } from "lucide-react";
+import { Spinner } from "@/components/ui/Spinner";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { cn } from "@/utils/cn";
 
@@ -77,7 +78,7 @@ export function ProductAutocomplete({ onSelect }: ProductAutocompleteProps) {
         />
         {isLoading && (
           <div className="absolute right-4 top-1/2 -translate-y-1/2">
-            <Loader2 className="h-5 w-5 animate-spin text-primary" />
+            <Spinner size="sm" />
           </div>
         )}
       </div>

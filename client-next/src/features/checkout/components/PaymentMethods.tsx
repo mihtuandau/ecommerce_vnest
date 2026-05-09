@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { CreditCard, Wallet, Banknote, CheckCircle2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/Card";
 import { cn } from "@/utils/cn";
@@ -65,7 +66,13 @@ export function PaymentMethods({ paymentMethod, setPaymentMethod }: PaymentMetho
                 paymentMethod === method.id ? "border-blue-100 shadow-sm" : ""
               )}>
                 {method.logo ? (
-                  <img src={method.logo} alt={method.name} className="h-5 w-5 object-contain" />
+                  <Image 
+                    src={method.logo} 
+                    alt={method.name} 
+                    width={20} 
+                    height={20} 
+                    className="h-5 w-5 object-contain" 
+                  />
                 ) : (
                   <method.icon className={cn("h-5 w-5", method.color)} />
                 )}

@@ -15,68 +15,62 @@ interface CartSummaryProps {
 }
 
 export function CartSummary({ selectedCount, selectedTotalPrice }: CartSummaryProps) {
+  const InfoIcon = () => (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-slate-300">
+      <circle cx="12" cy="12" r="10" />
+      <path d="M12 16v-4" />
+      <path d="M12 8h.01" />
+    </svg>
+  );
+
   return (
-    <Card className="border border-slate-100 rounded-[2rem] overflow-hidden bg-white">
-      <div className="bg-slate-50 p-5 border-b border-slate-100">
-        <h3 className="font-semibold text-slate-900 flex items-center gap-3 text-sm">
-          <CreditCard className="w-4 h-4 text-primary" />
-          Thanh toán
-        </h3>
-      </div>
+    <div className="bg-slate-50/50 rounded-2xl p-8 border border-slate-100">
+      <h2 className="text-lg font-semibold text-slate-900 mb-8">Tóm tắt đơn hàng</h2>
       
-      <CardContent className="p-6 space-y-6">
-        <div className="space-y-4">
-          <div className="flex justify-between items-center text-sm">
-            <span className="text-slate-600 font-normal">Tạm tính ({selectedCount} sản phẩm)</span>
-            <span className="font-semibold text-slate-900 tabular-nums">{formatCurrency(selectedTotalPrice)}</span>
-          </div>
-          <div className="flex justify-between items-center text-sm">
-            <span className="text-slate-600 font-normal">Phí giao hàng</span>
-            <span className="text-slate-500 font-normal text-[11px] bg-slate-50 px-3 py-1 rounded-lg">Tính ở bước thanh toán</span>
-          </div>
-        </div>
-
-        <div className="h-px bg-slate-100" />
-
-        <div className="flex justify-between items-end">
-          <div className="space-y-1">
-            <span className="text-[10px] font-semibold text-slate-500 tracking-wide">Tổng cộng</span>
-            <p className="text-[10px] text-slate-500 font-normal">Đã bao gồm VAT</p>
-          </div>
-          <p className="text-2xl font-bold text-primary tabular-nums tracking-tighter">{formatCurrency(selectedTotalPrice)}</p>
+      <div className="space-y-6">
+        <div className="flex justify-between items-center text-sm">
+          <span className="text-slate-500 font-medium">Tạm tính</span>
+          <span className="font-semibold text-slate-900 tabular-nums">{formatCurrency(selectedTotalPrice)}</span>
         </div>
         
-        <div className="space-y-4 pt-2">
+        <div className="flex justify-between items-center text-sm border-t border-slate-100/60 pt-6">
+          <div className="flex items-center gap-2">
+            <span className="text-slate-500 font-medium">Phí vận chuyển dự kiến</span>
+            <InfoIcon />
+          </div>
+          <span className="font-semibold text-slate-900 tabular-nums text-emerald-600">Miễn phí</span>
+        </div>
+
+        <div className="flex justify-between items-center text-sm border-t border-slate-100/60 pt-6">
+          <div className="flex items-center gap-2">
+            <span className="text-slate-500 font-medium">Thuế dự kiến</span>
+            <InfoIcon />
+          </div>
+          <span className="font-semibold text-slate-900 tabular-nums">{formatCurrency(0)}</span>
+        </div>
+
+        <div className="flex justify-between items-center pt-6 border-t border-slate-200/60">
+          <span className="text-base font-semibold text-slate-900">Tổng cộng đơn hàng</span>
+          <span className="text-lg font-semibold text-primary tabular-nums">
+            {formatCurrency(selectedTotalPrice)}
+          </span>
+        </div>
+        
+        <div className="pt-4">
           <Button 
             asChild 
+            disabled={selectedCount === 0}
             className={cn(
-              "w-full h-12 rounded-xl text-white text-sm font-semibold transition-all active:scale-95",
-              selectedCount > 0 ? "bg-primary hover:bg-[#0d47a1]" : "bg-slate-300 cursor-not-allowed pointer-events-none"
+              "w-full h-14 rounded-xl text-white text-sm font-semibold shadow-xl shadow-primary/10 transition-all active:scale-[0.98]",
+              selectedCount > 0 ? "bg-primary hover:brightness-110" : "bg-slate-300 cursor-not-allowed pointer-events-none"
             )}
           >
             <Link href={selectedCount > 0 ? ROUTES.CHECKOUT : "#"}>
-              {selectedCount > 0 ? "Tiến hành đặt hàng" : "Chọn sản phẩm"}
+              Thanh toán
             </Link>
           </Button>
-          
-          <div className="flex items-center justify-center gap-2 py-2">
-            <ShieldCheck className="w-4 h-4 text-slate-300" />
-            <span className="text-[10px] font-normal text-slate-400 tracking-wider">Thanh toán bảo mật</span>
-          </div>
         </div>
-
-        {/* Trust Badges */}
-        <div className="grid grid-cols-2 gap-3 pt-3 border-t border-slate-50">
-          <div className="p-3 bg-slate-50/50 rounded-xl space-y-1.5">
-            <Truck className="w-4 h-4 text-slate-500" />
-            <p className="text-[9px] font-normal text-slate-600 leading-tight">Giao hàng 2-4 ngày</p>
-          </div>
-          <div className="p-3 bg-slate-50/50 rounded-xl space-y-1.5">
-            <ShieldCheck className="w-4 h-4 text-slate-500" />
-            <p className="text-[9px] font-normal text-slate-600 leading-tight">Đổi trả 30 ngày</p>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

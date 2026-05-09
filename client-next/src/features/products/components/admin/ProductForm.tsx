@@ -10,7 +10,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs";
 import { useCategories } from "../../hooks";
 import { productsApi } from "../../api";
 import { Product } from "@/types/models";
-import { Save, Loader2 } from "lucide-react";
+import { Save } from "lucide-react";
+import { Spinner } from "@/components/ui/Spinner";
 import { useState, useEffect, useRef } from "react";
 import { GeneralInfo } from "./ProductForm/GeneralInfo";
 import { Variants } from "./ProductForm/Variants";
@@ -235,7 +236,7 @@ export function ProductForm({ initialData, onSubmit, isLoading }: ProductFormPro
         {categories.length === 0 ? (
           <div className="flex h-64 items-center justify-center bg-white rounded-2xl border-none shadow-sm">
             <div className="flex flex-col items-center gap-2">
-              <Loader2 className="h-6 w-6 animate-spin text-primary" />
+              <Spinner size="sm" />
               <p className="text-xs font-medium text-slate-400">
                 Đang chuẩn bị dữ liệu...
               </p>
@@ -271,7 +272,7 @@ export function ProductForm({ initialData, onSubmit, isLoading }: ProductFormPro
                 disabled={isLoading}
               >
                 {isLoading ? (
-                  <Loader2 className="h-5 w-5 animate-spin" />
+                  <Spinner size="sm" variant="white" />
                 ) : (
                   <Save className="h-5 w-5" />
                 )}

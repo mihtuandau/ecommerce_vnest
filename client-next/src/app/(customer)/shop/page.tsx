@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { ShopContainer } from "@/features/shop/components/ShopContainer";
 import { Suspense } from "react";
-import { Loader2 } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Cửa hàng — Minh Tuấn Shop",

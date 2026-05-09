@@ -5,6 +5,7 @@ import { ProductForm } from "@/features/products/components/admin/ProductForm";
 import { useParams, useRouter } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { Spinner } from "@/components/ui/Spinner";
 
 export default function AdminProductDetailPage() {
   const { id } = useParams() as { id: string };
@@ -78,7 +79,7 @@ export default function AdminProductDetailPage() {
         {isLoading ? (
           <div className="flex h-96 items-center justify-center bg-white rounded-xl border border-slate-200">
             <div className="flex flex-col items-center gap-3">
-              <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+              <Spinner size="lg" />
               <p className="text-sm font-semibold text-slate-400">Đang tải dữ liệu...</p>
             </div>
           </div>

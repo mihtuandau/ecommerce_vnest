@@ -1,7 +1,9 @@
 "use client";
 
 import React from "react";
-import { ImagePlus, Trash, Loader2 } from "lucide-react";
+import Image from "next/image";
+import { ImagePlus, Trash } from "lucide-react";
+import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/utils/cn";
 
 interface MediaProps {
@@ -30,7 +32,7 @@ export function Media({ images, isUploading, onImageAdd, onImageRemove }: MediaP
        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
           {images.map((url, index) => (
             <div key={index} className="relative aspect-square rounded-2xl overflow-hidden border-2 border-transparent hover:border-primary transition-all group shadow-sm bg-slate-50">
-              <img src={url} alt="Product" className="h-full w-full object-cover transition-transform group-hover:scale-110" />
+              <Image src={url} alt="Product" fill className="object-cover transition-transform group-hover:scale-110" />
               <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                 <button 
                   type="button"
@@ -55,7 +57,7 @@ export function Media({ images, isUploading, onImageAdd, onImageRemove }: MediaP
               className="aspect-square rounded-2xl border-2 border-dashed border-slate-200 hover:border-primary/50 hover:bg-slate-50 flex flex-col items-center justify-center gap-3 transition-all text-slate-400 hover:text-primary group relative overflow-hidden"
             >
               {isUploading ? (
-                <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                <Spinner size="sm" />
               ) : (
                 <>
                   <div className="h-10 w-10 rounded-full bg-slate-50 group-hover:bg-slate-100 flex items-center justify-center transition-colors">

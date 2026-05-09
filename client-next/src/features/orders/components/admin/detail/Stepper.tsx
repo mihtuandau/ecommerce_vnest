@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import { Clock, Package, Truck, CheckCircle2, Loader2, RotateCcw } from "lucide-react";
+import { Clock, Package, Truck, CheckCircle2, RotateCcw } from "lucide-react";
+import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/utils/cn";
 import { OrderStatus } from "@/types/enums";
 
@@ -53,7 +54,7 @@ export function Stepper({ status, isPending, onUpdateStatus, id }: StepperProps)
                     )}
                    >
                       {isPending && isCurrent ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <Spinner size="sm" variant="white" />
                       ) : (
                         <step.icon className={cn("h-5 w-5", isCompleted ? "text-white" : "text-slate-300")} />
                       )}

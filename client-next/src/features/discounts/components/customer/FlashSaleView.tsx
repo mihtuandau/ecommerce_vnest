@@ -9,11 +9,13 @@ import { Button } from "@/components/ui/Button";
 import { cn } from "@/utils/cn";
 import { Zap, ChevronLeft, ShoppingCart, ShoppingBag, Heart, Clock } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/features/cart/hooks";
 import { useWishlistStore } from "@/store/useWishlistStore";
 import { useToast } from "@/hooks/useToast";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { getImageUrl } from "@/utils/image";
 
 import { QuickAddModal } from "@/features/products/components/customer/cards/QuickAddModal";
 
@@ -65,59 +67,50 @@ function Countdown({ endDate }: { endDate: string }) {
 
 // ── Product Card ───────────────────────────────────────────
 
-function FlashProductCard({ product, discountPercent }: { product: Product; discountPercent: number }) {
+function FlashProductCard({ product: rawProduct, discountPercent }: { product: any; discountPercent: number }) {
   const { addItem } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlistStore();
   const { success, error } = useToast();
   const [isQuickAddOpen, setIsQuickAddOpen] = useState(false);
 
+  const product = rawProduct.product || rawProduct;
   const isFavorite = isInWishlist(String(product.id));
-  const imageUrl =
-    (typeof product.images?.[0] === "string" ? product.images[0] : (product.images?.[0] as any)?.url) ||
-    "/placeholder.png";
+  
+  // Handle image path correctly
+  let images = product.images;
+  if (typeof images === "string") {
+    try { images = JSON.parse(images); } catch (e) { images = []; }
+  }
+  const rawImage = Array.isArray(images) ? images[0] : null;
+  const imageUrl = getImageUrl(typeof rawImage === "string" ? rawImage : (rawImage as any)?.url);
 
   const originalPrice = product.basePrice || 0;
   const salePrice = Math.round(originalPrice * (1 - discountPercent / 100));
 
-  // Lấy dữ liệu thực tế từ Database
-  const soldCount = product.soldCount || 0;
-  
-  // Tính tổng kho từ các phiên bản nếu kho chính bằng 0
-  const variantsStock = product.variants?.reduce((acc, v) => acc + (v.stock || 0), 0) || 0;
-  const stock = (product.stock || 0) > 0 ? product.stock : variantsStock;
-  
-  const totalStock = stock + soldCount;
+  // Use flash sale specific sold/stock if available
+  const soldCount = rawProduct.sold ?? product.soldCount ?? 0;
+  const variantsStock = product.variants?.reduce((acc: number, v: any) => acc + (v.stock || 0), 0) || 0;
+  const stock = rawProduct.stock ?? ((product.stock || 0) > 0 ? product.stock : variantsStock);
+  const totalStock = rawProduct.totalStock || (stock + soldCount);
   const soldPercent = Math.min(100, Math.round((soldCount / Math.max(1, totalStock)) * 100));
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-
     const variants = product.variants || [];
-    const hasMultipleVariants = variants.length > 1;
-    const hasOptions = variants.some((v: any) => v.size || v.color);
-
-    if (hasMultipleVariants || hasOptions) {
+    if (variants.length > 1 || variants.some((v: any) => v.size || v.color)) {
       setIsQuickAddOpen(true);
       return;
     }
-
     const variantId = variants?.[0]?.id;
-    if (!variantId) {
-      error("Phiên bản này hiện không khả dụng");
-      return;
-    }
-
-    import("@/utils/animateCart").then(({ animateFlyToCart }) => {
-      animateFlyToCart(e, imageUrl);
-    });
-
+    if (!variantId) { error("Sản phẩm tạm hết hàng"); return; }
+    import("@/utils/animateCart").then(({ animateFlyToCart }) => { animateFlyToCart(e, imageUrl); });
     addItem({
       productId: String(product.id),
       variantId: String(variantId),
       name: product.name,
       price: salePrice,
-      originalPrice: originalPrice || undefined,
+      originalPrice,
       imageUrl,
       slug: product.slug,
       quantity: 1,
@@ -126,6 +119,7 @@ function FlashProductCard({ product, discountPercent }: { product: Product; disc
 
   const handleToggleWishlist = (e: React.MouseEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     toggleWishlist({
       id: String(product.id),
       name: product.name,
@@ -139,111 +133,98 @@ function FlashProductCard({ product, discountPercent }: { product: Product; disc
   };
 
   return (
-    <div className="group bg-white border border-slate-200/60 rounded-2xl overflow-hidden flex flex-col relative h-full transition-all duration-300 hover:shadow-xl hover:border-orange-500/20 cursor-pointer">
-      {/* Discount badge */}
-      <div className="absolute top-3 left-3 z-20">
-        <div className="bg-gradient-to-r from-[#E85D24] to-[#ff8a50] text-white text-[10px] font-extrabold px-2.5 py-1.5 rounded-lg flex items-center gap-1 shadow-lg shadow-[#E85D24]/20 animate-pulse">
-          <Zap size={10} className="fill-white" />
-          -{discountPercent}%
-        </div>
-      </div>
+    <div className="group relative flex flex-col h-full bg-white rounded-3xl cursor-pointer p-4 transition-all duration-500 hover:shadow-[0_20px_50px_rgba(232,93,36,0.12)] hover:-translate-y-1 border border-slate-100/50">
 
-      {/* Image Container */}
-      <Link
-        href={`/shop/${product.slug}`}
-        className="relative block bg-white aspect-square overflow-hidden p-5"
-      >
-        <img
-          src={imageUrl}
-          alt={product.name}
-          className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-110"
-        />
+      {/* ── IMAGE SECTION ── */}
+      <div className="relative z-30 aspect-square w-full overflow-hidden rounded-2xl bg-slate-50/30">
+        <div className="relative h-full w-full overflow-hidden">
+          <Image
+            src={imageUrl}
+            alt={product.name}
+            fill
+            className="h-full w-full object-cover object-center transition-all duration-1000 ease-in-out group-hover:scale-110 group-hover:rotate-2"
+            sizes="(max-width: 768px) 50vw, 20vw"
+          />
+          {/* Hover Overlay & Action Button */}
+          <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-50">
+            <button
+              onClick={handleAddToCart}
+              className="transition-all duration-500 bg-white/60 backdrop-blur-md text-slate-900 rounded-xl font-semibold shadow-sm border border-white/20 px-6 h-9 flex items-center justify-center active:scale-95 text-[13px] hover:bg-white/60 hover:text-slate-900"
+            >
+              Thêm vào giỏ
+            </button>
+          </div>
+        </div>
         
-        {/* Wishlist Button */}
+        <div className="absolute top-2 left-2 z-30">
+          <div className="bg-gradient-to-r from-[#E85D24] to-[#ff8a50] text-white text-[10px] font-bold px-2.5 py-1 rounded-lg shadow-lg shadow-orange-500/20 flex items-center gap-1 uppercase tracking-wider">
+            <Zap size={10} className="fill-white animate-pulse" />
+            -{discountPercent}%
+          </div>
+        </div>
+
         <button
           onClick={handleToggleWishlist}
           className={cn(
-            "absolute top-3 right-3 h-9 w-9 rounded-full flex items-center justify-center transition-all bg-white shadow-sm border border-slate-100 opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0",
-            isFavorite ? "text-rose-500 opacity-100 translate-x-0" : "text-slate-300 hover:text-rose-500"
+            "absolute top-2 right-2 h-9 w-9 rounded-full flex items-center justify-center transition-all duration-300 shadow-sm z-30",
+            isFavorite ? "text-rose-500 bg-white" : "text-gray-400 bg-white hover:text-rose-500 opacity-0 group-hover:opacity-100 hover:scale-110"
           )}
         >
           <Heart size={16} className={cn(isFavorite && "fill-current")} />
         </button>
-      </Link>
+      </div>
 
-      {/* Info Section */}
-      <div className="flex flex-col flex-1 p-4 pt-2 gap-3">
-        <div className="space-y-2">
-          <div className="flex items-center justify-between h-4">
-            {product.brand?.name ? (
-              <span className="text-[11px] text-[#E85D24] font-bold uppercase tracking-widest opacity-80">
-                {product.brand.name}
+      {/* ── CONTENT SECTION ── */}
+      <div className="relative z-10 mt-4 flex-1 flex flex-col">
+        <div className="flex justify-between items-start gap-3 mb-3">
+          <div className="space-y-1">
+            <Link href={`/shop/${product.slug}`}>
+              <h3 className="text-[14px] font-semibold text-gray-900 line-clamp-2 leading-snug group-hover:text-[#E85D24] transition-colors">
+                {product.name}
+              </h3>
+            </Link>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-bold text-[#E85D24] bg-orange-50 px-2 py-0.5 rounded-full uppercase tracking-tight">
+                {product.brand?.name || "Minh Tuấn"}
               </span>
-            ) : <div />}
-            <div className="flex items-center gap-1 bg-yellow-50 px-2 py-0.5 rounded-full">
-              <Star size={10} className="fill-yellow-500 text-yellow-500" />
-              <span className="text-[11px] font-bold text-yellow-700">
-                {product.averageRating && product.averageRating > 0 
-                  ? product.averageRating.toFixed(1) 
-                  : "N/A"}
-              </span>
+              <div className="flex items-center gap-0.5">
+                <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                <span className="text-[11px] text-gray-900 font-bold">
+                  {product.averageRating || "5.0"}
+                </span>
+              </div>
             </div>
-          </div>
-          <Link href={`/shop/${product.slug}`}>
-            <h3 className="text-[14px] font-bold text-slate-900 leading-snug line-clamp-2 group-hover:text-[#E85D24] transition-colors min-h-[40px]">
-              {product.name}
-            </h3>
-          </Link>
-        </div>
-
-        {/* Progress Section */}
-        <div className="space-y-2.5">
-          <div className="relative h-6 bg-orange-50 rounded-full overflow-hidden border border-orange-100/50 shadow-inner">
-            <div
-              className="h-full bg-gradient-to-r from-[#E85D24] via-[#f36b32] to-[#ff8a50] rounded-full transition-all duration-1000 ease-out relative"
-              style={{ width: `${soldPercent}%` }}
-            >
-              <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(255,255,255,0.15)_25%,transparent_25%,transparent_50%,rgba(255,255,255,0.15)_50%,rgba(255,255,255,0.15)_75%,transparent_75%,transparent)] bg-[length:24px_24px] animate-[progress-stripe_1.5s_linear_infinite]" />
-            </div>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className={cn(
-                "text-[10px] font-black uppercase tracking-tight transition-colors duration-500",
-                soldPercent > 50 ? "text-white" : "text-[#E85D24]"
-              )}>
-                {soldPercent >= 90 ? "⚡ Sắp cháy hàng" : `🔥 Đã bán ${soldCount}`}
-              </span>
-            </div>
-          </div>
-          <div className="flex justify-between items-center px-1">
-             <div className="flex items-center gap-1.5">
-               <span className="w-1.5 h-1.5 rounded-full bg-[#E85D24] animate-pulse" />
-               <span className="text-[11px] font-bold text-slate-500">Còn lại: <span className="text-slate-900 font-black">{stock}</span></span>
-             </div>
-            <span className="text-[11px] font-black text-[#E85D24]">{soldPercent}%</span>
           </div>
         </div>
 
-        {/* Price + CTA */}
-        <div className="flex items-center justify-between mt-auto pt-3 border-t border-slate-50">
-          <div className="space-y-0">
-            <div className="text-[10px] text-slate-400 line-through font-bold">
-              {formatCurrency(originalPrice)}
+        <div className="flex items-baseline gap-2 mb-4">
+          <span className="text-lg font-bold text-[#E85D24] tabular-nums tracking-tight">
+            {formatCurrency(salePrice)}
+          </span>
+          <span className="text-[11px] text-gray-400 line-through tabular-nums font-medium">
+            {formatCurrency(originalPrice)}
+          </span>
+        </div>
+        
+        {/* Progress Row */}
+        <div className="mt-auto">
+          <div className="space-y-1.5">
+            <div className="relative h-1.5 bg-orange-100/30 rounded-full overflow-hidden border border-orange-100/10">
+              <div
+                className="h-full bg-gradient-to-r from-[#E85D24] via-[#f36b32] to-[#ff8a50] rounded-full transition-all duration-1000 ease-out relative"
+                style={{ width: `${soldPercent}%` }}
+              >
+                 <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(255,255,255,0.15)_25%,transparent_25%,transparent_50%,rgba(255,255,255,0.15)_50%,rgba(255,255,255,0.15)_75%,transparent_75%,transparent)] bg-[length:15px_15px] animate-[progress-stripe_1s_linear_infinite]" />
+              </div>
             </div>
-            <div className="flex items-baseline gap-1">
-              <span className="text-lg font-black text-[#E85D24] tracking-tighter">
-                {formatCurrency(salePrice)}
-              </span>
-              <span className="text-[9px] font-bold text-[#E85D24] opacity-80 uppercase">đ</span>
+            <div className="flex justify-between items-center text-[9px] font-bold uppercase tracking-wider">
+              <span className="text-[#E85D24]">Đã bán {soldCount}</span>
+              <span className="text-gray-400">Còn {stock}</span>
             </div>
           </div>
-          <button
-            onClick={handleAddToCart}
-            className="h-10 w-10 rounded-full bg-[#E85D24] text-white flex items-center justify-center transition-all hover:scale-110 active:scale-95 shadow-sm"
-          >
-            <ShoppingCart size={18} />
-          </button>
         </div>
       </div>
+
       <QuickAddModal
         product={product}
         isOpen={isQuickAddOpen}
@@ -377,7 +358,7 @@ export function FlashSaleView() {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
           {flashSale.products.map((product: Product) => (
             <div key={product.id}>
               <FlashProductCard

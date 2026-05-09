@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
+import Image from "next/image";
 import { 
   Dialog, 
   DialogContent, 
@@ -11,7 +12,8 @@ import {
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { productsApi } from "@/features/products/api";
-import { Search, Plus, ShoppingCart, Loader2, Filter, ChevronRight } from "lucide-react";
+import { Search, Plus, ShoppingCart, Filter, ChevronRight } from "lucide-react";
+import { Spinner } from "@/components/ui/Spinner";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { Badge } from "@/components/ui/Badge";
 import { cn } from "@/utils/cn";
@@ -133,7 +135,7 @@ export function ProductSelector({ onSelect }: ProductSelectorProps) {
             <div className="flex-1 overflow-y-auto p-6 bg-slate-50/30">
               {isLoading && products.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-20 text-slate-400">
-                  <Loader2 className="h-10 w-10 animate-spin text-primary mb-4" />
+                  <Spinner size="lg" />
                   <p className="font-bold">Đang tải dữ liệu...</p>
                 </div>
               ) : products.length === 0 ? (
@@ -149,7 +151,14 @@ export function ProductSelector({ onSelect }: ProductSelectorProps) {
                       <div className="p-3 border-b border-slate-50 flex items-center gap-3">
                         <div className="h-12 w-12 bg-slate-100 rounded-xl overflow-hidden shrink-0 border border-slate-100">
                           {product.images?.[0]?.url ? (
-                            <img src={product.images[0].url} alt={product.name} className="h-full w-full object-cover" />
+                            <div className="relative h-full w-full">
+                              <Image 
+                                src={product.images[0].url} 
+                                alt={product.name} 
+                                fill 
+                                className="object-cover" 
+                              />
+                            </div>
                           ) : <div className="h-full w-full flex items-center justify-center font-bold text-slate-300">N/A</div>}
                         </div>
                         <div className="flex-1 min-w-0">

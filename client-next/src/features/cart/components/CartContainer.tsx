@@ -28,18 +28,15 @@ export function CartContainer() {
     clearCart,
   } = useCart();
   
-  const { setItems, toggleSelectItem, toggleSelectAll } = useCartStore();
+  const { toggleSelectItem, toggleSelectAll } = useCartStore();
 
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
-
-  const { user } = useAuthStore();
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Calculate derived state in component for better reactivity
   const selectedItems = items.filter(i => i.selected);
   const selectedCount = selectedItems.length;
   const selectedTotalPrice = selectedItems.reduce((sum, i) => sum + (i.discountedPrice || i.price) * i.quantity, 0);
@@ -47,26 +44,19 @@ export function CartContainer() {
 
   if (!mounted) {
     return (
-      <div className="bg-slate-50/30 min-h-screen">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
-          <div className="flex items-center gap-5 border-b border-slate-200/60 pb-8">
-            <Skeleton className="h-11 w-11 rounded-full shrink-0" />
-            <div className="space-y-2">
-              <Skeleton className="h-8 w-40" />
-              <Skeleton className="h-4 w-60" />
-            </div>
-          </div>
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-            <div className="lg:col-span-8 space-y-6">
-              <Skeleton className="h-14 w-full rounded-2xl" />
+      <div className="bg-white min-h-screen">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+            <div className="lg:col-span-8 space-y-8">
+              <Skeleton className="h-10 w-64" />
               <div className="space-y-4">
                 {[1, 2, 3].map((i) => (
-                  <Skeleton key={i} className="h-32 w-full rounded-2xl" />
+                  <Skeleton key={i} className="h-40 w-full rounded-2xl" />
                 ))}
               </div>
             </div>
             <div className="lg:col-span-4">
-              <Skeleton className="h-80 w-full rounded-[2rem]" />
+              <Skeleton className="h-96 w-full rounded-3xl" />
             </div>
           </div>
         </div>
@@ -79,31 +69,20 @@ export function CartContainer() {
   }
 
   return (
-    <div className="bg-slate-50/30 min-h-screen">
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
-        <div className="flex flex-col gap-8">
+    <div className="bg-white min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
+        <div className="flex flex-col gap-12 lg:gap-16">
           {/* Header Section */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-100 pb-8">
-            <div className="flex items-center gap-5">
-              <button 
-                type="button"
-                onClick={() => router.back()}
-                className="h-11 w-11 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:text-primary hover:border-primary hover:bg-blue-50 transition-all shrink-0 shadow-sm"
-              >
-                <ChevronLeft size={20} />
-              </button>
-              <div className="space-y-1">
-                <h1 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">Giỏ hàng của bạn</h1>
-                <p className="text-slate-600 text-sm font-normal">Bạn có {items.length} sản phẩm trong giỏ hàng</p>
-              </div>
-            </div>
+          <div className="space-y-2">
+            <h1 className="text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight">Giỏ hàng</h1>
+            <p className="text-slate-400 text-sm font-medium">Bạn đang có {items.length} sản phẩm trong giỏ hàng</p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 items-start">
             {/* Left Column: Product List */}
-            <div className="lg:col-span-8 space-y-6">
-              {/* Select All Bar */}
-              <div className="flex items-center justify-between bg-white px-6 py-4 rounded-2xl border border-slate-100">
+            <div className="lg:col-span-7 xl:col-span-8">
+              {/* Subtle Select All Bar */}
+              <div className="flex items-center justify-between pb-6 border-b border-slate-100 mb-2">
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => toggleSelectAll(!isAllSelected)}
@@ -111,27 +90,24 @@ export function CartContainer() {
                       "w-5 h-5 rounded-md border flex items-center justify-center transition-all",
                       isAllSelected
                         ? "bg-primary border-primary text-white"
-                        : "border-slate-300 hover:border-primary bg-white"
+                        : "border-slate-200 hover:border-primary bg-white"
                     )}
                   >
                     {isAllSelected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
                   </button>
-                  <span className="text-sm font-semibold text-slate-700">
-                    Chọn tất cả ({items.length} sản phẩm)
+                  <span className="text-sm font-bold text-slate-900">
+                    Chọn tất cả
                   </span>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-slate-500 hover:text-red-500 hover:bg-red-50 font-medium text-[11px] gap-2"
+                <button
+                  className="text-slate-400 hover:text-rose-500 font-bold text-xs transition-colors"
                   onClick={clearCart}
                 >
-                  <Trash2 className="h-3.5 w-3.5" />
-                  Xóa tất cả
-                </Button>
+                  Xóa toàn bộ
+                </button>
               </div>
 
-              <div className="space-y-4">
+              <div className="divide-y divide-slate-100">
                 {items.map((item) => (
                   <CartItem
                     key={item.variantId}
@@ -143,13 +119,13 @@ export function CartContainer() {
                 ))}
               </div>
 
-              <div className="pt-6">
+              <div className="pt-10">
                 <Button
                   asChild
                   variant="ghost"
-                  className="text-slate-500 hover:text-primary hover:bg-slate-100 rounded-xl px-6 h-12 font-medium text-sm group"
+                  className="text-primary hover:bg-primary/5 rounded-full px-8 h-12 font-bold text-xs group"
                 >
-                  <Link href={ROUTES.HOME} className="flex items-center gap-3">
+                  <Link href={ROUTES.HOME} className="flex items-center gap-2">
                     <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
                     Tiếp tục mua sắm
                   </Link>
@@ -158,7 +134,7 @@ export function CartContainer() {
             </div>
 
             {/* Right Column: Order Summary */}
-            <div className="lg:col-span-4 lg:sticky lg:top-24">
+            <div className="lg:col-span-5 xl:col-span-4 lg:sticky lg:top-24">
               <CartSummary
                 selectedCount={selectedCount}
                 selectedTotalPrice={selectedTotalPrice}

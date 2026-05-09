@@ -12,6 +12,7 @@ import {
   SelectValue 
 } from "@/components/ui/Select";
 import Link from "next/link";
+import { Spinner } from "@/components/ui/Spinner";
 
 type Province = {
   ProvinceID: number;
@@ -152,7 +153,14 @@ export const ShippingForm = React.memo(function ShippingForm({
               disabled={!form.provinceId || isLoadingDistricts}
             >
               <SelectTrigger className="rounded-xl h-11 border-slate-200 text-sm">
-                <SelectValue placeholder={isLoadingDistricts ? "Đang tải..." : "Chọn Quận/Huyện"} />
+                <SelectValue placeholder={
+                  isLoadingDistricts ? (
+                    <div className="flex items-center gap-2">
+                      <Spinner size="sm" variant="slate" />
+                      <span>Đang tải...</span>
+                    </div>
+                  ) : "Chọn Quận/Huyện"
+                } />
               </SelectTrigger>
               <SelectContent className="rounded-xl border-slate-100 max-h-[300px]">
                 {districts.map((d) => (
@@ -171,7 +179,14 @@ export const ShippingForm = React.memo(function ShippingForm({
               disabled={!form.districtId || isLoadingWards}
             >
               <SelectTrigger className="rounded-xl h-11 border-slate-200 text-sm">
-                <SelectValue placeholder={isLoadingWards ? "Đang tải..." : "Chọn Phường/Xã"} />
+                <SelectValue placeholder={
+                  isLoadingWards ? (
+                    <div className="flex items-center gap-2">
+                      <Spinner size="sm" variant="slate" />
+                      <span>Đang tải...</span>
+                    </div>
+                  ) : "Chọn Phường/Xã"
+                } />
               </SelectTrigger>
               <SelectContent className="rounded-xl border-slate-100 max-h-[300px]">
                 {wards.map((w) => (

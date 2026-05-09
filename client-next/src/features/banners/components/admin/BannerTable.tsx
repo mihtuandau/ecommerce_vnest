@@ -1,5 +1,6 @@
 "use client";
-
+import React from "react";
+import Image from "next/image";
 import { ColumnDef } from "@tanstack/react-table";
 import { Banner } from "@/types/models";
 import { DataTable } from "@/components/ui/DataTable";
@@ -25,10 +26,11 @@ export const columns: ColumnDef<Banner>[] = [
     header: "Hình ảnh",
     cell: ({ row }) => (
       <div className="relative h-16 w-32 rounded-xl overflow-hidden border border-slate-100 shadow-sm bg-slate-50 group">
-        <img
+        <Image
           src={row.getValue("image")}
           alt="Banner"
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+          fill
+          className="object-cover transition-transform duration-500 group-hover:scale-110"
         />
         <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors" />
       </div>

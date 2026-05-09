@@ -11,6 +11,7 @@ import { OrderTabs } from "@/features/orders/components/admin/list/Tabs";
 import { OrderListToolbar } from "@/features/orders/components/admin/list/ListToolbar";
 import { OrderListHeader } from "@/features/orders/components/admin/list/ListHeader";
 import { OrderStatus } from "@/types/enums";
+import { Spinner } from "@/components/ui/Spinner";
 
 export default function AdminOrdersPage() {
   const { data: orders = [], isLoading, refetch, isFetching } = useOrders({ limit: 1000 });
@@ -80,7 +81,7 @@ export default function AdminOrdersPage() {
           {isLoading ? (
             <div className="flex h-96 items-center justify-center">
               <div className="flex flex-col items-center gap-3">
-                <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+                <Spinner size="lg" />
                 <p className="text-sm font-semibold text-primary">Đang tải dữ liệu...</p>
               </div>
             </div>

@@ -23,7 +23,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/Card";
-import { User, Mail, Phone, Camera, Loader2, Save, ShieldCheck } from "lucide-react";
+import { User, Mail, Phone, Camera, Save, ShieldCheck } from "lucide-react";
+import { Spinner } from "@/components/ui/Spinner";
 import { useState, useRef, useEffect } from "react";
 import { productsApi } from "@/features/products/api";
 import { usersApi } from "@/features/users/api";
@@ -139,7 +140,7 @@ export default function ProfilePage() {
   if (!user) {
     return (
       <div className="flex h-[60vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <Spinner size="lg" />
       </div>
     );
   }
@@ -183,7 +184,7 @@ export default function ProfilePage() {
                   disabled={isUploading}
                 >
                   {isUploading ? (
-                    <Loader2 size={18} className="animate-spin" />
+                    <Spinner size="sm" variant="white" />
                   ) : (
                     <Camera size={18} />
                   )}
@@ -372,7 +373,7 @@ export default function ProfilePage() {
                       disabled={updateUser.isPending}
                     >
                       {updateUser.isPending ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <Spinner size="sm" variant="white" />
                       ) : (
                         <Save className="h-4 w-4" />
                       )}

@@ -26,6 +26,7 @@ import { DetailSidebar } from "./detail/DetailSidebar";
 import { PrintInvoice } from "../admin/detail/PrintInvoice";
 import { RequestReturnModal } from "./detail/RequestReturnModal";
 import { ConfirmReturnModal } from "./detail/ConfirmReturnModal";
+import { ConfirmCancelModal } from "./detail/ConfirmCancelModal";
 import { useQueryClient } from "@tanstack/react-query";
 import { useUpdateReturnStatus } from "@/features/returns/hooks";
 
@@ -76,6 +77,7 @@ export function OrderDetailView() {
   const queryClient = useQueryClient();
   const [isReturnModalOpen, setIsReturnModalOpen] = useState(false);
   const [isConfirmReturnOpen, setIsConfirmReturnOpen] = useState(false);
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const { mutate: updateReturnStatus, isPending: isUpdatingStatus } =
     useUpdateReturnStatus();
 
@@ -169,7 +171,7 @@ export function OrderDetailView() {
   return (
     <div className="min-h-screen bg-white pb-20 relative">
       <div className="no-print">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
           <DetailHeader
             orderCode={order.orderCode}
             orderId={order.id}
@@ -179,7 +181,7 @@ export function OrderDetailView() {
             isPaid={isPaid}
             isCancelled={isCancelled}
             onReorder={handleReorder}
-            onCancel={() => confirm("Hủy đơn hàng này?") && cancelOrder(String(order.id))}
+            onCancel={() => setIsCancelModalOpen(true)}
             onReturn={() => setIsReturnModalOpen(true)}
             onConfirmReturn={() => {
               updateReturnStatus({
@@ -192,13 +194,42 @@ export function OrderDetailView() {
             statusConfig={statusConfig}
           />
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2 space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
+            <div className="lg:col-span-8 space-y-8">
               <DetailStepper
                 status={order.status}
                 isCancelled={isCancelled}
                 returnStatus={order.returnRequest?.status}
               />
+
+              {order.returnRequest && (
+                <div className="border border-slate-100 rounded-2xl p-6 lg:p-8 space-y-6 bg-white shadow-sm">
+                  <div className="flex items-center gap-4">
+                    <div className="h-12 w-12 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-600 border border-amber-100">
+                      <AlertCircle size={22} />
+                    </div>
+                    <div>
+                      <h3 className="text-base font-semibold text-slate-900">Chi tiết yêu cầu trả hàng</h3>
+                      <p className="text-xs text-slate-400 font-medium mt-1">Cập nhật: {new Date(order.returnRequest?.updatedAt || order.updatedAt).toLocaleString("vi-VN")}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-6 border-t border-slate-50">
+                    <div className="space-y-2">
+                      <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Lý do của bạn</p>
+                      <p className="text-sm text-slate-700 font-medium leading-relaxed">{order.returnRequest.reason}</p>
+                    </div>
+                    {order.returnRequest?.adminNote && (
+                      <div className="space-y-2">
+                        <p className="text-[11px] font-bold text-amber-600 uppercase tracking-widest">Phản hồi từ Shop</p>
+                        <div className="p-4 bg-amber-50/50 rounded-xl border border-amber-100/50">
+                          <p className="text-sm text-slate-700 font-medium italic leading-relaxed">"{order.returnRequest.adminNote}"</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
 
               <DetailItems
                 orderItems={order.orderItems}
@@ -207,22 +238,25 @@ export function OrderDetailView() {
                 discountAmount={order.discountAmount}
                 status={order.status}
                 orderId={order.id}
+                reviews={order.reviews}
               />
             </div>
 
-            <DetailSidebar
-              orderId={order.id}
-              shippingSnapshot={order.shippingSnapshot || {}}
-              user={order.user}
-              addressRelation={order.address}
-              paymentMethod={order.paymentMethod}
-              paymentStatus={order.paymentStatus || order.payment?.status || ""}
-              isPaid={isPaid}
-              isCancelled={isCancelled}
-              isReturned={order.status === OrderStatus.RETURNED}
-              isReturning={order.status === OrderStatus.RETURN_REQUESTED}
-              shippingCode={order.shippingCode}
-            />
+            <div className="lg:col-span-4">
+              <DetailSidebar
+                orderId={order.id}
+                shippingSnapshot={order.shippingSnapshot || {}}
+                user={order.user}
+                addressRelation={order.address}
+                paymentMethod={order.paymentMethod}
+                paymentStatus={order.paymentStatus || order.payment?.status || ""}
+                isPaid={isPaid}
+                isCancelled={isCancelled}
+                isReturned={order.status === OrderStatus.RETURNED}
+                isReturning={order.status === OrderStatus.RETURN_REQUESTED}
+                shippingCode={order.shippingCode}
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -233,6 +267,15 @@ export function OrderDetailView() {
         orderId={order.id}
         orderCode={order.orderCode}
         onSuccess={handleReturnSuccess}
+      />
+
+      <ConfirmCancelModal
+        isOpen={isCancelModalOpen}
+        onClose={() => setIsCancelModalOpen(false)}
+        onConfirm={() => {
+          cancelOrder(String(order.id));
+          setIsCancelModalOpen(false);
+        }}
       />
 
       {/* DEDICATED PRINT COMPONENT */}

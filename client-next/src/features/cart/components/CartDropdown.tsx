@@ -8,6 +8,7 @@ import { formatCurrency } from "@/utils/formatCurrency";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { ROUTES } from "@/constants/routes";
 import { cn } from "@/utils/cn";
 
@@ -113,10 +114,11 @@ export function CartDropdown() {
                 {items.map((item) => (
                   <div key={item.variantId} className="group relative flex gap-4 p-2 rounded-2xl hover:bg-slate-50 transition-all duration-200">
                     <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl bg-white border border-slate-100 p-1 flex items-center justify-center">
-                      <img
+                      <Image
                         src={item.imageUrl}
                         alt={item.name}
-                        className="max-h-full max-w-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-500"
+                        fill
+                        className="object-contain p-1 mix-blend-multiply group-hover:scale-110 transition-transform duration-500"
                       />
                     </div>
                     <div className="flex flex-1 flex-col justify-between py-0.5 min-w-0">

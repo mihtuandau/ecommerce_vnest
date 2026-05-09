@@ -11,6 +11,7 @@ import {
   ShoppingCart,
   Trash2,
 } from "lucide-react";
+import Image from "next/image";
 import { chatApi } from "../api";
 import { productsApi } from "@/features/products/api";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -80,37 +81,32 @@ const ChatProductCard = ({
   return (
     <Link
       href={`/shop/${product.slug}`}
-      className="flex items-center gap-3 p-2 bg-white border border-slate-100 rounded-xl hover:border-primary/30 hover:shadow-sm transition-all group mt-2"
+      className="flex items-center gap-3 p-2 bg-white border border-slate-100 rounded-xl hover:border-primary/30 hover:shadow-sm transition-all group mt-2 relative z-10"
     >
-      <div className="h-12 w-12 rounded-lg bg-slate-50 flex-shrink-0 overflow-hidden border border-slate-100">
-        <img
+      <div className="h-12 w-12 rounded-lg bg-slate-50/50 flex-shrink-0 overflow-hidden border border-slate-50 flex items-center justify-center relative">
+        <Image
           src={normalizeImagePath(product.images?.[0]?.url || product.image)}
           alt={product.name}
-          className="h-full w-full object-contain group-hover:scale-105 transition-transform"
+          fill
+          className="object-contain p-1.5 transition-all duration-500 group-hover:scale-110 group-hover:rotate-1"
         />
       </div>
       <div className="flex-1 min-w-0">
-        <h4 className="text-[11px] font-semibold text-slate-900 truncate">
+        <h4 className="text-[11px] font-medium text-gray-900 truncate group-hover:text-primary transition-colors">
           {product.name}
         </h4>
         <div className="flex items-center gap-2 mt-0.5">
-          {hasDiscount ? (
-            <>
-              <span className="text-[11px] font-bold text-red-500">
-                {formatCurrency(currentPrice)}
-              </span>
-              <span className="text-[9px] text-slate-400 line-through">
-                {formatCurrency(originalPrice)}
-              </span>
-            </>
-          ) : (
-            <span className="text-[11px] font-bold text-primary">
-              {formatCurrency(product.basePrice)}
+          <span className="text-[11px] font-bold text-gray-900 tabular-nums">
+            {formatCurrency(currentPrice)}
+          </span>
+          {hasDiscount && (
+            <span className="text-[9px] text-gray-400 line-through tabular-nums">
+              {formatCurrency(originalPrice)}
             </span>
           )}
         </div>
       </div>
-      <ChevronRight className="h-3 w-3 text-slate-300" />
+      <ChevronRight className="h-3 w-3 text-gray-300 group-hover:text-primary transition-colors" />
     </Link>
   );
 };

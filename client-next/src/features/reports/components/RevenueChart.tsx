@@ -14,7 +14,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { useRevenueReport } from "../hooks";
-import { Loader2 } from "lucide-react";
+import { Spinner } from "@/components/ui/Spinner";
 
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
@@ -48,7 +48,7 @@ export function RevenueChart({ params }: { params?: Record<string, string | unde
   if (isLoading) {
     return (
       <Card className="border border-slate-200 shadow-none overflow-hidden h-[516px] flex items-center justify-center bg-white rounded-xl">
-        <Loader2 className="h-8 w-8 animate-spin text-slate-200" />
+        <Spinner size="lg" />
       </Card>
     );
   }

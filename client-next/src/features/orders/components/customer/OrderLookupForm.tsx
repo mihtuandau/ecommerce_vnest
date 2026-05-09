@@ -20,66 +20,64 @@ export function OrderLookupForm() {
   };
 
   return (
-    <div className="min-h-[70vh] bg-slate-50/30 flex items-center justify-center p-4 py-12">
-      <div className="w-full max-w-xl">
-        <div className="text-center mb-8 space-y-2">
-          <div className="h-16 w-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm border border-slate-100">
-            <Package className="h-8 w-8 text-primary stroke-[1.5]" />
+    <div className="min-h-[80vh] bg-white flex items-center justify-center p-6">
+      <div className="w-full max-w-lg">
+        <div className="text-center mb-12 space-y-4">
+          <div className="h-20 w-20 bg-slate-50 rounded-3xl flex items-center justify-center mx-auto mb-6 border border-slate-100 transition-transform hover:scale-105 duration-300">
+            <Package className="h-10 w-10 text-primary stroke-[1.25]" />
           </div>
-          <h1 className="text-2xl font-semibold text-slate-900 tracking-tight">Tra cứu đơn hàng</h1>
-          <p className="text-slate-500 text-sm max-w-md mx-auto leading-relaxed">
-            Nhập mã đơn hàng và thông tin liên hệ để theo dõi hành trình đơn hàng của bạn.
+          <h1 className="text-3xl font-semibold text-slate-900 tracking-tight">Theo dõi đơn hàng</h1>
+          <p className="text-slate-400 text-[13px] max-w-[280px] mx-auto leading-relaxed font-medium">
+            Nhập mã đơn hàng và thông tin liên hệ để cập nhật trạng thái đơn hàng của bạn.
           </p>
         </div>
 
-        <Card className="border border-slate-100 shadow-[0_32px_64px_-15px_rgba(0,0,0,0.05)] rounded-[2rem] overflow-hidden bg-white/80 backdrop-blur-xl">
-          <CardContent className="p-8 md:p-10">
-            <form onSubmit={handleLookup} className="space-y-6">
-              <div className="space-y-2.5">
-                <label className="text-xs font-semibold text-slate-500 ml-1">Mã đơn hàng</label>
-                <div className="relative group">
-                  <Package className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-primary transition-colors" />
-                  <Input
-                    placeholder="Ví dụ: ORD-QQ2AW4"
-                    value={orderCode}
-                    onChange={(e) => setOrderCode(e.target.value.toUpperCase())}
-                    className="h-12 pl-12 rounded-xl bg-slate-50/50 border-slate-100 focus:bg-white focus:border-primary/20 focus:ring-4 focus:ring-primary/5 transition-all text-sm font-medium text-slate-900 placeholder:text-slate-400"
-                    required
-                  />
-                </div>
+        <div className="space-y-8">
+          <form onSubmit={handleLookup} className="space-y-6">
+            <div className="space-y-3">
+              <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-widest ml-1">Mã đơn hàng</label>
+              <div className="relative group">
+                <Package className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-primary transition-colors" />
+                <Input
+                  placeholder="Ví dụ: ORD-QQ2AW4"
+                  value={orderCode}
+                  onChange={(e) => setOrderCode(e.target.value.toUpperCase())}
+                  className="h-14 pl-12 rounded-2xl bg-slate-50/50 border-slate-100 focus:bg-white focus:border-primary/30 focus:ring-4 focus:ring-primary/5 transition-all text-sm font-semibold text-slate-900 placeholder:text-slate-300 placeholder:font-medium"
+                  required
+                />
               </div>
-
-              <div className="space-y-2.5">
-                <label className="text-xs font-semibold text-slate-500 ml-1">Số điện thoại / Email</label>
-                <div className="relative group">
-                  <ShieldCheck className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-primary transition-colors" />
-                  <Input
-                    placeholder="Thông tin dùng khi đặt hàng"
-                    value={contact}
-                    onChange={(e) => setContact(e.target.value)}
-                    className="h-12 pl-12 rounded-xl bg-slate-50/50 border-slate-100 focus:bg-white focus:border-primary/20 focus:ring-4 focus:ring-primary/5 transition-all text-sm font-medium text-slate-900 placeholder:text-slate-400"
-                    required
-                  />
-                </div>
-              </div>
-
-              <Button 
-                type="submit" 
-                className="w-full h-13 rounded-xl bg-primary hover:bg-[#0d47a1] text-white font-semibold text-sm shadow-lg shadow-primary/10 transition-all active:scale-95 group"
-              >
-                Tra cứu ngay
-                <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-              </Button>
-            </form>
-
-            <div className="mt-12 pt-8 border-t border-slate-50 text-center">
-              <p className="text-[13px] text-slate-400 leading-relaxed font-medium">
-                Cần hỗ trợ? <br className="sm:hidden" />
-                Vui lòng gọi <span className="text-slate-900 font-bold">1900-xxxx</span> (8h00 - 22h00)
-              </p>
             </div>
-          </CardContent>
-        </Card>
+
+            <div className="space-y-3">
+              <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-widest ml-1">Số điện thoại / Email</label>
+              <div className="relative group">
+                <ShieldCheck className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-primary transition-colors" />
+                <Input
+                  placeholder="Thông tin dùng khi đặt hàng"
+                  value={contact}
+                  onChange={(e) => setContact(e.target.value)}
+                  className="h-14 pl-12 rounded-2xl bg-slate-50/50 border-slate-100 focus:bg-white focus:border-primary/30 focus:ring-4 focus:ring-primary/5 transition-all text-sm font-semibold text-slate-900 placeholder:text-slate-300 placeholder:font-medium"
+                  required
+                />
+              </div>
+            </div>
+
+            <Button 
+              type="submit" 
+              className="w-full h-14 rounded-2xl bg-primary hover:brightness-110 text-white font-semibold text-sm shadow-xl shadow-primary/10 transition-all active:scale-[0.98] group flex items-center justify-center gap-2"
+            >
+              Tiếp tục
+              <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+            </Button>
+          </form>
+
+          <div className="pt-10 border-t border-slate-50 text-center">
+            <p className="text-[13px] text-slate-400 leading-relaxed font-medium">
+              Bạn gặp khó khăn khi tra cứu? <br className="sm:hidden" />
+              Hãy gọi <span className="text-slate-900 font-semibold underline underline-offset-4 decoration-slate-200">1900 8198</span>
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

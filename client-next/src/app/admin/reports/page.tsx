@@ -8,7 +8,7 @@ import { StatCards } from "@/features/reports/components/StatCards";
 import { RevenueChart } from "@/features/reports/components/RevenueChart";
 import { TopProductsList } from "@/features/reports/components/TopProductsList";
 import { OrderStatusChart } from "@/features/dashboard/components/OrderStatusChart";
-import { Loader2 } from "lucide-react";
+import { Spinner } from "@/components/ui/Spinner";
 import { usePermission } from "@/hooks/usePermission";
 import { AccessDenied } from "@/components/ui/AccessDenied";
 
@@ -80,7 +80,7 @@ export default function AdminReportsPage() {
 
       {isLoading ? (
         <div className="h-[400px] flex flex-col items-center justify-center gap-4 bg-white/50 rounded-3xl border border-slate-100 border-dashed">
-          <Loader2 className="h-10 w-10 animate-spin text-slate-200" />
+          <Spinner size="lg" />
           <p className="text-xs font-bold text-slate-400 uppercase tracking-[0.2em]">
             Đang phân tích dữ liệu...
           </p>

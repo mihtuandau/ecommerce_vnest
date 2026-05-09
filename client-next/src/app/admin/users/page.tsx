@@ -9,6 +9,8 @@ import { Toolbar } from "@/features/users/components/admin/list/Toolbar";
 import { Role } from "@/types/enums";
 import { User } from "@/types/models";
 
+import { Spinner } from "@/components/ui/Spinner";
+
 export default function AdminUsersPage() {
   const { data, isLoading } = useUsers();
   const [searchTerm, setSearchTerm] = React.useState("");
@@ -49,7 +51,7 @@ export default function AdminUsersPage() {
         <div className="overflow-x-auto">
           {isLoading ? (
             <div className="flex h-96 flex-col items-center justify-center gap-3">
-              <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+              <Spinner size="lg" />
               <p className="text-sm font-bold text-slate-400">Đang tải dữ liệu...</p>
             </div>
           ) : (

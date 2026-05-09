@@ -8,7 +8,9 @@ import { Input } from "@/components/ui/Input";
 import Link from "next/link";
 import { ROUTES } from "@/constants/routes";
 import { useRouter } from "next/navigation";
-import { User, Lock, Mail, Phone, Facebook, Eye, EyeOff, Loader2 } from "lucide-react";
+import { User, Lock, Mail, Phone, Facebook, Eye, EyeOff } from "lucide-react";
+import { Spinner } from "@/components/ui/Spinner";
+import Image from "next/image";
 import { cn } from "@/utils/cn";
 
 export function RegisterForm() {
@@ -70,10 +72,12 @@ export function RegisterForm() {
     <>
       <div className="text-center mb-6">
         <Link href="/" className="inline-flex justify-center mb-4">
-          <div className="bg-white/80 backdrop-blur-md p-3 rounded-[1rem] shadow-sm border border-white/20">
-            <img
+          <div className="bg-white/80 backdrop-blur-md p-3 rounded-[1rem] shadow-sm border border-white/20 relative w-fit mx-auto">
+            <Image
               src="/logoMT.png"
               alt="Minh Tuan Shop Logo"
+              width={128}
+              height={32}
               className="h-8 w-auto object-contain"
             />
           </div>
@@ -279,7 +283,7 @@ export function RegisterForm() {
         >
           {isRegistering ? (
             <>
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <Spinner size="sm" variant="slate" />
               Đang xử lý...
             </>
           ) : (

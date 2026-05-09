@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import { Save, Loader2, RefreshCw, Lock } from "lucide-react";
+import { Save, RefreshCw, Lock } from "lucide-react";
+import { Spinner } from "@/components/ui/Spinner";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/utils/cn";
 
@@ -48,7 +49,7 @@ export function PermissionHeader({ isPending, hasChanges, onSave, onRefresh }: P
           onClick={onSave}
           disabled={isPending}
         >
-          {isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
+          {isPending ? <Spinner size="sm" variant="white" /> : <Save className="h-3.5 w-3.5" />}
           {isPending ? "Đang lưu..." : "Lưu thay đổi"}
         </Button>
       </div>

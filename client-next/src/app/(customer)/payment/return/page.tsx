@@ -1,7 +1,7 @@
 import { PaymentReturnView } from "@/features/checkout/components/PaymentReturnView";
 import { Metadata } from "next";
 import { Suspense } from "react";
-import { Loader2 } from "lucide-react";
+import { Spinner } from "@/components/ui/Spinner";
 
 export const metadata: Metadata = {
   title: "Kết quả thanh toán — Minh Tuấn Store",
@@ -13,7 +13,7 @@ export default function PaymentReturnPage() {
     <Suspense 
       fallback={
         <div className="min-h-screen flex items-center justify-center bg-slate-50/50">
-          <Loader2 className="h-8 w-8 animate-spin text-primary/30" />
+          <Spinner size="lg" />
         </div>
       }
     >

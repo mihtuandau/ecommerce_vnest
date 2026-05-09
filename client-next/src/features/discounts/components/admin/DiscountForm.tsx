@@ -7,7 +7,8 @@ import * as z from "zod";
 import { Form } from "@/components/ui/Form";
 import { Button } from "@/components/ui/Button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs";
-import { Loader2, Save } from "lucide-react";
+import { Save } from "lucide-react";
+import { Spinner } from "@/components/ui/Spinner";
 import { useRouter } from "next/navigation";
 import { useProducts } from "@/features/products/hooks";
 import { Product } from "@/types/models";
@@ -112,7 +113,7 @@ export function DiscountForm({ initialData, onSubmit, isLoading }: DiscountFormP
             disabled={isLoading}
           >
             {isLoading ? (
-              <Loader2 className="h-5 w-5 animate-spin" />
+              <Spinner size="sm" variant="white" />
             ) : (
               <Save className="h-5 w-5" />
             )}

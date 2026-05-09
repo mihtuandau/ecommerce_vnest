@@ -418,7 +418,7 @@ export class MailService {
       <div class="divider"></div>
 
       <div class="btn-center">
-        <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/orders/guest/lookup/${orderCode}?contact=${email}" class="btn">
+        <a href="${this.getFrontendUrl()}/orders/guest/lookup/${orderCode}?contact=${email}" class="btn">
           Tra cứu đơn hàng
         </a>
       </div>
@@ -531,7 +531,7 @@ export class MailService {
       <div class="divider"></div>
 
       <div class="btn-center">
-        <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/account/orders" class="btn">
+        <a href="${this.getFrontendUrl()}/account/orders" class="btn">
           Đánh giá sản phẩm
         </a>
       </div>
@@ -577,7 +577,7 @@ export class MailService {
       <div class="divider"></div>
 
       <div class="btn-center">
-        <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/products" class="btn">
+        <a href="${this.getFrontendUrl()}/products" class="btn">
           Tiếp tục mua sắm
         </a>
       </div>
@@ -597,6 +597,15 @@ export class MailService {
     } catch (error) {
       this.logger.error(`Failed to queue order cancelled email for ${email}:`, error);
     }
+  }
+
+  private getFrontendUrl(): string {
+    const urls = (process.env.FRONTEND_URL || 'http://localhost:3000').split(',');
+    if (process.env.NODE_ENV === 'production') {
+      const prodUrl = urls.find(u => u.trim().startsWith('https'));
+      if (prodUrl) return prodUrl.trim();
+    }
+    return urls[0].trim();
   }
 
   private formatCurrency(amount: number): string {

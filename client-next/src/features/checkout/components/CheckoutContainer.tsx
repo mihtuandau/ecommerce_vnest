@@ -8,7 +8,8 @@ import { discountsApi } from "@/features/discounts/api";
 import { useToast } from "@/hooks/useToast";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ROUTES } from "@/constants/routes";
-import { Truck, Loader2, ArrowLeft, CheckCircle2 } from "lucide-react";
+import { Truck, ArrowLeft, CheckCircle2 } from "lucide-react";
+import { Spinner } from "@/components/ui/Spinner";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Button } from "@/components/ui/Button";
@@ -67,7 +68,6 @@ export function CheckoutContainer() {
 
   const [mounted, setMounted] = useState(false);
   const [hasAppliedDefault, setHasAppliedDefault] = useState(false);
-  const [isSuccessRedirecting, setIsSuccessRedirecting] = useState(false);
 
   const isBuyNow = searchParams.get("buyNow") === "true";
   const displayItems = React.useMemo(
@@ -369,11 +369,7 @@ export function CheckoutContainer() {
         guestPhone: form.phone,
       };
 
-      // Ép độ trễ tối thiểu 1.5s để người dùng cảm nhận được quá trình xử lý chuyên nghiệp
-      const [res] = await Promise.all([
-        ordersApi.createOrder(orderData, isGuest),
-        new Promise(resolve => setTimeout(resolve, 1500))
-      ]);
+      const res = await ordersApi.createOrder(orderData, isGuest);
       const paymentLink = res.paymentLink || res.payment?.paymentLink;
 
       if (form.paymentMethod === "VNPAY" && !paymentLink) {
@@ -390,7 +386,6 @@ export function CheckoutContainer() {
       }
 
       success("Đặt hàng thành công!");
-      setIsSuccessRedirecting(true);
       
       const successParams = new URLSearchParams();
       if (res.orderCode) successParams.set("orderCode", res.orderCode);
@@ -435,27 +430,15 @@ export function CheckoutContainer() {
     );
   }
 
-  // Màn hình xử lý ngay khi nhấn đặt hàng hoặc sau khi thành công
-  if (isSubmitting || isSuccessRedirecting) {
+  // Màn hình xử lý ngay khi nhấn đặt hàng
+  if (isSubmitting) {
     return (
       <div className="fixed inset-0 z-[100] bg-white/95 backdrop-blur-sm flex flex-col items-center justify-center animate-in fade-in duration-300">
         <div className="flex flex-col items-center gap-5">
-          {isSuccessRedirecting ? (
-            <div className="bg-green-50 p-4 rounded-full animate-in zoom-in duration-500">
-              <CheckCircle2 className="h-12 w-12 text-green-500" />
-            </div>
-          ) : (
-            <Loader2 className="h-10 w-10 text-primary animate-spin" />
-          )}
+          <Spinner size="lg" />
           <div className="text-center">
-            <h2 className="text-xl font-bold text-slate-900">
-              {isSuccessRedirecting ? "Đặt hàng thành công!" : "Đang xử lý đơn hàng"}
-            </h2>
-            <p className="text-sm text-slate-500 mt-1 font-medium">
-              {isSuccessRedirecting 
-                ? "Hệ thống đang chuyển hướng..." 
-                : "Hệ thống đang xác nhận yêu cầu của bạn"}
-            </p>
+            <h2 className="text-xl font-bold text-slate-900">Đang xử lý đơn hàng</h2>
+            <p className="text-sm text-slate-500 mt-1 font-medium">Hệ thống đang xác nhận yêu cầu của bạn</p>
           </div>
         </div>
       </div>

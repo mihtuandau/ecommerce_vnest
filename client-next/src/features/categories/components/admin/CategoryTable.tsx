@@ -7,8 +7,9 @@ import { Button } from "@/components/ui/Button";
 import { Pencil, Trash, ExternalLink, Image as ImageIcon } from "lucide-react";
 import { useDeleteCategory } from "../../hooks";
 import { cn } from "@/utils/cn";
-import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/Badge";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export const columns: ColumnDef<Category>[] = [
   {
@@ -23,14 +24,12 @@ export const columns: ColumnDef<Category>[] = [
     header: "Hình ảnh",
     cell: ({ row }) => (
       <div className="relative h-12 w-12 rounded-xl overflow-hidden border border-slate-100 shadow-sm bg-slate-50 group">
-        <img
+        <Image
           src={row.getValue("image") || "/placeholder-category.png"}
           alt="Category"
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-          onError={(e) => {
-            (e.target as HTMLImageElement).src =
-              "https://placehold.co/100x100?text=No+Img";
-          }}
+          fill
+          unoptimized
+          className="object-cover transition-transform duration-500 group-hover:scale-110"
         />
       </div>
     ),

@@ -5,7 +5,8 @@ import { useParams, useRouter } from "next/navigation";
 import { CategoryForm } from "@/features/categories/components/admin/CategoryForm";
 import { useCategoryDetail, useUpdateCategory } from "@/features/categories/hooks";
 import { Button } from "@/components/ui/Button";
-import { ChevronLeft, Loader2 } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
+import { Spinner } from "@/components/ui/Spinner";
 
 export default function EditCategoryPage() {
   const { id } = useParams() as { id: string };
@@ -27,10 +28,7 @@ export default function EditCategoryPage() {
   if (isLoading) {
     return (
       <div className="h-96 flex flex-col items-center justify-center gap-4">
-        <div className="relative">
-          <Loader2 className="h-10 w-10 animate-spin text-slate-200" />
-          <ChevronLeft className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-        </div>
+        <Spinner size="lg" />
         <p className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em]">Đang tải dữ liệu danh mục...</p>
       </div>
     );

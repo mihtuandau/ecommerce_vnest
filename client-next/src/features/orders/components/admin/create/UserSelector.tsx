@@ -11,7 +11,8 @@ import {
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { usersApi } from "@/features/users/api";
-import { Search, User, Loader2, Mail, Phone, Check } from "lucide-react";
+import { Search, User, Mail, Phone, Check } from "lucide-react";
+import { Spinner } from "@/components/ui/Spinner";
 import Image from "next/image";
 import { handleAvatarError } from "@/utils/avatar";
 
@@ -73,7 +74,7 @@ export function UserSelector({ onSelect }: UserSelectorProps) {
         <div className="flex-1 overflow-y-auto p-6 pt-4">
           {isLoading ? (
             <div className="flex flex-col items-center justify-center py-20 text-slate-400">
-              <Loader2 className="h-8 w-8 animate-spin mb-2" />
+              <Spinner size="lg" />
               <p className="text-sm font-medium">Đang tìm khách hàng...</p>
             </div>
           ) : users.length === 0 ? (

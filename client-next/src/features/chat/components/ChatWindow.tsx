@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { User, Send, Loader2, Smile } from "lucide-react";
+import { User, Send, Smile } from "lucide-react";
+import { Spinner } from "@/components/ui/Spinner";
 import { useChatMessages, useSocket, ChatMessage } from "@/features/chat";
 import { cn } from "@/utils/cn";
 import { Role } from "@/types/enums";
@@ -105,7 +106,7 @@ export function ChatWindow({ roomId, customerName }: ChatWindowProps) {
       >
         {isLoading ? (
           <div className="flex flex-col items-center justify-center h-full gap-3">
-            <Loader2 className="h-6 w-6 animate-spin text-slate-200" />
+            <Spinner size="sm" />
             <p className="text-xs font-black text-slate-400 uppercase tracking-widest">Đang tải tin nhắn...</p>
           </div>
         ) : (

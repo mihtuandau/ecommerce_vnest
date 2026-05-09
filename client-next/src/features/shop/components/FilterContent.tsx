@@ -1,9 +1,8 @@
 "use client";
 
 import React from "react";
-import { Box, Filter, Zap, Star, Check } from "lucide-react";
+import { Box, Filter, Zap, Star, Check, Plus, Minus } from "lucide-react";
 import { cn } from "@/utils/cn";
-
 import { Category, Brand } from "@/types/models";
 
 interface FilterContentProps {
@@ -19,6 +18,48 @@ interface FilterContentProps {
   isMobile?: boolean;
 }
 
+function FilterSection({ 
+  title, 
+  children, 
+  defaultOpen = true,
+  className 
+}: { 
+  title: string; 
+  children: React.ReactNode; 
+  defaultOpen?: boolean;
+  className?: string;
+}) {
+  const [isOpen, setIsOpen] = React.useState(defaultOpen);
+
+  return (
+    <div className={cn("border-b border-gray-200 py-6", className)}>
+      <h3 className="-my-3 flow-root">
+        <button
+          type="button"
+          onClick={() => setIsOpen(!isOpen)}
+          className="group flex w-full items-center justify-between bg-white py-2 text-sm text-slate-400 hover:text-primary transition-colors"
+        >
+          <span className="font-bold text-slate-900 text-base tracking-tight">{title}</span>
+          <span className="ml-6 flex items-center">
+            {isOpen ? (
+              <Minus className="h-4 w-4 transition-transform group-hover:scale-110" aria-hidden="true" />
+            ) : (
+              <Plus className="h-4 w-4 transition-transform group-hover:scale-110" aria-hidden="true" />
+            )}
+          </span>
+        </button>
+      </h3>
+      {isOpen && (
+        <div className="pt-4 pb-2">
+          <div className="space-y-4">
+            {children}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function FilterContent({
   currentCategory,
   currentBrand,
@@ -32,135 +73,151 @@ export function FilterContent({
   isMobile = false
 }: FilterContentProps) {
   
-  const headerStyle = "text-sm font-semibold text-slate-900 flex items-center gap-2";
-  const itemStyle = "text-[13px] font-medium transition-all px-4 py-2.5 rounded-xl text-left";
-  
   return (
-    <div className="space-y-8">
+    <form className={cn("space-y-2 h-full overflow-auto", isMobile ? "px-2" : "")}>
       {/* Categories Section */}
-      <div className="space-y-4">
-        <h3 className={headerStyle}>
-          <Box className="h-4 w-4 text-primary" />
-          Danh mục
-        </h3>
-        <div className={cn("flex flex-wrap lg:flex-col gap-2", !isMobile && "flex-col")}>
-          <button
-            onClick={() => updateFilters('categoryId', null)}
-            className={cn(
-              itemStyle,
-              !currentCategory 
-                ? "bg-primary text-white shadow-lg shadow-primary/20 font-semibold" 
-                : "text-slate-700 bg-slate-50 lg:bg-transparent hover:text-primary hover:bg-slate-100"
-            )}
-          >
-            Tất cả sản phẩm
-          </button>
-          {categories.map((cat) => (
+      <FilterSection title="Danh mục">
+        <ul role="list" className="space-y-2 text-sm font-medium">
+          <li>
             <button
-              key={cat.id}
-              onClick={() => updateFilters('categoryId', String(cat.id))}
+              type="button"
+              onClick={() => updateFilters('categoryId', null)}
               className={cn(
-                itemStyle,
-                String(cat.id) === currentCategory 
-                  ? "bg-primary text-white shadow-lg shadow-primary/20 font-semibold" 
-                  : "text-slate-700 bg-slate-50 lg:bg-transparent hover:text-primary hover:bg-slate-100"
+                "text-left text-[15px] transition-colors",
+                !currentCategory ? "text-primary font-bold" : "text-slate-600 hover:text-slate-900"
               )}
             >
-              {cat.name}
+              Tất cả sản phẩm
             </button>
+          </li>
+          {categories.map((cat) => (
+            <li key={cat.id}>
+              <button
+                type="button"
+                onClick={() => updateFilters('categoryId', String(cat.id))}
+                className={cn(
+                  "text-left text-[15px] transition-colors",
+                  String(cat.id) === currentCategory ? "text-primary font-bold" : "text-slate-600 hover:text-slate-900"
+                )}
+              >
+                {cat.name}
+              </button>
+            </li>
           ))}
-        </div>
-      </div>
+        </ul>
+      </FilterSection>
 
       {/* Brands Section */}
-      <div className="space-y-4">
-        <h3 className={headerStyle}>
-          <Filter className="h-4 w-4 text-primary" />
-          Thương hiệu
-        </h3>
-        <div className={cn("flex flex-wrap lg:flex-col gap-2", !isMobile && "flex-col")}>
-          {brands.map((brand) => (
+      <FilterSection title="Thương hiệu">
+        {brands.map((brand) => (
+          <div key={brand.id} className="flex items-center gap-3 group/item">
+            <div className="flex h-5 shrink-0 items-center">
+              <div className="group grid size-4 grid-cols-1">
+                <input
+                  type="checkbox"
+                  checked={String(brand.id) === currentBrand}
+                  onChange={() => updateFilters('brandId', String(brand.id) === currentBrand ? null : String(brand.id))}
+                  className="col-start-1 row-start-1 appearance-none rounded-md border border-slate-300 bg-white checked:border-primary checked:bg-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-all cursor-pointer"
+                />
+                <Check className={cn(
+                  "pointer-events-none col-start-1 row-start-1 size-3 self-center justify-self-center text-white",
+                  String(brand.id) === currentBrand ? "opacity-100 scale-100" : "opacity-0 scale-50"
+                )} />
+              </div>
+            </div>
             <button
-              key={brand.id}
-              onClick={() => updateFilters('brandId', String(brand.id))}
+              type="button"
+              onClick={() => updateFilters('brandId', String(brand.id) === currentBrand ? null : String(brand.id))}
               className={cn(
-                itemStyle,
-                "border flex items-center justify-between",
-                String(brand.id) === currentBrand 
-                  ? "bg-primary/5 text-primary border-primary/20 font-semibold" 
-                  : "bg-white lg:bg-transparent border-transparent text-slate-700 hover:bg-slate-50 hover:text-primary"
+                "text-[15px] text-left transition-colors",
+                String(brand.id) === currentBrand ? "text-primary font-bold" : "text-slate-600 hover:text-slate-900"
               )}
             >
               {brand.name}
-              {String(brand.id) === currentBrand && <Check className="h-3.5 w-3.5" />}
             </button>
-          ))}
-        </div>
-      </div>
+          </div>
+        ))}
+      </FilterSection>
 
-      {/* Price Presets */}
-      <div className="space-y-4">
-        <h3 className={headerStyle}>
-          <Zap className="h-4 w-4 text-[#e85d24]" />
-          Khoảng giá
-        </h3>
-        <div className={cn("grid grid-cols-2 lg:grid-cols-1 gap-2", !isMobile && "grid-cols-1")}>
-          {[
-            { label: "Tất cả", min: null, max: null },
-            { label: "Dưới 5tr", min: "0", max: "5000000" },
-            { label: "5tr - 15tr", min: "5000000", max: "15000000" },
-            { label: "Trên 15tr", min: "15000000", max: "999999999" }
-          ].map((range) => (
-            <button 
-              key={range.label} 
-              onClick={() => updatePriceFilter(range.min, range.max)}
+      {/* Price Section */}
+      <FilterSection title="Khoảng giá">
+        {[
+          { label: "Dưới 5 triệu", min: "0", max: "5000000" },
+          { label: "5 - 15 triệu", min: "5000000", max: "15000000" },
+          { label: "Trên 15 triệu", min: "15000000", max: "999999999" }
+        ].map((range) => (
+          <div key={range.label} className="flex items-center gap-3 group/item">
+            <div className="flex h-5 shrink-0 items-center">
+              <div className="group grid size-4 grid-cols-1">
+                <input
+                  type="checkbox"
+                  checked={currentMinPrice === range.min && currentMaxPrice === range.max}
+                  onChange={() => updatePriceFilter(
+                    (currentMinPrice === range.min && currentMaxPrice === range.max) ? null : range.min,
+                    (currentMinPrice === range.min && currentMaxPrice === range.max) ? null : range.max
+                  )}
+                  className="col-start-1 row-start-1 appearance-none rounded-md border border-slate-300 bg-white checked:border-primary checked:bg-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-all cursor-pointer"
+                />
+                <Check className={cn(
+                  "pointer-events-none col-start-1 row-start-1 size-3 self-center justify-self-center text-white",
+                  (currentMinPrice === range.min && currentMaxPrice === range.max) ? "opacity-100 scale-100" : "opacity-0 scale-50"
+                )} />
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => updatePriceFilter(
+                (currentMinPrice === range.min && currentMaxPrice === range.max) ? null : range.min,
+                (currentMinPrice === range.min && currentMaxPrice === range.max) ? null : range.max
+              )}
               className={cn(
-                itemStyle,
-                "border",
-                (currentMinPrice === range.min && currentMaxPrice === range.max) 
-                  ? "bg-primary/5 text-primary border-primary/20 font-semibold" 
-                  : "bg-white lg:bg-transparent border-transparent text-slate-700 hover:bg-slate-50 hover:text-primary"
+                "text-[15px] text-left transition-colors",
+                (currentMinPrice === range.min && currentMaxPrice === range.max) ? "text-primary font-bold" : "text-slate-600 hover:text-slate-900"
               )}
             >
               {range.label}
             </button>
-          ))}
-        </div>
-      </div>
+          </div>
+        ))}
+      </FilterSection>
 
-      {/* Ratings */}
-      <div className="space-y-4">
-        <h3 className={headerStyle}>
-           <Star className="h-4 w-4 text-[#f4c300]" />
-           Đánh giá
-        </h3>
-        <div className={cn("grid grid-cols-2 lg:grid-cols-1 gap-2", !isMobile && "grid-cols-1")}>
-          {[null, 5, 4, 3].map((s) => (
-            <button 
-              key={s ?? 'all'} 
-              onClick={() => updateFilters('minRating', s ? String(s) : null)}
+      {/* Ratings Section */}
+      <FilterSection title="Đánh giá">
+        {[5, 4, 3].map((s) => (
+          <div key={s} className="flex items-center gap-3 group/item">
+            <div className="flex h-5 shrink-0 items-center">
+              <div className="group grid size-4 grid-cols-1">
+                <input
+                  type="checkbox"
+                  checked={currentMinRating === String(s)}
+                  onChange={() => updateFilters('minRating', currentMinRating === String(s) ? null : String(s))}
+                  className="col-start-1 row-start-1 appearance-none rounded-md border border-slate-300 bg-white checked:border-primary checked:bg-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-all cursor-pointer"
+                />
+                <Check className={cn(
+                  "pointer-events-none col-start-1 row-start-1 size-3 self-center justify-self-center text-white",
+                  currentMinRating === String(s) ? "opacity-100 scale-100" : "opacity-0 scale-50"
+                )} />
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => updateFilters('minRating', currentMinRating === String(s) ? null : String(s))}
               className={cn(
-                itemStyle,
-                "border flex items-center gap-2",
-                (currentMinRating === (s ? String(s) : null)) 
-                  ? "bg-primary/5 border-primary/20 font-semibold" 
-                  : "bg-white lg:bg-transparent border-transparent hover:bg-slate-50"
+                "flex items-center gap-1.5 transition-colors",
+                currentMinRating === String(s) ? "text-primary font-bold" : "text-slate-500 hover:text-slate-900"
               )}
             >
-               <div className="flex gap-0.5">
-                 {s === null ? (
-                   <span className="text-[13px] font-medium text-slate-700">Tất cả</span>
-                 ) : (
-                   [...Array(5)].map((_, i) => (
-                     <Star key={i} className={`h-3 w-3 ${i < s ? "fill-[#f4c300] text-[#f4c300]" : "text-slate-200"}`} />
-                   ))
-                 )}
-               </div>
-               {s !== null && <span className={cn("text-[13px] font-medium transition-colors", currentMinRating === String(s) ? 'text-primary' : 'text-slate-700')}>từ {s} sao</span>}
+              <div className="flex gap-0.5">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className={cn("h-3.5 w-3.5 transition-colors", i < s ? "fill-yellow-400 text-yellow-400" : "text-slate-200")} />
+                ))}
+              </div>
+              <span className="text-[15px]">Từ {s} sao</span>
             </button>
-          ))}
-        </div>
-      </div>
-    </div>
+          </div>
+        ))}
+      </FilterSection>
+    </form>
   );
 }
+

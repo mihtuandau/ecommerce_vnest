@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import {
   Dialog,
   DialogContent,
@@ -9,7 +10,8 @@ import {
   DialogFooter,
 } from "@/components/ui/Dialog";
 import { Button } from "@/components/ui/Button";
-import { Star, Camera, X, Loader2, CheckCircle2, ImagePlus } from "lucide-react";
+import { Star, Camera, X, CheckCircle2, ImagePlus } from "lucide-react";
+import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/utils/cn";
 import { useCreateReview } from "../../hooks";
 import { useQueryClient } from "@tanstack/react-query";
@@ -149,10 +151,12 @@ export function ReviewModal({
           <div className="grid grid-cols-1 sm:grid-cols-[1fr,200px] gap-5 items-center">
             {/* Product Summary */}
             <div className="flex items-center gap-4 p-3.5 bg-slate-50/50 rounded-[20px] border border-slate-100 min-w-0">
-              <div className="h-16 w-16 rounded-xl bg-white p-1 border border-slate-200 shrink-0 shadow-sm relative">
-                <img 
+              <div className="h-16 w-16 rounded-xl bg-white p-1 border border-slate-200 shrink-0 shadow-sm relative overflow-hidden">
+                <Image 
                   src={productImage || "/placeholder.png"} 
-                  alt={productName} 
+                  alt={productName || "Product"} 
+                  width={64}
+                  height={64}
                   className="h-full w-full object-contain"
                 />
               </div>
@@ -244,7 +248,14 @@ export function ReviewModal({
                   {selectedFiles.length > 0 ? (
                     selectedFiles.map((file, idx) => (
                       <div key={idx} className="h-14 w-14 rounded-xl border border-slate-200 shrink-0 relative group overflow-hidden">
-                        <img src={URL.createObjectURL(file)} alt="preview" className="h-full w-full object-cover" />
+                        <Image 
+                          src={URL.createObjectURL(file)} 
+                          alt="preview" 
+                          width={56}
+                          height={56}
+                          unoptimized
+                          className="h-full w-full object-cover" 
+                        />
                         <button 
                           onClick={() => removeFile(idx)}
                           className="absolute top-1 right-1 bg-black/50 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
@@ -278,7 +289,7 @@ export function ReviewModal({
           >
             {(isPending || isUploading) ? (
               <span className="flex items-center gap-2">
-                <Loader2 className="h-5 w-5 animate-spin" />
+                <Spinner size="sm" variant="white" />
                 {isUploading ? "Đang tải ảnh..." : "Đang gửi..."}
               </span>
             ) : (

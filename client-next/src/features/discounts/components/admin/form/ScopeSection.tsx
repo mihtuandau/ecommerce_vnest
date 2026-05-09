@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo } from "react";
+import Image from "next/image";
 import { UseFormReturn } from "react-hook-form";
 import { 
   FormItem, 
@@ -9,7 +10,8 @@ import {
 } from "@/components/ui/Form";
 import { Input } from "@/components/ui/Input";
 import { Badge } from "@/components/ui/Badge";
-import { Package, Search, Loader2, Check } from "lucide-react";
+import { Package, Search, Check } from "lucide-react";
+import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/utils/cn";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { Product } from "@/types/models";
@@ -93,7 +95,7 @@ export function ScopeSection({
           <div className="max-h-[400px] overflow-y-auto">
             {isLoading ? (
               <div className="p-8 text-center flex flex-col items-center gap-2">
-                <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                <Spinner size="sm" />
                 <p className="text-xs font-semibold text-slate-500">Đang tải...</p>
               </div>
             ) : filteredProducts.length === 0 ? (
@@ -123,10 +125,11 @@ export function ScopeSection({
                       </div>
 
                       <div className="h-10 w-10 rounded-lg bg-white overflow-hidden border border-slate-100 shrink-0">
-                        <img
+                        <Image
                           src={getImageUrl(product)}
                           alt={product.name}
-                          className="h-full w-full object-contain"
+                          fill
+                          className="object-contain"
                         />
                       </div>
 

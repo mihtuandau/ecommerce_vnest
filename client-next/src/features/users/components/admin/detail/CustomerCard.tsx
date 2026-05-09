@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { User } from "@/types/models";
 import { Mail, Phone, Calendar, Shield, MapPin, ExternalLink, MoreVertical } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
@@ -26,14 +27,13 @@ export function CustomerCard({ user }: CustomerCardProps) {
     <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
       <div className="p-6 text-center border-b border-slate-100">
         <div className="relative inline-block">
-          <div className="h-20 w-20 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-200 mx-auto text-3xl font-bold text-slate-300 overflow-hidden">
+          <div className="relative h-20 w-20 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-200 mx-auto text-3xl font-bold text-slate-300 overflow-hidden">
             {user.avatar ? (
-              <img
+              <Image
                 src={user.avatar}
                 alt={user.name}
-                referrerPolicy="no-referrer"
-                className="h-full w-full object-cover"
-                onError={(e) => handleAvatarError(e, user.name, user.email)}
+                fill
+                className="object-cover"
               />
             ) : (
               user.name?.charAt(0) || "U"

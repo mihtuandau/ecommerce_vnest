@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { Star, Package } from "lucide-react";
 import { useAllReviews } from "@/features/reviews/hooks";
 import { Skeleton } from "@/components/ui/Skeleton";
@@ -53,10 +54,11 @@ export function CustomerReviews({ userId }: CustomerReviewsProps) {
             {/* Product Info */}
             <div className="h-16 w-16 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden shrink-0">
               {productImgUrl ? (
-                <img 
+                <Image 
                   src={productImgUrl} 
-                  alt={review.product?.name} 
-                  className="h-full w-full object-cover"
+                  alt={review.product?.name || "Product"} 
+                  fill
+                  className="object-cover"
                 />
               ) : (
                 <Package className="h-8 w-8 text-slate-200" />
@@ -95,11 +97,13 @@ export function CustomerReviews({ userId }: CustomerReviewsProps) {
               {review.images && review.images.length > 0 && (
                 <div className="flex gap-2 pt-1">
                   {review.images.map((img: { id?: number | string; url?: string } | string, idx: number) => (
-                    <img 
+                    <Image 
                       key={typeof img === 'object' && img !== null ? img.id : idx} 
                       src={getImageUrl(img)} 
                       alt="Review" 
-                      className="h-14 w-14 object-cover rounded-2xl border border-slate-200" 
+                      width={56}
+                      height={56}
+                      className="object-cover rounded-2xl border border-slate-200" 
                     />
                   ))}
                 </div>

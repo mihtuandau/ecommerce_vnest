@@ -4,8 +4,10 @@ import React from "react";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
-import { ShoppingBag, ShieldCheck, CheckCircle2, Truck, Tag, X, Loader2 } from "lucide-react";
+import { ShoppingBag, ShieldCheck, CheckCircle2, Truck, Tag, X } from "lucide-react";
+import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/utils/cn";
+import Image from "next/image";
 import { CartItem } from "@/store/useCartStore";
 
 type CheckoutDiscount = {
@@ -75,11 +77,12 @@ export function OrderSummary({
         <div className="space-y-4 max-h-[350px] overflow-y-auto pr-1 custom-scrollbar border-b border-slate-50 pb-2">
           {items.map((item) => (
             <div key={item.variantId} className="flex gap-4">
-              <div className="h-16 w-16 rounded-2xl bg-slate-50 overflow-hidden shrink-0 border border-slate-100">
-                <img 
+              <div className="h-16 w-16 rounded-2xl bg-slate-50 overflow-hidden shrink-0 border border-slate-100 relative">
+                <Image 
                   src={item.imageUrl} 
                   alt={item.name} 
-                  className="h-full w-full object-cover" 
+                  fill
+                  className="object-cover" 
                 />
               </div>
               <div className="flex-1 min-w-0 flex flex-col justify-center">
@@ -152,7 +155,7 @@ export function OrderSummary({
                 disabled={!discountCode || isApplyingDiscount}
                 className="h-11 px-6 rounded-2xl text-sm font-semibold bg-primary hover:bg-slate-900 text-white transition-all shadow-sm"
               >
-                {isApplyingDiscount ? <Loader2 size={16} className="animate-spin" /> : "Áp dụng"}
+                {isApplyingDiscount ? <Spinner size="sm" /> : "Áp dụng"}
               </Button>
             </div>
           )}
@@ -167,7 +170,10 @@ export function OrderSummary({
           <div className="flex justify-between items-center text-sm font-normal text-slate-600">
             <span>Phí vận chuyển</span>
             {isCalculatingFee ? (
-              <span className="text-xs text-primary animate-pulse italic">Đang tính...</span>
+              <div className="flex items-center gap-2 text-primary animate-pulse italic">
+                <Spinner size="sm" />
+                <span className="text-xs">Đang tính...</span>
+              </div>
             ) : (
               <span className="text-slate-900 font-semibold">{formatCurrency(shippingFee)}</span>
             )}
@@ -206,7 +212,7 @@ export function OrderSummary({
         >
           {isSubmitting ? (
             <div className="flex items-center gap-2">
-              <div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              <Spinner size="sm" variant="white" />
               Đang đặt hàng...
             </div>
           ) : (

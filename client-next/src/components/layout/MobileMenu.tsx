@@ -9,9 +9,11 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { productsApi } from "@/features/products/api";
 import { formatCurrency } from "@/utils/formatCurrency";
+import { Spinner } from "@/components/ui/Spinner";
+import { Skeleton } from "@/components/ui/Skeleton";
+import { useAuthStore } from "@/store/useAuthStore";
 
 interface MobileMenuProps {
-  user: any;
   categories: any[];
   wishlistCount: number;
   onClose: () => void;
@@ -32,7 +34,8 @@ const NAV_LINKS = [
   { href: "/offers",      label: "Ưu đãi",    icon: Tag },
 ];
 
-export function MobileMenu({ user, categories, wishlistCount, onClose, mounted }: MobileMenuProps) {
+export function MobileMenu({ categories, wishlistCount, onClose, mounted }: MobileMenuProps) {
+  const { user, isLoading: authLoading } = useAuthStore();
   const [searchQuery, setSearchQuery] = useState("");
   const [liveResults, setLiveResults] = useState<any[]>([]);
   const [isLiveLoading, setIsLiveLoading] = useState(false);
@@ -102,7 +105,7 @@ export function MobileMenu({ user, categories, wishlistCount, onClose, mounted }
               <p className="text-[10px] font-medium text-slate-900 mb-2 px-2">Kết quả gợi ý</p>
               {isLiveLoading ? (
                 <div className="p-4 flex items-center justify-center">
-                  <div className="h-5 w-5 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+                  <Spinner size="sm" />
                 </div>
               ) : liveResults.length > 0 ? (
                 <div className="space-y-1">
@@ -177,7 +180,15 @@ export function MobileMenu({ user, categories, wishlistCount, onClose, mounted }
 
       {/* Account Info Mobile */}
       <div className="p-4 border-t border-slate-100 bg-slate-50/50">
-        {user ? (
+        {!mounted || authLoading ? (
+          <div className="flex items-center gap-3 p-2">
+            <Skeleton className="h-10 w-10 rounded-full" />
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-3 w-16" />
+            </div>
+          </div>
+        ) : user ? (
           <Link href={ROUTES.ACCOUNT} onClick={onClose} className="flex items-center gap-3 p-2">
             <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
               {user.name?.charAt(0).toUpperCase()}

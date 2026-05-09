@@ -1,5 +1,6 @@
 import React from "react";
 import { Target, Heart, Award, Sparkles, Rocket, ShieldCheck } from "lucide-react";
+import Image from "next/image";
 
 export default function AboutPage() {
   return (
@@ -7,10 +8,12 @@ export default function AboutPage() {
       {/* Premium Hero Banner */}
       <section className="relative h-[60vh] md:h-[70vh] flex items-center justify-center overflow-hidden bg-slate-900">
         <div className="absolute inset-0 z-0">
-          <img 
+          <Image 
             src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=2070&auto=format&fit=crop" 
-            className="w-full h-full object-cover opacity-60 scale-105"
+            fill
+            className="object-cover opacity-60 scale-105"
             alt="Minh Tuấn Shop Hero"
+            priority
           />
           <div className="absolute inset-0 bg-gradient-to-b from-slate-900/40 via-slate-900/60 to-slate-900/90" />
         </div>
@@ -56,11 +59,14 @@ export default function AboutPage() {
           </div>
           <div className="relative group">
             <div className="absolute -inset-4 bg-primary/5 rounded-[3rem] -z-10 group-hover:scale-105 transition-transform duration-700" />
-            <img 
-              src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2071&auto=format&fit=crop" 
-              alt="Our Team" 
-              className="rounded-[2.5rem] shadow-2xl w-full object-cover aspect-[4/3]"
-            />
+            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[2.5rem] shadow-2xl">
+              <Image 
+                src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2071&auto=format&fit=crop" 
+                alt="Our Team" 
+                fill
+                className="object-cover"
+              />
+            </div>
           </div>
         </div>
       </section>

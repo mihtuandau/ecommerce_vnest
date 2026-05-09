@@ -39,9 +39,9 @@ const normalizeImagePath = (path: any) => {
   return `/${path.replace(/\\/g, '/').replace(/^\//, '')}`;
 };
 
-export function Header() {
+export function Header({ initialHasToken }: { initialHasToken?: boolean }) {
   const { user, logout, isLoading: authLoading } = useAuthStore();
-  const { items: wishlistItems } = useWishlistStore();
+  const wishlistCount = useWishlistStore(state => state.items.length);
   const { data: categories } = useCategories();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -104,18 +104,25 @@ export function Header() {
                 <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full text-slate-600 hover:text-primary hover:bg-primary/5 transition-all relative" asChild>
                   <Link href={ROUTES.WISHLIST}>
                     <Heart className="h-6 w-6" />
-                    {mounted && wishlistItems.length > 0 && (
+                    {mounted && wishlistCount > 0 && (
                       <span className="absolute -top-0.5 -right-0.5 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-primary text-[9px] font-bold text-white shadow-sm ring-2 ring-white">
-                        {wishlistItems.length}
+                        {wishlistCount}
                       </span>
                     )}
                   </Link>
                 </Button>
                 <CartDropdown />
                 
-                {!mounted ? (
+                {!mounted || authLoading ? (
                   <div className="flex items-center">
-                    <div className="h-10 w-10 rounded-full bg-slate-50 border border-slate-100/50" />
+                    {initialHasToken ? (
+                      <Skeleton className="h-10 w-10 rounded-full bg-slate-100" />
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <Skeleton className="hidden sm:flex h-9 w-24 rounded-full bg-slate-100" />
+                        <Skeleton className="h-9 w-24 rounded-full bg-slate-100" />
+                      </div>
+                    )}
                   </div>
                 ) : user ? (
                   <DropdownMenu>
@@ -254,7 +261,7 @@ export function Header() {
           </Link>
           <button onClick={() => setMobileOpen(false)} className="p-2 rounded-full text-slate-400 hover:bg-slate-100"><X className="h-5 w-5" /></button>
         </div>
-        <MobileMenu user={user} categories={categories || []} wishlistCount={wishlistItems.length} onClose={() => setMobileOpen(false)} mounted={mounted} />
+        <MobileMenu categories={categories || []} wishlistCount={wishlistCount} onClose={() => setMobileOpen(false)} mounted={mounted} />
       </aside>
     </>
   );

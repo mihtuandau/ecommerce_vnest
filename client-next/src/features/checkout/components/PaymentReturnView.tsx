@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import { CheckCircle2, XCircle } from "lucide-react";
+import { Spinner } from "@/components/ui/Spinner";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
 import { api } from "@/lib/axios";
@@ -44,8 +45,7 @@ export function PaymentReturnView() {
             {status === "loading" && (
               <div className="flex flex-col items-center gap-6 animate-pulse">
                 <div className="relative">
-                  <div className="h-20 w-20 rounded-full border-4 border-slate-100 border-t-primary animate-spin" />
-                  <Loader2 className="h-8 w-8 text-primary absolute inset-0 m-auto animate-pulse" />
+                  <Spinner size="lg" />
                 </div>
                 <div className="space-y-2">
                   <h2 className="text-xl font-medium text-slate-800">Đang xử lý giao dịch</h2>

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useToast } from "@/hooks/useToast";
 import { Button } from "@/components/ui/Button";
@@ -8,8 +9,9 @@ import { Input } from "@/components/ui/Input";
 import { CardContent } from "@/components/ui/Card";
 import { 
   User, MapPin, Lock, Camera, ShoppingBag, Wallet, 
-  Phone, Trash2, CheckCircle2, X, Plus, Loader2
+  Phone, Trash2, CheckCircle2, X, Plus
 } from "lucide-react";
+import { Spinner } from "@/components/ui/Spinner";
 import Link from "next/link";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { Skeleton } from "@/components/ui/Skeleton";
@@ -237,14 +239,13 @@ export function AccountView() {
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 px-6 py-5 bg-white rounded-2xl border border-slate-100 shadow-sm">
           <div className="relative">
             {user.avatar ? (
-              <img 
+              <Image 
                 src={user.avatar} 
                 alt={user.name || "User"} 
-                referrerPolicy="no-referrer"
+                width={56}
+                height={56}
+                unoptimized
                 className="h-14 w-14 rounded-full object-cover border-2 border-white shadow-md" 
-                onError={(e) => {
-                  e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || user.email || "User")}&background=0D8ABC&color=fff&size=128`;
-                }}
               />
             ) : (
               <div className="h-14 w-14 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 text-lg font-medium border border-slate-200">
@@ -255,7 +256,7 @@ export function AccountView() {
               htmlFor="avatar-upload"
               className="absolute -bottom-0.5 -right-0.5 h-6 w-6 bg-white border border-slate-200 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 transition-colors shadow-sm cursor-pointer"
             >
-              {updateProfile.isPending ? <Loader2 size={11} className="animate-spin" /> : <Camera size={11} />}
+              {updateProfile.isPending ? <Spinner size="sm" /> : <Camera size={11} />}
               <input 
                 id="avatar-upload" 
                 type="file" 
@@ -345,7 +346,7 @@ export function AccountView() {
                       disabled={updateProfile.isPending}
                       className="h-10 px-8 rounded-full text-sm font-bold bg-primary hover:bg-primary/90 text-white transition-all active:scale-95 shadow-md shadow-blue-500/10"
                     >
-                      {updateProfile.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Lưu thay đổi"}
+                      {updateProfile.isPending ? <Spinner size="sm" variant="white" /> : "Lưu thay đổi"}
                     </Button>
                   </div>
                 </form>
@@ -474,7 +475,7 @@ export function AccountView() {
                           disabled={deleteAddress.isPending}
                           className="h-8 w-8 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 p-0"
                         >
-                          {deleteAddress.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+                          {deleteAddress.isPending ? <Spinner size="sm" /> : <Trash2 className="h-4 w-4" />}
                         </Button>
                       </div>
                     </div>
@@ -663,7 +664,7 @@ export function AccountView() {
                 disabled={createAddress.isPending}
                 className="h-11 px-10 rounded-full bg-primary hover:bg-primary/90 text-white font-bold shadow-lg shadow-blue-500/10 active:scale-95 transition-all"
               >
-                {createAddress.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Thêm địa chỉ"}
+                {createAddress.isPending ? <Spinner size="sm" variant="white" /> : "Thêm địa chỉ"}
               </Button>
             </DialogFooter>
           </form>

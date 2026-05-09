@@ -9,6 +9,7 @@ import { Plus, RefreshCcw, Zap } from "lucide-react";
 import Link from "next/link";
 import { ROUTES } from "@/constants/routes";
 import type { Discount } from "@/types/models";
+import { Spinner } from "@/components/ui/Spinner";
 
 export default function AdminFlashSalePage() {
   // Chỉ lấy Flash Sale
@@ -53,7 +54,7 @@ export default function AdminFlashSalePage() {
             onClick={() => refetch()}
             disabled={isFetching}
           >
-            <RefreshCcw className={`h-4 w-4 ${isFetching ? "animate-spin" : ""}`} />
+            {isFetching ? <Spinner size="sm" /> : <RefreshCcw className="h-4 w-4" />}
           </Button>
           <Button
             asChild
@@ -74,7 +75,7 @@ export default function AdminFlashSalePage() {
         {isLoading ? (
           <div className="flex h-96 items-center justify-center">
             <div className="flex flex-col items-center gap-3">
-              <div className="h-8 w-8 animate-spin rounded-full border-2 border-amber-500 border-t-transparent"></div>
+              <Spinner size="lg" />
               <p className="text-sm font-bold text-slate-400">Đang tải Flash Sale...</p>
             </div>
           </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { Package } from "lucide-react";
 import { formatCurrency } from "@/utils/formatCurrency";
 
@@ -29,13 +30,14 @@ export function Items({ order }: ItemsProps) {
           {items && items.length > 0 ? (
             items.map((item: any) => (
               <div key={item.id} className="p-6 flex items-center gap-4">
-                <div className="h-16 w-16 rounded-lg bg-slate-50 border border-slate-100 flex-shrink-0 overflow-hidden">
-                   <img 
-                     src={item.variant?.product?.images?.[0]?.url || item.variantSnapshot?.image || "/placeholder.png"} 
-                     alt={item.productName || "Sản phẩm"} 
-                     className="h-full w-full object-cover" 
-                   />
-                </div>
+                 <div className="h-16 w-16 rounded-lg bg-slate-50 border border-slate-100 flex-shrink-0 overflow-hidden relative">
+                    <Image 
+                      src={item.variant?.product?.images?.[0]?.url || item.variantSnapshot?.image || "/placeholder.png"} 
+                      alt={item.productName || "Sản phẩm"} 
+                      fill
+                      className="object-cover" 
+                    />
+                 </div>
                 <div className="flex-1 min-w-0">
                    <p className="font-semibold text-slate-800 text-sm leading-snug line-clamp-2">{item.productName || item.variant?.product?.name || "Sản phẩm"}</p>
                    <div className="flex items-center gap-2 mt-1.5">

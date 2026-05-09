@@ -4,6 +4,7 @@ import { useProducts } from "@/features/products/hooks";
 import { ProductCard } from "./cards/ProductCard";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Product } from "@/types/models";
+import { Spinner } from "@/components/ui/Spinner";
 
 interface RelatedProductsProps {
   categoryId: number | null | undefined;
@@ -26,7 +27,10 @@ export function RelatedProducts({ categoryId, currentProductId }: RelatedProduct
       <div className="space-y-10">
         <div className="flex items-center gap-4">
           <div className="h-px flex-1 bg-slate-100" />
-          <h2 className="text-[10px] font-semibold uppercase tracking-[0.4em] text-slate-400">Đang tải gợi ý</h2>
+          <div className="flex items-center gap-2">
+            <Spinner size="sm" variant="slate" />
+            <h2 className="text-[10px] font-semibold uppercase tracking-[0.4em] text-slate-400">Đang tải gợi ý</h2>
+          </div>
           <div className="h-px flex-1 bg-slate-100" />
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">

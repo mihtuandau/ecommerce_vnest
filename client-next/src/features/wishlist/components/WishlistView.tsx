@@ -10,6 +10,8 @@ import { Heart, ShoppingCart, Trash2, ArrowLeft, ShoppingBag } from "lucide-reac
 import Link from "next/link";
 import { Card } from "@/components/ui/Card";
 
+import Image from "next/image";
+
 export function WishlistView() {
   const { items, removeFromWishlist } = useWishlistStore();
   const { addItem } = useCart();
@@ -25,7 +27,7 @@ export function WishlistView() {
   const handleAddToCart = (item: any) => {
     addItem({
       productId: String(item.id),
-      variantId: String(item.id), // Assuming product ID if no variant selected
+      variantId: String(item.id), 
       name: item.name,
       price: item.price,
       imageUrl: item.imageUrl,
@@ -37,120 +39,125 @@ export function WishlistView() {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
         <div className="space-y-10">
           {/* Header & Navigation */}
           <div className="space-y-6">
             <Link
               href="/"
-              className="flex items-center gap-2 text-slate-600 hover:text-primary transition-all group w-fit"
+              className="flex items-center gap-2 text-slate-500 hover:text-primary transition-all group w-fit"
             >
-              <div className="h-8 w-8 rounded-full border border-slate-200 flex items-center justify-center group-hover:border-primary group-hover:bg-blue-50 transition-all">
-                <ArrowLeft size={14} />
-              </div>
-              <span className="text-xs font-semibold">
+              <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+              <span className="text-sm font-semibold">
                 Quay lại trang chủ
               </span>
             </Link>
 
-            <div className="flex items-end justify-between border-b border-slate-100 pb-6">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-100 pb-8">
               <div className="space-y-1">
-                <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+                <h1 className="text-2xl md:text-3xl font-semibold text-slate-900 tracking-tight">
                   Danh sách yêu thích
                 </h1>
-                <p className="text-slate-600 text-sm font-normal">
-                  Lưu giữ những sản phẩm bạn quan tâm nhất
+                <p className="text-slate-500 text-sm font-medium">
+                  Lưu giữ những sản phẩm bạn quan tâm nhất tại Vnest.
                 </p>
               </div>
-              <div className="hidden sm:block text-[10px] font-semibold text-slate-500 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100">
-                <span className="text-primary">{items.length}</span> sản phẩm
+              <div className="text-[11px] font-bold text-slate-400 bg-slate-50 px-4 py-2 rounded-xl border border-slate-100 w-fit">
+                <span className="text-slate-900">{items.length}</span> sản phẩm
               </div>
             </div>
           </div>
 
           {items.length === 0 ? (
-            <div className="py-24 text-center bg-white rounded-[2rem] border border-slate-100 shadow-sm">
-              <div className="h-20 w-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Heart className="h-10 w-10 text-slate-200" />
+            <div className="py-24 text-center bg-slate-50/50 rounded-3xl border border-dashed border-slate-200 px-6">
+              <div className="h-20 w-20 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
+                <Heart className="h-8 w-8 text-slate-200" />
               </div>
               <h3 className="text-slate-900 font-bold text-xl">Danh sách trống</h3>
-              <p className="text-slate-500 text-sm mt-2 max-w-xs mx-auto">
+              <p className="text-slate-500 text-sm mt-2 max-w-xs mx-auto font-medium">
                 Hãy bắt đầu khám phá và lưu lại những sản phẩm bạn yêu thích nhé!
               </p>
               <Button
-                className="mt-8 rounded-full px-10 h-12 bg-primary shadow-lg shadow-blue-500/20"
+                className="mt-8 rounded-xl px-10 h-12 bg-primary hover:brightness-110 text-white font-bold transition-all shadow-lg shadow-primary/20"
                 asChild
               >
                 <Link href="/shop">Mua sắm ngay</Link>
               </Button>
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-8">
               {items.map((item) => (
-                <Card
+                <div
                   key={item.id}
-                  className="group border-slate-100 hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-500 rounded-2xl sm:rounded-[1.5rem] overflow-hidden bg-white"
+                  className="group relative flex flex-col h-full transition-all duration-300"
                 >
-                  <div className="relative aspect-square overflow-hidden bg-slate-50 p-3 sm:p-6">
-                    <img
-                      src={item.imageUrl}
-                      alt={item.name}
-                      className="h-full w-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-700"
-                    />
+                  {/* Card Actions Overlay */}
+                  <div className="absolute top-3 right-3 z-30">
                     <button
                       onClick={() => removeFromWishlist(item.id)}
-                      className="absolute top-2 right-2 sm:top-4 sm:right-4 h-7 w-7 sm:h-9 sm:w-9 rounded-full bg-white/80 backdrop-blur-md shadow-sm flex items-center justify-center text-slate-400 hover:text-rose-500 hover:bg-white transition-all duration-300"
+                      className="h-8 w-8 rounded-full bg-white shadow-sm flex items-center justify-center text-slate-400 hover:text-rose-500 transition-all duration-300 border border-slate-100"
                     >
-                      <Trash2 size={14} className="sm:size-4" />
+                      <Trash2 size={14} />
                     </button>
+                  </div>
+
+                  {/* ── IMAGE SECTION ── */}
+                  <Link href={`/shop/${item.slug}`} className="relative aspect-square w-full overflow-hidden rounded-2xl bg-slate-50/50 block">
+                    <Image
+                      src={item.imageUrl}
+                      alt={item.name}
+                      fill
+                      className="object-contain p-4 group-hover:scale-110 transition-transform duration-700"
+                    />
                     {item.originalPrice && item.originalPrice > item.price && (
-                      <div className="absolute top-2 left-2 sm:top-4 sm:left-4 bg-rose-500 text-white text-[10px] font-bold px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-md sm:rounded-lg shadow-sm">
+                      <div className="absolute top-3 left-3 bg-rose-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm">
                         -{Math.round(((item.originalPrice - item.price) / item.originalPrice) * 100)}%
                       </div>
                     )}
-                  </div>
+                  </Link>
 
-                  <div className="p-3 sm:p-5 space-y-3 sm:space-y-4">
-                    <div className="space-y-1">
+                  {/* ── CONTENT SECTION ── */}
+                  <div className="flex-1 flex flex-col py-4 px-0.5">
+                    <div className="flex flex-col gap-2 mb-4">
                       <Link
                         href={`/shop/${item.slug}`}
-                        className="text-xs sm:text-sm font-semibold text-slate-900 hover:text-primary transition-colors line-clamp-1"
+                        className="text-sm font-semibold text-slate-900 hover:text-primary transition-colors line-clamp-2 leading-snug"
                       >
                         {item.name}
                       </Link>
-                      <div className="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-2">
-                        <span className="text-sm sm:text-base font-bold text-primary">
+                      <div className="flex items-baseline gap-2">
+                        <p className="text-sm font-bold text-slate-900 tabular-nums">
                           {formatCurrency(item.price)}
-                        </span>
+                        </p>
                         {item.originalPrice && item.originalPrice > item.price && (
-                          <span className="text-[11px] sm:text-xs text-slate-400 line-through font-medium">
+                          <p className="text-[11px] text-slate-400 line-through tabular-nums font-medium">
                             {formatCurrency(item.originalPrice)}
-                          </span>
+                          </p>
                         )}
                       </div>
                     </div>
 
-                    <div className="pt-1 sm:pt-2">
+                    <div className="mt-auto">
                       <Button
                         onClick={() => handleAddToCart(item)}
-                        className="w-full h-9 sm:h-11 rounded-lg sm:rounded-xl bg-primary hover:bg-[#0d47a1] text-white text-[11px] sm:text-xs font-bold shadow-lg shadow-blue-500/10 transition-all flex items-center justify-center gap-1.5 sm:gap-2"
+                        className="w-full h-11 rounded-xl bg-primary hover:brightness-110 text-white text-[11px] font-bold transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/10"
                       >
-                        <ShoppingCart size={14} className="sm:size-4" />
+                        <ShoppingCart size={14} />
                         Thêm vào giỏ
                       </Button>
                     </div>
                   </div>
-                </Card>
+                </div>
               ))}
             </div>
           )}
 
-          {/* Recently Viewed or Recommendations could go here */}
+          {/* Footer Navigation */}
           {items.length > 0 && (
             <div className="pt-10 border-t border-slate-100 flex justify-center">
               <Button
                 variant="ghost"
-                className="text-slate-500 hover:text-primary font-semibold text-xs transition-colors"
+                className="text-slate-400 hover:text-primary font-bold text-[11px] transition-colors"
                 asChild
               >
                 <Link href="/shop" className="flex items-center gap-2">
@@ -164,3 +171,5 @@ export function WishlistView() {
     </div>
   );
 }
+
+

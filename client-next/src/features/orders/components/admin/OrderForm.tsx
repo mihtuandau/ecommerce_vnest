@@ -26,10 +26,10 @@ import {
   Wallet, 
   QrCode, 
   CreditCard,
-  Loader2,
   Trash2,
   PackageSearch
 } from "lucide-react";
+import { Spinner } from "@/components/ui/Spinner";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { cn } from "@/utils/cn";
 import { Badge } from "@/components/ui/Badge";
@@ -314,7 +314,7 @@ export function AdminOrderForm() {
             {/* Product Grid */}
             <div className="flex-1 overflow-y-auto p-5 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent">
               {isLoading ? (
-                <div className="flex h-full items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary/50" /></div>
+                <div className="flex h-full items-center justify-center"><Spinner size="lg" /></div>
               ) : (
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                   {products.map((product) => (
@@ -442,7 +442,7 @@ export function AdminOrderForm() {
                     disabled={isValidatingDiscount || !form.watch("discountCode")}
                     className="h-9 px-3 bg-slate-900 text-white text-[10px] font-bold uppercase"
                   >
-                    {isValidatingDiscount ? <Loader2 className="h-3 w-3 animate-spin" /> : "Áp dụng"}
+                    {isValidatingDiscount ? <Spinner size="sm" variant="white" /> : "Áp dụng"}
                   </Button>
                 </div>
               </div>
@@ -468,7 +468,6 @@ export function AdminOrderForm() {
                 {[
                   { id: "CASH", label: "Tiền mặt", icon: Wallet },
                   { id: "BANK_TRANSFER", label: "C.Khoản", icon: QrCode },
-                  { id: "CARD", label: "Quẹt thẻ", icon: CreditCard },
                 ].map((m) => (
                   <button
                     key={m.id}
@@ -494,7 +493,7 @@ export function AdminOrderForm() {
                 className="w-full h-12 rounded-xl bg-primary hover:bg-primary/90 text-white font-bold text-sm uppercase tracking-widest shadow-lg shadow-primary/10 transition-all active:scale-[0.98]"
                 disabled={isSubmitting || items.length === 0}
               >
-                {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin" /> : "Xác nhận & In hóa đơn"}
+                {isSubmitting ? <Spinner size="sm" variant="white" /> : "Xác nhận & In hóa đơn"}
               </Button>
             </div>
           </div>

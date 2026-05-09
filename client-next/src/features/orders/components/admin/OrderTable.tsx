@@ -16,6 +16,7 @@ import {
   Clock,
   ExternalLink,
 } from "lucide-react";
+import Image from "next/image";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,6 +32,43 @@ import Link from "next/link";
 import { ROUTES } from "@/constants/routes";
 import dayjs from "@/lib/dayjs";
 import { OrderStatus, PaymentStatus } from "@/types/enums";
+
+const getImageUrl = (item: OrderItem) => {
+  const normalize = (path: string) => {
+    if (!path) return "";
+    if (path.startsWith("http")) return path;
+    return `/${path.replace(/\\/g, "/").replace(/^\//, "")}`;
+  };
+
+  // 1. Try variantSnapshot (saved at order time)
+  const snapshotImg = (item.variantSnapshot as { image?: string; imageUrl?: string })?.image || (item.variantSnapshot as { image?: string; imageUrl?: string })?.imageUrl;
+  if (snapshotImg && typeof snapshotImg === "string" && snapshotImg.length > 5) {
+    return normalize(snapshotImg);
+  }
+
+  // 2. Try variant's own images
+  const variantImages = item.variant?.images || [];
+  if (variantImages.length > 0) {
+    const url =
+      typeof variantImages[0] === "string"
+        ? variantImages[0]
+        : variantImages[0]?.url;
+    if (url) return normalize(url);
+  }
+
+  // 3. Try product images
+  const productImages = item.variant?.product?.images || [];
+  if (productImages.length > 0) {
+    const url =
+      typeof productImages[0] === "string"
+        ? productImages[0]
+        : productImages[0]?.url;
+    if (url) return normalize(url);
+  }
+
+  // 4. Fallback
+  return "/placeholder.png";
+};
 
 export const columns: ColumnDef<Order>[] = [
   {
@@ -62,53 +100,17 @@ export const columns: ColumnDef<Order>[] = [
 
       if (!firstItem) return <span className="text-slate-400">--</span>;
 
-      // Safe image resolver - try multiple sources
-      const getImageUrl = (item: OrderItem) => {
-        const normalize = (path: string) => {
-          if (!path) return "";
-          if (path.startsWith("http")) return path;
-          return `/${path.replace(/\\/g, "/").replace(/^\//, "")}`;
-        };
-
-        // 1. Try variantSnapshot (saved at order time)
-        const snapshotImg = (item.variantSnapshot as { image?: string; imageUrl?: string })?.image || (item.variantSnapshot as { image?: string; imageUrl?: string })?.imageUrl;
-        if (snapshotImg && typeof snapshotImg === "string" && snapshotImg.length > 5) {
-          return normalize(snapshotImg);
-        }
-
-        // 2. Try variant's own images
-        const variantImages = item.variant?.images || [];
-        if (variantImages.length > 0) {
-          const url =
-            typeof variantImages[0] === "string"
-              ? variantImages[0]
-              : variantImages[0]?.url;
-          if (url) return normalize(url);
-        }
-
-        // 3. Try product images
-        const productImages = item.variant?.product?.images || [];
-        if (productImages.length > 0) {
-          const url =
-            typeof productImages[0] === "string"
-              ? productImages[0]
-              : productImages[0]?.url;
-          if (url) return normalize(url);
-        }
-
-        // 4. Fallback
-        return "/placeholder.png";
-      };
-
       const imageUrl = getImageUrl(firstItem);
 
       return (
         <div className="flex items-center gap-3 py-1">
-          <div className="h-10 w-10 rounded-xl bg-slate-50 border border-slate-100 flex-shrink-0 overflow-hidden p-0.5 flex items-center justify-center">
-            <img
+          <div className="h-10 w-10 rounded-xl bg-slate-50 border border-slate-100 flex-shrink-0 overflow-hidden p-0.5 flex items-center justify-center relative">
+            <Image
               src={imageUrl}
               alt="Product"
-              className="h-full w-full object-cover rounded-lg"
+              fill
+              unoptimized
+              className="object-cover rounded-lg"
             />
           </div>
           <div className="flex flex-col min-w-0 max-w-[200px]">

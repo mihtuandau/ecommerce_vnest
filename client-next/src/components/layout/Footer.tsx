@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Facebook, Instagram, Twitter, Mail, Phone, MapPin, Send } from "lucide-react";
+import Image from "next/image";
 import { Button } from "@/components/ui/Button";
 
 export function Footer() {
@@ -11,16 +12,22 @@ export function Footer() {
         <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5">
           <div className="lg:col-span-2 space-y-8">
             <Link href="/" className="flex items-center gap-2 group p-2 rounded-xl w-fit bg-white">
-              <img
-                src="/logoMT.png"
-                alt="MINHTUANSHOP"
-                className="h-10 w-auto object-contain"
-              />
-              <img
-                src="/textlogo.png"
-                alt="MINHTUANSHOP"
-                className="h-7 w-auto object-contain"
-              />
+              <div className="relative h-10 w-24">
+                <Image
+                  src="/logoMT.png"
+                  alt="MINHTUANSHOP"
+                  fill
+                  className="object-contain"
+                />
+              </div>
+              <div className="relative h-7 w-32">
+                <Image
+                  src="/textlogo.png"
+                  alt="MINHTUANSHOP"
+                  fill
+                  className="object-contain"
+                />
+              </div>
             </Link>
             <p className="text-sm text-blue-50/90 leading-relaxed max-w-sm font-medium">
               Nền tảng thương mại điện tử hàng đầu cung cấp các sản phẩm chất lượng cao với trải nghiệm mua sắm tuyệt vời, giao diện tối giản và tốc độ vượt trội.

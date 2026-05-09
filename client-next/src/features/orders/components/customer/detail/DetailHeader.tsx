@@ -9,8 +9,10 @@ import {
   CheckCircle2,
   Download,
   AlertCircle,
+  Printer,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { Spinner } from "@/components/ui/Spinner";
 import { useRouter } from "next/navigation";
 import { OrderStatus, ReturnStatus } from "@/types/enums";
 
@@ -89,65 +91,65 @@ export function DetailHeader({
   const showConfirmReturn = returnStatus === ReturnStatus.APPROVED;
 
   return (
-    <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 border-b border-slate-100 pb-8">
-      <div className="flex items-center gap-4">
+    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-10 pb-8 border-b border-slate-100">
+      <div className="flex items-center gap-5">
         <button
           onClick={() => router.push("/orders")}
-          className="h-10 w-10 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:text-primary hover:border-primary hover:bg-blue-50 transition-all shrink-0"
+          className="h-12 w-12 rounded-2xl border border-slate-100 flex items-center justify-center text-slate-400 hover:text-primary hover:border-primary/30 hover:bg-slate-50 transition-all shrink-0 group"
         >
-          <ArrowLeft size={18} />
+          <ArrowLeft size={20} className="group-hover:-translate-x-0.5 transition-transform" />
         </button>
         <div className="space-y-1.5 min-w-0">
-          <div className="flex items-center gap-3 flex-wrap">
-            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight truncate">
-              Đơn hàng #{orderCode}
+          <div className="flex items-center gap-4 flex-wrap">
+            <h1 className="text-2xl lg:text-3xl font-semibold text-slate-900 tracking-tight">
+              Đơn hàng <span className="text-primary">#{orderCode}</span>
             </h1>
-            <span
-              className={`px-3 py-1.5 rounded-full text-[11px] font-medium border h-fit leading-none flex items-center justify-center ${currentStatus.color}`}
-            >
+            <div className={`px-4 py-1.5 rounded-full text-[11px] font-bold border h-fit flex items-center gap-1.5 ${currentStatus.color}`}>
+              <currentStatus.icon className="h-3.5 w-3.5" />
               {currentStatus.label}
-            </span>
+            </div>
           </div>
-          <p className="text-sm text-slate-500 font-medium">
-            Ngày đặt: {formatDate(createdAt)}
+          <div className="flex flex-wrap items-center gap-y-1 gap-x-4 text-[13px] text-slate-500 font-medium">
+            <p>Ngày đặt: <span className="text-slate-900">{formatDate(createdAt)}</span></p>
             {status === OrderStatus.DELIVERED && deliveredAt && (
-              <span className="ml-3 text-emerald-600">
-                • Giao lúc: {formatDate(deliveredAt)}
-              </span>
+              <div className="flex items-center gap-2 text-emerald-600">
+                <div className="h-1 w-1 rounded-full bg-emerald-500" />
+                Giao lúc: {formatDate(deliveredAt)}
+              </div>
             )}
-          </p>
+          </div>
         </div>
       </div>
 
-      <div className="flex items-center gap-2 flex-wrap relative">
+      <div className="flex items-center gap-3 flex-wrap">
         {showConfirmReturn && (
           <div className="relative" ref={popoverRef}>
             <Button
               onClick={() => setShowPopover(!showPopover)}
               disabled={isUpdatingReturn}
-              className="bg-primary hover:bg-[#0d47a1] text-white text-xs font-semibold h-10 px-6 rounded-xl flex items-center gap-2 shadow-sm transition-all active:scale-95"
+              className="bg-primary hover:brightness-110 text-white text-xs font-semibold h-11 px-6 rounded-xl flex items-center gap-2 shadow-lg shadow-primary/10 transition-all active:scale-95"
             >
-              <Truck className="h-4 w-4" />
+              {isUpdatingReturn ? <Spinner size="sm" variant="white" /> : <Truck className="h-4 w-4" />}
               Xác nhận đã gửi hàng
             </Button>
 
             {showPopover && (
-              <div className="absolute bottom-full mb-3 right-0 w-[240px] bg-white border border-slate-100 rounded-xl shadow-xl p-4 z-50 animate-in fade-in zoom-in-95 duration-200">
-                <p className="text-[12px] text-slate-600 font-medium mb-3">
+              <div className="absolute bottom-full mb-3 right-0 w-[260px] bg-white border border-slate-100 rounded-2xl shadow-2xl p-5 z-50 animate-in fade-in zoom-in-95 duration-200">
+                <p className="text-sm text-slate-600 font-medium mb-4 leading-relaxed">
                   Bạn chắc chắn đã bàn giao gói hàng cho bưu cục?
                 </p>
                 <div className="flex gap-2">
                   <Button
                     variant="outline"
                     size="sm"
-                    className="flex-1 h-8 text-[11px] font-semibold border-slate-100 text-slate-500 rounded-lg"
+                    className="flex-1 h-9 text-xs font-semibold border-slate-100 text-slate-400 rounded-xl hover:bg-slate-50"
                     onClick={() => setShowPopover(false)}
                   >
                     Hủy
                   </Button>
                   <Button
                     size="sm"
-                    className="flex-1 h-8 text-[11px] font-bold bg-primary hover:bg-[#0d47a1] text-white rounded-lg shadow-sm"
+                    className="flex-1 h-9 text-xs font-bold bg-primary hover:brightness-110 text-white rounded-xl shadow-sm"
                     onClick={() => {
                       onConfirmReturn?.();
                       setShowPopover(false);
@@ -156,61 +158,68 @@ export function DetailHeader({
                     Xác nhận
                   </Button>
                 </div>
-                {/* Arrow */}
-                <div className="absolute top-full right-6 -mt-1 w-3 h-3 bg-white border-r border-b border-slate-100 rotate-45" />
+                <div className="absolute top-full right-8 -mt-1 w-3 h-3 bg-white border-r border-b border-slate-100 rotate-45" />
               </div>
             )}
           </div>
         )}
 
-        {[OrderStatus.DELIVERED, OrderStatus.CANCELLED, OrderStatus.RETURNED].includes(
-          status
-        ) &&
-          !showConfirmReturn && (
-            <Button
-              onClick={onReorder}
-              className="bg-primary hover:bg-primary/90 text-white text-xs font-medium h-9 px-5 rounded-lg flex items-center gap-2"
-            >
-              <ShoppingCart className="h-3.5 w-3.5" />
-              Mua lại đơn này
-            </Button>
-          )}
+        {[OrderStatus.DELIVERED, OrderStatus.CANCELLED, OrderStatus.RETURNED].includes(status) && !showConfirmReturn && (
+          <Button
+            onClick={onReorder}
+            className="bg-primary hover:brightness-110 text-white text-xs font-semibold h-11 px-6 rounded-xl flex items-center gap-2 shadow-lg shadow-primary/10 transition-all active:scale-95"
+          >
+            <ShoppingCart className="h-4 w-4" />
+            Mua lại đơn này
+          </Button>
+        )}
 
         <Button
           variant="outline"
-          className="border-slate-200 text-slate-600 text-xs font-medium h-9 px-4 rounded-lg"
+          className="border-slate-200 text-slate-600 text-xs font-semibold h-11 px-6 rounded-xl hover:bg-slate-50 transition-all active:scale-95"
+          onClick={() => window.open('https://zalo.me/0987654321', '_blank')}
         >
           Liên hệ hỗ trợ
         </Button>
 
         <Button
           variant="outline"
-          className="border-slate-200 text-slate-600 text-xs font-medium h-9 px-4 rounded-lg flex items-center gap-2"
+          className="border-slate-200 text-slate-600 text-xs font-semibold h-11 px-6 rounded-xl hover:bg-slate-50 transition-all active:scale-95 flex items-center gap-2"
+          onClick={() => window.print()}
+        >
+          <Printer className="h-4 w-4" />
+          In hóa đơn
+        </Button>
+
+        <Button
+          variant="outline"
+          className="border-slate-200 text-slate-600 text-xs font-semibold h-11 px-6 rounded-xl hover:bg-slate-50 transition-all active:scale-95 flex items-center gap-2"
           onClick={() => {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
             window.location.href = `${apiUrl}/orders/${orderId}/invoice`;
           }}
         >
-          <Download className="h-3.5 w-3.5" />
+          <Download className="h-4 w-4" />
           Tải hóa đơn
         </Button>
 
         {!isCancelled && status === OrderStatus.PENDING && (
           <Button
             variant="ghost"
-            className="text-rose-500 hover:bg-rose-50 text-xs font-medium h-9 px-4 rounded-lg"
+            className="text-rose-500 hover:bg-rose-50 text-xs font-semibold h-11 px-6 rounded-xl transition-all active:scale-95"
             onClick={onCancel}
           >
-            Hủy đơn
+            Hủy đơn hàng
           </Button>
         )}
+        
         {status === OrderStatus.DELIVERED && !returnStatus && onReturn && (
           <Button
             variant="ghost"
-            className="text-amber-600 hover:bg-amber-50 text-xs font-medium h-9 px-4 rounded-lg flex items-center gap-2"
+            className="text-amber-600 hover:bg-amber-50 text-xs font-semibold h-11 px-6 rounded-xl flex items-center gap-2 transition-all active:scale-95"
             onClick={onReturn}
           >
-            <AlertCircle className="h-3.5 w-3.5" />
+            <AlertCircle className="h-4 w-4" />
             Yêu cầu trả hàng
           </Button>
         )}

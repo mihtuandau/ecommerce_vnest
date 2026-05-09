@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import { useForm } from "react-hook-form";
 import {
   Dialog,
@@ -15,7 +16,8 @@ import { Label } from "@/components/ui/Label";
 import { Textarea } from "@/components/ui/Textarea";
 import { useToast } from "@/hooks/useToast";
 import { returnsApi } from "@/features/returns/api";
-import { Camera, X, Loader2, AlertCircle } from "lucide-react";
+import { Camera, X, AlertCircle } from "lucide-react";
+import { Spinner } from "@/components/ui/Spinner";
 import { productsApi } from "@/features/products/api";
 import { cn } from "@/utils/cn";
 
@@ -153,7 +155,7 @@ export function RequestReturnModal({
               <div className="grid grid-cols-4 gap-3">
                 {images.map((url, i) => (
                   <div key={i} className="relative aspect-square rounded-xl overflow-hidden border border-slate-100 group shadow-sm">
-                    <img src={url} alt="Evidence" className="w-full h-full object-cover" />
+                    <Image src={url} alt="Evidence" fill className="object-cover" />
                     <button
                       type="button"
                       onClick={() => removeImage(i)}
@@ -166,7 +168,7 @@ export function RequestReturnModal({
                 {images.length < 4 && (
                   <label className="aspect-square rounded-xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center gap-1.5 cursor-pointer hover:border-primary hover:bg-primary/5 transition-all group">
                     <input type="file" multiple accept="image/*" className="hidden" onChange={handleImageUpload} disabled={isUploading} />
-                    {isUploading ? <Loader2 size={18} className="animate-spin text-primary" /> : <Camera size={18} className="text-slate-400 group-hover:text-primary transition-colors" />}
+                    {isUploading ? <Spinner size="sm" /> : <Camera size={18} className="text-slate-400 group-hover:text-primary transition-colors" />}
                     <span className="text-[10px] font-semibold text-slate-400 group-hover:text-primary transition-colors">Tải ảnh</span>
                   </label>
                 )}
@@ -183,7 +185,7 @@ export function RequestReturnModal({
               Hủy bỏ
             </Button>
             <Button type="submit" disabled={isSubmitting || isUploading} className="h-10 rounded-lg px-6 font-semibold bg-primary hover:bg-slate-800 shadow-sm transition-all text-[13px]">
-              {isSubmitting ? <Loader2 size={16} className="animate-spin mr-2" /> : null}
+              {isSubmitting ? <Spinner size="sm" variant="white" className="mr-2" /> : null}
               Gửi yêu cầu
             </Button>
           </DialogFooter>

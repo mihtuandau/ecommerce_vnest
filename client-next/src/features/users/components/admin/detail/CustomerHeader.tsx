@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { User } from "@/types/models";
 import { ChevronLeft, Mail, Phone, Calendar, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/Button";
@@ -42,14 +43,13 @@ export function CustomerHeader({ user }: CustomerHeaderProps) {
 
         <div className="flex flex-col md:flex-row md:items-end gap-8">
           <div className="relative shrink-0 group">
-            <div className="h-28 w-28 rounded-[2rem] bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center border-4 border-white shadow-xl text-4xl font-black text-slate-400 overflow-hidden transition-transform duration-500 group-hover:scale-105">
+            <div className="relative h-28 w-28 rounded-[2rem] bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center border-4 border-white shadow-xl text-4xl font-black text-slate-400 overflow-hidden transition-transform duration-500 group-hover:scale-105">
               {user.avatar ? (
-                <img
+                <Image
                   src={user.avatar}
                   alt={user.name}
-                  referrerPolicy="no-referrer"
-                  className="h-full w-full object-cover"
-                  onError={(e) => handleAvatarError(e, user.name, user.email)}
+                  fill
+                  className="object-cover"
                 />
               ) : (
                 user.name?.charAt(0) || "U"

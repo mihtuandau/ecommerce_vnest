@@ -5,7 +5,8 @@ import { useParams, useRouter } from "next/navigation";
 import { DiscountForm } from "@/features/discounts/components/admin/DiscountForm";
 import { useDiscountDetail, useUpdateDiscount } from "@/features/discounts/hooks";
 import { Button } from "@/components/ui/Button";
-import { ChevronLeft, Loader2 } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
+import { Spinner } from "@/components/ui/Spinner";
 import { ROUTES } from "@/constants/routes";
 
 export default function EditDiscountPage() {
@@ -28,7 +29,7 @@ export default function EditDiscountPage() {
   if (isLoading) {
     return (
       <div className="h-96 flex flex-col items-center justify-center gap-3">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <Spinner size="lg" />
         <p className="text-sm font-bold text-slate-400">Đang tải thông tin mã...</p>
       </div>
     );

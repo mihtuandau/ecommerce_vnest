@@ -6,7 +6,7 @@ import { BannerTable } from "@/features/banners/components/admin/BannerTable";
 import { BannerListHeader } from "@/features/banners/components/admin/list/ListHeader";
 import { BannerTabs } from "@/features/banners/components/admin/list/Tabs";
 import { BannerListToolbar } from "@/features/banners/components/admin/list/ListToolbar";
-import { Loader2 } from "lucide-react";
+import { Spinner } from "@/components/ui/Spinner";
 
 export default function AdminBannersPage() {
   const { data, isLoading, refetch, isFetching } = useBanners();
@@ -64,7 +64,7 @@ export default function AdminBannersPage() {
           {isLoading ? (
             <div className="flex h-96 items-center justify-center">
               <div className="flex flex-col items-center gap-3">
-                <Loader2 className="h-8 w-8 animate-spin text-slate-200" />
+                <Spinner size="lg" />
                 <p className="text-sm font-semibold text-slate-400">Đang tải dữ liệu...</p>
               </div>
             </div>

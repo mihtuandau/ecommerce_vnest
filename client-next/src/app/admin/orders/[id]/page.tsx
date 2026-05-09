@@ -9,6 +9,7 @@ import { Items } from "@/features/orders/components/admin/detail/Items";
 import { Customer } from "@/features/orders/components/admin/detail/Customer";
 import { Actions } from "@/features/orders/components/admin/detail/Actions";
 import { PrintInvoice } from "@/features/orders/components/admin/detail/PrintInvoice";
+import { Spinner } from "@/components/ui/Spinner";
 
 export default function AdminOrderDetailPage() {
   const { id } = useParams() as { id: string };
@@ -22,7 +23,7 @@ export default function AdminOrderDetailPage() {
   if (isLoading) {
     return (
       <div className="h-96 flex flex-col items-center justify-center gap-3">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+        <Spinner size="lg" />
         <p className="text-sm font-semibold text-slate-400">Đang tải thông tin...</p>
       </div>
     );

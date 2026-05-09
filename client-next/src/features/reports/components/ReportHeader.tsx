@@ -3,6 +3,7 @@
 import React from "react";
 import { Button } from "@/components/ui/Button";
 import { Download, RefreshCcw } from "lucide-react";
+import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/utils/cn";
 
 interface ReportHeaderProps {
@@ -30,7 +31,7 @@ export function ReportHeader({ onRefresh, onExport, isFetching, timeRange, setTi
             disabled={isFetching}
             className="h-10 border-slate-200 font-bold text-xs gap-2 bg-white shadow-none"
           >
-            <RefreshCcw className={cn("h-3.5 w-3.5", isFetching && "animate-spin text-slate-400")} />
+            {isFetching ? <Spinner size="sm" /> : <RefreshCcw className="h-3.5 w-3.5" />}
             Làm mới
           </Button>
           

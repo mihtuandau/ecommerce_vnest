@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import { Truck, CreditCard, Package, CheckCircle2, Loader2, RotateCcw, ArrowRight, Banknote } from "lucide-react";
+import { Truck, CreditCard, Package, CheckCircle2, RotateCcw, ArrowRight, Banknote } from "lucide-react";
+import { Spinner } from "@/components/ui/Spinner";
 import { Button } from "@/components/ui/Button";
 import { OrderStatus, PaymentStatus } from "@/types/enums";
 import Link from "next/link";
@@ -74,7 +75,7 @@ export function Actions({
                      onClick={() => orderAny.payment?.id && onUpdatePayment({ paymentId: String(orderAny.payment.id), status: PaymentStatus.SUCCESS, orderId: id })}
                      disabled={isPending || !orderAny.payment?.id}
                  >
-                     {isUpdatingPayment ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <CreditCard className="h-4 w-4 mr-2" />}
+                     {isUpdatingPayment ? <Spinner size="sm" /> : <CreditCard className="h-4 w-4 mr-2" />}
                      Xác nhận đã thanh toán
                  </Button>
             )}
@@ -86,7 +87,7 @@ export function Actions({
                      onClick={() => onUpdateStatus({ id, status: OrderStatus.PROCESSING })}
                      disabled={isPending}
                  >
-                     {isUpdating ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <CheckCircle2 className="h-4 w-4 mr-2" />}
+                     {isUpdating ? <Spinner size="sm" variant="white" /> : <CheckCircle2 className="h-4 w-4 mr-2" />}
                      Xác nhận đơn hàng
                  </Button>
             )}
@@ -99,7 +100,7 @@ export function Actions({
                      onClick={() => onSyncGHN(id)}
                      disabled={isPending}
                  >
-                     {isSyncing ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Truck className="h-4 w-4 mr-2" />}
+                     {isSyncing ? <Spinner size="sm" /> : <Truck className="h-4 w-4 mr-2" />}
                      Gửi đơn sang GHN
                  </Button>
             )}
@@ -112,7 +113,7 @@ export function Actions({
                      onClick={() => onUpdateStatus({ id, status: OrderStatus.DELIVERED })}
                      disabled={isPending}
                  >
-                     {isUpdating ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Package className="h-4 w-4 mr-2" />}
+                     {isUpdating ? <Spinner size="sm" /> : <Package className="h-4 w-4 mr-2" />}
                      Xác nhận đã giao hàng
                  </Button>
             )}

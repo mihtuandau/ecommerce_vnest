@@ -18,6 +18,7 @@ import {
 import { Badge } from "@/components/ui/Badge";
 import { useDeleteProduct } from "../../hooks";
 import { cn } from "@/utils/cn";
+import Image from "next/image";
 import Link from "next/link";
 import { ROUTES } from "@/constants/routes";
 
@@ -41,12 +42,14 @@ export const columns: ColumnDef<Product>[] = [
 
       return (
         <div className="flex items-center gap-4">
-          <div className="h-12 w-12 rounded-xl bg-muted overflow-hidden border border-muted-foreground/10 shrink-0 shadow-sm">
+          <div className="h-12 w-12 rounded-xl bg-muted overflow-hidden border border-muted-foreground/10 shrink-0 shadow-sm relative">
             {imageUrl && typeof imageUrl === 'string' ? (
-              <img
+              <Image
                 src={imageUrl}
                 alt={product.name}
-                className="h-full w-full object-cover transition-transform group-hover:scale-110"
+                fill
+                unoptimized
+                className="object-cover transition-transform group-hover:scale-110"
               />
             ) : (
               <div className="h-full w-full flex items-center justify-center text-muted-foreground">
@@ -210,7 +213,7 @@ export const columns: ColumnDef<Product>[] = [
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48 rounded-xl p-1 shadow-2xl border-muted/50">
-              <DropdownMenuLabel className="text-xs font-semibold tracking-widest text-slate-500 px-2 py-1.5 uppercase">Hành động</DropdownMenuLabel>
+              <DropdownMenuLabel className="text-xs font-semibold tracking-wide text-slate-500 px-2 py-1.5">Hành động</DropdownMenuLabel>
               <DropdownMenuItem className="rounded-lg cursor-pointer gap-2 py-2 text-sm focus:bg-slate-100 focus:text-slate-900" asChild>
                 <Link href={`${ROUTES.ADMIN_PRODUCTS}/${product.id}`}>
                   <Pencil className="h-3.5 w-3.5" />

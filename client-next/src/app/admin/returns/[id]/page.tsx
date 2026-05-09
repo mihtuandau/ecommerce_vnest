@@ -9,8 +9,9 @@ import { Badge } from "@/components/ui/Badge";
 import { useToast } from "@/hooks/useToast";
 import { 
   ArrowLeft, RotateCcw, Calendar, User, ShoppingBag, 
-  CheckCircle2, XCircle, Loader2, MessageSquare, Image as ImageIcon 
+  CheckCircle2, XCircle, MessageSquare, Image as ImageIcon 
 } from "lucide-react";
+import { Spinner } from "@/components/ui/Spinner";
 import Image from "next/image";
 import { ReturnStatus } from "@/types/enums";
 import { Textarea } from "@/components/ui/Textarea";
@@ -69,7 +70,7 @@ export default function AdminReturnDetailPage() {
   if (isLoading) {
     return (
       <div className="h-[70vh] flex flex-col items-center justify-center gap-2">
-        <Loader2 className="h-10 w-10 animate-spin text-primary/30" />
+        <Spinner size="lg" />
         <p className="text-[13px] font-medium text-slate-400">Đang tải dữ liệu...</p>
       </div>
     );

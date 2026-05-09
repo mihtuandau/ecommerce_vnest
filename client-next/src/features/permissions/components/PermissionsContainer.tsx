@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
-import { Loader2, Shield } from "lucide-react";
+import { Shield } from "lucide-react";
+import { Spinner } from "@/components/ui/Spinner";
 import { Tabs, TabsContent } from "@/components/ui/Tabs";
 import { useAllPermissions, useRolesWithPermissions, useUpdateRolePermissions } from "../hooks";
 import { PermissionHeader } from "./PermissionHeader";
@@ -67,7 +68,7 @@ export function PermissionsContainer() {
   if (isLoading) {
     return (
       <div className="h-[60vh] flex flex-col items-center justify-center gap-2">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <Spinner size="lg" />
         <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Đang tải dữ liệu...</p>
       </div>
     );

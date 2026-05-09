@@ -12,6 +12,7 @@ import { CustomerTabs } from "@/features/users/components/admin/detail/CustomerT
 import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { OrderStatus, PaymentStatus } from "@/types/enums";
+import { Spinner } from "@/components/ui/Spinner";
 
 export default function AdminUserDetailPage() {
   const { id } = useParams() as { id: string };
@@ -27,7 +28,7 @@ export default function AdminUserDetailPage() {
   if (isLoading) {
     return (
       <div className="h-96 flex flex-col items-center justify-center gap-3">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+        <Spinner size="lg" />
         <p className="text-sm font-bold text-slate-400">Đang tải hồ sơ...</p>
       </div>
     );

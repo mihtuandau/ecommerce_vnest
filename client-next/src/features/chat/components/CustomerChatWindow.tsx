@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { Send, Loader2, User, MessageSquare } from "lucide-react";
+import { Send, User, MessageSquare } from "lucide-react";
+import { Spinner } from "@/components/ui/Spinner";
 import { useSocket } from "../socket";
 import { useAuthStore } from "@/store/useAuthStore";
 import { chatApi } from "../api";
@@ -110,7 +111,7 @@ export function CustomerChatWindow() {
       >
         {isLoading ? (
           <div className="flex flex-col items-center justify-center h-full gap-3">
-            <Loader2 className="h-6 w-6 animate-spin text-primary/30" />
+            <Spinner size="sm" />
             <p className="text-[11px] font-medium text-slate-400">
               Đang tải hội thoại...
             </p>

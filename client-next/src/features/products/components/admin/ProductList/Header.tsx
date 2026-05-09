@@ -3,6 +3,7 @@
 import React from "react";
 import { RefreshCw, Plus } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/utils/cn";
 import Link from "next/link";
 import { ROUTES } from "@/constants/routes";
@@ -32,7 +33,7 @@ export function Header({ totalProducts, onRefresh, isFetching }: HeaderProps) {
           onClick={onRefresh}
           disabled={isFetching}
         >
-          <RefreshCw className={cn("h-4 w-4", isFetching && "animate-spin")} />
+          {isFetching ? <Spinner size="sm" /> : <RefreshCw className="h-4 w-4" />}
           {isFetching ? "Đang tải..." : "Làm mới"}
         </Button>
         <Button

@@ -14,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/DropdownMenu";
 import { cn } from "@/utils/cn";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Role, UserStatus } from "@/types/enums";
@@ -49,14 +50,14 @@ export const columns: ColumnDef<User>[] = [
       const user = row.original;
       return (
         <Link href={`/admin/users/${user.id}`} className="flex items-center gap-3 hover:opacity-70 transition-opacity group">
-          <div className="h-10 w-10 rounded-xl bg-slate-100 flex items-center justify-center border border-slate-200 overflow-hidden shrink-0 group-hover:border-primary/30">
+          <div className="h-10 w-10 rounded-xl bg-slate-100 flex items-center justify-center border border-slate-200 overflow-hidden shrink-0 group-hover:border-primary/30 relative">
             {user.avatar ? (
-              <img
+              <Image
                 src={user.avatar}
                 alt={user.name}
-                referrerPolicy="no-referrer"
-                className="h-full w-full object-cover"
-                onError={(e) => handleAvatarError(e, user.name, user.email)}
+                fill
+                unoptimized
+                className="object-cover"
               />
             ) : (
               <span className="text-sm font-semibold text-slate-500">{user.name?.charAt(0) || "U"}</span>

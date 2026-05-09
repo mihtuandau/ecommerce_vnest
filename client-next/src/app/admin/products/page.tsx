@@ -6,6 +6,7 @@ import { ProductTable } from "@/features/products/components/admin/ProductTable"
 import { Header } from "@/features/products/components/admin/ProductList/Header";
 import { Tabs } from "@/features/products/components/admin/ProductList/Tabs";
 import { Toolbar } from "@/features/products/components/admin/ProductList/Toolbar";
+import { Spinner } from "@/components/ui/Spinner";
 
 export default function AdminProductsPage() {
   const { data, isLoading, refetch, isFetching } = useProducts({ limit: 200, status: 'all', sortBy: 'newest' });
@@ -76,7 +77,7 @@ export default function AdminProductsPage() {
           {isLoading ? (
             <div className="flex h-96 items-center justify-center">
               <div className="flex flex-col items-center gap-3">
-                <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                <Spinner size="lg" />
                 <p className="text-sm font-semibold text-slate-400">Đang tải dữ liệu...</p>
               </div>
             </div>

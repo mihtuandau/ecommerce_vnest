@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/ui/Button";
 import { Product, ProductVariant } from "@/types/models";
 import { formatCurrency } from "@/utils/formatCurrency";
-import { ShoppingCart, Minus, Plus, Loader2 } from "lucide-react";
+import { ShoppingCart, Minus, Plus, X } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { useCart } from "@/features/cart/hooks";
 import { useToast } from "@/hooks/useToast";
@@ -73,7 +73,11 @@ export function QuickAddModal({
     }
   }, [isOpen]);
 
-  const currentStock = selectedVariant?.stock ?? product.stock ?? 0;
+  const totalVariantsStock = useMemo(() => {
+    return product.variants?.reduce((acc, v) => acc + (v.isActive !== false ? (v.stock ?? 0) : 0), 0) ?? 0;
+  }, [product.variants]);
+
+  const currentStock = selectedVariant?.stock ?? (product.variants && product.variants.length > 0 ? totalVariantsStock : (product.stock ?? 0));
   const currentPrice = selectedVariant?.price ?? price;
   const currentOriginalPrice = selectedVariant?.originalPrice ?? originalPrice;
 
@@ -107,9 +111,9 @@ export function QuickAddModal({
       color: selectedVariant?.color,
       size: selectedVariant?.size,
     });
+    success("Đã thêm vào giỏ hàng");
     onClose();
   };
-
 
   const productImageUrl = getImageUrl(
     selectedVariant?.images?.[0] || product.images?.[0]
@@ -117,133 +121,147 @@ export function QuickAddModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md p-0 overflow-hidden rounded-2xl border-none shadow-2xl">
-        <DialogHeader className="p-6 pb-0">
-          <DialogTitle className="text-xl font-bold text-slate-900">
-            Thêm vào giỏ hàng
-          </DialogTitle>
-        </DialogHeader>
+      <DialogContent className="max-w-2xl p-0 overflow-hidden rounded-[1.5rem] border-none shadow-2xl bg-white focus:outline-none">
+        {/* Accessibility: Title & Description (Hidden) */}
+        <div className="sr-only">
+          <DialogHeader>
+            <DialogTitle>{product.name}</DialogTitle>
+          </DialogHeader>
+        </div>
 
-        <div className="p-6 space-y-6">
-          {/* Product Brief */}
-          <div className="flex gap-4">
-            <div className="relative h-24 w-24 rounded-xl bg-slate-50 flex-shrink-0 overflow-hidden border border-slate-100">
-              <Image
-                src={productImageUrl}
-                alt={product.name}
-                fill
-                className="object-contain p-2 mix-blend-multiply"
-              />
-            </div>
-            <div className="flex flex-col justify-center">
-              <h3 className="font-bold text-slate-900 text-sm line-clamp-2">
+        <div className="relative grid grid-cols-1 md:grid-cols-12 min-h-[400px]">
+          {/* Left: Product Image Section */}
+          <div className="md:col-span-6 bg-white flex items-center justify-center p-6 relative overflow-hidden">
+             <div className="relative w-full aspect-square">
+                <Image
+                  src={productImageUrl}
+                  alt={product.name}
+                  fill
+                  className="object-contain"
+                  priority
+                />
+             </div>
+          </div>
+
+          {/* Right: Product Info & Options Section */}
+          <div className="md:col-span-6 p-6 md:p-8 flex flex-col justify-center bg-white">
+            <div className="space-y-0.5 mb-2">
+               <span className="text-[10px] font-semibold text-primary/80 tracking-wider">
+                 Minh Tuấn Shop
+               </span>
+               <h2 className="text-lg font-bold text-slate-900 leading-snug pr-4">
                 {product.name}
-              </h3>
-              <div className="mt-1 flex items-baseline gap-2">
-                <span className="text-lg font-bold text-primary">
-                  {formatCurrency(currentPrice)}
-                </span>
-                {currentOriginalPrice && currentOriginalPrice > currentPrice && (
-                  <span className="text-xs text-slate-400 line-through">
-                    {formatCurrency(currentOriginalPrice)}
+              </h2>
+            </div>
+            
+            <div className="flex items-center gap-3 mb-4">
+               <span className="text-xl font-bold text-slate-900 tracking-tight">
+                 {formatCurrency(currentPrice)}
+               </span>
+               {currentOriginalPrice && currentOriginalPrice > currentPrice && (
+                 <span className="text-sm font-medium text-slate-300 line-through">
+                   {formatCurrency(currentOriginalPrice)}
+                 </span>
+               )}
+            </div>
+
+            <div className="space-y-6">
+              {/* Color Selection */}
+              {colors.length > 0 && (
+                <div className="space-y-2">
+                  <span className="text-[11px] font-semibold text-slate-400">
+                    Màu sắc: <span className="text-slate-900 font-bold">{selectedColor || "Chưa chọn"}</span>
                   </span>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Options */}
-          <div className="space-y-4">
-            {colors.length > 0 && (
-              <div className="space-y-2">
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                  Màu sắc
-                </span>
-                <div className="flex flex-wrap gap-2">
-                  {colors.map((color) => (
-                    <button
-                      key={color}
-                      onClick={() => setSelectedColor(color)}
-                      className={cn(
-                        "px-4 py-2 rounded-xl text-xs font-bold transition-all border-2",
-                        selectedColor === color
-                          ? "bg-primary border-primary text-white shadow-lg shadow-primary/10"
-                          : "bg-slate-50 border-slate-100 text-slate-500 hover:border-slate-200"
-                      )}
-                    >
-                      {color}
-                    </button>
-                  ))}
+                  <div className="flex flex-wrap gap-2">
+                    {colors.map((color) => (
+                      <button
+                        key={color}
+                        onClick={() => setSelectedColor(color)}
+                        className={cn(
+                          "px-4 py-2 rounded-lg text-xs font-semibold transition-all border",
+                          selectedColor === color
+                            ? "bg-primary border-primary text-white shadow-md"
+                            : "bg-white border-slate-200 text-slate-600 hover:border-slate-300"
+                        )}
+                      >
+                        {color}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {sizes.length > 0 && (
-              <div className="space-y-2">
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                  Kích thước
-                </span>
-                <div className="flex flex-wrap gap-2">
-                  {sizes.map((size) => (
-                    <button
-                      key={size}
-                      onClick={() => setSelectedSize(size)}
-                      className={cn(
-                        "min-w-[3rem] px-4 py-2 rounded-xl text-xs font-bold transition-all border-2",
-                        selectedSize === size
-                          ? "bg-primary border-primary text-white shadow-lg shadow-primary/10"
-                          : "bg-slate-50 border-slate-100 text-slate-500 hover:border-slate-200"
-                      )}
-                    >
-                      {size}
-                    </button>
-                  ))}
+              {/* Size Selection */}
+              {sizes.length > 0 && (
+                <div className="space-y-2">
+                  <span className="text-[11px] font-semibold text-slate-400">
+                    Kích thước: <span className="text-slate-900 font-bold">{selectedSize || "Chưa chọn"}</span>
+                  </span>
+                  <div className="flex flex-wrap gap-2">
+                    {sizes.map((size) => (
+                      <button
+                        key={size}
+                        onClick={() => setSelectedSize(size)}
+                        className={cn(
+                          "min-w-[3.5rem] px-5 py-2.5 rounded-xl text-xs font-semibold transition-all border-2",
+                          selectedSize === size
+                            ? "bg-primary border-primary text-white shadow-lg shadow-primary/20"
+                            : "bg-white border-slate-100 text-slate-500 hover:border-slate-300"
+                        )}
+                      >
+                        {size}
+                      </button>
+                    ))}
+                  </div>
                 </div>
+              )}
+
+              {/* Quantity */}
+              <div className="space-y-3">
+                 <span className="text-[11px] font-semibold text-slate-400">
+                    Số lượng
+                 </span>
+                 <div className="flex items-center justify-between">
+                    <div className="flex items-center bg-slate-50 rounded-xl p-1 border border-slate-100">
+                      <button
+                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                        className="h-10 w-10 flex items-center justify-center hover:bg-white rounded-lg transition-all text-slate-600"
+                      >
+                        <Minus className="h-4 w-4" />
+                      </button>
+                      <span className="w-12 text-center text-sm font-bold text-slate-900">
+                        {quantity}
+                      </span>
+                      <button
+                        onClick={() =>
+                          setQuantity(Math.min(currentStock || 1, quantity + 1))
+                        }
+                        className="h-10 w-10 flex items-center justify-center hover:bg-white rounded-lg transition-all text-slate-600"
+                      >
+                        <Plus className="h-4 w-4" />
+                      </button>
+                    </div>
+                    
+                    <span className={cn(
+                      "text-[11px] font-semibold px-3 py-1 rounded-full",
+                      currentStock > 0 ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-600"
+                    )}>
+                      {currentStock > 0 ? `Còn ${currentStock} sản phẩm` : "Hết hàng"}
+                    </span>
+                 </div>
               </div>
-            )}
-          </div>
-
-          {/* Quantity & Stock */}
-          <div className="flex items-center justify-between pt-2">
-            <div className="flex items-center bg-slate-50 rounded-xl p-1 border border-slate-100">
-              <button
-                onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="h-8 w-8 flex items-center justify-center hover:bg-white rounded-lg transition-all"
-              >
-                <Minus className="h-3 w-3" />
-              </button>
-              <span className="w-10 text-center text-sm font-bold text-slate-900">
-                {quantity}
-              </span>
-              <button
-                onClick={() =>
-                  setQuantity(Math.min(currentStock || 1, quantity + 1))
-                }
-                className="h-8 w-8 flex items-center justify-center hover:bg-white rounded-lg transition-all"
-              >
-                <Plus className="h-3 w-3" />
-              </button>
             </div>
-            <div className="text-right">
-              <span
-                className={cn(
-                  "text-[10px] font-bold",
-                  currentStock > 0 ? "text-green-600" : "text-rose-600"
-                )}
+
+            <div className="mt-10 flex gap-4">
+              <Button
+                onClick={handleAddToCart}
+                disabled={currentStock <= 0}
+                className="flex-1 h-14 rounded-2xl bg-white text-primary hover:bg-primary hover:text-white font-semibold text-sm shadow-[0_4px_20px_rgba(0,0,0,0.06)] border border-primary/5 flex items-center justify-center transition-all active:scale-95 group tracking-wide"
               >
-                {currentStock > 0 ? `Còn ${currentStock} sản phẩm` : "Hết hàng"}
-              </span>
+                Thêm vào giỏ hàng
+              </Button>
             </div>
           </div>
-
-          {/* Action */}
-          <Button
-            onClick={handleAddToCart}
-            disabled={currentStock <= 0}
-            className="w-full h-12 rounded-2xl bg-primary hover:bg-[#0d47a1] text-white font-bold text-sm shadow-xl shadow-primary/20 gap-2 transition-all active:scale-[0.98]"
-          >
-            <ShoppingCart className="h-4 w-4" /> Xác nhận thêm vào giỏ
-          </Button>
         </div>
       </DialogContent>
     </Dialog>
