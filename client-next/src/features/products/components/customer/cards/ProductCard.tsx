@@ -236,7 +236,7 @@ export const ProductCard = React.memo(function ProductCard({ product, view = "gr
 
   // ── GRID VIEW VARIANT ──
   return (
-    <div className="group relative flex flex-col h-full cursor-pointer">
+    <div className="group relative flex flex-col h-full">
 
       {/* ── IMAGE SECTION ── */}
       <div className="relative z-0 aspect-square w-full overflow-hidden rounded-2xl bg-slate-50/50">

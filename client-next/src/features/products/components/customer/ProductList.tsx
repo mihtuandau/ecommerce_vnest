@@ -127,7 +127,7 @@ export function ProductList({
   }
 
   return (
-    <div className="space-y-12 min-h-[1400px] flex flex-col justify-between pb-12">
+    <div className="space-y-12 min-h-[600px] flex flex-col justify-between pb-12">
       <div
         className={cn(
           "grid gap-3 md:gap-5 animate-in fade-in slide-in-from-bottom-4 duration-1000 flex-1 content-start",

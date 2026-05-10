@@ -64,23 +64,37 @@ export class OrderRepository {
     const discountSavings = new Map<number, number>();
 
     for (const v of variants) {
-      const best = discounts.find(
+      // Find all applicable discounts for this variant
+      const applicableDiscounts = discounts.filter(
         (d) =>
           (!d.applicableToProducts.length && !d.applicableToCategories.length) ||
           d.applicableToProducts.some((ap) => ap.productId === v.productId) ||
           d.applicableToCategories.some((ac) => ac.categoryId === v.product.categoryId)
       );
 
-      if (best) {
-        const discountedPrice = best.percentage
-          ? Math.round(v.price * (1 - best.percentage / 100))
-          : Math.max(0, v.price - (best.fixedAmount || 0));
+      let bestDiscountForVariant: any = null;
+      let maxSavingForVariant = 0;
+      let bestPriceForVariant = v.price;
 
-        if (discountedPrice < v.price) {
-          result.set(v.id, discountedPrice);
-          const saving = v.price - discountedPrice;
-          discountSavings.set(best.id, (discountSavings.get(best.id) || 0) + saving);
+      for (const d of applicableDiscounts) {
+        const discountedPrice = d.percentage
+          ? Math.round(v.price * (1 - d.percentage / 100))
+          : Math.max(0, v.price - (d.fixedAmount || 0));
+        
+        const saving = v.price - discountedPrice;
+        if (saving > maxSavingForVariant) {
+          maxSavingForVariant = saving;
+          bestDiscountForVariant = d;
+          bestPriceForVariant = discountedPrice;
         }
+      }
+
+      if (bestDiscountForVariant) {
+        result.set(v.id, bestPriceForVariant);
+        discountSavings.set(
+          bestDiscountForVariant.id, 
+          (discountSavings.get(bestDiscountForVariant.id) || 0) + maxSavingForVariant
+        );
       }
     }
 
