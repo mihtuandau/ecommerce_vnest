@@ -137,10 +137,10 @@ export default function HomeContainer() {
           <div className="absolute bottom-0 right-1/4 w-72 h-72 bg-rose-500/10 rounded-full blur-3xl translate-y-1/2 pointer-events-none" />
 
           <div className="relative z-10 max-w-2xl mx-auto space-y-4 md:space-y-6">
-            <span className="inline-block text-[10px] font-black tracking-[0.25em] text-primary/80 bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">
+            <span className="inline-block text-xs font-bold tracking-[0.25em] text-primary/80 bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">
               Minh Tuấn Collection 2025
             </span>
-            <h2 className="text-2xl md:text-5xl font-black text-white tracking-tight leading-[1.2] md:leading-[1.1]">
+            <h2 className="text-2xl md:text-5xl font-bold text-white tracking-tight leading-[1.2] md:leading-[1.1]">
               Kiến tạo không gian
               <br className="hidden sm:block" /> hiện đại cùng Minh Tuấn
             </h2>

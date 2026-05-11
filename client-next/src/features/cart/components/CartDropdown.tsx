@@ -71,7 +71,7 @@ export function CartDropdown() {
 
           <ShoppingCart className="h-6 w-6" />
           {totalCount > 0 && (
-            <span className="absolute -top-0.5 -right-0.5 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-primary text-[9px] font-bold text-white shadow-sm ring-2 ring-white">
+            <span className="absolute -top-0.5 -right-0.5 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-primary text-xs font-bold text-white shadow-sm ring-2 ring-white">
               {totalCount}
             </span>
           )}
@@ -92,7 +92,7 @@ export function CartDropdown() {
               <ShoppingBasket className="w-4 h-4 text-primary" />
               Giỏ hàng của bạn
             </h3>
-            <span className="text-[10px] font-semibold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-full">
+            <span className="text-xs font-semibold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-full">
               {totalCount} món
             </span>
           </div>
@@ -105,8 +105,8 @@ export function CartDropdown() {
                   <ShoppingCart className="h-8 w-8 text-slate-200" />
                 </div>
                 <div className="space-y-1">
-                  <p className="text-sm font-semibold text-slate-900">Giỏ hàng trống</p>
-                  <p className="text-[10px] text-slate-500 font-normal">Hãy thêm vài món vào giỏ nhé!</p>
+                  <p className="text-sm font-bold text-slate-900">Giỏ hàng trống</p>
+                  <p className="text-xs text-slate-500 font-normal">Hãy thêm vài món vào giỏ nhé!</p>
                 </div>
               </div>
             ) : (
@@ -123,18 +123,18 @@ export function CartDropdown() {
                     </div>
                     <div className="flex flex-1 flex-col justify-between py-0.5 min-w-0">
                       <div className="space-y-0.5">
-                        <h4 className="text-xs font-semibold text-slate-900 line-clamp-1 group-hover:text-primary transition-colors leading-snug">
+                        <h4 className="text-xs font-bold text-slate-900 line-clamp-1 group-hover:text-primary transition-colors leading-snug">
                           {item.name}
                         </h4>
                         {(item.color || item.size) && (
                           <div className="flex items-center gap-2 mt-0.5">
                             {item.color && (
-                              <span className="text-[9px] font-medium text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded-md">
+                              <span className="text-xs font-medium text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded-lg">
                                 Màu: {item.color}
                               </span>
                             )}
                             {item.size && (
-                              <span className="text-[9px] font-medium text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded-md">
+                              <span className="text-xs font-medium text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded-lg">
                                 Size: {item.size}
                               </span>
                             )}
@@ -142,18 +142,18 @@ export function CartDropdown() {
                         )}
                         <div className="flex items-center justify-between">
                           <div className="flex flex-col">
-                            <p className="text-[11px] font-bold text-primary">{formatCurrency(item.discountedPrice || item.price)}</p>
+                            <p className="text-xs font-bold text-primary">{formatCurrency(item.discountedPrice || item.price)}</p>
                             {item.discountedPrice && item.discountedPrice < item.price ? (
-                              <span className="text-[9px] text-slate-600 line-through font-normal tabular-nums">
+                              <span className="text-xs text-slate-600 line-through font-normal tabular-nums">
                                 {formatCurrency(item.price)}
                               </span>
                             ) : (item.originalPrice && item.originalPrice > (item.discountedPrice || item.price)) ? (
-                              <span className="text-[9px] text-slate-600 line-through font-normal tabular-nums">
+                              <span className="text-xs text-slate-600 line-through font-normal tabular-nums">
                                 {formatCurrency(item.originalPrice)}
                               </span>
                             ) : null}
                           </div>
-                          <span className="text-[10px] text-slate-600 font-normal">x {item.quantity}</span>
+                          <span className="text-xs text-slate-600 font-normal">x {item.quantity}</span>
                         </div>
                       </div>
                       
@@ -169,7 +169,7 @@ export function CartDropdown() {
                           >
                             <Minus className="h-2.5 w-2.5" />
                           </button>
-                          <span className="w-6 text-center text-[10px] font-normal text-slate-800">
+                          <span className="w-6 text-center text-xs font-bold text-slate-800">
                             {item.quantity}
                           </span>
                           <button
@@ -204,7 +204,7 @@ export function CartDropdown() {
           {items.length > 0 && (
             <div className="p-6 bg-slate-50/50 border-t border-slate-100 space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-[11px] font-semibold text-slate-500">Tạm tính:</span>
+                <span className="text-xs font-bold text-slate-500">Tạm tính:</span>
                 <span className="text-xl font-bold text-slate-900 tabular-nums tracking-tighter">
                   {formatCurrency(totalPrice)}
                 </span>
@@ -223,7 +223,7 @@ export function CartDropdown() {
                 <Link 
                   href={ROUTES.CART} 
                   onClick={() => setIsOpen(false)}
-                  className="w-full rounded-full h-10 text-slate-500 hover:text-primary hover:bg-primary/5 flex items-center justify-center text-[12px] font-medium transition-all"
+                  className="w-full rounded-full h-10 text-slate-500 hover:text-primary hover:bg-primary/5 flex items-center justify-center text-xs font-medium transition-all"
                 >
                   Xem chi tiết giỏ hàng
                 </Link>

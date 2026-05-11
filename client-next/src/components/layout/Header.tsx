@@ -105,7 +105,7 @@ export function Header({ initialHasToken }: { initialHasToken?: boolean }) {
                   <Link href={ROUTES.WISHLIST}>
                     <Heart className="h-6 w-6" />
                     {mounted && wishlistCount > 0 && (
-                      <span className="absolute -top-0.5 -right-0.5 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-primary text-[9px] font-bold text-white shadow-sm ring-2 ring-white">
+                      <span className="absolute -top-0.5 -right-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs font-bold text-white shadow-sm ring-2 ring-white">
                         {wishlistCount}
                       </span>
                     )}

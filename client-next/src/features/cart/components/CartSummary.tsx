@@ -62,7 +62,7 @@ export function CartSummary({ selectedCount, selectedTotalPrice }: CartSummaryPr
             disabled={selectedCount === 0}
             className={cn(
               "w-full h-14 rounded-xl text-white text-sm font-semibold shadow-xl shadow-primary/10 transition-all active:scale-[0.98]",
-              selectedCount > 0 ? "bg-primary hover:brightness-110" : "bg-slate-300 cursor-not-allowed pointer-events-none"
+              selectedCount > 0 ? "bg-primary hover:bg-primary/90" : "bg-slate-300 cursor-not-allowed pointer-events-none"
             )}
           >
             <Link href={selectedCount > 0 ? ROUTES.CHECKOUT : "#"}>

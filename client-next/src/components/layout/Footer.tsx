@@ -28,8 +28,8 @@ export function Footer() {
                  <Image src="/logoMT.png" alt="Logo" width={40} height={40} className="h-10 w-auto object-contain" />
                </div>
                <div className="flex flex-col">
-                 <span className="text-xl font-black tracking-tighter">MINHTUAN</span>
-                 <span className="text-[10px] font-bold text-white/60 tracking-[0.3em] uppercase">Store</span>
+                 <span className="text-xl font-bold tracking-tighter uppercase">MINHTUAN</span>
+                 <span className="text-xs font-bold text-white/60 tracking-[0.3em] uppercase">Store</span>
                </div>
             </Link>
             
@@ -57,7 +57,7 @@ export function Footer() {
           {/* Links Columns */}
           <div className="lg:col-span-5 grid grid-cols-2 gap-8">
             <div className="space-y-8">
-              <h3 className="text-sm font-black text-white uppercase tracking-widest">Sản phẩm</h3>
+              <h3 className="text-sm font-bold text-white uppercase tracking-widest">Sản phẩm</h3>
               <ul className="space-y-4">
                 {topCategories.length > 0 ? (
                   topCategories.map((cat: any) => (
@@ -81,7 +81,7 @@ export function Footer() {
               </ul>
             </div>
             <div className="space-y-8">
-              <h3 className="text-sm font-black text-white uppercase tracking-widest">Hỗ trợ</h3>
+              <h3 className="text-sm font-bold text-white uppercase tracking-widest">Hỗ trợ</h3>
               <ul className="space-y-4">
                 {[
                   { name: "Về Minh Tuấn Shop", href: "/about" },
@@ -104,7 +104,7 @@ export function Footer() {
 
           {/* Contact Column */}
           <div className="lg:col-span-3 space-y-8">
-            <h3 className="text-sm font-black text-white uppercase tracking-widest">Liên hệ</h3>
+            <h3 className="text-sm font-bold text-white uppercase tracking-widest">Liên hệ</h3>
             <ul className="space-y-6">
               <li className="flex gap-4 items-start group">
                 <div className="h-10 w-10 rounded-xl bg-white/10 flex items-center justify-center shrink-0 text-white/60 group-hover:bg-white group-hover:text-primary transition-all">
@@ -130,14 +130,14 @@ export function Footer() {
 
         {/* Bottom Bar */}
         <div className="mt-24 pt-10 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-6">
-          <p className="text-[11px] font-bold text-white/40 uppercase tracking-widest">
+          <p className="text-xs font-bold text-white/40 uppercase tracking-widest">
             © 2026 MINHTUAN SHOP
           </p>
           <div className="flex items-center gap-8">
-             <Link href="/policy/privacy" className="text-[11px] font-bold text-white/40 hover:text-white transition-colors uppercase tracking-widest">Privacy</Link>
-             <Link href="/policy/terms" className="text-[11px] font-bold text-white/40 hover:text-white transition-colors uppercase tracking-widest">Terms</Link>
+             <Link href="/policy/privacy" className="text-xs font-bold text-white/40 hover:text-white transition-colors uppercase tracking-widest">Privacy</Link>
+             <Link href="/policy/terms" className="text-xs font-bold text-white/40 hover:text-white transition-colors uppercase tracking-widest">Terms</Link>
              <div className="h-4 w-px bg-white/10" />
-             <span className="text-[11px] font-bold text-white/60 uppercase tracking-widest">Designed by Minh Tuấn</span>
+             <span className="text-xs font-bold text-white/60 uppercase tracking-widest">Designed by Minh Tuấn</span>
           </div>
         </div>
       </div>

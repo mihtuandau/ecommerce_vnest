@@ -97,7 +97,7 @@ export function FilterContent({
               type="button"
               onClick={() => updateFilters('categoryId', null)}
               className={cn(
-                "text-[15px] text-left transition-colors",
+                "text-sm text-left transition-colors",
                 !currentCategory ? "text-primary font-bold" : "text-slate-600 hover:text-slate-900"
               )}
             >
@@ -125,7 +125,7 @@ export function FilterContent({
                 type="button"
                 onClick={() => updateFilters('categoryId', String(cat.id))}
                 className={cn(
-                  "text-[15px] text-left transition-colors",
+                  "text-sm text-left transition-colors",
                   String(cat.id) === currentCategory ? "text-primary font-bold" : "text-slate-600 hover:text-slate-900"
                 )}
               >
@@ -159,7 +159,7 @@ export function FilterContent({
                 type="button"
                 onClick={() => updateFilters('brandId', String(brand.id) === currentBrand ? null : String(brand.id))}
                 className={cn(
-                  "text-[15px] text-left transition-colors",
+                  "text-sm text-left transition-colors",
                   String(brand.id) === currentBrand ? "text-primary font-bold" : "text-slate-600 hover:text-slate-900"
                 )}
               >
@@ -203,7 +203,7 @@ export function FilterContent({
                   (currentMinPrice === range.min && currentMaxPrice === range.max) ? null : range.max
                 )}
                 className={cn(
-                  "text-[15px] text-left transition-colors",
+                  "text-sm text-left transition-colors",
                   (currentMinPrice === range.min && currentMaxPrice === range.max) ? "text-primary font-bold" : "text-slate-600 hover:text-slate-900"
                 )}
               >
@@ -246,7 +246,7 @@ export function FilterContent({
                     <Star key={i} className={cn("h-3.5 w-3.5 transition-colors", i < s ? "fill-yellow-400 text-yellow-400" : "text-slate-200")} />
                   ))}
                 </div>
-                <span className="text-[15px]">Từ {s} sao</span>
+                <span className="text-sm">Từ {s} sao</span>
               </button>
             </div>
           ))}

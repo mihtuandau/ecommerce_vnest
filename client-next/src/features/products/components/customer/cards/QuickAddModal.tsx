@@ -23,6 +23,7 @@ interface QuickAddModalProps {
   onClose: () => void;
   price: number;
   originalPrice?: number | null;
+  flashSalePercent?: number;
 }
 
 export function QuickAddModal({
@@ -31,6 +32,7 @@ export function QuickAddModal({
   onClose,
   price,
   originalPrice,
+  flashSalePercent = 0,
 }: QuickAddModalProps) {
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
@@ -78,8 +80,16 @@ export function QuickAddModal({
   }, [product.variants]);
 
   const currentStock = selectedVariant?.stock ?? (product.variants && product.variants.length > 0 ? totalVariantsStock : (product.stock ?? 0));
-  const currentPrice = selectedVariant?.price ?? price;
-  const currentOriginalPrice = selectedVariant?.originalPrice ?? originalPrice;
+  const variantBasePrice = selectedVariant?.price ?? price;
+  const variantOriginalPriceVal = selectedVariant?.originalPrice ?? originalPrice;
+
+  const currentPrice = flashSalePercent > 0
+    ? Math.round(variantBasePrice * (1 - flashSalePercent / 100))
+    : variantBasePrice;
+
+  const currentOriginalPrice = flashSalePercent > 0
+    ? variantBasePrice
+    : variantOriginalPriceVal;
 
   const handleAddToCart = () => {
     if (sizes.length > 0 && !selectedSize) {
@@ -121,7 +131,7 @@ export function QuickAddModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl p-0 overflow-hidden rounded-[1.5rem] border-none shadow-2xl bg-white focus:outline-none">
+      <DialogContent className="max-w-2xl p-0 overflow-hidden rounded-3xl border-none shadow-2xl bg-white focus:outline-none">
         {/* Accessibility: Title & Description (Hidden) */}
         <div className="sr-only">
           <DialogHeader>
@@ -146,7 +156,7 @@ export function QuickAddModal({
           {/* Right: Product Info & Options Section */}
           <div className="md:col-span-6 p-6 md:p-8 flex flex-col justify-center bg-white">
             <div className="space-y-0.5 mb-2">
-               <span className="text-[10px] font-semibold text-primary/80 tracking-wider">
+               <span className="text-xs font-semibold text-primary/80 tracking-wider">
                  Minh Tuấn Shop
                </span>
                <h2 className="text-lg font-bold text-slate-900 leading-snug pr-4">
@@ -169,7 +179,7 @@ export function QuickAddModal({
               {/* Color Selection */}
               {colors.length > 0 && (
                 <div className="space-y-2">
-                  <span className="text-[11px] font-semibold text-slate-400">
+                  <span className="text-xs font-semibold text-slate-400">
                     Màu sắc: <span className="text-slate-900 font-bold">{selectedColor || "Chưa chọn"}</span>
                   </span>
                   <div className="flex flex-wrap gap-2">
@@ -194,7 +204,7 @@ export function QuickAddModal({
               {/* Size Selection */}
               {sizes.length > 0 && (
                 <div className="space-y-2">
-                  <span className="text-[11px] font-semibold text-slate-400">
+                  <span className="text-xs font-semibold text-slate-400">
                     Kích thước: <span className="text-slate-900 font-bold">{selectedSize || "Chưa chọn"}</span>
                   </span>
                   <div className="flex flex-wrap gap-2">
@@ -243,7 +253,7 @@ export function QuickAddModal({
                     </div>
                     
                     <span className={cn(
-                      "text-[11px] font-semibold px-3 py-1 rounded-full",
+                      "text-xs font-semibold px-3 py-1 rounded-full",
                       currentStock > 0 ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-600"
                     )}>
                       {currentStock > 0 ? `Còn ${currentStock} sản phẩm` : "Hết hàng"}

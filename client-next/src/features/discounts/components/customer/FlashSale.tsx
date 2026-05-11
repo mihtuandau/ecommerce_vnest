@@ -94,7 +94,7 @@ function FlashProductCard({ product: rawProduct, discountPercent }: { product: a
         </div>
         
         <div className="absolute top-2 left-2 z-30">
-          <div className="bg-gradient-to-r from-[#E85D24] to-[#ff8a50] text-white text-[9px] font-bold px-2 py-0.5 rounded shadow-lg flex items-center gap-0.5 uppercase tracking-wider">
+          <div className="bg-gradient-to-r from-[#E85D24] to-[#ff8a50] text-white text-xs font-bold px-2 py-0.5 rounded shadow-lg flex items-center gap-0.5 uppercase tracking-wider">
             <Zap className="h-2.5 w-2.5 fill-current animate-pulse" /> -{discountPercent}%
           </div>
         </div>
@@ -103,14 +103,14 @@ function FlashProductCard({ product: rawProduct, discountPercent }: { product: a
       {/* ── CONTENT SECTION ── */}
       <div className="relative z-10 mt-3 flex-1 flex flex-col pb-2">
         <div className="flex justify-between items-start gap-2 mb-2">
-          <h3 className="text-[13px] font-semibold text-gray-900 line-clamp-2 min-h-[2.2rem] flex-1 leading-snug group-hover:text-primary transition-colors">
+          <h3 className="text-sm font-semibold text-gray-900 line-clamp-2 min-h-[2.2rem] flex-1 leading-snug group-hover:text-primary transition-colors">
             {product.name}
           </h3>
           <div className="flex flex-col items-end shrink-0">
-            <p className="text-[14px] font-bold text-[#E85D24] tabular-nums">
+            <p className="text-sm font-bold text-[#E85D24] tabular-nums">
               {formatCurrency(salePrice)}
             </p>
-            <p className="text-[10px] text-gray-400 line-through tabular-nums font-medium">
+            <p className="text-xs text-gray-400 line-through tabular-nums font-medium">
               {formatCurrency(originalPrice)}
             </p>
           </div>
@@ -126,7 +126,7 @@ function FlashProductCard({ product: rawProduct, discountPercent }: { product: a
                <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(255,255,255,0.15)_25%,transparent_25%,transparent_50%,rgba(255,255,255,0.15)_50%,rgba(255,255,255,0.15)_75%,transparent_75%,transparent)] bg-[length:15px_15px] animate-[progress-stripe_1s_linear_infinite]" />
             </div>
           </div>
-          <div className="flex justify-between items-center text-[9px] font-bold uppercase tracking-wider">
+          <div className="flex justify-between items-center text-xs font-bold uppercase tracking-wider">
             <span className="text-[#E85D24] flex items-center gap-1">
                <span className="w-1 h-1 rounded-full bg-[#E85D24] animate-pulse" />
                {soldPercent > 80 ? "Sắp cháy" : `Đã bán ${soldCount}`}
@@ -167,7 +167,7 @@ export function FlashSale({ data }: FlashSaleProps) {
                 Flash Sale
               </h2>
               <div className="flex items-center gap-3 mt-2">
-                <span className="text-[10px] text-white/80 font-normal hidden sm:block">Kết thúc</span>
+                <span className="text-xs text-white/80 font-normal hidden sm:block">Kết thúc</span>
                 <CountdownTimer endDate={data.endDate} />
               </div>
             </div>

@@ -97,17 +97,20 @@ export function ProductInfo({ product, flashSale, finalPrice, finalOriginalPrice
       {/* Pricing Box */}
       <div className={cn(
         "p-5 rounded-xl space-y-5",
-        isFlashSale ? "bg-rose-50/50 border border-rose-100" : "bg-slate-50/50 border border-slate-100"
+        isFlashSale ? "bg-[#FFF5F1]/50 border border-[#FFD9C9]" : "bg-slate-50/50 border border-slate-100"
       )}>
         <div className="space-y-3">
           {isFlashSale && (
-            <div className="inline-flex items-center gap-1.5 bg-rose-500 text-white px-2.5 py-0.5 rounded-full text-[10px] font-bold">
+            <div className="inline-flex items-center gap-1.5 bg-[#E85D24] text-white px-2.5 py-0.5 rounded-full text-xs font-bold">
               <Zap className="h-3 w-3 fill-current" /> Flash Sale · -{flashSalePercent}%
             </div>
           )}
 
           <div className="flex items-baseline gap-3">
-            <span className="text-3xl font-bold text-rose-500 tracking-tight tabular-nums">
+            <span className={cn(
+              "text-3xl font-bold tracking-tight tabular-nums",
+              isFlashSale ? "text-[#E85D24]" : "text-slate-900"
+            )}>
               {formatCurrency(finalPrice)}
             </span>
             {finalOriginalPrice && finalOriginalPrice > finalPrice && (
@@ -120,7 +123,7 @@ export function ProductInfo({ product, flashSale, finalPrice, finalOriginalPrice
 
         {isFlashSale && flashSale?.endDate && (
           <div className="flex items-center gap-4 pt-3 border-t border-rose-100/50">
-            <div className="flex items-center gap-1.5 text-xs font-normal text-rose-600/80">
+            <div className="flex items-center gap-1.5 text-xs font-normal text-[#E85D24]/80">
               Kết thúc sau
             </div>
             <ProductCountdown endDate={flashSale.endDate} />

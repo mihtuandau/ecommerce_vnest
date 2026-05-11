@@ -84,7 +84,7 @@ export function CheckoutContainer() {
   );
 
   const totalOriginal = React.useMemo(
-    () => displayItems.reduce((sum, i) => sum + (i.price || 0) * i.quantity, 0),
+    () => displayItems.reduce((sum, i) => sum + (i.originalPrice || i.price || 0) * i.quantity, 0),
     [displayItems]
   );
 
@@ -222,7 +222,7 @@ export function CheckoutContainer() {
       const discount = res.discount;
       
       // LOGIC ĐỒNG BỘ VỚI BACKEND: Chọn mức giảm tốt nhất
-      const totalOriginal = displayItems.reduce((sum, i) => sum + (i.price || 0) * i.quantity, 0);
+      const totalOriginal = displayItems.reduce((sum, i) => sum + (i.originalPrice || i.price || 0) * i.quantity, 0);
       const totalFlashSale = displayItems.reduce((sum, i) => sum + (i.discountedPrice || i.price) * i.quantity, 0);
       const flashSaleSaving = totalOriginal - totalFlashSale;
 

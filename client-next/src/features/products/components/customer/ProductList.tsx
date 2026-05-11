@@ -67,7 +67,7 @@ export function ProductList({
           >
             <Skeleton
               className={cn(
-                "w-full rounded-[2rem]",
+                "w-full rounded-3xl",
                 view === "grid" ? "aspect-square" : "h-[180px] w-1/4"
               )}
             />
@@ -104,7 +104,7 @@ export function ProductList({
   if (products.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-32 text-center space-y-6 animate-in fade-in duration-500">
-        <div className="h-24 w-24 rounded-[2rem] bg-slate-50 flex items-center justify-center text-slate-200">
+        <div className="h-24 w-24 rounded-3xl bg-slate-50 flex items-center justify-center text-slate-200">
           <PackageSearch className="h-12 w-12" />
         </div>
         <div className="space-y-2">

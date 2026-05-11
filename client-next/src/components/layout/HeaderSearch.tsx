@@ -146,7 +146,7 @@ export function HeaderSearch() {
             title="hỏi trợ lý ai"
           >
             <Sparkles className="h-4 w-4 text-primary/60 group-hover/ai:text-primary transition-colors" />
-            <span className="text-[10px] font-medium text-slate-400 group-hover/ai:text-primary">hỏi ai</span>
+            <span className="text-xs font-medium text-slate-400 group-hover/ai:text-primary">hỏi ai</span>
           </button>
 
           <div className="h-4 w-[1px] bg-slate-100 mx-1" />
@@ -255,7 +255,7 @@ export function HeaderSearch() {
                             {formatCurrency(Number(product.price || product.basePrice || 0))}
                           </p>
                           {(product.oldPrice || product.originalPrice) && (
-                            <p className="text-[10px] text-slate-400 line-through">
+                            <p className="text-xs text-slate-400 line-through">
                               {formatCurrency(Number(product.oldPrice || product.originalPrice))}
                             </p>
                           )}

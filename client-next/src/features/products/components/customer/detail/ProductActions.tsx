@@ -193,8 +193,8 @@ export function ProductActions({
 
       {/* ── Availability ── */}
       <div className="flex items-center gap-2 py-1">
-        <div className={cn("h-1.5 w-1.5 rounded-full", currentStock > 0 ? "bg-green-500" : "bg-rose-500")} />
-        <span className={cn("text-xs font-semibold", currentStock > 0 ? "text-green-600" : "text-rose-600")}>
+        <div className={cn("h-1.5 w-1.5 rounded-full", currentStock > 0 ? "bg-green-500" : "bg-red-500")} />
+        <span className={cn("text-xs font-semibold", currentStock > 0 ? "text-green-600" : "text-red-600")}>
           {currentStock > 0 ? `Còn hàng (${currentStock} sản phẩm)` : "Hết hàng"}
         </span>
       </div>
@@ -257,7 +257,7 @@ export function ProductActions({
           "Đổi trả 30 ngày",
           "Đóng gói cẩn thận"
         ].map((info, i) => (
-          <div key={i} className="text-[11px] font-medium text-slate-400 flex items-center gap-2">
+          <div key={i} className="text-xs font-medium text-slate-400 flex items-center gap-2">
             <div className="h-1 w-1 rounded-full bg-slate-200" />
             {info}
           </div>

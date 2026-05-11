@@ -62,7 +62,7 @@ export function WishlistView() {
                   Lưu giữ những sản phẩm bạn quan tâm nhất tại Vnest.
                 </p>
               </div>
-              <div className="text-[11px] font-bold text-slate-400 bg-slate-50 px-4 py-2 rounded-xl border border-slate-100 w-fit">
+              <div className="text-xs font-bold text-slate-400 bg-slate-50 px-4 py-2 rounded-xl border border-slate-100 w-fit">
                 <span className="text-slate-900">{items.length}</span> sản phẩm
               </div>
             </div>
@@ -110,7 +110,7 @@ export function WishlistView() {
                       className="object-contain p-4 group-hover:scale-110 transition-transform duration-700"
                     />
                     {item.originalPrice && item.originalPrice > item.price && (
-                      <div className="absolute top-3 left-3 bg-rose-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm">
+                      <div className="absolute top-3 left-3 bg-primary/10 text-primary text-xs font-bold px-2 py-1 rounded shadow-sm border border-primary/20">
                         -{Math.round(((item.originalPrice - item.price) / item.originalPrice) * 100)}%
                       </div>
                     )}
@@ -130,7 +130,7 @@ export function WishlistView() {
                           {formatCurrency(item.price)}
                         </p>
                         {item.originalPrice && item.originalPrice > item.price && (
-                          <p className="text-[11px] text-slate-400 line-through tabular-nums font-medium">
+                          <p className="text-xs text-slate-400 line-through tabular-nums font-medium">
                             {formatCurrency(item.originalPrice)}
                           </p>
                         )}
@@ -140,7 +140,7 @@ export function WishlistView() {
                     <div className="mt-auto">
                       <Button
                         onClick={() => handleAddToCart(item)}
-                        className="w-full h-11 rounded-xl bg-primary hover:brightness-110 text-white text-[11px] font-bold transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/10"
+                        className="w-full h-11 rounded-xl bg-primary hover:bg-primary/90 text-white text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/10"
                       >
                         <ShoppingCart size={14} />
                         Thêm vào giỏ
@@ -157,7 +157,7 @@ export function WishlistView() {
             <div className="pt-10 border-t border-slate-100 flex justify-center">
               <Button
                 variant="ghost"
-                className="text-slate-400 hover:text-primary font-bold text-[11px] transition-colors"
+                className="text-slate-400 hover:text-primary font-bold text-xs transition-colors"
                 asChild
               >
                 <Link href="/shop" className="flex items-center gap-2">

@@ -274,10 +274,10 @@ export function AccountView() {
           </div>
 
           <div className="flex gap-2">
-            <span className="text-[11px] text-slate-600 bg-slate-50 border border-slate-200 px-3 py-1 rounded-full font-medium">
+            <span className="text-xs text-slate-600 bg-slate-50 border border-slate-200 px-3 py-1 rounded-full font-medium">
               {user.role === "ADMIN" ? "Quản trị viên" : "Khách hàng"}
             </span>
-            <span className="text-[11px] text-primary bg-blue-50 border border-blue-100 px-3 py-1 rounded-full font-medium">
+            <span className="text-xs text-primary bg-blue-50 border border-blue-100 px-3 py-1 rounded-full font-medium">
               Thành viên Minh Tuấn Shop
             </span>
           </div>
@@ -433,7 +433,7 @@ export function AccountView() {
                             <MapPin className="h-5 w-5" />
                           </div>
                           {address.isDefault && (
-                            <Badge className="bg-primary text-white text-[9px] font-semibold tracking-wider h-5 px-2 rounded-lg">
+                            <Badge className="bg-primary text-white text-xs font-semibold tracking-wider h-5 px-2 rounded-lg">
                               Mặc định
                             </Badge>
                           )}
@@ -463,7 +463,7 @@ export function AccountView() {
                             size="sm" 
                             onClick={() => setDefaultAddress.mutate(address.id)}
                             disabled={setDefaultAddress.isPending}
-                            className="h-8 px-3 rounded-lg text-[10px] font-semibold text-slate-500 hover:text-primary hover:bg-blue-50"
+                            className="h-8 px-3 rounded-lg text-xs font-semibold text-slate-500 hover:text-primary hover:bg-blue-50"
                           >
                             Thiết lập mặc định
                           </Button>

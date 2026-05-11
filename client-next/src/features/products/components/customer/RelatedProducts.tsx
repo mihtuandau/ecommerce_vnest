@@ -30,13 +30,13 @@ export function RelatedProducts({ categoryId, currentProductId }: RelatedProduct
           <div className="h-px flex-1 bg-slate-100" />
           <div className="flex items-center gap-2">
             <Spinner size="sm" variant="slate" />
-            <h2 className="text-[10px] font-semibold uppercase tracking-[0.4em] text-slate-400">Đang tải gợi ý</h2>
+            <h2 className="text-xs font-semibold uppercase tracking-[0.4em] text-slate-400">Đang tải gợi ý</h2>
           </div>
           <div className="h-px flex-1 bg-slate-100" />
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {[...Array(4)].map((_, i) => (
-            <Skeleton key={i} className="aspect-[3/4] rounded-[2rem]" />
+            <Skeleton key={i} className="aspect-[3/4] rounded-3xl" />
           ))}
         </div>
       </div>

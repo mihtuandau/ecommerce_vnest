@@ -178,7 +178,7 @@ export const ProductCard = React.memo(function ProductCard({ product, view = "gr
                   {product.name}
                 </h3>
               </Link>
-              <p className="text-[12px] text-gray-500 font-medium">
+              <p className="text-xs text-gray-500 font-medium">
                 {product.brand?.name || "Minh Tuấn Shop"}
               </p>
             </div>
@@ -187,7 +187,7 @@ export const ProductCard = React.memo(function ProductCard({ product, view = "gr
                 {formatCurrency(price)}
               </p>
               {originalPrice && originalPrice > price && (
-                <p className="text-[11px] text-gray-400 line-through tabular-nums font-medium">
+                <p className="text-xs text-gray-400 line-through tabular-nums font-medium">
                   {formatCurrency(originalPrice)}
                 </p>
               )}
@@ -204,16 +204,19 @@ export const ProductCard = React.memo(function ProductCard({ product, view = "gr
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-1">
                 <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                <span className="text-[11px] text-gray-900 font-medium">
+                <span className="text-xs text-gray-900 font-medium">
                   {rating > 0 ? rating.toFixed(1) : "5.0"}
                 </span>
               </div>
               <span className="text-gray-300">|</span>
-              <span className="text-[11px] text-gray-500">
+              <span className="text-xs text-gray-500">
                 Đã bán {soldCount}
               </span>
               {originalPrice && originalPrice > price && (
-                <span className="text-[11px] text-rose-500 font-bold bg-rose-50 px-1.5 py-0.5 rounded">
+                <span className={cn(
+                  "text-xs font-bold px-1.5 py-0.5 rounded-md",
+                  isFlashSale ? "text-[#E85D24] bg-[#FFF5F1]" : "text-primary bg-primary/5"
+                )}>
                   -{discountPercent}%
                 </span>
               )}
@@ -223,7 +226,7 @@ export const ProductCard = React.memo(function ProductCard({ product, view = "gr
               size="sm"
               onClick={handleAddToCart}
               disabled={isOutOfStock}
-              className="relative h-9 px-4 rounded-xl bg-slate-900 text-white hover:bg-primary font-bold text-xs shadow-lg transition-all active:scale-95 z-20"
+              className="relative h-9 px-4 rounded-xl bg-primary text-white hover:brightness-110 font-bold text-xs shadow-lg transition-all active:scale-[0.98] z-20"
             >
               <ShoppingCart size={14} className="mr-2" />
               {isOutOfStock ? "Hết hàng" : "Thêm nhanh"}
@@ -265,13 +268,18 @@ export const ProductCard = React.memo(function ProductCard({ product, view = "gr
       {/* Badges & Actions Overlay - Moved outside to be on top of z-20 Link */}
       <div className="absolute top-3 left-3 flex flex-col gap-2 z-30">
         {product.isNew && (
-          <span className="bg-white text-gray-900 text-[10px] font-bold px-2 py-1 rounded shadow-sm uppercase tracking-wider">
+          <span className="bg-white text-gray-900 text-xs font-bold px-2 py-1 rounded shadow-sm uppercase tracking-wider">
             Mới
           </span>
         )}
-        {discountPercent > 0 && !product.isNew && (
-          <span className="bg-rose-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm uppercase tracking-wider">
-            Giảm {discountPercent}%
+        {isFlashSale && (
+          <span className="bg-[#E85D24] text-white text-xs font-bold px-2 py-1 rounded shadow-sm uppercase tracking-wider">
+            Flash Sale -{discountPercent}%
+          </span>
+        )}
+        {discountPercent > 0 && !isFlashSale && !product.isNew && (
+          <span className="bg-primary/10 text-primary text-[10px] font-bold px-2 py-1 rounded-lg uppercase tracking-wider border border-primary/20">
+            Sale
           </span>
         )}
       </div>
@@ -300,7 +308,7 @@ export const ProductCard = React.memo(function ProductCard({ product, view = "gr
               {formatCurrency(price)}
             </p>
             {originalPrice && originalPrice > price && (
-              <p className="text-[11px] text-gray-400 line-through tabular-nums font-medium">
+              <p className="text-xs text-gray-400 line-through tabular-nums font-medium">
                 {formatCurrency(originalPrice)}
               </p>
             )}
@@ -315,18 +323,21 @@ export const ProductCard = React.memo(function ProductCard({ product, view = "gr
           <div className="flex items-center gap-1.5">
             <div className="flex items-center gap-0.5">
               <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-              <span className="text-[11px] text-gray-900 font-medium">
+              <span className="text-xs text-gray-900 font-medium">
                 {rating > 0 ? rating.toFixed(1) : "5.0"}
               </span>
             </div>
-            <span className="text-[11px] text-gray-300">|</span>
-            <span className="text-[11px] text-gray-500">
+            <span className="text-xs text-gray-300">|</span>
+            <span className="text-xs text-gray-500">
               Đã bán {soldCount}
             </span>
           </div>
 
           {originalPrice && originalPrice > price && (
-            <span className="text-[11px] text-rose-500 font-bold bg-rose-50 px-1.5 py-0.5 rounded">
+            <span className={cn(
+              "text-xs font-bold px-1.5 py-0.5 rounded-md",
+              isFlashSale ? "text-[#E85D24] bg-[#FFF5F1]" : "text-primary bg-primary/5"
+            )}>
               -{discountPercent}%
             </span>
           )}
@@ -339,6 +350,7 @@ export const ProductCard = React.memo(function ProductCard({ product, view = "gr
         onClose={() => setIsQuickAddOpen(false)}
         price={price}
         originalPrice={originalPrice}
+        flashSalePercent={flashSalePercent}
       />
     </div>
   );

@@ -125,7 +125,7 @@ export const HomeProductCard = React.memo(function HomeProductCard({
         </div>
 
         <div className="absolute top-2.5 left-2.5 md:top-4 md:left-4 z-30 flex flex-col gap-1">
-          <span className="bg-primary text-white text-[10px] md:text-[11px] font-bold px-2 py-0.5 md:px-2.5 md:py-1.5 rounded-full shadow-lg tracking-wide">
+          <span className="bg-primary text-white text-xs font-bold px-2 py-0.5 md:px-2.5 md:py-1.5 rounded-full shadow-lg tracking-wide">
             Nổi bật
           </span>
         </div>
@@ -133,7 +133,7 @@ export const HomeProductCard = React.memo(function HomeProductCard({
         <div className="absolute inset-0 z-20 bg-gradient-to-t from-black/70 via-black/5 to-transparent" />
 
         <div className="absolute bottom-0 left-0 right-0 z-30 p-3 md:p-5 space-y-1 md:space-y-1.5">
-          <h3 className="text-[11px] md:text-sm font-semibold text-white line-clamp-1 md:line-clamp-2 leading-tight drop-shadow-sm">
+          <h3 className="text-xs md:text-sm font-semibold text-white line-clamp-1 md:line-clamp-2 leading-tight drop-shadow-sm">
             {product.name}
           </h3>
           <div className="flex flex-col">
@@ -142,11 +142,11 @@ export const HomeProductCard = React.memo(function HomeProductCard({
             </span>
             {originalPrice && originalPrice > price && (
               <div className="flex items-center gap-2 mt-1">
-                <span className="text-[11px] md:text-sm text-white/60 line-through font-bold">
+                <span className="text-xs md:text-sm text-white/60 line-through font-bold">
                   {formatCurrency(originalPrice)}
                 </span>
                 {discount && (
-                  <span className="bg-destructive/90 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-sm">
+                  <span className="bg-destructive/90 text-white text-xs font-bold px-1.5 py-0.5 rounded-sm">
                     -{discount}%
                   </span>
                 )}
@@ -182,7 +182,7 @@ export const HomeProductCard = React.memo(function HomeProductCard({
           </div>
           
           <div className="absolute top-3 left-3 flex flex-col gap-2 z-30">
-            <div className="bg-white/90 backdrop-blur-sm text-primary text-[10px] font-bold px-2 py-1 rounded shadow-sm flex items-center gap-1 uppercase tracking-wider">
+            <div className="bg-white/90 backdrop-blur-sm text-primary text-xs font-bold px-2 py-1 rounded shadow-sm flex items-center gap-1 uppercase tracking-wider">
               <TrendingUp className="h-2.5 w-2.5" /> Bán chạy
             </div>
           </div>
@@ -199,7 +199,7 @@ export const HomeProductCard = React.memo(function HomeProductCard({
                 {formatCurrency(price)}
               </p>
               {originalPrice && originalPrice > price && (
-                <p className="text-[11px] text-gray-400 line-through">
+                <p className="text-xs text-gray-400 line-through">
                   {formatCurrency(originalPrice)}
                 </p>
               )}
@@ -210,18 +210,21 @@ export const HomeProductCard = React.memo(function HomeProductCard({
             <div className="flex items-center gap-1.5">
               <div className="flex items-center gap-1">
                 <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                <span className="text-[11px] text-gray-900 font-medium">
+                <span className="text-xs text-gray-900 font-medium">
                   {product.averageRating || "5.0"}
                 </span>
               </div>
-              <span className="text-[11px] text-gray-300">|</span>
-              <span className="text-[11px] text-gray-500">
+              <span className="text-xs text-gray-300">|</span>
+              <span className="text-xs text-gray-500">
                 Đã bán {product.soldCount || 0}
               </span>
             </div>
 
             {discount && (
-              <span className="text-[11px] text-rose-500 font-bold bg-rose-50 px-1.5 py-0.5 rounded">
+              <span className={cn(
+                "text-xs font-bold px-1.5 py-0.5 rounded",
+                isFlashSale ? "text-[#E85D24] bg-[#FFF5F1]" : "text-primary bg-primary/5"
+              )}>
                 -{discount}%
               </span>
             )}
@@ -262,10 +265,10 @@ export const HomeProductCard = React.memo(function HomeProductCard({
           <div className="space-y-1">
             <div className="flex items-center gap-1">
               <Star className="h-2.5 w-2.5 fill-yellow-400 text-yellow-400" />
-              <span className="text-[11px] font-bold text-gray-900">
+              <span className="text-xs font-bold text-gray-900">
                 {product.averageRating || "5.0"}
               </span>
-              <span className="text-[10px] text-gray-400">
+              <span className="text-xs text-gray-400">
                 ({product.reviewCount || 0})
               </span>
             </div>
@@ -280,12 +283,12 @@ export const HomeProductCard = React.memo(function HomeProductCard({
                 {formatCurrency(price)}
               </span>
               {originalPrice && originalPrice > price && (
-                <span className="text-[10px] text-gray-400 line-through">
+                <span className="text-xs text-gray-400 line-through">
                   {formatCurrency(originalPrice)}
                 </span>
               )}
             </div>
-            <div className="text-[10px] font-bold text-primary bg-primary/5 px-2 py-0.5 rounded-full uppercase tracking-wider">
+            <div className="text-xs font-bold text-primary bg-primary/5 px-2 py-0.5 rounded-full uppercase tracking-wider">
               Top Rate
             </div>
           </div>

@@ -90,7 +90,7 @@ export function OrderSummary({
                 {(item.size || item.color) && (
                   <div className="flex gap-2 mt-1">
                     {item.size && (
-                      <span className="text-xs bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded-md font-semibold border border-slate-200">
+                      <span className="text-xs bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded-md font-medium border border-slate-200">
                         Size: {item.size}
                       </span>
                     )}

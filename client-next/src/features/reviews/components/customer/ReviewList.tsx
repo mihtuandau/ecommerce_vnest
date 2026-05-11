@@ -79,7 +79,7 @@ const RatingSummary = ({ reviews, product }: { reviews: Review[]; product: Produ
           return (
             <div key={star} className="flex items-center gap-4 group">
               <div className="flex items-center gap-1.5 w-6">
-                <span className="text-[11px] font-semibold text-slate-500">{star}</span>
+                <span className="text-xs font-semibold text-slate-500">{star}</span>
                 <Star size={10} className="fill-yellow-400 text-yellow-400 flex-shrink-0" />
               </div>
               <div className="flex-1 h-2.5 bg-slate-50 rounded-full overflow-hidden border border-slate-100">
@@ -88,7 +88,7 @@ const RatingSummary = ({ reviews, product }: { reviews: Review[]; product: Produ
                   style={{ width: `${pct}%` }}
                 />
               </div>
-              <span className="text-[10px] font-semibold text-slate-500 w-8 text-right tabular-nums">
+              <span className="text-xs font-semibold text-slate-500 w-8 text-right tabular-nums">
                 {count}
               </span>
             </div>
@@ -162,7 +162,7 @@ export function ReviewList({ productId, product }: ReviewListProps) {
         <Button 
           variant="outline" 
           size="sm"
-          className="rounded-full h-10 px-6 text-[11px] font-bold border-slate-200 hover:bg-slate-50 gap-2"
+          className="rounded-full h-10 px-6 text-xs font-bold border-slate-200 hover:bg-slate-50 gap-2"
           asChild
         >
           <Link href="/orders">
@@ -194,7 +194,7 @@ export function ReviewList({ productId, product }: ReviewListProps) {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-semibold text-slate-900">{review.user?.name || "Người dùng"}</span>
-                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">
+                        <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">
                           ✓ Đã mua hàng
                         </span>
                       </div>

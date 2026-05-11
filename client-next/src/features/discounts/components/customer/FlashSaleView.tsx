@@ -57,7 +57,7 @@ function Countdown({ endDate }: { endDate: string }) {
             <div className="w-14 h-14 bg-[#E85D24] rounded-xl flex items-center justify-center">
               <span className="text-2xl font-bold text-white tabular-nums">{pad(b.value)}</span>
             </div>
-            <span className="text-[10px] text-slate-500 font-semibold">{b.label}</span>
+            <span className="text-xs text-slate-500 font-semibold">{b.label}</span>
           </div>
         </React.Fragment>
       ))}
@@ -149,7 +149,7 @@ function FlashProductCard({ product: rawProduct, discountPercent }: { product: a
           <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-50">
             <button
               onClick={handleAddToCart}
-              className="transition-all duration-500 bg-white/60 backdrop-blur-md text-slate-900 rounded-xl font-semibold shadow-sm border border-white/20 px-6 h-9 flex items-center justify-center active:scale-95 text-[13px] hover:bg-white/60 hover:text-slate-900"
+              className="transition-all duration-500 bg-white/60 backdrop-blur-md text-slate-900 rounded-xl font-semibold shadow-sm border border-white/20 px-6 h-9 flex items-center justify-center active:scale-95 text-sm hover:bg-white/60 hover:text-slate-900"
             >
               Thêm vào giỏ
             </button>
@@ -157,7 +157,7 @@ function FlashProductCard({ product: rawProduct, discountPercent }: { product: a
         </div>
         
         <div className="absolute top-2 left-2 z-30">
-          <div className="bg-gradient-to-r from-[#E85D24] to-[#ff8a50] text-white text-[10px] font-bold px-2.5 py-1 rounded-lg shadow-lg shadow-orange-500/20 flex items-center gap-1 uppercase tracking-wider">
+          <div className="bg-gradient-to-r from-[#E85D24] to-[#ff8a50] text-white text-xs font-bold px-2.5 py-1 rounded-lg shadow-lg shadow-orange-500/20 flex items-center gap-1 uppercase tracking-wider">
             <Zap size={10} className="fill-white animate-pulse" />
             -{discountPercent}%
           </div>
@@ -179,17 +179,17 @@ function FlashProductCard({ product: rawProduct, discountPercent }: { product: a
         <div className="flex justify-between items-start gap-3 mb-3">
           <div className="space-y-1">
             <Link href={`/shop/${product.slug}`}>
-              <h3 className="text-[14px] font-semibold text-gray-900 line-clamp-2 leading-snug group-hover:text-[#E85D24] transition-colors">
+              <h3 className="text-sm font-semibold text-gray-900 line-clamp-2 leading-snug group-hover:text-[#E85D24] transition-colors">
                 {product.name}
               </h3>
             </Link>
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-bold text-[#E85D24] bg-orange-50 px-2 py-0.5 rounded-full uppercase tracking-tight">
+              <span className="text-xs font-bold text-[#E85D24] bg-orange-50 px-2 py-0.5 rounded-full uppercase tracking-tight">
                 {product.brand?.name || "Minh Tuấn"}
               </span>
               <div className="flex items-center gap-0.5">
                 <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                <span className="text-[11px] text-gray-900 font-bold">
+                <span className="text-xs text-gray-900 font-bold">
                   {product.averageRating || "5.0"}
                 </span>
               </div>
@@ -201,7 +201,7 @@ function FlashProductCard({ product: rawProduct, discountPercent }: { product: a
           <span className="text-lg font-bold text-[#E85D24] tabular-nums tracking-tight">
             {formatCurrency(salePrice)}
           </span>
-          <span className="text-[11px] text-gray-400 line-through tabular-nums font-medium">
+          <span className="text-xs text-gray-400 line-through tabular-nums font-medium">
             {formatCurrency(originalPrice)}
           </span>
         </div>
@@ -217,7 +217,7 @@ function FlashProductCard({ product: rawProduct, discountPercent }: { product: a
                  <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(255,255,255,0.15)_25%,transparent_25%,transparent_50%,rgba(255,255,255,0.15)_50%,rgba(255,255,255,0.15)_75%,transparent_75%,transparent)] bg-[length:15px_15px] animate-[progress-stripe_1s_linear_infinite]" />
               </div>
             </div>
-            <div className="flex justify-between items-center text-[9px] font-bold uppercase tracking-wider">
+            <div className="flex justify-between items-center text-xs font-bold uppercase tracking-wider">
               <span className="text-[#E85D24]">Đã bán {soldCount}</span>
               <span className="text-gray-400">Còn {stock}</span>
             </div>
@@ -316,15 +316,15 @@ export function FlashSaleView() {
               </button>
               <div className="min-w-0">
                 <div className="flex items-center gap-2 mb-2">
-                  <div className="bg-yellow-400 text-slate-900 text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-widest shadow-lg shadow-yellow-400/20">
+                  <div className="bg-yellow-400 text-slate-900 text-xs font-bold px-2 py-0.5 rounded uppercase tracking-widest shadow-lg shadow-yellow-400/20">
                     Hot Deal
                   </div>
-                  <div className="flex items-center gap-1 text-white/80 text-[11px] font-bold uppercase tracking-wider">
+                  <div className="flex items-center gap-1 text-white/80 text-xs font-bold uppercase tracking-wider">
                     <Zap size={12} className="text-yellow-300 fill-yellow-300 animate-pulse" />
                     Sự kiện đang diễn ra
                   </div>
                 </div>
-                <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-white leading-[1.1] tracking-tight drop-shadow-sm">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white leading-[1.1] tracking-tight drop-shadow-sm">
                   Flash Sale <span className="text-yellow-300">Giảm đến {flashSale.percentage}%</span>
                 </h1>
                 <p className="mt-2 text-white/70 text-sm md:text-base font-medium max-w-xl">
@@ -335,13 +335,13 @@ export function FlashSaleView() {
             </div>
 
             {/* Countdown Box */}
-            <div className="flex flex-col sm:flex-row items-center gap-4 bg-black/20 backdrop-blur-xl rounded-[2.5rem] px-8 py-6 border border-white/10 shadow-2xl group transition-all hover:bg-black/30">
+            <div className="flex flex-col sm:flex-row items-center gap-4 bg-black/20 backdrop-blur-xl rounded-4xl px-8 py-6 border border-white/10 shadow-2xl group transition-all hover:bg-black/30">
               <div className="flex items-center gap-3">
                 <div className="h-10 w-10 rounded-full bg-yellow-400 flex items-center justify-center shadow-lg shadow-yellow-400/20 group-hover:scale-110 transition-transform">
                   <Clock size={20} className="text-[#E85D24]" />
                 </div>
                 <div>
-                  <p className="text-[10px] text-white/50 font-black uppercase tracking-widest">Kết thúc sau</p>
+                  <p className="text-xs text-white/50 font-bold uppercase tracking-widest">Kết thúc sau</p>
                   <HeroCountdown endDate={flashSale.endDate} />
                 </div>
               </div>

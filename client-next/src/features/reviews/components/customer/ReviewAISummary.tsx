@@ -100,7 +100,7 @@ export function ReviewAISummary({ productId }: ReviewAISummaryProps) {
               <div className="flex items-start gap-4">
                 <Quote size={20} className="text-primary shrink-0 opacity-30" />
                 <div className="space-y-1">
-                  <span className="text-[11px] font-semibold text-primary/70">Tổng kết từ AI</span>
+                  <span className="text-xs font-semibold text-primary/70">Tổng kết từ AI</span>
                   <p className="text-sm md:text-base text-slate-700 font-medium leading-relaxed italic">
                     "{verdict}"
                   </p>

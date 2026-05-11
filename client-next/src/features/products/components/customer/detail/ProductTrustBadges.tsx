@@ -48,10 +48,10 @@ export function ProductTrustBadges() {
             <badge.icon size={20} strokeWidth={2.5} />
           </div>
           <div className="flex flex-col">
-            <span className="text-[13px] font-bold text-slate-900 leading-tight">
+            <span className="text-sm font-bold text-slate-900 leading-tight">
               {badge.title}
             </span>
-            <span className="text-[11px] font-medium text-slate-500 mt-0.5">
+            <span className="text-xs font-medium text-slate-500 mt-0.5">
               {badge.description}
             </span>
           </div>

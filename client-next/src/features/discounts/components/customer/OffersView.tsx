@@ -72,7 +72,7 @@ function VoucherCard({ voucher }: { voucher: OfferVoucher }) {
         <div className="space-y-4">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <h3 className="text-[16px] font-bold text-slate-900 leading-tight">
+              <h3 className="text-base font-bold text-slate-900 leading-tight">
                 {voucher.name || `Ưu đãi Minh Tuấn Shop - Giảm ${displayValue}`}
               </h3>
               <p className="text-sm text-slate-500 font-normal mt-1.5 line-clamp-2">
@@ -111,7 +111,7 @@ function VoucherCard({ voucher }: { voucher: OfferVoucher }) {
             className="w-full sm:w-auto bg-slate-50 border border-dashed border-slate-200 rounded-xl px-4 py-2.5 flex items-center justify-between sm:justify-start gap-4 cursor-pointer"
           >
             <div className="space-y-0.5">
-              <p className="text-[9px] text-slate-400 font-normal leading-none">
+              <p className="text-xs text-slate-400 font-normal leading-none">
                 Mã ưu đãi
               </p>
               <code className="text-sm font-bold text-slate-700 tracking-widest uppercase">

@@ -49,7 +49,7 @@ export function HeroBanner({ banners }: HeroBannerProps) {
             <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 w-full">
               <div className="max-w-2xl space-y-6 md:space-y-8 animate-in slide-in-from-left-12 duration-1000 ease-out">
                 <div className="space-y-4 md:space-y-6">
-                  <h2 className="text-4xl md:text-7xl lg:text-8xl font-black text-white leading-[1.1] tracking-tighter drop-shadow-2xl">
+                  <h2 className="text-4xl md:text-7xl lg:text-8xl font-bold text-white leading-[1.1] tracking-tighter drop-shadow-2xl">
                     {banner.title}
                   </h2>
                   {banner.description && (

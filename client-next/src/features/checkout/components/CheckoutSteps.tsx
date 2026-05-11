@@ -34,7 +34,7 @@ export function CheckoutSteps() {
                   )}
                 </span>
                 <span className={cn(
-                  "ml-3 text-[11px] font-bold uppercase tracking-wider hidden sm:block",
+                  "ml-3 text-xs font-bold uppercase tracking-wider hidden sm:block",
                   step.status === "current" ? "text-slate-900" : "text-slate-400"
                 )}>
                   {step.name}

@@ -102,7 +102,7 @@ export function MobileMenu({ categories, wishlistCount, onClose, mounted }: Mobi
         {searchQuery.trim().length >= 2 && (
           <div className="absolute left-0 right-0 top-full bg-white border-b border-slate-100 shadow-xl max-h-[60vh] overflow-y-auto z-30 animate-in fade-in slide-in-from-top-1">
             <div className="p-2">
-              <p className="text-[10px] font-medium text-slate-900 mb-2 px-2">Kết quả gợi ý</p>
+              <p className="text-xs font-medium text-slate-900 mb-2 px-2">Kết quả gợi ý</p>
               {isLiveLoading ? (
                 <div className="p-4 flex items-center justify-center">
                   <Spinner size="sm" />
@@ -135,7 +135,7 @@ export function MobileMenu({ categories, wishlistCount, onClose, mounted }: Mobi
                   ))}
                   <button
                     onClick={handleSearch}
-                    className="w-full py-3 text-[11px] font-medium text-primary bg-primary/5 rounded-xl mt-1"
+                    className="w-full py-3 text-xs font-medium text-primary bg-primary/5 rounded-xl mt-1"
                   >
                     Xem tất cả kết quả cho "{searchQuery}"
                   </button>
@@ -171,7 +171,7 @@ export function MobileMenu({ categories, wishlistCount, onClose, mounted }: Mobi
           <Heart className="h-4 w-4 flex-shrink-0" />
           Danh sách yêu thích
           {mounted && wishlistCount > 0 && (
-            <span className="ml-auto h-5 w-5 bg-primary text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+            <span className="ml-auto h-5 w-5 bg-primary text-white text-xs font-bold rounded-full flex items-center justify-center">
               {wishlistCount}
             </span>
           )}

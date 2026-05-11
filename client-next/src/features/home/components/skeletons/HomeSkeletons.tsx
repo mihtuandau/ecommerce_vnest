@@ -76,7 +76,7 @@ export function ProductSectionSkeleton({ variant = "bestseller" }: { variant?: "
 
 export function FlashSaleSkeleton() {
   return (
-    <div className="bg-slate-100 rounded-[2.5rem] p-12 space-y-12">
+    <div className="bg-slate-100 rounded-4xl p-12 space-y-12">
       <div className="flex justify-between items-center">
         <div className="flex gap-12">
           <Skeleton className="h-14 w-14 rounded-2xl" />

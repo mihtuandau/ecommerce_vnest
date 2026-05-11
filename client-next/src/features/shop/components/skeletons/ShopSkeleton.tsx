@@ -15,7 +15,7 @@ export function ShopSkeleton() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start pb-20">
           {/* Sidebar Skeleton */}
           <aside className="hidden lg:block lg:col-span-3 space-y-6 sticky top-24">
-            <div className="bg-white rounded-[2rem] border border-slate-200/50 p-6 shadow-sm space-y-8">
+            <div className="bg-white rounded-3xl border border-slate-200/50 p-6 shadow-sm space-y-8">
               <div className="space-y-4">
                 <Skeleton className="h-6 w-32" />
                 <div className="space-y-2">
@@ -31,7 +31,7 @@ export function ShopSkeleton() {
 
           {/* Main Content Skeleton */}
           <main className="lg:col-span-9 space-y-6">
-            <div className="flex items-center justify-between bg-white px-6 py-4 rounded-[2rem] border border-slate-200/50 shadow-sm">
+            <div className="flex items-center justify-between bg-white px-6 py-4 rounded-3xl border border-slate-200/50 shadow-sm">
               <Skeleton className="h-8 w-40 rounded-xl" />
               <Skeleton className="h-8 w-48 rounded-xl" />
             </div>

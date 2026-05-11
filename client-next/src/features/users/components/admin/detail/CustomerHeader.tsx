@@ -34,7 +34,7 @@ export function CustomerHeader({ user }: CustomerHeaderProps) {
         <Button 
           variant="ghost" 
           size="sm"
-          className="w-fit pl-0 hover:bg-transparent text-slate-400 hover:text-primary gap-2 font-bold text-[10px] uppercase tracking-[0.2em] transition-all hover:translate-x-[-4px]"
+          className="w-fit pl-0 hover:bg-transparent text-slate-400 hover:text-primary gap-2 font-semibold text-xs uppercase tracking-[0.15em] transition-all hover:translate-x-[-4px]"
           onClick={() => router.back()}
         >
           <ChevronLeft className="h-4 w-4" />
@@ -43,7 +43,7 @@ export function CustomerHeader({ user }: CustomerHeaderProps) {
 
         <div className="flex flex-col md:flex-row md:items-end gap-8">
           <div className="relative shrink-0 group">
-            <div className="relative h-28 w-28 rounded-[2rem] bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center border-4 border-white shadow-xl text-4xl font-black text-slate-400 overflow-hidden transition-transform duration-500 group-hover:scale-105">
+            <div className="relative h-28 w-28 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center border-4 border-white shadow-xl text-4xl font-bold text-slate-400 overflow-hidden transition-transform duration-500 group-hover:scale-105">
               {user.avatar ? (
                 <Image
                   src={user.avatar}
@@ -62,8 +62,8 @@ export function CustomerHeader({ user }: CustomerHeaderProps) {
 
           <div className="flex-1 min-w-0 pb-2">
             <div className="flex flex-wrap items-center gap-3 mb-3">
-              <h1 className="text-3xl font-black text-slate-900 tracking-tight truncate">{user.name || "Chưa đặt tên"}</h1>
-              <Badge variant="secondary" className="rounded-lg px-3 py-1 font-black text-[10px] bg-slate-900 text-white border-none uppercase tracking-widest shadow-lg shadow-slate-200">
+              <h1 className="text-3xl font-bold text-slate-900 tracking-tight truncate">{user.name || "Chưa đặt tên"}</h1>
+              <Badge variant="secondary" className="rounded-lg px-3 py-1 font-bold text-xs bg-slate-900 text-white border-none uppercase tracking-widest shadow-lg shadow-slate-200">
                 {user.role}
               </Badge>
             </div>
@@ -91,10 +91,10 @@ export function CustomerHeader({ user }: CustomerHeaderProps) {
           </div>
 
           <div className="flex items-center gap-3 pb-2">
-            <Button variant="outline" className="rounded-2xl h-12 px-6 font-black border-slate-200 hover:bg-slate-50 hover:border-slate-300 transition-all active:scale-95 shadow-sm">
+            <Button variant="outline" className="rounded-xl h-12 px-6 font-bold border-slate-200 hover:bg-slate-50 hover:border-slate-300 transition-all active:scale-95 shadow-sm">
               Gửi Email
             </Button>
-            <Button className="rounded-2xl h-12 px-6 font-black bg-slate-900 text-white hover:bg-slate-800 transition-all active:scale-95 shadow-lg shadow-slate-200">
+            <Button className="rounded-xl h-12 px-6 font-bold bg-slate-900 text-white hover:bg-slate-800 transition-all active:scale-95 shadow-lg shadow-slate-200">
               Hành động
             </Button>
           </div>

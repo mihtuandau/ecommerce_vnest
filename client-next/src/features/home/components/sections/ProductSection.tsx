@@ -37,7 +37,7 @@ export function ProductSection({
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 md:mb-12">
         <div className="space-y-4">
           <div className="space-y-2">
-            <h2 className="text-3xl md:text-5xl font-black text-primary tracking-tighter leading-[1.1]">
+            <h2 className="text-3xl md:text-5xl font-bold text-primary tracking-tighter leading-[1.1]">
               {title}
             </h2>
             <p className="text-slate-400 text-xs md:text-base font-medium tracking-tight max-w-xl leading-relaxed">

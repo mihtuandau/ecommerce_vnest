@@ -87,7 +87,7 @@ export function ProductDetailView({ slug }: ProductDetailViewProps) {
     return (
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
-          <Skeleton className="aspect-square rounded-[3rem]" />
+          <Skeleton className="aspect-square rounded-4xl" />
           <div className="space-y-8">
             <Skeleton className="h-4 w-20" />
             <Skeleton className="h-12 w-3/4" />

@@ -100,7 +100,7 @@ export function FeaturedCategories() {
 
               {/* Label Below Circle */}
               <div className="text-center space-y-1.5 px-2">
-                <h3 className="text-[11px] md:text-sm font-bold text-slate-900 group-hover:text-primary transition-colors duration-500 whitespace-nowrap overflow-hidden text-ellipsis w-full">
+                <h3 className="text-xs md:text-sm font-bold text-slate-900 group-hover:text-primary transition-colors duration-500 whitespace-nowrap overflow-hidden text-ellipsis w-full">
                   {category.name}
                 </h3>
                 <div className="h-1 w-0 bg-primary mx-auto rounded-full group-hover:w-8 transition-all duration-500" />
