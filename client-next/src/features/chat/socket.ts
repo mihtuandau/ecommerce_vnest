@@ -19,19 +19,21 @@ export const useSocket = () => {
     // Token might be null if HttpOnly cookie is used, but io will send cookies if withCredentials is true
     console.log("Socket Hook - Token found in store:", !!accessToken);
 
-    const SOCKET_URL =
-      process.env.NEXT_PUBLIC_SOCKET_URL ||
-      process.env.NEXT_PUBLIC_API_URL?.replace("/api", "") ||
-      "http://localhost:5000";
-    console.log("Socket Hook - Connecting to:", SOCKET_URL);
+    // Fallback: Nếu store không có token (vd: sau khi refresh), kiểm tra cookies
+    let currentToken = accessToken;
+    if (!currentToken) {
+      currentToken = Cookies.get("accessToken") || Cookies.get("access_token") || null;
+      console.log("Socket Hook - Token fallback to cookie:", !!currentToken);
+    }
 
     const socketInstance = io(SOCKET_URL, {
-      auth: { token: accessToken },
+      auth: { token: currentToken },
       withCredentials: true,
       reconnection: true,
-      reconnectionAttempts: 10,
+      reconnectionAttempts: 15,
       reconnectionDelay: 1000,
       autoConnect: true,
+      transports: ["websocket", "polling"],
     });
 
     socketInstance.on("connect", () => {
