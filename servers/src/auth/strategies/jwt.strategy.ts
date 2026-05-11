@@ -1,4 +1,4 @@
-﻿import { ExtractJwt, Strategy } from 'passport-jwt';
+import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -18,7 +18,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (request: Request) => {
-          const token = request?.cookies?.access_token;
+          const token = request?.cookies?.accessToken;
           return token;
         },
         ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -35,9 +35,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException('User not found');
     }
 
+    if (user.status === 'SUSPENDED') {
+      throw new UnauthorizedException('Tài khoản của bạn đã bị khóa. Vui lòng liên hệ hỗ trợ.');
+    }
+
     const permissions = await this.userService.getPermissionsByRole(user.role);
 
     return {
+      id: user.id,
       userId: user.id,
       email: user.email,
       role: user.role,
@@ -45,9 +50,3 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     };
   }
 }
-
-
-
-
-
-

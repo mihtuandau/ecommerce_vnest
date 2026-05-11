@@ -47,6 +47,7 @@ export class DiscountRepository {
         _count: {
           select: { orders: true },
         },
+        applicableToProducts: true,
       },
     });
   }
@@ -58,6 +59,7 @@ export class DiscountRepository {
         _count: {
           select: { orders: true },
         },
+        applicableToProducts: true,
       },
       orderBy: { createdAt: 'desc' },
     });
@@ -140,9 +142,7 @@ export class DiscountRepository {
         minOrderAmount: true,
         maxDiscountAmount: true,
         usageLimit: true,
-        _count: {
-          select: { orders: true }
-        },
+        usageCount: true,
         startDate: true,
         endDate: true,
         isFlashSale: true,
@@ -310,5 +310,15 @@ export class DiscountRepository {
         { fixedAmount: 'desc' },
       ],
     });
+  }
+
+  async hasUserUsedDiscount(userId: number, discountId: number): Promise<boolean> {
+    const count = await this.prisma.discountUsage.count({
+      where: {
+        userId,
+        discountId,
+      },
+    });
+    return count > 0;
   }
 }

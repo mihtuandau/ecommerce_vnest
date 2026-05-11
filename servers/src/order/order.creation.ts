@@ -1,4 +1,3 @@
-
 import { Injectable, BadRequestException, Logger } from '@nestjs/common';
 import { OrderRepository } from './order.repository';
 import { OrderCache } from './order.cache';
@@ -26,180 +25,258 @@ export class OrderCreation {
     private configService: ConfigService,
   ) {}
 
-  async create(userId: number | null, dto: CreateOrderDto): Promise<any> {
-    const itemsToOrder = await this.getItemsToOrder(userId, dto);
+  async create(userId: number | null, dto: CreateOrderDto, requester: { role: string }, ipAddr: string = '127.0.0.1'): Promise<any> {
+    const isStaff = ['ADMIN', 'KHO', 'BAN_HANG'].includes(requester.role);
+    const itemsToOrder = await this.getItemsToOrder(userId, dto, isStaff);
     const variantIds = itemsToOrder.map((i) => i.variantId);
-    
-    // 1. Auto-apply Flash Sale prices only if NO manual discount code provided
-    const autoDiscountPriceMap = dto.discountCode 
-      ? new Map() // Skip auto-apply if user has manual discount
-      : await this.repository.findAutoApplyPricesForVariants(variantIds);
-    
+
+    // 1. Luôn tính Flash Sale (auto-apply) để có dữ liệu so sánh với voucher.
+    const { priceMap, discountId: autoDiscountId } = await this.repository.findAutoApplyPricesForVariants(variantIds);
+
     // 2. Chuẩn bị danh sách items với giá đã giảm (nếu có)
     const itemsWithDiscounts = itemsToOrder.map((item) => {
-      const discountedPrice = autoDiscountPriceMap.get(item.variantId);
+      const discountedPrice = priceMap.get(item.variantId);
       return {
         ...item,
-        price: (discountedPrice !== undefined && discountedPrice < item.price) ? discountedPrice : item.price,
+        price:
+          discountedPrice !== undefined && discountedPrice < item.price
+            ? discountedPrice
+            : item.price,
       };
     });
 
-    const originalSubtotal = itemsToOrder.reduce((sum, i) => sum + i.price * i.quantity, 0);
-    const autoApplySubtotal = itemsWithDiscounts.reduce((sum, i) => sum + i.price * i.quantity, 0);
+    const originalSubtotal = itemsToOrder.reduce(
+      (sum, i) => sum + i.price * i.quantity,
+      0,
+    );
+    const autoApplySubtotal = itemsWithDiscounts.reduce(
+      (sum, i) => sum + i.price * i.quantity,
+      0,
+    );
     const autoApplySaving = originalSubtotal - autoApplySubtotal;
 
-    // 3. Kiểm tra mã giảm giá thủ công (Voucher)
-    const discount = await this.validateDiscount(dto.discountCode, originalSubtotal);
+    const manualDiscount = await this.validateDiscount(
+      dto.discountCode,
+      originalSubtotal,
+      userId,
+      dto.guestEmail,
+      dto.shippingInfo?.phone || dto.guestPhone
+    );
     let manualCodeSaving = 0;
-    if (discount) {
-      if (discount.percentage) {
-        manualCodeSaving = Math.round(originalSubtotal * discount.percentage / 100);
-      } else if (discount.fixedAmount) {
-        manualCodeSaving = discount.fixedAmount;
+    if (manualDiscount) {
+      if (manualDiscount.percentage) {
+        manualCodeSaving = Math.round(
+          (originalSubtotal * manualDiscount.percentage) / 100,
+        );
+      } else if (manualDiscount.fixedAmount) {
+        manualCodeSaving = manualDiscount.fixedAmount;
       }
-      if (discount.maxDiscountAmount && manualCodeSaving > discount.maxDiscountAmount) {
-        manualCodeSaving = discount.maxDiscountAmount;
+      if (
+        manualDiscount.maxDiscountAmount &&
+        manualCodeSaving > manualDiscount.maxDiscountAmount
+      ) {
+        manualCodeSaving = manualDiscount.maxDiscountAmount;
       }
       manualCodeSaving = Math.min(manualCodeSaving, originalSubtotal);
     }
 
     // 4. Quyết định dùng Flash Sale hay Voucher (cái nào lợi hơn cho khách)
-    const useAutoApply = autoApplySaving > 0 && autoApplySaving >= manualCodeSaving;
-    const finalItems = useAutoApply ? itemsWithDiscounts : itemsToOrder;
-    const finalDiscount = useAutoApply ? null : discount;
+    const useAutoApply =
+      autoApplySaving > 0 && autoApplySaving >= manualCodeSaving;
+    
+    // Tìm đối tượng discount cuối cùng để connect với Order
+    let finalDiscount: any = null;
+    if (useAutoApply && autoDiscountId) {
+      finalDiscount = await this.prisma.discount.findUnique({ where: { id: autoDiscountId } });
+    } else if (!useAutoApply && manualDiscount) {
+      finalDiscount = manualDiscount;
+    }
 
-    const discountData = finalDiscount ? {
-      percentage: finalDiscount.percentage || undefined,
-      fixedAmount: finalDiscount.fixedAmount || undefined,
-      maxDiscountAmount: finalDiscount.maxDiscountAmount || undefined,
-    } : {
-      fixedAmount: useAutoApply ? autoApplySaving : 0
-    };
+    const finalItems = useAutoApply ? itemsWithDiscounts : itemsToOrder;
+
+    const discountData = finalDiscount
+      ? {
+          percentage: finalDiscount.percentage || undefined,
+          fixedAmount: finalDiscount.fixedAmount || undefined,
+          maxDiscountAmount: finalDiscount.maxDiscountAmount || undefined,
+        }
+      : {
+          fixedAmount: 0,
+        };
 
     // 5. Tính phí vận chuyển qua GHN
-    let ghnShippingFee = 30000; // Default fallback
+    // Mặc định phí ship là 30k, trừ khi là đơn POS thì mặc định là 0
+    const isPOS = dto.status === 'DELIVERED' || dto.shippingAddress === 'Mua tại quầy';
+    let ghnShippingFee = isPOS ? 0 : 30000;
+    
+    // Chỉ chấp nhận phí ship từ DTO nếu đó là Admin tạo đơn
+    if (dto.shippingFee !== undefined && isStaff) {
+      ghnShippingFee = dto.shippingFee;
+    }
+
     try {
       const shippingFeeResult = await this.calculateGHNFee(dto, finalItems);
       if (shippingFeeResult) {
         ghnShippingFee = shippingFeeResult;
       } else {
-        // GHN calculation failed - either missing address or invalid input
-        // Only use fallback if this is optional shipping (COD order)
+        // GHN calculation failed
         const isOnlinePayment = ['VNPAY', 'PAYOS'].includes(dto.paymentMethod || '');
-        if (isOnlinePayment) {
-          throw new BadRequestException(
-            'Không thể tính phí vận chuyển. Vui lòng kiểm tra lại địa chỉ giao hàng.'
-          );
+        if (isOnlinePayment && !isPOS) {
+          throw new BadRequestException('Không thể tính phí vận chuyển. Vui lòng kiểm tra lại địa chỉ giao hàng.');
+        }
+        // Nếu là COD và GHN fail, chúng ta ép giá tối thiểu 20k nếu user gửi lên 0
+        if (!isPOS && ghnShippingFee < 20000) {
+          ghnShippingFee = 30000; 
         }
       }
     } catch (error) {
-      // GHN service error - strict policy for online payments
       const isOnlinePayment = ['VNPAY', 'PAYOS'].includes(dto.paymentMethod || '');
-      if (isOnlinePayment) {
-        this.logger.error('GHN fee calculation failed for online payment:', error);
-        throw new BadRequestException(
-          'Không thể tính phí vận chuyển qua GHN. Vui lòng thử lại hoặc chọn phương thức thanh toán khác.'
-        );
+      if (isOnlinePayment && !isPOS) {
+        throw new BadRequestException('Không thể tính phí vận chuyển qua GHN. Vui lòng thử lại.');
       }
-      // For COD, log warning but continue
-      this.logger.warn('GHN fee calculation failed, using default:', error.message);
+      
+      // Nếu GHN lỗi, dùng giá mặc định an toàn cho COD
+      if (!isPOS && ghnShippingFee < 20000) {
+        ghnShippingFee = 30000;
+      }
+      
+      if (!isPOS) {
+        this.logger.warn('GHN fee calculation failed, using fallback:', error.message);
+      }
     }
 
-    const totals = OrderHelper.calculateOrderTotal(finalItems, ghnShippingFee, finalDiscount ? discountData : undefined);
+    const totals = OrderHelper.calculateOrderTotal(
+      finalItems,
+      ghnShippingFee,
+      finalDiscount ? discountData : undefined,
+    );
 
-    const orderCode = await OrderHelper.generateOrderCode(
-      (code) => this.repository.findByCode(code)
+    const orderCode = await OrderHelper.generateOrderCode((code) =>
+      this.repository.findByCode(code),
     );
 
     const orderData = OrderHelper.prepareOrderData(
-      orderCode, 
-      userId, 
-      dto, 
-      finalItems, 
-      { 
-        subtotal: totals.totalItems, 
+      orderCode,
+      userId,
+      dto,
+      finalItems,
+      {
+        subtotal: totals.totalItems,
         shippingFee: totals.shippingFee,
-        discountAmount: totals.discountAmount, 
-        total: totals.discountedTotal 
-      }, 
-      finalDiscount
+        discountAmount: totals.discountAmount,
+        total: totals.discountedTotal,
+      },
+      finalDiscount,
     );
 
-    const order = await this.repository.createOrderTransactional(
-      orderData, 
+    const order = (await this.repository.createOrderTransactional(
+      orderData,
       finalItems,
       finalDiscount?.id ?? undefined,
-      finalDiscount?.usageLimit ?? undefined
-    ) as any;
+      finalDiscount?.usageLimit ?? undefined,
+    )) as any;
 
-    await this.createPaymentRecord(order.id, dto.paymentMethod);
-    await this.clearUserCartIfNeeded(userId, dto);
+    let payment;
+    try {
+      payment = await this.createPaymentRecord(order.id, dto.paymentMethod, ipAddr, order.status);
+      
+      // Log để kiểm tra ngay tại Server
+      console.log(`[OrderCreation] Created payment for ${order.orderCode}: ${payment ? 'OK' : 'NULL'}`);
+      if (payment) {
+        console.log(`[OrderCreation] Link detail: ${payment.paymentLink ? 'FOUND' : 'NOT FOUND'}`);
+      }
 
-    if (userId) {
-      await this.cacheService.deleteUserOrderCaches(userId);
+      if (dto.paymentMethod === 'VNPAY' && (!payment || !payment.paymentLink)) {
+        throw new Error('Hệ thống không thể tạo liên kết thanh toán VNPay. Vui lòng kiểm tra lại cấu hình.');
+      }
+    } catch (error) {
+      this.logger.error(`Failed to create payment for order ${order.id}. Initiating rollback. Error: ${error.message}`);
+      
+      // Rollback order and stock mapping safely if payment creation completely fails
+      await this.repository.cancelAndRestore(order.id);
+      
+      throw new BadRequestException(error.message || 'Lỗi hệ thống khi tạo giao dịch thanh toán.');
     }
 
+    await this.clearUserCartIfNeeded(userId, dto);
+    if (userId) await this.cacheService.deleteUserOrderCaches(userId);
     await this.sendConfirmationEmail(order);
-    return order;
+
+    // Trả về dữ liệu cực kỳ tường minh
+    return {
+      ...order,
+      payment: payment,
+      paymentLink: payment?.paymentLink || null,
+    };
   }
 
-  private async getItemsToOrder(userId: number | null, dto: CreateOrderDto) {
+  private async getItemsToOrder(userId: number | null, dto: CreateOrderDto, isStaff: boolean) {
     if (dto.items && dto.items.length > 0) {
-      return await this.prepareItemsFromDto(dto.items);
+      return await this.prepareItemsFromDto(dto.items, isStaff);
     } else {
       if (!userId) {
-        throw new BadRequestException('Guest checkout requires items in request body');
+        throw new BadRequestException(
+          'Guest checkout requires items in request body',
+        );
       }
       return await this.prepareItemsFromCart(userId);
     }
   }
 
-  private async prepareItemsFromDto(items: Array<{variantId: number, quantity: number, price?: number}>) {
-    const variantIds = items.map(item => item.variantId);
+  private async prepareItemsFromDto(
+    items: Array<{ variantId: number; quantity: number; price?: number }>,
+    isStaff: boolean,
+  ) {
+    const variantIds = items.map((item) => item.variantId);
     const variants = await this.prisma.productVariant.findMany({
-      where: { id: { in: variantIds } },
-      include: { product: { select: { name: true, category: { select: { name: true } } } } }
+      where: { 
+        id: { in: variantIds },
+        isActive: true,
+        product: { deletedAt: null, isActive: true } 
+      },
+      select: {
+        id: true, productId: true, price: true, originalPrice: true, weight: true, length: true, width: true, height: true,
+        product: {
+          select: { id: true, name: true, isActive: true, deletedAt: true, originalPrice: true, categoryId: true, category: { select: { name: true } } },
+        },
+      },
     });
-    
+
     if (!variants || variants.length === 0) {
       throw new BadRequestException('Không tìm thấy sản phẩm');
     }
 
-    const variantMap = new Map(variants.map(v => [v.id, v]));
-    
-    return items.map(item => {
-      const variant = variantMap.get(item.variantId);
-      if (!variant) {
-        throw new BadRequestException(`Sản phẩm ID ${item.variantId} không tồn tại`);
-      }
-      
-      // Validate price - if frontend provided expected price, check for significant changes
-      if (item.price !== undefined && variant.price !== item.price) {
-        const priceChange = Math.abs((variant.price - item.price) / item.price) * 100;
-        // If price changed more than 10%, block order and request fresh price from client
-        if (priceChange > 10) {
-          this.logger.warn(
-            `Significant price change detected for variant ${item.variantId}: ` +
-            `expected ${item.price}, actual ${variant.price} (${priceChange.toFixed(2)}% change). Order blocked.`
-          );
-          throw new BadRequestException(
-            `Giá sản phẩm đã thay đổi trên ${priceChange.toFixed(1)}%. ` +
-            `Giá hiện tại: ${variant.price}đ (giá lúc trước: ${item.price}đ). ` +
-            `Vui lòng tải lại giỏ hàng và thử lại.`
-          );
-        }
-      }
-      
+    const variantMap = new Map(variants.map((v) => [v.id, v]));
+
+    // Phát hiện và báo lỗi rõ ràng các variant không khả dụng (đã xóa/inactive/không tồn tại).
+    // Không silently drop để tránh tạo đơn thiếu sản phẩm.
+    const missingIds = items
+      .map((i) => i.variantId)
+      .filter((id) => !variantMap.has(id));
+    if (missingIds.length > 0) {
+      throw new BadRequestException(
+        `Một số sản phẩm không khả dụng hoặc đã ngừng kinh doanh (variantId: ${missingIds.join(', ')})`,
+      );
+    }
+
+    return items.map((item) => {
+      const variant = variantMap.get(item.variantId)!;
+
       return {
         variantId: item.variantId,
+        productId: variant.productId,
         quantity: item.quantity,
-        price: variant.price, // Always use current database price, not frontend price
+        // Trả về GIÁ GỐC của variant (không pre-apply Flash Sale).
+        // Auto-apply / voucher sẽ được so sánh và quyết định ở `create()`.
+        // Staff (Admin/POS) có thể override giá thủ công qua item.price.
+        price: (item.price !== undefined && isStaff) ? item.price : variant.price,
+        originalPrice: variant.originalPrice || variant.product?.originalPrice,
         productName: variant.product?.name || 'Sản phẩm',
         weight: variant.weight,
         length: variant.length,
         width: variant.width,
         height: variant.height,
-        category: variant.product?.category?.name
+        category: (variant.product as any)?.category?.name,
       };
     });
   }
@@ -209,18 +286,42 @@ export class OrderCreation {
     if (!cart.cartItems || cart.cartItems.length === 0) {
       throw new BadRequestException('Giỏ hàng trống');
     }
-    
-    return cart.cartItems.map(item => ({
-      variantId: item.variantId,
-      quantity: item.quantity,
-      price: item.variant?.price || 0,
-      productName: item.variant?.product?.name || 'Sản phẩm',
-      weight: item.variant?.weight,
-      length: item.variant?.length,
-      width: item.variant?.width,
-      height: item.variant?.height,
-      category: item.variant?.product?.category?.name
-    }));
+
+    // Loại bỏ trước các item có variant/product không khả dụng và báo lỗi rõ ràng,
+    // tránh tình trạng vẫn order được sản phẩm đã xóa/inactive.
+    const invalidItems = cart.cartItems.filter((item: any) => {
+      const v = item.variant;
+      if (!v) return true;
+      if (v.isActive === false || v.deletedAt) return true;
+      const p = v.product;
+      if (!p || p.isActive === false || p.deletedAt) return true;
+      return false;
+    });
+    if (invalidItems.length > 0) {
+      const names = invalidItems
+        .map((it: any) => it.variant?.product?.name || `variant#${it.variantId}`)
+        .join(', ');
+      throw new BadRequestException(
+        `Một số sản phẩm trong giỏ đã ngừng kinh doanh, vui lòng xóa khỏi giỏ hàng: ${names}`,
+      );
+    }
+
+    return cart.cartItems.map((item) => {
+      return {
+        variantId: item.variantId,
+        productId: item.variant?.productId,
+        quantity: item.quantity,
+        // Trả về GIÁ GỐC. Auto-apply Flash Sale & voucher sẽ được so sánh ở `create()`.
+        price: item.variant?.price || 0,
+        originalPrice: item.variant?.originalPrice || item.variant?.product?.originalPrice,
+        productName: item.variant?.product?.name || 'Sản phẩm',
+        weight: item.variant?.weight,
+        length: item.variant?.length,
+        width: item.variant?.width,
+        height: item.variant?.height,
+        category: item.variant?.product?.category?.name,
+      };
+    });
   }
 
   private async calculateGHNFee(dto: CreateOrderDto, items: any[]) {
@@ -229,7 +330,7 @@ export class OrderCreation {
 
     if (dto.addressId) {
       const address = await this.prisma.address.findUnique({
-        where: { id: dto.addressId }
+        where: { id: dto.addressId },
       });
       if (address) {
         districtCode = address.districtCode;
@@ -242,18 +343,26 @@ export class OrderCreation {
 
     if (!districtCode || !wardCode) return null;
 
-    const totalWeight = items.reduce((sum, item) => sum + (item.weight || 200) * item.quantity, 0);
-    const maxLength = Math.max(...items.map(i => i.length || 10));
-    const maxWidth = Math.max(...items.map(i => i.width || 10));
-    const totalHeight = items.reduce((sum, i) => sum + (i.height || 5) * i.quantity, 0);
+    const totalWeight = items.reduce(
+      (sum, item) => sum + (item.weight || 200) * item.quantity,
+      0,
+    );
+    const maxLength = Math.max(...items.map((i) => i.length || 10));
+    const maxWidth = Math.max(...items.map((i) => i.width || 10));
+    const totalHeight = items.reduce(
+      (sum, i) => sum + (i.height || 5) * i.quantity,
+      0,
+    );
 
-    const fromDistrictId = Number(this.configService.get('GHN_FROM_DISTRICT_ID'));
+    const fromDistrictId = Number(
+      this.configService.get('GHN_FROM_DISTRICT_ID'),
+    );
     if (!fromDistrictId) return null;
 
     const feeData = {
       from_district_id: fromDistrictId,
       service_id: 0,
-      service_type_id: 2, 
+      service_type_id: 2,
       to_district_id: Number(districtCode),
       to_ward_code: wardCode,
       height: Math.min(totalHeight, 150),
@@ -261,52 +370,85 @@ export class OrderCreation {
       weight: Math.min(totalWeight, 30000),
       width: Math.min(maxWidth, 150),
       insurance_value: 0,
-      coupon: null
+      coupon: null,
     };
 
     const result = await this.ghnService.calculateFee(feeData);
     return result.data.total;
   }
 
-  private async validateDiscount(discountCode?: string, subtotal?: number) {
+  private async validateDiscount(discountCode?: string, subtotal?: number, userId?: number | null, guestEmail?: string | null, guestPhone?: string | null) {
     if (!discountCode) return null;
+    console.log(`[OrderCreation] Validating discount: ${discountCode} for userId: ${userId}`);
     const discount = await this.repository.findDiscountByCode(discountCode);
     if (!discount) throw new BadRequestException('Mã giảm giá không tồn tại');
-    if (discount.isFlashSale) throw new BadRequestException('Mã Flash Sale đã được áp dụng tự động');
+    if (discount.isFlashSale)
+      throw new BadRequestException('Mã Flash Sale đã được áp dụng tự động');
 
-    const usageCount = await this.repository.countOrdersUsingDiscount(discount.id);
-    OrderHelper.validateDiscount(discount, subtotal, usageCount);
+    // Single source of truth: dùng field Discount.usageCount thay vì count Order
+    OrderHelper.validateDiscount(discount, subtotal, discount.usageCount);
+
+    // Kiểm tra giới hạn sử dụng của người dùng/guest (mỗi người dùng 1 lần)
+    const hasUsed = await this.repository.hasUsedDiscount(userId || null, discount.id, guestEmail, guestPhone);
+    console.log(`[OrderCreation] User/Guest has used discount ${discount.id}: ${hasUsed}`);
+    if (hasUsed) {
+      throw new BadRequestException('Bạn đã sử dụng mã giảm giá này cho đơn hàng trước đó');
+    }
+
     return discount;
   }
 
-  private async createPaymentRecord(orderId: number, paymentMethod?: string) {
-    try {
-      const finalMethod = paymentMethod === 'PAYOS' ? 'VNPAY' : (paymentMethod || 'CASH');
-      await this.paymentService.create({
-        orderId,
-        method: finalMethod as any,
-      });
-    } catch (error) {
-      this.logger.error('Failed to create payment record:', error);
+  private async createPaymentRecord(orderId: number, paymentMethod?: string, ipAddr: string = '127.0.0.1', orderStatus?: string) {
+    // Chuẩn hóa phương thức thanh toán: COD từ frontend -> CASH trong enum
+    const method = paymentMethod?.toUpperCase();
+    let finalMethod = 'CASH';
+
+    if (method === 'VNPAY' || method === 'PAYOS') {
+      finalMethod = 'VNPAY';
+    } else if (method === 'MOMO') {
+      finalMethod = 'MOMO';
+    } else if (method === 'CARD') {
+      finalMethod = 'CARD';
     }
+
+    const payment = await this.paymentService.create({
+      orderId,
+      method: finalMethod as any,
+      status: orderStatus === 'DELIVERED' ? 'SUCCESS' : 'PENDING'
+    }, ipAddr);
+
+    return payment;
   }
 
-  private async clearUserCartIfNeeded(userId: number | null, dto: CreateOrderDto) {
-    if (userId && (!dto.items || dto.items.length === 0)) {
-      await this.repository.clearUserCart(userId);
-    }
+  private async clearUserCartIfNeeded(
+    userId: number | null,
+    dto: CreateOrderDto,
+  ) {
+    if (!userId) return;
+    if (dto.items && dto.items.length > 0) return;
+
+    // Chỉ clear cart ngay khi đơn KHÔNG cần chờ thanh toán online (COD/CASH/POS).
+    // Với VNPAY/PAYOS, cart sẽ được clear khi IPN trả SUCCESS (tránh việc user
+    // bỏ thanh toán giữa chừng → đơn bị auto-cancel mà giỏ hàng đã trắng).
+    const onlineMethods = ['VNPAY', 'PAYOS'];
+    const method = (dto.paymentMethod || '').toUpperCase();
+    if (onlineMethods.includes(method)) return;
+
+    await this.repository.clearUserCart(userId);
   }
 
   private async sendConfirmationEmail(order: any) {
     const emailData = OrderHelper.prepareOrderEmailDetails(order);
     if (emailData.customerEmail && order.orderCode) {
-      this.mailService.sendOrderConfirmation(
-        emailData.customerEmail,
-        order.orderCode,
-        emailData.orderDetails,
-      ).catch(err => {
-        this.logger.error('Failed to send confirmation email:', err);
-      });
+      this.mailService
+        .sendOrderConfirmation(
+          emailData.customerEmail,
+          order.orderCode,
+          emailData.orderDetails,
+        )
+        .catch((err) => {
+          this.logger.error('Failed to send confirmation email:', err);
+        });
     }
   }
 }

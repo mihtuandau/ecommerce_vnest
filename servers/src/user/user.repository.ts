@@ -18,7 +18,31 @@ export class UserRepository {
   async findById(id: number): Promise<User | null> {
     return this.prisma.user.findUnique({
       where: { id },
-      include: { addresses: true },
+      include: { 
+        addresses: true,
+        orders: {
+          orderBy: { createdAt: 'desc' },
+          include: { 
+            payment: true,
+            orderItems: {
+              include: {
+                variant: {
+                  include: {
+                    product: {
+                      select: {
+                        id: true,
+                        name: true,
+                        images: true,
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        reviews: true
+      },
     });
   }
 
@@ -27,7 +51,11 @@ export class UserRepository {
       where,
       skip,
       take,
-      include: { addresses: true },
+      include: { 
+        addresses: true,
+        orders: true,
+        reviews: true
+      },
     });
   }
 
@@ -140,12 +168,18 @@ export class UserRepository {
   }
 
   async getRolesWithPermissions() {
-
-    return this.prisma.permissionRole.findMany({
-      include: {
-        permission: true,
-      },
+    const records = await this.prisma.permissionRole.findMany({
+      include: { permission: true },
     });
+
+    // Group by role: { role, permissions[] }
+    const grouped: Record<string, { role: string; permissions: any[] }> = {};
+    records.forEach((r) => {
+      if (!grouped[r.role]) grouped[r.role] = { role: r.role, permissions: [] };
+      grouped[r.role].permissions.push(r.permission);
+    });
+
+    return Object.values(grouped);
   }
 
   async updateRolePermissions(role: any, permissionIds: number[]) {

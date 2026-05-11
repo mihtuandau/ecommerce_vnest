@@ -1,4 +1,4 @@
-﻿import { IsString, IsNumber, IsPositive, IsOptional, IsInt, IsEnum } from 'class-validator';
+import { IsString, IsNumber, IsPositive, IsOptional, IsInt, IsEnum, IsArray } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';  
 
 export class UpdateProductDto {
@@ -78,7 +78,7 @@ export class UpdateProductDto {
   status?: string;
 
   @ApiProperty({
-    example: 'Áo thun nam - Vnest',
+    example: 'Áo thun nam - Minh Tuấn Shop',
     description: 'SEO meta title (tùy chọn)',
     required: false,
   })
@@ -94,9 +94,12 @@ export class UpdateProductDto {
   @IsOptional()
   @IsString()
   metaDesc?: string;
+
+  @IsOptional()
+  @IsArray()
+  images?: any[];
+
+  @IsOptional()
+  @IsArray()
+  variants?: any[];
 }
-
-
-
-
-

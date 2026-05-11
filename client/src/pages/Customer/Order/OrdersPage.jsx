@@ -1,9 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button, Spin, Empty, Modal } from "antd";
-import {
-  ExclamationCircleOutlined,
-} from "@ant-design/icons";
+import { ExclamationCircleOutlined } from "@ant-design/icons";
 import { notify } from "../../../utils/notification";
 import Layout from "../../../components/layouts/Layout";
 import Breadcrumb from "../../../components/common/Breadcrumb";
@@ -25,7 +23,7 @@ const OrdersPage = () => {
   const [loading, setLoading] = useState(true);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [reviewedProducts, setReviewedProducts] = useState(new Set()); 
+  const [reviewedProducts, setReviewedProducts] = useState(new Set());
   const [statusFilter, setStatusFilter] = useState("ALL");
 
   useEffect(() => {
@@ -37,7 +35,9 @@ const OrdersPage = () => {
       setLoading(true);
       const response = await orderService.getMyOrders();
       const ordersList = response?.orders || response?.data?.orders || [];
-      const transformedOrders = (Array.isArray(ordersList) ? ordersList : []).map((order) => ({
+      const transformedOrders = (
+        Array.isArray(ordersList) ? ordersList : []
+      ).map((order) => ({
         ...order,
         items: order.orderItems || [],
       }));
@@ -54,10 +54,14 @@ const OrdersPage = () => {
     for (const order of orders) {
       if (order.status === "DELIVERED" && order.items) {
         for (const item of order.items) {
-          const productId = item.variant?.product?.id || item.variant?.productId;
+          const productId =
+            item.variant?.product?.id || item.variant?.productId;
           if (productId) {
             try {
-              const response = await reviewService.canUserReview(productId, order.id);
+              const response = await reviewService.canUserReview(
+                productId,
+                order.id,
+              );
               if (response.data?.hasReviewed || response.hasReviewed) {
                 reviewed.add(`${productId}-${order.id}`);
               }
@@ -83,7 +87,10 @@ const OrdersPage = () => {
   const handleReviewSuccess = () => {
     setShowReviewModal(false);
     notify.success("Đánh giá thành công!");
-    setReviewedProducts((prev) => new Set([...prev, `${selectedProduct.id}-${selectedProduct.orderId}`]));
+    setReviewedProducts(
+      (prev) =>
+        new Set([...prev, `${selectedProduct.id}-${selectedProduct.orderId}`]),
+    );
     setSelectedProduct(null);
   };
 
@@ -101,14 +108,19 @@ const OrdersPage = () => {
           notify.success("Hủy đơn hàng thành công!");
           loadOrders();
         } catch (error) {
-          notify.error(error.response?.data?.message || "Không thể hủy đơn hàng");
+          notify.error(
+            error.response?.data?.message || "Không thể hủy đơn hàng",
+          );
         }
       },
     });
   };
 
   const safeOrders = Array.isArray(orders) ? orders : [];
-  const filteredOrders = statusFilter === "ALL" ? safeOrders : safeOrders.filter((order) => order.status === statusFilter);
+  const filteredOrders =
+    statusFilter === "ALL"
+      ? safeOrders
+      : safeOrders.filter((order) => order.status === statusFilter);
 
   const statusCounts = {
     ALL: safeOrders.length,
@@ -132,7 +144,7 @@ const OrdersPage = () => {
   return (
     <Layout>
       <div className="min-h-screen bg-white pb-12">
-        <div className="max-w-7xl mx-auto"> 
+        <div className="max-w-7xl mx-auto">
           <div className="px-6 py-2">
             <Breadcrumb items={[{ label: "Đơn hàng của tôi" }]} />
           </div>
@@ -147,36 +159,47 @@ const OrdersPage = () => {
 
           <div className="px-6 mt-6">
             {safeOrders.length === 0 ? (
-            <div className="flex justify-center items-center min-h-[400px]">
-              <Empty description="Bạn chưa có đơn hàng nào" image={Empty.PRESENTED_IMAGE_SIMPLE} />
-            </div>
-          ) : filteredOrders.length === 0 ? (
-            <div className="flex justify-center items-center min-h-[400px]">
-              <Empty description="Không tìm thấy đơn hàng phù hợp" image={Empty.PRESENTED_IMAGE_SIMPLE}>
-                <Button type="primary" onClick={() => setStatusFilter("ALL")}>Xem tất cả đơn hàng</Button>
-              </Empty>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {filteredOrders.map((order) => (
-                <OrderCard
-                  key={order.id}
-                  order={order}
-                  reviewedProducts={reviewedProducts}
-                  onReviewClick={handleOpenReviewModal}
-                  onCancelClick={handleCancelOrder}
+              <div className="flex justify-center items-center min-h-[400px]">
+                <Empty
+                  description="Bạn chưa có đơn hàng nào"
+                  image={Empty.PRESENTED_IMAGE_SIMPLE}
                 />
-              ))}
-            </div>
-          )}
+              </div>
+            ) : filteredOrders.length === 0 ? (
+              <div className="flex justify-center items-center min-h-[400px]">
+                <Empty
+                  description="Không tìm thấy đơn hàng phù hợp"
+                  image={Empty.PRESENTED_IMAGE_SIMPLE}
+                >
+                  <Button type="primary" onClick={() => setStatusFilter("ALL")}>
+                    Xem tất cả đơn hàng
+                  </Button>
+                </Empty>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {filteredOrders.map((order) => (
+                  <OrderCard
+                    key={order.id}
+                    order={order}
+                    reviewedProducts={reviewedProducts}
+                    onReviewClick={handleOpenReviewModal}
+                    onCancelClick={handleCancelOrder}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </div>
 
       <ReviewModal
         show={showReviewModal}
         product={selectedProduct}
-        onClose={() => { setShowReviewModal(false); setSelectedProduct(null); }}
+        onClose={() => {
+          setShowReviewModal(false);
+          setSelectedProduct(null);
+        }}
         onSuccess={handleReviewSuccess}
       />
     </Layout>

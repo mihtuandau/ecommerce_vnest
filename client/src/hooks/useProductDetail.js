@@ -13,7 +13,7 @@ export const useProductDetail = () => {
   const navigate = useNavigate();
   const { addToCart } = useCart();
   const { user } = useAuth();
-  
+
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState(0);
@@ -34,7 +34,7 @@ export const useProductDetail = () => {
       setProduct(data);
       if (viewedIdRef.current !== id) {
         viewedIdRef.current = id;
-        productService.incrementView(id).catch(() => {});
+        productService.incrementView(id).catch(() => { });
       }
       if (data.variants?.length) {
         const sizes = [...new Set(data.variants.map(v => v.size).filter(Boolean))];

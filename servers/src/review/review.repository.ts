@@ -1,4 +1,4 @@
-﻿import { Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Review, Prisma } from '@prisma/client';
 
@@ -10,6 +10,7 @@ export class ReviewRepository {
     return this.prisma.review.create({
       data,
       include: {
+        images: true,
         user: {
           select: {
             id: true,
@@ -41,6 +42,7 @@ export class ReviewRepository {
   async findById(id: number): Promise<Review | null> {
     return this.prisma.review.findUnique({
       where: { id },
+      include: { images: true }
     });
   }
 
@@ -104,6 +106,7 @@ export class ReviewRepository {
     return this.prisma.review.findMany({
       where: { productId },
       include: {
+        images: true,
         user: {
           select: {
             id: true,
@@ -128,6 +131,7 @@ export class ReviewRepository {
       where: { id },
       data,
       include: {
+        images: true,
         user: {
           select: {
             id: true,
@@ -170,6 +174,7 @@ export class ReviewRepository {
     return this.prisma.review.findMany({
       where,
       include: {
+        images: true,
         user: {
           select: {
             id: true,
@@ -181,6 +186,7 @@ export class ReviewRepository {
           select: {
             id: true,
             name: true,
+            images: true,
           },
         },
       },
@@ -192,6 +198,24 @@ export class ReviewRepository {
 
   async count(where: Prisma.ReviewWhereInput): Promise<number> {
     return this.prisma.review.count({ where });
+  }
+
+  async findCommentsByProduct(productId: number) {
+    return this.prisma.review.findMany({
+      where: { 
+        productId, 
+        AND: [
+          { comment: { not: null } },
+          { comment: { not: '' } }
+        ]
+      },
+      select: { 
+        comment: true, 
+        rating: true 
+      },
+      take: 50,
+      orderBy: { createdAt: 'desc' },
+    });
   }
 }
 

@@ -1,11 +1,14 @@
+import { SentryModule } from '@sentry/nestjs/setup';
+import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { PrismaService } from './prisma/prisma.service';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { TimeoutInterceptor } from './common/interceptors/timeout.interceptor';
+import { AuditInterceptor } from './common/interceptors/audit.interceptor';
 import { AuthModule } from './auth/auth.module';  
 import { UserModule } from './user/user.module';  
 import { ProductModule } from './product/product.module';  
@@ -29,14 +32,39 @@ import { HealthModule } from './common/health/health.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { GHNModule } from './ghn/ghn.module';
+import { BrandModule } from './brand/brand.module';
+import { ReturnModule } from './return/return.module';
+import { MaintenanceModule } from './common/maintenance/maintenance.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),  
+    SentryModule.forRoot(),
+    BullModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (config: ConfigService) => ({
+        connection: {
+          host: config.get('REDIS_HOST', 'localhost'),
+          port: config.get('REDIS_PORT', 6379),
+          username: config.get('REDIS_USERNAME', 'default'),
+          password: config.get('REDIS_PASSWORD'),
+        },
+      }),
+      inject: [ConfigService],
+    }),
     ScheduleModule.forRoot(),
     ThrottlerModule.forRoot([{
-      ttl: 60000, 
-      limit: 100, 
+      name: 'short',
+      ttl: 1000,
+      limit: 30, // Tăng lên 30 để Chatbot không bị chặn khi load nhiều card
+    }, {
+      name: 'medium',
+      ttl: 60000,
+      limit: 100, // Tăng lên 100 req / min
+    }, {
+      name: 'long',
+      ttl: 3600000,
+      limit: 1000, // 1000 req / hour
     }]),
     AuthModule,  
     UserModule,  
@@ -58,7 +86,10 @@ import { GHNModule } from './ghn/ghn.module';
     AddressModule,
     ReportModule,
     HealthModule,
+    BrandModule,
     GHNModule,
+    ReturnModule,
+    MaintenanceModule,
   ],
   controllers: [AppController],
   providers: [
@@ -75,6 +106,10 @@ import { GHNModule } from './ghn/ghn.module';
     {
       provide: APP_INTERCEPTOR,
       useClass: TimeoutInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: AuditInterceptor,
     },
   ],
   exports: [PrismaService],

@@ -1,4 +1,4 @@
-﻿import {
+import {
   Injectable,
   NotFoundException,
   BadRequestException,
@@ -12,43 +12,105 @@ import { UpdateCartItemDto } from './dto/update-cart-item.dto';
 import { RemoveCartItemDto } from './dto/remove-cart-item.dto';
 import { QueryCartDto } from './dto/query-cart.dto';
 import { Prisma, Cart, CartItem, ProductVariant } from '@prisma/client';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class CartService {
   constructor(
     private repository: CartRepository,
+    private prisma: PrismaService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
-  ) {}
+  ) {
+    console.log('[CartService] Initialized');
+  }
 
   async getCart(userId: number): Promise<any> {
-    
     const cacheKey = `cart:${userId}`;
-    let cart:
-      | (Cart & { cartItems: (CartItem & { variant: ProductVariant })[] })
-      | null
-      | undefined = await this.cacheManager.get(cacheKey);
+    let cart: any = await this.cacheManager.get(cacheKey);
 
-    if (cart) {
-      const total = cart.cartItems.reduce(
-        (sum, item) => sum + item.quantity * item.variant.price,
-        0,
-      );
-      return { ...cart, total };
+    if (!cart) {
+      cart = await this.repository.upsertCart(userId);
     }
-    
-    cart = await this.repository.findByUserId(userId);
 
-    if (!cart) throw new NotFoundException('Cart not found');
+    // Fetch active automatic discounts (Flash Sales)
+    const now = new Date();
+    const activeDiscounts = await this.prisma.discount.findMany({
+      where: {
+        isActive: true,
+        startDate: { lte: now },
+        AND: [
+          { OR: [{ endDate: null }, { endDate: { gte: now } }] },
+          { OR: [{ isFlashSale: true }, { code: "" }] },
+        ],
+      },
+      include: {
+        applicableToProducts: { select: { productId: true } },
+        applicableToCategories: { select: { categoryId: true } },
+      },
+    });
 
-    const total = cart.cartItems.reduce(
-      (sum, item) => sum + item.quantity * item.variant.price,
-      0,
-    );
-    const cartWithTotal = { ...cart, total };
+    const calculateDiscount = (item: any) => {
+      const variant = item.variant;
+      if (!variant) return item.variant?.price || 0;
+      
+      const discountedPrice = require('../common/utils/discount.util').calculateDiscountedPrice(
+        { ...variant, product: { categoryId: variant.product?.categoryId } },
+        activeDiscounts
+      );
+      return discountedPrice;
+    };
 
-    await this.cacheManager.set(cacheKey, cartWithTotal, 300);
-    
+    // Filter items and calculate totals with real-time pricing
+    const processedItems = (cart.cartItems || [])
+      .filter((item: any) => item && item.variant && item.variant.isActive && item.variant.product && !item.variant.product.deletedAt)
+      .map((item: any) => {
+        const discountedPrice = calculateDiscount(item);
+        return {
+          ...item,
+          discountedPrice,
+          subtotal: item.quantity * discountedPrice
+        };
+      });
+
+    const total = processedItems.reduce((sum: number, item: any) => sum + item.subtotal, 0);
+    const cartWithTotal = { ...cart, cartItems: processedItems, total };
+
+    await this.cacheManager.set(cacheKey, cartWithTotal, 300 * 1000); // 5 minutes in ms
     return cartWithTotal;
+  }
+
+  async sync(userId: number, items: Array<{ variantId: number; quantity: number }>): Promise<any> {
+    const cart = await this.repository.upsertCart(userId);
+    
+    if (items.length > 0) {
+      for (const item of items) {
+        try {
+          const existingItem = await this.repository.findCartItem(cart.id, item.variantId);
+          if (existingItem) {
+            // Merge: Add quantities
+            await this.repository.updateCartItem(
+              existingItem.id,
+              existingItem.quantity + item.quantity
+            );
+          } else {
+            // New item
+            const variant = await this.repository.findVariantById(item.variantId);
+            if (variant && variant.isActive && variant.stock >= item.quantity) {
+              await this.repository.createCartItem({
+                cart: { connect: { id: cart.id } },
+                variant: { connect: { id: item.variantId } },
+                quantity: item.quantity,
+              });
+            }
+          }
+        } catch (error) {
+          // Skip invalid variants or other errors during sync
+        }
+      }
+    }
+
+    await this.cacheManager.del(`cart:${userId}`);
+    return this.getCart(userId);
   }
 
   async addItem(userId: number, dto: AddCartItemDto): Promise<any> {
@@ -65,9 +127,13 @@ export class CartService {
     
     let updatedItem;
     if (existingItem) {
+      const totalRequested = existingItem.quantity + dto.quantity;
+      if (variant.stock < totalRequested) {
+        throw new BadRequestException(`Insufficient stock. You already have ${existingItem.quantity} in cart, and the warehouse only has ${variant.stock} left.`);
+      }
       updatedItem = await this.repository.updateCartItem(
         existingItem.id,
-        existingItem.quantity + dto.quantity,
+        totalRequested,
       );
     } else {
       updatedItem = await this.repository.createCartItem({
@@ -91,7 +157,11 @@ export class CartService {
     if (!cart) throw new NotFoundException('Cart not found');
     const item = await this.repository.findCartItem(cart.id, variantId);
     if (!item) throw new NotFoundException('Item not found');
-    const updatedItem = await this.repository.updateCartItem(item.id, dto.quantity!);
+
+    if (dto.quantity !== undefined && dto.quantity <= 0) {
+      return this.removeItem(userId, { variantId });
+    }
+    const updatedItem = await this.repository.updateCartItem(item.id, dto.quantity ?? item.quantity);
 
     await this.cacheManager.del(`cart:${userId}`);
     return updatedItem;

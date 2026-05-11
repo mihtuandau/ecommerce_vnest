@@ -37,7 +37,7 @@ export class AuthController {
   ) {}
 
   @Post('register')
-  @Throttle({ default: { limit: 50, ttl: 300000 } })
+  @Throttle({ default: { limit: 5, ttl: 300000 } })
   async register(@Body() registerDto: RegisterDto) {
     return this.authService.register(registerDto);
   }
@@ -45,14 +45,21 @@ export class AuthController {
   @Post('verify-otp')
   @Throttle({ default: { limit: 10, ttl: 60000 } })
   async verifyOtp(
-    @Body() body: { email: string; code: string },
+    @Body() body: { email: string; code?: string; otp?: string },
     @Res() res: Response,
   ) {
-    const result = await this.authService.verifyOtp(body.email, body.code);
+    const code = body.code ?? body.otp;
+    if (!code) {
+      return res
+        .status(HttpStatus.BAD_REQUEST)
+        .json({ message: 'Verification code is required' });
+    }
+
+    const result = await this.authService.verifyOtp(body.email, code);
     
-    if (result.access_token) {
-      this.authService.setAuthCookie(res, result.access_token);
-      this.authService.setRefreshTokenCookie(res, result.refresh_token);
+    if (result.accessToken) {
+      this.authService.setAuthCookie(res, result.accessToken);
+      this.authService.setRefreshTokenCookie(res, result.refreshToken);
     }
 
     return res.json(result);
@@ -72,8 +79,8 @@ export class AuthController {
   ) {
 
     const result = await this.authService.registerInitialAdmin(registerAdminDto);
-    this.authService.setAuthCookie(res, result.access_token);
-    this.authService.setRefreshTokenCookie(res, result.refresh_token);
+    this.authService.setAuthCookie(res, result.accessToken);
+    this.authService.setRefreshTokenCookie(res, result.refreshToken);
 
     return res.status(HttpStatus.CREATED).json({
       user: result.user,
@@ -90,8 +97,8 @@ export class AuthController {
     @Res() res: Response,
   ) {
     const result = await this.authService.registerAdmin(registerAdminDto);
-    this.authService.setAuthCookie(res, result.access_token);
-    this.authService.setRefreshTokenCookie(res, result.refresh_token);
+    this.authService.setAuthCookie(res, result.accessToken);
+    this.authService.setRefreshTokenCookie(res, result.refreshToken);
 
     return res.status(HttpStatus.CREATED).json({
       user: result.user,
@@ -100,7 +107,7 @@ export class AuthController {
   }
 
   @Post('login')
-  @Throttle({ default: { limit: 100, ttl: 300000 } }) 
+  @Throttle({ default: { limit: 5, ttl: 300000 } }) 
   async login(@Body() loginDto: LoginDto, @Res() res: Response) {
     const user = await this.authService.validateUser(
       loginDto.email,
@@ -108,18 +115,19 @@ export class AuthController {
     );
     const result = await this.authService.login({ sub: user.id }, user);
 
-    this.authService.setAuthCookie(res, result.access_token);
-    this.authService.setRefreshTokenCookie(res, result.refresh_token);
+    this.authService.setAuthCookie(res, result.accessToken);
+    this.authService.setRefreshTokenCookie(res, result.refreshToken);
 
     return res.json({
       user: result.user,
-      access_token: result.access_token,
+      accessToken: result.accessToken,
       message: 'Login successful',
     });
   }
 
   @Post('logout')
-  async logout(@Res() res: Response) {
+  async logout(@Req() req: any, @Res() res: Response) {
+    await this.authService.logout(req.cookies?.refreshToken);
     this.authService.clearAuthCookie(res);
     return res.json({ message: 'Logout successful' });
   }
@@ -127,15 +135,16 @@ export class AuthController {
   @Post('refresh')
   @Throttle({ default: { limit: 10, ttl: 60000 } }) 
   async refreshToken(@Req() req: any, @Res() res: Response) {
-    const token = req.cookies?.refresh_token;
+    const token = req.cookies?.refreshToken;
     if (!token) {
       return res
         .status(HttpStatus.UNAUTHORIZED)
         .json({ message: 'No refresh token provided' });
     }
     const result = await this.authService.refreshAccessToken(token);
-    this.authService.setAuthCookie(res, result.access_token);
-    return res.json({ access_token: result.access_token, message: 'Token refreshed' });
+    this.authService.setAuthCookie(res, result.accessToken);
+    this.authService.setRefreshTokenCookie(res, result.refreshToken);
+    return res.json({ accessToken: result.accessToken, message: 'Token refreshed' });
   }
 
   @Post('forgot-password')
@@ -170,34 +179,20 @@ export class AuthController {
   async googleAuthRedirect(@Req() req: any, @Res() res: Response) {
     const user = req.user;
 
-    const payload = {
-      sub: user.userId,
-      email: user.email,
-      role: user.role,
-    };
+    // Sử dụng authService.login() để tạo đầy đủ accessToken + refreshToken
+    // và lưu refreshToken hash vào DB (hỗ trợ rotation/revoke).
+    const result = await this.authService.login({ sub: user.userId });
 
-    const token = this.jwtService.sign(payload, {
-      secret: process.env.JWT_SECRET,
-      expiresIn: '2h', 
-    });
+    this.authService.setAuthCookie(res, result.accessToken);
+    this.authService.setRefreshTokenCookie(res, result.refreshToken);
 
-    this.authService.setAuthCookie(res, token);
-
-    const permissions = await this.authService.getPermissionsByRole(user.role);
-
-    const userData = encodeURIComponent(
-      JSON.stringify({
-        id: user.userId,
-        email: user.email,
-        role: user.role,
-        permissions: permissions,
-      }),
-    );
-
-    const origins = (process.env.FRONTEND_URL || 'http://localhost:5173').split(',').map(o => o.trim());
+    const origins = (process.env.FRONTEND_URL || 'http://localhost:3000').split(',').map(o => o.trim());
     const frontendUrl = origins.find(o => o.includes('localhost')) || origins[0];
 
-    return res.redirect(`${frontendUrl}/login-success?user=${userData}`);
+    console.log(`Google Auth Redirecting to: ${frontendUrl}`);
+    const role = result.user?.role || user.role;
+    const redirectPath = role === 'ADMIN' ? '/admin' : '/';
+    return res.redirect(`${frontendUrl}${redirectPath}?auth_success=true`);
   }
 
   @Get('me')
@@ -210,6 +205,8 @@ export class AuthController {
       id: fullUser.id,
       email: fullUser.email,
       name: fullUser.name,
+      phone: fullUser.phone,
+      avatar: fullUser.avatar,
       role: fullUser.role,
       status: fullUser.status,
       createdAt: fullUser.createdAt,

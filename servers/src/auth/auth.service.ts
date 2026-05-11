@@ -18,7 +18,7 @@ export class AuthService {
   ) {}
 
   async register(dto: any) {
-    const { email, password, name } = dto;
+    const { email, password, name, phone } = dto;
     const existing = await this.userService.findByEmail(email);
     
     // Allow re-registration for PENDING users to refresh OTP/info
@@ -39,6 +39,7 @@ export class AuthService {
       verificationCode: verificationHash, 
       verificationExpires: expires, 
       name, 
+      phone,
       password // raw password
     };
     
@@ -93,7 +94,18 @@ export class AuthService {
 
   async validateUser(email: string, pass: string) {
     const u = await this.userService.findByEmail(email);
-    if (!u || !(await bcrypt.compare(pass, u.password)) || u.deletedAt) throw new UnauthorizedException('Thông tin không đúng.');
+    if (!u || u.deletedAt) throw new UnauthorizedException('Thông tin không đúng.');
+    
+    // Nếu là tài khoản mạng xã hội và chưa đặt mật khẩu local
+    if (u.provider !== 'LOCAL' && !u.password) {
+      throw new UnauthorizedException(`Vui lòng đăng nhập bằng ${u.provider}`);
+    }
+
+    // Kiểm tra mật khẩu (đảm bảo u.password không null trước khi so sánh)
+    if (!u.password || !(await bcrypt.compare(pass, u.password))) {
+      throw new UnauthorizedException('Thông tin không đúng.');
+    }
+
     if (u.status === UserStatus.PENDING) throw new UnauthorizedException('Chưa xác thực.');
     const { password: _, ...res } = u; return res;
   }
@@ -116,10 +128,12 @@ export class AuthService {
     // Dọn token cũ đã hết hạn của user (giữ tối đa 5 thiết bị)
     await this.cleanupOldTokens(u.id);
 
+    const { password, verificationCode, verificationExpires, resetPasswordToken, resetPasswordExpires, ...safeUser } = u;
+
     return {
-      access_token: this.jwtService.sign(common, { secret: process.env.JWT_SECRET, expiresIn: '2h' }),
-      refresh_token: refreshToken,
-      user: { ...u, permissions: await this.userService.getPermissionsByRole(u.role) }
+      accessToken: this.jwtService.sign(common, { secret: process.env.JWT_SECRET, expiresIn: '2h' }),
+      refreshToken,
+      user: { ...safeUser, permissions: await this.userService.getPermissionsByRole(u.role) }
     };
   }
 
@@ -127,7 +141,7 @@ export class AuthService {
     try {
       const p = this.jwtService.verify(refreshToken, { secret: process.env.JWT_REFRESH_SECRET });
 
-      // Kiểm tra token có trong DB và chưa bị revoke
+      // 1. Kiểm tra token có trong DB và chưa bị revoke
       const tokenHash = crypto.createHash('sha256').update(refreshToken).digest('hex');
       const stored = await this.prisma.refreshToken.findUnique({ where: { tokenHash } });
 
@@ -135,11 +149,39 @@ export class AuthService {
         throw new UnauthorizedException('Token đã hết hạn hoặc bị thu hồi');
       }
 
+      // 2. TOKEN ROTATION: Revoke token cũ ngay lập tức
+      await this.prisma.refreshToken.update({
+        where: { id: stored.id },
+        data: { revoked: true },
+      });
+
+      // 3. Tạo cặp token mới
       const u = await this.userService.findOne(p.sub);
       if (!u) throw new UnauthorizedException();
 
-      return { access_token: this.jwtService.sign({ sub: u.id, email: u.email, role: u.role }, { secret: process.env.JWT_SECRET, expiresIn: '2h' }) };
-    } catch { throw new UnauthorizedException(); }
+      const common = { sub: u.id, email: u.email, role: u.role };
+      const newAccessToken = this.jwtService.sign(common, { secret: process.env.JWT_SECRET, expiresIn: '2h' });
+      const newRefreshToken = this.jwtService.sign({ sub: u.id }, { secret: process.env.JWT_REFRESH_SECRET, expiresIn: '7d' });
+
+      // 4. Lưu token mới vào DB
+      const newTokenHash = crypto.createHash('sha256').update(newRefreshToken).digest('hex');
+      await this.prisma.refreshToken.create({
+        data: {
+          userId: u.id,
+          tokenHash: newTokenHash,
+          expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        },
+      });
+
+      await this.cleanupOldTokens(u.id);
+
+      return { 
+        accessToken: newAccessToken,
+        refreshToken: newRefreshToken 
+      };
+    } catch { 
+      throw new UnauthorizedException('Phiên đăng nhập không hợp lệ'); 
+    }
   }
 
   async logout(refreshToken?: string) {
@@ -217,33 +259,36 @@ export class AuthService {
     return { message: 'Success' };
   }
 
-  setAuthCookie(res: any, t: string) { 
-    res.cookie('access_token', t, { 
-      httpOnly: true, 
-      secure: process.env.NODE_ENV === 'production', 
-      sameSite: 'lax',
+  private getCookieOptions(maxAge: number) {
+    const isProduction = process.env.NODE_ENV === 'production';
+    return {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
       path: '/',
-      maxAge: 7200000 
+      maxAge,
+    } as const;
+  }
+
+  setAuthCookie(res: any, t: string) { 
+    res.cookie('accessToken', t, { 
+      ...this.getCookieOptions(7200000),
     }); 
   }
   setRefreshTokenCookie(res: any, t: string) { 
-    res.cookie('refresh_token', t, { 
-      httpOnly: true, 
-      secure: process.env.NODE_ENV === 'production', 
-      sameSite: 'lax',
-      path: '/',
-      maxAge: 604800000 
+    res.cookie('refreshToken', t, { 
+      ...this.getCookieOptions(604800000),
     }); 
   }
   clearAuthCookie(res: any) { 
-    // Xóa tất cả các biến thể tên để đảm bảo không bị sót
     const cookiesToClear = ['access_token', 'accessToken', 'refresh_token', 'refreshToken'];
+    const isProduction = process.env.NODE_ENV === 'production';
     cookiesToClear.forEach(c => res.cookie(c, '', { 
       maxAge: 0, 
       path: '/',
       httpOnly: true,
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production'
+      sameSite: isProduction ? 'none' : 'lax',
+      secure: isProduction,
     })); 
   }
 

@@ -12,6 +12,10 @@ import { UpdatePaymentStatusDto } from './dto/update-payment-status.dto';
 import { QueryPaymentDto } from './dto/query-payment.dto';
 import { PaymentCache } from './payment.cache';
 import * as PaymentHelper from './payment.helper';
+import * as OrderHelper from '../order/order.helper';
+import { Payment, Order } from '@prisma/client';
+
+type PaymentWithOrder = Payment & { order: Order };
 
 @Injectable()
 export class PaymentService {
@@ -44,20 +48,26 @@ export class PaymentService {
     let transactionId: string | null = null;
     let paymentLink: string | null = null;
 
+    console.log(`[PaymentService] Creating payment for order ${order.orderCode}, Method: ${data.method}`);
+
     if (data.method === 'VNPAY') {
-      // Generate unique transaction ID to prevent collision under high load
-      // Using timestamp + random string instead of just Date.now()
       const timestamp = Date.now();
       const randomSuffix = Math.random().toString(36).substring(2, 11);
       transactionId = `VNP${timestamp}_${randomSuffix}`;
+      
       paymentLink = this.vnpayService.createPaymentUrl({
         amount: order.total,
         orderInfo: `Thanh toan don hang ${order.orderCode}`,
         vnp_TxnRef: order.orderCode as string,
         ipAddr: ipAddr,
       });
+
+      console.log(`[PaymentService] VNPay Link Generated: ${paymentLink ? 'YES' : 'NO'}`);
+      
+      if (!paymentLink) {
+        throw new BadRequestException('Không thể khởi tạo liên kết thanh toán VNPay. Vui lòng kiểm tra cấu hình hệ thống.');
+      }
     } else {
-      // Các phương thức khác (COD...)
       transactionId = PaymentHelper.generateTransactionId(data.method);
     }
 
@@ -65,7 +75,7 @@ export class PaymentService {
     if (existingPayment) {
       payment = await this.repository.update(existingPayment.id, {
         method: data.method,
-        status: 'PENDING',
+        status: data.status || 'PENDING',
         amount: order.total,
         transactionId,
         paymentLink,
@@ -74,7 +84,7 @@ export class PaymentService {
       payment = await this.repository.create({
         order: { connect: { id: data.orderId } },
         method: data.method,
-        status: 'PENDING',
+        status: data.status || 'PENDING',
         amount: order.total,
         transactionId,
         paymentLink,
@@ -83,10 +93,13 @@ export class PaymentService {
 
     await this.cacheService.clearPaymentCaches();
     
-    return PaymentHelper.serializePayment({
-      ...payment,
-      paymentLink,
-    });
+    // TRẢ VỀ ĐỐI TƯỢNG PHẲNG (PLAIN OBJECT) - TRÁNH SERIALIZATION LÀM MẤT DỮ LIỆU
+    const serializedPayment = PaymentHelper.serializePayment(payment);
+    
+    return {
+      ...serializedPayment,
+      paymentLink: paymentLink, // Đảm bảo luôn có ở cấp này
+    };
   }
 
   async updateStatus(id: number, data: UpdatePaymentStatusDto) {
@@ -102,18 +115,6 @@ export class PaymentService {
       payment.order.orderItems,
     );
 
-    if (data.status === 'REFUNDED') {
-      this.logger.log(`Payment ${id} REFUNDED - Restoring stock`);
-      for (const item of payment.order.orderItems) {
-        await this.repository.incrementVariantStock(item.variantId, item.quantity);
-      }
-      if (payment.order.status === 'DELIVERED') {
-        for (const item of payment.order.orderItems) {
-          await this.repository.decrementProductSoldCount(item.variant.productId, item.quantity);
-        }
-      }
-    }
-
     await this.cacheService.clearRelatedCaches(id, payment.orderId);
     return PaymentHelper.serializePayment(updatedPayment);
   }
@@ -122,32 +123,34 @@ export class PaymentService {
    * Initiate refund for a successful payment
    * This should be called when order is cancelled to request refund from payment gateway
    */
-  async initiateRefund(paymentId: number) {
+  async initiateRefund(paymentId: number, amount?: number) {
     const payment = await this.repository.findById(paymentId);
     if (!payment) {
       throw new NotFoundException('Payment not found');
     }
 
-    if (payment.status !== 'SUCCESS') {
-      throw new BadRequestException('Can only refund successful payments');
+    if (payment.status !== 'SUCCESS' && payment.status !== 'REFUNDED') {
+      throw new BadRequestException('Can only refund successful or partially refunded payments');
     }
+
+    const refundValue = amount || payment.amount;
 
     try {
       // For VNPAY/MOMO/PAYOS - mark as REFUNDED
       // In production, this would call the actual refund API on the payment gateway
       if (['VNPAY', 'MOMO', 'PAYOS'].includes(payment.method)) {
         // TODO: Implement actual refund API calls for each gateway
-        // For now, just mark payment as refunded
         await this.repository.update(paymentId, {
           status: 'REFUNDED',
+          refundAmount: (payment.refundAmount || 0) + refundValue,
         });
-        this.logger.log(`Refund initiated for ${payment.method} payment ${paymentId}`);
+        this.logger.log(`Refund of ${refundValue} initiated for ${payment.method} payment ${paymentId}`);
       } else if (payment.method === 'CASH' || payment.method === 'CARD') {
-        // For cash/card, just mark as refunded since no online refund needed
         await this.repository.update(paymentId, {
           status: 'REFUNDED',
+          refundAmount: (payment.refundAmount || 0) + refundValue,
         });
-        this.logger.log(`Refund marked for ${payment.method} payment ${paymentId}`);
+        this.logger.log(`Refund of ${refundValue} marked for ${payment.method} payment ${paymentId}`);
       }
 
       await this.cacheService.clearPaymentCaches();
@@ -172,14 +175,19 @@ export class PaymentService {
 
     const status = responseCode === '00' ? 'SUCCESS' : 'FAILED';
     
+    let updatedPayment = payment;
     if (payment.status === 'PENDING') {
-      await this.updateStatus(payment.id, { status });
+      updatedPayment = await this.updateStatus(payment.id, { status });
     }
     
     return {
+      success: status === 'SUCCESS',
       isValid: result.isValid,
-      payment: PaymentHelper.serializePayment(payment),
-      order: payment.order,
+      payment: PaymentHelper.serializePayment(updatedPayment),
+      order: {
+        ...updatedPayment.order,
+        totalAmount: updatedPayment.amount, // Khớp với frontend mong đợi
+      },
     };
   }
 
@@ -220,14 +228,45 @@ export class PaymentService {
 
 
 
-  async findOne(id: number) {
-    let payment = await this.cacheService.getPayment(id);
-    if (payment) return PaymentHelper.serializePayment(payment);
+  async findOne(id: number, requester?: { userId: number; role: string }) {
+    // ❌ [SECURITY UPDATE] Bypass hoàn toàn Cache cho Payment Detail vì tính chất Real-time (Tránh lỗi Stale State gây tranh cãi tài chính)
+    const payment = await this.repository.findById(id);
 
-    payment = await this.repository.findById(id);
-    if (payment) await this.cacheService.setPayment(id, payment);
+    if (!payment) {
+      throw new NotFoundException('Payment not found');
+    }
+
+    // Security Check: Only Admin or Owner can view
+    const isAdmin = requester?.role === 'ADMIN';
+    const pWithOrder = payment as unknown as PaymentWithOrder;
+    const isOwner = requester?.userId === pWithOrder.order?.userId;
+
+    if (requester && !isAdmin && !isOwner) {
+      this.logger.warn(`User ${requester.userId} attempted to view payment ${id} belonging to user ${pWithOrder.order?.userId}`);
+      throw new BadRequestException('You do not have permission to view this payment');
+    }
 
     return PaymentHelper.serializePayment(payment);
+  }
+
+  async cancelPayment(id: number, requester: { userId: number; role: string }) {
+    const payment = await this.repository.findById(id);
+    if (!payment) throw new NotFoundException('Payment not found');
+
+    const isAdmin = requester.role === 'ADMIN';
+    const pWithOrder = payment as unknown as PaymentWithOrder;
+    const isOwner = requester.userId === pWithOrder.order?.userId;
+
+    if (!isAdmin && !isOwner) {
+      throw new BadRequestException('You do not have permission to cancel this payment');
+    }
+
+    if (payment.status !== 'PENDING') {
+      throw new BadRequestException('Only pending payments can be cancelled');
+    }
+
+    const updated = await this.updateStatus(id, { status: 'CANCELLED' });
+    return updated;
   }
 
   async findAll(query: QueryPaymentDto) {

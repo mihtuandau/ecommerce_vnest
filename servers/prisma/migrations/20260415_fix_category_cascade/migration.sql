@@ -10,6 +10,9 @@ WHERE "categoryId" IS NOT NULL
 -- Add constraint to ensure referential integrity going forward
 -- This allows NULL but ensures valid categories are referenced
 ALTER TABLE "Product"
+DROP CONSTRAINT IF EXISTS "Product_categoryId_fkey";
+
+ALTER TABLE "Product"
 ADD CONSTRAINT "Product_categoryId_fkey" 
 FOREIGN KEY ("categoryId") REFERENCES "Category"("id") 
 ON DELETE SET NULL;

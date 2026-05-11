@@ -1,4 +1,4 @@
-﻿import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../common/guards/auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
@@ -14,13 +14,13 @@ export class DashboardController {
   constructor(private dashboardService: DashboardService) {}
 
   @Get('stats')
-  @Permissions('report.view')
+  @Permissions('dashboard.view')
   getStats() {
     return this.dashboardService.getStats();
   }
 
   @Get('revenue')
-  @Permissions('report.view')
+  @Permissions('dashboard.view')
   @ApiQuery({ name: 'startDate', required: false })
   @ApiQuery({ name: 'endDate', required: false })
   @ApiQuery({ name: 'year', required: false, type: Number })
@@ -29,15 +29,21 @@ export class DashboardController {
   }
 
   @Get('recent-orders')
-  @Permissions('report.view')
+  @Permissions('dashboard.view')
   getRecentOrders() {
     return this.dashboardService.getRecentOrders();
   }
 
   @Get('top-products')
-  @Permissions('report.view')
+  @Permissions('dashboard.view')
   getTopProducts() {
     return this.dashboardService.getTopProducts();
+  }
+
+  @Get('pending-reviews')
+  @Permissions('dashboard.view')
+  getPendingReviews() {
+    return this.dashboardService.getPendingReviews();
   }
 }
 

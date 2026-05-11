@@ -1,4 +1,4 @@
-﻿import {
+import {
   Controller,
   Get,
   Post,
@@ -64,6 +64,22 @@ export class ReviewController {
     return review;
   }
 
+  @Get('my-reviews')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  async getMyReviews(
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+    @Req() req?: any,
+  ) {
+    const userId = req.user.userId;
+    return this.reviewService.getMyReviews(
+      userId,
+      page ? +page : 1,
+      limit ? +limit : 10,
+    );
+  }
+
   @Get('product/:productId')
   async getProductReviews(
     @Param('productId') productId: string,
@@ -75,6 +91,11 @@ export class ReviewController {
       page ? +page : 1,
       limit ? +limit : 10,
     );
+  }
+
+  @Get('product/:productId/ai-summary')
+  async getAiReviewSummary(@Param('productId') productId: string) {
+    return this.reviewService.getAiReviewSummary(+productId);
   }
 
   @Put(':id')
@@ -105,11 +126,13 @@ export class ReviewController {
     @Query('page') page?: string,
     @Query('limit') limit?: string,
     @Query('productId') productId?: string,
+    @Query('userId') userId?: string,
   ) {
     return this.reviewService.getAllReviews(
       page ? +page : 1,
       limit ? +limit : 20,
       productId ? +productId : undefined,
+      userId ? +userId : undefined,
     );
   }
 }

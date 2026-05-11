@@ -1,6 +1,12 @@
-﻿import { Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { DashboardRepository } from './dashboard.repository';
 import { ReportQueryDto } from '../report/dto/report-query.dto';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 @Injectable()
 export class DashboardService {
@@ -26,6 +32,9 @@ export class DashboardService {
       todayOrders,
       yesterdayOrders,
       lowStockCount,
+      returnRequestedOrders,
+      returnedOrders,
+      pendingReviewsCount,
     ] = await Promise.all([
       this.repository.getTotalUsers(),
       this.repository.getTotalProducts(),
@@ -38,13 +47,16 @@ export class DashboardService {
       this.repository.getOrderCountByStatus('CANCELLED'),
       this.repository.getTotalCustomers(),
       this.repository.getTotalRevenue(),
-      this.repository.getRevenueByDate(new Date()),
-      this.repository.getRevenueByDate(new Date(Date.now() - 86400000)),
-      this.repository.getNewUsersCount(new Date()),
-      this.repository.getNewUsersCount(new Date(Date.now() - 86400000)),
-      this.repository.getOrderCountByDate(new Date()),
-      this.repository.getOrderCountByDate(new Date(Date.now() - 86400000)),
+      this.repository.getRevenueByDate(dayjs().tz('Asia/Ho_Chi_Minh').toDate()),
+      this.repository.getRevenueByDate(dayjs().tz('Asia/Ho_Chi_Minh').subtract(1, 'day').toDate()),
+      this.repository.getNewUsersCount(dayjs().tz('Asia/Ho_Chi_Minh').toDate()),
+      this.repository.getNewUsersCount(dayjs().tz('Asia/Ho_Chi_Minh').subtract(1, 'day').toDate()),
+      this.repository.getOrderCountByDate(dayjs().tz('Asia/Ho_Chi_Minh').toDate()),
+      this.repository.getOrderCountByDate(dayjs().tz('Asia/Ho_Chi_Minh').subtract(1, 'day').toDate()),
       this.repository.getLowStockCount(10),
+      this.repository.getOrderCountByStatus('RETURN_REQUESTED'),
+      this.repository.getOrderCountByStatus('RETURNED'),
+      this.repository.getPendingReviewsCount(),
     ]);
 
     const calculateChange = (current: number, previous: number) => {
@@ -74,6 +86,8 @@ export class DashboardService {
         shipped: shippedOrders,
         delivered: deliveredOrders,
         cancelled: cancelledOrders,
+        returned: returnedOrders,
+        returning: returnRequestedOrders,
         today: todayOrders,
         change: calculateChange(todayOrders, yesterdayOrders),
       },
@@ -83,7 +97,14 @@ export class DashboardService {
         change: calculateChange(todayRevenue, yesterdayRevenue),
         currency: 'VND',
       },
+      reviews: {
+        pendingCount: pendingReviewsCount,
+      },
     };
+  }
+
+  async getPendingReviews(limit: number = 5) {
+    return this.repository.getPendingReviews(limit);
   }
 
   async getRevenueAnalytics(query: ReportQueryDto) {
@@ -99,26 +120,28 @@ export class DashboardService {
       }));
 
       orders.forEach((item: any) => {
-        const date = new Date(item.createdAt);
-        const vnTime = new Date(
-          date.toLocaleString('en-US', { timeZone: 'Asia/Ho_Chi_Minh' }),
-        );
-        const month = vnTime.getMonth();
-        monthlyData[month].revenue += Number(item.subtotal) || 0;
+        const vnTime = dayjs(item.payment?.updatedAt || item.createdAt).tz('Asia/Ho_Chi_Minh');
+        const month = vnTime.month();
+        const subtotal = Number(item.subtotal) || 0;
+        const discount = Number(item.discountAmount) || 0;
+        const netRevenue = subtotal - discount;
+        
+        monthlyData[month].revenue += netRevenue;
         monthlyData[month].orders += 1;
       });
 
       if (!query.startDate && !query.endDate) {
+        const vnNow = dayjs().tz('Asia/Ho_Chi_Minh');
         const dailyData = await this.getDailyData(
-          now.getFullYear(),
-          now.getMonth(),
+          vnNow.year(),
+          vnNow.month(),
         );
         return {
           type: 'summary',
           monthly: monthlyData,
           daily: dailyData,
-          year: now.getFullYear(),
-          month: now.getMonth() + 1,
+          year: vnNow.year(),
+          month: vnNow.month() + 1,
         };
       }
 
@@ -128,39 +151,29 @@ export class DashboardService {
     const startDateStr = query.startDate as string;
     const endDateStr = query.endDate as string;
 
-    const start = new Date(startDateStr);
-    const end = new Date(endDateStr);
-    end.setHours(23, 59, 59, 999);
+    const start = dayjs(startDateStr).startOf('day');
+    const end = dayjs(endDateStr).endOf('day');
 
-    const diffDays = Math.ceil(
-      (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24),
-    );
+    const diffDays = end.diff(start, 'day');
 
-    const orders = await this.repository.getRevenueByDateRange(start, end);
+    const orders = await this.repository.getRevenueByDateRange(start.toDate(), end.toDate());
 
     if (diffDays > 62) {
       const dataMap = new Map();
 
-      const current = new Date(start);
-      while (current <= end) {
-        const key = `T${current.getMonth() + 1}/${current.getFullYear()}`;
+      orders.forEach((item: any) => {
+        const vnTime = dayjs(item.payment?.updatedAt || item.createdAt).tz('Asia/Ho_Chi_Minh');
+        const key = `T${vnTime.month() + 1}/${vnTime.year()}`;
         if (!dataMap.has(key)) {
           dataMap.set(key, { label: key, revenue: 0, orders: 0 });
         }
-        current.setMonth(current.getMonth() + 1);
-      }
-
-      orders.forEach((item: any) => {
-        const date = new Date(item.createdAt);
-        const vnTime = new Date(
-          date.toLocaleString('en-US', { timeZone: 'Asia/Ho_Chi_Minh' }),
-        );
-        const key = `T${vnTime.getMonth() + 1}/${vnTime.getFullYear()}`;
-        if (dataMap.has(key)) {
-          const entry = dataMap.get(key);
-          entry.revenue += Number(item.subtotal) || 0;
-          entry.orders += 1;
-        }
+        const entry = dataMap.get(key);
+        const total = Number(item.total) || 0;
+        const refund = Number(item.payment?.refundAmount) || 0;
+        const netRevenue = total - refund;
+        
+        entry.revenue += netRevenue;
+        entry.orders += 1;
       });
 
       return {
@@ -174,20 +187,20 @@ export class DashboardService {
     const dataMap = new Map();
 
     orders.forEach((item: any) => {
-      const date = new Date(item.createdAt);
-      const vnTime = new Date(
-        date.toLocaleString('en-US', { timeZone: 'Asia/Ho_Chi_Minh' }),
-      );
-
-      const label = `${vnTime.getDate()}/${vnTime.getMonth() + 1}`;
+      const vnTime = dayjs(item.payment?.updatedAt || item.createdAt).tz('Asia/Ho_Chi_Minh');
+      const label = vnTime.format('DD/MM');
 
       if (!dataMap.has(label)) {
-        const sortKey = new Date(vnTime).setHours(0, 0, 0, 0);
+        const sortKey = vnTime.startOf('day').valueOf();
         dataMap.set(label, { label, revenue: 0, orders: 0, sortKey });
       }
 
       const entry = dataMap.get(label);
-      entry.revenue += Number(item.subtotal) || 0;
+      const subtotal = Number(item.subtotal) || 0;
+      const discount = Number(item.discountAmount) || 0;
+      const netRevenue = subtotal - discount;
+      
+      entry.revenue += netRevenue;
       entry.orders += 1;
     });
 
@@ -207,24 +220,24 @@ export class DashboardService {
     const dataMap = new Map();
 
     orders.forEach((item: any) => {
-      const date = new Date(item.createdAt);
-      const vnTime = new Date(
-        date.toLocaleString('en-US', { timeZone: 'Asia/Ho_Chi_Minh' }),
-      );
-
-      const label = `${vnTime.getDate()}/${vnTime.getMonth() + 1}`;
+      const vnTime = dayjs(item.payment?.updatedAt || item.createdAt).tz('Asia/Ho_Chi_Minh');
+      const label = vnTime.format('DD/MM');
 
       if (!dataMap.has(label)) {
         dataMap.set(label, {
           label,
           revenue: 0,
           orders: 0,
-          day: vnTime.getDate(),
+          day: vnTime.date(),
         });
       }
 
       const entry = dataMap.get(label);
-      entry.revenue += Number(item.subtotal) || 0;
+      const subtotal = Number(item.subtotal) || 0;
+      const discount = Number(item.discountAmount) || 0;
+      const netRevenue = subtotal - discount;
+      
+      entry.revenue += netRevenue;
       entry.orders += 1;
     });
 
@@ -241,55 +254,76 @@ export class DashboardService {
     const productMap = new Map<
       number,
       {
-        product: any;
-        totalSold: number;
+        id: number;
+        productName: string;
+        image: string;
+        totalQuantity: number;
         totalRevenue: number;
         orderCount: number;
       }
     >();
 
     orderItems.forEach((item) => {
-      const product = item.variant.product;
-      const order = (item as any).order;
-      const productId = product.id;
+      const variant = item.variant;
+      if (!variant) return; 
       
-      const itemRevenue = Number(item.price) * item.quantity;
+      const product = variant.product;
+      if (!product) return; 
+      
+      const productId = product.id;
+      const order = item.order as any;
+      if (!order) return;
+      
+      const returnedQty = (order.returnRequests || [])
+        .filter((r: any) => r.status === 'RECEIVED' || r.status === 'COMPLETED')
+        .reduce((sum: number, r: any) => {
+          const rItems = (r.returnItems || []);
+          const rItem = rItems.find((ri: any) => ri.orderItemId === item.id);
+          return sum + (rItem?.quantity || 0);
+        }, 0);
+
+      const netQuantity = (item.quantity || 0) - returnedQty;
+      const price = Number(item.price) || 0;
+      const netRevenue = price * netQuantity;
+      
+      if (netQuantity <= 0) return; 
 
       const existing = productMap.get(productId);
-
       if (existing) {
-        existing.totalSold += item.quantity;
-        existing.totalRevenue += itemRevenue;
+        existing.totalQuantity += netQuantity;
+        existing.totalRevenue += netRevenue;
         existing.orderCount += 1;
       } else {
+        const images = (product as any).images || [];
         const thumbnail =
-          (product as any).images?.find((img: any) => img.isThumbnail)?.url ||
-          (product as any).images?.[0]?.url;
+          images.find((img: any) => img.isThumbnail)?.url ||
+          images[0]?.url || "";
 
         productMap.set(productId, {
-          product: {
-            id: product.id,
-            name: product.name,
-            thumbnail: thumbnail,
-            price: item.price,
-          },
-          totalSold: item.quantity,
-          totalRevenue: itemRevenue,
+          id: productId,
+          productName: product.name || "N/A",
+          image: thumbnail,
+          totalQuantity: netQuantity,
+          totalRevenue: netRevenue,
           orderCount: 1,
         });
       }
     });
 
-    const topProducts = Array.from(productMap.values())
-      .sort((a, b) => b.totalSold - a.totalSold)
+    const topSelling = Array.from(productMap.values())
+      .filter(p => p.totalQuantity > 0) 
+      .sort((a, b) => b.totalQuantity - a.totalQuantity)
       .slice(0, limit);
 
-    return topProducts;
+    // Fetch real ratings for top products
+    const productIds = topSelling.map(p => p.id);
+    const ratings = await this.repository.getProductRatings(productIds);
+
+    const ratingMap = new Map(ratings.map((r: any) => [r.productId, r._avg.rating]));
+
+    return topSelling.map(p => ({
+      ...p,
+      rating: parseFloat((Number(ratingMap.get(p.id)) || 0).toFixed(1))
+    }));
   }
 }
-
-
-
-
-
-

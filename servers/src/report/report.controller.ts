@@ -1,4 +1,4 @@
-﻿import {
+import {
   Controller,
   Get,
   Query,
@@ -13,6 +13,7 @@ import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
 import { ReportService } from './report.service';
 import { ReportQueryDto } from './dto/report-query.dto';
+import { Permissions } from '../common/decorators/permissions.decorator';
 
 @ApiTags('Reports')
 @ApiBearerAuth('Authorization')
@@ -22,7 +23,7 @@ export class ReportController {
   constructor(private reportService: ReportService) {}
 
   @Get('revenue')
-  @Roles('ADMIN')
+  @Permissions('report.view')
   @ApiOperation({ summary: 'Get revenue report by period (daily/monthly/yearly)' })
   @ApiQuery({ name: 'startDate', required: false, description: 'Start date (YYYY-MM-DD)' })
   @ApiQuery({ name: 'endDate', required: false, description: 'End date (YYYY-MM-DD)' })
@@ -34,14 +35,14 @@ export class ReportController {
   }
 
   @Get('orders')
-  @Roles('ADMIN')
+  @Permissions('report.view')
   @ApiOperation({ summary: 'Get orders report by status' })
   getOrdersReport(@Query() query: ReportQueryDto) {
     return this.reportService.getOrdersReport(query);
   }
 
   @Get('top-products')
-  @Roles('ADMIN')
+  @Permissions('report.view')
   @ApiOperation({ summary: 'Get top selling products' })
   @ApiQuery({ name: 'limit', required: false, description: 'Number of products to return', type: Number })
   getTopProductsReport(@Query() query: ReportQueryDto) {
@@ -49,7 +50,7 @@ export class ReportController {
   }
 
   @Get('top-categories')
-  @Roles('ADMIN')
+  @Permissions('report.view')
   @ApiOperation({ summary: 'Get top selling categories' })
   @ApiQuery({ name: 'limit', required: false, description: 'Number of categories to return', type: Number })
   getTopCategoriesReport(@Query() query: ReportQueryDto) {
@@ -57,21 +58,21 @@ export class ReportController {
   }
 
   @Get('customers')
-  @Roles('ADMIN')
+  @Permissions('report.view')
   @ApiOperation({ summary: 'Get customer statistics' })
   getCustomerReport(@Query() query: ReportQueryDto) {
     return this.reportService.getCustomerReport(query);
   }
 
   @Get('summary')
-  @Roles('ADMIN')
+  @Permissions('report.view')
   @ApiOperation({ summary: 'Get comprehensive summary report' })
   getSummaryReport(@Query() query: ReportQueryDto) {
     return this.reportService.getSummaryReport(query);
   }
 
   @Get('export')
-  @Roles('ADMIN')
+  @Permissions('report.view')
   @ApiOperation({ summary: 'Export report to Excel' })
   async exportReport(@Query() query: ReportQueryDto, @Res() res: Response) {
     const buffer = await this.reportService.exportToExcel(query);

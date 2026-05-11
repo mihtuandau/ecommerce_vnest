@@ -1,4 +1,4 @@
-﻿import {
+import {
   Controller,
   Get,
   Post,
@@ -37,20 +37,25 @@ export class UserController {
   @Get()
   @Permissions('user.view')
   async findAll(@Query() query: QueryUserDto) {
-    const users = await this.userService.findAll(query);
-
-    return users;
+    return this.userService.findAll(query);
   }
 
+  // ── Must come BEFORE @Get(':id') ──────────────────────────────────
   @Get('profile')
   async getProfile(@Req() req: any) {
     const userId = req.user.userId;
     const user = await this.userService.findOne(userId);
-    if (!user) {
-      throw new Error('User not found');
-    }
-    const { password, ...userWithoutPassword } = user;
-    return { user: userWithoutPassword };
+    if (!user) throw new Error('User not found');
+
+    const {
+      password, verificationCode, verificationExpires,
+      resetPasswordToken, resetPasswordExpires,
+      ...safeUser
+    } = user;
+
+    // Always return fresh permissions from DB so client stays in sync
+    const permissions = await this.userService.getPermissionsByRole(user.role);
+    return { user: { ...safeUser, permissions } };
   }
 
   @Put('profile')
@@ -78,9 +83,7 @@ export class UserController {
     }
 
     const user = await this.userService.findOne(id);
-    if (!user) {
-      throw new Error('User not found');
-    }
+    if (!user) throw new Error('User not found');
 
     const { password, ...userWithoutPassword } = user;
     return userWithoutPassword;
@@ -89,6 +92,10 @@ export class UserController {
   @Post()
   @Permissions('user.manage')
   async create(@Body() createUserDto: CreateUserDto, @Req() req: any) {
+    // SECURITY: Only real ADMIN can create another ADMIN
+    if (createUserDto.role === 'ADMIN' && req.user.role !== 'ADMIN') {
+      throw new ForbiddenException('Chỉ quản trị viên cấp cao mới có quyền tạo tài khoản Admin');
+    }
     const created = await this.userService.create(createUserDto);
     await this.auditLogService.write({
       action: 'USER_CREATE',
@@ -110,28 +117,29 @@ export class UserController {
     const userRole = req.user.role;
     const permissions = req.user.permissions || [];
 
-    
     const isStaff = userRole === 'ADMIN' || permissions.includes('user.manage');
     const isSelf = userId === id;
 
     if (!isStaff && !isSelf) {
       throw new ForbiddenException('Bạn không có quyền cập nhật người dùng này');
     }
-    
-    
+
+    // SECURITY: Only a real ADMIN can assign the ADMIN role to anyone.
+    // Even if a staff has 'user.manage', they cannot create/promote someone to ADMIN.
+    if (updateUserDto.role === 'ADMIN' && userRole !== 'ADMIN') {
+      throw new ForbiddenException('Chỉ quản trị viên cấp cao mới có quyền cấp quyền Admin');
+    }
+
     if (!isStaff) {
       delete updateUserDto.role;
     }
 
-    
     const updatedUser = await this.userService.update(id, updateUserDto);
     await this.auditLogService.write({
       action: 'USER_UPDATE',
       actorId: req.user?.userId,
       targetUserId: id,
-      details: {
-        fields: Object.keys(updateUserDto || {}),
-      },
+      details: { fields: Object.keys(updateUserDto || {}) },
     });
     const { password, ...userWithoutPassword } = updatedUser;
     return {
@@ -191,9 +199,3 @@ export class UserController {
     };
   }
 }
-
-
-
-
-
-
