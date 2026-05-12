@@ -28,7 +28,6 @@ import { DetailItems } from "./detail/DetailItems";
 import { GuestDetailHeader } from "./guest-detail/GuestDetailHeader";
 import { GuestDetailSidebar } from "./guest-detail/GuestDetailSidebar";
 import { RequestReturnModal } from "./detail/RequestReturnModal";
-import { PrintInvoice } from "../admin/detail/PrintInvoice";
 
 const statusConfig: Record<string, { label: string; color: string; icon: any }> = {
   [OrderStatus.PENDING]: { label: "Chờ xử lý", color: "text-slate-600 bg-slate-50 border-slate-100", icon: Clock },

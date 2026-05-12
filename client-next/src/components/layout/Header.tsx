@@ -44,6 +44,7 @@ export function Header({ initialHasToken }: { initialHasToken?: boolean }) {
   const { data: categories } = useCategories({ tree: 'true' });
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const router = useRouter();
   
   const [catOpen, setCatOpen]       = useState(false);
   const [activeCategory, setActiveCategory] = useState<number | null>(null);
