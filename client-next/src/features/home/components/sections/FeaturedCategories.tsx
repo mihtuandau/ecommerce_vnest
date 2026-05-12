@@ -33,7 +33,7 @@ export function FeaturedCategories() {
 
   return (
     <div className="space-y-12 md:space-y-16 py-4 overflow-hidden">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-4 sm:px-6 lg:px-8 mb-8 md:mb-12">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 md:mb-12">
         <div className="space-y-4">
           <div className="space-y-4">
             <h2 className="text-3xl md:text-5xl font-bold text-primary tracking-tighter leading-[1.1]">

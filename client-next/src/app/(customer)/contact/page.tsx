@@ -2,7 +2,7 @@ import React from "react";
 
 export default function ContactPage() {
   return (
-    <div className="max-w-[1000px] mx-auto py-12 md:py-20 px-4 sm:px-6">
+    <div className="max-w-5xl mx-auto py-10 md:py-16 px-4 sm:px-6">
       <header className="mb-12 border-b border-slate-100 pb-8">
         <h1 className="text-2xl font-bold text-slate-900 mb-2">Thông tin liên hệ</h1>
         <p className="text-slate-500 text-sm">Chúng tôi luôn sẵn sàng hỗ trợ quý khách</p>
@@ -31,15 +31,15 @@ export default function ContactPage() {
           <h2 className="font-bold text-slate-900 mb-6">Gửi yêu cầu trực tuyến</h2>
           <form className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Họ và tên</label>
+              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Họ và tên</label>
               <input type="text" className="w-full px-4 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-slate-400" />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Số điện thoại</label>
+              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Số điện thoại</label>
               <input type="text" className="w-full px-4 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-slate-400" />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Nội dung</label>
+              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Nội dung</label>
               <textarea rows={4} className="w-full px-4 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-slate-400"></textarea>
             </div>
             <button type="button" className="px-6 py-2 bg-slate-900 text-white font-bold text-sm rounded-lg hover:bg-slate-800 transition-colors">

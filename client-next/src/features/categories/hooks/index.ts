@@ -7,7 +7,7 @@ import { useToast } from "@/hooks/useToast";
 
 export function useCategories(params?: Record<string, any>) {
   return useQuery({
-    queryKey: queryKeys.categories.all,
+    queryKey: [...queryKeys.categories.all, params],
     queryFn: () => categoriesApi.getCategories(params),
   });
 }

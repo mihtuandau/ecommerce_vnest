@@ -3,6 +3,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
 import { ProductRepository } from './product.repository';
 import { UploadService } from '../upload/upload.service';
+import { CategoryService } from '../category/category.service';
 import { buildCacheKey } from '../common/utils/cache-key.util';
 import { createClient } from 'redis';
 
@@ -13,6 +14,7 @@ export class ProductService implements OnModuleInit {
     private repo: ProductRepository,
     @Inject(CACHE_MANAGER) private cache: Cache,
     private uploadService: UploadService,
+    private categoryService: CategoryService,
   ) {}
 
   async onModuleInit() {
@@ -175,7 +177,10 @@ export class ProductService implements OnModuleInit {
         { brand: { name: { contains: searchTrimmed, mode: 'insensitive' } } },
       ];
     }
-    if (categoryId) where.categoryId = Number(categoryId);
+    if (categoryId) {
+      const allCategoryIds = await this.categoryService.getChildIds(Number(categoryId));
+      where.categoryId = { in: allCategoryIds };
+    }
     if (brandId) where.brandId = Number(brandId);
     if (minPrice || maxPrice) {
       where.basePrice = {};

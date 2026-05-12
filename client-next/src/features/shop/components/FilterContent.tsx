@@ -1,8 +1,10 @@
 "use client";
 
 import React from "react";
-import { Box, Filter, Zap, Star, Check, Plus, Minus } from "lucide-react";
+import { Box, Filter, Zap, Star, Check, Plus, Minus, LayoutGrid, ChevronRight, ChevronDown } from "lucide-react";
 import { cn } from "@/utils/cn";
+import { getImageUrl } from "@/utils/image";
+import Image from "next/image";
 import { Category, Brand } from "@/types/models";
 
 interface FilterContentProps {
@@ -39,7 +41,7 @@ function FilterSection({
           onClick={() => setIsOpen(!isOpen)}
           className="group flex w-full items-center justify-between bg-white py-2 text-sm text-slate-400 hover:text-primary transition-colors"
         >
-          <span className="font-bold text-slate-900 text-base tracking-tight">{title}</span>
+          <span className="font-bold text-slate-400 text-[11px] uppercase tracking-widest">{title}</span>
           <span className="ml-6 flex items-center">
             {isOpen ? (
               <Minus className="h-4 w-4 transition-transform group-hover:scale-110" aria-hidden="true" />
@@ -72,7 +74,117 @@ export function FilterContent({
   updatePriceFilter,
   isMobile = false
 }: FilterContentProps) {
-  
+  const [expandedCategories, setExpandedCategories] = React.useState<Set<number>>(new Set());
+
+  const toggleExpand = (id: number, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const newExpanded = new Set(expandedCategories);
+    if (newExpanded.has(id)) {
+      newExpanded.delete(id);
+    } else {
+      newExpanded.add(id);
+    }
+    setExpandedCategories(newExpanded);
+  };
+
+  // Auto-expand parents of current category
+  React.useEffect(() => {
+    if (currentCategory) {
+      const findAndExpandParents = (cats: Category[], targetId: number): boolean => {
+        for (const cat of cats) {
+          if (cat.id === targetId) return true;
+          if (cat.children && findAndExpandParents(cat.children, targetId)) {
+            setExpandedCategories(prev => new Set(prev).add(cat.id));
+            return true;
+          }
+        }
+        return false;
+      };
+      findAndExpandParents(categories, Number(currentCategory));
+    }
+  }, [currentCategory, categories]);
+
+  const renderCategory = (cat: Category, level = 0) => {
+    const isSelected = String(cat.id) === currentCategory;
+    const hasChildren = cat.children && cat.children.length > 0;
+    const isExpanded = expandedCategories.has(cat.id);
+    
+    return (
+      <React.Fragment key={cat.id}>
+        <div 
+          className="flex items-center gap-2 group/item"
+          style={{ paddingLeft: `${level * 0.75}rem` }}
+        >
+          {/* Toggle Button for children */}
+          <div className="w-4 flex justify-center">
+            {hasChildren ? (
+              <button
+                type="button"
+                onClick={(e) => toggleExpand(cat.id, e)}
+                className="p-0.5 rounded hover:bg-slate-100 text-slate-400 hover:text-primary transition-colors"
+              >
+                {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+              </button>
+            ) : (
+              <div className="w-3.5 h-3.5" />
+            )}
+          </div>
+
+          <div className="flex h-5 shrink-0 items-center">
+            <div className="group grid size-4 grid-cols-1">
+              <input
+                type="checkbox"
+                checked={isSelected}
+                onChange={() => updateFilters('categoryId', String(cat.id))}
+                className="col-start-1 row-start-1 appearance-none rounded-md border border-slate-300 bg-white checked:border-primary checked:bg-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-all cursor-pointer"
+              />
+              <Check className={cn(
+                "pointer-events-none col-start-1 row-start-1 size-3 self-center justify-self-center text-white",
+                isSelected ? "opacity-100 scale-100" : "opacity-0 scale-50"
+              )} />
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => updateFilters('categoryId', String(cat.id))}
+            className={cn(
+              "text-sm text-left transition-colors flex items-center gap-2 py-1",
+              isSelected ? "text-primary font-bold" : "text-slate-600 hover:text-slate-900",
+              level > 0 && "text-[13px]"
+            )}
+          >
+            <div className={cn(
+              "rounded-md overflow-hidden bg-slate-100 flex-shrink-0 border border-slate-100 group-hover/item:border-primary/20 transition-colors",
+              level === 0 ? "h-6 w-6" : "h-5 w-5"
+            )}>
+              {cat.image ? (
+                <Image
+                  src={getImageUrl(cat.image)}
+                  alt={cat.name}
+                  width={24}
+                  height={24}
+                  className="object-cover h-full w-full"
+                />
+              ) : (
+                <div className="h-full w-full flex items-center justify-center bg-slate-50 text-slate-300">
+                  <LayoutGrid size={level === 0 ? 10 : 8} />
+                </div>
+              )}
+            </div>
+            {cat.name}
+          </button>
+        </div>
+        
+        {/* Render Children if expanded */}
+        {hasChildren && isExpanded && (
+          <div className="animate-in fade-in slide-in-from-top-1 duration-200">
+            {cat.children!.map(sub => renderCategory(sub, level + 1))}
+          </div>
+        )}
+      </React.Fragment>
+    );
+  };
+
   return (
     <form className={cn("space-y-2 h-full overflow-auto scrollbar-hide pb-10", isMobile ? "px-2" : "")}>
       {/* Categories Section */}
@@ -97,42 +209,18 @@ export function FilterContent({
               type="button"
               onClick={() => updateFilters('categoryId', null)}
               className={cn(
-                "text-sm text-left transition-colors",
+                "text-sm text-left transition-colors flex items-center gap-2",
                 !currentCategory ? "text-primary font-bold" : "text-slate-600 hover:text-slate-900"
               )}
             >
+              <div className="h-6 w-6 rounded-md bg-slate-100 flex items-center justify-center shrink-0">
+                <Box size={12} className={!currentCategory ? "text-primary" : "text-slate-400"} />
+              </div>
               Tất cả sản phẩm
             </button>
           </div>
 
-          {categories.map((cat) => (
-            <div key={cat.id} className="flex items-center gap-3 group/item">
-              <div className="flex h-5 shrink-0 items-center">
-                <div className="group grid size-4 grid-cols-1">
-                  <input
-                    type="checkbox"
-                    checked={String(cat.id) === currentCategory}
-                    onChange={() => updateFilters('categoryId', String(cat.id))}
-                    className="col-start-1 row-start-1 appearance-none rounded-md border border-slate-300 bg-white checked:border-primary checked:bg-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-all cursor-pointer"
-                  />
-                  <Check className={cn(
-                    "pointer-events-none col-start-1 row-start-1 size-3 self-center justify-self-center text-white",
-                    String(cat.id) === currentCategory ? "opacity-100 scale-100" : "opacity-0 scale-50"
-                  )} />
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => updateFilters('categoryId', String(cat.id))}
-                className={cn(
-                  "text-sm text-left transition-colors",
-                  String(cat.id) === currentCategory ? "text-primary font-bold" : "text-slate-600 hover:text-slate-900"
-                )}
-              >
-                {cat.name}
-              </button>
-            </div>
-          ))}
+          {categories.map((cat) => renderCategory(cat))}
         </div>
       </FilterSection>
 

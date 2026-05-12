@@ -133,7 +133,7 @@ export function ProductDetailView({ slug }: ProductDetailViewProps) {
     <div className="bg-white min-h-screen pb-20">
       <ProductBreadcrumbs product={product} />
 
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-10">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 md:pt-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
           
           {/* ── Left: Image Gallery ── */}

@@ -53,7 +53,8 @@ interface ProductFormProps {
 }
 
 export function ProductForm({ initialData, onSubmit, isLoading }: ProductFormProps) {
-  const { data: categories = [] } = useCategories();
+  const { data: categoryData = [] } = useCategories();
+  const categories = Array.isArray(categoryData) ? categoryData : (categoryData as any)?.data || [];
   const fileInputRef = useRef<HTMLInputElement>(null);
   const variantFileInputRef = useRef<HTMLInputElement>(null);
   const [currentVariantIndex, setCurrentVariantIndex] = useState<number | null>(null);

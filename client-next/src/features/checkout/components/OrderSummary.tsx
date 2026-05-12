@@ -86,7 +86,16 @@ export function OrderSummary({
                 />
               </div>
               <div className="flex-1 min-w-0 flex flex-col justify-center">
-                <span className="block text-sm font-medium text-slate-800 line-clamp-2 leading-snug">{item.name}</span>
+                <span 
+                  className="block text-sm font-semibold text-slate-900 leading-snug overflow-hidden"
+                  style={{
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                  }}
+                >
+                  {item.name}
+                </span>
                 {(item.size || item.color) && (
                   <div className="flex gap-2 mt-1">
                     {item.size && (
@@ -101,9 +110,9 @@ export function OrderSummary({
                     )}
                   </div>
                 )}
-                <div className="flex items-center justify-between mt-1">
-                  <span className="text-xs text-slate-500 font-normal">Số lượng: {item.quantity}</span>
-                  <div className="text-right flex flex-col items-end">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between mt-2 gap-2">
+                  <span className="text-xs text-slate-500 font-medium">Số lượng: {item.quantity}</span>
+                  <div className="text-left sm:text-right flex flex-col items-start sm:items-end">
                     <span className="text-sm font-bold text-slate-900">
                       {formatCurrency((item.discountedPrice || item.price) * item.quantity)}
                     </span>

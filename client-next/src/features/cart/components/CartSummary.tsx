@@ -38,7 +38,7 @@ export function CartSummary({ selectedCount, selectedTotalPrice }: CartSummaryPr
             <span className="text-slate-500 font-medium">Phí vận chuyển dự kiến</span>
             <InfoIcon />
           </div>
-          <span className="font-semibold text-slate-900 tabular-nums text-emerald-600">Miễn phí</span>
+          <span className="font-semibold text-slate-500 tabular-nums">Tính ở bước thanh toán</span>
         </div>
 
         <div className="flex justify-between items-center text-sm border-t border-slate-100/60 pt-6">
@@ -49,7 +49,7 @@ export function CartSummary({ selectedCount, selectedTotalPrice }: CartSummaryPr
           <span className="font-semibold text-slate-900 tabular-nums">{formatCurrency(0)}</span>
         </div>
 
-        <div className="flex justify-between items-center pt-6 border-t border-slate-200/60">
+        <div className="flex justify-between items-center pt-6 border-t border-slate-200/60 gap-4">
           <span className="text-base font-semibold text-slate-900">Tổng cộng đơn hàng</span>
           <span className="text-lg font-semibold text-primary tabular-nums">
             {formatCurrency(selectedTotalPrice)}

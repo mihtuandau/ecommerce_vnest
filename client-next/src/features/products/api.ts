@@ -95,8 +95,8 @@ export const productsApi = {
 
   // ── Categories & Brands ──
 
-  getCategories: async () => {
-    const { data } = await api.get("/categories");
+  getCategories: async (params?: Record<string, any>) => {
+    const { data } = await api.get("/categories", { params });
     return data;
   },
 

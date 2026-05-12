@@ -45,7 +45,7 @@ export function CartContainer() {
   if (!mounted) {
     return (
       <div className="bg-white min-h-screen">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
             <div className="lg:col-span-8 space-y-8">
               <Skeleton className="h-10 w-64" />
@@ -70,17 +70,17 @@ export function CartContainer() {
 
   return (
     <div className="bg-white min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
-        <div className="flex flex-col gap-12 lg:gap-16">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 md:py-10">
+        <div className="flex flex-col gap-10">
           {/* Header Section */}
           <div className="space-y-2">
             <h1 className="text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight">Giỏ hàng</h1>
             <p className="text-slate-400 text-sm font-medium">Bạn đang có {items.length} sản phẩm trong giỏ hàng</p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
             {/* Left Column: Product List */}
-            <div className="lg:col-span-7 xl:col-span-8">
+            <div className="lg:col-span-7">
               {/* Subtle Select All Bar */}
               <div className="flex items-center justify-between pb-6 border-b border-slate-100 mb-2">
                 <div className="flex items-center gap-3">
@@ -133,10 +133,10 @@ export function CartContainer() {
               </div>
             </div>
 
-            {/* Right Column: Order Summary */}
-            <div className="lg:col-span-5 xl:col-span-4 lg:sticky lg:top-24">
+            {/* Right Column: Summary */}
+            <div className="lg:col-span-5">
               <CartSummary
-                selectedCount={selectedCount}
+                selectedCount={items.filter((i) => i.selected).length}
                 selectedTotalPrice={selectedTotalPrice}
               />
             </div>

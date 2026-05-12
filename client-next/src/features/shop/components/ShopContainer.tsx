@@ -5,8 +5,6 @@ import { ProductList } from "@/features/products/components/customer/ProductList
 import { Button } from "@/components/ui/Button";
 import {
   LayoutGrid,
-  List,
-  SlidersHorizontal,
   ChevronDown,
   Check,
   ArrowUpDown,
@@ -15,12 +13,9 @@ import {
   TrendingUp,
   Sparkles,
   Star,
-  Search,
-  X,
-  Box,
   Filter,
+  Menu,
 } from "lucide-react";
-import Link from "next/link";
 import { useCategories, useBrands } from "@/features/products/hooks";
 import { Category, Brand } from "@/types/models";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -55,12 +50,20 @@ const SORT_OPTIONS = [
 
 export function ShopContainer() {
   const [view, setView] = useState<"grid" | "list">("grid");
-  const { data: categoryData } = useCategories();
-  const { data: brandData } = useBrands();
+  const { data: categoryData = [] } = useCategories({ tree: true });
+  const { data: brands = [] } = useBrands();
+
+  // Categories extraction helper
+  const categories: Category[] = React.useMemo(() => {
+    return Array.isArray(categoryData) ? categoryData : (categoryData as any)?.data || [];
+  }, [categoryData]);
+
+  const brandsList: Brand[] = React.useMemo(() => {
+    return Array.isArray(brands) ? brands : (brands as any)?.data || [];
+  }, [brands]);
+
   const searchParams = useSearchParams();
   const router = useRouter();
-
-  console.log('[DEBUG] ShopContainer searchParams:', searchParams.toString());
 
   const currentCategory = searchParams.get("categoryId");
   const currentBrand = searchParams.get("brandId");
@@ -70,17 +73,11 @@ export function ShopContainer() {
   const currentSort = searchParams.get("sortBy") || "newest";
   const currentPage = parseInt(searchParams.get("page") || "1");
 
-  const categories = (Array.isArray(categoryData)
-    ? categoryData
-    : (categoryData as any)?.data || (categoryData as any)?.categories || []) as Category[];
-  const brands = (Array.isArray(brandData) 
-    ? brandData 
-    : (brandData as any)?.data || (brandData as any)?.brands || []) as Brand[];
-
   const updateFilters = (key: string, value: string | null) => {
     const params = new URLSearchParams(searchParams.toString());
     if (value) params.set(key, value);
     else params.delete(key);
+    params.set("page", "1");
     router.push(`/shop?${params.toString()}`);
   };
 
@@ -90,6 +87,7 @@ export function ShopContainer() {
     else params.delete("minPrice");
     if (max) params.set("maxPrice", max);
     else params.delete("maxPrice");
+    params.set("page", "1");
     router.push(`/shop?${params.toString()}`);
   };
 
@@ -97,7 +95,6 @@ export function ShopContainer() {
     const params = new URLSearchParams(searchParams.toString());
     params.set("page", page.toString());
     router.push(`/shop?${params.toString()}`);
-    // Scroll to top
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -108,7 +105,7 @@ export function ShopContainer() {
     currentMaxPrice,
     currentMinRating,
     categories,
-    brands,
+    brands: brandsList,
     updateFilters,
     updatePriceFilter,
   };
@@ -117,122 +114,83 @@ export function ShopContainer() {
     SORT_OPTIONS.find((opt) => opt.value === currentSort)?.label || "Mới nhất";
 
   return (
-    <div className="bg-white min-h-screen">
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-        {/* ── BREADCRUMBS ── */}
-        <ShopBreadcrumbs currentCategory={currentCategory} categories={categories} />
+    <div className="bg-white min-h-screen pb-20">
+      <ShopBreadcrumbs currentCategory={currentCategory} categories={categories} />
 
-        {/* ── HEADER SECTION ── */}
-        <div className="flex items-center justify-between border-b border-gray-200 pb-6">
-          <div className="flex-1">
-            {searchParams.get("search") && (
-              <h1 className="text-xl font-bold tracking-tight text-gray-900">
-                Kết quả cho "{searchParams.get("search")}"
-              </h1>
-            )}
-          </div>
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 md:pt-10">
+        <section aria-labelledby="products-heading" className="pb-24">
+          <h2 id="products-heading" className="sr-only">Sản phẩm</h2>
 
-          <div className="flex items-center">
-            {/* SORT DROPDOWN */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button 
-                  type="button"
-                  className="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900"
-                >
-                  Sắp xếp: {activeSortLabel}
-                  <ChevronDown className="-mr-1 ml-1 h-5 w-5 shrink-0 text-gray-400 group-hover:text-gray-500" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="end"
-                className="w-48 rounded-md bg-white shadow-2xl ring-1 ring-black/5 focus:outline-none"
-              >
-                <div className="py-1">
-                  {SORT_OPTIONS.map((opt) => (
-                    <DropdownMenuItem
-                      key={opt.value}
-                      onClick={() => updateFilters("sortBy", opt.value)}
-                      className={cn(
-                        "block px-4 py-2 text-sm cursor-pointer",
-                        currentSort === opt.value 
-                          ? "font-medium text-gray-900 bg-gray-100" 
-                          : "text-gray-500 hover:bg-gray-50"
-                      )}
-                    >
-                      {opt.label}
-                    </DropdownMenuItem>
-                  ))}
-                </div>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            {/* VIEW TOGGLES */}
-            <button
-              type="button"
-              onClick={() => setView(view === "grid" ? "list" : "grid")}
-              className="-m-2 ml-5 p-2 text-gray-400 hover:text-gray-500 sm:ml-7"
-            >
-              <span className="sr-only">Đổi chế độ xem</span>
-              {view === "grid" ? (
-                <List className="h-5 w-5" />
-              ) : (
-                <LayoutGrid className="h-5 w-5" />
-              )}
-            </button>
-
-            {/* MOBILE FILTER TRIGGER */}
-            <div className="lg:hidden">
-              <Sheet>
-                <SheetTrigger asChild>
-                  <button 
-                    type="button"
-                    className="-m-2 ml-4 p-2 text-gray-400 hover:text-gray-500 sm:ml-6"
-                  >
-                    <span className="sr-only">Bộ lọc</span>
-                    <Filter className="h-5 w-5" />
-                  </button>
-                </SheetTrigger>
-                <SheetContent
-                  side="right"
-                  className="w-full max-w-xs p-0 border-none flex flex-col"
-                >
-                  <SheetHeader className="px-4 py-4 border-b shrink-0 space-y-0">
-                    <div className="flex items-center justify-between">
-                      <SheetTitle className="text-lg font-medium text-gray-900">
-                        Bộ lọc
-                      </SheetTitle>
-                      <button
-                        type="button"
-                        onClick={() => router.push("/shop")}
-                        className="text-sm text-primary hover:underline"
-                      >
-                        Xóa tất cả
-                      </button>
-                    </div>
-                  </SheetHeader>
-                  <div className="px-4 py-6 overflow-y-auto flex-1">
-                    <FilterContent {...filterProps} isMobile={true} />
-                  </div>
-                </SheetContent>
-              </Sheet>
-            </div>
-          </div>
-        </div>
-
-        <section aria-labelledby="products-heading" className="pt-6 pb-24">
-          <h2 id="products-heading" className="sr-only">
-            Sản phẩm
-          </h2>
-
-          <div className="flex flex-col lg:flex-row gap-x-12 gap-y-10">
-            {/* ── DESKTOP SIDEBAR ── */}
+          <div className="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-4">
             <aside className="hidden lg:block w-64 shrink-0">
               <FilterContent {...filterProps} />
             </aside>
 
-            {/* ── PRODUCT GRID ── */}
-            <div className="flex-1 min-w-0">
+            <div className="lg:col-span-3">
+              <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-6">
+                <div className="flex items-center gap-2">
+                   <h3 className="text-sm font-bold text-slate-900">Danh sách sản phẩm</h3>
+                </div>
+                
+                <div className="flex items-center gap-3">
+                  <div className="lg:hidden">
+                    <Sheet>
+                      <SheetTrigger asChild>
+                        <Button variant="outline" size="sm" className="h-9 rounded-xl border-slate-200 text-xs font-bold gap-2">
+                          <Filter className="h-3.5 w-3.5" />
+                          Bộ lọc
+                        </Button>
+                      </SheetTrigger>
+                      <SheetContent side="right" className="w-full max-w-xs p-0 border-none flex flex-col">
+                        <SheetHeader className="px-4 py-4 border-b shrink-0 space-y-0">
+                          <SheetTitle className="text-lg font-medium text-gray-900">Bộ lọc</SheetTitle>
+                        </SheetHeader>
+                        <div className="px-4 py-6 overflow-y-auto flex-1">
+                          <FilterContent {...filterProps} isMobile={true} />
+                        </div>
+                      </SheetContent>
+                    </Sheet>
+                  </div>
+
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" size="sm" className="h-9 rounded-xl border-slate-200 text-xs font-bold gap-2">
+                        <Filter className="h-3.5 w-3.5" />
+                        Sắp xếp: {activeSortLabel}
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48 rounded-xl border-slate-100 shadow-xl p-1">
+                      {SORT_OPTIONS.map((option) => (
+                        <DropdownMenuItem
+                          key={option.value}
+                          onClick={() => updateFilters("sortBy", option.value)}
+                          className={cn(
+                            "rounded-lg text-xs font-bold py-2.5 transition-colors cursor-pointer",
+                            currentSort === option.value ? "bg-primary/5 text-primary" : "text-slate-600 hover:bg-slate-50"
+                          )}
+                        >
+                          {option.label}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+
+                  <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
+                    <button
+                      onClick={() => setView("grid")}
+                      className={cn("p-1.5 rounded-lg transition-all", view === "grid" ? "bg-white shadow-sm text-primary" : "text-slate-400 hover:text-slate-600")}
+                    >
+                      <LayoutGrid size={16} />
+                    </button>
+                    <button
+                      onClick={() => setView("list")}
+                      className={cn("p-1.5 rounded-lg transition-all", view === "list" ? "bg-white shadow-sm text-primary" : "text-slate-400 hover:text-slate-600")}
+                    >
+                      <Menu size={16} />
+                    </button>
+                  </div>
+                </div>
+              </div>
               <ProductList 
                 view={view} 
                 page={currentPage} 
@@ -245,5 +203,3 @@ export function ShopContainer() {
     </div>
   );
 }
-
-

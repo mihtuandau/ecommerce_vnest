@@ -10,7 +10,6 @@ import {
   Download, 
   ShoppingCart, 
   AlertCircle,
-  Printer 
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { useRouter } from "next/navigation";
@@ -95,30 +94,30 @@ export function GuestDetailHeader({
   const showConfirmReturn = returnStatus === ReturnStatus.APPROVED;
 
   return (
-    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-10 pb-8 border-b border-slate-100">
-      <div className="flex items-center gap-5">
+    <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 mb-8 pb-6 border-b border-slate-100">
+      <div className="flex items-start gap-5">
         <button
           onClick={() => router.push("/")}
-          className="h-12 w-12 rounded-2xl border border-slate-100 flex items-center justify-center text-slate-400 hover:text-primary hover:border-primary/30 hover:bg-slate-50 transition-all shrink-0 group"
+          className="h-10 w-10 rounded-xl border border-slate-100 flex items-center justify-center text-slate-400 hover:text-primary hover:border-primary/30 hover:bg-slate-50 transition-all shrink-0 group mt-1"
         >
-          <ArrowLeft size={20} className="group-hover:-translate-x-0.5 transition-transform" />
+          <ArrowLeft size={18} className="group-hover:-translate-x-0.5 transition-transform" />
         </button>
         
-        <div className="space-y-1.5 min-w-0">
-          <div className="flex flex-wrap items-center gap-4">
-            <h1 className="text-2xl lg:text-3xl font-semibold text-slate-900 tracking-tight">
-              Đơn hàng <span className="text-primary">#{orderCode}</span>
+        <div className="space-y-2 min-w-0">
+          <div className="flex flex-wrap items-center gap-3">
+            <h1 className="text-xl lg:text-2xl font-bold text-slate-900 tracking-tight">
+              Đơn hàng <span className="text-primary font-bold">#{orderCode}</span>
             </h1>
-            <div className={`px-4 py-1.5 rounded-full text-[11px] font-bold border h-fit flex items-center gap-1.5 ${currentStatus.color}`}>
-              <currentStatus.icon className="h-3.5 w-3.5" />
+            <div className={`px-3 py-1 rounded-full text-[10px] font-bold border h-fit flex items-center gap-1.5 uppercase tracking-widest ${currentStatus.color}`}>
+              <currentStatus.icon className="h-3 w-3" />
               {currentStatus.label}
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-y-2 gap-x-6 text-[13px] text-slate-500 font-medium">
-            <p>Ngày đặt: <span className="text-slate-900">{formatDate(createdAt)}</span></p>
+          <div className="flex flex-wrap items-center gap-y-1 gap-x-6 text-[13px] text-slate-500 font-medium">
+            <p>Ngày đặt: <span className="text-slate-900 font-bold">{formatDate(createdAt)}</span></p>
             {status === OrderStatus.DELIVERED && deliveredAt && (
-              <div className="flex items-center gap-2 text-emerald-600">
+              <div className="flex items-center gap-2 text-emerald-600 font-bold">
                 <div className="h-1 w-1 rounded-full bg-emerald-500" />
                 Giao lúc: {formatDate(deliveredAt)}
               </div>
@@ -127,99 +126,93 @@ export function GuestDetailHeader({
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-3">
-        {showConfirmReturn && (
-          <div className="relative" ref={popoverRef}>
-            <Button
-              onClick={() => setShowPopover(!showPopover)}
-              disabled={isUpdatingReturn}
-              className="bg-primary hover:brightness-110 text-white text-xs font-semibold h-11 px-6 rounded-xl flex items-center gap-2 shadow-lg shadow-primary/10 transition-all active:scale-95"
-            >
-              <Truck className="h-4 w-4" />
-              Xác nhận đã gửi hàng
-            </Button>
+      <div className="flex flex-col items-end gap-3">
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          {showConfirmReturn && (
+            <div className="relative" ref={popoverRef}>
+              <Button
+                onClick={() => setShowPopover(!showPopover)}
+                disabled={isUpdatingReturn}
+                className="bg-primary hover:brightness-110 text-white text-[11px] font-bold h-10 px-5 rounded-xl flex items-center gap-2 shadow-lg shadow-primary/10 transition-all active:scale-95 uppercase tracking-widest"
+              >
+                <Truck className="h-3.5 w-3.5" />
+                Xác nhận đã gửi hàng
+              </Button>
 
-            {showPopover && (
-              <div className="absolute bottom-full mb-3 right-0 w-[260px] bg-white border border-slate-100 rounded-2xl shadow-2xl p-5 z-50 animate-in fade-in zoom-in-95 duration-200">
-                <p className="text-sm text-slate-600 font-medium mb-4 leading-relaxed">
-                  Bạn chắc chắn đã bàn giao gói hàng cho bưu cục?
-                </p>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="flex-1 h-9 text-xs font-semibold border-slate-100 text-slate-400 rounded-xl hover:bg-slate-50"
-                    onClick={() => setShowPopover(false)}
-                  >
-                    Hủy
-                  </Button>
-                  <Button
-                    size="sm"
-                    className="flex-1 h-9 text-xs font-bold bg-primary hover:brightness-110 text-white rounded-xl shadow-sm"
-                    onClick={() => {
-                      onConfirmReturn?.();
-                      setShowPopover(false);
-                    }}
-                  >
-                    Xác nhận
-                  </Button>
+              {showPopover && (
+                <div className="absolute bottom-full mb-3 right-0 w-[260px] bg-white border border-slate-100 rounded-2xl shadow-2xl p-5 z-50 animate-in fade-in zoom-in-95 duration-200">
+                  <p className="text-sm text-slate-600 font-medium mb-4 leading-relaxed text-left">
+                    Bạn chắc chắn đã bàn giao gói hàng cho bưu cục?
+                  </p>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1 h-9 text-xs font-semibold border-slate-100 text-slate-400 rounded-xl hover:bg-slate-50"
+                      onClick={() => setShowPopover(false)}
+                    >
+                      Hủy
+                    </Button>
+                    <Button
+                      size="sm"
+                      className="flex-1 h-9 text-xs font-bold bg-primary hover:brightness-110 text-white rounded-xl shadow-sm"
+                      onClick={() => {
+                        onConfirmReturn?.();
+                        setShowPopover(false);
+                      }}
+                    >
+                      Xác nhận
+                    </Button>
+                  </div>
+                  <div className="absolute top-full right-8 -mt-1 w-3 h-3 bg-white border-r border-b border-slate-100 rotate-45" />
                 </div>
-                <div className="absolute top-full right-8 -mt-1 w-3 h-3 bg-white border-r border-b border-slate-100 rotate-45" />
-              </div>
-            )}
-          </div>
-        )}
+              )}
+            </div>
+          )}
 
-        {[OrderStatus.DELIVERED, OrderStatus.CANCELLED, OrderStatus.RETURNED].includes(status) && !showConfirmReturn && (
+          {[OrderStatus.DELIVERED, OrderStatus.CANCELLED, OrderStatus.RETURNED].includes(status) && !showConfirmReturn && (
+            <Button
+              onClick={onReorder}
+              className="bg-primary hover:brightness-110 text-white text-[11px] font-bold h-10 px-5 rounded-xl flex items-center gap-2 shadow-lg shadow-primary/10 transition-all active:scale-95 uppercase tracking-widest"
+            >
+              <ShoppingCart className="h-3.5 w-3.5" />
+              Mua lại
+            </Button>
+          )}
+
           <Button
-            onClick={onReorder}
-            className="bg-primary hover:brightness-110 text-white text-xs font-semibold h-11 px-6 rounded-xl flex items-center gap-2 shadow-lg shadow-primary/10 transition-all active:scale-95"
+            variant="outline"
+            className="border-slate-200 text-slate-500 text-[11px] font-bold h-10 px-5 rounded-xl hover:bg-slate-50 transition-all active:scale-95 uppercase tracking-widest"
+            onClick={() => window.open('https://zalo.me/0987654321', '_blank')}
           >
-            <ShoppingCart className="h-4 w-4" />
-            Mua lại đơn này
+            Hỗ trợ
           </Button>
-        )}
 
-        <Button
-          variant="outline"
-          className="border-slate-200 text-slate-600 text-xs font-semibold h-11 px-6 rounded-xl hover:bg-slate-50 transition-all active:scale-95"
-          onClick={() => window.open('https://zalo.me/0987654321', '_blank')}
-        >
-          Liên hệ hỗ trợ
-        </Button>
-
-        <Button
-          variant="outline"
-          className="border-slate-200 text-slate-600 text-xs font-semibold h-11 px-6 rounded-xl hover:bg-slate-50 transition-all active:scale-95 flex items-center gap-2"
-          onClick={() => window.print()}
-        >
-          <Printer className="h-4 w-4" />
-          In hóa đơn
-        </Button>
-
-        <Button
-          variant="outline"
-          className="border-slate-200 text-slate-600 text-xs font-semibold h-11 px-6 rounded-xl hover:bg-slate-50 transition-all active:scale-95 flex items-center gap-2"
-          onClick={() => {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            window.location.href = `${apiUrl}/orders/guest/invoice/${orderCode}?contact=${contact}`;
-          }}
-        >
-          <Download className="h-4 w-4" />
-          Tải hóa đơn
-        </Button>
+          <Button
+            variant="outline"
+            className="border-slate-200 text-slate-500 text-[11px] font-bold h-10 px-5 rounded-xl hover:bg-slate-50 transition-all active:scale-95 flex items-center gap-2 uppercase tracking-widest"
+            onClick={() => {
+              const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+              window.location.href = `${apiUrl}/orders/guest/invoice/${orderCode}?contact=${contact}`;
+            }}
+          >
+            <Download className="h-3.5 w-3.5" />
+            Hóa đơn
+          </Button>
+        </div>
 
         {status === OrderStatus.DELIVERED && !returnStatus && onReturn && (
           <Button
             variant="ghost"
-            className="text-amber-600 hover:bg-amber-50 text-xs font-semibold h-11 px-6 rounded-xl flex items-center gap-2 transition-all active:scale-95"
+            className="text-amber-600 hover:bg-amber-50 text-[11px] font-bold h-8 px-4 rounded-lg flex items-center gap-2 transition-all active:scale-95 uppercase tracking-widest"
             onClick={onReturn}
           >
-            <AlertCircle className="h-4 w-4" />
-            Yêu cầu trả hàng
+            <AlertCircle className="h-3.5 w-3.5" />
+            Trả hàng
           </Button>
         )}
       </div>
+    </div>
 
       <RequestReturnModal
         isOpen={isReturnModalOpen}

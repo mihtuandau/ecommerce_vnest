@@ -409,8 +409,8 @@ export function CheckoutContainer() {
 
   if (!mounted) {
     return (
-      <div className="bg-[#fcfdfe] min-h-screen pb-20">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <div className="bg-white min-h-screen pb-20">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 border-b border-slate-100 pb-8 mb-10">
             <div className="flex items-center gap-5">
               <Skeleton className="h-11 w-11 rounded-full shrink-0" />
@@ -449,7 +449,7 @@ export function CheckoutContainer() {
   const showBuyNowEmpty = mounted && isBuyNow && !buyNowItem;
 
   return (
-    <div className="bg-[#fcfdfe] min-h-screen pb-20">
+    <div className="bg-white min-h-screen pb-20">
       {(showEmpty || showBuyNowEmpty) ? (
         <div className="bg-white min-h-[70vh] flex flex-col items-center justify-center text-center px-4">
           <div className="h-20 w-20 rounded-full bg-slate-50 flex items-center justify-center mb-6 border border-slate-100">
@@ -461,19 +461,21 @@ export function CheckoutContainer() {
           </Button>
         </div>
       ) : (
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 border-b border-slate-100 pb-8 mb-10">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-slate-100 pb-8 mb-10">
             <div className="flex items-center gap-5">
-              <button type="button" onClick={() => router.back()} className="h-11 w-11 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:text-primary hover:border-primary hover:bg-blue-50 transition-all shrink-0 shadow-sm"><ArrowLeft size={20} /></button>
+              <button type="button" onClick={() => router.back()} className="h-11 w-11 rounded-full border border-slate-200 flex items-center justify-center text-slate-400 hover:text-primary hover:border-primary hover:bg-blue-50 transition-all shrink-0 shadow-sm">
+                <ArrowLeft size={20} />
+              </button>
               <div className="space-y-1">
-                <h1 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">Thanh toán</h1>
+                <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Thanh toán</h1>
                 <p className="text-slate-500 text-sm font-medium">Hoàn tất thông tin để đặt hàng của bạn</p>
               </div>
             </div>
-            <div className="w-full lg:w-auto overflow-x-auto pb-2 lg:pb-0"><CheckoutSteps /></div>
+            <div className="w-full md:w-auto"><CheckoutSteps /></div>
           </div>
           <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            <div className="lg:col-span-8 space-y-6">
+            <div className="lg:col-span-7 space-y-6">
               <ShippingForm 
                 form={form}
                 setForm={setForm}
@@ -489,7 +491,7 @@ export function CheckoutContainer() {
               />
               <PaymentMethods paymentMethod={form.paymentMethod} setPaymentMethod={(method) => setForm({ ...form, paymentMethod: method })} />
             </div>
-            <div className="lg:col-span-4">
+            <div className="lg:col-span-5">
               <OrderSummary 
                 items={displayItems} 
                 subtotal={subtotal} 

@@ -1,4 +1,4 @@
-﻿import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards, UseInterceptors, UploadedFile, Query } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiBearerAuth, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../common/guards/auth.guard';
@@ -19,8 +19,8 @@ export class CategoryController {
   ) {}
 
   @Get()
-  findAll() {
-    return this.categoryService.findAll();
+  findAll(@Query('tree') tree?: string) {
+    return this.categoryService.findAll(tree === 'true');
   }
 
   @Get(':id')
@@ -39,7 +39,8 @@ export class CategoryController {
     @Body() body: any
   ) {
     const createCategoryDto: CreateCategoryDto = {
-      name: body.name
+      name: body.name,
+      parentId: body.parentId ? Number(body.parentId) : undefined
     };
 
     if (file) {
@@ -62,7 +63,8 @@ export class CategoryController {
     @Body() body: any
   ) {
     const updateCategoryDto: UpdateCategoryDto = {
-      name: body.name
+      name: body.name,
+      parentId: body.parentId !== undefined ? (body.parentId ? Number(body.parentId) : null) : undefined
     };
 
     if (file) {

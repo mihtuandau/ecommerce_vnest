@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Search, X, ChevronRight, Heart, Sparkles, Zap, Tag } from "lucide-react";
+import { Search, X, ChevronRight, Heart, Sparkles, Zap, Tag, ShoppingBag } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { ROUTES } from "@/constants/routes";
 import { useState, useEffect, useRef } from "react";
@@ -12,6 +12,7 @@ import { formatCurrency } from "@/utils/formatCurrency";
 import { Spinner } from "@/components/ui/Spinner";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useAuthStore } from "@/store/useAuthStore";
+import { cn } from "@/utils/cn";
 
 interface MobileMenuProps {
   categories: any[];
@@ -20,11 +21,8 @@ interface MobileMenuProps {
   mounted: boolean;
 }
 
-const normalizeImagePath = (path: any) => {
-  if (typeof path !== 'string' || !path) return "/placeholder.png";
-  if (path.startsWith('http') || path.startsWith('data:')) return path;
-  return `/${path.replace(/\\/g, '/').replace(/^\//, '')}`;
-};
+import { getImageUrl } from "@/utils/image";
+import { ChevronDown, LayoutGrid } from "lucide-react";
 
 const NAV_LINKS = [
   { href: "/",           label: "Trang chủ" },
@@ -118,7 +116,7 @@ export function MobileMenu({ categories, wishlistCount, onClose, mounted }: Mobi
                     >
                       <div className="h-12 w-12 rounded-lg bg-slate-50 overflow-hidden flex-shrink-0 border border-slate-100">
                         <Image 
-                          src={normalizeImagePath(product.images?.[0]?.url || product.images?.[0] || product.image)} 
+                          src={getImageUrl(product.images?.[0]?.url || product.images?.[0] || product.image)} 
                           alt={product.name}
                           width={48}
                           height={48}
@@ -155,23 +153,41 @@ export function MobileMenu({ categories, wishlistCount, onClose, mounted }: Mobi
             key={link.label}
             href={link.href}
             onClick={onClose}
-            className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-600 hover:bg-primary/5 hover:text-primary transition-all"
+            className="flex items-center gap-3 px-4 py-3 rounded-xl text-[11px] font-bold text-slate-600 hover:bg-primary/5 hover:text-primary transition-all uppercase tracking-widest"
           >
             {link.icon && <link.icon className="h-4 w-4 flex-shrink-0" />}
             {link.label}
           </Link>
         ))}
 
+        {/* Categories Section */}
+        <div className="pt-2 pb-1">
+          <div className="px-4 py-2 flex items-center gap-2">
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Danh mục sản phẩm</span>
+            <div className="h-px flex-1 bg-slate-50" />
+          </div>
+          
+          <div className="space-y-1">
+            {categories.map((cat) => (
+              <MobileCategoryItem 
+                key={cat.id} 
+                category={cat} 
+                onClose={onClose} 
+              />
+            ))}
+          </div>
+        </div>
+
         {/* Wishlist */}
         <Link
           href={ROUTES.WISHLIST}
           onClick={onClose}
-          className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-600 hover:bg-primary/5 hover:text-primary transition-all relative"
+          className="flex items-center gap-3 px-4 py-3 rounded-xl text-[11px] font-bold text-slate-600 hover:bg-primary/5 hover:text-primary transition-all relative uppercase tracking-widest"
         >
           <Heart className="h-4 w-4 flex-shrink-0" />
           Danh sách yêu thích
           {mounted && wishlistCount > 0 && (
-            <span className="ml-auto h-5 w-5 bg-primary text-white text-xs font-bold rounded-full flex items-center justify-center">
+            <span className="ml-auto h-5 w-5 bg-primary text-white text-[9px] font-bold rounded-full flex items-center justify-center no-uppercase">
               {wishlistCount}
             </span>
           )}
@@ -189,15 +205,37 @@ export function MobileMenu({ categories, wishlistCount, onClose, mounted }: Mobi
             </div>
           </div>
         ) : user ? (
-          <Link href={ROUTES.ACCOUNT} onClick={onClose} className="flex items-center gap-3 p-2">
-            <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
-              {user.name?.charAt(0).toUpperCase()}
+          <div className="flex flex-col w-full">
+            <Link href={ROUTES.ACCOUNT} onClick={onClose} className="flex items-center gap-3 p-2 hover:bg-white rounded-xl transition-all">
+              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold shrink-0">
+                {user.name?.charAt(0).toUpperCase()}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-bold text-slate-900 truncate">{user.name}</p>
+                <p className="text-xs text-slate-500 font-medium">Quản lý tài khoản</p>
+              </div>
+              <ChevronRight className="h-4 w-4 text-slate-300" />
+            </Link>
+            
+            <div className="grid grid-cols-2 gap-2 mt-3">
+              <Link 
+                href="/orders" 
+                onClick={onClose}
+                className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-white border border-slate-100 text-xs font-bold text-slate-600 hover:text-primary transition-all shadow-sm"
+              >
+                <ShoppingBag className="h-3.5 w-3.5" />
+                Đơn hàng
+              </Link>
+              <Link 
+                href={ROUTES.WISHLIST} 
+                onClick={onClose}
+                className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-white border border-slate-100 text-xs font-bold text-slate-600 hover:text-primary transition-all shadow-sm"
+              >
+                <Heart className="h-3.5 w-3.5" />
+                Yêu thích
+              </Link>
             </div>
-            <div>
-              <p className="text-sm font-bold text-slate-900">{user.name}</p>
-              <p className="text-xs text-slate-500">Xem tài khoản</p>
-            </div>
-          </Link>
+          </div>
         ) : (
           <div className="grid grid-cols-2 gap-3">
             <Link href={ROUTES.LOGIN} onClick={onClose}>
@@ -213,6 +251,76 @@ export function MobileMenu({ categories, wishlistCount, onClose, mounted }: Mobi
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+function MobileCategoryItem({ category, onClose }: { category: any, onClose: () => void }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const hasChildren = category.children && category.children.length > 0;
+
+  return (
+    <div className="flex flex-col">
+      <div className="flex items-center">
+        <Link
+          href={`/shop?categoryId=${category.id}`}
+          onClick={onClose}
+          className="flex-1 flex items-center gap-3 px-4 py-2.5 rounded-xl text-[11px] font-bold text-slate-700 hover:text-primary transition-all uppercase tracking-widest"
+        >
+          <div className="relative h-8 w-8 rounded-lg overflow-hidden bg-slate-50 border border-slate-100 flex-shrink-0">
+            {category.image ? (
+              <Image 
+                src={getImageUrl(category.image)}
+                alt={category.name}
+                fill
+                className="object-cover"
+              />
+            ) : (
+              <div className="h-full w-full flex items-center justify-center text-slate-300">
+                <LayoutGrid size={14} />
+              </div>
+            )}
+          </div>
+          {category.name}
+        </Link>
+        {hasChildren && (
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="p-3 mr-1 rounded-xl text-slate-400 hover:text-primary transition-all"
+          >
+            <ChevronDown className={cn("h-4 w-4 transition-transform duration-300", isOpen && "rotate-180")} />
+          </button>
+        )}
+      </div>
+
+      {hasChildren && isOpen && (
+        <div className="ml-12 border-l-2 border-slate-50 pl-2 py-1 space-y-1 animate-in slide-in-from-top-1 duration-200">
+          {category.children.map((sub: any) => (
+            <Link
+              key={sub.id}
+              href={`/shop?categoryId=${sub.id}`}
+              onClick={onClose}
+              className="flex items-center gap-3 px-4 py-2 rounded-lg text-[10px] font-bold text-slate-400 hover:text-primary hover:bg-slate-50 transition-all uppercase tracking-widest"
+            >
+              <div className="relative h-6 w-6 rounded-md overflow-hidden bg-slate-50 border border-slate-100 flex-shrink-0">
+                {sub.image ? (
+                  <Image 
+                    src={getImageUrl(sub.image)}
+                    alt={sub.name}
+                    fill
+                    className="object-cover"
+                  />
+                ) : (
+                  <div className="h-full w-full flex items-center justify-center text-slate-200">
+                    <LayoutGrid size={10} />
+                  </div>
+                )}
+              </div>
+              {sub.name}
+            </Link>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

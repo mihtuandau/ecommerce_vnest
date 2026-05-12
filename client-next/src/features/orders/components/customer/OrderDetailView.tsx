@@ -113,7 +113,7 @@ export function OrderDetailView() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-white">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 space-y-6">
           <div className="space-y-4">
             <Skeleton className="h-4 w-20" />
             <Skeleton className="h-10 w-64" />
@@ -171,7 +171,7 @@ export function OrderDetailView() {
   return (
     <div className="min-h-screen bg-white pb-20 relative">
       <div className="no-print">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 md:py-10">
           <DetailHeader
             orderCode={order.orderCode}
             orderId={order.id}

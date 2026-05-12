@@ -131,7 +131,6 @@ function FlashProductCard({ product: rawProduct, discountPercent }: { product: a
                <span className="w-1 h-1 rounded-full bg-[#E85D24] animate-pulse" />
                {soldPercent > 80 ? "Sắp cháy" : `Đã bán ${soldCount}`}
             </span>
-            <span className="text-gray-400">Tồn: {currentStock}</span>
           </div>
         </div>
       </div>

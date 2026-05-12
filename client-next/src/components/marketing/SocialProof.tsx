@@ -28,11 +28,7 @@ const TIMES = [
   "10 phút trước",
 ];
 
-const normalizeImagePath = (path: any) => {
-  if (typeof path !== "string" || !path) return "/placeholder.png";
-  if (path.startsWith("http") || path.startsWith("data:")) return path;
-  return `/${path.replace(/\\/g, "/").replace(/^\//, "")}`;
-};
+import { getImageUrl } from "@/utils/image";
 
 export function SocialProof() {
   const { data: productsData } = useProducts({ limit: 20 });
@@ -56,7 +52,7 @@ export function SocialProof() {
         name: randomCustomer.name,
         location: randomCustomer.location,
         productName: randomProduct.name,
-        image: normalizeImagePath(imageUrl || (randomProduct as any).image),
+        image: getImageUrl(imageUrl || (randomProduct as any).image),
         time: randomTime,
       });
 

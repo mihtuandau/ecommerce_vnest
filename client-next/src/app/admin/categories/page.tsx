@@ -9,18 +9,35 @@ import { CategoryListToolbar } from "@/features/categories/components/admin/List
 import { Spinner } from "@/components/ui/Spinner";
 
 export default function AdminCategoriesPage() {
-  const { data, isLoading, refetch, isFetching } = useCategories();
+  const { data: categoryData, isLoading, refetch, isFetching } = useCategories({ tree: true });
   const [activeTab, setActiveTab] = React.useState("ALL");
   const [searchTerm, setSearchTerm] = React.useState("");
 
-  const categories = data || [];
+  // Helper function to flatten the category tree for the table display
+  const flattenedCategories = React.useMemo(() => {
+    const categoriesArray = Array.isArray(categoryData) ? categoryData : (categoryData as any)?.data || [];
+    const result: any[] = [];
+
+    const flatten = (cats: any[], depth = 0, parent: any = null) => {
+      cats.forEach(cat => {
+        const item = { ...cat, depth, parent: cat.parent || parent };
+        result.push(item);
+        if (cat.children && cat.children.length > 0) {
+          flatten(cat.children, depth + 1, cat);
+        }
+      });
+    };
+
+    flatten(categoriesArray);
+    return result;
+  }, [categoryData]);
 
   const counts = React.useMemo(() => ({
-    ALL: categories.length,
-  }), [categories]);
+    ALL: flattenedCategories.length,
+  }), [flattenedCategories]);
 
   const filteredCategories = React.useMemo(() => {
-    let result = categories;
+    let result = flattenedCategories;
 
     if (searchTerm) {
       const lowerSearch = searchTerm.toLowerCase();
@@ -30,12 +47,12 @@ export default function AdminCategoriesPage() {
     }
 
     return result;
-  }, [categories, searchTerm]);
+  }, [flattenedCategories, searchTerm]);
 
   return (
     <div className="space-y-4 pb-10">
       <CategoryListHeader 
-        totalCategories={categories.length} 
+        totalCategories={flattenedCategories.length} 
         onRefresh={refetch} 
         isFetching={isFetching} 
       />

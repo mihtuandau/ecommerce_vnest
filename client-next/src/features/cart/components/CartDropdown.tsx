@@ -129,12 +129,12 @@ export function CartDropdown() {
                         {(item.color || item.size) && (
                           <div className="flex items-center gap-2 mt-0.5">
                             {item.color && (
-                              <span className="text-xs font-medium text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded-lg">
+                              <span className="text-[9px] font-bold text-slate-400 bg-slate-50 border border-slate-100 px-1.5 py-0.5 rounded-md uppercase tracking-wider">
                                 Màu: {item.color}
                               </span>
                             )}
                             {item.size && (
-                              <span className="text-xs font-medium text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded-lg">
+                              <span className="text-[9px] font-bold text-slate-400 bg-slate-50 border border-slate-100 px-1.5 py-0.5 rounded-md uppercase tracking-wider">
                                 Size: {item.size}
                               </span>
                             )}
@@ -142,18 +142,18 @@ export function CartDropdown() {
                         )}
                         <div className="flex items-center justify-between">
                           <div className="flex flex-col">
-                            <p className="text-xs font-bold text-primary">{formatCurrency(item.discountedPrice || item.price)}</p>
+                            <p className="text-xs font-bold text-primary tabular-nums">{formatCurrency(item.discountedPrice || item.price)}</p>
                             {item.discountedPrice && item.discountedPrice < item.price ? (
-                              <span className="text-xs text-slate-600 line-through font-normal tabular-nums">
+                              <span className="text-[10px] text-slate-400 line-through font-bold tabular-nums">
                                 {formatCurrency(item.price)}
                               </span>
                             ) : (item.originalPrice && item.originalPrice > (item.discountedPrice || item.price)) ? (
-                              <span className="text-xs text-slate-600 line-through font-normal tabular-nums">
+                              <span className="text-[10px] text-slate-400 line-through font-bold tabular-nums">
                                 {formatCurrency(item.originalPrice)}
                               </span>
                             ) : null}
                           </div>
-                          <span className="text-xs text-slate-600 font-normal">x {item.quantity}</span>
+                          <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">x {item.quantity}</span>
                         </div>
                       </div>
                       
@@ -204,8 +204,8 @@ export function CartDropdown() {
           {items.length > 0 && (
             <div className="p-6 bg-slate-50/50 border-t border-slate-100 space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-500">Tạm tính:</span>
-                <span className="text-xl font-bold text-slate-900 tabular-nums tracking-tighter">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tạm tính:</span>
+                <span className="text-2xl font-bold text-primary tabular-nums tracking-tighter">
                   {formatCurrency(totalPrice)}
                 </span>
               </div>

@@ -88,6 +88,7 @@ export function GeneralInfo({ form, categories }: GeneralInfoProps) {
                     Danh mục
                   </FormLabel>
                   <Select
+                    key={categories.length}
                     onValueChange={(val) => field.onChange(Number(val))}
                     value={field.value ? String(field.value) : ""}
                   >

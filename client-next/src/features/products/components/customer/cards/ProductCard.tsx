@@ -178,16 +178,16 @@ export const ProductCard = React.memo(function ProductCard({ product, view = "gr
                   {product.name}
                 </h3>
               </Link>
-              <p className="text-xs text-gray-500 font-medium">
+              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
                 {product.brand?.name || "Minh Tuấn Shop"}
               </p>
             </div>
             <div className="flex flex-col items-end shrink-0">
-              <p className="text-sm font-bold text-gray-900 tabular-nums">
+              <p className="text-sm font-bold text-primary tabular-nums">
                 {formatCurrency(price)}
               </p>
               {originalPrice && originalPrice > price && (
-                <p className="text-xs text-gray-400 line-through tabular-nums font-medium">
+                <p className="text-[10px] text-slate-400 line-through tabular-nums font-bold">
                   {formatCurrency(originalPrice)}
                 </p>
               )}
@@ -201,15 +201,15 @@ export const ProductCard = React.memo(function ProductCard({ product, view = "gr
           </div>
           
           <div className="mt-4 flex items-center justify-between border-t border-gray-100 pt-4">
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1">
-                <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                <span className="text-xs text-gray-900 font-medium">
+            <div className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+              <div className="flex items-center gap-1 no-uppercase">
+                <Star className="h-2.5 w-2.5 fill-yellow-400 text-yellow-400" />
+                <span className="text-slate-900 font-bold">
                   {rating > 0 ? rating.toFixed(1) : "5.0"}
                 </span>
               </div>
-              <span className="text-gray-300">|</span>
-              <span className="text-xs text-gray-500">
+              <span className="h-2 w-px bg-slate-100" />
+              <span>
                 Đã bán {soldCount}
               </span>
               {originalPrice && originalPrice > price && (
@@ -299,44 +299,44 @@ export const ProductCard = React.memo(function ProductCard({ product, view = "gr
       <div className="relative z-10 mt-4 flex-1 flex flex-col px-0.5">
         <div className="flex justify-between items-start gap-4">
           <Link href={`/shop/${product.slug}`} className="flex-1">
-            <h3 className="text-sm font-semibold text-gray-900 line-clamp-2 min-h-[2.5rem] group-hover:text-primary transition-colors">
+            <h3 className="text-sm font-bold text-slate-900 line-clamp-2 flex-1 leading-snug group-hover:text-primary transition-colors leading-snug">
               {product.name}
             </h3>
           </Link>
           <div className="flex flex-col items-end shrink-0">
-            <p className="text-sm font-bold text-gray-900 tabular-nums">
+            <p className="text-sm font-bold text-primary tabular-nums">
               {formatCurrency(price)}
             </p>
             {originalPrice && originalPrice > price && (
-              <p className="text-xs text-gray-400 line-through tabular-nums font-medium">
+              <p className="text-[10px] text-slate-400 line-through tabular-nums font-bold">
                 {formatCurrency(originalPrice)}
               </p>
             )}
           </div>
         </div>
         
-        <p className="mt-1 text-sm text-gray-500 line-clamp-1">
+        <p className="mt-1 text-[10px] text-slate-400 font-bold uppercase tracking-widest">
           {product.brand?.name || "Minh Tuấn Shop"}
         </p>
         
         <div className="mt-auto pt-2 flex items-center justify-between">
-          <div className="flex items-center gap-1.5">
-            <div className="flex items-center gap-0.5">
-              <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-              <span className="text-xs text-gray-900 font-medium">
+          <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+            <div className="flex items-center gap-0.5 no-uppercase">
+              <Star className="h-2.5 w-2.5 fill-yellow-400 text-yellow-400" />
+              <span className="text-slate-900 font-bold">
                 {rating > 0 ? rating.toFixed(1) : "5.0"}
               </span>
             </div>
-            <span className="text-xs text-gray-300">|</span>
-            <span className="text-xs text-gray-500">
+            <span className="h-2 w-px bg-slate-100" />
+            <span>
               Đã bán {soldCount}
             </span>
           </div>
 
           {originalPrice && originalPrice > price && (
             <span className={cn(
-              "text-xs font-bold px-1.5 py-0.5 rounded-md",
-              isFlashSale ? "text-[#E85D24] bg-[#FFF5F1]" : "text-primary bg-primary/5"
+              "text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-widest text-white",
+              isFlashSale ? "bg-[#E85D24]" : "bg-primary"
             )}>
               -{discountPercent}%
             </span>

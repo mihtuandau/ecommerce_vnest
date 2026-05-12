@@ -96,10 +96,10 @@ export function useBulkDeleteProducts() {
   });
 }
 
-export function useCategories() {
+export function useCategories(params?: Record<string, any>) {
   return useQuery({
-    queryKey: queryKeys.categories.all,
-    queryFn: () => productsApi.getCategories(),
+    queryKey: [...queryKeys.categories.all, params],
+    queryFn: () => productsApi.getCategories(params),
   });
 }
 

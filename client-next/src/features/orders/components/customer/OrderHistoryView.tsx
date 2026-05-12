@@ -113,7 +113,7 @@ export function OrderHistoryView() {
   return (
     <>
       <div className="min-h-screen bg-slate-50/30">
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-16">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10">
         <div className="flex items-center gap-4 border-b border-slate-100 pb-8">
           <Link
             href="/"
@@ -134,7 +134,7 @@ export function OrderHistoryView() {
         <div className="space-y-10">
           <Tabs value={status} onValueChange={setStatus} className="w-full">
             <div className="relative">
-              <TabsList className="flex w-full overflow-x-auto justify-start h-auto p-1 bg-white rounded-2xl border border-slate-100 shadow-sm gap-1 no-scrollbar select-none">
+              <TabsList className="flex lg:flex-wrap w-full overflow-x-auto lg:overflow-x-visible justify-start h-auto p-1 bg-white rounded-2xl border border-slate-100 shadow-sm gap-1 no-scrollbar select-none">
                 {[
                   "ALL",
                   OrderStatus.PENDING,
@@ -148,7 +148,7 @@ export function OrderHistoryView() {
                   <TabsTrigger
                     key={s}
                     value={s}
-                    className="flex-shrink-0 min-w-fit px-5 py-3 rounded-xl text-[12px] font-semibold transition-all data-[state=active]:bg-primary data-[state=active]:text-white whitespace-nowrap"
+                    className="flex-shrink-0 lg:flex-1 min-w-fit lg:min-w-0 px-3 md:px-5 py-3 rounded-xl text-[11px] font-bold uppercase tracking-widest transition-all data-[state=active]:bg-primary data-[state=active]:text-white whitespace-nowrap"
                   >
                     <div className="flex items-center gap-2">
                       <span>{statusLabelMap[s]}</span>
@@ -157,7 +157,7 @@ export function OrderHistoryView() {
                           className={`flex items-center justify-center min-w-[18px] h-4.5 px-1.5 rounded-full text-[9px] ${
                             status === s
                               ? "bg-white/20 text-white"
-                              : "bg-slate-50 text-slate-400"
+                              : "bg-slate-100 text-slate-400"
                           }`}
                         >
                           {getCount(s)}
@@ -240,32 +240,29 @@ export function OrderHistoryView() {
                       className="bg-white border border-slate-100 rounded-[2rem] overflow-hidden shadow-sm transition-all hover:shadow-md"
                     >
                       {/* ── Order Card Header ── */}
-                      <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-6 p-6 lg:p-8 bg-slate-50/50 border-b border-slate-100">
-                        <div className="space-y-1">
-                          <p className="text-[11px] font-medium text-slate-400">Số đơn hàng</p>
-                          <p className="text-sm font-semibold text-slate-900">{order.orderCode}</p>
+                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 lg:p-6 bg-slate-50/50 border-b border-slate-100">
+                        <div className="grid grid-cols-2 md:flex md:items-center gap-6 lg:gap-10">
+                          <div className="space-y-1">
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Số đơn hàng</p>
+                            <p className="text-sm font-bold text-slate-900">{order.orderCode}</p>
+                          </div>
+                          <div className="space-y-1">
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Ngày đặt</p>
+                            <p className="text-sm font-bold text-slate-900">{new Date(order.createdAt).toLocaleDateString("vi-VN", { day: '2-digit', month: 'long', year: 'numeric' })}</p>
+                          </div>
+                          <div className="space-y-1">
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tổng cộng</p>
+                            <p className="text-sm font-bold text-primary tabular-nums">{formatCurrency(order.total)}</p>
+                          </div>
                         </div>
-                        <div className="space-y-1">
-                          <p className="text-[11px] font-medium text-slate-400">Ngày đặt</p>
-                          <p className="text-sm font-medium text-slate-600">{new Date(order.createdAt).toLocaleDateString("vi-VN", { day: '2-digit', month: 'long', year: 'numeric' })}</p>
-                        </div>
-                        <div className="space-y-1">
-                          <p className="text-[11px] font-medium text-slate-400">Tổng cộng</p>
-                          <p className="text-sm font-semibold text-slate-900 tabular-nums">{formatCurrency(order.total)}</p>
-                        </div>
-                        <div className="md:col-span-1 lg:col-span-2 flex flex-col sm:flex-row items-center justify-end gap-3">
+                        
+                        <div className="flex items-center gap-3">
                           <Button 
                             variant="outline" 
-                            className="w-full sm:w-auto h-10 px-6 rounded-xl border-slate-200 text-slate-500 font-semibold text-[11px] hover:bg-white hover:border-primary hover:text-primary transition-all"
+                            className="w-full sm:w-auto h-10 px-6 rounded-xl border-slate-200 text-slate-500 font-bold text-[10px] uppercase tracking-widest hover:bg-white hover:border-primary hover:text-primary transition-all"
                             asChild
                           >
-                            <Link href={`/orders/${order.id}`}>Chi tiết đơn hàng</Link>
-                          </Button>
-                          <Button 
-                            variant="outline" 
-                            className="w-full sm:w-auto h-10 px-6 rounded-xl border-slate-200 text-slate-500 font-semibold text-[11px] hover:bg-white hover:border-primary hover:text-primary transition-all"
-                          >
-                            Tải hóa đơn
+                            <Link href={`/orders/${order.id}`}>Chi tiết</Link>
                           </Button>
                         </div>
                       </div>

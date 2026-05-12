@@ -226,7 +226,7 @@ export function AccountView() {
   });
 
   return (
-    <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-8 md:py-12">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 md:py-10">
       <div className="flex flex-col gap-8">
         {/* Breadcrumbs Only */}
         <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
@@ -290,10 +290,10 @@ export function AccountView() {
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
               className={[
-                "flex items-center gap-1.5 px-4 py-2.5 text-sm border-b-2 -mb-px transition-colors duration-200 whitespace-nowrap",
+                "flex items-center gap-1.5 px-5 py-3 text-[11px] border-b-2 -mb-px transition-all duration-300 whitespace-nowrap uppercase tracking-widest",
                 activeTab === tab.key
-                  ? "border-primary text-primary font-semibold"
-                  : "border-transparent text-slate-500 hover:text-primary",
+                  ? "border-primary text-primary font-bold bg-primary/[0.02]"
+                  : "border-transparent text-slate-400 hover:text-primary font-bold",
               ].join(" ")}
             >
               {tab.icon}
@@ -307,14 +307,14 @@ export function AccountView() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-in fade-in duration-400">
             <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
               <div className="flex items-center gap-2.5 px-6 py-4 border-b border-slate-50 bg-slate-50/30">
-                <User size={14} className="text-slate-500" />
-                <span className="text-sm font-semibold text-slate-700">Thông tin cá nhân</span>
+                <User size={14} className="text-primary" />
+                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Thông tin cá nhân</span>
               </div>
               <CardContent className="p-6">
                 <form onSubmit={handleUpdateProfile} className="space-y-5">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div className="space-y-1.5">
-                      <label className="text-xs font-normal text-slate-500 ml-0.5">Họ và tên</label>
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Họ và tên</label>
                       <Input
                         className="h-11 rounded-xl border-slate-200 text-sm focus-visible:ring-primary/10 transition-all font-medium"
                         value={form.name}
@@ -323,7 +323,7 @@ export function AccountView() {
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-xs font-normal text-slate-500 ml-0.5">Email liên hệ</label>
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Email liên hệ</label>
                       <Input
                         className="h-10 rounded-xl border-slate-100 bg-slate-50 text-slate-400 cursor-not-allowed text-sm font-medium"
                         value={form.email}
@@ -332,7 +332,7 @@ export function AccountView() {
                     </div>
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs font-normal text-slate-500 ml-0.5">Số điện thoại</label>
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Số điện thoại</label>
                     <Input
                       className="h-11 rounded-xl border-slate-200 text-sm focus-visible:ring-primary/10 transition-all font-medium max-w-[240px]"
                       value={form.phone}
@@ -360,8 +360,8 @@ export function AccountView() {
                     <ShoppingBag size={18} />
                   </div>
                   <div>
-                    <p className="text-xs text-slate-600 font-semibold">Đơn hàng</p>
-                    <p className="text-base font-bold text-slate-900 leading-none mt-1">{totalOrders} đơn</p>
+                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Đơn hàng</p>
+                    <p className="text-lg font-bold text-slate-900 leading-none mt-1.5 tabular-nums">{totalOrders}</p>
                   </div>
                 </div>
               </div>
@@ -371,8 +371,8 @@ export function AccountView() {
                     <Wallet size={18} />
                   </div>
                   <div>
-                    <p className="text-xs text-slate-600 font-semibold">Chi tiêu</p>
-                    <p className="text-base font-bold text-slate-900 leading-none mt-1">{formatCurrency(totalSpending)}</p>
+                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Chi tiêu</p>
+                    <p className="text-lg font-bold text-slate-900 leading-none mt-1.5 tabular-nums">{formatCurrency(totalSpending)}</p>
                   </div>
                 </div>
               </div>
@@ -385,8 +385,8 @@ export function AccountView() {
           <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden animate-in fade-in duration-400">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-50 bg-slate-50/30">
               <div className="flex items-center gap-3">
-                <MapPin size={16} className="text-slate-400" />
-                <span className="text-sm font-semibold text-slate-700">Sổ địa chỉ nhận hàng</span>
+                <MapPin size={16} className="text-primary" />
+                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Sổ địa chỉ nhận hàng</span>
               </div>
               <Button
                 onClick={() => setIsAddModalOpen(true)}

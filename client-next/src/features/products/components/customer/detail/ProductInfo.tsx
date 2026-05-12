@@ -48,8 +48,8 @@ function ProductCountdown({ endDate }: { endDate: string }) {
       ].map((item, i) => (
         <React.Fragment key={i}>
           <div className="flex items-baseline gap-0.5">
-            <span className="text-sm font-semibold text-slate-900 tabular-nums">{pad(item.val)}</span>
-            <span className="text-xs font-normal text-slate-500">{item.label}</span>
+            <span className="text-sm font-bold text-slate-900 tabular-nums">{pad(item.val)}</span>
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{item.label}</span>
           </div>
           {i < 3 && <span className="text-slate-200 font-medium">:</span>}
         </React.Fragment>
@@ -67,30 +67,30 @@ export function ProductInfo({ product, flashSale, finalPrice, finalOriginalPrice
       <div className="space-y-2.5">
         <Link 
           href={`/shop?categoryId=${product.categoryId}`}
-          className="inline-block text-xs font-normal text-primary/90 px-2 py-0.5 bg-blue-50 rounded hover:bg-blue-100 transition-colors"
+          className="inline-block text-[10px] font-bold text-primary uppercase tracking-[0.15em] px-3 py-1 bg-primary/5 rounded-full border border-primary/10 hover:bg-primary/10 transition-all"
         >
           {product.category?.name || "Danh mục"}
         </Link>
 
-        <h1 className="text-xl md:text-2xl font-semibold text-slate-900 leading-tight">
+        <h1 className="text-2xl md:text-3xl font-bold text-slate-900 leading-tight tracking-tight">
           {product.name}
         </h1>
 
-        <div className="flex items-center gap-4 text-xs font-normal text-slate-600">
-          <div className="flex items-center gap-1">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] font-bold uppercase tracking-widest text-slate-400">
+          <div className="flex items-center gap-1.5 no-uppercase">
             <div className="flex items-center">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} className={cn("h-3 w-3", i < Math.floor(product.averageRating || product.rating || 0) ? "fill-yellow-400 text-yellow-400" : "text-slate-200")} />
+                <Star key={i} className={cn("h-3 w-3", i < Math.floor(product.averageRating || product.rating || 0) ? "fill-yellow-400 text-yellow-400" : "text-slate-100")} />
               ))}
             </div>
-            <span className="text-slate-900 font-normal ml-1">{(product.averageRating || product.rating || 0).toFixed(1)}</span>
+            <span className="text-slate-900 font-bold ml-0.5">{(product.averageRating || product.rating || 0).toFixed(1)}</span>
           </div>
-          <span className="h-3 w-px bg-slate-200" />
-          <span>{product.reviewCount || 0} đánh giá</span>
-          <span className="h-3 w-px bg-slate-200" />
-          <span>{product.soldCount || 0} đã bán</span>
-          <span className="h-3 w-px bg-slate-200" />
-          <span>{product.viewCount || 0} lượt xem</span>
+          <span className="h-2 w-px bg-slate-100" />
+          <span className="hover:text-slate-600 transition-colors">{product.reviewCount || 0} Đánh giá</span>
+          <span className="h-2 w-px bg-slate-100" />
+          <span className="hover:text-slate-600 transition-colors">{product.soldCount || 0} Đã bán</span>
+          <span className="h-2 w-px bg-slate-100" />
+          <span className="hover:text-slate-600 transition-colors">{product.viewCount || 0} Lượt xem</span>
         </div>
       </div>
 
@@ -101,7 +101,7 @@ export function ProductInfo({ product, flashSale, finalPrice, finalOriginalPrice
       )}>
         <div className="space-y-3">
           {isFlashSale && (
-            <div className="inline-flex items-center gap-1.5 bg-[#E85D24] text-white px-2.5 py-0.5 rounded-full text-xs font-bold">
+            <div className="inline-flex items-center gap-1.5 bg-[#E85D24] text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-lg shadow-rose-500/10">
               <Zap className="h-3 w-3 fill-current" /> Flash Sale · -{flashSalePercent}%
             </div>
           )}
@@ -123,7 +123,7 @@ export function ProductInfo({ product, flashSale, finalPrice, finalOriginalPrice
 
         {isFlashSale && flashSale?.endDate && (
           <div className="flex items-center gap-4 pt-3 border-t border-rose-100/50">
-            <div className="flex items-center gap-1.5 text-xs font-normal text-[#E85D24]/80">
+            <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-[#E85D24]/60">
               Kết thúc sau
             </div>
             <ProductCountdown endDate={flashSale.endDate} />

@@ -18,16 +18,26 @@ import {
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { 
-  Image as ImageIcon,
+  ImageIcon,
   Save, 
   Upload, 
   X,
-  Type
+  Type,
+  Layers
 } from "lucide-react";
 import { Spinner } from "@/components/ui/Spinner";
+import { useCategories } from "@/features/categories/hooks";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from "@/components/ui/Select";
 
 const categorySchema = z.object({
   name: nameSchema,
+  parentId: z.string().optional().nullable(),
 });
 
 type CategoryFormValues = z.infer<typeof categorySchema>;
@@ -42,21 +52,32 @@ export function CategoryForm({ initialData, onSubmit, isLoading }: CategoryFormP
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  // Fetch categories for parent selection
+  const { data: categoryData = [] } = useCategories();
+  const categories = Array.isArray(categoryData) ? categoryData : (categoryData as any)?.data || [];
 
   const form = useForm<CategoryFormValues>({
     resolver: zodResolver(categorySchema),
     defaultValues: {
       name: "",
+      parentId: "none",
     },
   });
 
   useEffect(() => {
     if (initialData) {
+      // Handle potential wrapped data { success: true, data: { ... } }
+      const data = initialData.data || initialData;
+      
+      const parentIdValue = data.parentId || data.parent_id || (data.parent?.id);
+      
       form.reset({
-        name: initialData.name || "",
+        name: data.name || "",
+        parentId: parentIdValue ? String(parentIdValue) : "none",
       });
-      if (initialData.image) {
-        setPreviewUrl(initialData.image);
+      if (data.image) {
+        setPreviewUrl(data.image);
       }
     }
   }, [initialData, form]);
@@ -74,12 +95,22 @@ export function CategoryForm({ initialData, onSubmit, isLoading }: CategoryFormP
     const formData = new FormData();
     formData.append("name", values.name);
     
+    if (values.parentId && values.parentId !== "" && values.parentId !== "none") {
+      formData.append("parentId", values.parentId);
+    } else {
+      // For "none" or empty, we want to create a root category
+      formData.append("parentId", ""); 
+    }
+    
     if (selectedFile) {
       formData.append("image", selectedFile);
     }
 
     onSubmit(formData);
   };
+
+  // Filter out the current category from parent list to prevent self-parenting
+  const parentOptions = categories.filter(cat => initialData ? cat.id !== initialData.id : true);
 
   return (
     <Form {...form}>
@@ -95,23 +126,68 @@ export function CategoryForm({ initialData, onSubmit, isLoading }: CategoryFormP
                 </h2>
               </div>
 
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-[11px] font-bold text-slate-500 tracking-wider uppercase">Tên danh mục</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="VD: Điện thoại, Máy tính, Thời trang..."
-                        {...field}
-                        className="h-12 rounded-xl border-slate-200 text-slate-900 font-medium text-base shadow-sm focus:ring-2 focus:ring-slate-900/5 transition-all"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-[11px] font-bold text-slate-500 tracking-wider uppercase">Tên danh mục</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="VD: Điện thoại, Máy tính, Thời trang..."
+                          {...field}
+                          className="h-12 rounded-xl border-slate-200 text-slate-900 font-medium text-base shadow-sm focus:ring-2 focus:ring-slate-900/5 transition-all"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="parentId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-[11px] font-bold text-slate-500 tracking-wider uppercase flex items-center gap-2">
+                        <Layers size={12} />
+                        Danh mục cha
+                      </FormLabel>
+                      <Select 
+                        key={categories.length}
+                        onValueChange={field.onChange} 
+                        defaultValue={field.value}
+                        value={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="h-12 rounded-xl border-slate-200 text-slate-900 font-medium text-base shadow-sm focus:ring-2 focus:ring-slate-900/5 transition-all bg-white">
+                            <SelectValue placeholder="Chọn danh mục cha" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="rounded-xl border-slate-200 shadow-xl overflow-hidden p-1">
+                          <SelectItem value="none" className="rounded-lg text-slate-600 font-medium py-3">
+                            Không có (Danh mục gốc)
+                          </SelectItem>
+                          {parentOptions.map((cat) => (
+                            <SelectItem 
+                              key={cat.id} 
+                              value={String(cat.id)}
+                              className="rounded-lg font-bold text-slate-900 py-3"
+                            >
+                              {cat.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormDescription className="text-[10px] text-slate-400 font-medium">
+                        Chọn danh mục gốc nếu đây là danh mục cao nhất.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
             </div>
 
             {/* Image Upload Card */}

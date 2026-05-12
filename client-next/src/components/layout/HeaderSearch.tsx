@@ -12,13 +12,15 @@ import { formatCurrency } from "@/utils/formatCurrency";
 import { Category, Brand } from "@/types/models";
 import Image from "next/image";
 
-const normalizeImagePath = (path: any) => {
-  if (typeof path !== 'string' || !path) return "/placeholder.png";
-  if (path.startsWith('http') || path.startsWith('data:')) return path;
-  return `/${path.replace(/\\/g, '/').replace(/^\//, '')}`;
-};
+import { getImageUrl } from "@/utils/image";
+import { cn } from "@/utils/cn";
 
-export function HeaderSearch() {
+interface HeaderSearchProps {
+  onSearch?: () => void;
+  isMobile?: boolean;
+}
+
+export function HeaderSearch({ onSearch, isMobile = false }: HeaderSearchProps) {
   const router = useRouter();
   const { data: categoriesData } = useCategories();
   const { data: brandsData } = useBrands();
@@ -110,6 +112,7 @@ export function HeaderSearch() {
     if (searchQuery.trim()) {
       router.push(`/shop?search=${encodeURIComponent(searchQuery.trim())}`);
       setShowLiveSearch(false);
+      onSearch?.();
     }
   };
 
@@ -128,14 +131,14 @@ export function HeaderSearch() {
           <Search className="h-5 w-5" />
         </button>
         <Input
-          placeholder={isListening ? "đang nghe..." : "bạn đang tìm kiếm gì hôm nay?"}
+          placeholder={isListening ? "đang nghe..." : (isMobile ? "tìm kiếm..." : "bạn đang tìm kiếm gì hôm nay?")}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onFocus={() => searchQuery.trim().length >= 2 && setShowLiveSearch(true)}
-          className={`w-full pl-12 pr-24 h-12 rounded-full bg-white border border-slate-100 focus-visible:bg-white focus-visible:border-primary/40 focus-visible:ring-4 focus-visible:ring-primary/10 text-sm transition-all shadow-sm font-normal ${isListening ? "placeholder:text-rose-500" : ""}`}
+          className={`w-full pl-12 ${isMobile ? "pr-12" : "pr-24"} h-12 rounded-full bg-white border border-slate-100 focus-visible:bg-white focus-visible:border-primary/40 focus-visible:ring-4 focus-visible:ring-primary/10 text-sm transition-all shadow-sm font-normal ${isListening ? "placeholder:text-rose-500" : ""}`}
         />
         
-        <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-3 z-10">
+        <div className={cn("absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-3 z-10", isMobile && "hidden")}>
           <button
             type="button"
             onClick={() => {
@@ -174,7 +177,10 @@ export function HeaderSearch() {
 
       {/* ── LIVE SEARCH DROPDOWN ── */}
       {showLiveSearch && (
-        <div className="absolute top-full left-0 right-0 mt-3 bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-slate-100 overflow-hidden z-[100] animate-in fade-in slide-in-from-top-2 duration-300">
+        <div className={cn(
+          "absolute left-0 right-0 mt-3 bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-slate-100 overflow-hidden z-[100] animate-in fade-in slide-in-from-top-2 duration-300",
+          isMobile ? "fixed inset-x-4 top-20 bottom-4 mt-0 h-auto" : "top-full"
+        )}>
           <div className="p-2">
             {/* Quick Match Categories/Brands */}
             {(categories?.some(c => c.name.toLowerCase().includes(searchQuery.toLowerCase())) || 
@@ -189,7 +195,10 @@ export function HeaderSearch() {
                       <Link 
                         key={cat.id} 
                         href={`/shop?categoryId=${cat.id}`}
-                        onClick={() => setShowLiveSearch(false)}
+                        onClick={() => {
+                          setShowLiveSearch(false);
+                          onSearch?.();
+                        }}
                         className="px-4 py-2 bg-white border border-slate-100 rounded-xl text-xs text-slate-600 hover:text-primary hover:border-primary hover:shadow-sm transition-all flex items-center gap-2"
                       >
                         <div className="h-1.5 w-1.5 rounded-full bg-primary/40" />
@@ -204,7 +213,10 @@ export function HeaderSearch() {
                       <Link 
                         key={brand.id} 
                         href={`/shop?brandId=${brand.id}`}
-                        onClick={() => setShowLiveSearch(false)}
+                        onClick={() => {
+                          setShowLiveSearch(false);
+                          onSearch?.();
+                        }}
                         className="px-4 py-2 bg-white border border-slate-100 rounded-xl text-xs text-slate-600 hover:text-primary hover:border-primary hover:shadow-sm transition-all flex items-center gap-2"
                       >
                         <div className="h-1.5 w-1.5 rounded-full bg-slate-200" />
@@ -237,12 +249,15 @@ export function HeaderSearch() {
                     <Link 
                       key={product.id}
                       href={`/shop/${product.slug}`}
-                      onClick={() => setShowLiveSearch(false)}
+                      onClick={() => {
+                        setShowLiveSearch(false);
+                        onSearch?.();
+                      }}
                       className="flex items-center gap-4 p-3 hover:bg-slate-50 rounded-xl transition-all group border border-transparent hover:border-slate-100"
                     >
                       <div className="h-16 w-16 rounded-xl bg-slate-50 overflow-hidden flex-shrink-0 border border-slate-100 p-1 relative">
                         <Image 
-                          src={normalizeImagePath(product.images?.[0]?.url || product.images?.[0] || product.image)} 
+                          src={getImageUrl(product.images?.[0]?.url || product.images?.[0] || product.image)} 
                           alt={product.name}
                           fill
                           className="object-contain group-hover:scale-105 transition-transform"
@@ -266,7 +281,10 @@ export function HeaderSearch() {
                   ))}
                   <Link 
                     href={`/shop?search=${encodeURIComponent(searchQuery.trim())}`}
-                    onClick={() => setShowLiveSearch(false)}
+                    onClick={() => {
+                      setShowLiveSearch(false);
+                      onSearch?.();
+                    }}
                     className="block w-full text-center py-4 text-xs font-medium text-primary hover:bg-primary/5 transition-all border-t border-slate-50 mt-2"
                   >
                     Xem tất cả kết quả cho "{searchQuery}"

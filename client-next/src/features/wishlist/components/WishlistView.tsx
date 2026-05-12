@@ -19,10 +19,28 @@ export function WishlistView() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    syncWishlist();
     setMounted(true);
-  }, []);
+  }, [syncWishlist]);
 
-  if (!mounted) return null;
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-white">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 md:py-12">
+          <div className="space-y-10">
+             <Skeleton className="h-6 w-40" />
+             <div className="border-b border-slate-100 pb-8 space-y-4">
+               <Skeleton className="h-10 w-64" />
+               <Skeleton className="h-4 w-96" />
+             </div>
+             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+               {[1, 2, 3, 4].map(i => <Skeleton key={i} className="aspect-square w-full rounded-2xl" />)}
+             </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const handleAddToCart = (item: any) => {
     addItem({
@@ -39,7 +57,7 @@ export function WishlistView() {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 md:py-12">
         <div className="space-y-10">
           {/* Header & Navigation */}
           <div className="space-y-6">
@@ -62,8 +80,8 @@ export function WishlistView() {
                   Lưu giữ những sản phẩm bạn quan tâm nhất tại Vnest.
                 </p>
               </div>
-              <div className="text-xs font-bold text-slate-400 bg-slate-50 px-4 py-2 rounded-xl border border-slate-100 w-fit">
-                <span className="text-slate-900">{items.length}</span> sản phẩm
+              <div className="text-[10px] font-bold text-slate-400 bg-slate-50 px-4 py-2 rounded-xl border border-slate-100 w-fit uppercase tracking-widest">
+                <span className="text-slate-900 font-bold">{items.length}</span> sản phẩm
               </div>
             </div>
           </div>
@@ -85,7 +103,7 @@ export function WishlistView() {
               </Button>
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-8">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8">
               {items.map((item) => (
                 <div
                   key={item.id}
@@ -110,7 +128,7 @@ export function WishlistView() {
                       className="object-contain p-4 group-hover:scale-110 transition-transform duration-700"
                     />
                     {item.originalPrice && item.originalPrice > item.price && (
-                      <div className="absolute top-3 left-3 bg-primary/10 text-primary text-xs font-bold px-2 py-1 rounded shadow-sm border border-primary/20">
+                      <div className="absolute top-3 left-3 bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-sm uppercase tracking-widest">
                         -{Math.round(((item.originalPrice - item.price) / item.originalPrice) * 100)}%
                       </div>
                     )}
