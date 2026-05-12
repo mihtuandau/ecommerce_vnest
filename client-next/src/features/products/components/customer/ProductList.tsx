@@ -16,7 +16,9 @@ interface ProductListProps {
   onPageChange?: (page: number) => void;
 }
 
-export function ProductList({
+import React from "react";
+
+export const ProductList = React.memo(function ProductList({
   initialProducts,
   view = "grid",
   page = 1,
@@ -204,4 +206,4 @@ export function ProductList({
       )}
     </div>
   );
-}
+});

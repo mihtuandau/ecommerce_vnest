@@ -9,7 +9,7 @@ interface ProductBreadcrumbsProps {
   product: Product;
 }
 
-export function ProductBreadcrumbs({ product }: ProductBreadcrumbsProps) {
+export const ProductBreadcrumbs = React.memo(function ProductBreadcrumbs({ product }: ProductBreadcrumbsProps) {
   return (
     <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 border-b border-slate-50">
       <div className="py-4 md:py-6">
@@ -47,4 +47,4 @@ export function ProductBreadcrumbs({ product }: ProductBreadcrumbsProps) {
       </div>
     </div>
   );
-}
+});

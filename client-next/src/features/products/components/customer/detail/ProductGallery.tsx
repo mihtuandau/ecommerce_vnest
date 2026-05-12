@@ -17,7 +17,7 @@ interface ProductGalleryProps {
   name: string;
 }
 
-export function ProductGallery({ images, name }: ProductGalleryProps) {
+export const ProductGallery = React.memo(function ProductGallery({ images, name }: ProductGalleryProps) {
   const [selectedImage, setSelectedImage] = useState(0);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   
@@ -117,4 +117,4 @@ export function ProductGallery({ images, name }: ProductGalleryProps) {
       </Dialog>
     </div>
   );
-}
+});

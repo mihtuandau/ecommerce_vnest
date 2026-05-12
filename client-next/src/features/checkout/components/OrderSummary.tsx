@@ -38,7 +38,7 @@ interface OrderSummaryProps {
   isApplyingDiscount?: boolean;
 }
 
-export function OrderSummary({
+export const OrderSummary = React.memo(function OrderSummary({
   items,
   subtotal,
   shippingFee,
@@ -55,194 +55,194 @@ export function OrderSummary({
   onRemoveDiscount,
   isApplyingDiscount = false,
 }: OrderSummaryProps) {
-  const flashSaleDiscount = totalOriginal - subtotal;
-  const isVoucherActive = discountChoice === "VOUCHER" && discountAmount > 0;
-  
-  const displaySubtotal = totalOriginal;
-  const displayDiscount = isVoucherActive ? discountAmount : flashSaleDiscount;
-  const total = totalOriginal + shippingFee - displayDiscount;
-
   return (
-    <Card className="sticky top-24 border border-slate-100 shadow-sm rounded-3xl overflow-hidden bg-white">
-      {/* Header */}
-      <div className="px-6 py-5 border-b border-slate-50 flex items-center gap-3 bg-slate-50/30">
-        <div className="h-9 w-9 rounded-xl bg-primary/5 flex items-center justify-center text-primary">
-          <ShoppingBag className="h-5 w-5" />
+    <div className="lg:sticky lg:top-10 space-y-6">
+      <Card className="border border-slate-100 shadow-xl shadow-slate-200/20 rounded-2xl overflow-hidden bg-white">
+        <div className="px-5 py-4 border-b border-slate-50 bg-slate-50/30 flex items-center gap-2.5">
+          <ShoppingBag className="h-4 w-4 text-slate-400" />
+          <h2 className="text-sm font-bold text-slate-700">Đơn hàng của bạn</h2>
         </div>
-        <h3 className="text-base font-semibold text-slate-900">Đơn hàng của bạn</h3>
-      </div>
 
-      <CardContent className="p-6 space-y-6">
-        {/* Items List */}
-        <div className="space-y-4 max-h-[350px] overflow-y-auto pr-1 custom-scrollbar border-b border-slate-50 pb-2">
-          {items.map((item) => (
-            <div key={item.variantId} className="flex gap-4">
-              <div className="h-16 w-16 rounded-2xl bg-slate-50 overflow-hidden shrink-0 border border-slate-100 relative">
-                <Image 
-                  src={item.imageUrl} 
-                  alt={item.name} 
-                  fill
-                  className="object-cover" 
-                />
-              </div>
-              <div className="flex-1 min-w-0 flex flex-col justify-center">
-                <span 
-                  className="block text-sm font-semibold text-slate-900 leading-snug overflow-hidden"
-                  style={{
-                    display: '-webkit-box',
-                    WebkitLineClamp: 2,
-                    WebkitBoxOrient: 'vertical',
-                  }}
-                >
-                  {item.name}
-                </span>
-                {(item.size || item.color) && (
-                  <div className="flex gap-2 mt-1">
-                    {item.size && (
-                      <span className="text-xs bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded-md font-medium border border-slate-200">
-                        Size: {item.size}
+        <CardContent className="p-5 space-y-6">
+          {/* Item list */}
+          <div className="space-y-5 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+            {items.map((item) => (
+              <div key={item.variantId} className="flex gap-4">
+                <div className="h-16 w-16 rounded-2xl bg-slate-50 overflow-hidden shrink-0 border border-slate-100 relative">
+                  <Image 
+                    src={item.imageUrl} 
+                    alt={item.name} 
+                    fill
+                    className="object-cover" 
+                  />
+                </div>
+                <div className="flex-1 min-w-0 flex flex-col justify-center">
+                  <span 
+                    className="block text-sm font-semibold text-slate-900 leading-snug overflow-hidden"
+                    style={{
+                      display: '-webkit-box',
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: 'vertical',
+                    }}
+                  >
+                    {item.name}
+                  </span>
+                  {(item.size || item.color) && (
+                    <div className="flex gap-2 mt-1">
+                      {item.size && (
+                        <span className="text-xs bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded-md font-medium border border-slate-200">
+                          Size: {item.size}
+                        </span>
+                      )}
+                      {item.color && (
+                        <span className="text-xs bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded-md font-semibold border border-slate-200">
+                          Màu: {item.color}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between mt-2 gap-2">
+                    <span className="text-xs text-slate-500 font-medium">Số lượng: {item.quantity}</span>
+                    <div className="text-left sm:text-right flex flex-col items-start sm:items-end">
+                      <span className="text-sm font-bold text-slate-900">
+                        {formatCurrency((item.discountedPrice || item.price) * item.quantity)}
                       </span>
-                    )}
-                    {item.color && (
-                      <span className="text-xs bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded-md font-semibold border border-slate-200">
-                        Màu: {item.color}
-                      </span>
-                    )}
-                  </div>
-                )}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between mt-2 gap-2">
-                  <span className="text-xs text-slate-500 font-medium">Số lượng: {item.quantity}</span>
-                  <div className="text-left sm:text-right flex flex-col items-start sm:items-end">
-                    <span className="text-sm font-bold text-slate-900">
-                      {formatCurrency((item.discountedPrice || item.price) * item.quantity)}
-                    </span>
-                    {(item.discountedPrice || (item.originalPrice && item.originalPrice > item.price)) && (
-                      <span className="text-xs text-slate-400 line-through font-medium">
-                        {formatCurrency((item.originalPrice || item.price) * item.quantity)}
-                      </span>
-                    )}
+                      {(item.discountedPrice || (item.originalPrice && item.originalPrice > item.price)) && (
+                        <span className="text-xs text-slate-400 line-through font-medium">
+                          {formatCurrency((item.originalPrice || item.price) * item.quantity)}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Discount Section - Clean & Normal Case */}
-        <div className="space-y-3">
-          <div className="flex items-center gap-2">
-             <Tag size={14} className="text-primary" />
-             <span className="text-sm font-semibold text-slate-700">Mã giảm giá</span>
+            ))}
           </div>
-          
-          {appliedDiscount ? (
-            <div className="flex items-center justify-between bg-primary/5 border border-primary/20 rounded-2xl px-4 py-3 animate-in fade-in zoom-in-95 duration-300">
-              <div className="flex flex-col">
-                <span className="text-sm font-semibold text-primary">{appliedDiscount.code}</span>
-                <span className="text-xs text-primary/80 font-normal">Đã áp dụng giảm {formatCurrency(discountAmount)}</span>
-              </div>
-              <button 
-                type="button"
-                onClick={onRemoveDiscount}
-                className="h-8 w-8 rounded-full bg-white flex items-center justify-center text-primary shadow-sm hover:bg-primary hover:text-white transition-all"
-              >
-                <X size={14} />
-              </button>
-            </div>
-          ) : (
-            <div className="flex gap-2">
-              <input 
-                type="text"
-                value={discountCode}
-                onChange={(e) => setDiscountCode(e.target.value.toUpperCase())}
-                placeholder="Nhập mã tại đây..."
-                className="flex-1 h-11 bg-slate-100 border border-slate-200 rounded-2xl px-4 text-sm font-semibold focus:outline-none focus:border-primary/50 transition-all placeholder:text-slate-600"
-              />
-              <Button 
-                type="button"
-                onClick={onApplyDiscount}
-                disabled={!discountCode || isApplyingDiscount}
-                className="h-11 px-6 rounded-2xl text-sm font-semibold bg-primary hover:bg-slate-900 text-white transition-all shadow-sm"
-              >
-                {isApplyingDiscount ? <Spinner size="sm" /> : "Áp dụng"}
-              </Button>
-            </div>
-          )}
-        </div>
 
-        {/* Pricing Breakdown */}
-        <div className="space-y-3 pt-2">
-          <div className="flex justify-between items-center text-sm font-normal text-slate-600">
-            <span>Tạm tính</span>
-            <span className="text-slate-900 font-semibold">{formatCurrency(displaySubtotal)}</span>
-          </div>
-          <div className="flex justify-between items-center text-sm font-normal text-slate-600">
-            <span>Phí vận chuyển</span>
-            {isCalculatingFee ? (
-              <div className="flex items-center gap-2 text-primary animate-pulse italic">
-                <Spinner size="sm" />
-                <span className="text-xs">Đang tính...</span>
+          {/* Discount Section */}
+          <div className="pt-6 border-t border-slate-100 space-y-4">
+            <div className="flex items-center gap-2 text-slate-900 mb-1">
+              <Tag size={16} className="text-primary" />
+              <span className="text-sm font-bold uppercase tracking-wider">Mã giảm giá</span>
+            </div>
+            
+            {!appliedDiscount ? (
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Nhập mã tại đây..."
+                  value={discountCode}
+                  onChange={(e) => setDiscountCode(e.target.value)}
+                  className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:text-slate-400 font-medium"
+                />
+                <Button 
+                  onClick={onApplyDiscount}
+                  disabled={!discountCode || isApplyingDiscount}
+                  className="h-11 px-6 rounded-xl font-bold transition-all active:scale-95 shadow-lg shadow-primary/10"
+                >
+                  {isApplyingDiscount ? <Spinner size="sm" variant="white" /> : "Áp dụng"}
+                </Button>
               </div>
             ) : (
-              <span className="text-slate-900 font-semibold">{formatCurrency(shippingFee)}</span>
+              <div className="flex items-center justify-between bg-emerald-50 border border-emerald-100 rounded-xl px-4 py-3 animate-in zoom-in-95 duration-200">
+                <div className="flex items-center gap-3">
+                  <div className="h-8 w-8 rounded-full bg-emerald-500 flex items-center justify-center text-white">
+                    <CheckCircle2 size={16} />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-emerald-800 uppercase tracking-tighter">Đã áp dụng mã</p>
+                    <p className="text-sm font-black text-emerald-600">{appliedDiscount.code}</p>
+                  </div>
+                </div>
+                <button 
+                  onClick={onRemoveDiscount}
+                  className="p-1.5 hover:bg-emerald-100 rounded-lg text-emerald-400 hover:text-emerald-600 transition-colors"
+                >
+                  <X size={18} />
+                </button>
+              </div>
             )}
           </div>
-          {displayDiscount > 0 && (
-            <div className="flex justify-between items-center text-sm animate-in slide-in-from-right-4 duration-300">
-              <span className="text-primary font-semibold">
-                {isVoucherActive ? `Voucher (${appliedDiscount?.code})` : "Giảm giá Flash Sale"}
-              </span>
-              <span className="font-semibold text-primary">-{formatCurrency(displayDiscount)}</span>
-            </div>
-          )}
-        </div>
 
-        {/* Total */}
-        <div className="pt-5 border-t border-slate-100">
-          <div className="flex justify-between items-center">
-            <span className="text-base font-semibold text-slate-900">Tổng cộng</span>
-            <div className="text-right">
-              <span className="text-2xl font-bold text-primary tabular-nums block leading-none">
-                {formatCurrency(total)}
-              </span>
-              <p className="text-xs text-slate-500 mt-1.5 font-medium">Đã bao gồm VAT</p>
+          {/* Pricing Totals */}
+          <div className="pt-6 border-t border-slate-100 space-y-3">
+            <div className="flex justify-between items-center text-sm">
+              <span className="text-slate-500 font-medium">Tạm tính</span>
+              <span className="text-slate-900 font-bold tabular-nums">{formatCurrency(subtotal)}</span>
+            </div>
+            
+            <div className="flex justify-between items-center text-sm">
+              <div className="flex items-center gap-2">
+                <span className="text-slate-500 font-medium">Phí vận chuyển</span>
+                <Truck size={14} className="text-slate-300" />
+              </div>
+              {isCalculatingFee ? (
+                <Spinner size="sm" />
+              ) : (
+                <span className="text-slate-900 font-bold tabular-nums">{formatCurrency(shippingFee)}</span>
+              )}
+            </div>
+
+            {appliedDiscount && discountAmount > 0 && discountChoice === "VOUCHER" && (
+              <div className="flex justify-between items-center text-sm animate-in fade-in slide-in-from-right-4 duration-300">
+                <span className="text-emerald-600 font-bold flex items-center gap-2 italic">
+                  <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                  Mã giảm giá
+                </span>
+                <span className="text-emerald-600 font-bold tabular-nums">-{formatCurrency(discountAmount)}</span>
+              </div>
+            )}
+
+            {discountChoice === "FLASH_SALE" && (totalOriginal - subtotal) > 0 && (
+               <div className="flex justify-between items-center text-sm animate-in fade-in slide-in-from-right-4 duration-300">
+               <span className="text-primary font-bold flex items-center gap-2 italic">
+                 <div className="h-1.5 w-1.5 rounded-full bg-primary" />
+                 Giảm giá Flash Sale
+               </span>
+               <span className="text-primary font-bold tabular-nums">-{formatCurrency(totalOriginal - subtotal)}</span>
+             </div>
+            )}
+
+            <div className="pt-5 mt-2 border-t border-slate-100 flex justify-between items-end">
+              <div>
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Tổng cộng</p>
+                <div className="flex flex-col">
+                  <span className="text-2xl font-black text-primary tabular-nums tracking-tighter">
+                    {formatCurrency(subtotal + shippingFee - (discountChoice === "VOUCHER" ? discountAmount : 0))}
+                  </span>
+                  <span className="text-[10px] text-slate-400 font-medium italic mt-0.5">Đã bao gồm VAT</span>
+                </div>
+              </div>
+              <Button 
+                type="submit" 
+                disabled={isSubmitting || !canSubmit}
+                className="h-12 px-8 rounded-xl bg-primary hover:bg-primary/90 text-white font-bold shadow-xl shadow-primary/20 transition-all active:scale-[0.98]"
+              >
+                {isSubmitting ? (
+                  <div className="flex items-center gap-2">
+                    <Spinner size="sm" variant="white" />
+                    <span>Đang xử lý...</span>
+                  </div>
+                ) : (
+                  "Xác nhận đặt hàng"
+                )}
+              </Button>
             </div>
           </div>
-        </div>
+        </CardContent>
+      </Card>
 
-        {/* Submit Button */}
-        <Button 
-          type="submit" 
-          disabled={isSubmitting || !canSubmit}
-          className={cn(
-            "w-full h-14 rounded-2xl text-base font-semibold transition-all active:scale-95 shadow-lg",
-            !canSubmit ? "bg-slate-100 text-slate-400 shadow-none cursor-not-allowed" : "bg-primary text-white hover:bg-primary/90 shadow-primary/20"
-          )}
-        >
-          {isSubmitting ? (
-            <div className="flex items-center gap-2">
-              <Spinner size="sm" variant="white" />
-              Đang đặt hàng...
-            </div>
-          ) : (
-            "Xác nhận đặt hàng"
-          )}
-        </Button>
-
-        {/* Trust Badges */}
-        <div className="pt-2 space-y-3">
-          {[
-            { icon: ShieldCheck, text: "Bảo mật thông tin 100%", color: "text-green-600" },
-            { icon: CheckCircle2, text: "Hàng chính hãng Minh Tuấn Shop", color: "text-blue-600" },
-            { icon: Truck, text: "Giao hàng nhanh toàn quốc", color: "text-slate-500" },
-          ].map((info, i) => (
-            <div key={i} className="flex items-center gap-2.5 text-xs font-medium text-slate-600">
-              <info.icon className={cn("h-4 w-4", info.color)} />
-              {info.text}
-            </div>
-          ))}
+      {/* Safety Badges */}
+      <div className="grid grid-cols-2 gap-4">
+        <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50/50 border border-slate-100">
+          <ShieldCheck className="h-5 w-5 text-emerald-500" />
+          <span className="text-[10px] font-bold text-slate-600 uppercase leading-tight">Thanh toán bảo mật 100%</span>
         </div>
-      </CardContent>
-    </Card>
+        <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50/50 border border-slate-100">
+          <Truck className="h-5 w-5 text-blue-500" />
+          <span className="text-[10px] font-bold text-slate-600 uppercase leading-tight">Giao hàng nhanh chóng</span>
+        </div>
+      </div>
+    </div>
   );
-}
+});

@@ -11,7 +11,7 @@ interface PaymentMethodsProps {
   setPaymentMethod: (method: string) => void;
 }
 
-export function PaymentMethods({ paymentMethod, setPaymentMethod }: PaymentMethodsProps) {
+export const PaymentMethods = React.memo(function PaymentMethods({ paymentMethod, setPaymentMethod }: PaymentMethodsProps) {
   const methods = [
     { 
       id: "COD", 
@@ -101,4 +101,4 @@ export function PaymentMethods({ paymentMethod, setPaymentMethod }: PaymentMetho
       </CardContent>
     </Card>
   );
-}
+});

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { ProductList } from "@/features/products/components/customer/ProductList";
 import { Button } from "@/components/ui/Button";
 import {
@@ -73,15 +73,15 @@ export function ShopContainer() {
   const currentSort = searchParams.get("sortBy") || "newest";
   const currentPage = parseInt(searchParams.get("page") || "1");
 
-  const updateFilters = (key: string, value: string | null) => {
+  const updateFilters = useCallback((key: string, value: string | null) => {
     const params = new URLSearchParams(searchParams.toString());
     if (value) params.set(key, value);
     else params.delete(key);
     params.set("page", "1");
     router.push(`/shop?${params.toString()}`);
-  };
+  }, [router, searchParams]);
 
-  const updatePriceFilter = (min: string | null, max: string | null) => {
+  const updatePriceFilter = useCallback((min: string | null, max: string | null) => {
     const params = new URLSearchParams(searchParams.toString());
     if (min) params.set("minPrice", min);
     else params.delete("minPrice");
@@ -89,14 +89,14 @@ export function ShopContainer() {
     else params.delete("maxPrice");
     params.set("page", "1");
     router.push(`/shop?${params.toString()}`);
-  };
+  }, [router, searchParams]);
 
-  const updatePage = (page: number) => {
+  const updatePage = useCallback((page: number) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("page", page.toString());
     router.push(`/shop?${params.toString()}`);
     window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+  }, [router, searchParams]);
 
   const filterProps = {
     currentCategory,

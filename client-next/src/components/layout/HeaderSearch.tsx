@@ -20,7 +20,9 @@ interface HeaderSearchProps {
   isMobile?: boolean;
 }
 
-export function HeaderSearch({ onSearch, isMobile = false }: HeaderSearchProps) {
+import React from "react";
+
+export const HeaderSearch = React.memo(function HeaderSearch({ onSearch, isMobile = false }: HeaderSearchProps) {
   const router = useRouter();
   const { data: categoriesData } = useCategories();
   const { data: brandsData } = useBrands();
@@ -305,4 +307,4 @@ export function HeaderSearch({ onSearch, isMobile = false }: HeaderSearchProps) 
       )}
     </div>
   );
-}
+});

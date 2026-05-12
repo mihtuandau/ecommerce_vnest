@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Box, Filter, Zap, Star, Check, Plus, Minus, LayoutGrid, ChevronRight, ChevronDown } from "lucide-react";
+import { Box, Star, Check, Plus, Minus, LayoutGrid, ChevronRight, ChevronDown } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { getImageUrl } from "@/utils/image";
 import Image from "next/image";
@@ -62,7 +62,7 @@ function FilterSection({
   );
 }
 
-export function FilterContent({
+export const FilterContent = React.memo(function FilterContent({
   currentCategory,
   currentBrand,
   currentMinPrice,
@@ -342,5 +342,5 @@ export function FilterContent({
       </FilterSection>
     </form>
   );
-}
-
+});
+  

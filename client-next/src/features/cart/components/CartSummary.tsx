@@ -14,7 +14,7 @@ interface CartSummaryProps {
   selectedTotalPrice: number;
 }
 
-export function CartSummary({ selectedCount, selectedTotalPrice }: CartSummaryProps) {
+export const CartSummary = React.memo(function CartSummary({ selectedCount, selectedTotalPrice }: CartSummaryProps) {
   const InfoIcon = () => (
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-slate-300">
       <circle cx="12" cy="12" r="10" />
@@ -73,4 +73,4 @@ export function CartSummary({ selectedCount, selectedTotalPrice }: CartSummaryPr
       </div>
     </div>
   );
-}
+});

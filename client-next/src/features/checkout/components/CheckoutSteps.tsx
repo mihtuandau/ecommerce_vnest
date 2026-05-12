@@ -11,7 +11,7 @@ const steps = [
   { id: 3, name: "Hoàn tất", icon: PackageCheck, status: "upcoming" },
 ];
 
-export function CheckoutSteps() {
+export const CheckoutSteps = React.memo(function CheckoutSteps() {
   return (
     <nav aria-label="Progress" className="w-full lg:max-w-xl">
       <ol role="list" className="flex items-center justify-end">
@@ -53,5 +53,5 @@ export function CheckoutSteps() {
         ))}
       </ol>
     </nav>
-      );
-}
+  );
+});

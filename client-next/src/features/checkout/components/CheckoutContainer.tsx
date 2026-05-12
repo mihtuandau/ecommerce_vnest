@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useCartStore } from "@/store/useCartStore";
 import { shippingApi } from "@/features/shipping/api";
 import { ordersApi } from "@/features/orders/api";
@@ -128,7 +128,7 @@ export function CheckoutContainer() {
     }
   }, [user]);
 
-  const applySavedAddress = async (addr: AddressOption) => {
+  const applySavedAddress = useCallback(async (addr: AddressOption) => {
     try {
       const provinceId = addr.provinceCode ? String(addr.provinceCode) : "";
       const districtId = addr.districtCode ? String(addr.districtCode) : "";
@@ -167,7 +167,7 @@ export function CheckoutContainer() {
     } catch {
       error("Không thể áp dụng địa chỉ đã lưu");
     }
-  };
+  }, [error]);
 
   useEffect(() => {
     if (user && addressData?.addresses && addressData.addresses.length > 0 && mounted && !hasAppliedDefault) {
@@ -206,7 +206,7 @@ export function CheckoutContainer() {
   }, [form.districtId, form.wardCode, displayItems]);
 
   // Handle Apply Discount
-  const handleApplyDiscount = async () => {
+  const handleApplyDiscount = useCallback(async () => {
     const codeToValidate = discountCode.trim().toUpperCase();
     if (!codeToValidate) return;
     
@@ -222,25 +222,25 @@ export function CheckoutContainer() {
       const discount = res.discount;
       
       // LOGIC ĐỒNG BỘ VỚI BACKEND: Chọn mức giảm tốt nhất
-      const totalOriginal = displayItems.reduce((sum, i) => sum + (i.originalPrice || i.price || 0) * i.quantity, 0);
+      const totalOriginalValue = displayItems.reduce((sum, i) => sum + (i.originalPrice || i.price || 0) * i.quantity, 0);
       const totalFlashSale = displayItems.reduce((sum, i) => sum + (i.discountedPrice || i.price) * i.quantity, 0);
-      const flashSaleSaving = totalOriginal - totalFlashSale;
+      const flashSaleSaving = totalOriginalValue - totalFlashSale;
 
       let voucherSaving = 0;
       const isPercentage = discount.discountType === "PERCENTAGE";
       const val = discount.discountValue || 0;
 
       if (isPercentage) {
-        voucherSaving = Math.round((totalOriginal * val) / 100);
+        voucherSaving = Math.round((totalOriginalValue * val) / 100);
         if (discount.maxDiscountAmount && voucherSaving > discount.maxDiscountAmount) {
           voucherSaving = discount.maxDiscountAmount;
         }
       } else {
         voucherSaving = val;
       }
-      voucherSaving = Math.min(voucherSaving, totalOriginal);
+      voucherSaving = Math.min(voucherSaving, totalOriginalValue);
 
-      if (discount.minOrderAmount && totalOriginal < discount.minOrderAmount) {
+      if (discount.minOrderAmount && totalOriginalValue < discount.minOrderAmount) {
         warning(`Mã chỉ áp dụng cho đơn từ ${new Intl.NumberFormat('vi-VN').format(discount.minOrderAmount)}đ`);
         return;
       }
@@ -265,14 +265,14 @@ export function CheckoutContainer() {
     } finally {
       setIsApplyingDiscount(false);
     }
-  };
+  }, [discountCode, displayItems, error, success, warning]);
 
-  const handleRemoveDiscount = () => {
+  const handleRemoveDiscount = useCallback(() => {
     setAppliedDiscount(null);
     setDiscountAmount(0);
     setDiscountCode("");
     success("Đã gỡ mã giảm giá");
-  };
+  }, [success]);
 
   const [isLoadingDistricts, setIsLoadingDistricts] = useState(false);
   const [isLoadingWards, setIsLoadingWards] = useState(false);

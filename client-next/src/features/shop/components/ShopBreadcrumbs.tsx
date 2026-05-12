@@ -12,7 +12,7 @@ interface ShopBreadcrumbsProps {
   categories: Category[];
 }
 
-export function ShopBreadcrumbs({ currentCategory, categories }: ShopBreadcrumbsProps) {
+export const ShopBreadcrumbs = React.memo(function ShopBreadcrumbs({ currentCategory, categories }: ShopBreadcrumbsProps) {
   const findCategoryPath = (allCats: Category[], targetId: string): Category[] => {
     for (const cat of allCats) {
       if (String(cat.id) === targetId) return [cat];
@@ -56,4 +56,4 @@ export function ShopBreadcrumbs({ currentCategory, categories }: ShopBreadcrumbs
     </div>
   </div>
   );
-}
+});
