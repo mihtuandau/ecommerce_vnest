@@ -22,6 +22,11 @@ import { CreateReviewDto, UpdateReviewDto } from './dto/review.dto';
 export class ReviewController {
   constructor(private reviewService: ReviewService) {}
 
+  @Get('public/latest')
+  async getLatestPublicReviews() {
+    return this.reviewService.getAllReviews(1, 3);
+  }
+
   @Post()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()

@@ -3,9 +3,9 @@
 import React from "react";
 import { Product } from "@/types/models";
 import { formatCurrency } from "@/utils/formatCurrency";
-import { Button } from "@/components/ui/Button";
-import { ShoppingCart, Star, Eye, Heart, Flame } from "lucide-react";
+import { ShoppingCart, Star, Heart, Zap } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCart } from "@/features/cart/hooks";
 import { useWishlistStore } from "@/store/useWishlistStore";
 import { useToast } from "@/hooks/useToast";
@@ -15,7 +15,6 @@ import Image from "next/image";
 import { getImageUrl } from "@/utils/image";
 import { QuickAddModal } from "./QuickAddModal";
 import { animateFlyToCart } from "@/utils/animateCart";
-
 
 interface ProductCardProps {
   product: Product;
@@ -28,7 +27,32 @@ export const ProductCard = React.memo(function ProductCard({ product, view = "gr
   const toggleWishlist = useWishlistStore(state => state.toggleWishlist);
   const { success } = useToast();
   const { data: flashSale } = useFlashSale();
+  const router = useRouter();
   const [isQuickAddOpen, setIsQuickAddOpen] = React.useState(false);
+
+  const parsePrice = (val: string | number | undefined | null): number => {
+    let num = 0;
+    if (typeof val === "number") num = val;
+    else if (typeof val === "string") num = parseFloat(val.replace(/[^\d.]/g, ""));
+    return isNaN(num) ? 0 : num;
+  };
+
+  const basePrice = parsePrice(product.price || product.basePrice);
+  const isFlashSale = flashSale?.products?.some((p: { id: number | string }) => String(p.id) === String(product.id));
+  const flashSalePercent = isFlashSale ? flashSale.percentage || 0 : 0;
+  const price = isFlashSale ? Math.round(basePrice * (1 - flashSalePercent / 100)) : basePrice;
+
+  const originalPriceVal = product.variants?.[0]?.originalPrice || product.originalPrice;
+  const originalPrice = isFlashSale ? basePrice : originalPriceVal ? parsePrice(originalPriceVal) : null;
+
+  const discountPercent = originalPrice && originalPrice > price ? Math.round(((originalPrice - price) / originalPrice) * 100) : 0;
+
+  let images = product.images;
+  if (typeof images === 'string') {
+    try { images = JSON.parse(images); } catch (e) { images = []; }
+  }
+  const rawImage = Array.isArray(images) ? images[0] : null;
+  const imageUrl = getImageUrl(typeof rawImage === "string" ? rawImage : (rawImage as any)?.url);
 
   const handleToggleWishlist = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -42,71 +66,18 @@ export const ProductCard = React.memo(function ProductCard({ product, view = "gr
       slug: product.slug,
       stock: product.stock || 0,
     });
-    if (!isFavorite) {
-      success(`Đã thêm ${product.name} vào danh sách yêu thích`);
-    }
+    if (!isFavorite) success(`Đã thêm ${product.name} vào yêu thích`);
   };
-
-  const parsePrice = (val: string | number | undefined | null): number => {
-    let num = 0;
-    if (typeof val === "number") num = val;
-    else if (typeof val === "string") num = parseFloat(val.replace(/[^\d.]/g, ""));
-    return isNaN(num) ? 0 : num;
-  };
-
-  const basePrice = parsePrice(product.price || product.basePrice);
-
-  // Check if product is in flash sale
-  const isFlashSale = flashSale?.products?.some((p: { id: number | string }) => String(p.id) === String(product.id));
-  const flashSalePercent = isFlashSale ? flashSale.percentage || 0 : 0;
-
-  // Calculate final price based on flash sale
-  const price = isFlashSale
-    ? Math.round(basePrice * (1 - flashSalePercent / 100))
-    : basePrice;
-
-  // Set original price if on sale
-  const originalPriceVal = product.variants?.[0]?.originalPrice || product.originalPrice;
-  const originalPrice = isFlashSale
-    ? basePrice
-    : originalPriceVal
-      ? parsePrice(originalPriceVal)
-      : null;
-
-  // Handle case where product.images might be a JSON string from backend
-  let images = product.images;
-  if (typeof images === 'string') {
-    try {
-      images = JSON.parse(images);
-    } catch (e) {
-      images = [];
-    }
-  }
-
-  const rawImage = Array.isArray(images) ? images[0] : null;
-  const imageUrl = getImageUrl(typeof rawImage === "string" ? rawImage : (rawImage as any)?.url);
 
   const handleAddToCart = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-
+    e.preventDefault(); e.stopPropagation();
     const variants = product.variants || [];
-    const hasMultipleVariants = variants.length > 1;
-
-    // Check if the product has any options like size or color across variants
-    const hasOptions = variants.some(v => v.size || v.color);
-
-    if (hasMultipleVariants || hasOptions) {
-      setIsQuickAddOpen(true);
-      return;
+    if (variants.length > 1 || variants.some(v => v.size || v.color)) {
+      setIsQuickAddOpen(true); return;
     }
-
-    // Trigger fly-to-cart animation
     animateFlyToCart(e, imageUrl);
-
     const variantId = variants?.[0]?.id;
     if (!variantId) return;
-
     addItem({
       productId: String(product.id),
       variantId: String(variantId),
@@ -116,327 +87,114 @@ export const ProductCard = React.memo(function ProductCard({ product, view = "gr
       imageUrl: imageUrl,
       slug: product.slug,
       quantity: 1,
-      color: variants?.[0]?.color,
-      size: variants?.[0]?.size,
     });
   };
 
-
-
-  const discountPercent =
-    originalPrice && originalPrice > price
-      ? Math.round(((originalPrice - price) / originalPrice) * 100)
-      : 0;
-
-  const soldCount = product.soldCount || 0;
-  const viewCount = product.viewCount || 0;
-  const rating = product.averageRating || 0;
-  const firstVariant = product.variants?.[0];
-  const stock = firstVariant?.stock ?? product.stock ?? 0;
-  const isOutOfStock = stock <= 0 || !firstVariant;
-
-  // Variant info for display
-  const variants = product.variants || [];
-  const colorCount = new Set(variants.filter(v => v.color).map(v => v.color)).size;
-  const sizeCount = new Set(variants.filter(v => v.size).map(v => v.size)).size;
-  const variantInfo = [
-    colorCount > 0 ? `${colorCount} màu` : null,
-    sizeCount > 0 ? `${sizeCount} size` : null,
-  ].filter(Boolean).join(" · ");
-
-  // Format sold count for display
   const formatSoldCount = (count: number) => {
     if (count >= 1000) return `${(count / 1000).toFixed(1).replace(/\.0$/, '')}k`;
     return count.toString();
   };
 
-  // ── LIST VIEW VARIANT ──
+  const soldCount = product.soldCount || 0;
+  const rating = product.averageRating || 5;
+
+  // ── LIST VIEW ──
   if (view === "list") {
     return (
-      <div className="group relative flex gap-5 bg-white rounded-2xl border border-slate-100 p-3 overflow-hidden transition-all duration-300 hover:shadow-lg hover:border-primary/20">
-
-        {/* ── IMAGE SECTION ── */}
-        <div className="relative z-10 w-32 h-32 md:w-44 md:h-44 shrink-0 overflow-hidden rounded-xl bg-slate-50 p-2 cursor-pointer">
-          <div className="relative h-full w-full">
-            <Image
-              src={imageUrl}
-              alt={product.name}
-              fill
-              className="h-full w-full object-contain object-center transition-transform duration-500 ease-in-out group-hover:scale-105 mix-blend-multiply"
-              sizes="(max-width: 768px) 128px, 176px"
-            />
-          </div>
-          
-          {/* Badges */}
-          <div className="absolute top-2 left-2 flex flex-col gap-1.5 z-10">
-            {isFlashSale && (
-              <span className="bg-gradient-to-r from-orange-500 to-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-md shadow-sm flex items-center gap-1">
-                <Flame size={10} /> Flash Sale
-              </span>
-            )}
-            {discountPercent > 0 && !isFlashSale && (
-              <span className="bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-md shadow-sm">
-                Giảm giá
-              </span>
-            )}
-            {product.isNew && (
-              <span className="bg-emerald-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-md shadow-sm">
-                Mới
-              </span>
-            )}
-            {soldCount >= 50 && !isFlashSale && !product.isNew && (
-              <span className="bg-amber-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-md shadow-sm">
-                Bán chạy
-              </span>
-            )}
-          </div>
+      <div 
+        onClick={() => router.push(`/shop/${product.slug}`)}
+        className="group relative flex bg-white rounded-2xl border border-[#F3EFE8] hover:border-[#C4B49A]/30 hover:shadow-[0_10px_30px_rgba(61,43,26,0.04)] transition-all duration-500 overflow-hidden cursor-pointer"
+      >
+        <div className="relative h-40 w-40 md:h-48 md:w-48 bg-[#FAF8F4] flex-shrink-0 flex items-center justify-center p-4">
+          <Image src={imageUrl} alt={product.name} fill className="object-contain p-6 transition-transform duration-700 ease-out group-hover:scale-105 mix-blend-multiply" sizes="(max-width: 768px) 160px, 192px" />
         </div>
 
-        {/* Wishlist Button */}
-        <button 
-          type="button"
-          onClick={handleToggleWishlist}
-          className={cn(
-            "absolute top-4 right-4 h-8 w-8 rounded-full flex items-center justify-center transition-all duration-300 z-30 border",
-            isFavorite 
-              ? "text-rose-500 bg-rose-50 border-rose-200" 
-              : "text-slate-300 bg-white border-slate-200 hover:text-rose-500 hover:border-rose-200 hover:bg-rose-50"
-          )}
-        >
-          <Heart size={14} className={cn(isFavorite && "fill-current")} />
-        </button>
-
-        {/* ── CONTENT SECTION ── */}
-        <div className="relative z-10 flex-1 flex flex-col py-1">
-          <div className="space-y-1.5">
-            <Link href={`/shop/${product.slug}`}>
-              <h3 className="text-sm font-semibold text-slate-800 line-clamp-2 group-hover:text-primary transition-colors leading-snug">
-                {product.name}
-              </h3>
-            </Link>
-            {variantInfo && (
-              <p className="text-[11px] text-slate-400 font-medium">
-                {variantInfo}
-              </p>
-            )}
-          </div>
-
-          {/* Rating + Stats */}
-          <div className="mt-2 flex items-center gap-3 text-xs text-slate-400">
-            <div className="flex items-center gap-1.5">
-              <div className="flex gap-0.5">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className={cn("h-3 w-3", i < Math.round(rating || 5) ? "fill-amber-400 text-amber-400" : "text-slate-200")} />
-                ))}
+        <div className="flex-1 p-5 md:p-6 flex flex-col justify-between">
+          <div className="space-y-2">
+            <div className="flex justify-between items-start">
+              <div className="space-y-1">
+                <p className="text-[10px] font-bold text-[#C4B49A] uppercase tracking-[0.12em]">{product.category?.name || "Luxurious"}</p>
+                <h3 className="text-[16px] md:text-[18px] font-medium text-[#3D2B1A] leading-tight hover:text-[#C4783A] transition-colors">{product.name}</h3>
               </div>
-              <span className="text-slate-700 font-semibold">
-                {rating > 0 ? rating.toFixed(1) : "5.0"}
-              </span>
-              {product.reviewCount > 0 && (
-                <span className="text-slate-400">({product.reviewCount})</span>
-              )}
+              <button onClick={handleToggleWishlist} className={cn("relative z-30 w-8 h-8 rounded-full flex items-center justify-center border transition-all duration-300", isFavorite ? "bg-[#C4783A] border-[#C4783A] text-white" : "bg-white border-[#DDD6C8] text-[#8A7966] hover:bg-[#FAF8F4] hover:text-[#C4783A]")}>
+                <Heart size={14} fill={isFavorite ? "currentColor" : "none"} strokeWidth={isFavorite ? 0 : 2} />
+              </button>
             </div>
-            <span className="h-3 w-px bg-slate-200" />
-            <div className="flex items-center gap-1">
-              <Eye className="h-3 w-3 text-slate-400" />
-              <span>{formatSoldCount(viewCount)}</span>
-            </div>
-            <span className="h-3 w-px bg-slate-200" />
-            <span>Đã bán {formatSoldCount(soldCount)}</span>
-          </div>
-
-          <div className="mt-2 flex-1">
-            <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed">
-              {product.description || "Sản phẩm chính hãng chất lượng cao."}
-            </p>
-          </div>
-          
-          <div className="mt-auto flex items-center justify-between pt-3 border-t border-slate-100">
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-              <p className="text-sm md:text-base font-bold text-primary tabular-nums">
-                {formatCurrency(price)}
-              </p>
-              {originalPrice && originalPrice > price && (
-                <p className="text-[10px] md:text-[11px] text-slate-400 line-through tabular-nums">
-                  {formatCurrency(originalPrice)}
-                </p>
-              )}
-              {discountPercent > 0 && (
-                <span className={cn(
-                  "text-[9px] md:text-[10px] font-bold px-1.5 py-0.5 rounded",
-                  isFlashSale 
-                    ? "text-orange-600 bg-orange-50" 
-                    : "text-primary bg-primary/5"
-                )}>
-                  -{discountPercent}%
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1">
+                <div className="text-[#C4783A] text-[13px]">★★★★★</div>
+                <span className="text-[12px] text-[#C4B49A]">({product.reviewCount || 0})</span>
+              </div>
+              <div className="flex items-center gap-2 text-[10px] text-[#8A7966] font-medium">
+                <span className="bg-[#FAF8F4] px-2 py-0.5 rounded-full">{formatSoldCount(soldCount)} đã bán</span>
+                <span className="flex items-center gap-1.5 bg-[#FBF9F6] border border-[#F3EFE8] px-2 py-0.5 rounded-full">
+                  <Zap size={10} className="fill-current text-[#C4783A]" /> {product.viewCount || 0} lượt xem
                 </span>
-              )}
+              </div>
             </div>
+            <p className="text-[13px] text-[#8A7966] line-clamp-2 leading-relaxed max-w-xl">{product.description || "Sản phẩm thiết kế sang trọng, chất liệu cao cấp mang lại sự thoải mái và phong cách cho người mặc."}</p>
+          </div>
 
-            <Button
-              size="sm"
-              onClick={handleAddToCart}
-              disabled={isOutOfStock}
-              className="relative h-9 w-9 md:w-auto md:px-4 rounded-full md:rounded-xl bg-primary text-white hover:brightness-110 font-semibold text-xs shadow-md transition-all active:scale-[0.98] z-20 flex items-center justify-center"
-            >
-              <ShoppingCart size={14} className="md:mr-1.5" />
-              <span className="hidden md:inline">
-                {isOutOfStock ? "Hết hàng" : "Thêm nhanh"}
-              </span>
-            </Button>
+          <div className="flex items-end justify-between pt-4">
+            <div className="flex flex-col">
+              {originalPrice && originalPrice > price && <span className="text-[12px] text-[#C4B49A] line-through mb-0.5">{formatCurrency(originalPrice)}</span>}
+              <span className="text-[22px] font-bold text-[#3D2B1A] leading-none" style={{ fontFamily: "'Playfair Display', serif" }}>{formatCurrency(price)}</span>
+            </div>
+            <button onClick={handleAddToCart} className="relative z-30 flex items-center gap-2 px-5 h-10 rounded-full bg-[#3D2B1A] text-white text-[11px] font-bold uppercase tracking-widest hover:bg-[#C4783A] transition-all duration-300">
+              <ShoppingCart size={14} /> Thêm vào giỏ
+            </button>
           </div>
         </div>
+        <QuickAddModal product={product} isOpen={isQuickAddOpen} onClose={() => setIsQuickAddOpen(false)} price={price} originalPrice={originalPrice} />
       </div>
     );
   }
 
-  // ── GRID VIEW VARIANT ──
+  // ── GRID VIEW ──
   return (
-    <div className="group relative flex flex-col h-full bg-white rounded-2xl border border-slate-100 overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-primary/10">
-
-      {/* ── IMAGE SECTION ── */}
-      <div className="relative z-0 aspect-square w-full overflow-hidden bg-slate-50/50 p-4">
-        <div className="relative h-full w-full">
-          <Image
-            src={imageUrl}
-            alt={product.name}
-            fill
-            className="h-full w-full object-contain object-center transition-transform duration-500 ease-in-out group-hover:scale-105 mix-blend-multiply"
-            sizes="(max-width: 768px) 50vw, 25vw"
-            priority={product.isNew}
-          />
-          {/* Hover Overlay & Action Button */}
-          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-30 pointer-events-none">
-             <Button
-               onClick={handleAddToCart}
-               disabled={isOutOfStock}
-               className="pointer-events-auto opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-400 bg-white/90 backdrop-blur-md text-slate-800 rounded-xl font-semibold shadow-lg border border-slate-200/50 px-6 h-10 flex items-center gap-2 justify-center active:scale-95 text-sm hover:bg-white hover:text-primary"
-             >
-               <ShoppingCart size={15} />
-               {isOutOfStock ? "Hết hàng" : "Thêm vào giỏ"}
-             </Button>
-          </div>
+    <div 
+      onClick={() => router.push(`/shop/${product.slug}`)}
+      className="group relative flex flex-col h-full bg-white rounded-2xl border border-[#F3EFE8] hover:border-[#C4B49A]/30 hover:shadow-[0_15px_35px_rgba(61,43,26,0.06)] transition-all duration-500 overflow-hidden cursor-pointer"
+    >
+      <div className="relative aspect-square w-full bg-[#FAF8F4] overflow-hidden flex items-center justify-center">
+        <Image src={imageUrl} alt={product.name} fill className="object-contain p-8 transition-transform duration-700 ease-out group-hover:scale-105 mix-blend-multiply" sizes="(max-width: 768px) 50vw, 25vw" />
+        <div className="absolute top-4 left-4 z-30 flex flex-col gap-1.5">
+          {discountPercent > 0 && <span className="bg-[#C4783A] text-white text-[9px] font-bold px-2 py-1 rounded uppercase tracking-wider">-{discountPercent}%</span>}
+          {product.isNew && <span className="bg-[#3D2B1A] text-white text-[9px] font-bold px-2 py-1 rounded uppercase tracking-wider">Mới</span>}
         </div>
-      </div>
-      
-      {/* Badges */}
-      <div className="absolute top-2.5 left-2.5 flex flex-col gap-1.5 z-30">
-        {isFlashSale && (
-          <span className="bg-gradient-to-r from-orange-500 to-red-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-md shadow-sm flex items-center gap-1">
-            <Flame size={10} /> Flash Sale
-          </span>
-        )}
-        {discountPercent > 0 && !isFlashSale && (
-          <span className="bg-primary text-white text-[10px] font-bold px-2.5 py-1 rounded-md shadow-sm">
-            Giảm giá
-          </span>
-        )}
-        {product.isNew && (
-          <span className="bg-emerald-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-md shadow-sm">
-            Mới
-          </span>
-        )}
-        {soldCount >= 50 && !isFlashSale && !product.isNew && discountPercent === 0 && (
-          <span className="bg-amber-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-md shadow-sm">
-            Bán chạy
-          </span>
-        )}
-      </div>
-
-      {/* Wishlist + Discount Badge */}
-      <div className="absolute top-2.5 right-2.5 flex flex-col items-end gap-2 z-30">
-        <button 
-          type="button"
-          onClick={handleToggleWishlist}
-          className={cn(
-            "h-8 w-8 rounded-full flex items-center justify-center transition-all duration-300 border shadow-sm",
-            isFavorite 
-              ? "text-rose-500 bg-rose-50 border-rose-200" 
-              : "text-slate-400 bg-white border-slate-200 hover:text-rose-500 hover:bg-rose-50 hover:border-rose-200"
-          )}
-        >
-          <Heart size={14} className={cn(isFavorite && "fill-current")} />
+        <button onClick={handleToggleWishlist} className={cn("absolute top-4 right-4 z-30 w-8 h-8 rounded-full flex items-center justify-center border transition-all duration-300", isFavorite ? "bg-[#C4783A] border-[#C4783A] text-white" : "bg-white/80 backdrop-blur-sm border-[#DDD6C8] text-[#8A7966] hover:bg-white hover:text-[#C4783A]")}>
+          <Heart size={14} fill={isFavorite ? "currentColor" : "none"} strokeWidth={isFavorite ? 0 : 2} />
         </button>
       </div>
 
-      {/* ── CONTENT SECTION ── */}
-      <div className="relative z-10 flex-1 flex flex-col p-3.5 pt-3">
-        <div className="flex justify-between items-start gap-2">
-          <Link href={`/shop/${product.slug}`} className="flex-1">
-            <h3 className="text-[13px] font-semibold text-slate-800 line-clamp-2 leading-snug group-hover:text-primary transition-colors">
-              {product.name}
-            </h3>
-          </Link>
+      <div className="p-4 md:p-5 flex flex-col flex-1">
+        <div className="space-y-1 mb-3">
+          <p className="text-[10px] font-bold text-[#C4B49A] uppercase tracking-[0.12em]">{product.category?.name || "Luxurious"}</p>
+          <h3 className="text-[14px] font-medium text-[#3D2B1A] line-clamp-2 leading-snug min-h-[2.5rem] hover:text-[#C4783A] transition-colors">{product.name}</h3>
         </div>
-        
-        {/* Variant info */}
-        {variantInfo && (
-          <p className="mt-1 text-[10px] text-slate-400 font-medium">
-            {variantInfo}
-          </p>
-        )}
-        
-        {/* Rating + View + Sold */}
-        <div className="mt-2 flex items-center flex-wrap gap-x-2.5 gap-y-1 text-[10px] text-slate-400">
-          <div className="flex items-center gap-1">
-            <div className="flex gap-px">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} className={cn("h-2.5 w-2.5", i < Math.round(rating || 5) ? "fill-amber-400 text-amber-400" : "text-slate-200")} />
-              ))}
-            </div>
-            <span className="text-slate-700 font-semibold text-[11px]">
-              {rating > 0 ? rating.toFixed(1) : "5.0"}
+        <div className="flex items-center justify-between gap-4 mb-4">
+          <div className="flex items-center gap-1.5 shrink-0">
+            <div className="text-[#C4783A] text-[13px]">{"★".repeat(Math.round(rating)) + "☆".repeat(5 - Math.round(rating))}</div>
+            <span className="text-[12px] text-[#C4B49A]">({product.reviewCount || 0})</span>
+          </div>
+          <div className="flex items-center gap-2 text-[10px] text-[#8A7966] font-medium shrink-0">
+            <span className="bg-[#FAF8F4] px-2 py-0.5 rounded-full">{formatSoldCount(soldCount)} đã bán</span>
+            <span className="flex items-center gap-1.5 bg-[#FBF9F6] border border-[#F3EFE8] px-2 py-0.5 rounded-full">
+              <Zap size={10} className="fill-current text-[#C4783A]" /> {product.viewCount || 0} lượt xem
             </span>
-            {product.reviewCount > 0 && (
-              <span>({product.reviewCount})</span>
-            )}
           </div>
-          <span className="h-2.5 w-px bg-slate-200" />
-          <div className="flex items-center gap-0.5">
-            <Eye className="h-3 w-3" />
-            <span>{formatSoldCount(viewCount)}</span>
-          </div>
-          <span className="h-2.5 w-px bg-slate-200" />
-          <span className="font-medium">Đã bán {formatSoldCount(soldCount)}</span>
         </div>
-
-        {/* Price section */}
-        <div className="mt-auto pt-2.5">
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2">
-              <p className="text-sm font-bold text-primary tabular-nums">
-                {formatCurrency(price)}
-              </p>
-              {originalPrice && originalPrice > price && (
-                <p className="text-[10px] text-slate-400 line-through tabular-nums">
-                  {formatCurrency(originalPrice)}
-                </p>
-              )}
-            </div>
-            {discountPercent > 0 && (
-              <span className={cn(
-                "text-[10px] font-bold px-1.5 py-0.5 rounded",
-                isFlashSale 
-                  ? "text-orange-600 bg-orange-50 border border-orange-200" 
-                  : "text-primary bg-primary/5 border border-primary/10"
-              )}>
-                -{discountPercent}%
-              </span>
-            )}
+        <div className="pt-3 border-t border-[#F3EFE8] flex items-end justify-between mt-auto">
+          <div className="flex flex-col">
+            {originalPrice && originalPrice > price && <span className="text-[11px] text-[#C4B49A] line-through mb-0.5">{formatCurrency(originalPrice)}</span>}
+            <span className="text-[18px] font-bold text-[#3D2B1A] leading-none" style={{ fontFamily: "'Playfair Display', serif" }}>{formatCurrency(price)}</span>
           </div>
+          <button onClick={handleAddToCart} className="relative z-30 h-9 w-9 rounded-full bg-[#3D2B1A] text-white flex items-center justify-center hover:bg-[#C4783A] transition-all duration-300">
+            <ShoppingCart size={15} />
+          </button>
         </div>
       </div>
-
-      <QuickAddModal
-        product={product}
-        isOpen={isQuickAddOpen}
-        onClose={() => setIsQuickAddOpen(false)}
-        price={price}
-        originalPrice={originalPrice}
-        flashSalePercent={flashSalePercent}
-      />
+      <QuickAddModal product={product} isOpen={isQuickAddOpen} onClose={() => setIsQuickAddOpen(false)} price={price} originalPrice={originalPrice} />
     </div>
   );
 });
-
- 

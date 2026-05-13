@@ -58,7 +58,7 @@ export const ProductList = React.memo(function ProductList({
     return (
       <div
         className={cn(
-          "grid gap-4",
+          "grid gap-6 animate-in fade-in duration-700",
           view === "grid" ? "grid-cols-2 lg:grid-cols-3" : "grid-cols-1"
         )}
       >
@@ -66,21 +66,26 @@ export const ProductList = React.memo(function ProductList({
           <div
             key={i}
             className={cn(
-              "bg-white rounded-2xl border border-slate-100 overflow-hidden",
-              view === "list" ? "flex gap-5 p-3" : ""
+              "bg-white rounded-[2rem] border border-[#DDD6C8]/40 overflow-hidden",
+              view === "list" ? "flex gap-6 p-4" : ""
             )}
           >
             <Skeleton
               className={cn(
-                "w-full",
-                view === "grid" ? "aspect-square" : "h-[140px] w-36 rounded-xl shrink-0"
+                "bg-[#FAF8F4]",
+                view === "grid" ? "aspect-square w-full" : "h-40 w-40 md:h-52 md:w-52 rounded-2xl shrink-0"
               )}
             />
-            <div className={cn("space-y-3 flex-1", view === "grid" ? "p-3.5" : "py-2")}>
-              <Skeleton className="h-4 w-3/4" />
-              <Skeleton className="h-3 w-1/2" />
-              <Skeleton className="h-3 w-1/3" />
-              <Skeleton className="h-5 w-1/2" />
+            <div className={cn("space-y-4 flex-1", view === "grid" ? "p-5" : "py-2")}>
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-3/4 rounded-full" />
+                <Skeleton className="h-4 w-1/2 rounded-full" />
+              </div>
+              <Skeleton className="h-3 w-1/3 rounded-full" />
+              <div className="pt-4 border-t border-[#F3EFE8] flex justify-between items-center">
+                 <Skeleton className="h-6 w-24 rounded-full" />
+                 <Skeleton className="h-10 w-10 md:w-32 rounded-full" />
+              </div>
             </div>
           </div>
         ))}
@@ -90,18 +95,21 @@ export const ProductList = React.memo(function ProductList({
 
   if (error && !initialProducts) {
     return (
-      <div className="flex flex-col items-center justify-center py-32 text-center space-y-6">
-        <div className="h-20 w-20 rounded-2xl bg-rose-50 flex items-center justify-center text-rose-400">
+      <div className="flex flex-col items-center justify-center py-32 text-center space-y-8 bg-white rounded-[3rem] border border-[#DDD6C8]/40 shadow-sm animate-in zoom-in-95 duration-500 px-6">
+        <div className="h-24 w-24 rounded-[2rem] bg-rose-50 flex items-center justify-center text-rose-500 shadow-inner">
           <RefreshCcw className="h-10 w-10" />
         </div>
-        <div className="space-y-2">
-          <h3 className="text-lg font-semibold text-slate-800">Không thể tải sản phẩm</h3>
-          <p className="text-sm text-slate-500 max-w-xs mx-auto">
-            Vui lòng kiểm tra kết nối mạng và thử lại sau ít phút.
+        <div className="space-y-3 max-w-sm">
+          <h3 className="text-2xl font-bold text-[#3D2B1A]" style={{ fontFamily: "'Playfair Display', serif" }}>Hệ thống đang bảo trì</h3>
+          <p className="text-sm text-[#8A7966] font-medium leading-relaxed">
+            Chúng tôi xin lỗi vì sự bất tiện này. Vui lòng kiểm tra lại kết nối hoặc thử lại sau ít phút.
           </p>
         </div>
-        <Button onClick={() => refetch()} className="rounded-xl px-6 h-10 font-semibold text-sm">
-          Thử lại ngay
+        <Button 
+          onClick={() => refetch()} 
+          className="rounded-full px-10 h-12 bg-[#3D2B1A] hover:bg-[#C4783A] text-white font-bold text-[11px] uppercase tracking-widest shadow-xl shadow-[#3D2B1A]/10 transition-all active:scale-95 border-none"
+        >
+          Tải lại trang ngay
         </Button>
       </div>
     );
@@ -109,35 +117,33 @@ export const ProductList = React.memo(function ProductList({
 
   if (products.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-32 text-center space-y-6 animate-in fade-in duration-500">
-        <div className="h-20 w-20 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-300">
+      <div className="flex flex-col items-center justify-center py-32 text-center space-y-8 bg-white rounded-[3rem] border border-[#DDD6C8]/40 shadow-sm animate-in zoom-in-95 duration-700 px-6">
+        <div className="h-24 w-24 rounded-[2rem] bg-[#FAF8F4] flex items-center justify-center text-[#C4B49A] shadow-inner">
           <PackageSearch className="h-10 w-10" />
         </div>
-        <div className="space-y-2">
-          <h3 className="text-lg font-semibold text-slate-800">
-            Không tìm thấy sản phẩm
-          </h3>
-          <p className="text-sm text-slate-500 max-w-sm mx-auto">
-            Vui lòng thử lại với các bộ lọc hoặc từ khóa tìm kiếm khác.
+        <div className="space-y-3 max-w-md">
+          <h3 className="text-2xl font-bold text-[#3D2B1A]" style={{ fontFamily: "'Playfair Display', serif" }}>Tuyệt phẩm chưa xuất hiện</h3>
+          <p className="text-sm text-[#8A7966] font-medium leading-relaxed">
+            Thật tiếc, chúng tôi chưa tìm thấy sản phẩm nào phù hợp với yêu cầu của bạn. Hãy thử thay đổi bộ lọc hoặc từ khóa tìm kiếm nhé.
           </p>
         </div>
         <Button
           variant="outline"
           onClick={() => (window.location.href = "/shop")}
-          className="rounded-xl px-6 h-10 border-slate-200 font-semibold text-sm"
+          className="rounded-full px-10 h-12 border-[#DDD6C8] text-[#3D2B1A] font-bold text-[11px] uppercase tracking-widest hover:bg-[#FAF8F4] transition-all active:scale-95"
         >
-          Xem tất cả sản phẩm
+          Khám phá tất cả sản phẩm
         </Button>
       </div>
     );
   }
 
   return (
-    <div className="space-y-10 min-h-[600px] flex flex-col justify-between">
+    <div className="space-y-16 min-h-[600px] flex flex-col justify-between">
       <div
         className={cn(
-          "grid animate-in fade-in slide-in-from-bottom-4 duration-700 flex-1 content-start",
-          view === "grid" ? "grid-cols-2 lg:grid-cols-3 gap-4" : "grid-cols-1 gap-3"
+          "grid animate-in fade-in slide-in-from-bottom-6 duration-1000 flex-1 content-start",
+          view === "grid" ? "grid-cols-2 lg:grid-cols-3 gap-6" : "grid-cols-1 gap-6"
         )}
       >
         {products.map((product: Product) => (
@@ -147,18 +153,18 @@ export const ProductList = React.memo(function ProductList({
 
       {/* Pagination */}
       {products.length > 0 && totalPages > 1 && (
-        <div className="flex justify-center items-center gap-1.5 pt-8">
+        <div className="flex justify-center items-center gap-2 pt-12 border-t border-[#F3EFE8]">
           <Button
             variant="outline"
             size="icon"
             disabled={page === 1}
             onClick={() => onPageChange?.(page - 1)}
-            className="h-9 w-9 rounded-xl border-slate-200 hover:bg-primary/5 hover:text-primary hover:border-primary/20 disabled:opacity-30 transition-all"
+            className="h-11 w-11 rounded-2xl border-[#DDD6C8] bg-white text-[#3D2B1A] hover:bg-[#FAF8F4] hover:text-[#C4783A] hover:border-[#C4783A]/30 disabled:opacity-30 transition-all"
           >
-            <ChevronLeft className="h-4 w-4" />
+            <ChevronLeft className="h-5 w-5" />
           </Button>
 
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
             {Array.from({ length: Math.max(1, totalPages) }).map((_, i) => {
               const pageNum = i + 1;
               const isCurrent = pageNum === page;
@@ -171,7 +177,7 @@ export const ProductList = React.memo(function ProductList({
               ) {
                 if (pageNum === page - 2 || pageNum === page + 2) {
                   return (
-                    <span key={pageNum} className="px-1.5 text-slate-300 text-sm">
+                    <span key={pageNum} className="px-2 text-[#C4B49A] text-sm font-bold">
                       ···
                     </span>
                   );
@@ -182,13 +188,12 @@ export const ProductList = React.memo(function ProductList({
               return (
                 <Button
                   key={pageNum}
-                  variant={isCurrent ? "default" : "ghost"}
                   onClick={() => onPageChange?.(pageNum)}
                   className={cn(
-                    "h-9 w-9 rounded-xl font-semibold text-sm transition-all",
+                    "h-11 w-11 rounded-2xl font-bold text-[13px] transition-all",
                     isCurrent
-                      ? "bg-primary text-white shadow-md shadow-primary/20"
-                      : "text-slate-500 hover:bg-primary/5 hover:text-primary"
+                      ? "bg-[#3D2B1A] text-white shadow-xl shadow-[#3D2B1A]/15 active:scale-95"
+                      : "bg-white text-[#8A7966] hover:bg-[#FAF8F4] hover:text-[#3D2B1A] border border-[#DDD6C8]"
                   )}
                 >
                   {pageNum}
@@ -202,9 +207,9 @@ export const ProductList = React.memo(function ProductList({
             size="icon"
             disabled={page === totalPages || totalPages === 0}
             onClick={() => onPageChange?.(page + 1)}
-            className="h-9 w-9 rounded-xl border-slate-200 hover:bg-primary/5 hover:text-primary hover:border-primary/20 disabled:opacity-30 transition-all"
+            className="h-11 w-11 rounded-2xl border-[#DDD6C8] bg-white text-[#3D2B1A] hover:bg-[#FAF8F4] hover:text-[#C4783A] hover:border-[#C4783A]/30 disabled:opacity-30 transition-all"
           >
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className="h-5 w-5" />
           </Button>
         </div>
       )}

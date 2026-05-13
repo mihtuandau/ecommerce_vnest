@@ -62,3 +62,9 @@ export const useAiReviewSummary = (productId: number) => {
     staleTime: 1000 * 60 * 60 * 24, // 24 hours
   });
 };
+export const useLatestReviews = () => {
+  return useQuery({
+    queryKey: ["reviews", "latest"],
+    queryFn: () => reviewsApi.getLatestReviews(),
+  });
+};

@@ -18,6 +18,7 @@ import {
 import { useBanners } from "@/features/banners/hooks";
 import { useFlashSale } from "@/features/discounts/hooks";
 import { useProducts } from "@/features/products/hooks";
+import { useLatestReviews } from "@/features/reviews/hooks";
 
 export default function HomeContainer() {
   // Banners
@@ -35,13 +36,16 @@ export default function HomeContainer() {
   // Top Rated
   const { data: topRatedData, isLoading: isTopRatedLoading } = useProducts({ limit: "4", sortBy: "rating" });
 
+  // Reviews
+  const { data: reviewsData } = useLatestReviews();
+
   const banners = bannerData?.data || bannerData || [];
   const featuredProducts = featuredData?.data || [];
   const bestSellingProducts = bestSellingData?.data || [];
   const topRatedProducts = topRatedData?.data || [];
 
   return (
-    <div className="flex flex-col pb-12 md:pb-20 bg-background">
+    <div className="flex flex-col bg-[#FAF8F4]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
       {/* ── Hero Banner ── */}
       {isBannersLoading ? (
         <HeroBannerSkeleton />
@@ -50,23 +54,23 @@ export default function HomeContainer() {
       )}
 
       {/* ── Trust Badges ── */}
-      <section className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 w-full mt-8 md:mt-12">
+      <section className="max-w-[1440px] mx-auto px-6 lg:px-12 w-full mt-12 md:mt-16">
         <TrustBadges />
       </section>
 
-      <div className="space-y-16 md:space-y-24 mt-12 md:mt-20">
+      <div className="space-y-20 md:space-y-28 mt-16 md:mt-24">
         {/* ── Featured Categories ── */}
-        <section className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 w-full">
+        <section className="max-w-[1440px] mx-auto px-6 lg:px-12 w-full">
           <FeaturedCategories />
         </section>
 
         {/* ── Flash Sale ── */}
         {isFlashSaleLoading ? (
-          <section className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 w-full">
+          <section className="max-w-[1440px] mx-auto px-6 lg:px-12 w-full">
             <FlashSaleSkeleton />
           </section>
         ) : flashSale && (
-          <section className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 w-full">
+          <section className="max-w-[1440px] mx-auto px-6 lg:px-12 w-full">
             <FlashSale data={flashSale} />
           </section>
         )}
@@ -75,25 +79,25 @@ export default function HomeContainer() {
         <VoucherBanner />
 
         {/* ── Best Selling Products ── */}
-        <section className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 w-full">
-          {isBestSellingLoading ? (
-            <ProductSectionSkeleton variant="bestseller" />
-          ) : (
-            <ProductSection 
-              title="Bán chạy" 
-              subtitle="Sản phẩm được yêu thích nhất."
-              products={bestSellingProducts} 
-              icon={TrendingUp}
-              iconColor="text-foreground"
-              iconBg="bg-slate-100"
-              variant="bestseller"
-              viewAllLink="/shop?sortBy=sold"
-            />
-          )}
+        <section className="w-full">
+          <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
+            {isBestSellingLoading ? (
+              <ProductSectionSkeleton variant="bestseller" />
+            ) : (
+              <ProductSection 
+                title="Sản phẩm bán chạy" 
+                subtitle="Những thiết kế được yêu thích nhất."
+                products={bestSellingProducts} 
+                icon={TrendingUp}
+                variant="bestseller"
+                viewAllLink="/shop?sortBy=sold"
+              />
+            )}
+          </div>
         </section>
 
         {/* ── Featured Products ── */}
-        <section className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 w-full">
+        <section className="max-w-[1440px] mx-auto px-6 lg:px-12 w-full">
           {isFeaturedLoading ? (
             <ProductSectionSkeleton variant="featured" />
           ) : (
@@ -102,8 +106,6 @@ export default function HomeContainer() {
               subtitle="Gợi ý dành riêng cho bạn."
               products={featuredProducts} 
               icon={Sparkles}
-              iconColor="text-foreground"
-              iconBg="bg-slate-100"
               variant="featured"
               viewAllLink="/shop?sortBy=newest"
             />
@@ -111,7 +113,7 @@ export default function HomeContainer() {
         </section>
 
         {/* ── Top Rated Products ── */}
-        <section className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 w-full">
+        <section className="max-w-[1440px] mx-auto px-6 lg:px-12 w-full pb-8">
           {isTopRatedLoading ? (
             <ProductSectionSkeleton variant="toprated" />
           ) : (
@@ -120,53 +122,90 @@ export default function HomeContainer() {
               subtitle="Những sản phẩm chất lượng nhất."
               products={topRatedProducts} 
               icon={Star}
-              iconColor="text-foreground"
-              iconBg="bg-slate-100"
               variant="toprated"
               viewAllLink="/shop?sortBy=rating"
             />
           )}
         </section>
-
       </div>
 
-      {/* ── Call to Action ── */}
-      <section className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 w-full">
-        <div className="relative rounded-[2rem] md:rounded-[2.5rem] overflow-hidden bg-slate-900 px-6 py-12 md:px-20 md:py-24 text-center shadow-2xl">
-          <div className="absolute top-0 left-1/4 w-72 h-72 bg-primary/20 rounded-full blur-3xl -translate-y-1/2 pointer-events-none" />
-          <div className="absolute bottom-0 right-1/4 w-72 h-72 bg-rose-500/10 rounded-full blur-3xl translate-y-1/2 pointer-events-none" />
-
-          <div className="relative z-10 max-w-2xl mx-auto space-y-4 md:space-y-6">
-            <span className="inline-block text-xs font-bold tracking-[0.25em] text-primary/80 bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">
-              Minh Tuấn Collection 2025
-            </span>
-            <h2 className="text-2xl md:text-5xl font-bold text-white tracking-tight leading-[1.2] md:leading-[1.1]">
-              Kiến tạo không gian
-              <br className="hidden sm:block" /> hiện đại cùng Minh Tuấn
-            </h2>
-            <p className="text-slate-400 text-sm md:text-lg max-w-lg mx-auto leading-relaxed font-medium">
-              Sở hữu ngay những thiết kế công nghệ và gia dụng đẳng cấp bậc nhất hiện
-              nay.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
-              <Button
-                asChild
-                size="lg"
-                className="rounded-full px-10 h-12 text-sm font-bold shadow-lg shadow-primary/30 w-full sm:w-auto"
-              >
-                <Link href="/shop">Mua sắm ngay</Link>
-              </Button>
-              <Button
-                asChild
-                variant="ghost"
-                size="lg"
-                className="rounded-full px-10 h-12 text-sm text-slate-300 hover:text-white hover:bg-white/5 w-full sm:w-auto"
-              >
-                <Link href="/about" className="flex items-center gap-1.5">
-                  Về chúng tôi <ChevronRight className="h-4 w-4" />
-                </Link>
-              </Button>
-            </div>
+      {/* ── Reviews ── */}
+      <section className="w-full mt-12 pb-24">
+        <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
+          <h2 className="text-[28px] md:text-[32px] text-[#3D2B1A] mb-8" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600 }}>
+            Khách hàng <em className="text-[#C4783A]" style={{ fontStyle: 'italic' }}>nói gì</em>
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {(reviewsData?.reviews || []).length > 0 ? (
+              (reviewsData?.reviews || []).slice(0, 3).map((review: any, i: number) => (
+                <div key={i} className="bg-white border border-[#DDD6C8] rounded-2xl p-8 flex flex-col justify-between hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                  <div>
+                    <div className="text-[#C4783A] text-sm tracking-[2px] mb-4">
+                      {"★".repeat(review.rating || 5)}{"☆".repeat(5 - (review.rating || 5))}
+                    </div>
+                    <p className="text-[13.5px] text-[#3D2B1A] leading-relaxed italic line-clamp-4">
+                      "{review.comment || review.content}"
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3 mt-6 pt-4 border-t border-[#F3EFE8]">
+                    <div className="w-10 h-10 rounded-full bg-[#F3EFE8] flex items-center justify-center text-[#8B6F47] text-[12px] font-semibold shrink-0">
+                      {(review.user?.name || review.user?.fullName || "K").charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <h4 className="text-[13px] font-bold text-[#3D2B1A] line-clamp-1">
+                        {review.user?.name || review.user?.fullName || "Khách hàng"}
+                      </h4>
+                      <p className="text-[11px] text-[#8A7966] line-clamp-1">
+                        {review.user?.address || "Đã mua hàng tại Minh Tuấn Shop"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              // Fallback placeholders
+              [
+                {
+                  text: "Chất lượng sản phẩm thực sự vượt mong đợi. Giao hàng nhanh, đóng gói đẹp. Mình đã mua lần thứ 5 và lần nào cũng hài lòng.",
+                  name: "Linh Nguyễn",
+                  role: "Khách hàng thân thiết · Hà Nội",
+                  initials: "LN"
+                },
+                {
+                  text: "Mình mua chiếc đầm lụa cho tiệc cưới. Vải mềm mịn, form dáng chuẩn như hình. Được nhiều người khen lắm. Sẽ ủng hộ shop dài dài!",
+                  name: "Minh Tâm",
+                  role: "Verified · TP. Hồ Chí Minh",
+                  initials: "MT"
+                },
+                {
+                  text: "Túi xách đẹp hơn ảnh, da mềm, khóa chắc. Giao hàng đúng hẹn dù order vào dịp sale. Dịch vụ CSKH nhiệt tình, hỗ trợ đổi size nhanh.",
+                  name: "Hải Phong",
+                  role: "Verified · Đà Nẵng",
+                  initials: "HP"
+                }
+              ].map((review, i) => (
+                <div key={i} className="bg-white border border-[#DDD6C8] rounded-2xl p-8 flex flex-col justify-between hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                  <div>
+                    <div className="text-[#C4783A] text-sm tracking-[2px] mb-4">★★★★★</div>
+                    <p className="text-[13.5px] text-[#3D2B1A] leading-relaxed italic line-clamp-4">
+                      "{review.text}"
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3 mt-6 pt-4 border-t border-[#F3EFE8]">
+                    <div className="w-10 h-10 rounded-full bg-[#F3EFE8] flex items-center justify-center text-[#8B6F47] text-[12px] font-semibold shrink-0">
+                      {review.initials}
+                    </div>
+                    <div>
+                      <h4 className="text-[13px] font-bold text-[#3D2B1A] line-clamp-1">{review.name}</h4>
+                      <p className="text-[11px] text-[#8A7966] line-clamp-1">
+                        {review.role}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </section>

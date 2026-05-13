@@ -76,13 +76,13 @@ export function CartDropdown() {
           size="icon" 
           className={cn(
             "relative h-10 w-10 rounded-full transition-all duration-300",
-            isOpen ? "text-primary bg-primary/5" : "text-slate-600 hover:text-primary hover:bg-primary/5"
+            isOpen ? "text-[#C4783A] bg-[#C4783A]/5" : "text-[#8A7966] hover:text-[#C4783A] hover:bg-[#C4783A]/5"
           )}
         >
 
           <ShoppingCart className="h-6 w-6" />
           {totalCount > 0 && (
-            <span className="absolute -top-0.5 -right-0.5 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-primary text-xs font-bold text-white shadow-sm ring-2 ring-white">
+            <span className="absolute -top-0.5 -right-0.5 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-[#3D2B1A] text-xs font-bold text-[#FAF8F4] shadow-sm ring-2 ring-white">
               {totalCount}
             </span>
           )}
@@ -96,14 +96,14 @@ export function CartDropdown() {
           isOpen ? "opacity-100 scale-100 pointer-events-auto" : "opacity-0 scale-95 pointer-events-none translate-y-2"
         )}
       >
-        <div className="bg-white rounded-3xl border border-slate-100 shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden flex flex-col max-h-[580px]">
+        <div className="bg-[#FAF8F4] rounded-3xl border border-[#DDD6C8] shadow-[0_20px_50px_rgba(61,43,26,0.1)] overflow-hidden flex flex-col max-h-[580px]">
           {/* Header */}
-          <div className="px-6 py-4 border-b border-slate-50 flex items-center justify-between bg-white sticky top-0 z-10">
-            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-              <ShoppingBasket className="w-4 h-4 text-primary" />
+          <div className="px-6 py-4 border-b border-[#DDD6C8] flex items-center justify-between bg-white sticky top-0 z-10">
+            <h3 className="text-sm font-bold text-[#3D2B1A] flex items-center gap-2">
+              <ShoppingBasket className="w-4 h-4 text-[#C4783A]" />
               Giỏ hàng của bạn
             </h3>
-            <span className="text-xs font-semibold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-full">
+            <span className="text-xs font-semibold text-[#8A7966] bg-[#F3EFE8] px-2.5 py-0.5 rounded-full">
               {totalCount} món
             </span>
           </div>
@@ -112,19 +112,19 @@ export function CartDropdown() {
           <div className="flex-1 overflow-y-auto custom-scrollbar px-6 py-4 bg-white">
             {items.length === 0 ? (
               <div className="py-12 flex flex-col items-center justify-center text-center space-y-4">
-                <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center">
-                  <ShoppingCart className="h-8 w-8 text-slate-200" />
+                <div className="w-16 h-16 bg-[#F3EFE8] rounded-full flex items-center justify-center">
+                  <ShoppingCart className="h-8 w-8 text-[#C4B49A]" />
                 </div>
                 <div className="space-y-1">
-                  <p className="text-sm font-bold text-slate-900">Giỏ hàng trống</p>
-                  <p className="text-xs text-slate-500 font-normal">Hãy thêm vài món vào giỏ nhé!</p>
+                  <p className="text-sm font-bold text-[#3D2B1A]">Giỏ hàng trống</p>
+                  <p className="text-xs text-[#8A7966] font-normal">Hãy thêm vài món vào giỏ nhé!</p>
                 </div>
               </div>
             ) : (
               <div className="space-y-4">
                 {items.map((item) => (
-                  <div key={item.variantId} className="group relative flex gap-4 p-2 rounded-2xl hover:bg-slate-50 transition-all duration-200">
-                    <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl bg-white border border-slate-100 p-1 flex items-center justify-center">
+                  <div key={item.variantId} className="group relative flex gap-4 p-2 rounded-2xl hover:bg-[#FAF8F4] transition-all duration-200">
+                    <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl bg-[#F3EFE8] border border-[#DDD6C8] p-1 flex items-center justify-center">
                       <Image
                         src={item.imageUrl}
                         alt={item.name}
@@ -134,18 +134,18 @@ export function CartDropdown() {
                     </div>
                     <div className="flex flex-1 flex-col justify-between py-0.5 min-w-0">
                       <div className="space-y-0.5">
-                        <h4 className="text-xs font-bold text-slate-900 line-clamp-1 group-hover:text-primary transition-colors leading-snug">
+                        <h4 className="text-xs font-bold text-[#3D2B1A] line-clamp-1 group-hover:text-[#C4783A] transition-colors leading-snug">
                           {item.name}
                         </h4>
                         {(item.color || item.size) && (
                           <div className="flex items-center gap-2 mt-0.5">
                             {item.color && (
-                              <span className="text-[9px] font-bold text-slate-400 bg-slate-50 border border-slate-100 px-1.5 py-0.5 rounded-md uppercase tracking-wider">
+                              <span className="text-[9px] font-bold text-[#8A7966] bg-[#F3EFE8] border border-[#DDD6C8] px-1.5 py-0.5 rounded-md uppercase tracking-wider">
                                 Màu: {item.color}
                               </span>
                             )}
                             {item.size && (
-                              <span className="text-[9px] font-bold text-slate-400 bg-slate-50 border border-slate-100 px-1.5 py-0.5 rounded-md uppercase tracking-wider">
+                              <span className="text-[9px] font-bold text-[#8A7966] bg-[#F3EFE8] border border-[#DDD6C8] px-1.5 py-0.5 rounded-md uppercase tracking-wider">
                                 Size: {item.size}
                               </span>
                             )}
@@ -153,26 +153,26 @@ export function CartDropdown() {
                         )}
                         <div className="flex items-center justify-between">
                           <div className="flex flex-col">
-                            <p className="text-xs font-bold text-primary tabular-nums">{formatCurrency(item.discountedPrice || item.price)}</p>
+                            <p className="text-xs font-semibold text-[#3D2B1A]" style={{ fontFamily: "'Playfair Display', serif" }}>{formatCurrency(item.discountedPrice || item.price)}</p>
                             {item.discountedPrice && item.discountedPrice < item.price ? (
-                              <span className="text-[10px] text-slate-400 line-through font-bold tabular-nums">
+                              <span className="text-[10px] text-[#8A7966] line-through font-bold tabular-nums">
                                 {formatCurrency(item.price)}
                               </span>
                             ) : (item.originalPrice && item.originalPrice > (item.discountedPrice || item.price)) ? (
-                              <span className="text-[10px] text-slate-400 line-through font-bold tabular-nums">
+                              <span className="text-[10px] text-[#8A7966] line-through font-bold tabular-nums">
                                 {formatCurrency(item.originalPrice)}
                               </span>
                             ) : null}
                           </div>
-                          <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">x {item.quantity}</span>
+                          <span className="text-[10px] text-[#8A7966] font-bold uppercase tracking-widest">x {item.quantity}</span>
                         </div>
                       </div>
                       
                       <div className="flex items-center justify-between mt-3">
                         {/* Minimized controls */}
-                        <div className="flex items-center bg-white border border-slate-100 rounded-lg p-0.5">
+                        <div className="flex items-center bg-white border border-[#DDD6C8] rounded-lg p-0.5">
                           <button
-                            className="h-6 w-6 rounded-md hover:bg-slate-50 hover:text-primary transition-all flex items-center justify-center text-slate-600"
+                            className="h-6 w-6 rounded-md hover:bg-[#F3EFE8] hover:text-[#C4783A] transition-all flex items-center justify-center text-[#8A7966]"
                             onClick={(e) => {
                               e.preventDefault();
                               updateQuantity(item.variantId, item.quantity - 1);
@@ -180,11 +180,11 @@ export function CartDropdown() {
                           >
                             <Minus className="h-2.5 w-2.5" />
                           </button>
-                          <span className="w-6 text-center text-xs font-bold text-slate-800">
+                          <span className="w-6 text-center text-xs font-bold text-[#3D2B1A]">
                             {item.quantity}
                           </span>
                           <button
-                            className="h-6 w-6 rounded-md hover:bg-slate-50 hover:text-primary transition-all flex items-center justify-center text-slate-500"
+                            className="h-6 w-6 rounded-md hover:bg-[#F3EFE8] hover:text-[#C4783A] transition-all flex items-center justify-center text-[#8A7966]"
                             onClick={(e) => {
                               e.preventDefault();
                               updateQuantity(item.variantId, item.quantity + 1);
@@ -195,7 +195,7 @@ export function CartDropdown() {
                         </div>
                         
                         <button
-                          className="h-7 w-7 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors flex items-center justify-center"
+                          className="h-7 w-7 text-[#C4B49A] hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-colors flex items-center justify-center"
                           onClick={(e) => {
                             e.preventDefault();
                             removeItem(item.variantId);
@@ -213,10 +213,10 @@ export function CartDropdown() {
 
           {/* Footer */}
           {items.length > 0 && (
-            <div className="p-6 bg-slate-50/50 border-t border-slate-100 space-y-4">
+            <div className="p-6 bg-[#FAF8F4] border-t border-[#DDD6C8] space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tạm tính:</span>
-                <span className="text-2xl font-bold text-primary tabular-nums tracking-tighter">
+                <span className="text-[10px] font-bold text-[#8A7966] uppercase tracking-widest">Tạm tính:</span>
+                <span className="text-[20px] font-semibold text-[#3D2B1A] tabular-nums tracking-tighter" style={{ fontFamily: "'Playfair Display', serif" }}>
                   {formatCurrency(totalPrice)}
                 </span>
               </div>
@@ -226,7 +226,7 @@ export function CartDropdown() {
                     e.preventDefault();
                     handleCheckout();
                   }} 
-                  className="w-full rounded-full h-12 bg-primary hover:bg-primary/90 text-white font-semibold text-xs shadow-xl shadow-primary/10 group active:scale-95 transition-all"
+                  className="w-full rounded-full h-12 bg-[#3D2B1A] hover:bg-[#C4783A] text-[#FAF8F4] font-semibold text-xs shadow-xl shadow-[#3D2B1A]/10 group active:scale-95 transition-all border-none"
                 >
                   Thanh toán ngay
                   <ArrowRight className="ml-2 w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
@@ -234,7 +234,7 @@ export function CartDropdown() {
                 <Link 
                   href={ROUTES.CART} 
                   onClick={() => setIsOpen(false)}
-                  className="w-full rounded-full h-10 text-slate-500 hover:text-primary hover:bg-primary/5 flex items-center justify-center text-xs font-medium transition-all"
+                  className="w-full rounded-full h-10 text-[#8A7966] hover:text-[#3D2B1A] hover:bg-[#E8E0D0]/50 flex items-center justify-center text-xs font-medium transition-all"
                 >
                   Xem chi tiết giỏ hàng
                 </Link>

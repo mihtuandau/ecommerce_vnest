@@ -364,7 +364,7 @@ model Order {
   cancelledAt      DateTime?
   cancelledBy      Int?
   shippingSnapshot Json?
-  statusHistory    Json[]          @default([])
+  statusHistory    Json[]          @default([]) 
   deletedAt        DateTime?
   discountAmount   Float           @default(0)
   subtotal         Float

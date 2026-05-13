@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { cn } from "@/utils/cn";
-import { Shield, MessageSquare, BarChart2 } from "lucide-react";
+import { FileText, ListChecks, MessageSquare } from "lucide-react";
 import { Product } from "@/types/models";
 
 import { ReviewList } from "@/features/reviews/components/customer/ReviewList";
@@ -14,9 +14,9 @@ export function ProductTabs({ product }: ProductTabsProps) {
   const [activeTab, setActiveTab] = useState("description");
 
   const tabs = [
-    { id: "description", label: "Mô tả sản phẩm", icon: Shield },
-    { id: "specs", label: "Thông số kỹ thuật", icon: BarChart2 },
-    { id: "reviews", label: `Đánh giá (${product.reviewCount || 0})`, icon: MessageSquare },
+    { id: "description", label: "Mô tả sản phẩm", icon: FileText },
+    { id: "specs", label: "Thông số kỹ thuật", icon: ListChecks },
+    { id: "reviews", label: "Đánh giá khách hàng", icon: MessageSquare },
   ];
 
   const specs = [
@@ -29,9 +29,9 @@ export function ProductTabs({ product }: ProductTabsProps) {
   ];
 
   return (
-    <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+    <div className="bg-white">
       {/* Tab Navigation */}
-      <div className="flex border-b border-slate-200 overflow-x-auto no-scrollbar bg-slate-50/30">
+      <div className="flex border-b border-[#F3EFE8] overflow-x-auto no-scrollbar mb-10">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -40,16 +40,16 @@ export function ProductTabs({ product }: ProductTabsProps) {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                "relative flex items-center gap-2 px-6 py-4 text-sm font-semibold transition-all whitespace-nowrap border-r border-slate-200/60 last:border-r-0",
+                "relative flex items-center gap-3 px-8 py-5 text-[14px] font-bold uppercase transition-all whitespace-nowrap",
                 isActive 
-                  ? "text-primary bg-white" 
-                  : "text-slate-600 hover:text-slate-800 hover:bg-slate-50/50"
+                  ? "text-[#3D2B1A]" 
+                  : "text-[#C4B49A] hover:text-[#3D2B1A]"
               )}
             >
-              <Icon className={cn("h-3.5 w-3.5", isActive ? "text-primary" : "text-slate-500")} />
+              <Icon size={14} className={isActive ? "text-[#C4783A]" : "text-[#C4B49A]"} />
               {tab.label}
               {isActive && (
-                <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-primary" />
+                <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#3D2B1A] animate-in fade-in duration-500" />
               )}
             </button>
           );
@@ -57,31 +57,31 @@ export function ProductTabs({ product }: ProductTabsProps) {
       </div>
 
       {/* Tab Content */}
-      <div className="p-8 animate-in fade-in duration-500">
+      <div className="animate-in fade-in duration-700">
         {activeTab === "description" && (
-          <div className="prose prose-slate max-w-none">
-            <p className="text-slate-600 text-sm md:text-base leading-relaxed whitespace-pre-line">
+          <div className="max-w-4xl">
+            <p className="text-[#8A7966] text-[15px] leading-[1.8] font-medium whitespace-pre-line">
               {product.description || "Chưa có mô tả chi tiết cho sản phẩm này."}
             </p>
           </div>
         )}
 
         {activeTab === "specs" && (
-          <div className="divide-y divide-slate-100 border-t border-slate-100 mt-[-2rem]">
+          <div className="max-w-2xl divide-y divide-[#F3EFE8]">
             {specs.map((spec, i) => (
-              <div key={i} className="flex items-center py-4 gap-8">
-                <span className="w-40 flex-shrink-0 text-sm font-medium text-slate-500">
+              <div key={i} className="flex items-center py-5 gap-12">
+                <span className="w-48 flex-shrink-0 text-[12px] font-bold text-[#C4B49A] tracking-wide">
                   {spec.label}
                 </span>
                 {spec.label === "Danh mục" ? (
                   <Link 
                     href={`/shop?categoryId=${product.categoryId}`}
-                    className="text-sm font-semibold text-primary hover:underline"
+                    className="text-[14px] font-bold text-[#3D2B1A] hover:text-[#C4783A] transition-colors"
                   >
                     {spec.value}
                   </Link>
                 ) : (
-                  <span className="text-sm font-semibold text-slate-900">
+                  <span className="text-[14px] font-bold text-[#3D2B1A]">
                     {spec.value}
                   </span>
                 )}
@@ -91,7 +91,9 @@ export function ProductTabs({ product }: ProductTabsProps) {
         )}
 
         {activeTab === "reviews" && (
-          <ReviewList productId={Number(product.id)} product={product} />
+          <div className="max-w-5xl">
+            <ReviewList productId={Number(product.id)} product={product} />
+          </div>
         )}
       </div>
     </div>

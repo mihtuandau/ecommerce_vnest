@@ -33,30 +33,26 @@ export function ProductSection({
   if (!products || products.length === 0) return null;
 
   return (
-    <div className="space-y-6 md:space-y-10">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 md:mb-12">
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <h2 className="text-3xl md:text-5xl font-bold text-primary tracking-tighter leading-[1.1]">
-              {title}
-            </h2>
-            <p className="text-slate-400 text-xs md:text-base font-medium tracking-tight max-w-xl leading-relaxed">
-              {subtitle}
-            </p>
-          </div>
+    <div className="space-y-8 md:space-y-12">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div>
+          <h2 className="text-[30px] text-[#3D2B1A]" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600 }}>
+            {title.split(" ")[0]} <em className="text-[#C4783A]" style={{ fontStyle: 'italic' }}>{title.split(" ").slice(1).join(" ") || title}</em>
+          </h2>
+          <p className="text-[#8A7966] text-sm mt-2 max-w-md leading-relaxed">
+            {subtitle}
+          </p>
         </div>
 
         {viewAllLink && (
-          <Button asChild variant="ghost" className="hidden md:flex rounded-full px-8 h-12 hover:bg-slate-100 font-bold text-xs uppercase tracking-widest text-slate-500 hover:text-slate-900 transition-all group border border-slate-100">
-            <Link href={viewAllLink} className="flex items-center gap-2">
-              Xem tất cả <ChevronRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </Button>
+          <Link href={viewAllLink} className="hidden md:flex items-center gap-1 text-[13px] text-[#8B6F47] border-b border-[#C4B49A] pb-0.5 hover:text-[#C4783A] hover:border-[#C4783A] transition-colors">
+            Xem tất cả <ChevronRight className="h-3.5 w-3.5" />
+          </Link>
         )}
       </div>
 
       <div className={cn(
-        "grid gap-4 md:gap-8",
+        "grid gap-4 md:gap-6",
         variant === "toprated" ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" : "grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
       )}>
         {products.slice(0, variant === "toprated" ? 6 : 4).map((product) => (
@@ -66,7 +62,7 @@ export function ProductSection({
 
       {viewAllLink && (
         <div className="md:hidden pt-4">
-          <Button asChild variant="outline" className="w-full rounded-full h-12 font-bold text-xs uppercase tracking-widest border-slate-200 text-slate-600 bg-white shadow-sm">
+          <Button asChild variant="outline" className="w-full rounded-full h-12 font-medium text-sm border-[#DDD6C8] text-[#3D2B1A] bg-white hover:bg-[#F3EFE8] hover:border-[#C4B49A] transition-all">
             <Link href={viewAllLink}>Xem tất cả bộ sưu tập</Link>
           </Button>
         </div>

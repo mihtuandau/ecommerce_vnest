@@ -85,16 +85,21 @@ export function ProductDetailView({ slug }: ProductDetailViewProps) {
 
   if (isLoading) {
     return (
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
-          <Skeleton className="aspect-square rounded-4xl" />
-          <div className="space-y-8">
-            <Skeleton className="h-4 w-20" />
-            <Skeleton className="h-12 w-3/4" />
-            <Skeleton className="h-20 w-full" />
-            <div className="flex gap-4">
-               <Skeleton className="h-14 flex-1 rounded-full" />
-               <Skeleton className="h-14 flex-1 rounded-full" />
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+          <div className="lg:col-span-7">
+            <Skeleton className="aspect-square rounded-3xl" />
+          </div>
+          <div className="lg:col-span-5 space-y-8">
+            <div className="space-y-4">
+              <Skeleton className="h-4 w-24 rounded-full" />
+              <Skeleton className="h-10 w-3/4 rounded-xl" />
+              <Skeleton className="h-6 w-1/4 rounded-lg" />
+            </div>
+            <Skeleton className="h-40 w-full rounded-2xl" />
+            <div className="space-y-4">
+               <Skeleton className="h-14 w-full rounded-full" />
+               <Skeleton className="h-14 w-full rounded-full" />
             </div>
           </div>
         </div>
@@ -104,9 +109,9 @@ export function ProductDetailView({ slug }: ProductDetailViewProps) {
 
   if (error || !product) {
     return (
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center space-y-6">
-        <h1 className="text-2xl font-semibold uppercase tracking-tight text-slate-400">Không tìm thấy sản phẩm</h1>
-        <Button asChild className="rounded-full px-8" variant="outline">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
+        <h1 className="text-[20px] font-bold text-[#3D2B1A] mb-6" style={{ fontFamily: "'Playfair Display', serif" }}>Không tìm thấy sản phẩm</h1>
+        <Button asChild className="rounded-full px-8 h-12 bg-[#3D2B1A] hover:bg-[#C4783A] text-white" variant="outline">
           <Link href="/shop">Quay lại cửa hàng</Link>
         </Button>
       </div>
@@ -130,57 +135,63 @@ export function ProductDetailView({ slug }: ProductDetailViewProps) {
   const currentStock = selectedVariant?.stock ?? product.stock;
 
   return (
-    <div className="bg-white min-h-screen pb-20">
+    <div className="bg-white min-h-screen">
       <ProductBreadcrumbs product={product} />
 
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 md:pt-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-24">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
           
           {/* ── Left: Image Gallery ── */}
           <div className="lg:col-span-7">
-            <ProductGallery 
-              images={allAvailableImages} 
-              name={product.name} 
-            />
+            <div className="sticky top-32">
+              <ProductGallery 
+                images={allAvailableImages} 
+                name={product.name} 
+              />
+            </div>
           </div>
 
           {/* ── Right: Product Info & Actions ── */}
-          <div className="lg:col-span-5 space-y-8">
-            <ProductInfo 
-              product={product} 
-              flashSale={flashSale} 
-              finalPrice={finalPrice} 
-              finalOriginalPrice={finalOriginalPrice} 
-            />
+          <div className="lg:col-span-5 space-y-10">
+            <div className="space-y-10 animate-in fade-in slide-in-from-right-4 duration-700">
+              <ProductInfo 
+                product={product} 
+                flashSale={flashSale} 
+                finalPrice={finalPrice} 
+                finalOriginalPrice={finalOriginalPrice} 
+              />
 
-            <ProductActions 
-              product={product} 
-              finalPrice={finalPrice} 
-              finalOriginalPrice={finalOriginalPrice} 
-              currentStock={currentStock}
-              selectedSize={selectedSize}
-              setSelectedSize={setSelectedSize}
-              selectedColor={selectedColor}
-              setSelectedColor={setSelectedColor}
-              selectedVariant={selectedVariant || null}
-            />
+              <ProductActions 
+                product={product} 
+                finalPrice={finalPrice} 
+                finalOriginalPrice={finalOriginalPrice} 
+                currentStock={currentStock}
+                selectedSize={selectedSize}
+                setSelectedSize={setSelectedSize}
+                selectedColor={selectedColor}
+                setSelectedColor={setSelectedColor}
+                selectedVariant={selectedVariant || null}
+              />
 
-            <ProductTrustBadges />
+              <ProductTrustBadges />
+            </div>
           </div>
         </div>
 
         {/* Details & Tabs */}
-        <div className="mt-20 border-t border-slate-50 pt-16">
+        <div className="mt-24 border-t border-[#F3EFE8] pt-20">
           <ProductTabs product={product} />
         </div>
 
         {/* Related Products */}
-        <div className="mt-20">
+        <div className="mt-24">
           <RelatedProducts categoryId={product.categoryId} currentProductId={String(product.id)} />
         </div>
 
         {/* Recently Viewed Products */}
-        <RecentlyViewedProducts currentProductId={String(product.id)} />
+        <div className="mt-24">
+          <RecentlyViewedProducts currentProductId={String(product.id)} />
+        </div>
       </div>
     </div>
   );

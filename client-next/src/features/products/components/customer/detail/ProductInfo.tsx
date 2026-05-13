@@ -39,19 +39,19 @@ function ProductCountdown({ endDate }: { endDate: string }) {
   if (!time || time.expired) return null;
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-3">
       {[
-        { val: time.days, label: "n" },
-        { val: time.hours, label: "g" },
-        { val: time.minutes, label: "p" },
-        { val: time.seconds, label: "s" }
+        { val: time.days, label: "Ngày" },
+        { val: time.hours, label: "Giờ" },
+        { val: time.minutes, label: "Phút" },
+        { val: time.seconds, label: "Giây" }
       ].map((item, i) => (
         <React.Fragment key={i}>
-          <div className="flex items-baseline gap-0.5">
-            <span className="text-sm font-bold text-slate-900 tabular-nums">{pad(item.val)}</span>
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{item.label}</span>
+          <div className="flex flex-col items-center">
+            <span className="text-[14px] font-bold text-[#3D2B1A] tabular-nums leading-none mb-1">{pad(item.val)}</span>
+            <span className="text-[9px] font-bold text-[#C4B49A] uppercase tracking-[0.1em]">{item.label}</span>
           </div>
-          {i < 3 && <span className="text-slate-200 font-medium">:</span>}
+          {i < 3 && <span className="text-[#F3EFE8] font-light self-start mt-0.5">:</span>}
         </React.Fragment>
       ))}
     </div>
@@ -63,58 +63,52 @@ export function ProductInfo({ product, flashSale, finalPrice, finalOriginalPrice
   const flashSalePercent = isFlashSale ? (flashSale!.percentage || 0) : 0;
 
   return (
-    <div className="space-y-5">
-      <div className="space-y-2.5">
+    <div className="space-y-6">
+      <div className="space-y-4">
         <Link 
           href={`/shop?categoryId=${product.categoryId}`}
-          className="inline-block text-[10px] font-bold text-primary uppercase tracking-[0.15em] px-3 py-1 bg-primary/5 rounded-full border border-primary/10 hover:bg-primary/10 transition-all"
+          className="inline-block text-[12px] font-bold text-[#C4783A] hover:text-[#3D2B1A] transition-colors"
         >
-          {product.category?.name || "Danh mục"}
+          {product.category?.name || "Bộ sưu tập LUXE"}
         </Link>
 
-        <h1 className="text-2xl md:text-3xl font-bold text-slate-900 leading-tight tracking-tight">
+        <h1 className="text-[36px] md:text-[44px] font-bold text-[#3D2B1A] leading-[1.1] tracking-tight" style={{ fontFamily: "'Playfair Display', serif" }}>
           {product.name}
         </h1>
 
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] font-bold uppercase tracking-widest text-slate-400">
-          <div className="flex items-center gap-1.5 no-uppercase">
-            <div className="flex items-center">
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[12px] font-bold text-[#C4B49A]">
+          <div className="flex items-center gap-2">
+            <div className="flex items-center text-[#C4783A] gap-0.5">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} className={cn("h-3 w-3", i < Math.floor(product.averageRating || product.rating || 0) ? "fill-yellow-400 text-yellow-400" : "text-slate-100")} />
+                <Star key={i} size={11} className={cn(i < Math.floor(product.averageRating || 5) ? "fill-current" : "opacity-20")} />
               ))}
             </div>
-            <span className="text-slate-900 font-bold ml-0.5">{(product.averageRating || product.rating || 0).toFixed(1)}</span>
+            <span className="text-[#3D2B1A] ml-0.5">{(product.averageRating || 5).toFixed(1)}</span>
           </div>
-          <span className="h-2 w-px bg-slate-100" />
-          <span className="hover:text-slate-600 transition-colors">{product.reviewCount || 0} Đánh giá</span>
-          <span className="h-2 w-px bg-slate-100" />
-          <span className="hover:text-slate-600 transition-colors">{product.soldCount || 0} Đã bán</span>
-          <span className="h-2 w-px bg-slate-100" />
-          <span className="hover:text-slate-600 transition-colors">{product.viewCount || 0} Lượt xem</span>
+          <span className="h-3 w-px bg-[#F3EFE8]" />
+          <span className="text-[#8A7966]">{product.reviewCount || 0} đánh giá</span>
+          <span className="h-3 w-px bg-[#F3EFE8]" />
+          <span className="text-[#8A7966]">{product.soldCount || 0} đã bán</span>
         </div>
       </div>
 
-      {/* Pricing Box */}
-      <div className={cn(
-        "p-5 rounded-xl space-y-5",
-        isFlashSale ? "bg-[#FFF5F1]/50 border border-[#FFD9C9]" : "bg-slate-50/50 border border-slate-100"
-      )}>
-        <div className="space-y-3">
+      <div className="pt-10 border-t border-[#F3EFE8] space-y-8">
+        <div className="flex flex-col gap-3">
           {isFlashSale && (
-            <div className="inline-flex items-center gap-1.5 bg-[#E85D24] text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-lg shadow-rose-500/10">
-              <Zap className="h-3 w-3 fill-current" /> Flash Sale · -{flashSalePercent}%
+            <div className="flex items-center gap-2 mb-1">
+              <span className="bg-[#C4783A] text-white px-3 py-1 rounded-full text-[10px] font-bold flex items-center gap-1.5">
+                <Zap size={11} fill="currentColor" /> Flash Sale
+              </span>
+              <span className="text-[#C4783A] text-[13px] font-bold">Tiết kiệm {flashSalePercent}%</span>
             </div>
           )}
-
-          <div className="flex items-baseline gap-3">
-            <span className={cn(
-              "text-3xl font-bold tracking-tight tabular-nums",
-              isFlashSale ? "text-[#E85D24]" : "text-slate-900"
-            )}>
+          
+          <div className="flex items-baseline gap-5">
+            <span className="text-[40px] font-bold tabular-nums leading-none text-[#3D2B1A]" style={{ fontFamily: "'Playfair Display', serif" }}>
               {formatCurrency(finalPrice)}
             </span>
             {finalOriginalPrice && finalOriginalPrice > finalPrice && (
-              <span className="text-sm text-slate-500 line-through font-semibold">
+              <span className="text-[18px] text-[#C4B49A] line-through font-medium tabular-nums">
                 {formatCurrency(finalOriginalPrice)}
               </span>
             )}
@@ -122,14 +116,18 @@ export function ProductInfo({ product, flashSale, finalPrice, finalOriginalPrice
         </div>
 
         {isFlashSale && flashSale?.endDate && (
-          <div className="flex items-center gap-4 pt-3 border-t border-rose-100/50">
-            <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-[#E85D24]/60">
+          <div className="flex items-center justify-between p-6 bg-white rounded-3xl border border-[#F3EFE8] max-w-sm">
+            <div className="text-[11px] font-bold text-[#8A7966]">
               Kết thúc sau
             </div>
             <ProductCountdown endDate={flashSale.endDate} />
           </div>
         )}
       </div>
+
+      <p className="text-[15px] text-[#8A7966] leading-[1.8] font-medium max-w-lg">
+        {product.description || "Một tuyệt tác được chế tác tỉ mỉ từ bộ sưu tập cao cấp của LUXE Storefront. Sản phẩm mang ngôn ngữ thiết kế tối giản, kết hợp cùng chất liệu thượng hạng giúp nâng tầm phong cách và mang lại trải nghiệm tinh tế."}
+      </p>
     </div>
   );
 }
