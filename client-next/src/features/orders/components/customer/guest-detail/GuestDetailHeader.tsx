@@ -14,6 +14,7 @@ import {
 import { Button } from "@/components/ui/Button";
 import { useRouter } from "next/navigation";
 import { OrderStatus, ReturnStatus } from "@/types/enums";
+import { cn } from "@/utils/cn";
 
 interface GuestDetailHeaderProps {
   orderId: number;
@@ -107,10 +108,13 @@ export function GuestDetailHeader({
           <div className="space-y-2 min-w-0">
             <div className="flex flex-wrap items-center gap-3">
               <h1 className="text-xl lg:text-2xl font-bold text-slate-900 tracking-tight">
-                Đơn hàng <span className="text-primary font-bold">#{orderCode}</span>
+                Đơn hàng <span className="text-blue-600 font-bold">#{orderCode}</span>
               </h1>
-              <div className={`px-3 py-1 rounded-full text-[10px] font-bold border h-fit flex items-center gap-1.5 uppercase tracking-widest ${currentStatus.color}`}>
-                <currentStatus.icon className="h-3 w-3" />
+              <div className={cn(
+                "flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold border",
+                currentStatus.color
+              )}>
+                <currentStatus.icon size={12} />
                 {currentStatus.label}
               </div>
             </div>
@@ -174,7 +178,7 @@ export function GuestDetailHeader({
             {[OrderStatus.DELIVERED, OrderStatus.CANCELLED, OrderStatus.RETURNED].includes(status) && !showConfirmReturn && (
               <Button
                 onClick={onReorder}
-                className="bg-primary hover:brightness-110 text-white text-[11px] font-bold h-10 px-5 rounded-xl flex items-center gap-2 shadow-lg shadow-primary/10 transition-all active:scale-95 uppercase tracking-widest"
+                className="bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-bold h-10 px-5 rounded-xl flex items-center gap-2 shadow-sm transition-all active:scale-95 uppercase tracking-widest"
               >
                 <ShoppingCart className="h-3.5 w-3.5" />
                 Mua lại

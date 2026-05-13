@@ -2,6 +2,7 @@
 
 import React from "react";
 import { MapPin, CheckCircle2, CreditCard, Mail, Clock, Phone, ArrowRight } from "lucide-react";
+import { cn } from "@/utils/cn";
 
 interface GuestDetailSidebarProps {
   shippingSnapshot: any;
@@ -45,9 +46,11 @@ export function GuestDetailSidebar({
     <div className="space-y-8 lg:sticky lg:top-24">
       {/* Shipping Info */}
       <div className="border border-slate-100 rounded-2xl p-6 space-y-6 bg-white">
-        <div className="flex items-center gap-3 text-slate-900">
-          <MapPin className="h-4 w-4 text-primary" />
-          <h3 className="text-sm font-semibold">Thông tin nhận hàng</h3>
+        <div className="flex items-center gap-3 text-slate-900 mb-6">
+          <div className="h-8 w-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-500 border border-blue-100">
+            <MapPin size={16} />
+          </div>
+          <h3 className="text-sm font-bold text-slate-800 tracking-tight">Thông tin nhận hàng</h3>
         </div>
         <div className="space-y-5">
           <div className="flex items-start gap-4">
@@ -89,36 +92,30 @@ export function GuestDetailSidebar({
 
       {/* Payment & Logistics */}
       <div className="border border-slate-100 rounded-2xl p-6 space-y-6 bg-white">
-        <div className="flex items-center gap-3 text-slate-900">
-          <CreditCard className="h-4 w-4 text-primary" />
-          <h3 className="text-sm font-semibold">Thanh toán & Vận chuyển</h3>
+        <div className="flex items-center gap-3 text-slate-900 mb-6">
+          <div className="h-8 w-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-500 border border-blue-100">
+            <CreditCard size={16} />
+          </div>
+          <h3 className="text-sm font-bold text-slate-800 tracking-tight">Thanh toán & Vận chuyển</h3>
         </div>
         <div className="space-y-4 text-sm font-medium">
           <div className="flex justify-between items-center">
             <span className="text-slate-500">Phương thức</span>
-            <span className="text-slate-900">{paymentMethod || "COD"}</span>
+            <span className="text-slate-900">{paymentMethod || "Thanh Toán Khi Nhận Hang (COD)"}</span>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-slate-500">Trạng thái</span>
-            <span
-              className={
-                paymentStatus === "REFUNDED"
-                  ? "text-purple-600"
-                  : paymentStatus === "CANCELLED"
-                    ? "text-rose-600"
-                    : isPaid 
-                      ? "text-emerald-600" 
-                      : "text-amber-600"
-              }
-            >
-              {paymentStatus === "REFUNDED"
-                ? "Đã hoàn tiền"
-                : paymentStatus === "CANCELLED"
-                  ? "Đã hủy"
-                  : isPaid 
-                    ? "Đã thanh toán" 
-                    : "Chờ thanh toán"}
-            </span>
+            <div className={cn(
+              "px-3 py-0.5 rounded-md text-[10px] font-bold border",
+              paymentStatus === "REFUNDED" ? "text-purple-600 bg-purple-50 border-purple-100" :
+              paymentStatus === "CANCELLED" ? "text-rose-600 bg-rose-50 border-rose-100" :
+              isPaid ? "text-emerald-600 bg-emerald-50 border-emerald-100" : 
+              "text-amber-600 bg-amber-50 border-amber-100"
+            )}>
+              {paymentStatus === "REFUNDED" ? "Đã hoàn tiền" :
+               paymentStatus === "CANCELLED" ? "Đã hủy" :
+               isPaid ? "Đã thanh toán" : "Chờ thanh toán"}
+            </div>
           </div>
           <div className="border-t border-slate-50 pt-4 flex justify-between items-center">
             <span className="text-slate-500">Đơn vị vận chuyển</span>
@@ -127,7 +124,7 @@ export function GuestDetailSidebar({
           {shippingCode && (
             <div className="flex justify-between items-center">
               <span className="text-slate-500">Mã vận đơn</span>
-              <span className="text-primary font-mono text-xs">{shippingCode}</span>
+              <span className="text-blue-600 font-mono text-xs font-bold">{shippingCode}</span>
             </div>
           )}
         </div>
@@ -135,9 +132,11 @@ export function GuestDetailSidebar({
       
       {/* Support Info */}
       <div className="border border-slate-100 rounded-2xl p-6 space-y-5 bg-slate-50/50">
-        <div className="flex items-center gap-3 text-slate-900">
-          <Clock className="h-4 w-4 text-primary" />
-          <h3 className="text-sm font-semibold">Hỗ trợ khách hàng</h3>
+        <div className="flex items-center gap-3 text-slate-900 mb-5">
+          <div className="h-8 w-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-500 border border-blue-100">
+            <Clock size={16} />
+          </div>
+          <h3 className="text-sm font-bold text-slate-800 tracking-tight">Hỗ trợ khách hàng</h3>
         </div>
         <div className="space-y-3">
           <button 

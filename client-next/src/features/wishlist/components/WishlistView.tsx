@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/Button";
 import { Heart, ShoppingCart, Trash2, ArrowLeft, ShoppingBag } from "lucide-react";
 import Link from "next/link";
 import { Card } from "@/components/ui/Card";
+import { Skeleton } from "@/components/ui/Skeleton";
 
 import Image from "next/image";
 
@@ -19,9 +20,8 @@ export function WishlistView() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    syncWishlist();
     setMounted(true);
-  }, [syncWishlist]);
+  }, []);
 
   if (!mounted) {
     return (

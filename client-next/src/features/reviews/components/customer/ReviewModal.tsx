@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import {
   Dialog,
@@ -26,6 +27,7 @@ interface ReviewModalProps {
   orderId: number;
   orderCode?: string;
   productName: string;
+  productSlug?: string;
   variantName?: string;
   productImage?: string;
 }
@@ -37,9 +39,11 @@ export function ReviewModal({
   orderId,
   orderCode,
   productName,
+  productSlug,
   variantName,
   productImage,
 }: ReviewModalProps) {
+  const router = useRouter();
   const [rating, setRating] = useState(5);
   const [hoverRating, setHoverRating] = useState(0);
   const [comment, setComment] = useState("");
@@ -49,8 +53,6 @@ export function ReviewModal({
   const { mutate: createReview, isPending } = useCreateReview();
   const { success, error: toastError } = useToast();
   const queryClient = useQueryClient();
-
-  if (!isOpen) return null;
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -105,9 +107,14 @@ export function ReviewModal({
         {
           onSuccess: () => {
             success("Cảm ơn bạn đã đánh giá sản phẩm!");
-            queryClient.invalidateQueries({ queryKey: ["reviews", "product", productId] });
-            queryClient.invalidateQueries({ queryKey: ["order", String(orderId)] });
+            queryClient.invalidateQueries({ queryKey: ["reviews", "product", String(productId)] });
+            queryClient.invalidateQueries({ queryKey: ["orders", "detail", String(orderId)] });
             onClose();
+            
+            // Chuyển hướng đến trang chi tiết sản phẩm, phần đánh giá
+            if (productSlug) {
+              router.push(`/shop/${productSlug}#reviews`);
+            }
             setComment("");
             setRating(5);
             setSelectedFiles([]);
@@ -135,11 +142,11 @@ export function ReviewModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] p-0 border-none rounded-3xl bg-white shadow-2xl flex flex-col overflow-visible">
+      <DialogContent className="sm:max-w-[600px] p-0 border-none rounded-2xl bg-white shadow-2xl flex flex-col overflow-visible">
         <DialogTitle className="sr-only">Đánh giá sản phẩm</DialogTitle>
         
         {/* Header */}
-        <div className="p-6 pb-4 bg-slate-50/50 border-b border-slate-100 rounded-t-3xl flex items-center justify-between">
+        <div className="p-6 pb-4 bg-slate-50/50 border-b border-slate-100 rounded-t-2xl flex items-center justify-between">
           <div className="space-y-0.5">
             <h2 className="text-xl font-bold text-slate-900">Đánh giá sản phẩm</h2>
             <p className="text-xs text-slate-500 font-medium">Chia sẻ trải nghiệm thực tế của bạn về sản phẩm này</p>

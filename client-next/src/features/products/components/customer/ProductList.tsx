@@ -58,25 +58,29 @@ export const ProductList = React.memo(function ProductList({
     return (
       <div
         className={cn(
-          "grid gap-3 md:gap-5",
+          "grid gap-4",
           view === "grid" ? "grid-cols-2 lg:grid-cols-3" : "grid-cols-1"
         )}
       >
         {Array.from({ length: 6 }).map((_, i) => (
           <div
             key={i}
-            className={cn("space-y-5", view === "list" && "flex gap-6 space-y-0")}
+            className={cn(
+              "bg-white rounded-2xl border border-slate-100 overflow-hidden",
+              view === "list" ? "flex gap-5 p-3" : ""
+            )}
           >
             <Skeleton
               className={cn(
-                "w-full rounded-3xl",
-                view === "grid" ? "aspect-square" : "h-[180px] w-1/4"
+                "w-full",
+                view === "grid" ? "aspect-square" : "h-[140px] w-36 rounded-xl shrink-0"
               )}
             />
-            <div className={cn("space-y-3 px-2 flex-1", view === "list" && "py-4")}>
-              <Skeleton className="h-4 w-1/4" />
-              <Skeleton className="h-6 w-full" />
-              <Skeleton className="h-4 w-1/2" />
+            <div className={cn("space-y-3 flex-1", view === "grid" ? "p-3.5" : "py-2")}>
+              <Skeleton className="h-4 w-3/4" />
+              <Skeleton className="h-3 w-1/2" />
+              <Skeleton className="h-3 w-1/3" />
+              <Skeleton className="h-5 w-1/2" />
             </div>
           </div>
         ))}
@@ -87,16 +91,16 @@ export const ProductList = React.memo(function ProductList({
   if (error && !initialProducts) {
     return (
       <div className="flex flex-col items-center justify-center py-32 text-center space-y-6">
-        <div className="h-20 w-20 rounded-full bg-rose-50 flex items-center justify-center text-rose-500">
+        <div className="h-20 w-20 rounded-2xl bg-rose-50 flex items-center justify-center text-rose-400">
           <RefreshCcw className="h-10 w-10" />
         </div>
         <div className="space-y-2">
-          <h3 className="text-xl font-bold text-slate-900">Không thể tải sản phẩm</h3>
-          <p className="text-slate-500 max-w-xs mx-auto">
+          <h3 className="text-lg font-semibold text-slate-800">Không thể tải sản phẩm</h3>
+          <p className="text-sm text-slate-500 max-w-xs mx-auto">
             Vui lòng kiểm tra kết nối mạng và thử lại sau ít phút.
           </p>
         </div>
-        <Button onClick={() => refetch()} className="rounded-full px-8">
+        <Button onClick={() => refetch()} className="rounded-xl px-6 h-10 font-semibold text-sm">
           Thử lại ngay
         </Button>
       </div>
@@ -106,21 +110,21 @@ export const ProductList = React.memo(function ProductList({
   if (products.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-32 text-center space-y-6 animate-in fade-in duration-500">
-        <div className="h-24 w-24 rounded-3xl bg-slate-50 flex items-center justify-center text-slate-200">
-          <PackageSearch className="h-12 w-12" />
+        <div className="h-20 w-20 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-300">
+          <PackageSearch className="h-10 w-10" />
         </div>
         <div className="space-y-2">
-          <h3 className="text-xl font-bold text-slate-900 tracking-tight">
+          <h3 className="text-lg font-semibold text-slate-800">
             Không tìm thấy sản phẩm
           </h3>
-          <p className="text-slate-500 max-w-sm mx-auto font-medium">
+          <p className="text-sm text-slate-500 max-w-sm mx-auto">
             Vui lòng thử lại với các bộ lọc hoặc từ khóa tìm kiếm khác.
           </p>
         </div>
         <Button
           variant="outline"
           onClick={() => (window.location.href = "/shop")}
-          className="rounded-full px-8 border-slate-200"
+          className="rounded-xl px-6 h-10 border-slate-200 font-semibold text-sm"
         >
           Xem tất cả sản phẩm
         </Button>
@@ -129,11 +133,11 @@ export const ProductList = React.memo(function ProductList({
   }
 
   return (
-    <div className="space-y-12 min-h-[600px] flex flex-col justify-between pb-12">
+    <div className="space-y-10 min-h-[600px] flex flex-col justify-between">
       <div
         className={cn(
-          "grid gap-3 md:gap-5 animate-in fade-in slide-in-from-bottom-4 duration-1000 flex-1 content-start",
-          view === "grid" ? "grid-cols-2 lg:grid-cols-3" : "grid-cols-1"
+          "grid animate-in fade-in slide-in-from-bottom-4 duration-700 flex-1 content-start",
+          view === "grid" ? "grid-cols-2 lg:grid-cols-3 gap-4" : "grid-cols-1 gap-3"
         )}
       >
         {products.map((product: Product) => (
@@ -142,14 +146,14 @@ export const ProductList = React.memo(function ProductList({
       </div>
 
       {/* Pagination */}
-      {products.length > 0 && (
-        <div className="flex justify-center items-center gap-2 pt-8 border-t border-slate-100">
+      {products.length > 0 && totalPages > 1 && (
+        <div className="flex justify-center items-center gap-1.5 pt-8">
           <Button
             variant="outline"
             size="icon"
             disabled={page === 1}
             onClick={() => onPageChange?.(page - 1)}
-            className="rounded-xl border-slate-200 hover:bg-white hover:text-primary hover:border-primary/20 disabled:opacity-30"
+            className="h-9 w-9 rounded-xl border-slate-200 hover:bg-primary/5 hover:text-primary hover:border-primary/20 disabled:opacity-30 transition-all"
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
@@ -167,8 +171,8 @@ export const ProductList = React.memo(function ProductList({
               ) {
                 if (pageNum === page - 2 || pageNum === page + 2) {
                   return (
-                    <span key={pageNum} className="px-2 text-slate-300">
-                      ...
+                    <span key={pageNum} className="px-1.5 text-slate-300 text-sm">
+                      ···
                     </span>
                   );
                 }
@@ -181,10 +185,10 @@ export const ProductList = React.memo(function ProductList({
                   variant={isCurrent ? "default" : "ghost"}
                   onClick={() => onPageChange?.(pageNum)}
                   className={cn(
-                    "h-10 w-10 rounded-xl font-bold text-sm",
+                    "h-9 w-9 rounded-xl font-semibold text-sm transition-all",
                     isCurrent
-                      ? "bg-primary text-white shadow-lg shadow-primary/20"
-                      : "text-slate-500 hover:bg-white hover:text-primary hover:shadow-sm"
+                      ? "bg-primary text-white shadow-md shadow-primary/20"
+                      : "text-slate-500 hover:bg-primary/5 hover:text-primary"
                   )}
                 >
                   {pageNum}
@@ -198,7 +202,7 @@ export const ProductList = React.memo(function ProductList({
             size="icon"
             disabled={page === totalPages || totalPages === 0}
             onClick={() => onPageChange?.(page + 1)}
-            className="rounded-xl border-slate-200 hover:bg-white hover:text-primary hover:border-primary/20 disabled:opacity-30"
+            className="h-9 w-9 rounded-xl border-slate-200 hover:bg-primary/5 hover:text-primary hover:border-primary/20 disabled:opacity-30 transition-all"
           >
             <ChevronRight className="h-4 w-4" />
           </Button>

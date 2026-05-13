@@ -60,7 +60,7 @@ type CheckoutDiscount = {
 
 
 export function CheckoutContainer() {
-  const { items, buyNowItem, clearBuyNowItem } = useCartStore();
+  const { items, buyNowItem, clearBuyNowItem, appliedDiscount: globalDiscount, setAppliedDiscount: setGlobalDiscount } = useCartStore();
   const { user } = useAuthStore();
   const { success, error, warning } = useToast();
   const router = useRouter();
@@ -96,11 +96,10 @@ export function CheckoutContainer() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Discount states
-  const [discountCode, setDiscountCode] = useState("");
-  const [appliedDiscount, setAppliedDiscount] = useState<CheckoutDiscount | null>(null);
-  const [discountAmount, setDiscountAmount] = useState(0);
+  const [discountCode, setDiscountCode] = useState(globalDiscount?.code || "");
+  const [appliedDiscount, setAppliedDiscount] = useState<CheckoutDiscount | null>(globalDiscount);
+  const [discountAmount, setDiscountAmount] = useState(0); // Will be calculated in effect
   const [isApplyingDiscount, setIsApplyingDiscount] = useState(false);
-  const [discountChoice, setDiscountChoice] = useState<"FLASH_SALE" | "VOUCHER">("FLASH_SALE");
 
   const [form, setForm] = useState({
     fullName: "",
@@ -206,8 +205,8 @@ export function CheckoutContainer() {
   }, [form.districtId, form.wardCode, displayItems]);
 
   // Handle Apply Discount
-  const handleApplyDiscount = useCallback(async () => {
-    const codeToValidate = discountCode.trim().toUpperCase();
+  const handleApplyDiscount = useCallback(async (codeFromModal?: string) => {
+    const codeToValidate = (codeFromModal || discountCode).trim().toUpperCase();
     if (!codeToValidate) return;
     
     setIsApplyingDiscount(true);
@@ -221,45 +220,33 @@ export function CheckoutContainer() {
 
       const discount = res.discount;
       
-      // LOGIC ĐỒNG BỘ VỚI BACKEND: Chọn mức giảm tốt nhất
-      const totalOriginalValue = displayItems.reduce((sum, i) => sum + (i.originalPrice || i.price || 0) * i.quantity, 0);
-      const totalFlashSale = displayItems.reduce((sum, i) => sum + (i.discountedPrice || i.price) * i.quantity, 0);
-      const flashSaleSaving = totalOriginalValue - totalFlashSale;
-
       let voucherSaving = 0;
       const isPercentage = discount.discountType === "PERCENTAGE";
       const val = discount.discountValue || 0;
 
       if (isPercentage) {
-        voucherSaving = Math.round((totalOriginalValue * val) / 100);
+        voucherSaving = Math.round((subtotal * val) / 100);
         if (discount.maxDiscountAmount && voucherSaving > discount.maxDiscountAmount) {
           voucherSaving = discount.maxDiscountAmount;
         }
       } else {
         voucherSaving = val;
       }
-      voucherSaving = Math.min(voucherSaving, totalOriginalValue);
+      voucherSaving = Math.min(voucherSaving, subtotal);
 
-      if (discount.minOrderAmount && totalOriginalValue < discount.minOrderAmount) {
+      if (discount.minOrderAmount && subtotal < discount.minOrderAmount) {
         warning(`Mã chỉ áp dụng cho đơn từ ${new Intl.NumberFormat('vi-VN').format(discount.minOrderAmount)}đ`);
         return;
       }
 
-      // So sánh: Nếu Flash Sale tốt hơn hoặc bằng -> Ưu tiên Flash Sale
-      if (flashSaleSaving >= voucherSaving && flashSaleSaving > 0) {
-        setAppliedDiscount({ ...discount, code: codeToValidate });
-        setDiscountAmount(0); // Không cộng dồn
-        setDiscountChoice("FLASH_SALE");
-        warning("Flash Sale đang có giá tốt hơn mã giảm giá này. Chúng tôi sẽ giữ giá Flash Sale cho bạn.");
-      } else {
-        // Voucher tốt hơn -> Áp dụng Voucher trên GIÁ GỐC
-        setAppliedDiscount({ ...discount, code: codeToValidate });
-        setDiscountAmount(voucherSaving);
-        setDiscountChoice("VOUCHER");
-        success(`Đã áp dụng mã giảm giá: -${new Intl.NumberFormat('vi-VN').format(voucherSaving)}đ`);
-      }
-    } catch (err: unknown) {
-      error("Mã giảm giá không hợp lệ");
+      // Voucher tốt hơn -> Áp dụng Voucher trên GIÁ GỐC
+      setDiscountCode(codeToValidate);
+      setAppliedDiscount({ ...discount, code: codeToValidate });
+      setDiscountAmount(voucherSaving);
+      success(`Đã áp dụng mã giảm giá: -${new Intl.NumberFormat('vi-VN').format(voucherSaving)}đ`);
+    } catch (err: any) {
+      const message = err.response?.data?.message || "Mã giảm giá không hợp lệ";
+      error(message);
       setAppliedDiscount(null);
       setDiscountAmount(0);
     } finally {
@@ -271,8 +258,43 @@ export function CheckoutContainer() {
     setAppliedDiscount(null);
     setDiscountAmount(0);
     setDiscountCode("");
+    setGlobalDiscount(null);
     success("Đã gỡ mã giảm giá");
-  }, [success]);
+  }, [success, setGlobalDiscount]);
+
+  // Recalculate discount amount and sync to global state
+  useEffect(() => {
+    setGlobalDiscount(appliedDiscount);
+    if (!appliedDiscount) {
+      setDiscountAmount(0);
+      return;
+    }
+
+    if (appliedDiscount.minOrderAmount && subtotal < appliedDiscount.minOrderAmount) {
+      setAppliedDiscount(null);
+      setDiscountAmount(0);
+      setDiscountCode("");
+      setGlobalDiscount(null);
+      warning(`Đã gỡ mã vì giỏ hàng chưa đủ ${new Intl.NumberFormat('vi-VN').format(appliedDiscount.minOrderAmount)}đ`);
+      return;
+    }
+
+    let voucherSaving = 0;
+    const isPercentage = appliedDiscount.discountType === "PERCENTAGE";
+    const val = appliedDiscount.discountValue || 0;
+
+    if (isPercentage) {
+      voucherSaving = Math.round((subtotal * val) / 100);
+      if (appliedDiscount.maxDiscountAmount && voucherSaving > appliedDiscount.maxDiscountAmount) {
+        voucherSaving = appliedDiscount.maxDiscountAmount;
+      }
+    } else {
+      voucherSaving = val;
+    }
+    voucherSaving = Math.min(voucherSaving, subtotal);
+
+    setDiscountAmount(voucherSaving);
+  }, [appliedDiscount, subtotal, setGlobalDiscount, warning]);
 
   const [isLoadingDistricts, setIsLoadingDistricts] = useState(false);
   const [isLoadingWards, setIsLoadingWards] = useState(false);
@@ -506,8 +528,6 @@ export function CheckoutContainer() {
                 onApplyDiscount={handleApplyDiscount}
                 onRemoveDiscount={handleRemoveDiscount}
                 isApplyingDiscount={isApplyingDiscount}
-                totalOriginal={totalOriginal}
-                discountChoice={discountChoice}
               />
             </div>
           </form>

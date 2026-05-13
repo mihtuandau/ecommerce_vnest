@@ -33,6 +33,7 @@ export function CartDropdown() {
   };
 
   const handleMouseEnter = () => {
+    if (typeof window !== "undefined" && window.innerWidth < 1024) return;
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     setIsOpen(true);
   };
@@ -58,7 +59,17 @@ export function CartDropdown() {
       onMouseLeave={handleMouseLeave}
     >
       {/* Trigger */}
-      <Link href={ROUTES.CART}>
+      <Link 
+        href={ROUTES.CART}
+        onClick={(e) => {
+          if (typeof window !== "undefined" && window.innerWidth < 1024) {
+            // Let Link handle navigation
+          } else {
+            e.preventDefault();
+            setIsOpen(!isOpen);
+          }
+        }}
+      >
         <Button 
           id="cart-icon"
           variant="ghost" 
@@ -81,7 +92,7 @@ export function CartDropdown() {
       {/* Dropdown Box */}
       <div 
         className={cn(
-          "absolute right-0 top-full pt-4 z-50 transition-all duration-300 transform origin-top-right w-[380px]",
+          "absolute right-0 top-full pt-4 z-50 transition-all duration-300 transform origin-top-right w-[380px] hidden lg:block",
           isOpen ? "opacity-100 scale-100 pointer-events-auto" : "opacity-0 scale-95 pointer-events-none translate-y-2"
         )}
       >

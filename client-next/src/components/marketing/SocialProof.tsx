@@ -87,7 +87,7 @@ export function SocialProof() {
 
   return (
     <div
-      className={`fixed bottom-8 left-24 z-[100] transition-all duration-1000 ease-[cubic-bezier(0.23,1,0.32,1)] transform
+      className={`fixed bottom-8 left-6 md:left-24 z-[100] hidden md:block transition-all duration-1000 ease-[cubic-bezier(0.23,1,0.32,1)] transform
         ${isVisible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0 pointer-events-none"}`}
     >
       <div className="bg-white/95 backdrop-blur-xl border border-slate-200 p-3 pr-5 rounded-2xl shadow-sm flex items-center gap-4 max-w-[340px] group relative overflow-hidden">

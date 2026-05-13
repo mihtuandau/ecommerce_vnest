@@ -74,7 +74,7 @@ export function Header({ initialHasToken }: { initialHasToken?: boolean }) {
           <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex h-18 items-center gap-4">
               {/* LEFT — Logo */}
-              <div className="flex shrink-0 items-center gap-2 min-w-[160px]">
+              <div className="flex shrink-0 items-center gap-1 sm:gap-2 lg:min-w-[160px]">
                 <button onClick={() => setMobileOpen(true)} className="lg:hidden p-2 -ml-2 rounded-full text-slate-500 hover:bg-slate-100 transition-colors">
                   <Menu className="h-5 w-5" />
                 </button>
@@ -102,14 +102,14 @@ export function Header({ initialHasToken }: { initialHasToken?: boolean }) {
               </div>
 
               {/* RIGHT — Actions */}
-              <div className="flex shrink-0 items-center justify-end gap-2 sm:gap-3 ml-auto">
+              <div className="flex shrink-0 items-center justify-end gap-1 sm:gap-3 ml-auto">
                 <Button 
                   variant="ghost" 
                   size="icon" 
-                  className="lg:hidden h-10 w-10 rounded-full text-slate-600 hover:text-primary hover:bg-primary/5 transition-all"
+                  className="lg:hidden h-9 w-9 rounded-full text-slate-600 hover:text-primary hover:bg-primary/5 transition-all"
                   onClick={() => setIsSearchOpen(true)}
                 >
-                  <Search className="h-6 w-6" />
+                  <Search className="h-5 w-5" />
                 </Button>
 
                 <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full text-slate-600 hover:text-primary hover:bg-primary/5 transition-all relative" asChild>
@@ -180,7 +180,7 @@ export function Header({ initialHasToken }: { initialHasToken?: boolean }) {
                     <Button asChild variant="outline" className="hidden sm:flex rounded-full px-5 h-9 text-xs font-semibold border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-primary transition-all">
                       <Link href={ROUTES.LOGIN}>Đăng nhập</Link>
                     </Button>
-                    <Button asChild size="sm" className="rounded-full px-5 h-9 text-xs font-semibold shadow-lg shadow-primary/20 transition-all active:scale-95">
+                    <Button asChild size="sm" className="hidden sm:flex rounded-full px-5 h-9 text-xs font-semibold shadow-lg shadow-primary/20 transition-all active:scale-95">
                       <Link href={ROUTES.REGISTER}>Đăng ký</Link>
                     </Button>
                   </div>

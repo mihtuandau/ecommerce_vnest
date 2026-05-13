@@ -34,6 +34,7 @@ import {
   SelectTrigger, 
   SelectValue 
 } from "@/components/ui/Select";
+import { Category } from "@/types/models";
 
 const categorySchema = z.object({
   name: nameSchema,
@@ -110,7 +111,7 @@ export function CategoryForm({ initialData, onSubmit, isLoading }: CategoryFormP
   };
 
   // Filter out the current category from parent list to prevent self-parenting
-  const parentOptions = categories.filter(cat => initialData ? cat.id !== initialData.id : true);
+  const parentOptions = categories.filter((cat: Category) => initialData ? cat.id !== initialData.id : true);
 
   return (
     <Form {...form}>
@@ -157,8 +158,8 @@ export function CategoryForm({ initialData, onSubmit, isLoading }: CategoryFormP
                       <Select 
                         key={categories.length}
                         onValueChange={field.onChange} 
-                        defaultValue={field.value}
-                        value={field.value}
+                        defaultValue={field.value ?? undefined}
+                        value={field.value ?? undefined}
                       >
                         <FormControl>
                           <SelectTrigger className="h-12 rounded-xl border-slate-200 text-slate-900 font-medium text-base shadow-sm focus:ring-2 focus:ring-slate-900/5 transition-all bg-white">
@@ -169,7 +170,7 @@ export function CategoryForm({ initialData, onSubmit, isLoading }: CategoryFormP
                           <SelectItem value="none" className="rounded-lg text-slate-600 font-medium py-3">
                             Không có (Danh mục gốc)
                           </SelectItem>
-                          {parentOptions.map((cat) => (
+                          {parentOptions.map((cat: Category) => (
                             <SelectItem 
                               key={cat.id} 
                               value={String(cat.id)}

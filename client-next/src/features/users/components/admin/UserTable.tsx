@@ -33,6 +33,73 @@ const statusConfig: Record<string, { label: string; color: string }> = {
   [UserStatus.PENDING]: { label: "Chờ xác minh", color: "bg-slate-100 text-slate-600 border-slate-200" },
 };
 
+interface CellActionProps {
+  data: User;
+}
+
+const CellAction = ({ data }: CellActionProps) => {
+  const router = useRouter();
+  const { mutate: deleteUser } = useDeleteUser();
+  const { mutate: updateUser } = useUpdateUser();
+
+  const toggleStatus = () => {
+    const newStatus = data.status === UserStatus.ACTIVE ? UserStatus.SUSPENDED : UserStatus.ACTIVE;
+    updateUser({ id: data.id, data: { status: newStatus } });
+  };
+
+  return (
+    <div className="flex justify-end">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-slate-500 hover:text-slate-700">
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-48 rounded-xl p-1 shadow-xl border-slate-200">
+          <DropdownMenuItem 
+            className="rounded-lg cursor-pointer gap-2 py-2.5 text-sm font-medium text-slate-600 focus:text-primary"
+            onClick={() => router.push(`/admin/users/${data.id}`)}
+          >
+            <Pencil className="h-4 w-4 text-slate-500" />
+            Xem chi tiết & Sửa
+          </DropdownMenuItem>
+          <DropdownMenuItem 
+            className={cn(
+              "rounded-lg cursor-pointer gap-2 py-2.5 text-sm font-medium focus:bg-slate-50",
+              data.status === UserStatus.ACTIVE ? "text-amber-600" : "text-emerald-600"
+            )}
+            onClick={toggleStatus}
+          >
+            {data.status === UserStatus.ACTIVE ? (
+              <>
+                <Ban className="h-4 w-4" />
+                Vô hiệu hóa
+              </>
+            ) : (
+              <>
+                <CheckCircle2 className="h-4 w-4" />
+                Kích hoạt lại
+              </>
+            )}
+          </DropdownMenuItem>
+          <div className="my-1 border-t border-slate-100" />
+          <DropdownMenuItem 
+            className="rounded-lg cursor-pointer gap-2 py-2.5 text-sm font-medium text-rose-600 focus:bg-rose-50"
+            onClick={() => {
+              if (confirm(`Bạn có chắc chắn muốn xóa người dùng ${data.email}? Hành động này không thể hoàn tác.`)) {
+                deleteUser(data.id);
+              }
+            }}
+          >
+            <Trash2 className="h-4 w-4" />
+            Xóa tài khoản
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  );
+};
+
 export const columns: ColumnDef<User>[] = [
   {
     id: "stt",
@@ -130,72 +197,7 @@ export const columns: ColumnDef<User>[] = [
   },
   {
     id: "actions",
-    cell: ({ row }) => {
-      const user = row.original;
-      // eslint-disable-next-line react-hooks/rules-of-hooks
-      const router = useRouter();
-      // eslint-disable-next-line react-hooks/rules-of-hooks
-      const { mutate: deleteUser } = useDeleteUser();
-      // eslint-disable-next-line react-hooks/rules-of-hooks
-      const { mutate: updateUser } = useUpdateUser();
-
-      const toggleStatus = () => {
-        const newStatus = user.status === UserStatus.ACTIVE ? UserStatus.SUSPENDED : UserStatus.ACTIVE;
-        updateUser({ id: user.id, data: { status: newStatus } });
-      };
-
-      return (
-        <div className="flex justify-end">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-slate-500 hover:text-slate-700">
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48 rounded-xl p-1 shadow-xl border-slate-200">
-              <DropdownMenuItem 
-                className="rounded-lg cursor-pointer gap-2 py-2.5 text-sm font-medium text-slate-600 focus:text-primary"
-                onClick={() => router.push(`/admin/users/${user.id}`)}
-              >
-                <Pencil className="h-4 w-4 text-slate-500" />
-                Xem chi tiết & Sửa
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                className={cn(
-                  "rounded-lg cursor-pointer gap-2 py-2.5 text-sm font-medium focus:bg-slate-50",
-                  user.status === UserStatus.ACTIVE ? "text-amber-600" : "text-emerald-600"
-                )}
-                onClick={toggleStatus}
-              >
-                {user.status === UserStatus.ACTIVE ? (
-                  <>
-                    <Ban className="h-4 w-4" />
-                    Vô hiệu hóa
-                  </>
-                ) : (
-                  <>
-                    <CheckCircle2 className="h-4 w-4" />
-                    Kích hoạt lại
-                  </>
-                )}
-              </DropdownMenuItem>
-              <div className="my-1 border-t border-slate-100" />
-              <DropdownMenuItem 
-                className="rounded-lg cursor-pointer gap-2 py-2.5 text-sm font-medium text-rose-600 focus:bg-rose-50"
-                onClick={() => {
-                  if (confirm(`Bạn có chắc chắn muốn xóa người dùng ${user.email}? Hành động này không thể hoàn tác.`)) {
-                    deleteUser(user.id);
-                  }
-                }}
-              >
-                <Trash2 className="h-4 w-4" />
-                Xóa tài khoản
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      );
-    },
+    cell: ({ row }) => <CellAction data={row.original} />,
   },
 ];
 

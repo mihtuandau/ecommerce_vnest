@@ -9,6 +9,8 @@ import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/utils/cn";
 import Image from "next/image";
 import { CartItem } from "@/store/useCartStore";
+import { VoucherModal } from "@/features/discounts/components/customer/VoucherModal";
+import { useState } from "react";
 
 type CheckoutDiscount = {
   id?: number;
@@ -26,14 +28,12 @@ interface OrderSummaryProps {
   isSubmitting: boolean;
   canSubmit: boolean;
   isCalculatingFee?: boolean;
-  totalOriginal: number;
-  discountChoice: "FLASH_SALE" | "VOUCHER";
   // Discount props
   discountCode: string;
   setDiscountCode: (code: string) => void;
   appliedDiscount: CheckoutDiscount | null;
   discountAmount: number;
-  onApplyDiscount: () => void;
+  onApplyDiscount: (code: string) => void;
   onRemoveDiscount: () => void;
   isApplyingDiscount?: boolean;
 }
@@ -45,8 +45,6 @@ export const OrderSummary = React.memo(function OrderSummary({
   isSubmitting,
   canSubmit,
   isCalculatingFee = false,
-  totalOriginal,
-  discountChoice,
   discountCode,
   setDiscountCode,
   appliedDiscount,
@@ -55,6 +53,8 @@ export const OrderSummary = React.memo(function OrderSummary({
   onRemoveDiscount,
   isApplyingDiscount = false,
 }: OrderSummaryProps) {
+  const [isVoucherModalOpen, setIsVoucherModalOpen] = useState(false);
+
   return (
     <div className="lg:sticky lg:top-10 space-y-6">
       <Card className="border border-slate-100 shadow-xl shadow-slate-200/20 rounded-2xl overflow-hidden bg-white">
@@ -120,45 +120,44 @@ export const OrderSummary = React.memo(function OrderSummary({
           </div>
 
           {/* Discount Section */}
-          <div className="pt-6 border-t border-slate-100 space-y-4">
-            <div className="flex items-center gap-2 text-slate-900 mb-1">
-              <Tag size={16} className="text-primary" />
-              <span className="text-sm font-bold uppercase tracking-wider">Mã giảm giá</span>
-            </div>
+          <VoucherModal 
+            isOpen={isVoucherModalOpen}
+            onClose={() => setIsVoucherModalOpen(false)}
+            onApply={(code) => {
+              onApplyDiscount(code);
+              setIsVoucherModalOpen(false);
+            }}
+            isApplying={!!isApplyingDiscount}
+            appliedCode={appliedDiscount?.code}
+            cartTotal={subtotal}
+          />
+
+          <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
+            <span className="text-[15px] font-medium text-slate-600">Mã giảm giá</span>
             
             {!appliedDiscount ? (
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  placeholder="Nhập mã tại đây..."
-                  value={discountCode}
-                  onChange={(e) => setDiscountCode(e.target.value)}
-                  className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:text-slate-400 font-medium"
-                />
-                <Button 
-                  onClick={onApplyDiscount}
-                  disabled={!discountCode || isApplyingDiscount}
-                  className="h-11 px-6 rounded-xl font-bold transition-all active:scale-95 shadow-lg shadow-primary/10"
-                >
-                  {isApplyingDiscount ? <Spinner size="sm" variant="white" /> : "Áp dụng"}
-                </Button>
-              </div>
+              <button 
+                type="button"
+                onClick={() => setIsVoucherModalOpen(true)}
+                className="text-sm font-medium text-green-600  transition-colors cursor-pointer hover:underline"
+              >
+                Chọn hoặc nhập mã
+              </button>
             ) : (
-              <div className="flex items-center justify-between bg-emerald-50 border border-emerald-100 rounded-xl px-4 py-3 animate-in zoom-in-95 duration-200">
-                <div className="flex items-center gap-3">
-                  <div className="h-8 w-8 rounded-full bg-emerald-500 flex items-center justify-center text-white">
-                    <CheckCircle2 size={16} />
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-emerald-800 uppercase tracking-tighter">Đã áp dụng mã</p>
-                    <p className="text-sm font-black text-emerald-600">{appliedDiscount.code}</p>
-                  </div>
-                </div>
-                <button 
-                  onClick={onRemoveDiscount}
-                  className="p-1.5 hover:bg-emerald-100 rounded-lg text-emerald-400 hover:text-emerald-600 transition-colors"
+              <div 
+                onClick={() => setIsVoucherModalOpen(true)}
+                className="flex items-center gap-2 cursor-pointer group"
+              >
+                <span className="text-sm font-bold text-emerald-600 group-hover:text-emerald-700">{appliedDiscount.code}</span>
+                <button
+                  type="button"
+                  className="p-1 hover:bg-rose-50 rounded-full transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onRemoveDiscount();
+                  }}
                 >
-                  <X size={18} />
+                  <X size={14} className="text-slate-400 hover:text-rose-500" />
                 </button>
               </div>
             )}
@@ -179,28 +178,20 @@ export const OrderSummary = React.memo(function OrderSummary({
               {isCalculatingFee ? (
                 <Spinner size="sm" />
               ) : (
-                <span className="text-slate-900 font-bold tabular-nums">{formatCurrency(shippingFee)}</span>
+                <span className="text-slate-900 font-bold tabular-nums">
+                  {shippingFee === 0 ? "Miễn phí" : formatCurrency(shippingFee)}
+                </span>
               )}
             </div>
 
-            {appliedDiscount && discountAmount > 0 && discountChoice === "VOUCHER" && (
+            {appliedDiscount && discountAmount > 0 && (
               <div className="flex justify-between items-center text-sm animate-in fade-in slide-in-from-right-4 duration-300">
-                <span className="text-emerald-600 font-bold flex items-center gap-2 italic">
-                  <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                <span className="text-emerald-600 font-semibold flex items-center gap-2">
+                  <Tag size={14} className="text-emerald-500" />
                   Mã giảm giá
                 </span>
                 <span className="text-emerald-600 font-bold tabular-nums">-{formatCurrency(discountAmount)}</span>
               </div>
-            )}
-
-            {discountChoice === "FLASH_SALE" && (totalOriginal - subtotal) > 0 && (
-               <div className="flex justify-between items-center text-sm animate-in fade-in slide-in-from-right-4 duration-300">
-               <span className="text-primary font-bold flex items-center gap-2 italic">
-                 <div className="h-1.5 w-1.5 rounded-full bg-primary" />
-                 Giảm giá Flash Sale
-               </span>
-               <span className="text-primary font-bold tabular-nums">-{formatCurrency(totalOriginal - subtotal)}</span>
-             </div>
             )}
 
             <div className="pt-5 mt-2 border-t border-slate-100 flex justify-between items-end">
@@ -208,7 +199,7 @@ export const OrderSummary = React.memo(function OrderSummary({
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Tổng cộng</p>
                 <div className="flex flex-col">
                   <span className="text-2xl font-black text-primary tabular-nums tracking-tighter">
-                    {formatCurrency(subtotal + shippingFee - (discountChoice === "VOUCHER" ? discountAmount : 0))}
+                    {formatCurrency(subtotal + shippingFee - discountAmount)}
                   </span>
                   <span className="text-[10px] text-slate-400 font-medium italic mt-0.5">Đã bao gồm VAT</span>
                 </div>

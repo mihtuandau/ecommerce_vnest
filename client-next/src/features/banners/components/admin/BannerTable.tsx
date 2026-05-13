@@ -11,6 +11,40 @@ import { useDeleteBanner } from "../../hooks";
 import { cn } from "@/utils/cn";
 import { useRouter } from "next/navigation";
 
+interface CellActionProps {
+  data: Banner;
+}
+
+const CellAction = ({ data }: CellActionProps) => {
+  const router = useRouter();
+  const { mutate: deleteBanner } = useDeleteBanner();
+
+  return (
+    <div className="flex items-center justify-end gap-2">
+      <Button 
+        variant="ghost" 
+        size="icon" 
+        className="h-8 w-8 rounded-lg border border-slate-100 text-slate-500 hover:text-slate-900 hover:bg-white hover:shadow-sm transition-all"
+        onClick={() => router.push(`/admin/banners/${data.id}`)}
+      >
+        <Pencil className="h-3.5 w-3.5" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-8 w-8 rounded-lg border border-slate-100 text-slate-500 hover:text-red-600 hover:bg-red-50 hover:border-red-100 transition-all"
+        onClick={() => {
+          if (confirm(`Xác nhận xóa banner: ${data.title}?`)) {
+            deleteBanner(data.id);
+          }
+        }}
+      >
+        <Trash className="h-3.5 w-3.5" />
+      </Button>
+    </div>
+  );
+};
+
 export const columns: ColumnDef<Banner>[] = [
   {
     id: "stt",
@@ -89,38 +123,7 @@ export const columns: ColumnDef<Banner>[] = [
   },
   {
     id: "actions",
-    cell: ({ row }) => {
-      const banner = row.original;
-      // eslint-disable-next-line react-hooks/rules-of-hooks
-      const router = useRouter();
-      // eslint-disable-next-line react-hooks/rules-of-hooks
-      const { mutate: deleteBanner } = useDeleteBanner();
-
-      return (
-        <div className="flex items-center justify-end gap-2">
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="h-8 w-8 rounded-lg border border-slate-100 text-slate-500 hover:text-slate-900 hover:bg-white hover:shadow-sm transition-all"
-            onClick={() => router.push(`/admin/banners/${banner.id}`)}
-          >
-            <Pencil className="h-3.5 w-3.5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 rounded-lg border border-slate-100 text-slate-500 hover:text-red-600 hover:bg-red-50 hover:border-red-100 transition-all"
-            onClick={() => {
-              if (confirm(`Xác nhận xóa banner: ${banner.title}?`)) {
-                deleteBanner(banner.id);
-              }
-            }}
-          >
-            <Trash className="h-3.5 w-3.5" />
-          </Button>
-        </div>
-      );
-    },
+    cell: ({ row }) => <CellAction data={row.original} />,
   },
 ];
 

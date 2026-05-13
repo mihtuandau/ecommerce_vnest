@@ -22,6 +22,57 @@ import Image from "next/image";
 import Link from "next/link";
 import { ROUTES } from "@/constants/routes";
 
+interface CellActionProps {
+  data: Product;
+}
+
+const CellAction = ({ data }: CellActionProps) => {
+  const { mutate: deleteProduct } = useDeleteProduct();
+
+  return (
+    <div className="flex justify-end">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg transition-colors">
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-48 rounded-xl p-1 shadow-2xl border-muted/50">
+          <DropdownMenuLabel className="text-xs font-semibold tracking-wide text-slate-500 px-2 py-1.5">Hành động</DropdownMenuLabel>
+          <DropdownMenuItem className="rounded-lg cursor-pointer gap-2 py-2 text-sm focus:bg-slate-100 focus:text-slate-900" asChild>
+            <Link href={`${ROUTES.ADMIN_PRODUCTS}/${data.id}`}>
+              <Pencil className="h-3.5 w-3.5" />
+              Chỉnh sửa
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem className="rounded-lg cursor-pointer gap-2 py-2 text-sm" asChild>
+             <Link href={ROUTES.PRODUCT_DETAIL(data.slug)} target="_blank">
+                <ExternalLink className="h-3.5 w-3.5" />
+                Xem trang khách
+             </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem className="rounded-lg cursor-pointer gap-2 py-2 text-sm text-amber-600">
+            <History className="h-3.5 w-3.5" />
+            Lịch sử kho
+          </DropdownMenuItem>
+          <DropdownMenuSeparator className="my-1 bg-muted" />
+          <DropdownMenuItem
+            className="rounded-lg cursor-pointer gap-2 py-2 text-sm text-destructive focus:bg-destructive/10"
+            onClick={() => {
+              if (confirm("Bạn có chắc chắn muốn xóa sản phẩm này? Hành động này không thể hoàn tác.")) {
+                deleteProduct(data.id);
+              }
+            }}
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+            Xóa sản phẩm
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  );
+};
+
 export const columns: ColumnDef<Product>[] = [
   {
     id: "stt",
@@ -199,54 +250,7 @@ export const columns: ColumnDef<Product>[] = [
   },
   {
     id: "actions",
-    cell: ({ row }) => {
-      const product = row.original;
-      // eslint-disable-next-line react-hooks/rules-of-hooks
-      const { mutate: deleteProduct } = useDeleteProduct();
-
-      return (
-        <div className="flex justify-end">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg transition-colors">
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48 rounded-xl p-1 shadow-2xl border-muted/50">
-              <DropdownMenuLabel className="text-xs font-semibold tracking-wide text-slate-500 px-2 py-1.5">Hành động</DropdownMenuLabel>
-              <DropdownMenuItem className="rounded-lg cursor-pointer gap-2 py-2 text-sm focus:bg-slate-100 focus:text-slate-900" asChild>
-                <Link href={`${ROUTES.ADMIN_PRODUCTS}/${product.id}`}>
-                  <Pencil className="h-3.5 w-3.5" />
-                  Chỉnh sửa
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="rounded-lg cursor-pointer gap-2 py-2 text-sm" asChild>
-                 <Link href={ROUTES.PRODUCT_DETAIL(product.slug)} target="_blank">
-                    <ExternalLink className="h-3.5 w-3.5" />
-                    Xem trang khách
-                 </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="rounded-lg cursor-pointer gap-2 py-2 text-sm text-amber-600">
-                <History className="h-3.5 w-3.5" />
-                Lịch sử kho
-              </DropdownMenuItem>
-              <DropdownMenuSeparator className="my-1 bg-muted" />
-              <DropdownMenuItem
-                className="rounded-lg cursor-pointer gap-2 py-2 text-sm text-destructive focus:bg-destructive/10"
-                onClick={() => {
-                  if (confirm("Bạn có chắc chắn muốn xóa sản phẩm này? Hành động này không thể hoàn tác.")) {
-                    deleteProduct(product.id);
-                  }
-                }}
-              >
-                <Trash2 className="h-3.5 w-3.5" />
-                Xóa sản phẩm
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      );
-    },
+    cell: ({ row }) => <CellAction data={row.original} />,
   },
 ];
 

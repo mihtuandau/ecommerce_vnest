@@ -30,11 +30,31 @@ import { GuestDetailSidebar } from "./guest-detail/GuestDetailSidebar";
 import { RequestReturnModal } from "./detail/RequestReturnModal";
 
 const statusConfig: Record<string, { label: string; color: string; icon: any }> = {
-  [OrderStatus.PENDING]: { label: "Chờ xử lý", color: "text-slate-600 bg-slate-50 border-slate-100", icon: Clock },
-  [OrderStatus.PROCESSING]: { label: "Đang xử lý", color: "text-blue-600 bg-blue-50 border-blue-100", icon: Package },
-  [OrderStatus.SHIPPED]: { label: "Đang giao hàng", color: "text-indigo-600 bg-indigo-50 border-indigo-100", icon: Truck },
-  [OrderStatus.DELIVERED]: { label: "Đã giao hàng", color: "text-emerald-600 bg-emerald-50 border-emerald-100", icon: CheckCircle2 },
-  [OrderStatus.CANCELLED]: { label: "Đã hủy", color: "text-rose-600 bg-rose-50 border-rose-100", icon: XCircle },
+  [OrderStatus.PENDING]: {
+    label: "Chờ xác nhận",
+    color: "text-amber-600 bg-amber-50 border-amber-100",
+    icon: Clock,
+  },
+  [OrderStatus.PROCESSING]: {
+    label: "Đang xử lý",
+    color: "text-blue-600 bg-blue-50 border-blue-100",
+    icon: Package,
+  },
+  [OrderStatus.SHIPPED]: {
+    label: "Đang giao hàng",
+    color: "text-indigo-600 bg-indigo-50 border-indigo-100",
+    icon: Truck,
+  },
+  [OrderStatus.DELIVERED]: {
+    label: "Giao thành công",
+    color: "text-emerald-600 bg-emerald-50 border-emerald-100",
+    icon: CheckCircle2,
+  },
+  [OrderStatus.CANCELLED]: {
+    label: "Đã hủy đơn",
+    color: "text-rose-600 bg-rose-50 border-rose-100",
+    icon: XCircle,
+  },
 };
 
 export function GuestOrderDetailView() {
@@ -131,8 +151,8 @@ export function GuestOrderDetailView() {
   const isCancelled = order.status === OrderStatus.CANCELLED;
 
   return (
-    <div className="min-h-screen bg-white pb-20">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 md:py-10">
+    <div className="min-h-screen bg-slate-50/50 text-slate-900 pb-20 relative font-sans">
+      <div className="max-w-[1100px] mx-auto px-4 sm:px-6 py-6 md:py-10">
         <GuestDetailHeader 
           orderId={order.id}
           orderCode={order.orderCode}
@@ -158,8 +178,8 @@ export function GuestOrderDetailView() {
           }}
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
-          <div className="lg:col-span-8 space-y-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div className="lg:col-span-7 space-y-6">
             <DetailStepper 
               status={order.status} 
               isCancelled={isCancelled} 
@@ -167,7 +187,7 @@ export function GuestOrderDetailView() {
             />
 
             {order.returnRequest && (
-              <div className="border border-slate-100 rounded-2xl p-6 lg:p-8 space-y-6 bg-white shadow-sm">
+              <div className="bg-white border border-slate-100 rounded-2xl p-6 lg:p-8 space-y-6 shadow-sm">
                 <div className="flex items-center gap-4">
                   <div className="h-12 w-12 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-600 border border-amber-100">
                     <RotateCcw size={22} />
@@ -206,7 +226,7 @@ export function GuestOrderDetailView() {
             />
           </div>
 
-          <div className="lg:col-span-4">
+          <div className="lg:col-span-5">
             <GuestDetailSidebar 
               shippingSnapshot={order.shippingSnapshot || {}}
               fullName={(order as any).fullName}

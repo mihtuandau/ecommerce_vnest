@@ -301,7 +301,7 @@ export function ChatWidget() {
   };
 
   return (
-    <div className="fixed bottom-12 right-6 z-[9999] flex flex-col items-end gap-4">
+    <div className="fixed bottom-12 right-6 z-[9999] hidden md:flex flex-col items-end gap-4">
       {/* AI Chat Window */}
       {isOpen && (
         <div className="w-80 sm:w-[400px] h-[620px] bg-white rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-slate-100 flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 zoom-in-95 duration-300 font-sans">

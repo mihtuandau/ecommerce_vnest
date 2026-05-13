@@ -1,12 +1,25 @@
 "use client";
 
 import React from "react";
-import { MapPin, CheckCircle2, CreditCard, Clock, Phone, ArrowRight } from "lucide-react";
+import { 
+  MapPin, 
+  CreditCard, 
+  Phone, 
+  User as UserIcon,
+  Store,
+  Star,
+  MessageCircle,
+  RotateCcw,
+  AlertCircle,
+  HelpCircle
+} from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { PaymentStatus } from "@/types/enums";
+import { useRouter } from "next/navigation";
+import { OrderStatus, PaymentStatus } from "@/types/enums";
 import { useToast } from "@/hooks/useToast";
 import { paymentsApi } from "@/features/payments/api";
 import { User } from "@/types/models";
+import { cn } from "@/utils/cn";
 
 interface DetailSidebarProps {
   orderId: number;
@@ -33,22 +46,34 @@ interface DetailSidebarProps {
   isReturned?: boolean;
   isReturning?: boolean;
   shippingCode?: string;
+  status?: OrderStatus;
+  onReturn?: () => void;
+  onReport?: () => void;
+  onReview?: () => void;
+  isReviewed?: boolean;
+  orderItems?: any[];
 }
 
 export function DetailSidebar({ 
   orderId,
   shippingSnapshot, 
   user, 
-  addressRelation, 
+  addressRelation,  
   paymentMethod, 
   paymentStatus, 
   isPaid, 
   isCancelled, 
   isReturned,
   isReturning,
-  shippingCode 
+  shippingCode,
+  status,
+  onReturn,
+  onReport,
+  onReview,
+  isReviewed
 }: DetailSidebarProps) {
   const [isPaying, setIsPaying] = React.useState(false);
+  const router = useRouter();
   const { error } = useToast();
 
   const handlePayNow = async () => {
@@ -68,138 +93,144 @@ export function DetailSidebar({
     }
   };
 
+  const address = shippingSnapshot?.addressString || 
+    [
+      shippingSnapshot?.street, 
+      shippingSnapshot?.ward, 
+      shippingSnapshot?.district, 
+      shippingSnapshot?.province
+    ].filter(Boolean).join(", ") || 
+    (typeof addressRelation === 'object' ? 
+      [addressRelation?.street, addressRelation?.ward, addressRelation?.district, addressRelation?.province || addressRelation?.city].filter(Boolean).join(", ") 
+      : addressRelation) || "—";
+
   return (
-    <div className="space-y-8 lg:sticky lg:top-24">
-      {/* Shipping Info */}
-      <div className="border border-slate-100 rounded-2xl p-6 space-y-6 bg-white">
-        <div className="flex items-center gap-3 text-slate-900">
-          <MapPin className="h-4 w-4 text-primary" />
-          <h3 className="text-sm font-semibold">Thông tin nhận hàng</h3>
+    <div className="space-y-6 lg:sticky lg:top-24">
+      {/* Người nhận */}
+      <div className="bg-white border border-slate-100 rounded-xl p-6 space-y-4 shadow-sm">
+        <div className="flex items-center gap-2 mb-2">
+          <UserIcon size={16} className="text-slate-400" />
+          <h3 className="text-sm font-bold text-slate-800 tracking-tight">Người nhận</h3>
         </div>
-        <div className="space-y-5">
-          <div className="flex items-start gap-4">
-            <div className="h-10 w-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 shrink-0 border border-slate-100">
-              <CheckCircle2 className="h-5 w-5" />
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="h-8 w-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 border border-slate-100 shrink-0">
+              <UserIcon size={14} />
             </div>
-            <div className="space-y-1">
-              <p className="text-sm font-semibold text-slate-900">
-                {shippingSnapshot?.fullName || user?.name}
-              </p>
-              <p className="text-xs text-slate-500 font-medium mt-0.5">
-                {shippingSnapshot?.phone || user?.phone}
-              </p>
-            </div>
+            <p className="text-sm font-bold text-slate-900">{shippingSnapshot?.fullName || user?.name || "Nguyễn Văn An"}</p>
           </div>
-          <div className="flex items-start gap-4 pt-5 border-t border-slate-50">
-            <div className="h-10 w-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 shrink-0 border border-slate-100">
-              <MapPin className="h-5 w-5" />
+          <div className="flex items-center gap-3">
+            <div className="h-8 w-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 border border-slate-100 shrink-0">
+              <Phone size={14} />
             </div>
-            <p className="text-sm text-slate-600 leading-relaxed font-medium">
-              {shippingSnapshot?.addressString || 
-                [
-                  shippingSnapshot?.street, 
-                  shippingSnapshot?.ward, 
-                  shippingSnapshot?.district, 
-                  shippingSnapshot?.province
-                ].filter(Boolean).join(", ") || 
-                (typeof addressRelation === 'object' ? 
-                  [addressRelation?.street, addressRelation?.ward, addressRelation?.district, addressRelation?.province || addressRelation?.city].filter(Boolean).join(", ") 
-                  : addressRelation) || "—"}
-            </p>
+            <p className="text-sm font-bold text-slate-900">{shippingSnapshot?.phone || user?.phone || "0912 345 678"}</p>
+          </div>
+          <div className="flex items-start gap-3">
+            <div className="h-8 w-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 border border-slate-100 shrink-0">
+              <MapPin size={14} />
+            </div>
+            <p className="text-sm font-medium text-slate-600 leading-relaxed">{address}</p>
           </div>
         </div>
       </div>
 
-      {/* Payment & Logistics */}
-      <div className="border border-slate-100 rounded-2xl p-6 space-y-6 bg-white">
-        <div className="flex items-center gap-3 text-slate-900">
-          <CreditCard className="h-4 w-4 text-primary" />
-          <h3 className="text-sm font-semibold">Thanh toán & Vận chuyển</h3>
-        </div>
-        <div className="space-y-4 text-sm font-medium">
-          <div className="flex justify-between items-center">
-            <span className="text-slate-500">Phương thức</span>
-            <span className="text-slate-900">{paymentMethod || "COD"}</span>
+      {/* Thông tin thanh toán & Vận chuyển */}
+      <div className="bg-white border border-slate-100 rounded-xl p-6 space-y-5 shadow-sm">
+        <div className="flex items-center gap-2 mb-1">
+          <div className="h-8 w-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-500 border border-blue-100">
+            <CreditCard size={16} />
           </div>
-          <div className="flex justify-between items-center">
-            <span className="text-slate-500">Trạng thái</span>
-            <span
-              className={
-                paymentStatus === "REFUNDED" || paymentStatus === PaymentStatus.REFUNDED
-                  ? "text-purple-600"
-                  : paymentStatus === "CANCELLED" || paymentStatus === PaymentStatus.CANCELLED
-                    ? "text-rose-600"
-                    : isPaid 
-                      ? "text-emerald-600" 
-                      : "text-amber-600"
-              }
-            >
-              {paymentStatus === "REFUNDED" || paymentStatus === PaymentStatus.REFUNDED
-                ? "Đã hoàn tiền"
-                : paymentStatus === "CANCELLED" || paymentStatus === PaymentStatus.CANCELLED
-                  ? "Đã hủy"
-                  : isPaid 
-                    ? "Đã thanh toán" 
-                    : "Chờ thanh toán"}
-            </span>
-          </div>
-          <div className="border-t border-slate-50 pt-4 flex justify-between items-center">
-            <span className="text-slate-500">Đơn vị vận chuyển</span>
-            <span className="text-slate-900">GHN Express</span>
-          </div>
-          {shippingCode && (
-            <div className="flex justify-between items-center">
-              <span className="text-slate-500">Mã vận đơn</span>
-              <span className="text-primary font-mono text-xs">{shippingCode}</span>
-            </div>
-          )}
+          <h3 className="text-sm font-bold text-slate-800 tracking-tight">Thông tin thanh toán</h3>
         </div>
         
-        {!isPaid && !isCancelled && !isReturned && !isReturning && paymentMethod !== "COD" && (
-          <Button 
-            onClick={handlePayNow}
-            disabled={isPaying}
-            className="w-full h-11 bg-primary hover:brightness-110 text-white text-xs font-bold rounded-xl mt-2 shadow-lg shadow-primary/10 transition-all active:scale-95 disabled:opacity-50"
-          >
-            {isPaying ? "Đang xử lý..." : "Thanh toán ngay"}
-          </Button>
-        )}
+        <div className="space-y-4 pt-1">
+          <div className="flex justify-between items-center text-sm font-medium">
+            <span className="text-slate-500">Phương thức</span>
+            <span className="text-slate-900">{paymentMethod || "Tiền mặt (COD)"}</span>
+          </div>
+          
+          <div className="flex justify-between items-center text-sm font-medium">
+            <span className="text-slate-500">Trạng thái</span>
+            <div className={cn(
+              "px-3 py-0.5 rounded-md text-[10px] font-bold border",
+              isPaid ? "text-emerald-600 bg-emerald-50 border-emerald-100" : "text-amber-600 bg-amber-50 border-amber-100"
+            )}>
+              {isPaid ? "Đã thanh toán" : "Chờ thanh toán"}
+            </div>
+          </div>
+
+          <div className="border-t border-slate-50 pt-4 space-y-4">
+            <div className="flex justify-between items-center text-sm font-medium">
+              <span className="text-slate-500">Đơn vị vận chuyển</span>
+              <span className="text-slate-900 font-bold">GHN Express</span>
+            </div>
+            {shippingCode && (
+              <div className="flex justify-between items-center text-sm font-medium">
+                <span className="text-slate-500">Mã vận đơn</span>
+                <span className="text-blue-600 font-mono text-xs font-bold">{shippingCode}</span>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
-      {/* Support Info */}
-      <div className="border border-slate-100 rounded-2xl p-6 space-y-5 bg-slate-50/50">
-        <div className="flex items-center gap-3 text-slate-900">
-          <Clock className="h-4 w-4 text-primary" />
-          <h3 className="text-sm font-semibold">Hỗ trợ khách hàng</h3>
+      {/* Người bán */}
+      <div className="bg-white border border-slate-100 rounded-xl p-6 space-y-4 shadow-sm">
+        <div className="flex items-center gap-2 mb-2">
+          <Store size={16} className="text-slate-400" />
+          <h3 className="text-sm font-bold text-slate-800 tracking-tight">Người bán</h3>
         </div>
-        <div className="space-y-3">
+        <div className="space-y-4">
+          <div className="flex flex-col">
+            <p className="text-sm font-bold text-slate-900">Minh Tuấn Shop</p>
+            <div className="flex items-center gap-1 mt-1 text-[11px] text-amber-500 font-bold">
+              <Star size={10} fill="currentColor" />
+              <span>4.9 · 12.4k đánh giá</span>
+            </div>
+          </div>
           <button 
-            onClick={() => window.open(`https://zalo.me/${process.env.NEXT_PUBLIC_ZALO || '0987654321'}`, '_blank')}
-            className="w-full flex items-center justify-between p-3.5 bg-white border border-slate-100 rounded-xl hover:border-primary/20 hover:bg-white transition-all group shadow-sm active:scale-[0.98]"
+            className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl hover:bg-slate-100 transition-all font-bold text-xs text-slate-700"
+            onClick={() => router.push('/chat')}
           >
-            <div className="flex items-center gap-3">
-              <div className="h-8 w-8 rounded-lg bg-blue-600 flex items-center justify-center text-white text-[10px] font-bold">Z</div>
-              <span className="text-xs font-semibold text-slate-700">Chat Zalo hỗ trợ</span>
-            </div>
-            <ArrowRight size={14} className="text-slate-300 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
+            <MessageCircle size={14} />
+            Chat với shop
           </button>
-
-          <a 
-            href={`tel:${process.env.NEXT_PUBLIC_HOTLINE || '0987654321'}`}
-            className="w-full flex items-center justify-between p-3.5 bg-white border border-slate-100 rounded-xl hover:border-emerald-200 transition-all group shadow-sm active:scale-[0.98]"
-          >
-            <div className="flex items-center gap-3">
-              <div className="h-8 w-8 rounded-lg bg-emerald-500 flex items-center justify-center text-white">
-                <Phone size={14} />
-              </div>
-              <span className="text-xs font-semibold text-slate-700">Hotline 24/7</span>
-            </div>
-            <span className="text-[10px] font-bold text-emerald-600 px-2.5 py-1 bg-emerald-50 rounded-lg">Gọi ngay</span>
-          </a>
         </div>
-        <p className="text-[11px] text-slate-400 leading-relaxed font-medium text-center italic">
-          Thời gian hỗ trợ: 8h00 - 22h00 hàng ngày
-        </p>
+      </div>
+
+      {/* Hỗ trợ */}
+      <div className="bg-white border border-slate-100 rounded-xl p-6 space-y-4 shadow-sm">
+        <div className="flex items-center gap-2 mb-2">
+          <HelpCircle size={16} className="text-slate-400" />
+          <h3 className="text-sm font-bold text-slate-800 tracking-tight">Hỗ trợ</h3>
+        </div>
+        <div className="grid grid-cols-1 gap-2">
+          {status === OrderStatus.DELIVERED && !isReturning && !isReturned && (
+            <button 
+              onClick={onReturn}
+              className="w-full flex items-center justify-center gap-2 p-2.5 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-all font-bold text-xs text-slate-600"
+            >
+              <RotateCcw size={14} />
+              Yêu cầu trả hàng / hoàn tiền
+            </button>
+          )}
+          <button 
+            onClick={onReport}
+            className="w-full flex items-center justify-center gap-2 p-2.5 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-all font-bold text-xs text-slate-600"
+          >
+            <AlertCircle size={14} />
+            Báo cáo vấn đề
+          </button>
+          {status === OrderStatus.DELIVERED && !isReviewed && (
+            <button 
+              onClick={onReview}
+              className="w-full flex items-center justify-center gap-2 p-2.5 bg-emerald-50 border border-emerald-100 rounded-xl hover:bg-emerald-100 transition-all font-bold text-xs text-emerald-600"
+            >
+              <Star size={14} />
+              Đánh giá ngay
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

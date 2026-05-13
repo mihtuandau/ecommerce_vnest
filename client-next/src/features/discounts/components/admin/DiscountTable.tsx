@@ -24,6 +24,57 @@ import {
 import { cn } from "@/utils/cn";
 import { useRouter } from "next/navigation";
 
+interface CellActionProps {
+  data: Discount;
+}
+
+const CellAction = ({ data }: CellActionProps) => {
+  const router = useRouter();
+  const { mutate: deleteDiscount } = useDeleteDiscount();
+
+  return (
+    <div className="flex justify-end">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 rounded-lg text-slate-500 hover:text-slate-700"
+          >
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          align="end"
+          className="w-48 rounded-xl p-1 shadow-xl border-slate-200"
+        >
+          <DropdownMenuItem
+            className="rounded-lg cursor-pointer gap-2 py-2.5 text-sm font-medium text-slate-600 focus:bg-slate-100 focus:text-slate-900"
+            onClick={() => router.push(`/admin/discounts/${data.id}`)}
+          >
+            <Pencil className="h-4 w-4 text-slate-500" />
+            Chỉnh sửa mã
+          </DropdownMenuItem>
+          <div className="my-1 border-t border-slate-100" />
+          <DropdownMenuItem
+            className="rounded-lg cursor-pointer gap-2 py-2.5 text-sm font-medium text-rose-600 focus:bg-rose-50"
+            onClick={() => {
+              if (
+                confirm(`Bạn có chắc chắn muốn xóa mã giảm giá ${data.code}?`)
+              ) {
+                deleteDiscount(data.id);
+              }
+            }}
+          >
+            <Trash2 className="h-4 w-4" />
+            Xóa chương trình
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  );
+};
+
 export const columns: ColumnDef<Discount>[] = [
   {
     id: "stt",
@@ -98,7 +149,7 @@ export const columns: ColumnDef<Discount>[] = [
     header: "Đã dùng",
     cell: ({ row }) => {
       const discount = row.original;
-      const used = discount.usageCount || discount.usedCount || 0;
+      const used = discount.usedCount || 0;
       const limit = discount.usageLimit || 0;
       const percent = limit > 0 ? (used / limit) * 100 : 0;
 
@@ -180,53 +231,7 @@ export const columns: ColumnDef<Discount>[] = [
   },
   {
     id: "actions",
-    cell: ({ row }) => {
-      const discount = row.original;
-      const router = useRouter();
-      const { mutate: deleteDiscount } = useDeleteDiscount();
-
-      return (
-        <div className="flex justify-end">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 rounded-lg text-slate-500 hover:text-slate-700"
-              >
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="end"
-              className="w-48 rounded-xl p-1 shadow-xl border-slate-200"
-            >
-              <DropdownMenuItem
-                className="rounded-lg cursor-pointer gap-2 py-2.5 text-sm font-medium text-slate-600 focus:bg-slate-100 focus:text-slate-900"
-                onClick={() => router.push(`/admin/discounts/${discount.id}`)}
-              >
-                <Pencil className="h-4 w-4 text-slate-500" />
-                Chỉnh sửa mã
-              </DropdownMenuItem>
-              <div className="my-1 border-t border-slate-100" />
-              <DropdownMenuItem
-                className="rounded-lg cursor-pointer gap-2 py-2.5 text-sm font-medium text-rose-600 focus:bg-rose-50"
-                onClick={() => {
-                  if (
-                    confirm(`Bạn có chắc chắn muốn xóa mã giảm giá ${discount.code}?`)
-                  ) {
-                    deleteDiscount(discount.id);
-                  }
-                }}
-              >
-                <Trash2 className="h-4 w-4" />
-                Xóa chương trình
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      );
-    },
+    cell: ({ row }) => <CellAction data={row.original} />,
   },
 ];
 
