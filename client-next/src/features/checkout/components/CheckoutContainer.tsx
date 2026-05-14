@@ -409,7 +409,7 @@ export function CheckoutContainer() {
   const showBuyNowEmpty = isBuyNow && !buyNowItem;
 
   return (
-    <div className="bg-[#f8fafc] min-h-screen pb-20 text-slate-900 font-sans">
+    <div className="bg-[#FAF8F4] min-h-screen pb-20 text-[#3D2B1A] font-sans">
       {(showEmpty || showBuyNowEmpty) ? (
         <div className="min-h-[70vh] flex flex-col items-center justify-center text-center px-4">
           <Truck className="h-16 w-16 text-slate-200 mb-6" />
@@ -420,10 +420,10 @@ export function CheckoutContainer() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-10">
             <div className="flex items-center gap-5">
-              <button type="button" onClick={() => router.back()} className="h-10 w-10 rounded-full border border-slate-200 flex items-center justify-center text-slate-400 hover:text-primary transition-all shadow-sm">
+              <button type="button" onClick={() => router.back()} className="h-10 w-10 rounded-full border border-[#DDD6C8] flex items-center justify-center text-[#8A7966] hover:text-[#C4783A] transition-all bg-white">
                 <ArrowLeft size={18} />
               </button>
-              <h1 className="text-2xl font-bold text-slate-900 tracking-tight uppercase">Thanh toán</h1>
+              <h1 className="text-[32px] font-bold text-[#3D2B1A] tracking-tight font-serif">Thanh toán</h1>
             </div>
             <div className="flex items-center gap-4 text-[11px] font-bold uppercase tracking-widest text-slate-400">
               <span className="text-emerald-600">Giỏ hàng</span>
@@ -439,9 +439,9 @@ export function CheckoutContainer() {
               {/* Address Section */}
               {user ? (
                 <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-                  <div className="px-6 py-5 border-b border-slate-50 flex items-center justify-between bg-slate-50/30">
-                    <h2 className="text-sm font-bold text-slate-700 uppercase tracking-widest">Địa chỉ giao hàng</h2>
-                    <Button type="button" variant="ghost" size="sm" className="text-[11px] font-bold text-primary" onClick={() => router.push("/account?tab=address")}>+ Thêm địa chỉ</Button>
+                  <div className="px-6 py-5 border-b border-[#F3EFE8] flex items-center justify-between bg-white">
+                    <h2 className="text-[16px] font-bold text-[#3D2B1A] font-serif">Địa chỉ giao hàng</h2>
+                    <Button type="button" variant="ghost" size="sm" className="text-[11px] font-bold text-[#C4783A]" onClick={() => router.push("/account?tab=address")}>+ Thêm địa chỉ</Button>
                   </div>
                   <div className="p-6 space-y-3">
                     {addressData?.addresses && addressData.addresses.length > 0 ? (
@@ -489,7 +489,7 @@ export function CheckoutContainer() {
 
               {/* 4. GHI CHÚ ĐƠN HÀNG */}
               <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
-                <h2 className="text-sm font-bold text-slate-700 uppercase tracking-widest mb-4">Ghi chú đơn hàng</h2>
+                <h2 className="text-[16px] font-bold text-[#3D2B1A] font-serif mb-4">Ghi chú đơn hàng</h2>
                 <textarea 
                   placeholder="Ghi chú cho người bán hoặc shipper (không bắt buộc)..." 
                   value={form.orderNote}

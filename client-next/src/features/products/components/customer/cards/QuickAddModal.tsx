@@ -138,9 +138,9 @@ export function QuickAddModal({
           </DialogHeader>
         </div>
 
-        <div className="relative grid grid-cols-1 md:grid-cols-12 min-h-[450px]">
+        <div className="relative grid grid-cols-1 md:grid-cols-12 min-h-[450px]" onClick={(e) => e.stopPropagation()}>
           {/* Left: Product Image */}
-          <div className="md:col-span-5 bg-white flex items-center justify-center p-8 relative">
+          <div className="md:col-span-5 bg-white flex items-center justify-center p-8 relative border-b md:border-b-0 border-[#F3EFE8]">
              <div className="relative w-full aspect-[4/5]">
                 <Image
                   src={productImageUrl}

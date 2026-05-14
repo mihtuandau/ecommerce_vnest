@@ -61,7 +61,7 @@ function SuccessContent() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-50/30 flex flex-col items-center justify-center p-6">
+    <div className="min-h-screen bg-[#FAF8F4] flex flex-col items-center justify-center p-6">
       <motion.div 
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}

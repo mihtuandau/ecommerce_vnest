@@ -191,7 +191,7 @@ export function AccountView() {
   ];
 
   return (
-    <div className="bg-slate-50 min-h-screen">
+    <div className="bg-[#FAF8F4] min-h-screen">
       <div className="max-w-6xl mx-auto px-4 py-8 md:py-12">
         <div className="flex flex-col lg:flex-row gap-12 items-start">
           
@@ -252,8 +252,8 @@ export function AccountView() {
                       </div>
 
                       <div className="text-center md:text-left">
-                        <h1 className="text-2xl font-semibold text-slate-900 mb-1">{user.name}</h1>
-                        <p className="text-slate-500 text-sm mb-4">{user.email}</p>
+                        <h1 className="text-[32px] font-bold text-[#3D2B1A] mb-1 font-serif">{user.name}</h1>
+                        <p className="text-[#8A7966] text-sm mb-4 font-medium">{user.email}</p>
                         <div className="flex items-center justify-center md:justify-start gap-2">
                           <Badge className="bg-emerald-50 text-emerald-600 border-emerald-100 rounded-lg px-2.5 py-0.5 text-[10px] font-medium">Đã xác minh</Badge>
                           <span className="px-2.5 py-0.5 bg-primary/5 border border-primary/10 rounded-lg text-[10px] font-semibold text-primary uppercase">Khách hàng</span>
@@ -268,8 +268,8 @@ export function AccountView() {
 
                   {/* Info Details */}
                   <div className="space-y-8">
-                    <h2 className="text-[14px] font-semibold text-slate-800 flex items-center gap-2">
-                      <span className="w-1 h-4 bg-primary rounded-full opacity-40" /> Thông tin cá nhân
+                    <h2 className="text-[18px] font-bold text-[#3D2B1A] flex items-center gap-3 font-serif">
+                      <span className="w-1.5 h-6 bg-[#C4783A] rounded-full opacity-40" /> Thông tin cá nhân
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-y-10 gap-x-16">
                       <div className="space-y-1.5">
@@ -294,8 +294,8 @@ export function AccountView() {
 
                 {/* Stats Section */}
                 <div className="bg-white border border-slate-200 rounded-[32px] p-10 space-y-10 shadow-sm shadow-slate-100/50">
-                  <h2 className="text-[14px] font-semibold text-slate-800 flex items-center gap-2">
-                    <span className="w-1 h-4 bg-primary rounded-full opacity-40" /> Thống kê hoạt động
+                  <h2 className="text-[18px] font-bold text-[#3D2B1A] flex items-center gap-3 font-serif">
+                    <span className="w-1.5 h-6 bg-[#C4783A] rounded-full opacity-40" /> Thống kê hoạt động
                   </h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="bg-slate-50/50 p-8 rounded-[24px] border border-slate-200/60 transition-all group hover:border-primary/20">
@@ -307,7 +307,7 @@ export function AccountView() {
                     </div>
                     <div className="bg-slate-50/50 p-8 rounded-[24px] border border-slate-200/60 transition-all group hover:border-primary/20">
                        <p className="text-[12px] font-medium text-slate-400 mb-2">Tổng chi tiêu</p>
-                       <p className="text-4xl font-bold text-slate-900 tabular-nums">{formatCurrency(totalSpending)}</p>
+                        <p className="text-4xl font-bold text-[#3D2B1A] tabular-nums font-serif">{formatCurrency(totalSpending)}</p>
                     </div>
                   </div>
                 </div>
@@ -317,8 +317,8 @@ export function AccountView() {
             {activeTab === "address" && (
               <div className="bg-white border border-slate-200 rounded-[32px] p-8 space-y-6 animate-in fade-in duration-400 shadow-sm shadow-slate-100/50">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-[14px] font-semibold text-slate-800 flex items-center gap-2">
-                    <span className="w-1 h-4 bg-primary rounded-full opacity-40" /> Danh sách địa chỉ
+                  <h2 className="text-[18px] font-bold text-[#3D2B1A] flex items-center gap-3 font-serif">
+                    <span className="w-1.5 h-6 bg-[#C4783A] rounded-full opacity-40" /> Danh sách địa chỉ
                   </h2>
                   <Button onClick={() => setIsAddModalOpen(true)} className="rounded-xl bg-primary hover:bg-primary/90 text-white font-semibold h-9 px-6 text-[11px] shadow-sm transition-all">
                     <Plus size={14} className="mr-2" /> Thêm địa chỉ

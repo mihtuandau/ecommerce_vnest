@@ -72,7 +72,7 @@ export function ProductInfo({ product, flashSale, finalPrice, finalOriginalPrice
           {product.category?.name || "Bộ sưu tập LUXE"}
         </Link>
 
-        <h1 className="text-[36px] md:text-[44px] font-bold text-[#3D2B1A] leading-[1.1] tracking-tight" style={{ fontFamily: "'Playfair Display', serif" }}>
+        <h1 className="text-[36px] md:text-[44px] font-bold text-[#3D2B1A] leading-[1.1] tracking-tight font-serif">
           {product.name}
         </h1>
 
@@ -104,7 +104,7 @@ export function ProductInfo({ product, flashSale, finalPrice, finalOriginalPrice
           )}
           
           <div className="flex items-baseline gap-5">
-            <span className="text-[40px] font-bold tabular-nums leading-none text-[#3D2B1A]" style={{ fontFamily: "'Playfair Display', serif" }}>
+            <span className="text-[40px] font-bold tabular-nums leading-none text-[#3D2B1A] font-serif">
               {formatCurrency(finalPrice)}
             </span>
             {finalOriginalPrice && finalOriginalPrice > finalPrice && (

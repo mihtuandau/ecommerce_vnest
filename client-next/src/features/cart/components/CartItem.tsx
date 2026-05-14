@@ -1,12 +1,10 @@
 "use client";
 
 import React from "react";
-import { Trash2, Plus, Minus, Check, ChevronDown, X } from "lucide-react";
+import { Trash2, Plus, Minus, Check, Heart, X } from "lucide-react";
 import { formatCurrency } from "@/utils/formatCurrency";
-import { Button } from "@/components/ui/Button";
 import Link from "next/link";
 import Image from "next/image";
-import { Card, CardContent } from "@/components/ui/Card";
 import { cn } from "@/utils/cn";
 import { CartItem as CartItemType } from "@/store/useCartStore";
 
@@ -16,6 +14,12 @@ interface CartItemProps {
   removeItem: (id: string) => void;
   toggleSelectItem: (id: string) => void;
 }
+
+const getImageUrl = (path: string) => {
+  if (!path) return "";
+  if (path.startsWith("http")) return path;
+  return `${process.env.NEXT_PUBLIC_API_URL}${path}`;
+};
 
 export const CartItem = React.memo(function CartItem({ 
   item, 
@@ -28,101 +32,107 @@ export const CartItem = React.memo(function CartItem({
   const savings = oldPrice > currentPrice ? oldPrice - currentPrice : 0;
 
   return (
-    <div className="py-5 first:pt-4 border-b border-slate-100 last:border-0 group">
-      <div className="flex gap-4 items-start">
+    <div className="bg-white rounded-2xl p-4 border border-[#DDD6C8] shadow-sm transition-all hover:shadow-md group">
+      <div className="flex gap-4 items-center">
         {/* Checkbox */}
         <button 
           onClick={() => toggleSelectItem(item.variantId)}
           className={cn(
-            "mt-4 w-5 h-5 rounded-md border flex-shrink-0 flex items-center justify-center transition-all",
+            "w-4 h-4 rounded border flex-shrink-0 flex items-center justify-center transition-all",
             item.selected 
-              ? "bg-primary border-primary text-white" 
-              : "border-slate-300 hover:border-primary bg-white"
+              ? "bg-[#3D2B1A] border-[#3D2B1A] text-white" 
+              : "border-[#DDD6C8] hover:border-[#3D2B1A] bg-white"
           )}
         >
-          {item.selected && <Check size={14} strokeWidth={3} />}
+          {item.selected && <Check size={10} strokeWidth={4} />}
         </button>
 
         {/* Product Image */}
-        <div className="h-24 w-24 sm:h-28 sm:w-28 flex-shrink-0 rounded-xl bg-slate-50/80 flex items-center justify-center p-2 border border-slate-100 relative">
-          {/* Badge Example (Optional based on design) */}
-          {/* <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-rose-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">Vừa thêm</span> */}
+        <div className="h-24 w-24 flex-shrink-0 rounded-xl bg-[#FAF8F4] flex items-center justify-center p-2 relative overflow-hidden">
           <Image 
-            src={item.imageUrl} 
+            src={getImageUrl(item.imageUrl)} 
             alt={item.name} 
             fill
-            className="object-contain p-2 mix-blend-multiply" 
+            className="object-contain p-1.5 mix-blend-multiply group-hover:scale-110 transition-transform duration-500" 
           />
         </div>
 
         {/* Content Section */}
-        <div className="flex-1 flex flex-col min-h-[96px] sm:min-h-[112px]">
-          <div className="flex flex-col sm:flex-row sm:justify-between gap-3">
-            {/* Left side: Info */}
-            <div className="space-y-1.5 flex-1 pr-4">
+        <div className="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          {/* Info Side */}
+          <div className="space-y-2">
+            <div className="space-y-0.5">
+              <span className="text-[9px] font-black text-[#8A7966] uppercase tracking-[0.2em]">BRAND</span>
               <Link 
                 href={`/shop/${item.slug}`} 
-                className="text-sm font-semibold text-slate-800 hover:text-primary transition-colors leading-snug line-clamp-2"
+                className="block text-[15px] font-medium text-[#3D2B1A] hover:text-[#C4783A] transition-colors leading-tight font-serif"
               >
                 {item.name}
               </Link>
-              
-              <div className="text-[12px] text-slate-500 font-medium">
-                Màu: {item.color || "Mặc định"} {item.size ? `· Size: ${item.size}` : ""}
-              </div>
-
-              <div className="pt-1">
-                <div className="flex items-baseline gap-2">
-                  <span className="text-[15px] font-bold text-slate-900">
-                    {formatCurrency(currentPrice)}
-                  </span>
-                  {oldPrice > 0 && (
-                    <span className="text-[12px] text-slate-400 line-through font-medium">
-                      {formatCurrency(oldPrice)}
-                    </span>
-                  )}
-                </div>
-                {savings > 0 && (
-                  <div className="text-[11px] text-emerald-600 font-medium mt-0.5">
-                    Tiết kiệm {formatCurrency(savings)}
-                  </div>
-                )}
-              </div>
+            </div>
+            
+            <div className="flex flex-wrap gap-1.5">
+              <span className="bg-[#FAF8F4] border border-[#DDD6C8] text-[#8A7966] text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">
+                Màu: {item.color || "Mặc định"}
+              </span>
+              {item.size && (
+                <span className="bg-[#FAF8F4] border border-[#DDD6C8] text-[#8A7966] text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">
+                  Size: {item.size}
+                </span>
+              )}
             </div>
 
-            {/* Right side: Actions */}
-            <div className="flex flex-col gap-3 items-start sm:items-end w-full sm:w-auto">
-              {/* Quantity Control */}
-              <div className="flex items-center h-8 bg-white border border-slate-200 rounded-lg overflow-hidden shrink-0">
-                <button 
-                  onClick={() => updateQuantity(item.variantId, item.quantity - 1)}
-                  className="w-8 h-full flex items-center justify-center text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition-colors"
-                >
-                  <Minus size={14} />
-                </button>
-                <div className="w-10 h-full flex items-center justify-center text-[13px] font-semibold text-slate-700 border-x border-slate-200">
-                  {item.quantity}
-                </div>
-                <button 
-                  onClick={() => updateQuantity(item.variantId, item.quantity + 1)}
-                  className="w-8 h-full flex items-center justify-center text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition-colors"
-                >
-                  <Plus size={14} />
-                </button>
-              </div>
+            <div className="flex items-center gap-4 pt-0.5">
+              <button className="flex items-center gap-1 text-[11px] font-bold text-[#8A7966] hover:text-[#3D2B1A] transition-colors group/btn">
+                <Heart size={13} className="group-hover/btn:fill-[#3D2B1A]" /> 
+                Lưu yêu thích
+              </button>
+              <div className="w-[1px] h-3 bg-[#DDD6C8]" />
+              <button 
+                onClick={() => removeItem(item.variantId)}
+                className="flex items-center gap-1 text-[11px] font-bold text-[#8A7966] hover:text-red-500 transition-colors"
+              >
+                <X size={13} /> 
+                Xoá
+              </button>
+            </div>
+          </div>
 
-              {/* Buttons */}
-              <div className="flex items-center gap-2">
-                <button className="flex items-center justify-center gap-1.5 h-8 px-3 rounded-lg border border-slate-200 bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all text-xs font-semibold">
-                  <span className="text-sm">♡</span> Lưu
-                </button>
-                <button 
-                  onClick={() => removeItem(item.variantId)}
-                  className="flex items-center justify-center gap-1.5 h-8 px-3 rounded-lg border border-slate-200 bg-white text-slate-600 hover:text-rose-600 hover:border-rose-200 hover:bg-rose-50 transition-all text-xs font-semibold"
-                >
-                  <Trash2 size={13} /> Xóa
-                </button>
+          {/* Pricing & Control Side */}
+          <div className="flex flex-col items-end gap-3 min-w-[120px]">
+            <div className="text-right">
+              <div className="text-[16px] font-bold text-[#3D2B1A] tabular-nums font-serif">
+                {formatCurrency(currentPrice)}
               </div>
+              {oldPrice > currentPrice && (
+                <div className="text-[12px] text-[#8A7966] line-through font-medium opacity-50">
+                  {formatCurrency(oldPrice)}
+                </div>
+              )}
+              {savings > 0 && (
+                <div className="text-[10px] text-emerald-600 font-medium mt-0.5">
+                  Tiết kiệm {formatCurrency(savings)}
+                </div>
+              )}
+            </div>
+
+            {/* Quantity Selector */}
+            <div className="flex items-center h-8 bg-[#FAF8F4] border border-[#DDD6C8] rounded-lg overflow-hidden">
+              <button 
+                onClick={() => updateQuantity(item.variantId, item.quantity - 1)}
+                className="w-8 h-full flex items-center justify-center text-[#3D2B1A] hover:bg-white transition-all"
+              >
+                <Minus size={12} />
+              </button>
+              <div className="w-9 h-full flex items-center justify-center text-[13px] font-bold text-[#3D2B1A] border-x border-[#DDD6C8] bg-white/50">
+                {item.quantity}
+              </div>
+              <button 
+                onClick={() => updateQuantity(item.variantId, item.quantity + 1)}
+                className="w-8 h-full flex items-center justify-center text-[#3D2B1A] hover:bg-white transition-all"
+              >
+                <Plus size={12} />
+              </button>
             </div>
           </div>
         </div>

@@ -13,7 +13,7 @@ export function Footer() {
   const topCategories = categories.slice(0, 5);
 
   return (
-    <footer className="bg-[#2A2420] text-[#C4B49A] overflow-hidden relative" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+    <footer className="bg-[#2A2420] text-[#C4B49A] overflow-hidden relative">
       <div className="max-w-[1440px] mx-auto px-6 lg:px-12 py-14 lg:py-16 relative z-10">
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-12">
           {/* Brand Column */}
@@ -49,7 +49,7 @@ export function Footer() {
           {/* Links Columns */}
           <div className="lg:col-span-5 grid grid-cols-2 gap-8">
             <div className="space-y-5">
-              <h3 className="text-[12px] font-medium text-[#FAF8F4] uppercase tracking-[0.1em]">Danh mục</h3>
+              <h3 className="text-[14px] font-bold text-[#FAF8F4] font-serif">Danh mục</h3>
               <ul className="space-y-3">
                 {topCategories.length > 0 ? (
                   topCategories.map((cat: any) => (
@@ -71,7 +71,7 @@ export function Footer() {
               </ul>
             </div>
             <div className="space-y-5">
-              <h3 className="text-[12px] font-medium text-[#FAF8F4] uppercase tracking-[0.1em]">Hỗ trợ</h3>
+              <h3 className="text-[14px] font-bold text-[#FAF8F4] font-serif">Hỗ trợ</h3>
               <ul className="space-y-3">
                 {[
                   { name: "Về chúng tôi", href: "/about" },
@@ -92,7 +92,7 @@ export function Footer() {
 
           {/* Contact Column */}
           <div className="lg:col-span-3 space-y-5">
-            <h3 className="text-[12px] font-medium text-[#FAF8F4] uppercase tracking-[0.1em]">Liên hệ</h3>
+            <h3 className="text-[14px] font-bold text-[#FAF8F4] font-serif">Liên hệ</h3>
             <ul className="space-y-4">
               <li className="text-[13.5px] text-[#C4B49A]">📍 Tòa nhà Innovation, Khu CNC, TP. Thủ Đức</li>
               <li className="text-[13.5px] text-[#C4B49A]">📞 1900 8888 (miễn phí)</li>

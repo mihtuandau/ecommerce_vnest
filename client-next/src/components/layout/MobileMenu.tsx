@@ -6,7 +6,7 @@ import { Search, X, ChevronRight, Heart, Sparkles, Zap, Tag, ShoppingBag } from 
 import { Input } from "@/components/ui/Input";
 import { ROUTES } from "@/constants/routes";
 import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { productsApi } from "@/features/products/api";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { Spinner } from "@/components/ui/Spinner";
@@ -38,6 +38,7 @@ export function MobileMenu({ categories, wishlistCount, onClose, mounted }: Mobi
   const [liveResults, setLiveResults] = useState<any[]>([]);
   const [isLiveLoading, setIsLiveLoading] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
 
   // Live search logic for mobile
   useEffect(() => {
@@ -148,17 +149,23 @@ export function MobileMenu({ categories, wishlistCount, onClose, mounted }: Mobi
 
       {/* Navigation Links */}
       <div className="flex-1 overflow-y-auto py-4 px-2 space-y-1">
-        {NAV_LINKS.map((link) => (
-          <Link
-            key={link.label}
-            href={link.href}
-            onClick={onClose}
-            className="flex items-center gap-3 px-4 py-3 rounded-xl text-[11px] font-bold text-slate-600 hover:bg-primary/5 hover:text-primary transition-all uppercase tracking-widest"
-          >
-            {link.icon && <link.icon className="h-4 w-4 flex-shrink-0" />}
-            {link.label}
-          </Link>
-        ))}
+        {NAV_LINKS.map((link) => {
+          const isActive = pathname === link.href;
+          return (
+            <Link
+              key={link.label}
+              href={link.href}
+              onClick={onClose}
+              className={cn(
+                "flex items-center gap-3 px-4 py-3 rounded-xl nav-item-standard transition-all",
+                isActive ? "text-[#C4783A] bg-[#C4783A]/5 " : "hover:bg-primary/5 hover:text-[#C4783A]"
+              )}
+            >
+              {link.icon && <link.icon className="h-4 w-4 flex-shrink-0" />}
+              {link.label}
+            </Link>
+          );
+        })}
 
         {/* Categories Section */}
         <div className="pt-2 pb-1">
@@ -265,7 +272,7 @@ function MobileCategoryItem({ category, onClose }: { category: any, onClose: () 
         <Link
           href={`/shop?categoryId=${category.id}`}
           onClick={onClose}
-          className="flex-1 flex items-center gap-3 px-4 py-2.5 rounded-xl text-[11px] font-bold text-slate-700 hover:text-primary transition-all uppercase tracking-widest"
+          className="flex-1 flex items-center gap-3 px-4 py-2.5 rounded-xl text-[13px] font-medium text-[#3D2B1A] hover:text-[#C4783A] transition-all font-sans"
         >
           <div className="relative h-8 w-8 rounded-lg overflow-hidden bg-slate-50 border border-slate-100 flex-shrink-0">
             {category.image ? (

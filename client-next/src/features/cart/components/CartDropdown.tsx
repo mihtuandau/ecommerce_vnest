@@ -99,7 +99,7 @@ export function CartDropdown() {
         <div className="bg-[#FAF8F4] rounded-3xl border border-[#DDD6C8] shadow-[0_20px_50px_rgba(61,43,26,0.1)] overflow-hidden flex flex-col max-h-[580px]">
           {/* Header */}
           <div className="px-6 py-4 border-b border-[#DDD6C8] flex items-center justify-between bg-white sticky top-0 z-10">
-            <h3 className="text-sm font-bold text-[#3D2B1A] flex items-center gap-2">
+            <h3 className="text-sm font-bold text-[#3D2B1A] flex items-center gap-2 font-serif">
               <ShoppingBasket className="w-4 h-4 text-[#C4783A]" />
               Giỏ hàng của bạn
             </h3>
@@ -153,7 +153,7 @@ export function CartDropdown() {
                         )}
                         <div className="flex items-center justify-between">
                           <div className="flex flex-col">
-                            <p className="text-xs font-semibold text-[#3D2B1A]" style={{ fontFamily: "'Playfair Display', serif" }}>{formatCurrency(item.discountedPrice || item.price)}</p>
+                            <p className="text-xs font-semibold text-[#3D2B1A] font-serif">{formatCurrency(item.discountedPrice || item.price)}</p>
                             {item.discountedPrice && item.discountedPrice < item.price ? (
                               <span className="text-[10px] text-[#8A7966] line-through font-bold tabular-nums">
                                 {formatCurrency(item.price)}
@@ -216,7 +216,7 @@ export function CartDropdown() {
             <div className="p-6 bg-[#FAF8F4] border-t border-[#DDD6C8] space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-bold text-[#8A7966] uppercase tracking-widest">Tạm tính:</span>
-                <span className="text-[20px] font-semibold text-[#3D2B1A] tabular-nums tracking-tighter" style={{ fontFamily: "'Playfair Display', serif" }}>
+                <span className="text-[20px] font-semibold text-[#3D2B1A] tabular-nums tracking-tighter font-serif">
                   {formatCurrency(totalPrice)}
                 </span>
               </div>

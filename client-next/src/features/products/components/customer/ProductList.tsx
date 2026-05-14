@@ -58,11 +58,11 @@ export const ProductList = React.memo(function ProductList({
     return (
       <div
         className={cn(
-          "grid gap-6 animate-in fade-in duration-700",
+          "grid gap-6 animate-in fade-in duration-700 min-h-[1200px] content-start",
           view === "grid" ? "grid-cols-2 lg:grid-cols-3" : "grid-cols-1"
         )}
       >
-        {Array.from({ length: 6 }).map((_, i) => (
+        {Array.from({ length: 9 }).map((_, i) => (
           <div
             key={i}
             className={cn(
@@ -139,7 +139,7 @@ export const ProductList = React.memo(function ProductList({
   }
 
   return (
-    <div className="space-y-16 min-h-[600px] flex flex-col justify-between">
+    <div className="space-y-16 min-h-[1200px] flex flex-col justify-between">
       <div
         className={cn(
           "grid animate-in fade-in slide-in-from-bottom-6 duration-1000 flex-1 content-start",
@@ -153,7 +153,7 @@ export const ProductList = React.memo(function ProductList({
 
       {/* Pagination */}
       {products.length > 0 && totalPages > 1 && (
-        <div className="flex justify-center items-center gap-2 pt-12 border-t border-[#F3EFE8]">
+        <div className="flex justify-center items-center gap-2 pt-12 border-t border-[#DDD6C8]">
           <Button
             variant="outline"
             size="icon"
@@ -190,10 +190,10 @@ export const ProductList = React.memo(function ProductList({
                   key={pageNum}
                   onClick={() => onPageChange?.(pageNum)}
                   className={cn(
-                    "h-11 w-11 rounded-2xl font-bold text-[13px] transition-all",
+                    "h-11 w-11 rounded-2xl font-bold text-[13px] transition-all border",
                     isCurrent
-                      ? "bg-[#3D2B1A] text-white shadow-xl shadow-[#3D2B1A]/15 active:scale-95"
-                      : "bg-white text-[#8A7966] hover:bg-[#FAF8F4] hover:text-[#3D2B1A] border border-[#DDD6C8]"
+                      ? "bg-white text-[#C4783A] border-[#C4783A] shadow-lg shadow-[#C4783A]/10"
+                      : "bg-white text-[#8A7966] hover:bg-[#FAF8F4] hover:text-[#3D2B1A] border-[#DDD6C8]"
                   )}
                 >
                   {pageNum}

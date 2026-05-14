@@ -50,7 +50,7 @@ export function ReviewAISummary({ productId }: ReviewAISummaryProps) {
           <Sparkles size={18} className="fill-primary/10" />
         </div>
         <div>
-          <h3 className="text-sm font-semibold text-slate-900 tracking-tight">Phân tích đánh giá bởi AI</h3>
+          <h3 className="text-sm font-semibold text-slate-900 tracking-tight font-serif">Phân tích đánh giá bởi AI</h3>
         </div>
       </div>
 

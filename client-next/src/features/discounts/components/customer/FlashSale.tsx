@@ -40,9 +40,9 @@ function CountdownTimer({ endDate }: { endDate: string }) {
     <div className="flex items-center gap-3">
       {blocks.map((v, i) => (
         <React.Fragment key={i}>
-          {i > 0 && <span className="text-2xl font-bold text-[#FAF8F4]" style={{ fontFamily: "'Playfair Display', serif" }}>:</span>}
+          {i > 0 && <span className="text-2xl font-bold text-[#FAF8F4] font-sans">:</span>}
           <div className="bg-white/10 px-4 py-3 rounded-xl text-center min-w-[70px]">
-            <span className="block text-2xl md:text-[28px] font-bold text-[#FAF8F4]" style={{ fontFamily: "'Playfair Display', serif" }}>
+            <span className="block text-2xl md:text-[28px] font-bold text-[#FAF8F4] font-sans">
               {pad(v)}
             </span>
             <span className="block text-[10px] uppercase tracking-widest mt-1 text-[#FAF8F4]/60">
@@ -86,7 +86,7 @@ function FlashProductCard({ product: rawProduct, discountPercent }: { product: a
       </Link>
 
       {/* ── IMAGE SECTION ── */}
-      <div className="relative h-[240px] w-full flex items-center justify-center overflow-hidden bg-[#F3EFE8]">
+      <div className="relative h-[240px] w-full flex items-center justify-center overflow-hidden bg-white border-b border-[#F3EFE8]">
         <Image
           src={imageUrl}
           alt={product.name}
@@ -117,7 +117,7 @@ function FlashProductCard({ product: rawProduct, discountPercent }: { product: a
         
         <div className="mt-auto flex items-center justify-between pt-1">
           <div className="flex items-center gap-1.5">
-            <span className="text-[18px] font-semibold text-[#3D2B1A]" style={{ fontFamily: "'Playfair Display', serif" }}>
+            <span className="text-[18px] font-semibold text-[#3D2B1A] font-sans">
               {formatCurrency(salePrice)}
             </span>
             <span className="text-[12px] text-[#8A7966] line-through hidden sm:block">
@@ -159,7 +159,7 @@ export function FlashSale({ data }: FlashSaleProps) {
     <section className="w-full bg-[#2A2420] text-[#FAF8F4] py-12 md:py-16 my-8 md:my-16">
       <div className="max-w-[1440px] mx-auto px-6 lg:px-12 flex flex-col md:flex-row items-center justify-between gap-8 mb-10 md:mb-12">
         <div className="text-center md:text-left space-y-2">
-          <h2 className="text-[32px] md:text-[36px]" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600 }}>
+          <h2 className="text-[32px] md:text-[36px] font-serif-brand font-semibold">
             Flash <em className="text-[#C4783A]" style={{ fontStyle: 'italic' }}>Sale</em>
           </h2>
           <p className="text-[14px] text-[#FAF8F4]/70 max-w-sm leading-relaxed hidden md:block">

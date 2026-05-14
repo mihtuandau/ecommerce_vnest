@@ -15,11 +15,9 @@ export default async function CustomerLayout({
 
   return (
     <div className="flex min-h-screen flex-col">
-      <div className="no-print sticky top-0 z-50 w-full">
-        <Suspense fallback={<div className="h-20 bg-white" />}>
-          <Header initialHasToken={hasToken} />
-        </Suspense>
-      </div>
+      <Suspense fallback={<div className="h-20 bg-white" />}>
+        <Header initialHasToken={hasToken} />
+      </Suspense>
       <main className="flex-1">{children}</main>
       <div className="no-print">
         <Footer />

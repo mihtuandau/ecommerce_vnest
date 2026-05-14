@@ -1,11 +1,13 @@
 @import "tailwindcss";
 @plugin "tailwindcss-animate";
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap');
 
 @theme {
+  --font-sans: var(--font-dm-sans), sans-serif;
+  --font-serif: var(--font-playfair), serif;
+
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
-
+  /* ... (rest of colors) */
   --color-card: hsl(var(--card));
   --color-card-foreground: hsl(var(--card-foreground));
 
@@ -68,7 +70,7 @@
   --destructive-foreground: 210 40% 98%;
 
   /* Background & Foreground */
-  --background: 0 0% 100%;
+  --background: 40 33% 98%; /* #FAF8F4 - LUXE Linen */
   --foreground: 0 0% 10%; /* #1a1a1a approx */
 
   --card: 0 0% 100%;
@@ -145,6 +147,15 @@
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'DM Sans', sans-serif !important;
+  }
+
+  h1, h2, h3 {
+    @apply font-bold;
+  }
+  
+  .font-serif-brand {
+    font-family: var(--font-playfair), 'Playfair Display', serif !important;
   }
 }
 
@@ -266,6 +277,13 @@
   --primary: 222 47% 11%;
   --primary-foreground: 210 40% 98%;
 
+  /* Force font-sans for admin */
+  font-family: ui-sans-serif, system-ui, sans-serif !important;
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: ui-sans-serif, system-ui, sans-serif !important;
+  }
+
   /* Force black for common primary classes */
   .bg-primary {
     @apply !bg-slate-900;
@@ -303,4 +321,11 @@
   .tabs-trigger-pill {
     @apply !rounded-full;
   }
+}
+
+.nav-item-standard {
+  font-family: var(--font-dm-sans), 'DM Sans', sans-serif !important;
+  font-size: 13px !important;
+  color: #3D2B1A;
+  font-weight: 500 !important;
 }

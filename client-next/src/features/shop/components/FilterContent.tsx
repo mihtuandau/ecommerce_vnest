@@ -30,13 +30,13 @@ function FilterSection({
   const [isOpen, setIsOpen] = React.useState(defaultOpen);
 
   return (
-    <div className="border-b border-[#F3EFE8] last:border-0">
+    <div className="border-b border-[#DDD6C8] last:border-0">
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         className="group flex w-full items-center justify-between py-3.5 text-sm transition-all"
       >
-        <span className="font-bold text-[#3D2B1A] text-[10.5px] uppercase tracking-[0.15em] flex items-center gap-2">
+        <span className="font-bold text-[#3D2B1A] text-[14px] tracking-tight flex items-center gap-2 font-serif">
           {title}
         </span>
         <ChevronDown 

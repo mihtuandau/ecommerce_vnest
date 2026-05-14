@@ -125,54 +125,54 @@ export const HeaderSearch = React.memo(function HeaderSearch({ onSearch, isMobil
 
   return (
     <div ref={searchContainerRef} className="relative w-full max-w-2xl group">
-      <form onSubmit={handleSearch} className="relative">
-        <button 
-          type="submit"
-          className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-[#8A7966] hover:text-[#C4783A] transition-colors z-10"
-        >
-          <Search className="h-5 w-5" />
-        </button>
+      <form onSubmit={handleSearch} className="relative group max-w-[550px] mx-auto">
         <Input
-          placeholder={isListening ? "đang nghe..." : (isMobile ? "tìm kiếm..." : "bạn đang tìm kiếm gì hôm nay?")}
+          placeholder="Tìm kiếm sản phẩm, thương hiệu..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onFocus={() => searchQuery.trim().length >= 2 && setShowLiveSearch(true)}
-          className={`w-full pl-12 ${isMobile ? "pr-12" : "pr-24"} h-12 rounded-full bg-white border border-[#DDD6C8] focus-visible:bg-white focus-visible:border-[#C4783A]/40 focus-visible:ring-4 focus-visible:ring-[#C4783A]/10 text-sm transition-all shadow-sm font-normal text-[#3D2B1A] placeholder:text-[#8A7966] ${isListening ? "placeholder:text-[#C4783A]" : ""}`}
+          className="w-full pl-6 pr-32 h-11 rounded-full bg-[#FAF8F4] border border-[#F3EFE8] focus-visible:bg-white focus-visible:border-[#C4B49A] focus-visible:ring-4 focus-visible:ring-[#C4783A]/5 text-[13px] transition-all font-normal text-[#3D2B1A] placeholder:text-[#8A7966]/60 font-sans shadow-none"
         />
-        
-        <div className={cn("absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-3 z-10", isMobile && "hidden")}>
+        <button 
+          type="submit"
+          className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-[#8A7966]/80 hover:text-[#C4783A] transition-colors z-10 flex items-center justify-center"
+        >
+          <Search className="h-4.5 w-4.5" />
+        </button>
+
+        <div className="absolute right-12 top-1/2 -translate-y-1/2 flex items-center gap-2 pr-2 border-r border-[#F3EFE8] z-10">
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={clearSearch}
+              className="p-1 text-[#8A7966]/40 hover:text-[#C4783A] transition-colors mr-1"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
+
           <button
             type="button"
             onClick={() => {
               const event = new CustomEvent('open-ai-chat');
               window.dispatchEvent(event);
             }}
-            className="p-1.5 px-2.5 text-[#8A7966] hover:text-[#C4783A] transition-all flex items-center gap-1.5 hover:bg-[#C4783A]/5 rounded-full group/ai"
+            className="p-1.5 text-[#8A7966]/60 hover:text-[#C4783A] hover:bg-[#C4783A]/5 rounded-full transition-all group/ai"
             title="hỏi trợ lý ai"
           >
-            <Sparkles className="h-4 w-4 text-[#C4783A]/60 group-hover/ai:text-[#C4783A] transition-colors" />
-            <span className="text-xs font-medium text-[#8A7966] group-hover/ai:text-[#C4783A]">hỏi ai</span>
+            <Sparkles className="h-4 w-4" />
           </button>
-
-          <div className="h-4 w-[1px] bg-[#DDD6C8] mx-1" />
-
-          {searchQuery && (
-            <button
-              type="button"
-              onClick={clearSearch}
-              className="p-1 text-[#C4B49A] hover:text-[#8A7966] transition-colors"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          )}
           
           <button
             type="button"
             onClick={startVoiceSearch}
-            className={`p-1.5 rounded-full transition-all duration-300 ${isListening ? "bg-[#C4783A]/10 text-[#C4783A] animate-pulse" : "text-[#8A7966] hover:text-[#C4783A] hover:bg-[#F3EFE8]"}`}
+            className={cn(
+              "p-1.5 rounded-full transition-all",
+              isListening ? "bg-[#C4783A]/10 text-[#C4783A] animate-pulse" : "text-[#8A7966]/60 hover:text-[#C4783A] hover:bg-[#C4783A]/5"
+            )}
             title="tìm kiếm bằng giọng nói"
           >
-            {isListening ? <Mic className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+            <Mic className="h-4 w-4" />
           </button>
         </div>
       </form>
@@ -268,7 +268,7 @@ export const HeaderSearch = React.memo(function HeaderSearch({ onSearch, isMobil
                       <div className="flex-1 min-w-0">
                         <h4 className="text-sm font-medium text-[#3D2B1A] truncate transition-colors">{product.name}</h4>
                         <div className="flex items-center gap-2 mt-1">
-                          <p className="text-sm font-semibold text-[#3D2B1A]" style={{ fontFamily: "'Playfair Display', serif" }}>
+                          <p className="text-sm font-semibold text-[#3D2B1A] font-serif">
                             {formatCurrency(Number(product.price || product.basePrice || 0))}
                           </p>
                           {(product.oldPrice || product.originalPrice) && (

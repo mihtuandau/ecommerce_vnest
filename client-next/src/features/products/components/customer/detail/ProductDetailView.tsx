@@ -110,7 +110,7 @@ export function ProductDetailView({ slug }: ProductDetailViewProps) {
   if (error || !product) {
     return (
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
-        <h1 className="text-[20px] font-bold text-[#3D2B1A] mb-6" style={{ fontFamily: "'Playfair Display', serif" }}>Không tìm thấy sản phẩm</h1>
+        <h1 className="text-[20px] font-bold text-[#3D2B1A] mb-6 font-serif">Không tìm thấy sản phẩm</h1>
         <Button asChild className="rounded-full px-8 h-12 bg-[#3D2B1A] hover:bg-[#C4783A] text-white" variant="outline">
           <Link href="/shop">Quay lại cửa hàng</Link>
         </Button>
@@ -135,7 +135,7 @@ export function ProductDetailView({ slug }: ProductDetailViewProps) {
   const currentStock = selectedVariant?.stock ?? product.stock;
 
   return (
-    <div className="bg-white min-h-screen">
+    <div className="bg-[#FAF8F4] min-h-screen">
       <ProductBreadcrumbs product={product} />
 
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-24">

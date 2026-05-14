@@ -25,7 +25,7 @@ export function HeroBanner({ banners }: HeroBannerProps) {
             </span>
           </div>
 
-          <h1 className="text-4xl md:text-6xl lg:text-[4.5rem] leading-[1.05] text-[#3D2B1A] tracking-tight" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600 }}>
+          <h1 className="text-4xl md:text-6xl lg:text-[4.5rem] leading-[1.05] text-[#3D2B1A] tracking-tight font-serif-brand font-bold">
             {banner?.title ? (
               <>
                 {banner.title.split(' ').slice(0, 2).join(' ')} <br />
@@ -65,15 +65,15 @@ export function HeroBanner({ banners }: HeroBannerProps) {
           {/* Stats */}
           <div className="flex gap-10 pt-10 border-t border-[#DDD6C8]/60 mt-10">
             <div>
-              <p className="text-2xl text-[#3D2B1A]" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600 }}>12K+</p>
+              <p className="text-2xl text-[#3D2B1A] font-sans font-semibold">12K+</p>
               <p className="text-[10px] text-[#8A7966] font-bold tracking-widest uppercase mt-1">Sản phẩm</p>
             </div>
             <div>
-              <p className="text-2xl text-[#3D2B1A]" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600 }}>200+</p>
+              <p className="text-2xl text-[#3D2B1A] font-sans font-semibold">200+</p>
               <p className="text-[10px] text-[#8A7966] font-bold tracking-widest uppercase mt-1">Thương hiệu</p>
             </div>
             <div>
-              <p className="text-2xl text-[#3D2B1A]" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600 }}>98%</p>
+              <p className="text-2xl text-[#3D2B1A] font-sans font-semibold">98%</p>
               <p className="text-[10px] text-[#8A7966] font-bold tracking-widest uppercase mt-1">Hài lòng</p>
             </div>
           </div>
@@ -86,7 +86,7 @@ export function HeroBanner({ banners }: HeroBannerProps) {
         <div className="absolute w-[400px] h-[400px] lg:w-[550px] lg:h-[550px] rounded-full border border-[#C4B49A]/30 flex items-center justify-center animate-spin-slow">
           <div className="w-[300px] h-[300px] lg:w-[420px] lg:h-[420px] rounded-full bg-[#C4B49A]/10 flex items-center justify-center">
             <div className="w-[200px] h-[200px] lg:w-[280px] lg:h-[280px] rounded-full bg-[#C4B49A]/20 flex items-center justify-center">
-              <span className="text-[#3D2B1A] text-center italic text-xl opacity-60" style={{ fontFamily: "'Playfair Display', serif" }}>
+              <span className="text-[#3D2B1A] text-center italic text-xl opacity-60 font-serif">
                 Thời trang <br />không chỉ là <br />quần áo
               </span>
             </div>
@@ -109,7 +109,7 @@ export function HeroBanner({ banners }: HeroBannerProps) {
           <div className="flex items-center justify-between border-t border-[#F3EFE8] pt-3">
             <div className="flex flex-col">
               <span className="text-[10px] text-[#8A7966] uppercase tracking-wider font-bold">Giá ưu đãi</span>
-              <span className="text-[16px] font-bold text-[#3D2B1A]" style={{ fontFamily: "'Playfair Display', serif" }}>890.000đ</span>
+              <span className="text-[16px] font-bold text-[#3D2B1A] font-sans">890.000đ</span>
             </div>
             <div className="flex flex-col items-end">
                <div className="flex text-[#C4783A] text-[10px] mb-0.5">★★★★★</div>

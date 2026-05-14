@@ -101,100 +101,120 @@ export const ProductCard = React.memo(function ProductCard({ product, view = "gr
   // ── LIST VIEW ──
   if (view === "list") {
     return (
-      <div 
-        onClick={() => router.push(`/shop/${product.slug}`)}
-        className="group relative flex bg-white rounded-2xl border border-[#F3EFE8] hover:border-[#C4B49A]/30 hover:shadow-[0_10px_30px_rgba(61,43,26,0.04)] transition-all duration-500 overflow-hidden cursor-pointer"
-      >
-        <div className="relative h-40 w-40 md:h-48 md:w-48 bg-[#FAF8F4] flex-shrink-0 flex items-center justify-center p-4">
-          <Image src={imageUrl} alt={product.name} fill className="object-contain p-6 transition-transform duration-700 ease-out group-hover:scale-105 mix-blend-multiply" sizes="(max-width: 768px) 160px, 192px" />
-        </div>
-
-        <div className="flex-1 p-5 md:p-6 flex flex-col justify-between">
-          <div className="space-y-2">
-            <div className="flex justify-between items-start">
-              <div className="space-y-1">
-                <p className="text-[10px] font-bold text-[#C4B49A] uppercase tracking-[0.12em]">{product.category?.name || "Luxurious"}</p>
-                <h3 className="text-[16px] md:text-[18px] font-medium text-[#3D2B1A] leading-tight hover:text-[#C4783A] transition-colors">{product.name}</h3>
-              </div>
-              <button onClick={handleToggleWishlist} className={cn("relative z-30 w-8 h-8 rounded-full flex items-center justify-center border transition-all duration-300", isFavorite ? "bg-[#C4783A] border-[#C4783A] text-white" : "bg-white border-[#DDD6C8] text-[#8A7966] hover:bg-[#FAF8F4] hover:text-[#C4783A]")}>
-                <Heart size={14} fill={isFavorite ? "currentColor" : "none"} strokeWidth={isFavorite ? 0 : 2} />
-              </button>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1">
-                <div className="text-[#C4783A] text-[13px]">★★★★★</div>
-                <span className="text-[12px] text-[#C4B49A]">({product.reviewCount || 0})</span>
-              </div>
-              <div className="flex items-center gap-2 text-[10px] text-[#8A7966] font-medium">
-                <span className="bg-[#FAF8F4] px-2 py-0.5 rounded-full">{formatSoldCount(soldCount)} đã bán</span>
-                <span className="flex items-center gap-1.5 bg-[#FBF9F6] border border-[#F3EFE8] px-2 py-0.5 rounded-full">
-                  <Zap size={10} className="fill-current text-[#C4783A]" /> {product.viewCount || 0} lượt xem
-                </span>
-              </div>
-            </div>
-            <p className="text-[13px] text-[#8A7966] line-clamp-2 leading-relaxed max-w-xl">{product.description || "Sản phẩm thiết kế sang trọng, chất liệu cao cấp mang lại sự thoải mái và phong cách cho người mặc."}</p>
+      <>
+        <div 
+          onClick={() => router.push(`/shop/${product.slug}`)}
+          className="group relative flex bg-white rounded-2xl border border-[#DDD6C8] hover:border-[#C4783A]/30 hover:shadow-[0_16px_48px_rgba(61,43,26,0.1)] transition-all duration-500 overflow-hidden cursor-pointer"
+        >
+          <div className="relative h-40 w-40 md:h-48 md:w-48 bg-[#F9F7F2] flex-shrink-0 flex items-center justify-center p-4">
+            <Image src={imageUrl} alt={product.name} fill className="object-contain p-6 transition-transform duration-700 ease-out group-hover:scale-105 mix-blend-multiply" sizes="(max-width: 768px) 160px, 192px" />
           </div>
 
-          <div className="flex items-end justify-between pt-4">
-            <div className="flex flex-col">
-              {originalPrice && originalPrice > price && <span className="text-[12px] text-[#C4B49A] line-through mb-0.5">{formatCurrency(originalPrice)}</span>}
-              <span className="text-[22px] font-bold text-[#3D2B1A] leading-none" style={{ fontFamily: "'Playfair Display', serif" }}>{formatCurrency(price)}</span>
+          <div className="flex-1 p-5 md:p-6 flex flex-col justify-between">
+            <div className="space-y-2">
+              <div className="flex justify-between items-start">
+                <div className="space-y-1">
+                  <p className="text-[10px] font-bold text-[#C4B49A] uppercase tracking-[0.12em]">{product.category?.name || "Luxurious"}</p>
+                  <h3 className="text-[16px] md:text-[18px] font-medium text-[#3D2B1A] leading-tight hover:text-[#C4783A] transition-colors">{product.name}</h3>
+                </div>
+                <button onClick={handleToggleWishlist} className={cn("relative z-30 w-8 h-8 rounded-full flex items-center justify-center border transition-all duration-300", isFavorite ? "bg-[#C4783A] border-[#C4783A] text-white" : "bg-white border-[#DDD6C8] text-[#8A7966] hover:bg-[#FAF8F4] hover:text-[#C4783A]")}>
+                  <Heart size={14} fill={isFavorite ? "currentColor" : "none"} strokeWidth={isFavorite ? 0 : 2} />
+                </button>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-1">
+                  <div className="text-[#C4783A] text-[13px]">★★★★★</div>
+                  <span className="text-[12px] text-[#C4B49A]">({product.reviewCount || 0})</span>
+                </div>
+                <div className="flex items-center gap-2 text-[10px] text-[#8A7966] font-medium">
+                  <span className="bg-[#FAF8F4] px-2 py-0.5 rounded-full">{formatSoldCount(soldCount)} đã bán</span>
+                  <span className="flex items-center gap-1.5 bg-[#FBF9F6] border border-[#F3EFE8] px-2 py-0.5 rounded-full">
+                    <Zap size={10} className="fill-current text-[#C4783A]" /> {product.viewCount || 0} lượt xem
+                  </span>
+                </div>
+              </div>
+              <p className="text-[13px] text-[#8A7966] line-clamp-2 leading-relaxed max-w-xl">{product.description || "Sản phẩm thiết kế sang trọng, chất liệu cao cấp mang lại sự thoải mái và phong cách cho người mặc."}</p>
             </div>
-            <button onClick={handleAddToCart} className="relative z-30 flex items-center gap-2 px-5 h-10 rounded-full bg-[#3D2B1A] text-white text-[11px] font-bold uppercase tracking-widest hover:bg-[#C4783A] transition-all duration-300">
-              <ShoppingCart size={14} /> Thêm vào giỏ
-            </button>
+
+            <div className="flex items-center justify-between pt-4">
+              <div className="flex items-baseline gap-3">
+                <span className="text-[22px] font-bold text-[#3D2B1A] leading-none font-sans">{formatCurrency(price)}</span>
+                {originalPrice && originalPrice > price && <span className="text-[14px] text-[#8A7966] line-through font-medium">{formatCurrency(originalPrice)}</span>}
+              </div>
+              <button onClick={handleAddToCart} className="relative z-30 flex items-center gap-2 px-5 h-10 rounded-full bg-[#3D2B1A] text-white text-[11px] font-bold uppercase tracking-widest hover:bg-[#C4783A] transition-all duration-300">
+                <ShoppingCart size={14} /> Thêm vào giỏ
+              </button>
+            </div>
           </div>
         </div>
         <QuickAddModal product={product} isOpen={isQuickAddOpen} onClose={() => setIsQuickAddOpen(false)} price={price} originalPrice={originalPrice} />
-      </div>
+      </>
     );
   }
 
   // ── GRID VIEW ──
   return (
-    <div 
-      onClick={() => router.push(`/shop/${product.slug}`)}
-      className="group relative flex flex-col h-full bg-white rounded-2xl border border-[#F3EFE8] hover:border-[#C4B49A]/30 hover:shadow-[0_15px_35px_rgba(61,43,26,0.06)] transition-all duration-500 overflow-hidden cursor-pointer"
-    >
-      <div className="relative aspect-square w-full bg-[#FAF8F4] overflow-hidden flex items-center justify-center">
-        <Image src={imageUrl} alt={product.name} fill className="object-contain p-8 transition-transform duration-700 ease-out group-hover:scale-105 mix-blend-multiply" sizes="(max-width: 768px) 50vw, 25vw" />
-        <div className="absolute top-4 left-4 z-30 flex flex-col gap-1.5">
-          {discountPercent > 0 && <span className="bg-[#C4783A] text-white text-[9px] font-bold px-2 py-1 rounded uppercase tracking-wider">-{discountPercent}%</span>}
-          {product.isNew && <span className="bg-[#3D2B1A] text-white text-[9px] font-bold px-2 py-1 rounded uppercase tracking-wider">Mới</span>}
-        </div>
-        <button onClick={handleToggleWishlist} className={cn("absolute top-4 right-4 z-30 w-8 h-8 rounded-full flex items-center justify-center border transition-all duration-300", isFavorite ? "bg-[#C4783A] border-[#C4783A] text-white" : "bg-white/80 backdrop-blur-sm border-[#DDD6C8] text-[#8A7966] hover:bg-white hover:text-[#C4783A]")}>
-          <Heart size={14} fill={isFavorite ? "currentColor" : "none"} strokeWidth={isFavorite ? 0 : 2} />
-        </button>
-      </div>
-
-      <div className="p-4 md:p-5 flex flex-col flex-1">
-        <div className="space-y-1 mb-3">
-          <p className="text-[10px] font-bold text-[#C4B49A] uppercase tracking-[0.12em]">{product.category?.name || "Luxurious"}</p>
-          <h3 className="text-[14px] font-medium text-[#3D2B1A] line-clamp-2 leading-snug min-h-[2.5rem] hover:text-[#C4783A] transition-colors">{product.name}</h3>
-        </div>
-        <div className="flex items-center justify-between gap-4 mb-4">
-          <div className="flex items-center gap-1.5 shrink-0">
-            <div className="text-[#C4783A] text-[13px]">{"★".repeat(Math.round(rating)) + "☆".repeat(5 - Math.round(rating))}</div>
-            <span className="text-[12px] text-[#C4B49A]">({product.reviewCount || 0})</span>
+    <>
+      <div 
+        onClick={() => router.push(`/shop/${product.slug}`)}
+        className="group relative flex flex-col h-full bg-white rounded-2xl border border-[#DDD6C8] hover:border-[#C4783A]/30 hover:shadow-[0_16px_48px_rgba(61,43,26,0.1)] transition-all duration-500 overflow-hidden cursor-pointer"
+      >
+        <div className="relative h-[280px] w-full bg-[#F9F7F2] overflow-hidden flex items-center justify-center">
+          <Image src={imageUrl} alt={product.name} fill className="object-contain p-8 transition-transform duration-700 ease-out group-hover:scale-105 mix-blend-multiply" sizes="(max-width: 768px) 50vw, 25vw" />
+          <div className="absolute top-4 left-4 z-30 flex flex-col gap-1.5">
+            {discountPercent > 0 && <span className="bg-[#C4783A] text-white text-[9px] font-bold px-2 py-1 rounded uppercase tracking-wider">-{discountPercent}%</span>}
+            {product.isNew && <span className="bg-[#3D2B1A] text-white text-[9px] font-bold px-2 py-1 rounded uppercase tracking-wider">Mới</span>}
           </div>
-          <div className="flex items-center gap-2 text-[10px] text-[#8A7966] font-medium shrink-0">
-            <span className="bg-[#FAF8F4] px-2 py-0.5 rounded-full">{formatSoldCount(soldCount)} đã bán</span>
-            <span className="flex items-center gap-1.5 bg-[#FBF9F6] border border-[#F3EFE8] px-2 py-0.5 rounded-full">
-              <Zap size={10} className="fill-current text-[#C4783A]" /> {product.viewCount || 0} lượt xem
-            </span>
-          </div>
-        </div>
-        <div className="pt-3 border-t border-[#F3EFE8] flex items-end justify-between mt-auto">
-          <div className="flex flex-col">
-            {originalPrice && originalPrice > price && <span className="text-[11px] text-[#C4B49A] line-through mb-0.5">{formatCurrency(originalPrice)}</span>}
-            <span className="text-[18px] font-bold text-[#3D2B1A] leading-none" style={{ fontFamily: "'Playfair Display', serif" }}>{formatCurrency(price)}</span>
-          </div>
-          <button onClick={handleAddToCart} className="relative z-30 h-9 w-9 rounded-full bg-[#3D2B1A] text-white flex items-center justify-center hover:bg-[#C4783A] transition-all duration-300">
-            <ShoppingCart size={15} />
+          <button onClick={handleToggleWishlist} className={cn("absolute top-4 right-4 z-30 w-8 h-8 rounded-full flex items-center justify-center border transition-all duration-300", isFavorite ? "bg-[#C4783A] border-[#C4783A] text-white" : "bg-white/80 backdrop-blur-sm border-[#DDD6C8] text-[#8A7966] hover:bg-white hover:text-[#C4783A]")}>
+            <Heart size={14} fill={isFavorite ? "currentColor" : "none"} strokeWidth={isFavorite ? 0 : 2} />
           </button>
+        </div>
+
+        <div className="p-4 md:p-5 flex flex-col flex-1">
+          <div className="mb-2">
+            <p className="text-[11px] font-bold text-[#8A7966] uppercase tracking-[0.1em] mb-1">{product.category?.name || "Bộ sưu tập LUXE"}</p>
+            <h3 className="text-[14.5px] font-medium text-[#3D2B1A] mb-2 line-clamp-2 leading-snug hover:text-[#C4783A] transition-colors min-h-[40px]">
+              {product.name}
+            </h3>
+          </div>
+          
+          <div className="flex items-center justify-between gap-4 mb-4">
+            <div className="flex items-center gap-2 shrink-0">
+              <div className="text-[#C4783A] text-[13px] tracking-[1px]">
+                 {"★".repeat(Math.round(rating)) + "☆".repeat(5 - Math.round(rating))}
+              </div>
+              <span className="text-[12px] text-[#8A7966] font-medium">({product.reviewCount || 0})</span>
+            </div>
+            
+            <div className="flex items-center gap-2 text-[10px] text-[#8A7966] font-medium shrink-0">
+              <span className="bg-[#FAF8F4] px-2 py-0.5 rounded-full">{formatSoldCount(soldCount)} đã bán</span>
+              <span className="flex items-center gap-1.5 bg-[#FBF9F6] border border-[#F3EFE8] px-2 py-0.5 rounded-full">
+                <Zap size={10} className="fill-current text-[#C4783A]" /> {product.viewCount || 0}
+              </span>
+            </div>
+          </div>
+          
+          <div className="mt-auto pt-3 border-t border-[#F3EFE8] flex items-end justify-between gap-2">
+            <div className="flex flex-col gap-0.5 min-w-0">
+              {originalPrice && originalPrice > price && (
+                <span className="text-[11px] text-[#8A7966] line-through font-medium opacity-60">
+                  {formatCurrency(originalPrice)}
+                </span>
+              )}
+              <span className="text-[16px] font-bold text-[#3D2B1A] leading-none font-serif truncate">
+                {formatCurrency(price)}
+              </span>
+            </div>
+            <button 
+              onClick={handleAddToCart} 
+              className="relative z-30 h-9 w-9 shrink-0 rounded-full bg-[#3D2B1A] text-white flex items-center justify-center hover:bg-[#C4783A] transition-all duration-300 shadow-sm"
+            >
+              <ShoppingCart size={15} />
+            </button>
+          </div>
         </div>
       </div>
       <QuickAddModal product={product} isOpen={isQuickAddOpen} onClose={() => setIsQuickAddOpen(false)} price={price} originalPrice={originalPrice} />
-    </div>
+    </>
   );
 });

@@ -36,7 +36,7 @@ export function ProductSection({
     <div className="space-y-8 md:space-y-12">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h2 className="text-[30px] text-[#3D2B1A]" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600 }}>
+          <h2 className="text-[30px] text-[#3D2B1A] font-serif-brand font-semibold">
             {title.split(" ")[0]} <em className="text-[#C4783A]" style={{ fontStyle: 'italic' }}>{title.split(" ").slice(1).join(" ") || title}</em>
           </h2>
           <p className="text-[#8A7966] text-sm mt-2 max-w-md leading-relaxed">

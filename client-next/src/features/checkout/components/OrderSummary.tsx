@@ -58,8 +58,8 @@ export const OrderSummary = React.memo(function OrderSummary({
   return (
     <div className="lg:sticky lg:top-10 space-y-4">
       <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-xl shadow-slate-200/50">
-        <div className="px-6 py-5 border-b border-slate-50 flex items-center gap-3 bg-slate-50/30">
-          <h2 className="text-sm font-bold text-slate-700 uppercase tracking-widest">Đơn hàng của bạn</h2>
+        <div className="px-6 py-5 border-b border-[#F3EFE8] flex items-center gap-3 bg-white">
+          <h2 className="text-[16px] font-bold text-[#3D2B1A] font-serif">Đơn hàng của bạn</h2>
         </div>
 
         <div className="p-6 space-y-6">
@@ -168,20 +168,20 @@ export const OrderSummary = React.memo(function OrderSummary({
               </div>
             </div>
 
-            <div className="pt-6 mt-2 border-t border-slate-100 flex justify-between items-end">
-               <span className="text-sm font-bold text-slate-900 uppercase tracking-widest">Tổng cộng</span>
+            <div className="pt-6 mt-2 border-t border-[#F3EFE8] flex justify-between items-end">
+               <span className="text-[15px] font-bold text-[#3D2B1A] font-serif">Tổng cộng</span>
                <div className="text-right">
-                  <span className="text-xl font-black text-primary tabular-nums tracking-tighter block">
+                  <span className="text-[28px] font-bold text-[#3D2B1A] tabular-nums tracking-tighter block font-serif">
                     {formatCurrency(subtotal + shippingFee - discountAmount)}
                   </span>
-                  <span className="text-[9px] text-slate-400 font-bold uppercase mt-1 block tracking-wider">(Đã bao gồm VAT)</span>
+                  <span className="text-[9px] text-[#8A7966] font-bold uppercase mt-1 block tracking-wider">(Đã bao gồm VAT)</span>
                </div>
             </div>
 
             <button 
               type="submit" 
               disabled={isSubmitting || !canSubmit}
-              className="w-full mt-6 h-12 rounded-xl bg-primary hover:bg-primary/90 text-white font-bold transition-all active:scale-[0.98] flex items-center justify-center gap-2 group shadow-xl shadow-primary/20"
+              className="w-full mt-6 h-14 rounded-full bg-[#3D2B1A] hover:bg-[#C4783A] text-white font-bold transition-all active:scale-[0.98] flex items-center justify-center gap-3 group shadow-xl shadow-[#3D2B1A]/20 border-none"
             >
               {isSubmitting ? (
                 <div className="flex items-center gap-2">

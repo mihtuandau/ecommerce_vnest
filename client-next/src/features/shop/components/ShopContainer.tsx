@@ -60,7 +60,7 @@ export function ShopContainer() {
     const params = new URLSearchParams(searchParams.toString());
     if (value) params.set(key, value); else params.delete(key);
     params.set("page", "1");
-    router.push(`/shop?${params.toString()}`);
+    router.push(`/shop?${params.toString()}`, { scroll: false });
   }, [router, searchParams]);
 
   const updatePriceFilter = useCallback((min: string | null, max: string | null) => {
@@ -68,42 +68,47 @@ export function ShopContainer() {
     if (min) params.set("minPrice", min); else params.delete("minPrice");
     if (max) params.set("maxPrice", max); else params.delete("maxPrice");
     params.set("page", "1");
-    router.push(`/shop?${params.toString()}`);
+    router.push(`/shop?${params.toString()}`, { scroll: false });
   }, [router, searchParams]);
 
   const activeSortLabel = SORT_OPTIONS.find((opt) => opt.value === currentSort)?.label || "Sắp xếp";
 
   return (
-    <div className="bg-white min-h-screen">
+    <div className="bg-[#FAF8F4] min-h-screen">
       {/* ── HEADER ── */}
-      <div className="border-b border-[#F3EFE8]">
+      <div className="bg-white border-b border-[#DDD6C8]">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="py-4 flex items-center">
-            <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-[#C4B49A]">
+          <div className="h-11 flex items-center justify-between">
+            <div className="flex items-center gap-2 text-[12px] font-medium text-[#8A7966]">
                <Link href="/" className="hover:text-[#3D2B1A] transition-colors">Trang chủ</Link>
-               <span>/</span>
-               <span className="text-[#3D2B1A] font-bold">Cửa hàng</span>
+               <span className="text-[#DDD6C8]">/</span>
+               <span className="text-[#3D2B1A] font-semibold">Cửa hàng</span>
+            </div>
+            <div className="text-[11px] font-medium text-[#8A7966] bg-[#FAF8F4] px-3 py-1 rounded-full border border-[#F3EFE8]">
+              {totalProducts} sản phẩm
             </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-20">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-20">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-x-12">
           
           {/* ── SIDEBAR ── */}
           <aside className="hidden lg:block lg:col-span-1 sticky top-32 h-fit">
-            <FilterContent
-              currentCategory={currentCategory}
-              currentBrand={currentBrand}
-              currentMinPrice={currentMinPrice}
-              currentMaxPrice={currentMaxPrice}
-              currentMinRating={currentMinRating}
-              categories={categories}
-              brands={brandsList}
-              updateFilters={updateFilters}
-              updatePriceFilter={updatePriceFilter}
-            />
+            <div className="bg-white rounded-2xl p-6 border border-[#DDD6C8] shadow-[0_8px_30px_rgba(61,43,26,0.04)]">
+              <FilterContent
+                currentCategory={currentCategory}
+                currentBrand={currentBrand}
+                currentMinPrice={currentMinPrice}
+                currentMaxPrice={currentMaxPrice}
+                currentMinRating={currentMinRating}
+                categories={categories}
+                brands={brandsList}
+                updateFilters={updateFilters}
+                updatePriceFilter={updatePriceFilter}
+              />
+            </div>
           </aside>
 
           {/* ── MAIN ── */}
@@ -121,7 +126,7 @@ export function ShopContainer() {
                   updateFilters("search", val || null);
                 }} className="relative hidden md:block">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#C4B49A]" />
-                  <input name="search" type="text" defaultValue={currentSearch || ""} placeholder="Tìm kiếm..." className="h-10 pl-9 pr-4 w-48 border border-[#DDD6C8] rounded-full text-[12px] focus:outline-none focus:border-[#C4783A]" />
+                  <input name="search" type="text" defaultValue={currentSearch || ""} placeholder="Tìm kiếm..." className="h-10 pl-9 pr-4 w-48 bg-white border border-[#DDD6C8] rounded-full text-[12px] focus:outline-none focus:border-[#C4783A] shadow-sm" />
                 </form>
 
                 <DropdownMenu>
@@ -151,28 +156,28 @@ export function ShopContainer() {
                 <span className="text-[10px] font-bold text-[#C4B49A] uppercase tracking-widest mr-2">Đang lọc:</span>
                 
                 {currentCategory && (
-                  <button onClick={() => updateFilters('categoryId', null)} className="flex items-center gap-2 px-3 py-1.5 bg-[#FAF8F4] border border-[#DDD6C8] rounded-full text-[11px] font-medium text-[#3D2B1A] hover:border-[#C4783A] transition-all group">
+                  <button onClick={() => updateFilters('categoryId', null)} className="flex items-center gap-2 px-3 py-1.5 bg-white border border-[#DDD6C8] rounded-full text-[11px] font-medium text-[#3D2B1A] hover:border-[#C4783A] transition-all group">
                     Danh mục: {categories.find((c: any) => String(c.id) === currentCategory)?.name || "Đang tải..."}
                     <X size={12} className="text-[#C4B49A] group-hover:text-rose-500" />
                   </button>
                 )}
 
                 {currentBrand && (
-                  <button onClick={() => updateFilters('brandId', null)} className="flex items-center gap-2 px-3 py-1.5 bg-[#FAF8F4] border border-[#DDD6C8] rounded-full text-[11px] font-medium text-[#3D2B1A] hover:border-[#C4783A] transition-all group">
+                  <button onClick={() => updateFilters('brandId', null)} className="flex items-center gap-2 px-3 py-1.5 bg-white border border-[#DDD6C8] rounded-full text-[11px] font-medium text-[#3D2B1A] hover:border-[#C4783A] transition-all group">
                     Hiệu: {brandsList.find((b: any) => String(b.id) === currentBrand)?.name || "Đang tải..."}
                     <X size={12} className="text-[#C4B49A] group-hover:text-rose-500" />
                   </button>
                 )}
 
                 {(currentMinPrice || currentMaxPrice) && (
-                  <button onClick={() => updatePriceFilter(null, null)} className="flex items-center gap-2 px-3 py-1.5 bg-[#FAF8F4] border border-[#DDD6C8] rounded-full text-[11px] font-medium text-[#3D2B1A] hover:border-[#C4783A] transition-all group">
+                  <button onClick={() => updatePriceFilter(null, null)} className="flex items-center gap-2 px-3 py-1.5 bg-white border border-[#DDD6C8] rounded-full text-[11px] font-medium text-[#3D2B1A] hover:border-[#C4783A] transition-all group">
                     Giá: {currentMinPrice ? `${(Number(currentMinPrice)/1000).toLocaleString()}k` : "0"} — {currentMaxPrice ? `${(Number(currentMaxPrice)/1000).toLocaleString()}k` : "∞"}
                     <X size={12} className="text-[#C4B49A] group-hover:text-rose-500" />
                   </button>
                 )}
 
                 {currentMinRating && (
-                  <button onClick={() => updateFilters('minRating', null)} className="flex items-center gap-2 px-3 py-1.5 bg-[#FAF8F4] border border-[#DDD6C8] rounded-full text-[11px] font-medium text-[#3D2B1A] hover:border-[#C4783A] transition-all group">
+                  <button onClick={() => updateFilters('minRating', null)} className="flex items-center gap-2 px-3 py-1.5 bg-white border border-[#DDD6C8] rounded-full text-[11px] font-medium text-[#3D2B1A] hover:border-[#C4783A] transition-all group">
                     Đánh giá: {currentMinRating}+ ⭐
                     <X size={12} className="text-[#C4B49A] group-hover:text-rose-500" />
                   </button>
@@ -186,7 +191,7 @@ export function ShopContainer() {
                 )}
 
                 <button
-                  onClick={() => router.push('/shop')}
+                  onClick={() => router.push('/shop', { scroll: false })}
                   className="text-[11px] font-bold text-[#C4783A] hover:underline px-2 transition-all"
                 >
                   Xóa tất cả
@@ -201,7 +206,7 @@ export function ShopContainer() {
               onPageChange={(p) => {
                 const params = new URLSearchParams(searchParams.toString());
                 params.set("page", p.toString());
-                router.push(`/shop?${params.toString()}`);
+                router.push(`/shop?${params.toString()}`, { scroll: false });
                 window.scrollTo({ top: 0, behavior: "smooth" });
               }}
             />
