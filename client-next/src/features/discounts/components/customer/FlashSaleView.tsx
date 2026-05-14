@@ -258,12 +258,28 @@ export function FlashSaleView() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-white pb-24">
-        <div className="h-48 bg-slate-50 animate-pulse" />
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 mt-8">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
-            {Array.from({ length: 10 }).map((_, i) => (
-              <Skeleton key={i} className="h-[380px] rounded-2xl" />
+      <div className="min-h-screen bg-brand-cream pb-24">
+        {/* Banner Skeleton */}
+        <div className="h-48 md:h-64 bg-brand-sand/20 animate-pulse relative overflow-hidden">
+           <div className="absolute inset-0 bg-gradient-to-br from-brand-sand/10 to-transparent" />
+        </div>
+        
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 mt-12">
+          <div className="flex items-center justify-between mb-8">
+            <div className="h-6 w-48 bg-brand-sand/20 animate-pulse rounded-full" />
+            <div className="h-6 w-24 bg-brand-sand/20 animate-pulse rounded-full" />
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="bg-white rounded-3xl p-4 border border-brand-sand/40 space-y-4">
+                <Skeleton className="aspect-square w-full rounded-2xl bg-brand-cream" />
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-3/4 rounded-full bg-brand-cream" />
+                  <Skeleton className="h-4 w-1/2 rounded-full bg-brand-cream" />
+                </div>
+                <Skeleton className="h-10 w-full rounded-full bg-brand-cream" />
+              </div>
             ))}
           </div>
         </div>

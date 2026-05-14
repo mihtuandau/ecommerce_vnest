@@ -32,7 +32,7 @@ export function useAuth() {
       clearAuth();
       useCartStore.getState().clearCart();
       if (typeof window !== "undefined") {
-        window.location.href = "/login";
+        window.location.href = "/";
       }
     }
   };

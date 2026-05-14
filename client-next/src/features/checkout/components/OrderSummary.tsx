@@ -1,16 +1,13 @@
 "use client";
 
-import React from "react";
-import { formatCurrency } from "@/utils/formatCurrency";
-import { Button } from "@/components/ui/Button";
-import { Card, CardContent } from "@/components/ui/Card";
-import { ShoppingBag, ShieldCheck, CheckCircle2, Truck, Tag, X } from "lucide-react";
-import { Spinner } from "@/components/ui/Spinner";
-import { cn } from "@/utils/cn";
+import React, { useState } from "react";
 import Image from "next/image";
+import { formatCurrency } from "@/utils/formatCurrency";
+import { ShoppingBag, ChevronDown, ChevronUp, ShieldCheck, Truck, CheckCircle2 } from "lucide-react";
+import { Spinner } from "@/components/ui/Spinner";
 import { CartItem } from "@/store/useCartStore";
 import { VoucherModal } from "@/features/discounts/components/customer/VoucherModal";
-import { useState } from "react";
+import { cn } from "@/utils/cn";
 
 type CheckoutDiscount = {
   id?: number;
@@ -28,7 +25,6 @@ interface OrderSummaryProps {
   isSubmitting: boolean;
   canSubmit: boolean;
   isCalculatingFee?: boolean;
-  // Discount props
   discountCode: string;
   setDiscountCode: (code: string) => void;
   appliedDiscount: CheckoutDiscount | null;
@@ -53,175 +49,171 @@ export const OrderSummary = React.memo(function OrderSummary({
   onRemoveDiscount,
   isApplyingDiscount = false,
 }: OrderSummaryProps) {
+  const [isExpanded, setIsExpanded] = useState(true);
   const [isVoucherModalOpen, setIsVoucherModalOpen] = useState(false);
 
+  const total = subtotal + shippingFee - discountAmount;
+
   return (
-    <div className="lg:sticky lg:top-10 space-y-4">
-      <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-xl shadow-slate-200/50">
-        <div className="px-6 py-5 border-b border-[#F3EFE8] flex items-center gap-3 bg-white">
-          <h2 className="text-[16px] font-bold text-[#3D2B1A] font-serif">Đơn hàng của bạn</h2>
-        </div>
+    <div className="bg-white rounded-[16px] border border-brand-sand overflow-hidden shadow-sm">
+      {/* OS Header */}
+      <div className="px-[22px] py-[18px] border-b border-brand-sand flex items-center justify-between">
+        <h2 className="text-[17px] font-bold text-primary font-serif">Đơn hàng của bạn</h2>
+        <button 
+          type="button" 
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="text-[12.5px] font-medium text-brand-bronze hover:underline flex items-center gap-1"
+        >
+          {isExpanded ? (
+            <><ChevronUp size={14} /> Ẩn</>
+          ) : (
+            <><ChevronDown size={14} /> Xem</>
+          )}
+        </button>
+      </div>
 
-        <div className="p-6 space-y-6">
-          {/* Item list */}
-          <div className="space-y-4 max-h-[350px] overflow-y-auto pr-2 custom-scrollbar">
-            {items.map((item) => (
-              <div key={item.variantId} className="flex gap-4 group">
-                <div className="h-14 w-14 rounded-xl bg-slate-50 overflow-hidden shrink-0 border border-slate-100 relative">
-                  <Image 
-                    src={item.imageUrl} 
-                    alt={item.name} 
-                    fill
-                    className="object-cover transition-transform group-hover:scale-110 duration-500" 
-                  />
-                  <div className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-slate-900 text-white text-[10px] font-bold flex items-center justify-center border border-white shadow-sm">
-                    {item.quantity}
-                  </div>
-                </div>
-                <div className="flex-1 min-w-0 py-0.5">
-                   <div className="flex justify-between gap-4">
-                      <span className="text-xs font-bold text-slate-900 leading-relaxed line-clamp-2 flex-1">
-                        {item.name}
-                      </span>
-                      <span className="text-xs font-bold text-slate-900 whitespace-nowrap">
-                        {formatCurrency((item.discountedPrice || item.price) * item.quantity)}
-                      </span>
-                   </div>
-                   {(item.size || item.color) && (
-                    <p className="text-[10px] text-slate-400 mt-1 font-medium">
-                      {item.color}{item.size ? ` / ${item.size}` : ""}
-                    </p>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
+      {/* OS Items */}
+      {isExpanded && (
+        <div className="px-[22px] py-4 border-b border-brand-sand space-y-5 max-h-[400px] overflow-y-auto animate-in slide-in-from-top-2 duration-300 custom-scrollbar bg-white">
+          {(() => {
+            const groups = items.reduce((acc: { [key: string]: typeof items }, item) => {
+              const key = item.productId || item.name;
+              if (!acc[key]) acc[key] = [];
+              acc[key].push(item);
+              return acc;
+            }, {});
 
-          {/* Voucher Section */}
-          <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
-            <span className="text-[13px] font-bold text-slate-700">Mã giảm giá</span>
-            <VoucherModal 
-              isOpen={isVoucherModalOpen}
-              onClose={() => setIsVoucherModalOpen(false)}
-              onApply={(code) => {
-                onApplyDiscount(code);
-                setIsVoucherModalOpen(false);
-              }}
-              isApplying={!!isApplyingDiscount}
-              appliedCode={appliedDiscount?.code}
-              cartTotal={subtotal}
-            />
-            
-            {!appliedDiscount ? (
-              <button 
-                type="button"
-                onClick={() => setIsVoucherModalOpen(true)}
-                className="text-xs font-bold text-primary transition-colors cursor-pointer hover:underline"
-              >
-                Chọn hoặc nhập mã
-              </button>
-            ) : (
-              <div 
-                onClick={() => setIsVoucherModalOpen(true)}
-                className="flex items-center gap-2 cursor-pointer group"
-              >
-                <span className="text-xs font-bold text-emerald-600 group-hover:text-emerald-700">{appliedDiscount.code}</span>
-                <button
-                  type="button"
-                  className="p-1 hover:bg-rose-50 rounded-full transition-colors"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onRemoveDiscount();
-                  }}
-                >
-                  <X size={12} className="text-slate-400 hover:text-rose-500" />
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* Pricing Totals */}
-          <div className="pt-6 border-t border-slate-100 space-y-3">
-            <div className="flex justify-between items-center text-xs">
-              <span className="text-slate-500 font-medium">Tạm tính</span>
-              <span className="text-slate-900 font-bold tabular-nums">{formatCurrency(subtotal)}</span>
-            </div>
-            
-            <div className="flex justify-between items-center text-xs">
-              <span className="text-slate-500 font-medium">Giảm giá</span>
-              <span className="text-rose-600 font-bold tabular-nums">
-                {discountAmount > 0 ? `-${formatCurrency(discountAmount)}` : "0đ"}
-              </span>
-            </div>
-
-            <div className="flex justify-between items-start text-xs">
-              <span className="text-slate-500 font-medium">Phí vận chuyển</span>
-              <div className="text-right">
-                {isCalculatingFee ? (
-                  <Spinner size="sm" />
-                ) : (
-                  <span className="text-emerald-600 font-bold tabular-nums uppercase">
-                    {shippingFee === 0 ? "Miễn phí" : formatCurrency(shippingFee)}
-                  </span>
-                )}
-                <p className="text-[10px] text-slate-400 mt-0.5 font-medium italic">Giao hàng tiêu chuẩn (2-4 ngày)</p>
-              </div>
-            </div>
-
-            <div className="pt-6 mt-2 border-t border-[#F3EFE8] flex justify-between items-end">
-               <span className="text-[15px] font-bold text-[#3D2B1A] font-serif">Tổng cộng</span>
-               <div className="text-right">
-                  <span className="text-[28px] font-bold text-[#3D2B1A] tabular-nums tracking-tighter block font-serif">
-                    {formatCurrency(subtotal + shippingFee - discountAmount)}
-                  </span>
-                  <span className="text-[9px] text-[#8A7966] font-bold uppercase mt-1 block tracking-wider">(Đã bao gồm VAT)</span>
-               </div>
-            </div>
-
-            <button 
-              type="submit" 
-              disabled={isSubmitting || !canSubmit}
-              className="w-full mt-6 h-14 rounded-full bg-[#3D2B1A] hover:bg-[#C4783A] text-white font-bold transition-all active:scale-[0.98] flex items-center justify-center gap-3 group shadow-xl shadow-[#3D2B1A]/20 border-none"
-            >
-              {isSubmitting ? (
+            return Object.entries(groups).map(([key, groupItems]) => (
+              <div key={key} className="space-y-2.5">
+                {/* Group Product Name */}
                 <div className="flex items-center gap-2">
-                  <Spinner size="sm" variant="white" />
-                  <span>Đang xử lý...</span>
+                  <div className="w-1 h-3.5 bg-brand-bronze rounded-full" />
+                  <p className="text-[13px] font-bold text-primary font-serif truncate">
+                    {groupItems[0].name}
+                  </p>
                 </div>
-              ) : (
-                <>
-                  <CheckCircle2 size={16} />
-                  <span>Xác nhận đặt hàng</span>
-                </>
-              )}
-            </button>
-            <p className="text-[10px] text-slate-400 text-center mt-4 font-medium flex items-center justify-center gap-2">
-              <ShieldCheck size={12} className="text-emerald-500" />
-              Thanh toán được mã hoá & bảo mật
-            </p>
-          </div>
+
+                {/* Group Variants */}
+                <div className="space-y-2 pl-3">
+                  {groupItems.map((item) => (
+                    <div key={item.variantId} className="flex gap-[12px] items-center group/item">
+                      <div className="w-[48px] h-[58px] rounded-[8px] bg-brand-ivory flex items-center justify-center text-[22px] shrink-0 relative border border-brand-sand/50 overflow-hidden">
+                        <Image src={item.imageUrl} alt={item.name} fill className="object-cover transition-transform group-hover/item:scale-110 duration-500" />
+                        <span className="absolute -top-[4px] -right-[4px] w-4.5 h-4.5 bg-primary text-white text-[9px] font-black rounded-full flex items-center justify-center shadow-sm">
+                          {item.quantity}
+                        </span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-wrap gap-1.5 mb-1">
+                          {item.color && (
+                            <span className="text-[9px] font-bold text-brand-taupe bg-brand-cream border border-brand-sand/40 px-1.5 py-0.5 rounded uppercase tracking-wider">
+                              {item.color}
+                            </span>
+                          )}
+                          {item.size && (
+                            <span className="text-[9px] font-bold text-brand-taupe bg-brand-cream border border-brand-sand/40 px-1.5 py-0.5 rounded uppercase tracking-wider">
+                              {item.size}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-[13px] font-bold text-brand-bronze font-serif">
+                          {formatCurrency((item.discountedPrice || item.price) * item.quantity)}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ));
+          })()}
+        </div>
+      )}
+
+      {/* Voucher Modal Toggle */}
+      <div className="px-[22px] py-4 border-b border-brand-sand flex items-center justify-between">
+        <span className="text-[13px] font-bold text-primary">Mã giảm giá</span>
+        <button 
+          type="button" 
+          onClick={() => setIsVoucherModalOpen(true)}
+          className={cn("text-[12px] font-bold", appliedDiscount ? "text-emerald-600" : "text-brand-bronze hover:underline")}
+        >
+          {appliedDiscount ? appliedDiscount.code : "Chọn hoặc nhập mã"}
+        </button>
+      </div>
+
+      <VoucherModal 
+        isOpen={isVoucherModalOpen}
+        onClose={() => setIsVoucherModalOpen(false)}
+        onApply={(code) => {
+          onApplyDiscount(code);
+          setIsVoucherModalOpen(false);
+        }}
+        isApplying={!!isApplyingDiscount}
+        appliedCode={appliedDiscount?.code}
+        cartTotal={subtotal}
+      />
+
+      {/* Pricing Rows */}
+      <div className="px-[22px] py-4 border-b border-brand-sand space-y-[10px]">
+        <div className="flex justify-between text-[13px]">
+          <span className="text-brand-taupe">Tạm tính</span>
+          <span className="text-primary font-medium">{formatCurrency(subtotal)}</span>
+        </div>
+        <div className="flex justify-between text-[13px]">
+          <span className="text-brand-taupe">Giảm giá</span>
+          <span className="text-destructive font-medium">-{formatCurrency(discountAmount)}</span>
+        </div>
+        <div className="flex justify-between text-[13px]">
+          <span className="text-brand-taupe">Vận chuyển</span>
+          <span className={cn("text-[13px] font-bold", shippingFee === 0 ? "text-emerald-600" : "text-primary")}>
+            {isCalculatingFee ? <Spinner size="sm" /> : (shippingFee === 0 ? "Miễn phí" : formatCurrency(shippingFee))}
+          </span>
         </div>
       </div>
 
-      {/* Safety Badges */}
-      <div className="grid grid-cols-3 gap-2 px-2">
-        <div className="flex flex-col items-center gap-2 text-center p-3">
-          <div className="h-8 w-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 mb-1 border border-slate-100">
-             <ShoppingBag size={14} />
-          </div>
-          <span className="text-[9px] font-bold text-slate-400 uppercase leading-tight tracking-wider">Đổi trả 15 ngày</span>
+      {/* Total Section */}
+      <div className="px-[22px] py-4">
+        <div className="flex justify-between items-baseline mb-1">
+          <span className="text-[15px] font-bold text-primary">Tổng cộng</span>
+          <span className="text-[26px] font-bold text-brand-bronze font-serif">
+            {formatCurrency(total)}
+          </span>
         </div>
-        <div className="flex flex-col items-center gap-2 text-center p-3">
-          <div className="h-8 w-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 mb-1 border border-slate-100">
-             <ShieldCheck size={14} />
-          </div>
-          <span className="text-[9px] font-bold text-slate-400 uppercase leading-tight tracking-wider">Hàng chính hãng</span>
+        <p className="text-[11px] text-brand-taupe text-right italic tracking-wider font-bold">Đã bao gồm VAT</p>
+      </div>
+
+      {/* Submit Button */}
+      <div className="px-[22px] pb-[14px]">
+        <button 
+          type="submit" 
+          disabled={isSubmitting || !canSubmit}
+          className="w-full h-[52px] bg-primary hover:bg-black text-brand-cream rounded-full text-[15px] font-medium flex items-center justify-center gap-2 transition-all active:scale-[0.98] shadow-lg shadow-primary/10 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isSubmitting ? (
+            <Spinner size="sm" variant="white" />
+          ) : (
+            <>
+              <CheckCircle2 size={16} />
+              <span>Đặt hàng ngay</span>
+            </>
+          )}
+        </button>
+      </div>
+
+      {/* Terms & Badges */}
+      <p className="px-[22px] pb-[18px] text-[11px] text-brand-taupe text-center leading-[1.6]">
+        Bằng cách đặt hàng, bạn đồng ý với <a href="#" className="text-brand-bronze hover:underline font-bold">Điều khoản dịch vụ</a> và <a href="#" className="text-brand-bronze hover:underline font-bold">Chính sách bảo mật</a>.
+      </p>
+
+      <div className="py-[14px] px-[22px] border-t border-brand-sand flex items-center justify-center gap-4 bg-brand-cream/50">
+        <div className="flex items-center gap-1 text-[9px] text-brand-taupe font-bold tracking-widest">
+          <ShieldCheck size={12} className="text-emerald-600" /> SSL 256-bit
         </div>
-        <div className="flex flex-col items-center gap-2 text-center p-3">
-          <div className="h-8 w-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 mb-1 border border-slate-100">
-             <Truck size={14} />
-          </div>
-          <span className="text-[9px] font-bold text-slate-400 uppercase leading-tight tracking-wider">Hỗ trợ 24/7</span>
+        <div className="flex items-center gap-1 text-[9px] text-brand-taupe font-bold tracking-widest">
+          <CheckCircle2 size={12} className="text-emerald-600" /> PCI DSS
+        </div>
+        <div className="flex items-center gap-1 text-[9px] text-brand-taupe font-bold tracking-widest">
+          <Truck size={12} className="text-emerald-600" /> Chính hãng
         </div>
       </div>
     </div>

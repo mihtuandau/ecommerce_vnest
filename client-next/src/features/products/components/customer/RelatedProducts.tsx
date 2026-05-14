@@ -27,12 +27,12 @@ export function RelatedProducts({ categoryId, currentProductId }: RelatedProduct
     return (
       <div className="space-y-10">
         <div className="flex items-center gap-4">
-          <div className="h-px flex-1 bg-slate-100" />
+          <div className="h-px flex-1 bg-brand-sand/30" />
           <div className="flex items-center gap-2">
             <Spinner size="sm" variant="slate" />
-            <h2 className="text-xs font-semibold uppercase tracking-[0.4em] text-slate-400">Đang tải gợi ý</h2>
+            <h2 className="text-xs font-semibold uppercase tracking-[0.4em] text-brand-taupe/40">Đang tải gợi ý</h2>
           </div>
-          <div className="h-px flex-1 bg-slate-100" />
+          <div className="h-px flex-1 bg-brand-sand/30" />
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {[...Array(4)].map((_, i) => (
@@ -52,8 +52,8 @@ export function RelatedProducts({ categoryId, currentProductId }: RelatedProduct
           <Zap size={20} />
         </div>
         <div>
-          <h2 className="text-[28px] font-bold text-[#3D2B1A] tracking-tight font-serif">Sản phẩm liên quan</h2>
-          <p className="text-[13px] text-[#8A7966] font-medium mt-0.5">Có thể bạn cũng sẽ thích những sản phẩm này</p>
+          <h2 className="text-[28px] font-bold text-primary tracking-tight font-serif">Sản phẩm liên quan</h2>
+          <p className="text-[13px] text-brand-taupe font-medium mt-0.5">Có thể bạn cũng sẽ thích những sản phẩm này</p>
         </div>
       </div>
 

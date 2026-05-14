@@ -45,7 +45,7 @@ export default function HomeContainer() {
   const topRatedProducts = topRatedData?.data || [];
 
   return (
-    <div className="flex flex-col bg-[#FAF8F4]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+    <div className="flex flex-col bg-brand-cream" style={{ fontFamily: "'DM Sans', sans-serif" }}>
       {/* ── Hero Banner ── */}
       {isBannersLoading ? (
         <HeroBannerSkeleton />

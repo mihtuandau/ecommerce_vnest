@@ -176,11 +176,41 @@ export function CartContainer() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            <div className="lg:col-span-8 flex flex-col gap-4">
-              {items.map((item) => (
-                <CartItem key={item.variantId} item={item} updateQuantity={updateQuantity} removeItem={removeItem} toggleSelectItem={toggleSelectItem} />
-              ))}
-              
+            <div className="lg:col-span-8 flex flex-col gap-6">
+              {(() => {
+                const groups = items.reduce((acc: { [key: string]: typeof items }, item) => {
+                  const key = item.productId || item.name; // Fallback to name if productId is missing
+                  if (!acc[key]) acc[key] = [];
+                  acc[key].push(item);
+                  return acc;
+                }, {});
+
+                return Object.entries(groups).map(([key, groupItems]) => (
+                  <div key={key} className="bg-white rounded-[2rem] border border-[#DDD6C8] shadow-sm overflow-hidden transition-all hover:shadow-md">
+                    <div className="px-6 py-4 border-b border-[#F3EFE8] bg-[#FAF8F4]/30">
+                      <div className="flex items-center gap-3">
+                        <div className="h-6 w-1 bg-[#3D2B1A] rounded-full" />
+                        <h3 className="font-serif font-semibold text-[#3D2B1A] text-[15px] leading-snug tracking-tight">
+                          {groupItems[0].name}
+                        </h3>
+                      </div>
+                    </div>
+
+                    <div className="divide-y divide-[#F3EFE8]/80">
+                      {groupItems.map((item) => (
+                        <CartItem 
+                          key={item.variantId} 
+                          item={item} 
+                          updateQuantity={updateQuantity} 
+                          removeItem={removeItem} 
+                          toggleSelectItem={toggleSelectItem} 
+                          isGrouped 
+                        />
+                      ))}
+                    </div>
+                  </div>
+                ));
+              })()}
             </div>
 
             <div className="lg:col-span-4 sticky top-40">

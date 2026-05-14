@@ -55,15 +55,17 @@ export const useAuthStore = create<AuthStore>()(
       // Only persist user profile for UI — tokens are managed via httpOnly cookies set by the backend
       partialize: (state) => ({
         // Only store UI-needed fields — strip internal backend fields
-        user: state.user ? {
-          id: state.user.id,
-          name: state.user.name,
-          email: state.user.email,
-          phone: state.user.phone,
-          avatar: state.user.avatar,
-          role: state.user.role,
-          permissions: state.user.permissions,
-        } : null,
+        user: state.user
+          ? {
+              id: state.user.id,
+              name: state.user.name,
+              email: state.user.email,
+              phone: state.user.phone,
+              avatar: state.user.avatar,
+              role: state.user.role,
+              permissions: state.user.permissions,
+            }
+          : null,
       }),
     }
   )

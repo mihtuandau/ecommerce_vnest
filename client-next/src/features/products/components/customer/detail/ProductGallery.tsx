@@ -53,7 +53,7 @@ export const ProductGallery = React.memo(function ProductGallery({ images, name 
 
       {/* Main Image */}
       <div 
-        className="flex-1 relative aspect-[4/5] w-full overflow-hidden flex items-center justify-center bg-white rounded-[2.5rem] cursor-zoom-in group"
+        className="flex-1 relative aspect-square w-full overflow-hidden flex items-center justify-center bg-white rounded-[2rem] cursor-zoom-in group"
         onClick={() => setIsPreviewOpen(true)}
       >
         <Image

@@ -13,6 +13,7 @@ interface CartItemProps {
   updateQuantity: (id: string, qty: number) => void;
   removeItem: (id: string) => void;
   toggleSelectItem: (id: string) => void;
+  isGrouped?: boolean;
 }
 
 const getImageUrl = (path: string) => {
@@ -25,14 +26,20 @@ export const CartItem = React.memo(function CartItem({
   item, 
   updateQuantity, 
   removeItem, 
-  toggleSelectItem 
+  toggleSelectItem,
+  isGrouped = false
 }: CartItemProps) {
   const currentPrice = item.discountedPrice || item.price;
   const oldPrice = item.originalPrice || (item.discountedPrice ? item.price : 0);
   const savings = oldPrice > currentPrice ? oldPrice - currentPrice : 0;
 
   return (
-    <div className="bg-white rounded-2xl p-4 border border-[#DDD6C8] shadow-sm transition-all hover:shadow-md group">
+    <div className={cn(
+      "p-4 transition-all group/item",
+      isGrouped 
+        ? "bg-transparent hover:bg-[#FAF8F4]/50 border-none" 
+        : "bg-white rounded-2xl border border-[#DDD6C8] shadow-sm hover:shadow-md"
+    )}>
       <div className="flex gap-4 items-center">
         {/* Checkbox */}
         <button 
@@ -60,17 +67,19 @@ export const CartItem = React.memo(function CartItem({
         {/* Content Section */}
         <div className="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           {/* Info Side */}
-          <div className="space-y-2">
-            <div className="space-y-0.5">
-              <span className="text-[9px] font-black text-[#8A7966] uppercase tracking-[0.2em]">BRAND</span>
+          <div className="flex-1 min-w-0 space-y-3">
+            <div className="space-y-1">
+              {!isGrouped && <span className="text-[10px] font-black text-[#8A7966] uppercase tracking-[0.2em]">BRAND</span>}
               <Link 
                 href={`/shop/${item.slug}`} 
-                className="block text-[15px] font-medium text-[#3D2B1A] hover:text-[#C4783A] transition-colors leading-tight font-serif"
+                className={cn(
+                  "block hover:text-[#C4783A] transition-colors leading-tight font-serif tracking-tight",
+                  isGrouped ? "text-[14px] font-medium text-[#3D2B1A]" : "text-[15px] font-semibold text-[#3D2B1A]"
+                )}
               >
                 {item.name}
               </Link>
             </div>
-            
             <div className="flex flex-wrap gap-1.5">
               <span className="bg-[#FAF8F4] border border-[#DDD6C8] text-[#8A7966] text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">
                 Màu: {item.color || "Mặc định"}

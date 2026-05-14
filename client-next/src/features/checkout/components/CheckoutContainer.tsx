@@ -2,12 +2,13 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { useCartStore } from "@/store/useCartStore";
+import { formatCurrency } from "@/utils/formatCurrency";
 import { shippingApi } from "@/features/shipping/api";
 import { ordersApi } from "@/features/orders/api";
 import { discountsApi } from "@/features/discounts/api";
 import { useToast } from "@/hooks/useToast";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Truck, ArrowLeft, CheckCircle2 } from "lucide-react";
+import { Truck, ArrowLeft, CheckCircle2, ShoppingBag, ChevronDown } from "lucide-react";
 import { Spinner } from "@/components/ui/Spinner";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Skeleton } from "@/components/ui/Skeleton";
@@ -376,7 +377,7 @@ export function CheckoutContainer() {
         return;
       }
 
-      success("Đặt hàng thành công!");
+      // success("Đặt hàng thành công!");
       const successParams = new URLSearchParams();
       if (res.orderCode) successParams.set("orderCode", res.orderCode);
       if (res.id) successParams.set("orderId", String(res.id));
@@ -394,7 +395,26 @@ export function CheckoutContainer() {
     }
   };
 
-  if (!mounted) return <div className="bg-[#f8fafc] min-h-screen p-10"><Skeleton className="h-full w-full rounded-3xl" /></div>;
+  if (!mounted) {
+    return (
+      <div className="bg-brand-cream min-h-screen pb-20">
+        <div className="max-w-[1200px] mx-auto px-12 py-9">
+          <div className="flex items-center justify-between mb-8">
+            <Skeleton className="h-10 w-48 bg-white rounded-xl" />
+            <Skeleton className="h-6 w-32 bg-white rounded-full" />
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-7">
+            <div className="space-y-4">
+              <Skeleton className="h-64 w-full bg-white rounded-[16px] border border-brand-sand" />
+              <Skeleton className="h-48 w-full bg-white rounded-[16px] border border-brand-sand" />
+              <Skeleton className="h-32 w-full bg-white rounded-[16px] border border-brand-sand" />
+            </div>
+            <Skeleton className="h-[500px] w-full bg-white rounded-[16px] border border-brand-sand" />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (isSubmitting) {
     return (
@@ -409,7 +429,9 @@ export function CheckoutContainer() {
   const showBuyNowEmpty = isBuyNow && !buyNowItem;
 
   return (
-    <div className="bg-[#FAF8F4] min-h-screen pb-20 text-[#3D2B1A] font-sans">
+    <div className="bg-brand-cream min-h-screen pb-20 text-foreground font-sans">
+    
+
       {(showEmpty || showBuyNowEmpty) ? (
         <div className="min-h-[70vh] flex flex-col items-center justify-center text-center px-4">
           <Truck className="h-16 w-16 text-slate-200 mb-6" />
@@ -417,59 +439,112 @@ export function CheckoutContainer() {
           <Button onClick={() => router.push("/shop")} className="rounded-xl px-10 h-12 font-bold">Quay lại cửa hàng</Button>
         </div>
       ) : (
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-10">
-            <div className="flex items-center gap-5">
-              <button type="button" onClick={() => router.back()} className="h-10 w-10 rounded-full border border-[#DDD6C8] flex items-center justify-center text-[#8A7966] hover:text-[#C4783A] transition-all bg-white">
-                <ArrowLeft size={18} />
-              </button>
-              <h1 className="text-[32px] font-bold text-[#3D2B1A] tracking-tight font-serif">Thanh toán</h1>
-            </div>
-            <div className="flex items-center gap-4 text-[11px] font-bold uppercase tracking-widest text-slate-400">
-              <span className="text-emerald-600">Giỏ hàng</span>
-              <div className="h-[1px] w-6 bg-slate-200" />
-              <span className="text-primary">Thanh toán</span>
-              <div className="h-[1px] w-6 bg-slate-200" />
-              <span>Xác nhận</span>
+        <div className="max-w-[1200px] mx-auto px-12 py-9">
+          <div className="flex items-center justify-between mb-8">
+            <h1 className="text-[32px] font-bold text-primary tracking-tight font-serif">Thanh toán</h1>
+            <div className="flex items-center gap-1.5 text-[12.5px] text-brand-taupe">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-emerald-600"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              Thanh toán bảo mật SSL
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            <div className="lg:col-span-7 space-y-6">
-              {/* Address Section */}
-              {user ? (
-                <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-                  <div className="px-6 py-5 border-b border-[#F3EFE8] flex items-center justify-between bg-white">
-                    <h2 className="text-[16px] font-bold text-[#3D2B1A] font-serif">Địa chỉ giao hàng</h2>
-                    <Button type="button" variant="ghost" size="sm" className="text-[11px] font-bold text-[#C4783A]" onClick={() => router.push("/account?tab=address")}>+ Thêm địa chỉ</Button>
+          <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-7 items-start">
+            <div className="space-y-4">
+              {/* 1. THÔNG TIN KHÁCH HÀNG */}
+              <div className="bg-white rounded-[16px] border border-brand-sand overflow-hidden">
+                <div className="px-6 py-[18px] border-b border-brand-sand flex items-center justify-between">
+                  <div className="flex items-center gap-[10px]">
+                    <div className="w-[26px] h-[26px] rounded-full bg-primary flex items-center justify-center text-white text-[12px] font-bold">1</div>
+                    <h2 className="text-[15px] font-bold text-primary">Thông tin khách hàng</h2>
                   </div>
-                  <div className="p-6 space-y-3">
-                    {addressData?.addresses && addressData.addresses.length > 0 ? (
-                      addressData?.addresses.map((addr: AddressOption) => (
-                        <div 
-                          key={addr.id} 
-                          onClick={() => applySavedAddress(addr)}
-                          className={cn("p-4 rounded-xl border transition-all cursor-pointer", selectedAddressId === addr.id ? "bg-blue-50/30 border-primary/20 ring-1 ring-primary/5" : "border-slate-100 hover:border-slate-200")}
-                        >
-                          <div className="flex items-center gap-3 mb-1">
-                            <span className="text-sm font-bold">{addr.fullName}</span>
-                            {addr.isDefault && <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">Mặc định</span>}
-                          </div>
-                          <p className="text-xs text-slate-500 truncate">
-                            {addr.street}, {addr.ward || wards.find(w => w.WardCode === addr.wardCode)?.WardName}, {addr.district || addr.city || districts.find(d => d.DistrictID === Number(addr.districtCode))?.DistrictName}, {addr.province || addr.state || provinces.find(p => p.ProvinceID === Number(addr.provinceCode))?.ProvinceName}
-                          </p>
-                          <p className="text-xs text-slate-900 font-bold mt-1.5">{addr.phone}</p>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="p-10 text-center border-2 border-dashed border-slate-100 rounded-xl">
-                        <p className="text-sm text-slate-400">Chưa có địa chỉ lưu sẵn</p>
-                        <Button type="button" variant="outline" className="mt-4" onClick={() => router.push("/account?tab=address")}>Tạo mới</Button>
-                      </div>
-                    )}
+                  {user ? (
+                    <div className="flex items-center gap-2">
+                      <span className="text-[11px] text-brand-taupe">Đang đăng nhập: <strong>{user.email}</strong></span>
+                    </div>
+                  ) : (
+                    <button type="button" className="text-[12.5px] font-bold text-brand-bronze hover:underline" onClick={() => router.push("/login")}>Đăng nhập</button>
+                  )}
+                </div>
+                <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-[14px]">
+                  <div className="flex flex-col gap-[6px]">
+                    <label className="text-[12.5px] font-medium text-primary">Họ và tên người nhận <span className="text-destructive">*</span></label>
+                    <input 
+                      type="text" 
+                      placeholder="Nhập họ và tên..."
+                      value={form.fullName} 
+                      onChange={(e) => setForm({ ...form, fullName: e.target.value })}
+                      className="w-full bg-white border-[1.5px] border-brand-sand rounded-[10px] px-[14px] py-[12px] h-12 text-[13.5px] font-sans text-primary focus:outline-none focus:border-brand-bronze/50 transition-all"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-[6px]">
+                    <label className="text-[12.5px] font-medium text-primary">Số điện thoại <span className="text-destructive">*</span></label>
+                    <input 
+                      type="text" 
+                      placeholder="09xx xxx xxx"
+                      value={form.phone} 
+                      onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                      className="w-full bg-white border-[1.5px] border-brand-sand rounded-[10px] px-[14px] py-[12px] h-12 text-[13.5px] font-sans text-primary focus:outline-none focus:border-brand-bronze/50 transition-all"
+                    />
+                  </div>
+                  <div className="md:col-span-2 flex flex-col gap-[6px]">
+                    <label className="text-[12.5px] font-medium text-primary">Email nhận thông báo <span className="text-destructive">*</span></label>
+                    <input 
+                      type="email" 
+                      placeholder="example@gmail.com"
+                      value={form.email} 
+                      onChange={(e) => setForm({ ...form, email: e.target.value })}
+                      className="w-full bg-white border-[1.5px] border-brand-sand rounded-[10px] px-[14px] py-[12px] h-12 text-[13.5px] font-sans text-primary focus:outline-none focus:border-brand-bronze/50 transition-all"
+                    />
                   </div>
                 </div>
-              ) : (
+              </div>
+
+              {/* 2. ĐỊA CHỈ GIAO HÀNG */}
+              {user && addressData?.addresses && addressData.addresses.length > 0 ? (
+                <div className="bg-white rounded-[16px] border border-brand-sand overflow-hidden">
+                  <div className="px-6 py-[18px] border-b border-brand-sand flex items-center justify-between">
+                    <div className="flex items-center gap-[10px]">
+                      <div className="w-[26px] h-[26px] rounded-full bg-primary flex items-center justify-center text-white text-[12px] font-bold">2</div>
+                      <h2 className="text-[15px] font-bold text-primary">Địa chỉ đã lưu</h2>
+                    </div>
+                    <Button type="button" variant="ghost" size="sm" className="text-[12.5px] font-bold text-brand-bronze hover:underline p-0 h-auto" onClick={() => router.push("/account?tab=address")}>Quản lý</Button>
+                  </div>
+                  <div className="p-6 space-y-[10px]">
+                    {addressData.addresses.map((addr: AddressOption) => (
+                      <div 
+                        key={addr.id} 
+                        onClick={() => applySavedAddress(addr)}
+                        className={cn("p-4 rounded-[12px] border transition-all cursor-pointer flex items-start gap-3", selectedAddressId === addr.id ? "border-primary bg-brand-ivory" : "border-brand-sand hover:border-brand-bronze/30 hover:bg-brand-ivory")}
+                      >
+                        <input type="radio" checked={selectedAddressId === addr.id} readOnly className="mt-1 accent-primary" />
+                        <div className="addr-body">
+                          <div className="text-[13.5px] font-medium text-primary mb-1 flex items-center">
+                            {addr.fullName}
+                            {addr.isDefault && <span className="ml-[6px] text-[10.5px] bg-brand-bronze/10 text-brand-bronze px-2 py-[2px] rounded-full font-medium">Mặc định</span>}
+                          </div>
+                          <p className="text-[12.5px] text-brand-taupe line-height-[1.5]">
+                            {addr.street}, {addr.ward || wards.find(w => w.WardCode === addr.wardCode)?.WardName}, {addr.district || addr.city || districts.find(d => d.DistrictID === Number(addr.districtCode))?.DistrictName}, {addr.province || addr.state || provinces.find(p => p.ProvinceID === Number(addr.provinceCode))?.ProvinceName}
+                          </p>
+                          <p className="text-[12.5px] text-brand-taupe mt-1 font-bold">📞 {addr.phone}</p>
+                        </div>
+                      </div>
+                    ))}
+                    <button 
+                      type="button" 
+                      onClick={() => setSelectedAddressId(null)}
+                      className={cn(
+                        "flex items-center justify-center gap-2 text-[13px] border-[1.5px] border-dashed rounded-[10px] py-[11px] px-4 w-full transition-all font-medium mt-2",
+                        selectedAddressId === null ? "border-primary bg-brand-ivory text-primary" : "border-brand-sand text-brand-bronze hover:bg-brand-ivory hover:border-brand-bronze"
+                      )}
+                    >
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                      Dùng địa chỉ khác
+                    </button>
+                  </div>
+                </div>
+              ) : null}
+
+              {( !user || (user && (selectedAddressId === null || !addressData?.addresses || addressData.addresses.length === 0)) ) && (
                 <ShippingForm 
                   form={form}
                   setForm={setForm}
@@ -484,24 +559,84 @@ export function CheckoutContainer() {
                 />
               )}
 
-              {/* 3. PHƯƠNG THỨC THANH TOÁN */}
-              <PaymentMethods paymentMethod={form.paymentMethod} setPaymentMethod={(method) => setForm({ ...form, paymentMethod: method })} />
+              {/* PHƯƠNG THỨC VẬN CHUYỂN */}
+              <div className="bg-white rounded-[16px] border border-brand-sand overflow-hidden">
+                <div className="px-6 py-[18px] border-b border-brand-sand flex items-center justify-between">
+                  <div className="flex items-center gap-[10px]">
+                    <div className="w-[26px] h-[26px] rounded-full bg-primary flex items-center justify-center text-white text-[12px] font-bold">
+                      {user ? "3" : "2"}
+                    </div>
+                    <h2 className="text-[15px] font-bold text-primary">Phương thức vận chuyển</h2>
+                  </div>
+                </div>
+                <div className="p-6">
+                  <label className="border-[1.5px] border-primary bg-brand-ivory rounded-[12px] p-4 cursor-pointer flex items-center gap-[14px] transition-all">
+                    <input type="radio" checked readOnly className="accent-primary shrink-0" />
+                    <span className="text-[22px]">🚀</span>
+                    <div className="flex-1">
+                      <div className="text-[13.5px] font-medium text-primary mb-[2px]">Giao hàng nhanh</div>
+                      <div className="text-[12px] text-brand-taupe">Giao trong 2–3 ngày làm việc</div>
+                      <div className="text-[12px] text-emerald-600 font-medium">Dự kiến: 16/05 – 17/05</div>
+                    </div>
+                    <span className={cn("text-[14px] font-bold whitespace-nowrap", shippingFee === 0 ? "text-emerald-600" : "text-primary")}>
+                      {isCalculatingFee ? <Spinner size="sm" /> : (shippingFee === 0 ? "Miễn phí" : formatCurrency(shippingFee))}
+                    </span>
+                  </label>
+                </div>
+              </div>
 
-              {/* 4. GHI CHÚ ĐƠN HÀNG */}
-              <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
-                <h2 className="text-[16px] font-bold text-[#3D2B1A] font-serif mb-4">Ghi chú đơn hàng</h2>
-                <textarea 
-                  placeholder="Ghi chú cho người bán hoặc shipper (không bắt buộc)..." 
-                  value={form.orderNote}
-                  onChange={(e) => setForm({ ...form, orderNote: e.target.value })}
-                  rows={3}
-                  className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-primary/20 transition-all resize-none font-medium leading-relaxed"
-                />
+              {/* PHƯƠNG THỨC THANH TOÁN */}
+              <PaymentMethods 
+                paymentMethod={form.paymentMethod} 
+                setPaymentMethod={(method) => setForm({ ...form, paymentMethod: method })} 
+                stepNumber={user ? "4" : "3"}
+              />
+
+              {/* GHI CHÚ ĐƠN HÀNG */}
+              <div className="bg-white rounded-[16px] border border-brand-sand overflow-hidden">
+                <div className="px-6 py-[18px] border-b border-brand-sand flex items-center justify-between bg-white">
+                  <div className="flex items-center gap-[10px]">
+                    <div className="w-[26px] h-[26px] rounded-full bg-primary flex items-center justify-center text-white text-[12px] font-bold">
+                      {user ? "5" : "4"}
+                    </div>
+                    <h2 className="text-[15px] font-bold text-primary">Ghi chú đơn hàng</h2>
+                  </div>
+                  <span className="text-[12px] text-brand-taupe">Không bắt buộc</span>
+                </div>
+                <div className="p-6 space-y-4">
+                  <textarea 
+                    placeholder="Giao giờ hành chính · Gọi trước khi giao · Để ở bảo vệ..." 
+                    value={form.orderNote}
+                    onChange={(e) => setForm({ ...form, orderNote: e.target.value })}
+                    rows={4}
+                    className="w-full bg-white border-[1.5px] border-brand-sand rounded-[10px] p-[11px] text-[13px] text-foreground placeholder:text-brand-taupe focus:outline-none focus:border-brand-bronze transition-all resize-none font-sans leading-relaxed"
+                  />
+                  <div className="flex items-center gap-2">
+                    <input type="checkbox" id="gift-wrap" className="h-4 w-4 rounded border-brand-sand text-primary accent-primary" />
+                    <label htmlFor="gift-wrap" className="text-[13px] text-foreground cursor-pointer">
+                      🎁 Gói quà miễn phí (đơn trên 500k)
+                    </label>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div className="lg:col-span-5">
-              <OrderSummary items={displayItems} subtotal={subtotal} shippingFee={shippingFee} isSubmitting={isSubmitting} canSubmit={true} isCalculatingFee={isCalculatingFee} discountCode={discountCode} setDiscountCode={setDiscountCode} appliedDiscount={appliedDiscount} discountAmount={discountAmount} onApplyDiscount={handleApplyDiscount} onRemoveDiscount={handleRemoveDiscount} isApplyingDiscount={isApplyingDiscount} />
+            <div className="lg:sticky lg:top-6">
+              <OrderSummary 
+                items={displayItems} 
+                subtotal={subtotal} 
+                shippingFee={shippingFee} 
+                isSubmitting={isSubmitting} 
+                canSubmit={true} 
+                isCalculatingFee={isCalculatingFee} 
+                discountCode={discountCode} 
+                setDiscountCode={setDiscountCode} 
+                appliedDiscount={appliedDiscount} 
+                discountAmount={discountAmount} 
+                onApplyDiscount={handleApplyDiscount} 
+                onRemoveDiscount={handleRemoveDiscount} 
+                isApplyingDiscount={isApplyingDiscount} 
+              />
             </div>
           </form>
         </div>
