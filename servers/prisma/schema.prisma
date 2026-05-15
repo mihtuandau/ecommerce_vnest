@@ -37,6 +37,10 @@ model User {
   returnRequests       ReturnRequest[]
   reviews              Review[]
   wishlistItems        WishlistItem[]
+  notificationSettings Json?            @default("{\"orderStatus\":true,\"promotions\":true,\"newsletter\":false,\"security\":true}")
+  notifications        Notification[]
+  twoFactorEnabled     Boolean          @default(false)
+  twoFactorSecret      String?
 
   @@index([deletedAt])
   @@index([status])
@@ -50,6 +54,8 @@ model RefreshToken {
   tokenHash String   @unique
   expiresAt DateTime
   revoked   Boolean  @default(false)
+  ipAddress String?
+  userAgent String?
   createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -648,4 +654,20 @@ enum AiRole {
   USER
   MODEL
   SYSTEM
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  title     String
+  content   String
+  type      String
+  isRead    Boolean  @default(false)
+  link      String?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isRead])
+  @@index([createdAt])
 }

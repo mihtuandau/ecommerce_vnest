@@ -19,11 +19,11 @@ export default function SupportPage() {
   return (
     <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-8 md:py-12">
       <div className="flex flex-col gap-8">
-        {/* Breadcrumbs - Synchronized with Account Page */}
-        <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
-          <Link href="/" className="hover:text-primary transition-colors">Trang chủ</Link>
-          <ChevronRight size={10} className="text-slate-300" />
-          <span className="text-primary">Trung tâm hỗ trợ</span>
+        {/* Breadcrumbs - Synchronized Style */}
+        <div className="flex items-center gap-1.5 text-[12.5px] text-[#8A7966]">
+          <Link href="/" className="hover:text-[#3D2B1A] transition-colors">Trang chủ</Link>
+          <span className="opacity-50">›</span>
+          <span className="text-[#3D2B1A] font-medium">Trung tâm hỗ trợ</span >
         </div>
 
         {/* Main Content Grid */}

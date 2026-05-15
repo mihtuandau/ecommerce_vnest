@@ -29,27 +29,25 @@ export function ProductTabs({ product }: ProductTabsProps) {
   ];
 
   return (
-    <div className="bg-white">
+    <div className="bg-white rounded-[2.5rem] border border-brand-sand/30 p-8 md:p-12 shadow-sm">
       {/* Tab Navigation */}
-      <div className="flex border-b border-brand-ivory overflow-x-auto no-scrollbar mb-10">
+      <div className="flex border-b border-brand-sand/20 overflow-x-auto no-scrollbar mb-12">
         {tabs.map((tab) => {
-          const Icon = tab.icon;
           const isActive = activeTab === tab.id;
           return (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                "relative flex items-center gap-3 px-8 py-5 text-[14px] font-bold uppercase transition-all whitespace-nowrap",
+                "relative px-0 mr-12 pb-5 text-[14px] font-bold transition-all whitespace-nowrap",
                 isActive 
                   ? "text-primary" 
-                  : "text-brand-taupe/60 hover:text-primary"
+                  : "text-brand-taupe/40 hover:text-primary"
               )}
             >
-              <Icon size={14} className={isActive ? "text-brand-bronze" : "text-brand-taupe/40"} />
               {tab.label}
               {isActive && (
-                <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-primary animate-in fade-in duration-500" />
+                <div className="absolute bottom-[-1px] left-0 right-0 h-[1.5px] bg-brand-bronze animate-in slide-in-from-bottom-1 duration-500" />
               )}
             </button>
           );
@@ -57,20 +55,20 @@ export function ProductTabs({ product }: ProductTabsProps) {
       </div>
 
       {/* Tab Content */}
-      <div className="animate-in fade-in duration-700">
+      <div className="animate-in fade-in slide-in-from-bottom-2 duration-700">
         {activeTab === "description" && (
           <div className="max-w-4xl">
-            <p className="text-brand-taupe text-[15px] leading-[1.8] font-medium whitespace-pre-line">
+            <p className="text-brand-espresso text-[15px] leading-[1.8] font-medium whitespace-pre-line opacity-80">
               {product.description || "Chưa có mô tả chi tiết cho sản phẩm này."}
             </p>
           </div>
         )}
 
         {activeTab === "specs" && (
-          <div className="max-w-2xl divide-y divide-brand-ivory">
+          <div className="max-w-2xl divide-y divide-brand-sand/10">
             {specs.map((spec, i) => (
-              <div key={i} className="flex items-center py-5 gap-12">
-                <span className="w-48 flex-shrink-0 text-[12px] font-bold text-brand-taupe uppercase tracking-wide opacity-60">
+              <div key={i} className="flex items-center py-5 gap-12 group">
+                <span className="w-40 flex-shrink-0 text-[12px] font-bold text-brand-taupe transition-opacity opacity-50 group-hover:opacity-100">
                   {spec.label}
                 </span>
                 {spec.label === "Danh mục" ? (

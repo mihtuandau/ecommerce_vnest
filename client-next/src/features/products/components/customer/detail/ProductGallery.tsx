@@ -61,7 +61,7 @@ export const ProductGallery = React.memo(function ProductGallery({ images, name 
           alt={name}
           fill
           priority
-          className="object-contain p-4 md:p-8 transition-transform duration-1000 ease-out group-hover:scale-110"
+          className="object-contain p-2 md:p-4 transition-transform duration-1000 ease-out group-hover:scale-110"
           sizes="(max-width: 768px) 100vw, 800px"
         />
         

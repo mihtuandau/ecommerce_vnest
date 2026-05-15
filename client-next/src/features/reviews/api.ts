@@ -30,6 +30,11 @@ export const reviewsApi = {
     const response = await api.get("/reviews", { params });
     return response.data;
   },
+
+  getMyReviews: async (params: { page?: number; limit?: number } = {}) => {
+    const response = await api.get("/reviews/my-reviews", { params });
+    return response.data;
+  },
   
   getAiReviewSummary: async (productId: number) => {
     const response = await api.get(`/reviews/product/${productId}/ai-summary`);

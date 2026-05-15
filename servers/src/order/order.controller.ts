@@ -140,7 +140,8 @@ export class OrderController {
     @Param('orderCode') orderCode: string,
     @Query('contact') contact: string,
   ) {
-    return this.orderService.cancelGuestOrder(orderCode, contact);
+    const result = await this.orderService.cancelGuestOrder(orderCode, contact);
+    return { success: true, data: result };
   }
 
   @Post(':id/discount')

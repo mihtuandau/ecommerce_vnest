@@ -35,6 +35,7 @@ import { GHNModule } from './ghn/ghn.module';
 import { BrandModule } from './brand/brand.module';
 import { ReturnModule } from './return/return.module';
 import { MaintenanceModule } from './common/maintenance/maintenance.module';
+import { NotificationModule } from './notification/notification.module';
 
 @Module({
   imports: [
@@ -94,6 +95,7 @@ import { MaintenanceModule } from './common/maintenance/maintenance.module';
     GHNModule,
     ReturnModule,
     MaintenanceModule,
+    NotificationModule,
   ],
   controllers: [AppController],
   providers: [

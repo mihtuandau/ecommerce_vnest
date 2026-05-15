@@ -56,24 +56,30 @@ export class AuthService {
     }
   }
 
-  async verifyOtp(email: string, code: string) {
-    const u = await this.userService.findByEmail(email);
-    if (!u || u.status === UserStatus.ACTIVE || !u.verificationCode || !u.verificationExpires || new Date() > new Date(u.verificationExpires)) {
-      throw new BadRequestException('Mã không hợp lệ hoặc đã hết hạn.');
+  async verifyOtp(email: string, code: string, deviceInfo?: { ip?: string; userAgent?: string }) {
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    if (!user || !user.verificationCode || !user.verificationExpires) {
+      throw new BadRequestException('Mã xác thực không tồn tại hoặc đã hết hạn');
     }
 
-    const isMatch = await bcrypt.compare(code, u.verificationCode);
-    if (!isMatch) {
-      throw new BadRequestException('Mã xác thực không chính xác.');
+    if (new Date() > user.verificationExpires) {
+      throw new BadRequestException('Mã xác thực đã hết hạn');
     }
 
-    const activatedUser = await this.userService.activateUser(u.id);
-    const loginData = await this.login({ sub: activatedUser.id }, activatedUser);
+    const isMatch = await bcrypt.compare(code, user.verificationCode);
+    if (!isMatch) throw new BadRequestException('Mã xác thực không chính xác');
 
-    return { 
-      message: 'Kích hoạt thành công.',
-      ...loginData
-    };
+    // Activate user if pending
+    const activatedUser = await this.prisma.user.update({
+      where: { email },
+      data: { 
+        status: 'ACTIVE',
+        verificationCode: null,
+        verificationExpires: null
+      },
+    });
+
+    return this.generateTokens(activatedUser, deviceInfo);
   }
 
   async resendOtp(email: string) {
@@ -110,8 +116,35 @@ export class AuthService {
     const { password: _, ...res } = u; return res;
   }
 
-  async login(payload: any, info?: any) {
+  async login(payload: any, info?: any, deviceInfo?: { ip?: string; userAgent?: string }) {
     const u = info || await this.userService.findOne(payload.sub);
+    
+    // Check if 2FA is enabled
+    if (u.twoFactorEnabled) {
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
+      const hashedOtp = await bcrypt.hash(otp, 10);
+      
+      await this.prisma.user.update({
+        where: { id: u.id },
+        data: {
+          verificationCode: hashedOtp,
+          verificationExpires: new Date(Date.now() + 10 * 60 * 1000) // 10 mins
+        }
+      });
+
+      await this.mailService.sendVerificationCode(u.email, otp, u.name || undefined);
+      return { 
+        requires2FA: true, 
+        email: u.email,
+        message: 'Tài khoản đã bật bảo mật 2 lớp. Vui lòng nhập mã xác thực gửi tới email.' 
+      };
+    }
+    
+    // Security check for new device
+    if (deviceInfo && u.id) {
+      this.checkNewDevice(u, deviceInfo).catch(err => console.error('New device check failed:', err));
+    }
+
     const common = { sub: u.id, email: u.email, role: u.role };
     const refreshToken = this.jwtService.sign({ sub: u.id }, { secret: process.env.JWT_REFRESH_SECRET, expiresIn: '7d' });
 
@@ -121,6 +154,8 @@ export class AuthService {
       data: {
         userId: u.id,
         tokenHash,
+        ipAddress: deviceInfo?.ip,
+        userAgent: deviceInfo?.userAgent,
         expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 ngày
       },
     });
@@ -221,6 +256,67 @@ export class AuthService {
     }
   }
 
+  private async checkNewDevice(user: any, deviceInfo: { ip?: string; userAgent?: string }) {
+    const { ip, userAgent } = deviceInfo;
+    console.log(`[SecurityCheck] Checking login for User: ${user.email} | IP: ${ip}`);
+    
+    if (!ip || !userAgent) {
+      console.log(`[SecurityCheck] Missing IP or UserAgent. IP: ${ip}, UA: ${userAgent}`);
+      return;
+    }
+
+    // Check if this device has been used before in AuditLog
+    const logs = await this.prisma.auditLog.findMany({
+      where: {
+        userId: user.id,
+        action: 'LOGIN',
+        ipAddress: ip,
+      },
+      take: 20,
+    });
+
+    console.log(`[SecurityCheck] Found ${logs.length} previous logins from this IP.`);
+
+    const isNewDevice = !logs.some(log => (log.newData as any)?.userAgent === userAgent);
+    console.log(`[SecurityCheck] Is new device: ${isNewDevice}`);
+
+    // Create audit log for current login
+    await this.prisma.auditLog.create({
+      data: {
+        userId: user.id,
+        action: 'LOGIN',
+        entityName: 'User',
+        entityId: String(user.id),
+        ipAddress: ip,
+        newData: { userAgent },
+      },
+    });
+
+    if (isNewDevice) {
+      // Check if security notifications are enabled
+      let settings = user.notificationSettings;
+      if (typeof settings === 'string') {
+        try { settings = JSON.parse(settings); } catch (e) { settings = {}; }
+      }
+      
+      const isSecurityEnabled = (settings as any)?.security !== false;
+      console.log(`[SecurityCheck] Security Notifications Enabled: ${isSecurityEnabled}`);
+
+      if (isSecurityEnabled) {
+        console.log(`[SecurityCheck] Creating SECURITY notification for user ${user.id}`);
+        // Create notification
+        await this.prisma.notification.create({
+          data: {
+            userId: user.id,
+            title: 'Cảnh báo bảo mật',
+            content: `Tài khoản của bạn vừa được đăng nhập từ một thiết bị hoặc trình duyệt mới. Nếu không phải bạn, hãy đổi mật khẩu ngay.`,
+            type: 'SECURITY',
+          },
+        });
+      }
+    }
+  }
+
   async registerAdmin(dto: any) {
     const u = await this.userService.create({ ...dto, role: 'ADMIN' });
     return this.login({ sub: u.id }, u);
@@ -297,4 +393,110 @@ export class AuthService {
   async getAllPermissions() { return this.userService.getAllPermissions(); }
   async getRolesWithPermissions() { return this.userService.getRolesWithPermissions(); }
   async updateRolePermissions(role: string, pIds: number[]) { return this.userService.updateRolePermissions(role, pIds); }
+
+  async getSessions(userId: number) {
+    return this.prisma.refreshToken.findMany({
+      where: { userId, revoked: false, expiresAt: { gt: new Date() } },
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        ipAddress: true,
+        userAgent: true,
+        createdAt: true,
+      },
+    });
+  }
+
+  async revokeSession(userId: number, sessionId: number) {
+    const session = await this.prisma.refreshToken.findUnique({ where: { id: sessionId } });
+    if (!session || session.userId !== userId) {
+      throw new BadRequestException('Phiên đăng nhập không tồn tại');
+    }
+    return this.prisma.refreshToken.update({
+      where: { id: sessionId },
+      data: { revoked: true },
+    });
+  }
+
+  async toggle2FA(userId: number) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new BadRequestException('User not found');
+
+    if (user.twoFactorEnabled) {
+      // Disable 2FA
+      await this.prisma.user.update({
+        where: { id: userId },
+        data: { twoFactorEnabled: false },
+      });
+      return { message: 'Đã tắt xác thực 2 lớp' };
+    } else {
+      // Send OTP to email to verify before enabling
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
+      const hashedOtp = await bcrypt.hash(otp, 10);
+      
+      await this.prisma.user.update({
+        where: { id: userId },
+        data: {
+          verificationCode: hashedOtp,
+          verificationExpires: new Date(Date.now() + 10 * 60 * 1000)
+        }
+      });
+
+      await this.mailService.sendVerificationCode(user.email, otp, user.name || undefined);
+      return { message: 'Mã xác thực đã được gửi tới email của bạn', requiresVerification: true };
+    }
+  }
+
+  async verify2FAActivate(userId: number, code: string) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user || !user.verificationCode || !user.verificationExpires) {
+      throw new BadRequestException('Mã xác thực không hợp lệ');
+    }
+
+    if (new Date() > user.verificationExpires) {
+      throw new BadRequestException('Mã xác thực đã hết hạn');
+    }
+
+    const isMatch = await bcrypt.compare(code, user.verificationCode);
+    if (!isMatch) throw new BadRequestException('Mã xác thực không chính xác');
+
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { 
+        twoFactorEnabled: true,
+        verificationCode: null,
+        verificationExpires: null
+      },
+    });
+
+    return { message: 'Đã bật xác thực 2 lớp thành công' };
+  }
+
+  async verify2FALogin(email: string, code: string, deviceInfo?: { ip?: string; userAgent?: string }) {
+    return this.verifyOtp(email, code, deviceInfo);
+  }
+
+  private async generateTokens(u: any, deviceInfo?: { ip?: string; userAgent?: string }) {
+    const payload = { sub: u.id };
+    const accessToken = this.jwtService.sign(payload);
+    const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
+    const tokenHash = await bcrypt.hash(refreshToken, 10);
+
+    // Security check for new device
+    if (deviceInfo && u.id) {
+      this.checkNewDevice(u, deviceInfo).catch(err => console.error('New device check failed:', err));
+    }
+
+    await this.prisma.refreshToken.create({
+      data: {
+        userId: u.id,
+        tokenHash,
+        ipAddress: deviceInfo?.ip,
+        userAgent: deviceInfo?.userAgent,
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 ngày
+      },
+    });
+
+    return { accessToken, refreshToken, user: u };
+  }
 }

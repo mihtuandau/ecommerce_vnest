@@ -20,9 +20,9 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Minh Tuan Shop — Mua sắm trực tuyến",
-  description: "Nền tảng mua sắm trực tuyến hiện đại, tối giản và hiệu quả.",
-  keywords: ["ecommerce", "minh tuan shop", "shopping", "online store"],
+  title: "LUXE Store — Mua sắm trực tuyến cao cấp",
+  description: "Trải nghiệm mua sắm đẳng cấp, tối giản và tinh tế tại LUXE Store.",
+  keywords: ["ecommerce", "luxe", "premium shopping", "online store"],
   icons: {
     icon: "/logoMT.png",
   },

@@ -47,6 +47,13 @@ export const ordersApi = {
     await api.put(`/orders/${id}/cancel`);
   },
 
+  cancelGuestOrder: async (orderCode: string, contact: string): Promise<any> => {
+    const { data } = await api.put(`/orders/guest/${orderCode}/cancel`, {}, {
+      params: { contact }
+    });
+    return data;
+  },
+
   syncToGHN: async (id: string) => {
     const { data } = await api.post(`/orders/${id}/ghn`);
     return data;

@@ -15,35 +15,36 @@ interface ConfirmCancelModalProps {
 export function ConfirmCancelModal({ isOpen, onClose, onConfirm, isLoading }: ConfirmCancelModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[360px] rounded-[2.5rem] p-8 border-slate-100 shadow-2xl">
-        <DialogHeader className="space-y-4 pt-2 flex flex-col items-center">
-          <div className="h-16 w-16 rounded-2xl bg-rose-50 flex items-center justify-center text-rose-500 border border-rose-100">
-            <AlertTriangle size={28} />
+      <DialogContent className="sm:max-w-[400px] rounded-2xl p-0 border-[#DDD6C8] shadow-2xl overflow-hidden font-sans-brand">
+        <div className="p-8 space-y-6">
+          <div className="flex flex-col items-center text-center space-y-4">
+            <div className="h-16 w-16 rounded-2xl bg-[#FCEAEA] flex items-center justify-center text-[#C44040] border border-[#F0C0C0]">
+              <AlertTriangle size={32} />
+            </div>
+            <div className="space-y-2">
+              <DialogTitle className="text-2xl font-bold text-[#3D2B1A] font-serif-brand">Xác nhận hủy đơn</DialogTitle>
+              <p className="text-[14px] text-[#8A7966] font-medium leading-relaxed px-4">
+                Bạn chắc chắn muốn hủy đơn hàng này? Hành động này sẽ không thể hoàn tác sau khi xác nhận.
+              </p>
+            </div>
           </div>
-          <div className="space-y-2 text-center">
-            <DialogTitle className="text-xl font-bold text-slate-900">Hủy đơn hàng?</DialogTitle>
-            <p className="text-sm text-slate-500 font-medium leading-relaxed px-2">
-              Bạn chắc chắn muốn hủy đơn hàng này? Hành động này không thể hoàn tác sau khi thực hiện.
-            </p>
-          </div>
-        </DialogHeader>
 
-        <DialogFooter className="flex flex-row gap-3 mt-10 pt-2">
-          <Button
-            variant="outline"
-            onClick={onClose}
-            className="flex-1 rounded-2xl h-12 border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-50 transition-all active:scale-95"
-          >
-            Giữ lại đơn
-          </Button>
-          <Button
-            onClick={onConfirm}
-            disabled={isLoading}
-            className="flex-1 rounded-2xl h-12 bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs shadow-lg shadow-rose-500/20 transition-all active:scale-95"
-          >
-            {isLoading ? "Đang xử lý..." : "Xác nhận hủy"}
-          </Button>
-        </DialogFooter>
+          <div className="flex flex-col gap-3 pt-2">
+            <button
+              onClick={onConfirm}
+              disabled={isLoading}
+              className="w-full h-12 bg-[#C44040] text-white rounded-xl font-bold text-[13px] transition-all hover:bg-[#A33535] disabled:opacity-50"
+            >
+              {isLoading ? "Đang xử lý..." : "Xác nhận hủy đơn hàng"}
+            </button>
+            <button
+              onClick={onClose}
+              className="w-full h-12 bg-white border border-[#DDD6C8] text-[#3D2B1A] rounded-xl font-bold text-[13px] transition-all hover:bg-[#FAF8F4]"
+            >
+              Quay lại
+            </button>
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   );

@@ -77,32 +77,23 @@ export function ShopContainer() {
   const activeSortLabel = SORT_OPTIONS.find((opt) => opt.value === currentSort)?.label || "Sắp xếp";
 
   return (
-    <div className="bg-brand-cream min-h-screen">
-      {/* ── HEADER ── */}
-      <div className="bg-white border-b border-brand-sand">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="h-11 flex items-center justify-between">
-            <div className="flex items-center gap-2 text-[12px] font-medium text-brand-taupe">
-               <Link href="/" className="hover:text-primary transition-colors">Trang chủ</Link>
-               <span className="text-brand-sand">/</span>
-               <Link href="/shop" className={cn("hover:text-primary transition-colors", !currentCategory && "text-primary font-semibold")}>Cửa hàng</Link>
-               {currentCategory && (
-                 <>
-                   <span className="text-brand-sand">/</span>
-                   <span className="text-primary font-semibold">
-                     {categories.find((c: any) => String(c.id) === currentCategory)?.name || "Danh mục"}
-                   </span>
-                 </>
-               )}
-            </div>
-            <div className="text-[11px] font-medium text-brand-taupe bg-brand-cream px-3 py-1 rounded-full border border-brand-ivory">
-              {totalProducts} sản phẩm
-            </div>
-          </div>
+    <div className="bg-brand-cream min-h-screen font-sans-brand">
+      {/* ── BREADCRUMBS ── */}
+      <div className="max-w-[1400px] mx-auto px-6 lg:px-12 py-5 flex items-center gap-1.5 text-[12.5px] text-brand-taupe">
+          <Link href="/" className="hover:text-brand-espresso transition-colors">Trang chủ</Link>
+          <span className="opacity-50 text-[10px]">›</span>
+          <Link href="/shop" className={cn("hover:text-brand-espresso transition-colors", !currentCategory && "text-brand-espresso font-semibold")}>Cửa hàng</Link>
+          {currentCategory && (
+            <>
+              <span className="opacity-50 text-[10px]">›</span>
+              <span className="text-brand-espresso font-semibold">
+                {categories.find((c: any) => String(c.id) === currentCategory)?.name || "Danh mục"}
+              </span>
+            </>
+          )}
         </div>
-      </div>
 
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-20">
+      <div className="max-w-[1400px] mx-auto px-6 lg:px-12 pt-10 pb-20">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-x-12">
           
           {/* ── SIDEBAR ── */}

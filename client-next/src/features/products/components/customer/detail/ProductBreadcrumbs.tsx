@@ -11,42 +11,27 @@ interface ProductBreadcrumbsProps {
 
 export const ProductBreadcrumbs = React.memo(function ProductBreadcrumbs({ product }: ProductBreadcrumbsProps) {
   return (
-    <div className="bg-white border-b border-brand-sand mb-6">
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="h-11 flex items-center">
-          <nav className="flex items-center gap-3 text-[12px] font-medium overflow-x-auto no-scrollbar scroll-smooth">
-            <Link
-              href="/"
-              className="text-brand-taupe hover:text-primary transition-all flex items-center gap-2 group whitespace-nowrap"
-            >
-              <Home size={14} className="group-hover:scale-110 transition-transform" />
-              <span>Trang chủ</span>
-            </Link>
-            <ChevronRight size={12} className="text-brand-sand shrink-0" />
-            <Link
-              href="/shop"
-              className="text-brand-taupe hover:text-primary transition-colors whitespace-nowrap"
-            >
-              Cửa hàng
-            </Link>
-            {product.category && (
-              <>
-                <ChevronRight size={12} className="text-brand-sand shrink-0" />
-                <Link
-                  href={`/shop?categoryId=${product.categoryId}`}
-                  className="text-brand-taupe hover:text-primary transition-colors whitespace-nowrap"
-                >
-                  {product.category.name}
-                </Link>
-              </>
-            )}
-            <ChevronRight size={12} className="text-brand-sand shrink-0" />
-            <span className="text-primary font-semibold whitespace-nowrap truncate max-w-[250px]">
-              {product.name}
-            </span>
-          </nav>
-        </div>
-      </div>
+    <div className="max-w-[1400px] mx-auto px-6 lg:px-12 py-5">
+      <nav className="flex items-center gap-1.5 text-[12.5px] text-brand-taupe">
+          <Link href="/" className="hover:text-brand-espresso transition-colors">Trang chủ</Link>
+          <span className="opacity-50 text-[10px]">›</span>
+          <Link href="/shop" className="hover:text-brand-espresso transition-colors">Cửa hàng</Link>
+          {product.category && (
+            <>
+              <span className="opacity-50 text-[10px]">›</span>
+              <Link
+                href={`/shop?categoryId=${product.categoryId}`}
+                className="hover:text-brand-espresso transition-colors"
+              >
+                {product.category.name}
+              </Link>
+            </>
+          )}
+          <span className="opacity-50 text-[10px]">›</span>
+          <span className="text-brand-espresso font-semibold truncate max-w-[200px]">
+            {product.name}
+          </span>
+        </nav>
     </div>
   );
 });

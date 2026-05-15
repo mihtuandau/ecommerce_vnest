@@ -54,6 +54,13 @@ export const useAllReviews = (params: { page?: number; limit?: number; productId
   });
 };
 
+export const useMyReviews = (params: { page?: number; limit?: number } = {}) => {
+  return useQuery({
+    queryKey: ["reviews", "my", params],
+    queryFn: () => reviewsApi.getMyReviews(params),
+  });
+};
+
 export const useAiReviewSummary = (productId: number) => {
   return useQuery({
     queryKey: ["reviews", "ai-summary", productId],

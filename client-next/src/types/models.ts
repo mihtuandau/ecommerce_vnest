@@ -16,6 +16,9 @@ export interface User {
   role: Role;
   status: UserStatus;
   permissions?: string[];
+  twoFactorEnabled?: boolean;
+  gender?: string;
+  birthDate?: string;
   createdAt: string;
   updatedAt: string;
 }

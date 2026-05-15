@@ -79,14 +79,6 @@ export function RequestReturnModal({
       return toastError("Vui lòng tải lên ít nhất một hình ảnh bằng chứng");
     }
 
-    console.log("[RequestReturnModal] Submitting return request:", {
-      isGuest,
-      orderId: Number(orderId),
-      orderCode,
-      contact,
-      data
-    });
-    
     setIsSubmitting(true);
     try {
       if (isGuest) {
@@ -119,76 +111,83 @@ export function RequestReturnModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px] rounded-2xl p-0 overflow-hidden border-none shadow-2xl bg-white">
-        <DialogHeader className="px-6 py-5 bg-slate-50/50 border-b border-slate-100">
-          <DialogTitle className="text-lg font-bold text-slate-900">Yêu cầu trả hàng</DialogTitle>
-          <DialogDescription className="text-slate-500 font-medium text-[11px]">
-            Đơn hàng #{orderCode}
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent className="sm:max-w-[550px] rounded-2xl p-0 overflow-hidden border-[#DDD6C8] shadow-2xl bg-white font-sans-brand">
+        <div className="px-8 py-6 border-b border-[#DDD6C8] bg-[#FAF8F4]">
+          <DialogTitle className="text-2xl font-bold text-[#3D2B1A] font-serif-brand">Yêu cầu trả hàng</DialogTitle>
+          <p className="text-[12px] text-[#8A7966] font-bold uppercase tracking-[0.1em] mt-1">Đơn hàng #{orderCode}</p>
+        </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-5">
-          <div className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="p-8 space-y-6">
+          <div className="space-y-5">
             <div className="space-y-2">
-              <Label className="text-[13px] font-semibold text-slate-700">Lý do trả hàng <span className="text-rose-500">*</span></Label>
+              <Label className="text-[13px] font-bold text-[#3D2B1A] uppercase tracking-[0.06em]">Lý do trả hàng <span className="text-[#C44040]">*</span></Label>
               <select
                 {...register("reason", { required: "Vui lòng chọn lý do" })}
-                className="w-full h-10 bg-white border border-slate-200 rounded-xl px-3 text-[13px] focus:outline-none focus:border-primary/50 transition-all font-medium"
+                className="w-full h-12 bg-white border border-[#DDD6C8] rounded-xl px-4 text-[13.5px] text-[#3D2B1A] focus:outline-none focus:border-[#C4B49A] transition-all font-medium appearance-none"
               >
-                <option value="">Chọn lý do...</option>
+                <option value="">Chọn lý do phù hợp...</option>
                 {REASONS.map(r => <option key={r} value={r}>{r}</option>)}
               </select>
-              {errors.reason && <p className="text-[11px] text-rose-500 font-medium ml-1">{errors.reason.message as string}</p>}
+              {errors.reason && <p className="text-[11px] text-[#C44040] font-bold ml-1">{errors.reason.message as string}</p>}
             </div>
 
             <div className="space-y-2">
-              <Label className="text-[13px] font-semibold text-slate-700">Mô tả chi tiết</Label>
+              <Label className="text-[13px] font-bold text-[#3D2B1A] uppercase tracking-[0.06em]">Mô tả chi tiết</Label>
               <Textarea
                 {...register("details")}
-                placeholder="Vui lòng mô tả rõ tình trạng sản phẩm..."
-                className="min-h-[100px] rounded-xl p-3 resize-none !bg-white !border-[0.5px] !border-slate-200 !text-slate-900 placeholder:text-slate-400 text-[13px] focus-visible:!ring-0 focus-visible:!border-primary/50 transition-all outline-none !ring-offset-0"
+                placeholder="Vui lòng mô tả rõ tình trạng sản phẩm để LUXE hỗ trợ bạn tốt nhất..."
+                className="min-h-[120px] rounded-xl p-4 resize-none !bg-white !border-[#DDD6C8] !text-[#3D2B1A] placeholder:text-[#8A7966]/50 text-[13.5px] focus-visible:!ring-0 focus-visible:!border-[#C4B49A] transition-all outline-none"
               />
             </div>
 
             <div className="space-y-3">
-              <Label className="text-[13px] font-semibold text-slate-700">Hình ảnh bằng chứng <span className="text-rose-500">*</span></Label>
+              <Label className="text-[13px] font-bold text-[#3D2B1A] uppercase tracking-[0.06em]">Hình ảnh bằng chứng <span className="text-[#C44040]">*</span></Label>
               <div className="grid grid-cols-4 gap-3">
                 {images.map((url, i) => (
-                  <div key={i} className="relative aspect-square rounded-xl overflow-hidden border border-slate-100 group shadow-sm">
+                  <div key={i} className="relative aspect-square rounded-xl overflow-hidden border border-[#DDD6C8] group shadow-sm">
                     <Image src={url} alt="Evidence" fill className="object-cover" />
                     <button
                       type="button"
                       onClick={() => removeImage(i)}
-                      className="absolute top-1 right-1 h-5 w-5 rounded-full bg-rose-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
+                      className="absolute top-1.5 right-1.5 h-6 w-6 rounded-full bg-[#C44040] text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-md"
                     >
-                      <X size={12} />
+                      <X size={14} />
                     </button>
                   </div>
                 ))}
                 {images.length < 4 && (
-                  <label className="aspect-square rounded-xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center gap-1.5 cursor-pointer hover:border-primary hover:bg-primary/5 transition-all group">
+                  <label className="aspect-square rounded-xl border-2 border-dashed border-[#DDD6C8] flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-[#C4783A] hover:bg-[#FAF8F4] transition-all group">
                     <input type="file" multiple accept="image/*" className="hidden" onChange={handleImageUpload} disabled={isUploading} />
-                    {isUploading ? <Spinner size="sm" /> : <Camera size={18} className="text-slate-400 group-hover:text-primary transition-colors" />}
-                    <span className="text-[10px] font-semibold text-slate-400 group-hover:text-primary transition-colors">Tải ảnh</span>
+                    {isUploading ? <Spinner size="sm" /> : <Camera size={20} className="text-[#8A7966] group-hover:text-[#C4783A] transition-colors" />}
+                    <span className="text-[10px] font-bold text-[#8A7966] uppercase tracking-widest group-hover:text-[#C4783A] transition-colors">Tải ảnh</span>
                   </label>
                 )}
               </div>
-              <p className="text-[11px] text-slate-400 font-medium flex items-center gap-1.5 italic">
-                <AlertCircle size={12} />
-                Tải lên ít nhất 1 ảnh rõ nét về tình trạng sản phẩm
+              <p className="text-[11px] text-[#8A7966] font-medium flex items-center gap-1.5 italic">
+                <AlertCircle size={13} className="text-[#C4783A]" />
+                Tải lên ít nhất 1 ảnh rõ nét về tình trạng sản phẩm (Tối đa 4 ảnh)
               </p>
             </div>
           </div>
 
-          <DialogFooter className="pt-2 gap-2">
-            <Button type="button" variant="ghost" onClick={onClose} disabled={isSubmitting} className="h-10 rounded-lg font-semibold text-slate-500 text-[13px]">
-              Hủy bỏ
-            </Button>
-            <Button type="submit" disabled={isSubmitting || isUploading} className="h-10 rounded-lg px-6 font-semibold bg-primary hover:bg-slate-800 shadow-sm transition-all text-[13px]">
-              {isSubmitting ? <Spinner size="sm" variant="white" className="mr-2" /> : null}
-              Gửi yêu cầu
-            </Button>
-          </DialogFooter>
+          <div className="flex flex-col gap-3 pt-4 border-t border-[#DDD6C8]">
+            <button
+              type="submit"
+              disabled={isSubmitting || isUploading}
+              className="w-full h-12 bg-[#3D2B1A] text-white rounded-xl font-bold text-[13.5px] transition-all hover:bg-[#2A2420] disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              {isSubmitting && <Spinner size="sm" variant="white" />}
+              {isSubmitting ? "Đang gửi yêu cầu..." : "Gửi yêu cầu trả hàng"}
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={isSubmitting}
+              className="w-full h-12 bg-white border border-[#DDD6C8] text-[#8A7966] rounded-xl font-bold text-[13.5px] transition-all hover:bg-[#FAF8F4]"
+            >
+              Quay lại
+            </button>
+          </div>
         </form>
       </DialogContent>
     </Dialog>

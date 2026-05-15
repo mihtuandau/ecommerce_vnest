@@ -47,6 +47,7 @@ export class AuthController {
   async verifyOtp(
     @Body() body: { email: string; code?: string; otp?: string },
     @Res() res: Response,
+    @Req() req: any,
   ) {
     const code = body.code ?? body.otp;
     if (!code) {
@@ -55,13 +56,16 @@ export class AuthController {
         .json({ message: 'Verification code is required' });
     }
 
-    const result = await this.authService.verifyOtp(body.email, code);
+    const ip = req.ip || req.headers['x-forwarded-for'] || req.connection?.remoteAddress;
+    const userAgent = req.headers['user-agent'];
+    console.log(`[AuthGateway] Verify OTP for: ${body.email}`);
+    const result = await this.authService.verifyOtp(body.email, code, { ip, userAgent });
     
-    if (result.accessToken) {
+    if (result.accessToken && result.refreshToken) {
       this.authService.setAuthCookie(res, result.accessToken);
       this.authService.setRefreshTokenCookie(res, result.refreshToken);
     }
-
+    
     return res.json(result);
   }
 
@@ -79,8 +83,10 @@ export class AuthController {
   ) {
 
     const result = await this.authService.registerInitialAdmin(registerAdminDto);
-    this.authService.setAuthCookie(res, result.accessToken);
-    this.authService.setRefreshTokenCookie(res, result.refreshToken);
+    if (result.accessToken && result.refreshToken) {
+      this.authService.setAuthCookie(res, result.accessToken);
+      this.authService.setRefreshTokenCookie(res, result.refreshToken);
+    }
 
     return res.status(HttpStatus.CREATED).json({
       user: result.user,
@@ -97,8 +103,10 @@ export class AuthController {
     @Res() res: Response,
   ) {
     const result = await this.authService.registerAdmin(registerAdminDto);
-    this.authService.setAuthCookie(res, result.accessToken);
-    this.authService.setRefreshTokenCookie(res, result.refreshToken);
+    if (result.accessToken && result.refreshToken) {
+      this.authService.setAuthCookie(res, result.accessToken);
+      this.authService.setRefreshTokenCookie(res, result.refreshToken);
+    }
 
     return res.status(HttpStatus.CREATED).json({
       user: result.user,
@@ -108,21 +116,24 @@ export class AuthController {
 
   @Post('login')
   @Throttle({ default: { limit: 5, ttl: 300000 } }) 
-  async login(@Body() loginDto: LoginDto, @Res() res: Response) {
+  async login(@Body() loginDto: LoginDto, @Res() res: Response, @Req() req: any) {
+    console.log(`[AuthGateway] Login attempt for: ${loginDto.email}`);
     const user = await this.authService.validateUser(
       loginDto.email,
       loginDto.password,
     );
-    const result = await this.authService.login({ sub: user.id }, user);
+    
+    const ip = req.ip || req.headers['x-forwarded-for'] || req.connection?.remoteAddress;
+    const userAgent = req.headers['user-agent'];
+    
+    const result = await this.authService.login({ sub: user.id }, user, { ip, userAgent });
 
-    this.authService.setAuthCookie(res, result.accessToken);
-    this.authService.setRefreshTokenCookie(res, result.refreshToken);
-
-    return res.json({
-      user: result.user,
-      accessToken: result.accessToken,
-      message: 'Login successful',
-    });
+    if (result.accessToken && result.refreshToken) {
+      this.authService.setAuthCookie(res, result.accessToken);
+      this.authService.setRefreshTokenCookie(res, result.refreshToken);
+    }
+    
+    return res.json(result);
   }
 
   @Post('logout')
@@ -179,15 +190,23 @@ export class AuthController {
   async googleAuthRedirect(@Req() req: any, @Res() res: Response) {
     const user = req.user;
 
-    // Sử dụng authService.login() để tạo đầy đủ accessToken + refreshToken
-    // và lưu refreshToken hash vào DB (hỗ trợ rotation/revoke).
-    const result = await this.authService.login({ sub: user.userId });
-
-    this.authService.setAuthCookie(res, result.accessToken);
-    this.authService.setRefreshTokenCookie(res, result.refreshToken);
+    console.log(`[AuthGateway] Google Auth Success for: ${user.email}`);
+    const result = await this.authService.login({ sub: user.userId }, null, {
+      ip: req.ip || req.headers['x-forwarded-for'] || req.connection?.remoteAddress,
+      userAgent: req.headers['user-agent']
+    });
 
     const origins = (process.env.FRONTEND_URL || 'http://localhost:3000').split(',').map(o => o.trim());
     const frontendUrl = origins.find(o => o.includes('localhost')) || origins[0];
+
+    if (result.requires2FA) {
+      return res.redirect(`${frontendUrl}/auth/verify-2fa?email=${result.email}`);
+    }
+
+    if (result.accessToken && result.refreshToken) {
+      this.authService.setAuthCookie(res, result.accessToken);
+      this.authService.setRefreshTokenCookie(res, result.refreshToken);
+    }
 
     console.log(`Google Auth Redirecting to: ${frontendUrl}`);
     const role = result.user?.role || user.role;
@@ -241,5 +260,46 @@ export class AuthController {
   @Roles('ADMIN')
   async updateRolePermissions(@Body() body: { role: string; permissionIds: number[] }) {
     return this.authService.updateRolePermissions(body.role, body.permissionIds);
+  }
+
+  @Get('sessions')
+  @UseGuards(JwtAuthGuard)
+  async getSessions(@Req() req: any) {
+    return this.authService.getSessions(req.user.userId);
+  }
+
+  @Post('sessions/revoke')
+  @UseGuards(JwtAuthGuard)
+  async revokeSession(@Body() body: { sessionId: number }, @Req() req: any) {
+    return this.authService.revokeSession(req.user.userId, body.sessionId);
+  }
+
+  @Post('2fa/toggle')
+  @UseGuards(JwtAuthGuard)
+  async toggle2FA(@Req() req: any) {
+    return this.authService.toggle2FA(req.user.userId);
+  }
+
+  @Post('2fa/verify-activate')
+  @UseGuards(JwtAuthGuard)
+  async verify2FAActivate(@Body() body: { code: string }, @Req() req: any) {
+    return this.authService.verify2FAActivate(req.user.userId, body.code);
+  }
+
+  @Post('2fa/verify-login')
+  async verify2FALogin(
+    @Body() body: { email: string; code: string },
+    @Res() res: Response,
+    @Req() req: any
+  ) {
+    const ip = req.ip || req.headers['x-forwarded-for'] || req.connection?.remoteAddress;
+    const userAgent = req.headers['user-agent'];
+    const result = await this.authService.verify2FALogin(body.email, body.code, { ip, userAgent });
+
+    if (result.accessToken && result.refreshToken) {
+      this.authService.setAuthCookie(res, result.accessToken);
+      this.authService.setRefreshTokenCookie(res, result.refreshToken);
+    }
+    return res.json(result);
   }
 }

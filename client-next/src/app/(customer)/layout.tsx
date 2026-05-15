@@ -12,7 +12,7 @@ export default async function CustomerLayout({
   children: React.ReactNode;
 }) {
   const cookieStore = await cookies();
-  const hasToken = cookieStore.has("accessToken") || cookieStore.has("access_token");
+  const hasToken = cookieStore.has("accessToken") ;
 
   return (
     <div className="flex min-h-screen flex-col">

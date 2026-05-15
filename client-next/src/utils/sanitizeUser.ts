@@ -13,5 +13,8 @@ export function sanitizeUser(raw: any) {
     avatar: raw.avatar ?? null,
     role: raw.role,
     permissions: raw.permissions ?? [],
+    twoFactorEnabled: !!raw.twoFactorEnabled,
+    gender: raw.gender ?? null,
+    birthDate: raw.birthDate ?? null,
   };
 }
