@@ -18,6 +18,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { cn } from "@/utils/cn";
 import { formatCurrency } from "@/utils/formatCurrency";
 import Link from "next/link";
+import { getImageUrl } from "@/utils/image";
 
 // ── GLOBAL CACHE FOR CHAT PRODUCTS ──
 // Helps prevent 429 Too Many Requests by reusing data
@@ -68,11 +69,6 @@ const ChatProductCard = ({
 
   if (!product) return null;
 
-  const normalizeImagePath = (path: any) => {
-    if (typeof path !== "string" || !path) return "/placeholder.png";
-    if (path.startsWith("http") || path.startsWith("data:")) return path;
-    return `/${path.replace(/\\/g, "/").replace(/^\//, "")}`;
-  };
 
   const currentPrice = salePrice || product.basePrice;
   const originalPrice = product.originalPrice || (salePrice ? product.basePrice : null);
@@ -85,7 +81,7 @@ const ChatProductCard = ({
     >
       <div className="h-12 w-12 rounded-lg bg-slate-50/50 flex-shrink-0 overflow-hidden border border-slate-50 flex items-center justify-center relative">
         <Image
-          src={normalizeImagePath(product.images?.[0]?.url || product.image)}
+          src={getImageUrl(product.images?.[0]?.url || product.image)}
           alt={product.name}
           fill
           className="object-contain p-1.5 transition-all duration-500 group-hover:scale-110 group-hover:rotate-1"
@@ -305,7 +301,7 @@ export function ChatWidget() {
   };
 
   return (
-    <div className="fixed bottom-12 right-6 z-[9999] flex flex-col items-end gap-4">
+    <div className="fixed bottom-12 right-6 z-[9999] hidden md:flex flex-col items-end gap-4">
       {/* AI Chat Window */}
       {isOpen && (
         <div className="w-80 sm:w-[400px] h-[620px] bg-white rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-slate-100 flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 zoom-in-95 duration-300 font-sans">

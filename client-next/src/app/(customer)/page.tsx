@@ -7,11 +7,11 @@ export const metadata: Metadata = {
 };
 
 import { Suspense } from "react";
-import { Skeleton } from "@/components/ui/Skeleton";
+import { HeroBannerSkeleton } from "@/features/home/components/skeletons/HomeSkeletons";
 
 export default function HomePage() {
   return (
-    <Suspense fallback={<div className="min-h-screen animate-pulse bg-slate-50" />}>
+    <Suspense fallback={<HeroBannerSkeleton />}>
       <HomeContainer />
     </Suspense>
   );

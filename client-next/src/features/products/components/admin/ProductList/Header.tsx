@@ -12,11 +12,12 @@ interface HeaderProps {
   totalProducts: number;
   onRefresh: () => void;
   isFetching: boolean;
+  className?: string;
 }
 
-export function Header({ totalProducts, onRefresh, isFetching }: HeaderProps) {
+export function Header({ totalProducts, onRefresh, isFetching, className }: HeaderProps) {
   return (
-    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className={cn("flex flex-col md:flex-row md:items-center justify-between gap-4", className)}>
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-slate-900">
           Quản lý sản phẩm

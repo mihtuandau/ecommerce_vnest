@@ -56,7 +56,7 @@ export class GHNService {
       height: 10,
       length: 10,
       width: 10,
-      weight: 500,
+      weight: 1000,
       insurance_value: 0,
       coupon: null,
       ...feeData,
@@ -64,7 +64,9 @@ export class GHNService {
 
     // Chuyển đổi các trường số nếu cần
     if (finalData.to_district_id) finalData.to_district_id = Number(finalData.to_district_id);
-    if (finalData.weight) finalData.weight = Number(finalData.weight);
+    
+    // Đảm bảo weight luôn dương và là số nguyên
+    finalData.weight = Math.max(1000, Number(finalData.weight || 1000));
 
     try {
       if (!this.ghnToken || !this.shopId) {

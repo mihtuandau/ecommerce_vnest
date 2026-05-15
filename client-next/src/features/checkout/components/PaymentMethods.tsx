@@ -9,96 +9,102 @@ import { cn } from "@/utils/cn";
 interface PaymentMethodsProps {
   paymentMethod: string;
   setPaymentMethod: (method: string) => void;
+  stepNumber?: number | string;
 }
 
-export function PaymentMethods({ paymentMethod, setPaymentMethod }: PaymentMethodsProps) {
+export const PaymentMethods = React.memo(function PaymentMethods({ paymentMethod, setPaymentMethod, stepNumber = "4" }: PaymentMethodsProps) {
   const methods = [
     { 
       id: "COD", 
       name: "Thanh toán khi nhận hàng (COD)", 
+      desc: "Kiểm tra hàng trước khi thanh toán",
       icon: Banknote,
       color: "text-amber-600",
       bgColor: "bg-amber-50"
     },
     { 
       id: "VNPAY", 
-      name: "Thanh toán Online (VNPay / Thẻ ATM / QR Code)", 
+      name: "Ví VNPay", 
+      desc: "Thanh toán nhanh qua ứng dụng VNPay",
       icon: Wallet,
       color: "text-blue-600",
       bgColor: "bg-blue-50",
       logo: "https://stcd02206177151.cloud.edgevnpay.vn/assets/images/logo-icon/logo-primary.svg"
+    },
+    { 
+      id: "MOMO", 
+      name: "Ví MoMo", 
+      desc: "Thanh toán nhanh, hoàn tiền tức thì",
+      icon: CreditCard,
+      color: "text-rose-600",
+      bgColor: "bg-rose-50"
     }
   ];
 
   return (
-    <Card className="border border-slate-100 shadow-none rounded-2xl overflow-hidden bg-white">
-      <div className="px-5 py-4 border-b border-slate-50 bg-slate-50/30 flex items-center gap-2.5">
-        <CreditCard className="h-4 w-4 text-slate-400" />
-        <h2 className="text-sm font-bold text-slate-700">Phương thức thanh toán</h2>
+    <div className="bg-white rounded-[16px] border border-brand-sand overflow-hidden">
+      <div className="px-6 py-[18px] border-b border-brand-sand flex items-center justify-between">
+        <div className="flex items-center gap-[10px]">
+          <div className="w-[26px] h-[26px] rounded-full bg-primary flex items-center justify-center text-white text-[12px] font-bold">{stepNumber}</div>
+          <h2 className="text-[15px] font-bold text-primary">Phương thức thanh toán</h2>
+        </div>
+        <div className="flex items-center gap-1.5 text-[11.5px] text-brand-taupe">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-emerald-600"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          Bảo mật SSL
+        </div>
       </div>
 
-      <CardContent className="p-0">
-        <div className="divide-y divide-slate-50">
-          {methods.map((method) => (
-            <div
-              key={method.id}
+      <div className="p-6 space-y-[10px]">
+        {methods.map((method) => (
+          <div
+            key={method.id}
+            className={cn(
+              "border-[1.5px] rounded-[12px] transition-all overflow-hidden",
+              paymentMethod === method.id ? "border-primary" : "border-brand-sand hover:border-brand-taupe/30"
+            )}
+          >
+            <div 
               onClick={() => setPaymentMethod(method.id)}
-              className={cn(
-                "flex items-center gap-4 px-5 py-4 cursor-pointer transition-colors group",
-                paymentMethod === method.id ? "bg-blue-50/30" : "hover:bg-slate-50/50"
-              )}
+              className="px-4 py-[14px] flex items-center gap-3 cursor-pointer"
             >
-              {/* Radio Circle */}
+              <input type="radio" checked={paymentMethod === method.id} readOnly className="accent-primary shrink-0" />
               <div className={cn(
-                "h-4 w-4 rounded-full border-2 flex items-center justify-center transition-all",
-                paymentMethod === method.id 
-                  ? "border-primary bg-primary" 
-                  : "border-slate-300 bg-white group-hover:border-slate-400"
+                "w-9 h-6 rounded-[5px] flex items-center justify-center text-[10px] font-bold tracking-[0.04em] shrink-0",
+                method.id === "MOMO" ? "bg-[#A50064] text-white" : 
+                method.id === "VNPAY" ? "bg-[#005BAA] text-white" :
+                method.id === "COD" ? "bg-brand-sand text-primary" : "bg-slate-200"
               )}>
-                {paymentMethod === method.id && (
-                  <div className="h-1.5 w-1.5 rounded-full bg-white" />
-                )}
+                {method.id === "MOMO" ? "MoMo" : method.id === "VNPAY" ? "VNPAY" : method.id}
               </div>
-
-              {/* Icon Container */}
-              <div className={cn(
-                "h-9 w-9 rounded-lg flex items-center justify-center shrink-0 border border-slate-100 bg-white",
-                paymentMethod === method.id ? "border-blue-100 shadow-sm" : ""
-              )}>
-                {method.logo ? (
-                  <Image 
-                    src={method.logo} 
-                    alt={method.name} 
-                    width={20} 
-                    height={20} 
-                    className="h-5 w-5 object-contain" 
-                  />
-                ) : (
-                  <method.icon className={cn("h-5 w-5", method.color)} />
-                )}
-              </div>
-              
-              {/* Name */}
-              <div className="flex-1 min-w-0">
-                <p className={cn(
-                  "text-sm font-semibold transition-colors",
-                  paymentMethod === method.id ? "text-primary" : "text-slate-600"
-                )}>
-                  {method.name}
-                </p>
-              </div>
-
-              {/* Status Badge */}
-              {paymentMethod === method.id && (
-                <div className="hidden sm:flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-blue-100 text-primary">
-                  <CheckCircle2 size={10} />
-                  <span className="text-xs font-bold">Đã chọn</span>
-                </div>
-              )}
+              <span className="text-[13.5px] font-medium text-primary flex-1">{method.name}</span>
+              <span className="text-[12px] text-brand-taupe">{method.desc}</span>
             </div>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+
+            {/* Expandable Body */}
+            {paymentMethod === method.id && (
+              <div className="px-4 pb-[18px] pt-4 border-t border-brand-sand animate-in fade-in duration-300">
+                {method.id === "MOMO" ? (
+                  <div className="bg-brand-ivory border border-brand-sand rounded-[12px] p-5 text-center">
+                    <div className="w-[120px] h-[120px] bg-white border border-brand-sand rounded-[8px] mx-auto mb-3 flex items-center justify-center text-[11px] text-brand-taupe">QR Placeholder</div>
+                    <p className="text-[12px] text-brand-taupe">Quét mã bằng ứng dụng MoMo</p>
+                    <p className="text-[13px] font-bold text-[#A50064] mt-1">Sử dụng ví MoMo để thanh toán</p>
+                  </div>
+                ) : method.id === "VNPAY" ? (
+                  <div className="bg-blue-50 border border-blue-200 rounded-[10px] p-4 text-[13px] text-foreground leading-relaxed">
+                    Bạn sẽ được chuyển đến cổng VNPAY để hoàn tất thanh toán. Hỗ trợ tất cả thẻ ATM nội địa và ví điện tử liên kết VNPAY.
+                  </div>
+                ) : method.id === "COD" ? (
+                  <div className="bg-brand-ivory rounded-[10px] p-4 text-[13px] text-foreground leading-relaxed">
+                    <strong>Lưu ý khi thanh toán COD:</strong><br />
+                    Vui lòng chuẩn bị đúng số tiền cần thanh toán. Shipper không đổi tiền lẻ.<br />
+                    Phí thu hộ: <strong>Miễn phí</strong> cho đơn trên 500k.
+                  </div>
+                ) : null}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
   );
-}
+});

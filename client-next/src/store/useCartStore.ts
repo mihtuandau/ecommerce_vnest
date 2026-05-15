@@ -16,10 +16,20 @@ export interface CartItem {
   selected?: boolean;
 }
 
+export type CheckoutDiscount = {
+  id?: number;
+  code?: string;
+  discountType?: "PERCENTAGE" | "FIXED";
+  discountValue?: number;
+  maxDiscountAmount?: number;
+  minOrderAmount?: number;
+};
+
 interface CartStore {
   items: CartItem[];
   buyNowItem: CartItem | null;
   isDirty: boolean; // Flag to track if guest items need merging
+  appliedDiscount: CheckoutDiscount | null;
   addItem: (item: CartItem, isGuest?: boolean) => void;
   removeItem: (variantId: string) => void;
   updateQuantity: (variantId: string, quantity: number) => void;
@@ -32,6 +42,7 @@ interface CartStore {
   totalPrice: () => number;
   selectedTotalPrice: () => number;
   selectedCount: () => number;
+  setAppliedDiscount: (discount: CheckoutDiscount | null) => void;
 }
 
 export const useCartStore = create<CartStore>()(
@@ -40,6 +51,7 @@ export const useCartStore = create<CartStore>()(
       items: [],
       buyNowItem: null,
       isDirty: false,
+      appliedDiscount: null,
       
       addItem: (item, isGuest = true) =>
         set((state) => {
@@ -120,6 +132,8 @@ export const useCartStore = create<CartStore>()(
           .reduce((sum, i) => sum + (i.discountedPrice || i.price) * i.quantity, 0),
 
       selectedCount: () => get().items.filter((i) => i.selected).length,
+
+      setAppliedDiscount: (discount) => set({ appliedDiscount: discount }),
     }),
     {
       name: "minhtuan-cart-storage",

@@ -28,11 +28,7 @@ const TIMES = [
   "10 phút trước",
 ];
 
-const normalizeImagePath = (path: any) => {
-  if (typeof path !== "string" || !path) return "/placeholder.png";
-  if (path.startsWith("http") || path.startsWith("data:")) return path;
-  return `/${path.replace(/\\/g, "/").replace(/^\//, "")}`;
-};
+import { getImageUrl } from "@/utils/image";
 
 export function SocialProof() {
   const { data: productsData } = useProducts({ limit: 20 });
@@ -56,7 +52,7 @@ export function SocialProof() {
         name: randomCustomer.name,
         location: randomCustomer.location,
         productName: randomProduct.name,
-        image: normalizeImagePath(imageUrl || (randomProduct as any).image),
+        image: getImageUrl(imageUrl || (randomProduct as any).image),
         time: randomTime,
       });
 
@@ -91,7 +87,7 @@ export function SocialProof() {
 
   return (
     <div
-      className={`fixed bottom-8 left-24 z-[100] transition-all duration-1000 ease-[cubic-bezier(0.23,1,0.32,1)] transform
+      className={`fixed bottom-8 left-6 md:left-24 z-[100] hidden md:block transition-all duration-1000 ease-[cubic-bezier(0.23,1,0.32,1)] transform
         ${isVisible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0 pointer-events-none"}`}
     >
       <div className="bg-white/95 backdrop-blur-xl border border-slate-200 p-3 pr-5 rounded-2xl shadow-sm flex items-center gap-4 max-w-[340px] group relative overflow-hidden">

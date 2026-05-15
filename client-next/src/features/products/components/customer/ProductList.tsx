@@ -11,13 +11,17 @@ import { cn } from "@/utils/cn";
 
 interface ProductListProps {
   initialProducts?: Product[];
+  isLoading?: boolean;
   view?: "grid" | "list";
   page?: number;
   onPageChange?: (page: number) => void;
 }
 
-export function ProductList({
+import React from "react";
+
+export const ProductList = React.memo(function ProductList({
   initialProducts,
+  isLoading: externalIsLoading,
   view = "grid",
   page = 1,
   onPageChange,
@@ -45,36 +49,46 @@ export function ProductList({
     ...(sortBy && { sortBy }),
   };
 
-  const { data, isLoading, error, refetch } = useProducts(queryParams, {
+  const { data, isLoading: internalIsLoading, error, refetch } = useProducts(queryParams, {
     enabled: !initialProducts,
   });
 
+  const isLoading = externalIsLoading || internalIsLoading;
   const products = (initialProducts !== undefined) ? initialProducts : (data?.data || []);
   const totalPages = data?.meta?.totalPages || 0;
 
-  if (isLoading && !initialProducts) {
+  if (isLoading) {
     return (
       <div
         className={cn(
-          "grid gap-3 md:gap-5",
+          "grid gap-6 animate-in fade-in duration-700 min-h-[1200px] content-start",
           view === "grid" ? "grid-cols-2 lg:grid-cols-3" : "grid-cols-1"
         )}
       >
-        {Array.from({ length: 6 }).map((_, i) => (
+        {Array.from({ length: 9 }).map((_, i) => (
           <div
             key={i}
-            className={cn("space-y-5", view === "list" && "flex gap-6 space-y-0")}
+            className={cn(
+              "bg-white rounded-[2rem] border border-brand-sand/40 overflow-hidden",
+              view === "list" ? "flex gap-6 p-4" : ""
+            )}
           >
             <Skeleton
               className={cn(
-                "w-full rounded-[2rem]",
-                view === "grid" ? "aspect-square" : "h-[180px] w-1/4"
+                "bg-brand-cream",
+                view === "grid" ? "aspect-square w-full" : "h-40 w-40 md:h-52 md:w-52 rounded-2xl shrink-0"
               )}
             />
-            <div className={cn("space-y-3 px-2 flex-1", view === "list" && "py-4")}>
-              <Skeleton className="h-4 w-1/4" />
-              <Skeleton className="h-6 w-full" />
-              <Skeleton className="h-4 w-1/2" />
+            <div className={cn("space-y-4 flex-1", view === "grid" ? "p-5" : "py-2")}>
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-3/4 rounded-full" />
+                <Skeleton className="h-4 w-1/2 rounded-full" />
+              </div>
+              <Skeleton className="h-3 w-1/3 rounded-full" />
+              <div className="pt-4 border-t border-brand-ivory flex justify-between items-center">
+                 <Skeleton className="h-6 w-24 rounded-full" />
+                 <Skeleton className="h-10 w-10 md:w-32 rounded-full" />
+              </div>
             </div>
           </div>
         ))}
@@ -84,18 +98,21 @@ export function ProductList({
 
   if (error && !initialProducts) {
     return (
-      <div className="flex flex-col items-center justify-center py-32 text-center space-y-6">
-        <div className="h-20 w-20 rounded-full bg-rose-50 flex items-center justify-center text-rose-500">
+      <div className="flex flex-col items-center justify-center py-32 text-center space-y-8 bg-white rounded-[3rem] border border-brand-sand/40 shadow-sm animate-in zoom-in-95 duration-500 px-6">
+        <div className="h-24 w-24 rounded-[2rem] bg-rose-50 flex items-center justify-center text-rose-500 shadow-inner">
           <RefreshCcw className="h-10 w-10" />
         </div>
-        <div className="space-y-2">
-          <h3 className="text-xl font-bold text-slate-900">Không thể tải sản phẩm</h3>
-          <p className="text-slate-500 max-w-xs mx-auto">
-            Vui lòng kiểm tra kết nối mạng và thử lại sau ít phút.
+        <div className="space-y-3 max-w-sm">
+          <h3 className="text-2xl font-bold text-primary" style={{ fontFamily: "'Playfair Display', serif" }}>Hệ thống đang bảo trì</h3>
+          <p className="text-sm text-brand-taupe font-medium leading-relaxed">
+            Chúng tôi xin lỗi vì sự bất tiện này. Vui lòng kiểm tra lại kết nối hoặc thử lại sau ít phút.
           </p>
         </div>
-        <Button onClick={() => refetch()} className="rounded-full px-8">
-          Thử lại ngay
+        <Button 
+          onClick={() => refetch()} 
+          className="rounded-full px-10 h-12 bg-primary hover:bg-brand-bronze text-white font-bold text-[11px] uppercase tracking-widest shadow-xl shadow-primary/10 transition-all active:scale-95 border-none"
+        >
+          Tải lại trang ngay
         </Button>
       </div>
     );
@@ -103,35 +120,33 @@ export function ProductList({
 
   if (products.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-32 text-center space-y-6 animate-in fade-in duration-500">
-        <div className="h-24 w-24 rounded-[2rem] bg-slate-50 flex items-center justify-center text-slate-200">
-          <PackageSearch className="h-12 w-12" />
+      <div className="flex flex-col items-center justify-center py-32 text-center space-y-8 bg-white rounded-[3rem] border border-brand-sand/40 shadow-sm animate-in zoom-in-95 duration-700 px-6">
+        <div className="h-24 w-24 rounded-[2rem] bg-brand-cream flex items-center justify-center text-brand-taupe/40 shadow-inner">
+          <PackageSearch className="h-10 w-10" />
         </div>
-        <div className="space-y-2">
-          <h3 className="text-xl font-bold text-slate-900 tracking-tight">
-            Không tìm thấy sản phẩm
-          </h3>
-          <p className="text-slate-500 max-w-sm mx-auto font-medium">
-            Vui lòng thử lại với các bộ lọc hoặc từ khóa tìm kiếm khác.
+        <div className="space-y-3 max-w-md">
+          <h3 className="text-2xl font-bold text-primary" style={{ fontFamily: "'Playfair Display', serif" }}>Tuyệt phẩm chưa xuất hiện</h3>
+          <p className="text-sm text-brand-taupe font-medium leading-relaxed">
+            Thật tiếc, chúng tôi chưa tìm thấy sản phẩm nào phù hợp với yêu cầu của bạn. Hãy thử thay đổi bộ lọc hoặc từ khóa tìm kiếm nhé.
           </p>
         </div>
         <Button
           variant="outline"
           onClick={() => (window.location.href = "/shop")}
-          className="rounded-full px-8 border-slate-200"
+          className="rounded-full px-10 h-12 border-brand-sand text-primary font-bold text-[11px] uppercase tracking-widest hover:bg-brand-cream transition-all active:scale-95"
         >
-          Xem tất cả sản phẩm
+          Khám phá tất cả sản phẩm
         </Button>
       </div>
     );
   }
 
   return (
-    <div className="space-y-12 min-h-[600px] flex flex-col justify-between pb-12">
+    <div className="space-y-16 min-h-[1200px] flex flex-col justify-between">
       <div
         className={cn(
-          "grid gap-3 md:gap-5 animate-in fade-in slide-in-from-bottom-4 duration-1000 flex-1 content-start",
-          view === "grid" ? "grid-cols-2 lg:grid-cols-3" : "grid-cols-1"
+          "grid animate-in fade-in slide-in-from-bottom-6 duration-1000 flex-1 content-start",
+          view === "grid" ? "grid-cols-2 lg:grid-cols-3 gap-6" : "grid-cols-1 gap-6"
         )}
       >
         {products.map((product: Product) => (
@@ -140,19 +155,19 @@ export function ProductList({
       </div>
 
       {/* Pagination */}
-      {products.length > 0 && (
-        <div className="flex justify-center items-center gap-2 pt-8 border-t border-slate-100">
+      {products.length > 0 && totalPages > 1 && (
+        <div className="flex justify-center items-center gap-2 pt-12 border-t border-brand-sand">
           <Button
             variant="outline"
             size="icon"
             disabled={page === 1}
             onClick={() => onPageChange?.(page - 1)}
-            className="rounded-xl border-slate-200 hover:bg-white hover:text-primary hover:border-primary/20 disabled:opacity-30"
+            className="h-11 w-11 rounded-2xl border-brand-sand bg-white text-primary hover:bg-brand-cream hover:text-brand-bronze hover:border-brand-bronze/30 disabled:opacity-30 transition-all"
           >
-            <ChevronLeft className="h-4 w-4" />
+            <ChevronLeft className="h-5 w-5" />
           </Button>
 
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
             {Array.from({ length: Math.max(1, totalPages) }).map((_, i) => {
               const pageNum = i + 1;
               const isCurrent = pageNum === page;
@@ -165,8 +180,8 @@ export function ProductList({
               ) {
                 if (pageNum === page - 2 || pageNum === page + 2) {
                   return (
-                    <span key={pageNum} className="px-2 text-slate-300">
-                      ...
+                    <span key={pageNum} className="px-2 text-brand-taupe/40 text-sm font-bold">
+                      ···
                     </span>
                   );
                 }
@@ -176,13 +191,12 @@ export function ProductList({
               return (
                 <Button
                   key={pageNum}
-                  variant={isCurrent ? "default" : "ghost"}
                   onClick={() => onPageChange?.(pageNum)}
                   className={cn(
-                    "h-10 w-10 rounded-xl font-bold text-sm",
+                    "h-11 w-11 rounded-2xl font-bold text-[13px] transition-all border",
                     isCurrent
-                      ? "bg-primary text-white shadow-lg shadow-primary/20"
-                      : "text-slate-500 hover:bg-white hover:text-primary hover:shadow-sm"
+                      ? "bg-white text-brand-bronze border-brand-bronze shadow-lg shadow-brand-bronze/10"
+                      : "bg-white text-brand-taupe hover:bg-brand-cream hover:text-primary border-brand-sand"
                   )}
                 >
                   {pageNum}
@@ -196,12 +210,12 @@ export function ProductList({
             size="icon"
             disabled={page === totalPages || totalPages === 0}
             onClick={() => onPageChange?.(page + 1)}
-            className="rounded-xl border-slate-200 hover:bg-white hover:text-primary hover:border-primary/20 disabled:opacity-30"
+            className="h-11 w-11 rounded-2xl border-brand-sand bg-white text-primary hover:bg-brand-cream hover:text-brand-bronze hover:border-brand-bronze/30 disabled:opacity-30 transition-all"
           >
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className="h-5 w-5" />
           </Button>
         </div>
       )}
     </div>
   );
-}
+});

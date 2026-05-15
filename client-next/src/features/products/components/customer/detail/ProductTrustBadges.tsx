@@ -9,49 +9,37 @@ const BADGES = [
     icon: Truck,
     title: "Giao hàng nhanh",
     description: "Từ 2-3 ngày làm việc",
-    color: "text-blue-600",
-    bg: "bg-blue-50"
   },
   {
     icon: ShieldCheck,
     title: "Bảo hành 12 tháng",
     description: "Chính hãng 100%",
-    color: "text-emerald-600",
-    bg: "bg-emerald-50"
   },
   {
     icon: RotateCcw,
     title: "Đổi trả 30 ngày",
     description: "Nếu có lỗi nhà sản xuất",
-    color: "text-orange-600",
-    bg: "bg-orange-50"
   },
   {
     icon: Award,
     title: "Cam kết chất lượng",
     description: "Hoàn tiền nếu không ưng ý",
-    color: "text-purple-600",
-    bg: "bg-purple-50"
   }
 ];
 
 export function ProductTrustBadges() {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8 pt-8 border-t border-slate-100">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-10 pt-10 border-t border-[#F3EFE8]">
       {BADGES.map((badge, i) => (
-        <div key={i} className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50/50 border border-slate-100/50 hover:bg-white hover:shadow-md transition-all duration-300 group">
-          <div className={cn(
-            "h-10 w-10 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110",
-            badge.bg,
-            badge.color
-          )}>
-            <badge.icon size={20} strokeWidth={2.5} />
+        <div key={i} className="flex items-center gap-5 group">
+          <div className="h-12 w-12 rounded-full flex items-center justify-center shrink-0 bg-[#FBF9F6] border border-[#F3EFE8] text-[#C4783A] transition-all duration-300 group-hover:bg-[#3D2B1A] group-hover:text-white group-hover:border-[#3D2B1A]">
+            <badge.icon size={20} strokeWidth={1.5} />
           </div>
           <div className="flex flex-col">
-            <span className="text-[13px] font-bold text-slate-900 leading-tight">
+            <span className="text-[14px] font-bold text-[#3D2B1A] leading-tight">
               {badge.title}
             </span>
-            <span className="text-[11px] font-medium text-slate-500 mt-0.5">
+            <span className="text-[12px] font-medium text-[#8A7966] mt-1">
               {badge.description}
             </span>
           </div>

@@ -58,7 +58,7 @@ export function ProductOptions({
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
                 Kích thước
               </span>
               {selectedSize && (
@@ -67,7 +67,7 @@ export function ProductOptions({
                 </span>
               )}
             </div>
-            <button className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-primary hover:opacity-70 transition-opacity">
+            <button className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-primary hover:opacity-70 transition-opacity">
               <Ruler size={12} /> Hướng dẫn chọn size
             </button>
           </div>
@@ -101,7 +101,7 @@ export function ProductOptions({
       {colors.length > 0 && (
         <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
               Màu sắc
             </span>
             {selectedColor && (
@@ -129,7 +129,7 @@ export function ProductOptions({
                         : "bg-slate-50 text-slate-300 border-slate-100 cursor-not-allowed opacity-40"
                   )}
                 >
-                  <span className="text-[11px] font-bold">{color}</span>
+                  <span className="text-xs font-bold">{color}</span>
                 </button>
               );
             })}

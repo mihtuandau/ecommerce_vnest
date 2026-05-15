@@ -48,6 +48,10 @@ import { MaintenanceModule } from './common/maintenance/maintenance.module';
           port: config.get('REDIS_PORT', 6379),
           username: config.get('REDIS_USERNAME', 'default'),
           password: config.get('REDIS_PASSWORD'),
+          connectTimeout: 10000,
+          retryStrategy: (times) => {
+            return Math.min(times * 100, 3000);
+          }
         },
       }),
       inject: [ConfigService],

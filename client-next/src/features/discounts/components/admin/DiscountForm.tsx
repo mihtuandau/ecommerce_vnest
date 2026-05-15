@@ -29,7 +29,7 @@ const discountSchema = z.object({
   usageLimit: z.coerce.number().min(1).optional(),
   startDate: z.string().min(1, "Vui lòng chọn ngày bắt đầu"),
   endDate: z.string().optional(),
-  applicableToProducts: z.array(z.string()).default([]),
+  applicableToProducts: z.array(z.any()).default([]),
 });
 
 export type DiscountFormValues = z.infer<typeof discountSchema>;
@@ -95,8 +95,12 @@ export function DiscountForm({ initialData, onSubmit, isLoading }: DiscountFormP
     }
   }, [initialData, form]);
 
-  const onFormSubmit = (values: DiscountFormValues) => {
-    onSubmit(values);
+  const onFormSubmit = (values: any) => {
+    const submissionValues = {
+      ...values,
+      applicableToProducts: (values.applicableToProducts || []).map((id: any) => Number(id))
+    };
+    onSubmit(submissionValues);
   };
 
   const products = Array.isArray(productsData)

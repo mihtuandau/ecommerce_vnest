@@ -2,17 +2,20 @@
 @plugin "tailwindcss-animate";
 
 @theme {
+  --font-sans: var(--font-dm-sans), sans-serif;
+  --font-serif: var(--font-playfair), serif;
+
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
-
-  --color-card: hsl(var(--card));
-  --color-card-foreground: hsl(var(--card-foreground));
-
-  --color-popover: hsl(var(--popover));
-  --color-popover-foreground: hsl(var(--popover-foreground));
-
+  
   --color-primary: hsl(var(--primary));
   --color-primary-foreground: hsl(var(--primary-foreground));
+
+  --color-brand-bronze: hsl(var(--brand-bronze));
+  --color-brand-sand: hsl(var(--brand-sand));
+  --color-brand-taupe: hsl(var(--brand-taupe));
+  --color-brand-cream: hsl(var(--brand-cream));
+  --color-brand-ivory: hsl(var(--brand-ivory));
 
   --color-secondary: hsl(var(--secondary));
   --color-secondary-foreground: hsl(var(--secondary-foreground));
@@ -33,15 +36,6 @@
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
-
-  --color-sidebar-background: hsl(var(--sidebar-background));
-  --color-sidebar-foreground: hsl(var(--sidebar-foreground));
-  --color-sidebar-primary: hsl(var(--sidebar-primary));
-  --color-sidebar-primary-foreground: hsl(var(--sidebar-primary-foreground));
-  --color-sidebar-accent: hsl(var(--sidebar-accent));
-  --color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
-  --color-sidebar-border: hsl(var(--sidebar-border));
-  --color-sidebar-ring: hsl(var(--sidebar-ring));
 }
 
 /* ──────────────────────────────────────────────
@@ -49,25 +43,29 @@
    ────────────────────────────────────────────── */
 :root {
   /* Brand Colors */
-  --primary: 212 80% 42%; /* #1565C0 converted to HSL */
+  --primary: 30 40% 17%; /* #3D2B1A - LUXE Deep Brown (Espresso) */
   --primary-foreground: 0 0% 100%;
 
-  --brand-blue: 212 80% 42%;
-  --sale-red: 17 80% 52%; /* #e85d24 */
-  --rating-yellow: 48 100% 48%; /* #f4c300 */
+  --brand-bronze: 27 54% 50%; /* #C4783A - LUXE Bronze */
+  --brand-sand: 40 25% 83%;   /* #DDD6C8 - LUXE Sand (Border) */
+  --brand-taupe: 30 15% 47%;  /* #8A7966 - LUXE Taupe (Muted) */
+  --brand-cream: 40 30% 96.5%;  /* More visible LUXE Linen Background */
+  --brand-ivory: 40 30% 94%;  /* #F3EFE8 - LUXE Ivory (Light Accent) */
 
-  --secondary: 210 40% 96.1%;
-  --secondary-foreground: 222.2 47.4% 11.2%;
+  --background: 40 30% 96.5%; /* Same as brand-cream */
+  --foreground: 0 0% 10%; 
 
-  --accent: 212 80% 95%; /* Light brand blue */
-  --accent-foreground: 212 80% 42%;
+  --border: 40 25% 83%;    /* Same as brand-sand */
+  --muted-foreground: 30 15% 47%; /* Same as brand-taupe */
+  
+  --secondary: 30 20% 96%;
+  --secondary-foreground: 30 40% 17%;
+
+  --accent: 30 30% 95%; 
+  --accent-foreground: 27 54% 50%; 
 
   --destructive: 17 80% 52%;
   --destructive-foreground: 210 40% 98%;
-
-  /* Background & Foreground */
-  --background: 0 0% 100%;
-  --foreground: 0 0% 10%; /* #1a1a1a approx */
 
   --card: 0 0% 100%;
   --card-foreground: 0 0% 10%;
@@ -75,15 +73,7 @@
   --popover: 0 0% 100%;
   --popover-foreground: 0 0% 10%;
 
-  --muted: 210 40% 96%;
-  --muted-foreground: 215 16% 47%; /* Darker, clearer slate grey instead of #999 */
-
-  /* Borders & Inputs */
-  --border: 0 0% 92%;
-  --input: 0 0% 92%;
-  --ring: 212 80% 42%;
-
-  /* Radius */
+  --ring: 27 54% 50%; 
   --radius: 1rem;
 
   /* Sidebar */
@@ -143,6 +133,15 @@
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'DM Sans', sans-serif !important;
+  }
+
+  h1, h2, h3 {
+    @apply font-bold;
+  }
+  
+  .font-serif-brand {
+    font-family: var(--font-playfair), 'Playfair Display', serif !important;
   }
 }
 
@@ -264,6 +263,13 @@
   --primary: 222 47% 11%;
   --primary-foreground: 210 40% 98%;
 
+  /* Force font-sans for admin */
+  font-family: ui-sans-serif, system-ui, sans-serif !important;
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: ui-sans-serif, system-ui, sans-serif !important;
+  }
+
   /* Force black for common primary classes */
   .bg-primary {
     @apply !bg-slate-900;
@@ -301,4 +307,11 @@
   .tabs-trigger-pill {
     @apply !rounded-full;
   }
+}
+
+.nav-item-standard {
+  font-family: var(--font-dm-sans), 'DM Sans', sans-serif !important;
+  font-size: 13px !important;
+  color: #3D2B1A;
+  font-weight: 500 !important;
 }

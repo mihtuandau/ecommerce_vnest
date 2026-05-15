@@ -1,12 +1,10 @@
 "use client";
 
 import React from "react";
-import { Trash2, Plus, Minus, Check, ChevronDown, X } from "lucide-react";
+import { Trash2, Plus, Minus, Check, Heart, X } from "lucide-react";
 import { formatCurrency } from "@/utils/formatCurrency";
-import { Button } from "@/components/ui/Button";
 import Link from "next/link";
 import Image from "next/image";
-import { Card, CardContent } from "@/components/ui/Card";
 import { cn } from "@/utils/cn";
 import { CartItem as CartItemType } from "@/store/useCartStore";
 
@@ -15,107 +13,136 @@ interface CartItemProps {
   updateQuantity: (id: string, qty: number) => void;
   removeItem: (id: string) => void;
   toggleSelectItem: (id: string) => void;
+  isGrouped?: boolean;
 }
+
+const getImageUrl = (path: string) => {
+  if (!path) return "";
+  if (path.startsWith("http")) return path;
+  return `${process.env.NEXT_PUBLIC_API_URL}${path}`;
+};
 
 export const CartItem = React.memo(function CartItem({ 
   item, 
   updateQuantity, 
   removeItem, 
-  toggleSelectItem 
+  toggleSelectItem,
+  isGrouped = false
 }: CartItemProps) {
+  const currentPrice = item.discountedPrice || item.price;
+  const oldPrice = item.originalPrice || (item.discountedPrice ? item.price : 0);
+  const savings = oldPrice > currentPrice ? oldPrice - currentPrice : 0;
+
   return (
-    <div className="py-10 first:pt-0 border-b border-slate-100 last:border-0 group">
-      <div className="flex gap-4 lg:gap-8 relative items-center">
-        {/* Individual Selection Checkbox */}
+    <div className={cn(
+      "p-4 transition-all group/item",
+      isGrouped 
+        ? "bg-transparent hover:bg-[#FAF8F4]/50 border-none" 
+        : "bg-white rounded-2xl border border-[#DDD6C8] shadow-sm hover:shadow-md"
+    )}>
+      <div className="flex gap-4 items-center">
+        {/* Checkbox */}
         <button 
           onClick={() => toggleSelectItem(item.variantId)}
           className={cn(
-            "w-5 h-5 rounded-md border flex-shrink-0 flex items-center justify-center transition-all",
+            "w-4 h-4 rounded border flex-shrink-0 flex items-center justify-center transition-all",
             item.selected 
-              ? "bg-primary border-primary text-white" 
-              : "border-slate-200 hover:border-primary bg-white"
+              ? "bg-[#3D2B1A] border-[#3D2B1A] text-white" 
+              : "border-[#DDD6C8] hover:border-[#3D2B1A] bg-white"
           )}
         >
-          {item.selected && (
-            <Check size={12} strokeWidth={4} />
-          )}
+          {item.selected && <Check size={10} strokeWidth={4} />}
         </button>
 
         {/* Product Image */}
-        <div className="h-32 w-32 lg:h-40 lg:w-40 flex-shrink-0 overflow-hidden rounded-2xl bg-slate-50/50 flex items-center justify-center p-4 border border-slate-100/50 relative">
+        <div className="h-24 w-24 flex-shrink-0 rounded-xl bg-[#FAF8F4] flex items-center justify-center p-2 relative overflow-hidden">
           <Image 
-            src={item.imageUrl} 
+            src={getImageUrl(item.imageUrl)} 
             alt={item.name} 
             fill
-            className="object-contain p-4 mix-blend-multiply" 
+            className="object-contain p-1.5 mix-blend-multiply group-hover:scale-110 transition-transform duration-500" 
           />
         </div>
 
         {/* Content Section */}
-        <div className="flex-1 flex flex-col justify-between self-stretch">
-          <div className="space-y-4">
-            <div className="flex justify-between items-start">
-              <div className="space-y-1.5">
-                <Link 
-                  href={`/shop/${item.slug}`} 
-                  className="text-base lg:text-lg font-semibold text-slate-900 hover:text-primary transition-colors leading-snug"
-                >
-                  {item.name}
-                </Link>
-                
-                <div className="flex items-center gap-2 text-[13px] text-slate-400 font-medium">
-                  {item.color && <span>{item.color}</span>}
-                  {item.color && item.size && <span className="text-slate-200">|</span>}
-                  {item.size && <span>{item.size}</span>}
-                </div>
+        <div className="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          {/* Info Side */}
+          <div className="flex-1 min-w-0 space-y-3">
+            <div className="space-y-1">
+              {!isGrouped && <span className="text-[10px] font-black text-[#8A7966] uppercase tracking-[0.2em]">BRAND</span>}
+              <Link 
+                href={`/shop/${item.slug}`} 
+                className={cn(
+                  "block hover:text-[#C4783A] transition-colors leading-tight font-serif tracking-tight",
+                  isGrouped ? "text-[14px] font-medium text-[#3D2B1A]" : "text-[15px] font-semibold text-[#3D2B1A]"
+                )}
+              >
+                {item.name}
+              </Link>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              <span className="bg-[#FAF8F4] border border-[#DDD6C8] text-[#8A7966] text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">
+                Màu: {item.color || "Mặc định"}
+              </span>
+              {item.size && (
+                <span className="bg-[#FAF8F4] border border-[#DDD6C8] text-[#8A7966] text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">
+                  Size: {item.size}
+                </span>
+              )}
+            </div>
 
-                <div className="pt-1 flex items-baseline gap-3">
-                  <p className="text-base font-semibold text-primary">
-                    {formatCurrency(item.discountedPrice || item.price)}
-                  </p>
-                  {item.discountedPrice && item.discountedPrice < item.price ? (
-                    <span className="text-[11px] text-slate-400 line-through font-medium tabular-nums">
-                      {formatCurrency(item.price)}
-                    </span>
-                  ) : (item.originalPrice && item.originalPrice > (item.discountedPrice || item.price)) ? (
-                    <span className="text-[11px] text-slate-400 line-through font-medium tabular-nums">
-                      {formatCurrency(item.originalPrice)}
-                    </span>
-                  ) : null}
-                </div>
-              </div>
-
-              {/* Action Side */}
-              <div className="flex items-center gap-6 lg:gap-10">
-                <div className="relative group">
-                  <select
-                    value={item.quantity}
-                    onChange={(e) => updateQuantity(item.variantId, parseInt(e.target.value))}
-                    className="appearance-none bg-white border border-slate-200 rounded-xl px-4 py-2 pr-9 text-xs font-semibold text-slate-700 hover:border-primary transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/10 min-w-[65px]"
-                  >
-                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => (
-                      <option key={n} value={n}>{n}</option>
-                    ))}
-                  </select>
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-300">
-                    <ChevronDown size={14} strokeWidth={3} />
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => removeItem(item.variantId)}
-                  className="text-slate-300 hover:text-rose-500 transition-colors p-1"
-                >
-                  <X size={20} />
-                </button>
-              </div>
+            <div className="flex items-center gap-4 pt-0.5">
+              <button className="flex items-center gap-1 text-[11px] font-bold text-[#8A7966] hover:text-[#3D2B1A] transition-colors group/btn">
+                <Heart size={13} className="group-hover/btn:fill-[#3D2B1A]" /> 
+                Lưu yêu thích
+              </button>
+              <div className="w-[1px] h-3 bg-[#DDD6C8]" />
+              <button 
+                onClick={() => removeItem(item.variantId)}
+                className="flex items-center gap-1 text-[11px] font-bold text-[#8A7966] hover:text-red-500 transition-colors"
+              >
+                <X size={13} /> 
+                Xoá
+              </button>
             </div>
           </div>
 
-          {/* Status Indicator */}
-          <div className="flex items-center gap-2 mt-auto">
-            <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-            <span className="text-[13px] font-medium text-slate-400">Còn hàng</span>
+          {/* Pricing & Control Side */}
+          <div className="flex flex-col items-end gap-3 min-w-[120px]">
+            <div className="text-right">
+              <div className="text-[16px] font-bold text-[#3D2B1A] tabular-nums font-serif">
+                {formatCurrency(currentPrice)}
+              </div>
+              {oldPrice > currentPrice && (
+                <div className="text-[12px] text-[#8A7966] line-through font-medium opacity-50">
+                  {formatCurrency(oldPrice)}
+                </div>
+              )}
+              {savings > 0 && (
+                <div className="text-[10px] text-emerald-600 font-medium mt-0.5">
+                  Tiết kiệm {formatCurrency(savings)}
+                </div>
+              )}
+            </div>
+
+            {/* Quantity Selector */}
+            <div className="flex items-center h-8 bg-[#FAF8F4] border border-[#DDD6C8] rounded-lg overflow-hidden">
+              <button 
+                onClick={() => updateQuantity(item.variantId, item.quantity - 1)}
+                className="w-8 h-full flex items-center justify-center text-[#3D2B1A] hover:bg-white transition-all"
+              >
+                <Minus size={12} />
+              </button>
+              <div className="w-9 h-full flex items-center justify-center text-[13px] font-bold text-[#3D2B1A] border-x border-[#DDD6C8] bg-white/50">
+                {item.quantity}
+              </div>
+              <button 
+                onClick={() => updateQuantity(item.variantId, item.quantity + 1)}
+                className="w-8 h-full flex items-center justify-center text-[#3D2B1A] hover:bg-white transition-all"
+              >
+                <Plus size={12} />
+              </button>
+            </div>
           </div>
         </div>
       </div>

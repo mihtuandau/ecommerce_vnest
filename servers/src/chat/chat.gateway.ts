@@ -49,12 +49,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
           acc[key] = value;
           return acc;
         }, {} as any);
-        token = cookies['access_token'];
+        token = cookies['accessToken'] || cookies['access_token'];
       }
 
       console.log(`Socket Hook - Token found: ${token ? 'YES (len:' + token.length + ')' : 'NO'}`);
-
       if (!token) {
+        console.warn(`Socket connection ${client.id} disconnected: No token provided in auth, headers, or cookies`);
         client.disconnect();
         return;
       }

@@ -1,8 +1,7 @@
 "use client";
 
 import React from "react";
-import { MapPin, User, Truck, Mail, Settings } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/Card";
+import { MapPin, User, Truck, Mail } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { 
   Select, 
@@ -11,8 +10,6 @@ import {
   SelectTrigger, 
   SelectValue 
 } from "@/components/ui/Select";
-import Link from "next/link";
-import { Spinner } from "@/components/ui/Spinner";
 
 type Province = {
   ProvinceID: number;
@@ -62,60 +59,45 @@ export const ShippingForm = React.memo(function ShippingForm({
   handleWardChange,
   isLoadingDistricts,
   isLoadingWards,
-  user
 }: ShippingFormProps) {
   return (
-    <Card className="border-none shadow-sm rounded-3xl overflow-hidden bg-white">
-      <div className="px-6 py-5 border-b border-slate-50 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-primary/5 flex items-center justify-center text-primary">
-            <MapPin className="h-5 w-5" />
-          </div>
-          <h2 className="text-lg font-semibold text-slate-900">Thông tin nhận hàng</h2>
+    <div className="bg-white rounded-2xl border border-brand-sand shadow-sm overflow-hidden">
+      <div className="px-6 py-5 border-b border-brand-ivory flex items-center gap-4 bg-white/50 backdrop-blur-sm">
+        <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/20">
+          <MapPin size={16} />
         </div>
-        
-        {user && (
-          <Link 
-            href="/account?tab=address" 
-            className="text-xs font-bold text-primary hover:underline flex items-center gap-1.5 bg-blue-50 px-3 py-1.5 rounded-full transition-all hover:bg-blue-100"
-          >
-            <Settings size={12} />
-            Thay đổi địa chỉ
-          </Link>
-        )}
+        <h2 className="text-[18px] font-bold text-primary font-serif tracking-widest">1. Thông tin giao hàng</h2>
       </div>
 
-      <CardContent className="p-6 space-y-6">
+      <div className="p-6 space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div className="space-y-1.5">
-            <label className="text-xs font-medium text-slate-500 flex items-center gap-2">
-              <User className="h-3.5 w-3.5" /> Họ và tên người nhận
+          <div className="space-y-2">
+            <label className="text-[13px] font-medium text-primary ml-1 flex items-center gap-2">
+              <User size={14} className="text-brand-bronze" /> Họ và tên người nhận
             </label>
             <Input 
               required 
-              placeholder="Nguyễn Văn A" 
+              placeholder="Nhập họ và tên..." 
               value={form.fullName}
               onChange={(e) => setForm({...form, fullName: e.target.value})}
-              autoComplete="off"
-              className="rounded-xl h-11 border-slate-200 focus:ring-primary/10 transition-all text-sm"
+              className="rounded-[12px] h-12 border-brand-sand bg-white focus-visible:ring-1 focus-visible:ring-brand-bronze/30 focus-visible:border-brand-bronze transition-all text-sm font-medium text-primary placeholder:text-brand-taupe/40"
             />
           </div>
-          <div className="space-y-1.5">
-            <label className="text-xs font-medium text-slate-500 flex items-center gap-2">
-              <Truck className="h-3.5 w-3.5" /> Số điện thoại
+          <div className="space-y-2">
+            <label className="text-[13px] font-medium text-primary ml-1 flex items-center gap-2">
+              <Truck size={14} className="text-brand-bronze" /> Số điện thoại
             </label>
             <Input 
               required 
               placeholder="09xx xxx xxx" 
               value={form.phone}
               onChange={(e) => setForm({...form, phone: e.target.value})}
-              autoComplete="off"
-              className="rounded-xl h-11 border-slate-200 focus:ring-primary/10 transition-all text-sm"
+              className="rounded-[12px] h-12 border-brand-sand bg-white focus-visible:ring-1 focus-visible:ring-brand-bronze/30 focus-visible:border-brand-bronze transition-all text-sm font-medium text-primary placeholder:text-brand-taupe/40"
             />
           </div>
-          <div className="space-y-1.5 md:col-span-2">
-            <label className="text-xs font-medium text-slate-500 flex items-center gap-2">
-              <Mail className="h-3.5 w-3.5" /> Email nhận thông báo
+          <div className="space-y-2 md:col-span-2">
+            <label className="text-[13px] font-medium text-primary ml-1 flex items-center gap-2">
+              <Mail size={14} className="text-brand-bronze" /> Email nhận thông báo
             </label>
             <Input 
               required 
@@ -123,74 +105,59 @@ export const ShippingForm = React.memo(function ShippingForm({
               placeholder="example@gmail.com" 
               value={form.email}
               onChange={(e) => setForm({...form, email: e.target.value})}
-              autoComplete="off"
-              className="rounded-xl h-11 border-slate-200 focus:ring-primary/10 transition-all text-sm"
+              className="rounded-[12px] h-12 border-brand-sand bg-white focus-visible:ring-1 focus-visible:ring-brand-bronze/30 focus-visible:border-brand-bronze transition-all text-sm font-medium text-primary placeholder:text-brand-taupe/40"
             />
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          <div className="space-y-1.5">
-            <label className="text-xs font-medium text-slate-500">Tỉnh / Thành phố</label>
+          <div className="space-y-2">
+            <label className="text-[13px] font-medium text-primary ml-1">Tỉnh / Thành phố</label>
             <Select value={form.provinceId} onValueChange={handleProvinceChange}>
-              <SelectTrigger className="rounded-xl h-11 border-slate-200 text-sm">
+              <SelectTrigger className="rounded-[12px] h-12 border-brand-sand bg-white focus-visible:ring-1 focus-visible:ring-brand-bronze/30 focus-visible:border-brand-bronze transition-all text-sm font-medium text-primary">
                 <SelectValue placeholder="Chọn Tỉnh/Thành" />
               </SelectTrigger>
-              <SelectContent className="rounded-xl border-slate-100 max-h-[300px]">
+              <SelectContent className="rounded-[12px]">
                 {provinces.map((p) => (
-                  <SelectItem key={p.ProvinceID} value={p.ProvinceID.toString()} className="text-sm py-2">
+                  <SelectItem key={p.ProvinceID} value={p.ProvinceID.toString()} className="text-sm">
                     {p.ProvinceName}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
-          <div className="space-y-1.5">
-            <label className="text-xs font-medium text-slate-500">Quận / Huyện</label>
+          <div className="space-y-2">
+            <label className="text-[13px] font-medium text-primary ml-1">Quận / Huyện</label>
             <Select 
               value={form.districtId} 
               onValueChange={handleDistrictChange}
               disabled={!form.provinceId || isLoadingDistricts}
             >
-              <SelectTrigger className="rounded-xl h-11 border-slate-200 text-sm">
-                <SelectValue placeholder={
-                  isLoadingDistricts ? (
-                    <div className="flex items-center gap-2">
-                      <Spinner size="sm" variant="slate" />
-                      <span>Đang tải...</span>
-                    </div>
-                  ) : "Chọn Quận/Huyện"
-                } />
+              <SelectTrigger className="rounded-[12px] h-12 border-brand-sand bg-white focus-visible:ring-1 focus-visible:ring-brand-bronze/30 focus-visible:border-brand-bronze transition-all text-sm font-medium text-primary">
+                <SelectValue placeholder={isLoadingDistricts ? "Đang tải..." : "Chọn Quận/Huyện"} />
               </SelectTrigger>
-              <SelectContent className="rounded-xl border-slate-100 max-h-[300px]">
+              <SelectContent className="rounded-[12px]">
                 {districts.map((d) => (
-                  <SelectItem key={d.DistrictID} value={d.DistrictID.toString()} className="text-sm py-2">
+                  <SelectItem key={d.DistrictID} value={d.DistrictID.toString()} className="text-sm">
                     {d.DistrictName}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
-          <div className="space-y-1.5">
-            <label className="text-xs font-medium text-slate-500">Phường / Xã</label>
+          <div className="space-y-2">
+            <label className="text-[13px] font-medium text-primary ml-1">Phường / Xã</label>
             <Select 
               value={form.wardCode} 
               onValueChange={handleWardChange}
               disabled={!form.districtId || isLoadingWards}
             >
-              <SelectTrigger className="rounded-xl h-11 border-slate-200 text-sm">
-                <SelectValue placeholder={
-                  isLoadingWards ? (
-                    <div className="flex items-center gap-2">
-                      <Spinner size="sm" variant="slate" />
-                      <span>Đang tải...</span>
-                    </div>
-                  ) : "Chọn Phường/Xã"
-                } />
+              <SelectTrigger className="rounded-[12px] h-12 border-brand-sand bg-white focus-visible:ring-1 focus-visible:ring-brand-bronze/30 focus-visible:border-brand-bronze transition-all text-sm font-medium text-primary">
+                <SelectValue placeholder={isLoadingWards ? "Đang tải..." : "Chọn Phường/Xã"} />
               </SelectTrigger>
-              <SelectContent className="rounded-xl border-slate-100 max-h-[300px]">
+              <SelectContent className="rounded-[12px]">
                 {wards.map((w) => (
-                  <SelectItem key={w.WardCode} value={w.WardCode} className="text-sm py-2">
+                  <SelectItem key={w.WardCode} value={w.WardCode} className="text-sm">
                     {w.WardName}
                   </SelectItem>
                 ))}
@@ -199,18 +166,19 @@ export const ShippingForm = React.memo(function ShippingForm({
           </div>
         </div>
 
-        <div className="space-y-1.5">
-          <label className="text-xs font-medium text-slate-500">Địa chỉ cụ thể</label>
+        <div className="space-y-2">
+          <label className="text-[13px] font-medium text-primary ml-1 flex items-center gap-2">
+             <MapPin size={14} className="text-brand-bronze" /> Địa chỉ cụ thể
+          </label>
           <Input 
             required 
             placeholder="Số nhà, tên đường..." 
             value={form.street}
             onChange={(e) => setForm({...form, street: e.target.value})}
-            autoComplete="off"
-            className="rounded-xl h-11 border-slate-200 focus:ring-primary/10 transition-all text-sm"
+            className="rounded-[12px] h-12 border-brand-sand bg-white focus-visible:ring-1 focus-visible:ring-brand-bronze/30 focus-visible:border-brand-bronze transition-all text-sm font-medium text-primary placeholder:text-brand-taupe/40"
           />
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 });

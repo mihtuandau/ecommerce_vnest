@@ -24,16 +24,18 @@ import { DetailStepper } from "./detail/DetailStepper";
 import { DetailItems } from "./detail/DetailItems";
 import { DetailSidebar } from "./detail/DetailSidebar";
 import { PrintInvoice } from "../admin/detail/PrintInvoice";
+import { ReviewModal } from "@/features/reviews/components/customer/ReviewModal";
 import { RequestReturnModal } from "./detail/RequestReturnModal";
 import { ConfirmReturnModal } from "./detail/ConfirmReturnModal";
 import { ConfirmCancelModal } from "./detail/ConfirmCancelModal";
 import { useQueryClient } from "@tanstack/react-query";
 import { useUpdateReturnStatus } from "@/features/returns/hooks";
+import { queryKeys } from "@/constants/queryKeys";
 
 const statusConfig: Record<string, { label: string; color: string; icon: any }> = {
   [OrderStatus.PENDING]: {
-    label: "Chờ xử lý",
-    color: "text-slate-600 bg-slate-50 border-slate-100",
+    label: "Chờ xác nhận",
+    color: "text-amber-600 bg-amber-50 border-amber-100",
     icon: Clock,
   },
   [OrderStatus.PROCESSING]: {
@@ -47,12 +49,12 @@ const statusConfig: Record<string, { label: string; color: string; icon: any }> 
     icon: Truck,
   },
   [OrderStatus.DELIVERED]: {
-    label: "Đã giao hàng",
+    label: "Giao thành công",
     color: "text-emerald-600 bg-emerald-50 border-emerald-100",
     icon: CheckCircle2,
   },
   [OrderStatus.CANCELLED]: {
-    label: "Đã hủy",
+    label: "Đã hủy đơn",
     color: "text-rose-600 bg-rose-50 border-rose-100",
     icon: XCircle,
   },
@@ -78,6 +80,7 @@ export function OrderDetailView() {
   const [isReturnModalOpen, setIsReturnModalOpen] = useState(false);
   const [isConfirmReturnOpen, setIsConfirmReturnOpen] = useState(false);
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<any>(null);
   const { mutate: updateReturnStatus, isPending: isUpdatingStatus } =
     useUpdateReturnStatus();
 
@@ -107,13 +110,13 @@ export function OrderDetailView() {
   };
 
   const handleReturnSuccess = () => {
-    queryClient.invalidateQueries({ queryKey: ["order", id] });
+    queryClient.invalidateQueries({ queryKey: queryKeys.orders.detail(id) });
   };
 
   if (isLoading) {
     return (
       <div className="min-h-screen bg-white">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 space-y-6">
           <div className="space-y-4">
             <Skeleton className="h-4 w-20" />
             <Skeleton className="h-10 w-64" />
@@ -169,9 +172,9 @@ export function OrderDetailView() {
   const isCancelled = order.status === OrderStatus.CANCELLED;
 
   return (
-    <div className="min-h-screen bg-white pb-20 relative">
+    <div className="min-h-screen bg-slate-50/50 text-slate-900 pb-20 relative font-sans">
       <div className="no-print">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+        <div className="max-w-[1100px] mx-auto px-4 sm:px-6 py-6 md:py-10">
           <DetailHeader
             orderCode={order.orderCode}
             orderId={order.id}
@@ -194,23 +197,26 @@ export function OrderDetailView() {
             statusConfig={statusConfig}
           />
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
-            <div className="lg:col-span-8 space-y-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <div className="lg:col-span-7 space-y-6">
               <DetailStepper
                 status={order.status}
                 isCancelled={isCancelled}
                 returnStatus={order.returnRequest?.status}
+                updatedAt={order.updatedAt}
+                createdAt={order.createdAt}
+                deliveredAt={order.deliveredAt}
               />
 
               {order.returnRequest && (
-                <div className="border border-slate-100 rounded-2xl p-6 lg:p-8 space-y-6 bg-white shadow-sm">
+                <div className="bg-white border border-slate-100 rounded-2xl p-6 lg:p-8 space-y-6 shadow-sm">
                   <div className="flex items-center gap-4">
                     <div className="h-12 w-12 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-600 border border-amber-100">
                       <AlertCircle size={22} />
                     </div>
                     <div>
                       <h3 className="text-base font-semibold text-slate-900">Chi tiết yêu cầu trả hàng</h3>
-                      <p className="text-xs text-slate-400 font-medium mt-1">Cập nhật: {new Date(order.returnRequest?.updatedAt || order.updatedAt).toLocaleString("vi-VN")}</p>
+                      <p className="text-xs text-slate-400  -medium mt-1">Cập nhật: {new Date(order.returnRequest?.updatedAt || order.updatedAt).toLocaleString("vi-VN")}</p>
                     </div>
                   </div>
                   
@@ -242,7 +248,7 @@ export function OrderDetailView() {
               />
             </div>
 
-            <div className="lg:col-span-4">
+            <div className="lg:col-span-5">
               <DetailSidebar
                 orderId={order.id}
                 shippingSnapshot={order.shippingSnapshot || {}}
@@ -255,6 +261,16 @@ export function OrderDetailView() {
                 isReturned={order.status === OrderStatus.RETURNED}
                 isReturning={order.status === OrderStatus.RETURN_REQUESTED}
                 shippingCode={order.shippingCode}
+                status={order.status}
+                onReturn={() => setIsReturnModalOpen(true)}
+                onReport={() => window.open('https://zalo.me/0987654321', '_blank')}
+                onReview={() => {
+                  if (order.orderItems?.[0]) {
+                    setSelectedItem(order.orderItems[0]);
+                  }
+                }}
+                isReviewed={order.reviews && order.reviews.length > 0}
+                orderItems={order.orderItems}
               />
             </div>
           </div>
@@ -276,6 +292,22 @@ export function OrderDetailView() {
           cancelOrder(String(order.id));
           setIsCancelModalOpen(false);
         }}
+      />
+
+      <ReviewModal 
+        isOpen={!!selectedItem}
+        onClose={() => setSelectedItem(null)}
+        productId={Number(selectedItem?.variant?.productId || selectedItem?.productId)}
+        orderId={order.id || 0}
+        productName={selectedItem?.productName || selectedItem?.variant?.product?.name || ""}
+        productSlug={selectedItem?.variant?.product?.slug}
+        productImage={(() => {
+          const getUrl = (img: any) => typeof img === 'string' ? img : img?.url;
+          const path = (selectedItem?.variantSnapshot as { image?: string })?.image || getUrl(selectedItem?.variant?.images?.[0]) || getUrl(selectedItem?.variant?.product?.images?.[0]);
+          if (!path) return "/placeholder.png";
+          if (path.startsWith('http')) return path;
+          return `/${path.replace(/\\/g, '/').replace(/^\//, '')}`;
+        })()}
       />
 
       {/* DEDICATED PRINT COMPONENT */}

@@ -79,7 +79,7 @@ const RatingSummary = ({ reviews, product }: { reviews: Review[]; product: Produ
           return (
             <div key={star} className="flex items-center gap-4 group">
               <div className="flex items-center gap-1.5 w-6">
-                <span className="text-[11px] font-semibold text-slate-500">{star}</span>
+                <span className="text-xs font-semibold text-slate-500">{star}</span>
                 <Star size={10} className="fill-yellow-400 text-yellow-400 flex-shrink-0" />
               </div>
               <div className="flex-1 h-2.5 bg-slate-50 rounded-full overflow-hidden border border-slate-100">
@@ -88,7 +88,7 @@ const RatingSummary = ({ reviews, product }: { reviews: Review[]; product: Produ
                   style={{ width: `${pct}%` }}
                 />
               </div>
-              <span className="text-[10px] font-semibold text-slate-500 w-8 text-right tabular-nums">
+              <span className="text-xs font-semibold text-slate-500 w-8 text-right tabular-nums">
                 {count}
               </span>
             </div>
@@ -103,18 +103,15 @@ import { useProductReviews, useCanReview } from "../../hooks";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Button } from "@/components/ui/Button";
 import { ReviewModal } from "./ReviewModal";
+import { useAuthStore } from "@/store/useAuthStore";
 
 import { ReviewAISummary } from "./ReviewAISummary";
 
 export function ReviewList({ productId, product }: ReviewListProps) {
   const { data: reviewsData, isLoading } = useProductReviews(productId);
+  const { user } = useAuthStore();
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [previewImage, setPreviewImage] = React.useState<string | null>(null);
-  
-  // We don't have an orderId here easily, but we can try to find one from user's orders
-  // or the backend can check if they've purchased THIS product in ANY order.
-  // Our current backend 'can-review' requires an orderId.
-  // For now, let's just focus on the visible button.
   
   const body = reviewsData as any;
   const reviews = Array.isArray(body) 
@@ -125,9 +122,9 @@ export function ReviewList({ productId, product }: ReviewListProps) {
 
   if (isLoading) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-8">
         <Skeleton className="h-40 w-full rounded-3xl" />
-        <div className="space-y-4">
+        <div className="space-y-6">
           {[...Array(3)].map((_, i) => (
             <Skeleton key={i} className="h-24 w-full rounded-2xl" />
           ))}
@@ -151,25 +148,25 @@ export function ReviewList({ productId, product }: ReviewListProps) {
       {/* AI Review Summary Section */}
       <ReviewAISummary productId={productId} />
 
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
         <div className="space-y-1">
-          <h3 className="text-base font-semibold text-slate-900">Đánh giá từ khách hàng ({total})</h3>
-          <p className="text-xs font-semibold text-slate-500">Những chia sẻ thật từ người mua</p>
+          <h3 className="text-[16px] font-bold text-[#3D2B1A]">Đánh giá từ khách hàng ({total})</h3>
+          <p className="text-[12px] font-medium text-[#8A7966]">Những chia sẻ chân thực từ những người đã trải nghiệm</p>
         </div>
         
-        {/* Note: In a real scenario, we'd check if user is logged in and has purchased */}
-        {/* Since we don't have an orderId here, we point them to their orders if they want to review */}
-        <Button 
-          variant="outline" 
-          size="sm"
-          className="rounded-full h-10 px-6 text-[11px] font-bold border-slate-200 hover:bg-slate-50 gap-2"
-          asChild
-        >
-          <Link href="/orders">
-            <MessageSquarePlus className="h-3.5 w-3.5 text-primary" />
-            Viết đánh giá
-          </Link>
-        </Button>
+        {user && (
+          <Button 
+            variant="outline" 
+            size="sm"
+            className="rounded-full h-11 px-8 text-[12px] font-bold border-[#3D2B1A] text-[#3D2B1A] hover:bg-[#3D2B1A] hover:text-white transition-all gap-2"
+            asChild
+          >
+            <Link href="/orders">
+              <MessageSquarePlus size={14} />
+              Viết đánh giá
+            </Link>
+          </Button>
+        )}
       </div>
 
       {reviews.length === 0 ? (
@@ -194,7 +191,7 @@ export function ReviewList({ productId, product }: ReviewListProps) {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-semibold text-slate-900">{review.user?.name || "Người dùng"}</span>
-                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">
+                        <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">
                           ✓ Đã mua hàng
                         </span>
                       </div>

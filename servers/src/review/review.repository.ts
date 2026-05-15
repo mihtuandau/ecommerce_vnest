@@ -52,9 +52,6 @@ export class ReviewRepository {
         order: {
           userId,
           status: 'DELIVERED',
-          payment: { 
-            status: 'SUCCESS' 
-          },
         },
         variant: {
           productId,
@@ -89,9 +86,6 @@ export class ReviewRepository {
           id: orderId,
           userId,
           status: 'DELIVERED',
-          payment: { 
-            status: 'SUCCESS' 
-          },
         },
         variant: {
           productId,

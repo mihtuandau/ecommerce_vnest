@@ -1,8 +1,14 @@
-import { Injectable, Inject, NotFoundException, OnModuleInit } from '@nestjs/common';
+import {
+  Injectable,
+  Inject,
+  NotFoundException,
+  OnModuleInit,
+} from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
 import { ProductRepository } from './product.repository';
 import { UploadService } from '../upload/upload.service';
+import { CategoryService } from '../category/category.service';
 import { buildCacheKey } from '../common/utils/cache-key.util';
 import { createClient } from 'redis';
 
@@ -13,6 +19,7 @@ export class ProductService implements OnModuleInit {
     private repo: ProductRepository,
     @Inject(CACHE_MANAGER) private cache: Cache,
     private uploadService: UploadService,
+    private categoryService: CategoryService,
   ) {}
 
   async onModuleInit() {
@@ -26,9 +33,14 @@ export class ProductService implements OnModuleInit {
         },
       });
       await this.redisClient.connect();
-      console.log('✅ [ProductService] Trực tiếp kết nối Redis để làm nhiệm vụ dọn Cache (Wildcard Deletion)');
+      console.log(
+        '✅ [ProductService] Trực tiếp kết nối Redis để làm nhiệm vụ dọn Cache (Wildcard Deletion)',
+      );
     } catch (err) {
-      console.error('❌ [ProductService] Không thể kết nối Redis trực tiếp:', err.message);
+      console.error(
+        '❌ [ProductService] Không thể kết nối Redis trực tiếp:',
+        err.message,
+      );
     }
   }
 
@@ -55,21 +67,21 @@ export class ProductService implements OnModuleInit {
             MATCH: pattern,
             COUNT: 100,
           });
-          
+
           cursor = reply.cursor;
           const keys = reply.keys;
-          
+
           if (keys && keys.length > 0) {
             await this.redisClient.del(keys);
           }
         } while (cursor !== '0');
       } else {
-        await this.cache.del('products:all'); 
+        await this.cache.del('products:all');
       }
     } catch (err) {
       console.error('Error clearing product caches:', err.message);
     }
-    
+
     if (productId) await this.cache.del(`product:${productId}`);
     if (slug) await this.cache.del(`product:${slug}`);
   }
@@ -142,7 +154,7 @@ export class ProductService implements OnModuleInit {
 
   async findAll(q: any) {
     const key = buildCacheKey('products', q);
-    
+
     // BỎ QUA CACHE ĐỐI VỚI ADMIN (Admin luôn cần dữ liệu realtime)
     // Dấu hiệu nhận biết Admin: status = 'all' hoặc limit quá lớn
     const isAdmin = q.status === 'all' || Number(q.limit) >= 100;
@@ -171,11 +183,18 @@ export class ProductService implements OnModuleInit {
       where.OR = [
         { name: { contains: searchTrimmed, mode: 'insensitive' } },
         { description: { contains: searchTrimmed, mode: 'insensitive' } },
-        { category: { name: { contains: searchTrimmed, mode: 'insensitive' } } },
+        {
+          category: { name: { contains: searchTrimmed, mode: 'insensitive' } },
+        },
         { brand: { name: { contains: searchTrimmed, mode: 'insensitive' } } },
       ];
     }
-    if (categoryId) where.categoryId = Number(categoryId);
+    if (categoryId) {
+      const allCategoryIds = await this.categoryService.getChildIds(
+        Number(categoryId),
+      );
+      where.categoryId = { in: allCategoryIds };
+    }
     if (brandId) where.brandId = Number(brandId);
     if (minPrice || maxPrice) {
       where.basePrice = {};
@@ -219,7 +238,7 @@ export class ProductService implements OnModuleInit {
       total,
       totalPages: Math.ceil(total / limit),
     };
-    
+
     // Chỉ lưu Cache cho người dùng (Customer)
     if (!isAdmin) {
       await this.cache.set(key, res, 3600 * 1000); // v5+ expects ms
@@ -229,17 +248,17 @@ export class ProductService implements OnModuleInit {
 
   async findOne(id: any, full = false) {
     if (full) return this.repo.findByIdOrSlug(id, true);
-    
-    const cached = await this.cache.get(`product:${id}`) as any;
+
+    const cached = (await this.cache.get(`product:${id}`)) as any;
     if (cached) return cached;
-    
+
     const p = await this.repo.findByIdOrSlug(id, false);
-    
+
     // Security check: If not in full (admin) mode, ensure product is active
     if (!full && p && !p.isActive) {
       throw new NotFoundException('Sản phẩm hiện không khả dụng');
     }
-    
+
     if (p) await this.cache.set(`product:${id}`, p, 1800 * 1000); // v5+ expects ms
     return p;
   }
@@ -251,8 +270,12 @@ export class ProductService implements OnModuleInit {
       ...rest,
     };
 
-    if (rest.basePrice !== undefined) prismaData.basePrice = Number(rest.basePrice);
-    if (rest.originalPrice !== undefined) prismaData.originalPrice = rest.originalPrice ? Number(rest.originalPrice) : null;
+    if (rest.basePrice !== undefined)
+      prismaData.basePrice = Number(rest.basePrice);
+    if (rest.originalPrice !== undefined)
+      prismaData.originalPrice = rest.originalPrice
+        ? Number(rest.originalPrice)
+        : null;
 
     if (rest.name) {
       prismaData.slug = this.slugify(rest.name);
@@ -281,7 +304,9 @@ export class ProductService implements OnModuleInit {
     // This is a simplified implementation: delete existing and create new
     // to match the frontend state 1:1.
     if (images && Array.isArray(images)) {
-      const incomingUrls = images.map((img: any) => typeof img === 'string' ? img : img.url);
+      const incomingUrls = images.map((img: any) =>
+        typeof img === 'string' ? img : img.url,
+      );
       // Fetch existing images to delete from Cloudinary ONLY IF they are removed
       const existingImages = await this.repo.findImagesByProductId(id);
       for (const img of existingImages) {
@@ -289,7 +314,7 @@ export class ProductService implements OnModuleInit {
           await this.uploadService.deleteImage(img.url);
         }
       }
-      
+
       // Clear existing images in DB and create new ones
       await this.repo.deleteImagesByProductId(id);
       prismaData.images = {
@@ -305,7 +330,7 @@ export class ProductService implements OnModuleInit {
     if (variants && Array.isArray(variants)) {
       const currentProduct = await this.repo.findById(id);
       const existingVariants = currentProduct?.variants || [];
-      
+
       const updateOperations: any[] = [];
       const createOperations: any[] = [];
 
@@ -313,18 +338,22 @@ export class ProductService implements OnModuleInit {
       existingVariants.forEach((ev: any) => {
         updateOperations.push({
           where: { id: ev.id },
-          data: { isActive: false }
+          data: { isActive: false },
         });
       });
 
       // 2. Process the incoming variants
       for (const v of variants) {
-        const existing = v.id ? existingVariants.find((ev: any) => ev.id === v.id) : null;
-        
+        const existing = v.id
+          ? existingVariants.find((ev: any) => ev.id === v.id)
+          : null;
+
         if (existing) {
           // If variant exists, update it and set isActive back to true
           // We need to find the previous update operation for this ID and replace it
-          const opIndex = updateOperations.findIndex(op => op.where.id === existing.id);
+          const opIndex = updateOperations.findIndex(
+            (op) => op.where.id === existing.id,
+          );
           const updateData: any = {
             size: v.size,
             color: v.color,
@@ -336,9 +365,12 @@ export class ProductService implements OnModuleInit {
           };
 
           if (v.image) {
-            const incomingUrl = typeof v.image === 'string' ? v.image : v.image.url;
+            const incomingUrl =
+              typeof v.image === 'string' ? v.image : v.image.url;
             // Fetch old variant images to delete from Cloudinary ONLY IF changed
-            const oldVImages = await this.repo.findImagesByVariantId(existing.id);
+            const oldVImages = await this.repo.findImagesByVariantId(
+              existing.id,
+            );
             for (const img of oldVImages) {
               if (img.url !== incomingUrl) {
                 await this.uploadService.deleteImage(img.url);
@@ -356,13 +388,13 @@ export class ProductService implements OnModuleInit {
               ],
             };
           }
-          
+
           if (opIndex > -1) {
             updateOperations[opIndex].data = updateData;
           } else {
             updateOperations.push({
               where: { id: existing.id },
-              data: updateData
+              data: updateData,
             });
           }
         } else {
@@ -468,10 +500,10 @@ export class ProductService implements OnModuleInit {
   async deleteProductImage(id: number) {
     const img = await this.repo.findImageById(id);
     if (!img) throw new NotFoundException();
-    
+
     // Delete from Cloudinary
     await this.uploadService.deleteImage(img.url);
-    
+
     await this.repo.deleteImages([id]);
     await this.cache.del(`product:${img.productId}`);
     return { id };
@@ -497,7 +529,7 @@ export class ProductService implements OnModuleInit {
       if (p) {
         await this.repo.incrementViewCount(id);
         await this.cache.set(key, true, 86400 * 1000);
-        
+
         // Xóa toàn bộ cache liên quan (cả id, slug và danh sách)
         await this.clearProductCaches(id, p.slug || undefined);
       }

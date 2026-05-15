@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Menu, X, ChevronDown, Sparkles, Heart, Zap, ChevronRight, Tag } from "lucide-react";
+import { Menu, X, ChevronDown, Sparkles, Heart, Zap, ChevronRight, Tag, LayoutGrid, Search, User as UserIcon, ShieldCheck, LogOut, ShoppingBag, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { CartDropdown } from "@/features/cart/components/CartDropdown";
@@ -10,9 +10,10 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { useWishlistStore } from "@/store/useWishlistStore";
 import { useCategories } from "@/features/categories/hooks";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { Role } from "@/types/enums";
+import { cn } from "@/utils/cn";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,243 +25,222 @@ import {
 import { HeaderSearch } from "./HeaderSearch";
 import { MobileMenu } from "./MobileMenu";
 
-const NAV_LINKS = [
-  { href: "/",           label: "Trang chủ" },
-  { href: "/shop",       label: "Cửa hàng", exact: true },
-  { href: "/shop?sortBy=newest", label: "Hàng mới", icon: Sparkles },
-  { href: "/flash-sale",  label: "Flash Sale", icon: Zap, activeColor: "text-[#e85d24]", activeBg: "bg-[#e85d24]/5" },
-  { href: "/offers",      label: "Ưu đãi",    icon: Tag },
-  { href: "/support",     label: "Hỗ trợ" },
-];
-
-const normalizeImagePath = (path: any) => {
-  if (typeof path !== 'string' || !path) return "/placeholder.png";
-  if (path.startsWith('http') || path.startsWith('data:')) return path;
-  return `/${path.replace(/\\/g, '/').replace(/^\//, '')}`;
+const getImageUrl = (path: string) => {
+  if (!path) return "";
+  if (path.startsWith("http")) return path;
+  return `${process.env.NEXT_PUBLIC_API_URL}${path}`;
 };
 
 export function Header({ initialHasToken }: { initialHasToken?: boolean }) {
   const { user, logout, isLoading: authLoading } = useAuthStore();
   const wishlistCount = useWishlistStore(state => state.items.length);
-  const { data: categories } = useCategories();
+  const { data: categories } = useCategories({ tree: 'true' });
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const router = useRouter();
   
   const [catOpen, setCatOpen]       = useState(false);
+  const [activeCategory, setActiveCategory] = useState<number | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const catRef = useRef<HTMLDivElement>(null);
 
-  const isAuthSuccess = searchParams.get("auth_success") === "true";
-  const currentPathWithSearch = pathname + (searchParams.toString() ? `?${searchParams.toString()}` : "");
+  const lastScrollY = useRef(0);
+  const ticking = useRef(false);
+
+  const handleScroll = useCallback(() => {
+    if (!ticking.current) {
+      window.requestAnimationFrame(() => {
+        const currentScrollY = window.scrollY;
+        
+        if (Math.abs(currentScrollY - lastScrollY.current) > 10) {
+          if (currentScrollY > lastScrollY.current && currentScrollY > 200) {
+            setIsVisible(false);
+          } else if (currentScrollY < lastScrollY.current || currentScrollY < 50) {
+            setIsVisible(true);
+          }
+        }
+
+        setIsScrolled(currentScrollY > 20);
+        lastScrollY.current = currentScrollY;
+        ticking.current = false;
+      });
+      ticking.current = true;
+    }
+  }, []);
 
   useEffect(() => {
     setMounted(true);
-    const handleScroll = () => setIsScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [handleScroll]);
 
   useEffect(() => { setMobileOpen(false); }, [pathname]);
 
   return (
     <>
-      <header className={`w-full sticky top-0 z-50 transition-all duration-500 ${isScrolled ? "bg-white/70 backdrop-blur-2xl shadow-[0_4px_30px_rgba(0,0,0,0.03)] border-b border-white/20" : "bg-white border-b border-transparent"}`}>
-        {/* ── TOP BAR ── */}
-        <div className="border-b border-slate-100 py-3 lg:py-0">
-          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex h-18 items-center gap-4">
-              {/* LEFT — Logo */}
-              <div className="flex shrink-0 items-center gap-2 min-w-[160px]">
-                <button onClick={() => setMobileOpen(true)} className="lg:hidden p-2 -ml-2 rounded-full text-slate-500 hover:bg-slate-100 transition-colors">
-                  <Menu className="h-5 w-5" />
-                </button>
-                <Link href="/" className="flex items-center gap-2 group">
-                  <Image 
-                    src="/logoMT.png" 
-                    alt="MINHTUANSHOP" 
-                    width={40}
-                    height={40}
-                    className="h-10 w-auto object-contain group-hover:scale-105 transition-transform duration-200" 
-                  />
-                  <Image 
-                    src="/textlogo.png" 
-                    alt="MINHTUANSHOP" 
-                    width={140}
-                    height={28}
-                    className="hidden sm:block h-7 w-auto object-contain" 
-                  />
-                </Link>
-              </div>
+      <div className="fixed top-0 left-0 w-full z-50 pointer-events-none">
+        <div className="flex flex-col w-full pointer-events-auto">
+          {/* ── TOP ANNOUNCEMENT BAR ── */}
+          <div className={cn(
+            "bg-primary text-brand-bronze/80 text-center text-[12px] tracking-[0.12em] hidden lg:block w-full transition-all duration-500 ease-in-out overflow-hidden",
+            isVisible ? "h-[38px] py-2.5" : "h-0 opacity-0"
+          )}>
+            Miễn phí vận chuyển cho đơn từ <span className="text-brand-bronze font-medium">500.000đ</span> · Đổi trả trong 30 ngày · Hotline: <span className="text-brand-bronze font-medium">1800 1234</span>
+          </div>
 
-              {/* CENTER — Search Bar */}
-              <div className="hidden lg:flex flex-1 items-center justify-center px-8">
-                <HeaderSearch />
-              </div>
-
-              {/* RIGHT — Actions */}
-              <div className="flex shrink-0 items-center justify-end gap-2 sm:gap-3 ml-auto">
-                <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full text-slate-600 hover:text-primary hover:bg-primary/5 transition-all relative" asChild>
-                  <Link href={ROUTES.WISHLIST}>
-                    <Heart className="h-6 w-6" />
-                    {mounted && wishlistCount > 0 && (
-                      <span className="absolute -top-0.5 -right-0.5 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-primary text-[9px] font-bold text-white shadow-sm ring-2 ring-white">
-                        {wishlistCount}
-                      </span>
-                    )}
+          {/* ── MAIN HEADER CONTENT ── */}
+          <header className={cn(
+            "w-full bg-white transition-all duration-500 ease-in-out",
+            isScrolled ? "shadow-[0_10px_30px_rgba(61,43,26,0.05)] border-b border-brand-ivory" : "border-b border-brand-ivory/50"
+          )}>
+            {/* MAIN BAR: Logo / Search / Actions */}
+            <div className="border-b border-brand-sand/40 h-16 flex items-center bg-white">
+              <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 w-full flex items-center gap-4">
+                <div className="flex shrink-0 items-center gap-1 sm:gap-2 lg:min-w-[160px]">
+                  <button onClick={() => setMobileOpen(true)} className="lg:hidden p-2 -ml-2 rounded-full text-brand-taupe hover:bg-brand-ivory transition-colors"><Menu size={20} /></button>
+                  <Link href="/" className="flex items-center gap-2 group">
+                    <Image src="/logoMT.png" alt="Logo" width={40} height={40} className="h-10 w-auto object-contain" />
+                    <Image src="/textlogo.png" alt="Text" width={140} height={28} className="hidden sm:block h-7 w-auto object-contain" />
                   </Link>
-                </Button>
-                <CartDropdown />
-                
-                {!mounted || authLoading ? (
-                  <div className="flex items-center">
-                    {initialHasToken ? (
-                      <Skeleton className="h-10 w-10 rounded-full bg-slate-100" />
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        <Skeleton className="hidden sm:flex h-9 w-24 rounded-full bg-slate-100" />
-                        <Skeleton className="h-9 w-24 rounded-full bg-slate-100" />
-                      </div>
-                    )}
-                  </div>
-                ) : user ? (
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full overflow-hidden border border-slate-100 p-0.5 relative">
-                        {user.avatar ? (
-                          <Image
-                            src={normalizeImagePath(user.avatar)}
-                            alt={user.name}
-                            fill
-                            referrerPolicy="no-referrer"
-                            className="rounded-full object-cover shadow-sm"
-                            sizes="40px"
-                          />
-                        ) : (
-                          <div className="h-full w-full rounded-full bg-primary flex items-center justify-center text-white font-bold text-sm shadow-sm">
-                            {user.name?.charAt(0).toUpperCase()}
-                          </div>
-                        )}
+                </div>
+                <div className="hidden lg:flex flex-1 items-center justify-center px-8"><HeaderSearch /></div>
+                <div className="flex shrink-0 items-center justify-end gap-1 sm:gap-3 ml-auto">
+                  <Button variant="ghost" size="icon" className="lg:hidden h-9 w-9 rounded-full text-brand-taupe" onClick={() => setIsSearchOpen(true)}><Search size={20} /></Button>
+                  {mounted ? (
+                    <>
+                      <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full text-brand-taupe relative" asChild>
+                        <Link href={ROUTES.WISHLIST}>
+                          <Heart size={24} />
+                          {wishlistCount > 0 && <span className="absolute -top-0.5 -right-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white ring-2 ring-white">{wishlistCount}</span>}
+                        </Link>
                       </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-56 rounded-2xl shadow-xl border-slate-100 p-2">
-                      <DropdownMenuLabel className="px-3 py-2">
-                        <p className="text-sm font-bold text-slate-900">{user.name}</p>
-                        <p className="text-xs text-slate-500 mt-0.5">{user.email}</p>
-                      </DropdownMenuLabel>
-                      <DropdownMenuSeparator className="my-1 bg-slate-50" />
-                      <DropdownMenuItem asChild className="rounded-xl p-2.5 focus:bg-primary/5 cursor-pointer"><Link href={ROUTES.ACCOUNT} className="font-semibold text-sm">Tài khoản của tôi</Link></DropdownMenuItem>
-                      <DropdownMenuItem asChild className="rounded-xl p-2.5 focus:bg-primary/5 cursor-pointer"><Link href="/orders" className="font-semibold text-sm">Đơn hàng của tôi</Link></DropdownMenuItem>
-                      <DropdownMenuItem asChild className="rounded-xl p-2.5 focus:bg-primary/5 cursor-pointer font-semibold text-sm">
-                        <Link href="/support">Chat với hỗ trợ</Link>
-                      </DropdownMenuItem>
-                      {user.role === Role.ADMIN && (
-                        <DropdownMenuItem asChild className="rounded-xl p-2.5 focus:bg-primary/5 text-primary font-bold cursor-pointer">
-                          <Link href={ROUTES.ADMIN}>Quản trị hệ thống</Link>
-                        </DropdownMenuItem>
+                      <CartDropdown />
+                      {user ? (
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <button className="flex items-center gap-2 p-1 rounded-full hover:bg-brand-cream transition-all">
+                              <div className="relative w-9 h-9 rounded-full border border-brand-sand overflow-hidden">
+                                {user.avatar ? <Image src={getImageUrl(user.avatar)} alt="User" fill className="object-cover" /> : <div className="w-full h-full flex items-center justify-center bg-primary text-white text-xs">{user.name?.charAt(0)}</div>}
+                              </div>
+                            </button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-56 rounded-2xl p-2 bg-white shadow-xl border-brand-sand">
+                            {(user.role === Role.ADMIN || user.role === Role.BAN_HANG) && (
+                              <>
+                                <DropdownMenuItem asChild className="rounded-xl">
+                                  <Link href="/admin" className="flex items-center gap-2 px-2 py-2 text-sm text-brand-bronze font-bold">
+                                    <ShieldCheck size={16} /> Trang quản trị
+                                  </Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator className="bg-brand-ivory" />
+                              </>
+                            )}
+                            <DropdownMenuItem asChild className="rounded-xl"><Link href={ROUTES.ACCOUNT} className="flex items-center gap-2 px-2 py-2 text-sm"><UserIcon size={16} /> Hồ sơ</Link></DropdownMenuItem>
+                            <DropdownMenuItem asChild className="rounded-xl"><Link href="/orders" className="flex items-center gap-2 px-2 py-2 text-sm"><ShoppingBag size={16} /> Đơn hàng</Link></DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => logout()} className="rounded-xl text-red-500 px-2 py-2 text-sm"><LogOut size={16} className="mr-2" /> Đăng xuất</DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      ) : (
+                        <Link href={ROUTES.LOGIN} className="hidden lg:flex items-center gap-2 bg-primary text-white px-5 py-2 rounded-full text-xs font-bold hover:bg-brand-bronze transition-all">Đăng nhập</Link>
                       )}
-                      <DropdownMenuSeparator className="my-1 bg-slate-50" />
-                      <DropdownMenuItem onClick={() => logout()} className="rounded-xl p-2.5 focus:bg-rose-50 focus:text-rose-600 text-rose-500 font-bold text-sm cursor-pointer">Đăng xuất</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                ) : (
-                  <div className="flex items-center gap-2">
-                    <Button asChild variant="outline" className="hidden sm:flex rounded-full px-5 h-9 text-xs font-semibold border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-primary transition-all">
-                      <Link href={ROUTES.LOGIN}>Đăng nhập</Link>
-                    </Button>
-                    <Button asChild size="sm" className="rounded-full px-5 h-9 text-xs font-semibold shadow-lg shadow-primary/20 transition-all active:scale-95">
-                      <Link href={ROUTES.REGISTER}>Đăng ký</Link>
-                    </Button>
-                  </div>
-                )}
+                    </>
+                  ) : (
+                    <div className="flex items-center gap-3">
+                      <Skeleton className="w-10 h-10 rounded-full" />
+                      <Skeleton className="w-10 h-10 rounded-full" />
+                      {initialHasToken ? (
+                        <Skeleton className="h-10 w-10 lg:w-32 rounded-full" />
+                      ) : (
+                        <div className="hidden lg:flex items-center gap-2 bg-brand-sand/10 text-transparent px-5 py-2 rounded-full text-xs font-bold animate-pulse">
+                          Đăng nhập
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* ── BOTTOM BAR: Navigation ── */}
-        <div className="hidden lg:block border-b border-slate-100 bg-white/50 backdrop-blur-sm">
-          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-            <nav className="flex items-center h-12 gap-1">
-              {NAV_LINKS.map((link) => {
-                const isSpecificLink = link.href.includes("?");
-                const otherSpecificActive = NAV_LINKS.some(l => l.href.includes("?") && currentPathWithSearch.includes(l.href));
-                let isActive = false;
-                if (link.href === "/") isActive = pathname === "/";
-                else if (isSpecificLink) isActive = currentPathWithSearch.includes(link.href);
-                else if (link.href === "/shop") isActive = pathname === "/shop" && !otherSpecificActive;
-                else isActive = pathname === link.href;
-
-                const Icon = link.icon;
-                const isColored = !!link.activeColor;
-                
-                return (
-                  <Link 
-                    key={link.label} 
-                    href={link.href} 
-                    className={`flex items-center gap-2 px-5 py-2 text-sm transition-all duration-300 rounded-full
-                      ${isActive 
-                        ? (isColored ? `${link.activeColor} ${link.activeBg}` : "text-primary font-bold bg-primary/5") 
-                        : (isColored ? `hover:${link.activeBg} ${link.activeColor}` : "text-slate-500 hover:text-primary hover:bg-slate-50 font-semibold")}`}
-                  >
-                    {Icon && <Icon className="h-4 w-4" />}
-                    {link.label}
-                  </Link>
-                );
-              })}
-
-              <div className="h-4 w-px bg-slate-100 mx-2" />
-
-              <div className="relative" ref={catRef}>
-                <button 
-                  onClick={() => setCatOpen(!catOpen)} 
-                  className={`flex items-center gap-2 px-5 py-2 text-sm transition-all duration-300 rounded-full
-                    ${catOpen ? "text-primary font-bold bg-primary/5" : "text-slate-500 hover:text-primary hover:bg-slate-50 font-semibold"}`}
-                >
-                  Danh mục
-                  <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-300 ${catOpen ? "rotate-180" : ""}`} />
-                </button>
-                {catOpen && (
-                  <div className="absolute left-0 top-full mt-2 w-64 bg-white rounded-2xl shadow-xl border border-slate-100 z-[9999] p-2 animate-in fade-in slide-in-from-top-2 duration-150">
-                    <div className="max-h-80 overflow-y-auto scrollbar-thin">
-                      {categories?.map((cat) => (
-                        <Link key={cat.id} href={`/shop?categoryId=${cat.id}`} onClick={() => setCatOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-xs font-semibold rounded-xl text-slate-500 hover:bg-slate-50 hover:text-primary transition-all">
-                          <span className="w-1.5 h-1.5 rounded-full bg-slate-300" />
-                          {cat.name}
-                        </Link>
-                      ))}
+            {/* BOTTOM BAR: Navigation (Navbar) */}
+            <div className={cn(
+              "hidden lg:block border-b border-brand-sand/30 bg-white transition-all duration-500 ease-in-out overflow-hidden",
+              isVisible ? "h-11 opacity-100" : "h-0 opacity-0 pointer-events-none"
+            )}>
+              <div className="max-w-[1400px] mx-auto px-4 lg:px-8 h-11 flex items-center justify-center">
+                <nav className="flex items-center gap-1">
+                  {mounted ? (
+                    (() => {
+                      const categoryList = Array.isArray(categories) ? categories : (categories as any)?.data || [];
+                      return [
+                        { href: "/", label: "Trang chủ" },
+                        { href: "/shop", label: "Cửa hàng" },
+                        ...categoryList.slice(0, 8).map((cat: any) => ({
+                          href: `/shop?categoryId=${cat.id}`,
+                          label: cat.name,
+                          categoryId: cat.id,
+                          hasChildren: cat.children && cat.children.length > 0
+                        })),
+                        { href: "/flash-sale", label: "Flash Sale 🔥", isHot: true }
+                      ].map((link) => {
+                        const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
+                        return (
+                          <div key={link.label} className="relative group/nav" onMouseEnter={() => { if ((link as any).hasChildren) { setCatOpen(true); setActiveCategory((link as any).categoryId); } else { setCatOpen(false); } }}>
+                            <Link href={link.href} className={cn("px-4 py-1.5 rounded-lg text-[13px] font-medium transition-all", isActive ? "text-brand-bronze bg-brand-bronze/5" : "text-primary hover:bg-brand-cream hover:text-brand-bronze", (link as any).isHot && "text-orange-600 font-bold")}>
+                              {link.label}
+                            </Link>
+                          </div>
+                        );
+                      });
+                    })()
+                  ) : (
+                    <div className="flex items-center gap-6">
+                      <div className="px-4 py-1.5 text-[13px] font-medium text-primary">Trang chủ</div>
+                      <div className="px-4 py-1.5 text-[13px] font-medium text-primary">Cửa hàng</div>
+                      <Skeleton className="w-20 h-4 rounded-md" />
+                      <Skeleton className="w-20 h-4 rounded-md" />
+                      <Skeleton className="w-20 h-4 rounded-md" />
+                      <div className="px-4 py-1.5 text-[13px] font-bold text-orange-600">Flash Sale 🔥</div>
                     </div>
-                  </div>
-                )}
+                  )}
+                </nav>
               </div>
-            </nav>
-          </div>
+            </div>
+          </header>
         </div>
-      </header>
 
-      {/* MOBILE MENU DRAWER */}
-      <div className={`fixed inset-0 z-50 bg-black/40 backdrop-blur-sm transition-opacity duration-300 lg:hidden ${mobileOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`} onClick={() => setMobileOpen(false)} />
-      <aside className={`fixed top-0 left-0 z-50 h-full w-[300px] bg-white shadow-2xl flex flex-col transition-transform duration-300 lg:hidden ${mobileOpen ? "translate-x-0" : "-translate-x-full"}`}>
-        <div className="flex items-center justify-between px-5 h-16 border-b border-slate-100 flex-shrink-0">
-          <Link href="/" onClick={() => setMobileOpen(false)} className="flex items-center gap-2">
-            <Image 
-              src="/logoMT.png" 
-              alt="Logo" 
-              width={32}
-              height={32}
-              className="h-8 w-auto" 
-            />
-            <Image 
-              src="/textlogo.png" 
-              alt="TextLogo" 
-              width={100}
-              height={20}
-              className="h-5 w-auto" 
-            />
-          </Link>
-          <button onClick={() => setMobileOpen(false)} className="p-2 rounded-full text-slate-400 hover:bg-slate-100"><X className="h-5 w-5" /></button>
+        {/* MEGA MENU OVERLAY */}
+        {catOpen && activeCategory && (
+          <div className="absolute top-full left-0 w-full bg-white border-b border-brand-sand shadow-2xl animate-in fade-in slide-in-from-top-2 duration-300 z-[50] pointer-events-auto" onMouseEnter={() => setCatOpen(true)} onMouseLeave={() => setCatOpen(false)}>
+            <div className="max-w-[1400px] mx-auto p-10 grid grid-cols-5 gap-8">
+              {categories?.find(c => c.id === activeCategory)?.children?.map(sub => (
+                <Link key={sub.id} href={`/shop?categoryId=${sub.id}`} onClick={() => setCatOpen(false)} className="flex flex-col items-center gap-3 group/sub">
+                  <div className="w-20 h-20 rounded-2xl bg-brand-cream border border-brand-sand flex items-center justify-center overflow-hidden group-hover/sub:border-brand-bronze transition-all">
+                    {sub.image ? <Image src={getImageUrl(sub.image)} alt={sub.name} width={80} height={80} className="object-cover" /> : <LayoutGrid className="text-brand-taupe/40" size={32} />}
+                  </div>
+                  <span className="text-sm font-bold text-primary group-hover/sub:text-brand-bronze">{sub.name}</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Spacer - FIXED HEIGHT to avoid jitter during scroll */}
+      <div className="h-[64px] lg:h-[146px] w-full" />
+
+      {/* MOBILE SEARCH & MENU */}
+      <div className={cn("fixed inset-0 z-[100] bg-brand-cream transition-all duration-300", isSearchOpen ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0 pointer-events-none")}>
+        <div className="flex flex-col h-full">
+          <div className="flex items-center gap-4 px-4 h-20 border-b border-brand-sand bg-white"><HeaderSearch onSearch={() => setIsSearchOpen(false)} isMobile /><Button variant="ghost" onClick={() => setIsSearchOpen(false)}>Hủy</Button></div>
+          <div className="flex-1 p-6"><p className="text-xs font-bold text-brand-taupe uppercase tracking-widest mb-4">Phổ biến</p></div>
         </div>
+      </div>
+      <div className={cn("fixed inset-0 z-[100] bg-black/40 backdrop-blur-sm transition-opacity lg:hidden", mobileOpen ? "opacity-100" : "opacity-0 pointer-events-none")} onClick={() => setMobileOpen(false)} />
+      <aside className={cn("fixed top-0 left-0 z-[110] h-full w-[300px] bg-white transition-transform lg:hidden", mobileOpen ? "translate-x-0" : "-translate-x-full")}>
+        <div className="flex items-center justify-between px-6 h-20 border-b border-brand-sand"><Link href="/" onClick={() => setMobileOpen(false)}><Image src="/logoMT.png" alt="L" width={32} height={32} /></Link><button onClick={() => setMobileOpen(false)}><X /></button></div>
         <MobileMenu categories={categories || []} wishlistCount={wishlistCount} onClose={() => setMobileOpen(false)} mounted={mounted} />
       </aside>
     </>

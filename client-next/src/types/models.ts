@@ -81,6 +81,7 @@ export interface Category {
   image?: string;
   displayOrder?: number;
   products?: Product[];
+  children?: Category[];
 }
 
 export interface Payment {

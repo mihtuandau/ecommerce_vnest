@@ -10,7 +10,13 @@ import { ConfigService } from '@nestjs/config';
       useFactory: async (configService: ConfigService) => {
         const store = await redisStore({
           url: `redis://${configService.get<string>('REDIS_USERNAME', 'default')}:${configService.get<string>('REDIS_PASSWORD')}@${configService.get<string>('REDIS_HOST')}:${configService.get<string>('REDIS_PORT')}`,
-          ttl: parseInt(configService.get<string>('REDIS_CACHE_EXPIRATION', '3600'), 10) * 1000, // cache-manager v5+ uses milliseconds
+          ttl: parseInt(configService.get<string>('REDIS_CACHE_EXPIRATION', '3600'), 10) * 1000,
+          socket: {
+            connectTimeout: 10000,
+            reconnectStrategy: (retries) => {
+              return Math.min(retries * 100, 3000);
+            }
+          }
         });
         
         return {

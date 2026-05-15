@@ -42,7 +42,7 @@ function SuccessContent() {
         angle: 60,
         spread: 60,
         origin: { x: 0, y: 0.65 },
-        colors: ["#1565C0", "#2196F3", "#90CAF9", "#ffffff"]
+        colors: ["#C4783A", "#DDD6C8", "#8A7966", "#ffffff"]
       });
       // Bắn từ bên phải
       confetti({
@@ -50,7 +50,7 @@ function SuccessContent() {
         angle: 120,
         spread: 60,
         origin: { x: 1, y: 0.65 },
-        colors: ["#1565C0", "#2196F3", "#90CAF9", "#ffffff"]
+        colors: ["#C4783A", "#DDD6C8", "#8A7966", "#ffffff"]
       });
 
       if (Date.now() < end) {
@@ -61,11 +61,11 @@ function SuccessContent() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-50/30 flex flex-col items-center justify-center p-6">
+    <div className="min-h-screen bg-brand-cream flex flex-col items-center justify-center p-6">
       <motion.div 
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-lg bg-white border border-slate-100 p-8 md:p-12 rounded-3xl shadow-sm text-center"
+        className="w-full max-w-lg bg-white border border-brand-sand p-8 md:p-12 rounded-3xl shadow-sm text-center"
       >
         <div className="mb-6">
           <div className="h-20 w-20 bg-primary/5 rounded-full flex items-center justify-center mx-auto">
@@ -74,20 +74,20 @@ function SuccessContent() {
         </div>
 
         <div className="space-y-2 mb-8">
-          <h1 className="text-2xl font-bold text-slate-900">
+          <h1 className="text-2xl font-bold text-primary font-serif">
             Đặt hàng thành công
           </h1>
-          <p className="text-slate-500 text-sm font-medium leading-relaxed">
+          <p className="text-brand-taupe text-sm font-medium leading-relaxed">
             Cảm ơn bạn đã tin tưởng Minh Tuấn Shop.<br />Đơn hàng của bạn đang được xử lý.
           </p>
         </div>
 
         {orderCode && (
-          <div className="bg-slate-50 rounded-2xl p-6 mb-8 flex flex-col items-center gap-1 border border-slate-100">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Mã đơn hàng</span>
+          <div className="bg-brand-ivory rounded-2xl p-6 mb-8 flex flex-col items-center gap-1 border border-brand-sand">
+            <span className="text-[10px] font-bold text-brand-taupe/60 uppercase tracking-widest">Mã đơn hàng</span>
             <span className="text-xl font-mono font-bold text-primary tracking-wider">{orderCode}</span>
             {isGuest && (
-              <p className="text-[11px] text-slate-400 mt-2 font-medium italic">
+              <p className="text-[11px] text-brand-taupe/60 mt-2 font-medium italic">
                 Vui lòng lưu lại mã này để tra cứu đơn hàng
               </p>
             )}
@@ -107,7 +107,7 @@ function SuccessContent() {
           <Button 
             variant="ghost"
             asChild
-            className="w-full h-12 rounded-xl text-slate-500 font-bold text-sm hover:bg-slate-50 transition-all"
+            className="w-full h-12 rounded-xl text-brand-taupe font-bold text-sm hover:bg-brand-ivory transition-all"
           >
             <Link href="/shop">
               Tiếp tục mua sắm
@@ -116,7 +116,7 @@ function SuccessContent() {
         </div>
       </motion.div>
 
-      <div className="mt-8 flex items-center gap-2 text-slate-300 text-[10px] font-bold uppercase tracking-widest">
+      <div className="mt-8 flex items-center gap-2 text-brand-taupe/20 text-[10px] font-bold uppercase tracking-widest">
         <Package className="h-3 w-3" />
         Minh Tuấn Shop • Delivery Excellence
       </div>
