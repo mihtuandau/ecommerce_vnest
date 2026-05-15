@@ -16,6 +16,11 @@
   --color-brand-taupe: hsl(var(--brand-taupe));
   --color-brand-cream: hsl(var(--brand-cream));
   --color-brand-ivory: hsl(var(--brand-ivory));
+  
+  /* Semantic Aliases */
+  --color-brand-espresso: hsl(var(--primary));
+  --color-brand-accent: hsl(var(--brand-bronze));
+  --color-brand-border: hsl(var(--brand-sand));
 
   --color-secondary: hsl(var(--secondary));
   --color-secondary-foreground: hsl(var(--secondary-foreground));
@@ -131,13 +136,13 @@
     @apply border-border;
   }
 
-  body {
-    @apply bg-background text-foreground;
-    font-family: 'DM Sans', sans-serif !important;
+  html, body {
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-dm-sans), sans-serif !important;
   }
 
-  h1, h2, h3 {
-    @apply font-bold;
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold font-serif;
   }
   
   .font-serif-brand {
@@ -264,10 +269,10 @@
   --primary-foreground: 210 40% 98%;
 
   /* Force font-sans for admin */
-  font-family: ui-sans-serif, system-ui, sans-serif !important;
+  font-family: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: ui-sans-serif, system-ui, sans-serif !important;
+    font-family: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
   }
 
   /* Force black for common primary classes */
@@ -310,8 +315,12 @@
 }
 
 .nav-item-standard {
-  font-family: var(--font-dm-sans), 'DM Sans', sans-serif !important;
+  font-family: "DM Sans", var(--font-dm-sans), sans-serif !important;
   font-size: 13px !important;
   color: #3D2B1A;
   font-weight: 500 !important;
+}
+
+.font-sans-brand {
+  font-family: var(--font-dm-sans),  sans-serif !important;
 }

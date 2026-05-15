@@ -52,7 +52,7 @@ export function RelatedProducts({ categoryId, currentProductId }: RelatedProduct
           <Zap size={20} />
         </div>
         <div>
-          <h2 className="text-[28px] font-bold text-primary tracking-tight font-serif">Sản phẩm liên quan</h2>
+          <h2 className="text-[28px] font-bold text-primary tracking-tight">Sản phẩm liên quan</h2>
           <p className="text-[13px] text-brand-taupe font-medium mt-0.5">Có thể bạn cũng sẽ thích những sản phẩm này</p>
         </div>
       </div>

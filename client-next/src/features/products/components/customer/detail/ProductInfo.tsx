@@ -72,11 +72,11 @@ export function ProductInfo({ product, flashSale, finalPrice, finalOriginalPrice
           {product.category?.name || "Bộ sưu tập LUXE"}
         </Link>
 
-        <h1 className="text-[28px] md:text-[34px] font-bold text-primary leading-[1.2] tracking-tight font-serif">
+        <h1 className="text-[24px] md:text-[30px] font-bold text-primary leading-[1.2] tracking-tight">
           {product.name}
         </h1>
 
-        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[12px] font-bold text-brand-taupe/90">
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[11px] font-bold text-brand-taupe/90">
           <div className="flex items-center gap-2">
             <div className="flex items-center text-brand-bronze gap-0.5">
               {[...Array(5)].map((_, i) => (
@@ -103,12 +103,12 @@ export function ProductInfo({ product, flashSale, finalPrice, finalOriginalPrice
             </div>
           )}
           
-          <div className="flex items-baseline gap-5">
-            <span className="text-[40px] font-bold tabular-nums leading-none text-primary font-serif">
+          <div className="flex items-baseline gap-4">
+            <span className="text-[32px] font-bold tabular-nums leading-none text-primary">
               {formatCurrency(finalPrice)}
             </span>
             {finalOriginalPrice && finalOriginalPrice > finalPrice && (
-              <span className="text-[18px] text-brand-taupe/80 line-through font-medium tabular-nums">
+              <span className="text-[16px] text-brand-taupe/80 line-through font-medium tabular-nums">
                 {formatCurrency(finalOriginalPrice)}
               </span>
             )}

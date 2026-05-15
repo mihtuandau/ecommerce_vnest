@@ -7,6 +7,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/utils/cn";
 import { CartItem as CartItemType } from "@/store/useCartStore";
+import { getImageUrl } from "@/utils/image";
 
 interface CartItemProps {
   item: CartItemType;
@@ -15,12 +16,6 @@ interface CartItemProps {
   toggleSelectItem: (id: string) => void;
   isGrouped?: boolean;
 }
-
-const getImageUrl = (path: string) => {
-  if (!path) return "";
-  if (path.startsWith("http")) return path;
-  return `${process.env.NEXT_PUBLIC_API_URL}${path}`;
-};
 
 export const CartItem = React.memo(function CartItem({ 
   item, 
@@ -110,7 +105,7 @@ export const CartItem = React.memo(function CartItem({
           {/* Pricing & Control Side */}
           <div className="flex flex-col items-end gap-3 min-w-[120px]">
             <div className="text-right">
-              <div className="text-[16px] font-bold text-[#3D2B1A] tabular-nums font-serif">
+              <div className="text-[16px] font-bold text-[#3D2B1A] tabular-nums">
                 {formatCurrency(currentPrice)}
               </div>
               {oldPrice > currentPrice && (

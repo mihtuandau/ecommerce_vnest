@@ -41,4 +41,9 @@ export const authApi = {
     });
     return data;
   },
+  
+  verify2FALogin: async (email: string, code: string): Promise<AuthResponse> => {
+    const { data } = await api.post<AuthResponse>("/auth/2fa/verify-login", { email, code });
+    return data;
+  },
 };

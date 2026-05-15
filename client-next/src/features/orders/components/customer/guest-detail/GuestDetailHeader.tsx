@@ -1,40 +1,50 @@
 "use client";
 
 import React from "react";
-import { 
-  ArrowLeft, 
-  Package, 
-  Clock, 
-  Truck, 
-  CheckCircle2, 
-  Download, 
-  ShoppingCart, 
-  AlertCircle,
+import {
+  Calendar,
+  Package,
+  Printer,
+  MapPin,
+  X,
+  Truck,
+  ShoppingBag,
+  RotateCcw,
+  Star,
+  Clock,
 } from "lucide-react";
-import { Button } from "@/components/ui/Button";
 import { useRouter } from "next/navigation";
 import { OrderStatus, ReturnStatus } from "@/types/enums";
 import { cn } from "@/utils/cn";
+import Link from "next/link";
+import { Button } from "@/components/ui/Button";
+import { RequestReturnModal } from "../detail/RequestReturnModal";
 
 interface GuestDetailHeaderProps {
-  orderId: number;
   orderCode: string;
+  orderId: number;
   createdAt: string;
   status: OrderStatus;
   isPaid: boolean;
-  statusConfig: Record<string, { label: string; color: string; icon: any }>;
-  onSuccess?: () => void;
-  contact: string;
-  deliveredAt?: string;
-  onReorder?: () => void;
+  isCancelled: boolean;
+  onReorder: () => void;
   onCancel?: () => void;
   onReturn?: () => void;
+  onReview?: () => void;
   onConfirmReturn?: () => void;
   returnStatus?: ReturnStatus;
   isUpdatingReturn?: boolean;
+  statusConfig: Record<string, { label: string; color: string; bg: string; dot: string; icon: any }>;
+  deliveredAt?: string;
+  totalItems?: number;
+  paymentMethod?: string;
+  contact: string;
+  onSuccess?: () => void;
+  isReviewed?: boolean;
 }
 
 const formatDate = (dateString: string) => {
+  if (!dateString) return "—";
   return new Date(dateString).toLocaleString("vi-VN", {
     hour: "2-digit",
     minute: "2-digit",
@@ -44,178 +54,128 @@ const formatDate = (dateString: string) => {
   });
 };
 
-import { RequestReturnModal } from "../detail/RequestReturnModal";
-
 export function GuestDetailHeader({
-  orderId,
   orderCode,
+  orderId,
   createdAt,
   status,
   isPaid,
-  statusConfig,
-  onSuccess,
-  contact,
-  deliveredAt,
+  isCancelled,
   onReorder,
   onCancel,
   onReturn,
+  onReview,
   onConfirmReturn,
   returnStatus,
   isUpdatingReturn,
+  statusConfig,
+  deliveredAt,
+  totalItems = 0,
+  paymentMethod = "COD",
+  contact,
+  onSuccess,
+  isReviewed
 }: GuestDetailHeaderProps) {
-  const router = useRouter();
   const [isReturnModalOpen, setIsReturnModalOpen] = React.useState(false);
-  const [showPopover, setShowPopover] = React.useState(false);
-  const popoverRef = React.useRef<HTMLDivElement>(null);
 
-  React.useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (popoverRef.current && !popoverRef.current.contains(event.target as Node)) {
-        setShowPopover(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  let currentStatus = statusConfig[status] || {
-    label: status,
-    color: "text-slate-500 bg-slate-50 border-slate-100",
-    icon: Package,
+  const scMap: Record<string, { label: string; cls: string }> = {
+    [OrderStatus.PENDING]: { label: "Chờ xác nhận", cls: "bg-[#FFF8E6] text-[#C49A00]" },
+    [OrderStatus.PROCESSING]: { label: "Đã xác nhận", cls: "bg-[#E8F0F8] text-[#2C5F8A]" },
+    [OrderStatus.SHIPPED]: { label: "Đang giao hàng", cls: "bg-[#F0D5BB] text-[#C4783A]" },
+    [OrderStatus.DELIVERED]: { label: "Đã giao hàng", cls: "bg-[#E6F3EC] text-[#3A7D5A]" },
+    [OrderStatus.CANCELLED]: { label: "Đã huỷ", cls: "bg-[#FCEAEA] text-[#C44040]" },
+    [OrderStatus.RETURN_REQUESTED]: { label: "Yêu cầu trả hàng", cls: "bg-[#FFF8E6] text-[#C49A00]" },
+    [OrderStatus.RETURNED]: { label: "Đã trả hàng", cls: "bg-[#E6F3EC] text-[#3A7D5A]" },
   };
 
-  if (status === OrderStatus.PENDING && isPaid) {
-    currentStatus = {
-      label: "Đã thanh toán",
-      color: "text-emerald-600 bg-emerald-50 border-emerald-100",
-      icon: CheckCircle2,
-    };
-  }
-
-  const showConfirmReturn = returnStatus === ReturnStatus.APPROVED;
+  const sc = scMap[status] || { label: status, cls: "bg-[#F3EFE8] text-[#8A7966]" };
 
   return (
-    <>
-      <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 mb-8 pb-6 border-b border-slate-100">
-        <div className="flex items-start gap-5">
-          <button
-            onClick={() => router.push("/")}
-            className="h-10 w-10 rounded-xl border border-slate-100 flex items-center justify-center text-slate-400 hover:text-primary hover:border-primary/30 hover:bg-slate-50 transition-all shrink-0 group mt-1"
-          >
-            <ArrowLeft size={18} className="group-hover:-translate-x-0.5 transition-transform" />
-          </button>
-          
-          <div className="space-y-2 min-w-0">
-            <div className="flex flex-wrap items-center gap-3">
-              <h1 className="text-xl lg:text-2xl font-bold text-slate-900 tracking-tight">
-                Đơn hàng <span className="text-blue-600 font-bold">#{orderCode}</span>
-              </h1>
-              <div className={cn(
-                "flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold border",
-                currentStatus.color
-              )}>
-                <currentStatus.icon size={12} />
-                {currentStatus.label}
-              </div>
-            </div>
+    <div className="space-y-5 mb-5 font-sans-brand animate-in fade-in slide-in-from-top-4 duration-500">
+      {/* ── BREADCRUMBS ── */}
+      <div className="flex items-center gap-1.5 text-[12.5px] text-[#8A7966]">
+        <Link href="/" className="hover:text-[#3D2B1A] transition-colors">Trang chủ</Link>
+        <span className="opacity-50">›</span>
+        <span className="text-[#3D2B1A] font-medium">#{orderCode}</span>
+      </div>
 
-            <div className="flex flex-wrap items-center gap-y-1 gap-x-6 text-[13px] text-slate-500 font-medium">
-              <p>Ngày đặt: <span className="text-slate-900 font-bold">{formatDate(createdAt)}</span></p>
-              {status === OrderStatus.DELIVERED && deliveredAt && (
-                <div className="flex items-center gap-2 text-emerald-600 font-bold">
-                  <div className="h-1 w-1 rounded-full bg-emerald-500" />
-                  Giao lúc: {formatDate(deliveredAt)}
-                </div>
-              )}
+      <div className="bg-white border border-[#DDD6C8] rounded-2xl p-6 flex flex-wrap items-start justify-between gap-5 shadow-sm">
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-3">
+            <h1 className="text-[28px] md:text-[32px] font-bold text-[#3D2B1A] font-serif-brand tracking-tight">
+              Đơn hàng <em className="italic text-[#C4783A] font-medium font-serif-brand not-italic">#{orderCode}</em>
+            </h1>
+            <div className={cn("inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[13px] font-bold", sc.cls)}>
+              <span className="w-1.5 h-1.5 rounded-full bg-current" />
+              {sc.label}
             </div>
+            <div className={cn("inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[12.5px] font-bold", 
+              isPaid ? "bg-[#E6F3EC] text-[#3A7D5A]" : "bg-[#FCEAEA] text-[#C44040]"
+            )}>
+              {isPaid ? "Đã thanh toán" : "Chưa thanh toán"}
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[12.5px] text-[#8A7966]">
+            <span className="flex items-center gap-1.5"><Calendar size={13} className="opacity-70" /> Đặt lúc <strong className="text-[#3D2B1A] font-semibold">{formatDate(createdAt)}</strong></span>
+            <span className="flex items-center gap-1.5"><Package size={13} className="opacity-70" /> <strong className="text-[#3D2B1A] font-semibold">{totalItems} sản phẩm</strong></span>
+            <span className="flex items-center gap-1.5"><ShoppingBag size={13} className="opacity-70" /> Phương thức: <strong className="text-[#3D2B1A] font-semibold">{paymentMethod || "COD"}</strong></span>
           </div>
         </div>
 
-        <div className="flex flex-col items-end gap-3">
-          <div className="flex flex-wrap items-center justify-end gap-2">
-            {showConfirmReturn && (
-              <div className="relative" ref={popoverRef}>
-                <Button
-                  onClick={() => setShowPopover(!showPopover)}
-                  disabled={isUpdatingReturn}
-                  className="bg-primary hover:brightness-110 text-white text-[11px] font-bold h-10 px-5 rounded-xl flex items-center gap-2 shadow-lg shadow-primary/10 transition-all active:scale-95 uppercase tracking-widest"
-                >
-                  <Truck className="h-3.5 w-3.5" />
-                  Xác nhận đã gửi hàng
-                </Button>
-
-                {showPopover && (
-                  <div className="absolute bottom-full mb-3 right-0 w-[260px] bg-white border border-slate-100 rounded-2xl shadow-2xl p-5 z-50 animate-in fade-in zoom-in-95 duration-200">
-                    <p className="text-sm text-slate-600 font-medium mb-4 leading-relaxed text-left">
-                      Bạn chắc chắn đã bàn giao gói hàng cho bưu cục?
-                    </p>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="flex-1 h-9 text-xs font-semibold border-slate-100 text-slate-400 rounded-xl hover:bg-slate-50"
-                        onClick={() => setShowPopover(false)}
-                      >
-                        Hủy
-                      </Button>
-                      <Button
-                        size="sm"
-                        className="flex-1 h-9 text-xs font-bold bg-primary hover:brightness-110 text-white rounded-xl shadow-sm"
-                        onClick={() => {
-                          onConfirmReturn?.();
-                          setShowPopover(false);
-                        }}
-                      >
-                        Xác nhận
-                      </Button>
-                    </div>
-                    <div className="absolute top-full right-8 -mt-1 w-3 h-3 bg-white border-r border-b border-slate-100 rotate-45" />
-                  </div>
-                )}
-              </div>
-            )}
-
-            {[OrderStatus.DELIVERED, OrderStatus.CANCELLED, OrderStatus.RETURNED].includes(status) && !showConfirmReturn && (
-              <Button
-                onClick={onReorder}
-                className="bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-bold h-10 px-5 rounded-xl flex items-center gap-2 shadow-sm transition-all active:scale-95 uppercase tracking-widest"
-              >
-                <ShoppingCart className="h-3.5 w-3.5" />
-                Mua lại
-              </Button>
-            )}
-
-            <Button
-              variant="outline"
-              className="border-slate-200 text-slate-500 text-[11px] font-bold h-10 px-5 rounded-xl hover:bg-slate-50 transition-all active:scale-95 uppercase tracking-widest"
-              onClick={() => window.open('https://zalo.me/0987654321', '_blank')}
+        <div className="flex flex-wrap gap-2 items-start">
+          <button 
+            className="flex items-center gap-1.5 px-4.5 py-2.5 rounded-xl border-1.5 border-[#DDD6C8] bg-white text-[13px] font-medium text-[#3D2B1A] transition-all hover:bg-[#F3EFE8] hover:border-[#C4B49A]" 
+            onClick={() => window.print()}
+          >
+            <Printer size={14} />
+            In đơn
+          </button>
+          
+          { status === OrderStatus.PENDING && !isCancelled && onCancel && (
+            <button 
+              className="flex items-center gap-1.5 px-4.5 py-2.5 rounded-xl border-1.5 border-[#F0C0C0] bg-white text-[13px] font-medium text-[#C44040] transition-all hover:bg-[#FCEAEA] hover:border-[#C44040]" 
+              onClick={onCancel}
             >
-              Hỗ trợ
-            </Button>
-
-            <Button
-              variant="outline"
-              className="border-slate-200 text-slate-500 text-[11px] font-bold h-10 px-5 rounded-xl hover:bg-slate-50 transition-all active:scale-95 flex items-center gap-2 uppercase tracking-widest"
-              onClick={() => {
-                const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-                window.location.href = `${apiUrl}/orders/guest/invoice/${orderCode}?contact=${contact}`;
-              }}
-            >
-              <Download className="h-3.5 w-3.5" />
-              Hóa đơn
-            </Button>
-          </div>
-
-          {status === OrderStatus.DELIVERED && !returnStatus && onReturn && (
-            <Button
-              variant="ghost"
-              className="text-amber-600 hover:bg-amber-50 text-[11px] font-bold h-8 px-4 rounded-lg flex items-center gap-2 transition-all active:scale-95 uppercase tracking-widest"
-              onClick={onReturn}
-            >
-              <AlertCircle className="h-3.5 w-3.5" />
-              Trả hàng
-            </Button>
+              <X size={14} />
+              Yêu cầu huỷ
+            </button>
           )}
+
+          { status === OrderStatus.SHIPPED && (
+            <button className="flex items-center gap-1.5 px-4.5 py-2.5 rounded-xl border-1.5 border-[#DDD6C8] bg-white text-[13px] font-medium text-[#3D2B1A] transition-all hover:bg-[#F3EFE8] hover:border-[#C4B49A]">
+              <MapPin size={14} />
+              Theo dõi GHN
+            </button>
+          )}
+
+          { status === OrderStatus.DELIVERED && !returnStatus && onReturn && (
+            <button 
+              className="flex items-center gap-1.5 px-4.5 py-2.5 rounded-xl border-1.5 border-[#DDD6C8] bg-white text-[13px] font-medium text-[#3D2B1A] transition-all hover:bg-[#F3EFE8] hover:border-[#C4B49A]"
+              onClick={() => setIsReturnModalOpen(true)}
+            >
+              <RotateCcw size={14} />
+              Trả hàng
+            </button>
+          )}
+
+          {status === OrderStatus.DELIVERED && !isReviewed && (
+            <button 
+              className="flex items-center gap-1.5 px-4.5 py-2.5 rounded-xl border-1.5 border-[#C49A00] bg-[#FFF8E6] text-[13px] font-bold text-[#C49A00] transition-all hover:bg-[#FFF2CC]"
+              onClick={() => onReview?.()}
+            >
+              <Star size={14} fill="currentColor" />
+              Đánh giá đơn hàng
+            </button>
+          )}
+
+          <button 
+            className="flex items-center gap-1.5 px-4.5 py-2.5 rounded-xl bg-[#3D2B1A] text-[13px] font-medium text-white transition-all hover:bg-[#2A2420]" 
+            onClick={onReorder}
+          >
+            <ShoppingBag size={14} />
+            Mua lại
+          </button>
         </div>
       </div>
 
@@ -231,6 +191,6 @@ export function GuestDetailHeader({
         isGuest={true}
         contact={contact}
       />
-    </>
+    </div>
   );
 }

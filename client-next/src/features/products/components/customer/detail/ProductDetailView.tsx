@@ -85,30 +85,29 @@ export function ProductDetailView({ slug }: ProductDetailViewProps) {
 
   if (isLoading) {
     return (
-      <div className="bg-brand-cream min-h-screen">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <div className="bg-brand-cream min-h-screen font-sans">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
           <div className="h-6 w-48 bg-brand-sand/20 animate-pulse rounded-full mb-8" />
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
-            <div className="lg:col-span-6">
+            <div className="lg:col-span-7">
               <Skeleton className="aspect-square rounded-[2rem] bg-white border border-brand-sand/40" />
               <div className="flex gap-4 mt-6">
-                <Skeleton className="h-20 w-20 rounded-xl bg-white border border-brand-sand/40" />
-                <Skeleton className="h-20 w-20 rounded-xl bg-white border border-brand-sand/40" />
-                <Skeleton className="h-20 w-20 rounded-xl bg-white border border-brand-sand/40" />
+                <Skeleton className="h-20 w-20 rounded-2xl bg-white border border-brand-sand/40" />
+                <Skeleton className="h-20 w-20 rounded-2xl bg-white border border-brand-sand/40" />
+                <Skeleton className="h-20 w-20 rounded-2xl bg-white border border-brand-sand/40" />
               </div>
             </div>
-            <div className="lg:col-span-6 space-y-10">
+            <div className="lg:col-span-5 space-y-10">
               <div className="space-y-4">
-                <Skeleton className="h-4 w-24 rounded-full bg-white" />
-                <Skeleton className="h-12 w-3/4 rounded-2xl bg-white" />
-                <Skeleton className="h-8 w-1/4 rounded-xl bg-white" />
+                <Skeleton className="h-4 w-24 rounded-full bg-white/50" />
+                <Skeleton className="h-10 w-3/4 rounded-2xl bg-white" />
+                <Skeleton className="h-12 w-1/3 rounded-2xl bg-white mt-8" />
               </div>
-              <Skeleton className="h-32 w-full rounded-3xl bg-white" />
               <div className="space-y-6">
-                 <Skeleton className="h-14 w-full rounded-full bg-white" />
-                 <Skeleton className="h-14 w-full rounded-full bg-white" />
+                 <Skeleton className="h-12 w-full rounded-full bg-white" />
+                 <Skeleton className="h-12 w-full rounded-full bg-white" />
               </div>
-              <Skeleton className="h-24 w-full rounded-2xl bg-white" />
+              <Skeleton className="h-32 w-full rounded-3xl bg-white/50" />
             </div>
           </div>
         </div>
@@ -118,7 +117,7 @@ export function ProductDetailView({ slug }: ProductDetailViewProps) {
 
   if (error || !product) {
     return (
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
         <h1 className="text-[20px] font-bold text-primary mb-6 font-serif">Không tìm thấy sản phẩm</h1>
         <Button asChild className="rounded-full px-8 h-12 bg-primary hover:bg-brand-bronze text-white border-none" variant="outline">
           <Link href="/shop">Quay lại cửa hàng</Link>
@@ -138,45 +137,45 @@ export function ProductDetailView({ slug }: ProductDetailViewProps) {
     
   const originalPriceVal = selectedVariant?.originalPrice || product.originalPrice;
   const finalOriginalPrice = isFlashSale 
-    ? currentBasePrice 
-    : originalPriceVal;
+      ? currentBasePrice 
+      : originalPriceVal;
 
-  const currentStock = selectedVariant?.stock ?? product.stock;
-  
-  return (
-    <div className="bg-brand-cream min-h-screen">
-      <ProductBreadcrumbs product={product} />
+    const currentStock = selectedVariant?.stock ?? product.stock;
+    
+    return (
+      <div className="bg-brand-cream min-h-screen font-sans">
+        <ProductBreadcrumbs product={product} />
 
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-24">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
-          
-          {/* ── Left: Image Gallery ── */}
-          <div className="lg:col-span-6">
-            <div className="sticky top-32">
-              <ProductGallery 
-                images={allAvailableImages} 
-                name={product.name} 
-              />
+        <div className="max-w-[1400px] mx-auto px-6 lg:px-12 pt-8 pb-24">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
+            
+            {/* ── Left: Image Gallery ── */}
+            <div className="lg:col-span-7">
+              <div className="sticky top-32">
+                <ProductGallery 
+                  images={allAvailableImages} 
+                  name={product.name} 
+                />
+              </div>
             </div>
-          </div>
 
-          {/* ── Right: Product Info & Actions ── */}
-          <div className="lg:col-span-6 space-y-10">
-            <div className="space-y-10 animate-in fade-in slide-in-from-right-4 duration-700">
-              <ProductInfo 
-                product={product} 
-                flashSale={flashSale} 
-                finalPrice={finalPrice} 
-                finalOriginalPrice={finalOriginalPrice} 
-              />
+            {/* ── Right: Product Info & Actions ── */}
+            <div className="lg:col-span-5 space-y-10">
+              <div className="space-y-10 animate-in fade-in slide-in-from-right-4 duration-700">
+                <ProductInfo 
+                  product={product} 
+                  flashSale={flashSale} 
+                  finalPrice={finalPrice} 
+                  finalOriginalPrice={finalOriginalPrice} 
+                />
 
-              <ProductActions 
-                product={product} 
-                finalPrice={finalPrice} 
-                finalOriginalPrice={finalOriginalPrice} 
-                currentStock={currentStock}
-                selectedSize={selectedSize}
-                setSelectedSize={setSelectedSize}
+                <ProductActions 
+                  product={product} 
+                  finalPrice={finalPrice} 
+                  finalOriginalPrice={finalOriginalPrice} 
+                  currentStock={currentStock}
+                  selectedSize={selectedSize}
+                  setSelectedSize={setSelectedSize}
                 selectedColor={selectedColor}
                 setSelectedColor={setSelectedColor}
                 selectedVariant={selectedVariant || null}

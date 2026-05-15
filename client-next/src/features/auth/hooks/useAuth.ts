@@ -13,13 +13,25 @@ export function useAuth() {
   const loginMutation = useMutation({
     mutationFn: (payload: LoginPayload) => authApi.login(payload),
     onSuccess: (data) => {
-      setTokens(data.accessToken, data.refreshToken);
-      setUser(sanitizeUser(data.user) as any);
+      if (data.accessToken) {
+        setTokens(data.accessToken, data.refreshToken);
+        setUser(sanitizeUser(data.user) as any);
+      }
     },
   });
 
   const registerMutation = useMutation({
     mutationFn: (payload: RegisterPayload) => authApi.register(payload),
+  });
+
+  const verify2FALoginMutation = useMutation({
+    mutationFn: (data: { email: string; code: string }) => authApi.verify2FALogin(data.email, data.code),
+    onSuccess: (data) => {
+      if (data.accessToken) {
+        setTokens(data.accessToken, data.refreshToken);
+        setUser(sanitizeUser(data.user) as any);
+      }
+    },
   });
 
   const logout = async () => {
@@ -40,8 +52,9 @@ export function useAuth() {
   return {
     login: loginMutation.mutateAsync,
     register: registerMutation.mutateAsync,
+    verify2FALogin: verify2FALoginMutation.mutateAsync,
     logout,
-    isLoggingIn: loginMutation.isPending,
+    isLoggingIn: loginMutation.isPending || verify2FALoginMutation.isPending,
     isRegistering: registerMutation.isPending,
   };
 }

@@ -13,6 +13,7 @@ import {
   Truck,
   CheckCircle2,
   XCircle,
+  RotateCcw,
 } from "lucide-react";
 import { OrderStatus, PaymentStatus } from "@/types/enums";
 import { Button } from "@/components/ui/Button";
@@ -23,50 +24,65 @@ import { DetailHeader } from "./detail/DetailHeader";
 import { DetailStepper } from "./detail/DetailStepper";
 import { DetailItems } from "./detail/DetailItems";
 import { DetailSidebar } from "./detail/DetailSidebar";
+import { DetailReview } from "./detail/DetailReview";
+import { ReorderBanner } from "./detail/ReorderBanner";
 import { PrintInvoice } from "../admin/detail/PrintInvoice";
 import { ReviewModal } from "@/features/reviews/components/customer/ReviewModal";
 import { RequestReturnModal } from "./detail/RequestReturnModal";
-import { ConfirmReturnModal } from "./detail/ConfirmReturnModal";
 import { ConfirmCancelModal } from "./detail/ConfirmCancelModal";
 import { useQueryClient } from "@tanstack/react-query";
 import { useUpdateReturnStatus } from "@/features/returns/hooks";
 import { queryKeys } from "@/constants/queryKeys";
 
-const statusConfig: Record<string, { label: string; color: string; icon: any }> = {
+const statusConfig: Record<string, { label: string; color: string; bg: string; dot: string; icon: any }> = {
   [OrderStatus.PENDING]: {
-    label: "Chờ xác nhận",
-    color: "text-amber-600 bg-amber-50 border-amber-100",
+    label: "Đang chờ LUXE xác nhận",
+    color: "text-[#C49A00]",
+    bg: "bg-[#FFF8E6]",
+    dot: "bg-[#C49A00]",
     icon: Clock,
   },
   [OrderStatus.PROCESSING]: {
-    label: "Đang xử lý",
-    color: "text-blue-600 bg-blue-50 border-blue-100",
+    label: "Đơn hàng đã được xác nhận",
+    color: "text-[#2C5F8A]",
+    bg: "bg-[#E8F0F8]",
+    dot: "bg-[#2C5F8A]",
     icon: Package,
   },
   [OrderStatus.SHIPPED]: {
-    label: "Đang giao hàng",
-    color: "text-indigo-600 bg-indigo-50 border-indigo-100",
+    label: "Đang được vận chuyển",
+    color: "text-[#2C5F8A]",
+    bg: "bg-[#E8F0F8]",
+    dot: "bg-[#2C5F8A]",
     icon: Truck,
   },
   [OrderStatus.DELIVERED]: {
-    label: "Giao thành công",
-    color: "text-emerald-600 bg-emerald-50 border-emerald-100",
+    label: "Giao hàng thành công",
+    color: "text-[#3A7D5A]",
+    bg: "bg-[#E6F3EC]",
+    dot: "bg-[#3A7D5A]",
     icon: CheckCircle2,
   },
   [OrderStatus.CANCELLED]: {
-    label: "Đã hủy đơn",
-    color: "text-rose-600 bg-rose-50 border-rose-100",
+    label: "Đã hủy đơn hàng",
+    color: "text-[#C44040]",
+    bg: "bg-[#FCEAEA]",
+    dot: "bg-[#C44040]",
     icon: XCircle,
   },
   [OrderStatus.RETURN_REQUESTED]: {
     label: "Yêu cầu trả hàng",
-    color: "text-amber-600 bg-amber-50 border-amber-100",
-    icon: AlertCircle,
+    color: "text-[#C4783A]",
+    bg: "bg-[#FFF2E6]",
+    dot: "bg-[#C4783A]",
+    icon: RotateCcw,
   },
   [OrderStatus.RETURNED]: {
     label: "Đã trả hàng",
-    color: "text-purple-600 bg-purple-50 border-purple-100",
-    icon: CheckCircle2,
+    color: "text-[#3D2B1A]",
+    bg: "bg-[#F3EFE8]",
+    dot: "bg-[#3D2B1A]",
+    icon: RotateCcw,
   },
 };
 
@@ -75,10 +91,9 @@ export function OrderDetailView() {
   const { data: order, isLoading } = useOrderDetail(id);
   const { mutate: cancelOrder } = useCancelOrder();
   const { addItem } = useCart();
-  const { success } = useToast();
+  const { success, error: toastError } = useToast();
   const queryClient = useQueryClient();
   const [isReturnModalOpen, setIsReturnModalOpen] = useState(false);
-  const [isConfirmReturnOpen, setIsConfirmReturnOpen] = useState(false);
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const { mutate: updateReturnStatus, isPending: isUpdatingStatus } =
@@ -96,10 +111,9 @@ export function OrderDetailView() {
         price: item.price,
         quantity: item.quantity,
         imageUrl:
-          getUrl(item.variantSnapshot?.image) ||
-          getUrl(item.variant?.images?.[0]) ||
-          getUrl(item.variant?.product?.images?.[0]) ||
-          "/placeholder.png",
+          getUrl(item.variantSnapshot?.image ||
+          item.variant?.images?.[0] ||
+          item.variant?.product?.images?.[0]),
         slug: item.variant?.product?.slug || "",
         color: item.variant?.color,
         size: item.variant?.size,
@@ -115,27 +129,21 @@ export function OrderDetailView() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-white">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+      <div className="min-h-screen bg-brand-cream">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-8">
           <div className="space-y-4">
-            <Skeleton className="h-4 w-20" />
-            <Skeleton className="h-10 w-64" />
-            <Skeleton className="h-4 w-40" />
+            <Skeleton className="h-10 w-48 rounded-full" />
+            <Skeleton className="h-12 w-96 rounded-xl" />
+            <Skeleton className="h-4 w-64 rounded-full" />
           </div>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2 space-y-6">
-              <Skeleton className="h-24 w-full rounded-xl" />
-              <div className="border border-slate-100 rounded-xl overflow-hidden">
-                <div className="h-12 bg-slate-50 border-b border-slate-100" />
-                <div className="p-4 space-y-4">
-                  <Skeleton className="h-16 w-full rounded-lg" />
-                  <Skeleton className="h-16 w-full rounded-lg" />
-                </div>
-              </div>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div className="lg:col-span-8 space-y-8">
+              <Skeleton className="h-32 w-full rounded-2xl" />
+              <Skeleton className="h-[400px] w-full rounded-2xl" />
             </div>
-            <div className="space-y-6">
-              <Skeleton className="h-48 w-full rounded-xl" />
-              <Skeleton className="h-48 w-full rounded-xl" />
+            <div className="lg:col-span-4 space-y-8">
+              <Skeleton className="h-64 w-full rounded-2xl" />
+              <Skeleton className="h-64 w-full rounded-2xl" />
             </div>
           </div>
         </div>
@@ -145,19 +153,19 @@ export function OrderDetailView() {
 
   if (!order) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-6 bg-slate-50/30">
-        <div className="h-20 w-20 bg-white rounded-full flex items-center justify-center shadow-sm border border-slate-100">
-          <AlertCircle className="h-10 w-10 text-rose-500" />
+      <div className="min-h-screen flex flex-col items-center justify-center gap-6 bg-brand-cream px-6">
+        <div className="h-24 w-24 bg-white rounded-full flex items-center justify-center shadow-sm border border-brand-border">
+          <AlertCircle className="h-12 w-12 text-rose-500 opacity-50" />
         </div>
         <div className="text-center space-y-2">
-          <h2 className="text-2xl font-semibold text-slate-900">
+          <h2 className="text-3xl font-bold text-brand-espresso font-serif">
             Không tìm thấy đơn hàng
           </h2>
-          <p className="text-slate-500">
-            Đơn hàng có thể đã bị xóa hoặc không tồn tại.
+          <p className="text-brand-taupe text-sm max-w-xs mx-auto">
+            Đơn hàng có thể đã bị xóa hoặc không tồn tại trong hệ thống của chúng tôi.
           </p>
         </div>
-        <Button asChild variant="outline" className="rounded-full px-8">
+        <Button asChild className="rounded-full px-10 h-12 bg-brand-espresso text-white hover:bg-brand-espresso/90">
           <Link href="/orders">Quay lại danh sách</Link>
         </Button>
       </div>
@@ -172,9 +180,9 @@ export function OrderDetailView() {
   const isCancelled = order.status === OrderStatus.CANCELLED;
 
   return (
-    <div className="min-h-screen bg-slate-50/50 text-slate-900 pb-20 relative font-sans">
+    <div className="min-h-screen bg-brand-cream text-brand-espresso pb-20 relative font-sans-brand">
       <div className="no-print">
-        <div className="max-w-[1100px] mx-auto px-4 sm:px-6 py-6 md:py-10">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <DetailHeader
             orderCode={order.orderCode}
             orderId={order.id}
@@ -186,50 +194,77 @@ export function OrderDetailView() {
             onReorder={handleReorder}
             onCancel={() => setIsCancelModalOpen(true)}
             onReturn={() => setIsReturnModalOpen(true)}
+            onReview={() => {
+              if (order.orderItems?.[0]) setSelectedItem(order.orderItems[0]);
+            }}
             onConfirmReturn={() => {
-              updateReturnStatus({
-                id: order.returnRequest.id,
-                status: "RETURNING" as any,
-              });
+              try {
+                if (order?.returnRequest?.id) {
+                  updateReturnStatus({
+                    id: order.returnRequest.id,
+                    status: "RETURNING" as any,
+                  });
+                } else {
+                  toastError("Không tìm thấy thông tin yêu cầu trả hàng");
+                }
+              } catch (err: any) {
+                toastError(err.message || "Không thể cập nhật trạng thái hoàn trả");
+              }
             }}
             returnStatus={order.returnRequest?.status}
             isUpdatingReturn={isUpdatingStatus}
             statusConfig={statusConfig}
+            order={order}
+            isReviewed={order.reviews && order.reviews.length > 0}
           />
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <div className="lg:col-span-7 space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            <div className="lg:col-span-8 space-y-8">
               <DetailStepper
                 status={order.status}
                 isCancelled={isCancelled}
-                returnStatus={order.returnRequest?.status}
-                updatedAt={order.updatedAt}
                 createdAt={order.createdAt}
                 deliveredAt={order.deliveredAt}
+                shippingCode={order.shippingCode}
+                userEmail={order.user?.email}
               />
 
+              {isCancelled && (
+                <div className="p-6 bg-[#FCEAEA] border border-[#F0C0C0] rounded-2xl flex items-start gap-4 shadow-sm animate-in fade-in slide-in-from-left-4 duration-500">
+                  <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-[#C44040] shadow-sm shrink-0">
+                    <AlertCircle size={22} />
+                  </div>
+                  <div className="space-y-1">
+                    <h4 className="text-[15px] font-bold text-[#C44040]">Đơn hàng đã bị huỷ</h4>
+                    <p className="text-[13px] text-[#C44040]/80 font-medium leading-relaxed">
+                      Đơn hàng của bạn đã được hủy thành công. Nếu bạn đã thanh toán trước, số tiền sẽ được hoàn trả trong vòng 3–5 ngày làm việc.
+                    </p>
+                  </div>
+                </div>
+              )}
+
               {order.returnRequest && (
-                <div className="bg-white border border-slate-100 rounded-2xl p-6 lg:p-8 space-y-6 shadow-sm">
-                  <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-600 border border-amber-100">
-                      <AlertCircle size={22} />
+                <div className="bg-white border border-[#DDD6C8] rounded-2xl p-10 space-y-8 shadow-sm font-sans-brand">
+                  <div className="flex items-center gap-5">
+                    <div className="h-14 w-14 rounded-2xl bg-[#F3EFE8] flex items-center justify-center text-[#8A7966] border border-[#DDD6C8]">
+                      <RotateCcw size={24} />
                     </div>
                     <div>
-                      <h3 className="text-base font-semibold text-slate-900">Chi tiết yêu cầu trả hàng</h3>
-                      <p className="text-xs text-slate-400  -medium mt-1">Cập nhật: {new Date(order.returnRequest?.updatedAt || order.updatedAt).toLocaleString("vi-VN")}</p>
+                      <h3 className="text-lg font-bold text-[#3D2B1A] font-serif-brand">Chi tiết yêu cầu trả hàng</h3>
+                      <p className="text-[10px] text-[#8A7966] font-black tracking-[0.05em] mt-1">Cập nhật: {new Date(order.returnRequest?.updatedAt || order.updatedAt).toLocaleString("vi-VN")}</p>
                     </div>
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-6 border-t border-slate-50">
-                    <div className="space-y-2">
-                      <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Lý do của bạn</p>
-                      <p className="text-sm text-slate-700 font-medium leading-relaxed">{order.returnRequest.reason}</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-10 pt-8 border-t border-[#DDD6C8]">
+                    <div className="space-y-3">
+                      <p className="text-[10px] font-black text-[#8A7966] tracking-[0.05em]">Lý do từ bạn</p>
+                      <p className="text-sm text-[#3D2B1A] font-medium leading-relaxed italic">"{order.returnRequest.reason}"</p>
                     </div>
                     {order.returnRequest?.adminNote && (
-                      <div className="space-y-2">
-                        <p className="text-[11px] font-bold text-amber-600 uppercase tracking-widest">Phản hồi từ Shop</p>
-                        <div className="p-4 bg-amber-50/50 rounded-xl border border-amber-100/50">
-                          <p className="text-sm text-slate-700 font-medium italic leading-relaxed">"{order.returnRequest.adminNote}"</p>
+                      <div className="space-y-3">
+                        <p className="text-[10px] font-black text-[#C4783A] tracking-[0.05em]">Phản hồi LUXE</p>
+                        <div className="p-5 bg-[#FAF8F4] rounded-xl border border-[#DDD6C8]">
+                          <p className="text-sm text-[#3D2B1A] font-medium leading-relaxed italic">"{order.returnRequest.adminNote}"</p>
                         </div>
                       </div>
                     )}
@@ -246,9 +281,10 @@ export function OrderDetailView() {
                 orderId={order.id}
                 reviews={order.reviews}
               />
+
             </div>
 
-            <div className="lg:col-span-5">
+            <div className="lg:col-span-4">
               <DetailSidebar
                 orderId={order.id}
                 shippingSnapshot={order.shippingSnapshot || {}}
@@ -271,9 +307,15 @@ export function OrderDetailView() {
                 }}
                 isReviewed={order.reviews && order.reviews.length > 0}
                 orderItems={order.orderItems}
+                total={order.total}
               />
             </div>
           </div>
+
+          <ReorderBanner 
+            itemCount={order.orderItems?.length || 0}
+            onReorder={handleReorder}
+          />
         </div>
       </div>
 

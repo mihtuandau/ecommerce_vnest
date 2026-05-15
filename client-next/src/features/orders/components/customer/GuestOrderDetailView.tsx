@@ -18,6 +18,7 @@ import {
   RotateCcw
 } from "lucide-react";
 import { OrderStatus, PaymentStatus } from "@/types/enums";
+import { ordersApi } from "@/features/orders/api";
 import { returnsApi } from "@/features/returns/api";
 
 // Shared sub-components
@@ -28,32 +29,60 @@ import { DetailItems } from "./detail/DetailItems";
 import { GuestDetailHeader } from "./guest-detail/GuestDetailHeader";
 import { GuestDetailSidebar } from "./guest-detail/GuestDetailSidebar";
 import { RequestReturnModal } from "./detail/RequestReturnModal";
+import { ReorderBanner } from "./detail/ReorderBanner";
+import { ConfirmCancelModal } from "./detail/ConfirmCancelModal";
+import { PrintInvoice } from "../admin/detail/PrintInvoice";
+import { ReviewModal } from "@/features/reviews/components/customer/ReviewModal";
 
-const statusConfig: Record<string, { label: string; color: string; icon: any }> = {
+const statusConfig: Record<string, { label: string; color: string; bg: string; dot: string; icon: any }> = {
   [OrderStatus.PENDING]: {
-    label: "Chờ xác nhận",
-    color: "text-amber-600 bg-amber-50 border-amber-100",
+    label: "Đang chờ LUXE xác nhận",
+    color: "text-[#C49A00]",
+    bg: "bg-[#FFF8E6]",
+    dot: "bg-[#C49A00]",
     icon: Clock,
   },
   [OrderStatus.PROCESSING]: {
-    label: "Đang xử lý",
-    color: "text-blue-600 bg-blue-50 border-blue-100",
+    label: "Đơn hàng đã được xác nhận",
+    color: "text-[#2C5F8A]",
+    bg: "bg-[#E8F0F8]",
+    dot: "bg-[#2C5F8A]",
     icon: Package,
   },
   [OrderStatus.SHIPPED]: {
-    label: "Đang giao hàng",
-    color: "text-indigo-600 bg-indigo-50 border-indigo-100",
+    label: "Đang được vận chuyển",
+    color: "text-[#2C5F8A]",
+    bg: "bg-[#E8F0F8]",
+    dot: "bg-[#2C5F8A]",
     icon: Truck,
   },
   [OrderStatus.DELIVERED]: {
-    label: "Giao thành công",
-    color: "text-emerald-600 bg-emerald-50 border-emerald-100",
+    label: "Giao hàng thành công",
+    color: "text-[#3A7D5A]",
+    bg: "bg-[#E6F3EC]",
+    dot: "bg-[#3A7D5A]",
     icon: CheckCircle2,
   },
   [OrderStatus.CANCELLED]: {
-    label: "Đã hủy đơn",
-    color: "text-rose-600 bg-rose-50 border-rose-100",
+    label: "Đã hủy đơn hàng",
+    color: "text-[#C44040]",
+    bg: "bg-[#FCEAEA]",
+    dot: "bg-[#C44040]",
     icon: XCircle,
+  },
+  [OrderStatus.RETURN_REQUESTED]: {
+    label: "Yêu cầu trả hàng",
+    color: "text-[#C4783A]",
+    bg: "bg-[#FFF2E6]",
+    dot: "bg-[#C4783A]",
+    icon: RotateCcw,
+  },
+  [OrderStatus.RETURNED]: {
+    label: "Đã trả hàng",
+    color: "text-[#3D2B1A]",
+    bg: "bg-[#F3EFE8]",
+    dot: "bg-[#3D2B1A]",
+    icon: RotateCcw,
   },
 };
 
@@ -62,10 +91,13 @@ export function GuestOrderDetailView() {
   const searchParams = useSearchParams();
   const contact = searchParams.get("contact") || "";
   const [isReturnModalOpen, setIsReturnModalOpen] = React.useState(false);
+  const [isCancelModalOpen, setIsCancelModalOpen] = React.useState(false);
+  const [isCancelling, setIsCancelling] = React.useState(false);
+  const [selectedItem, setSelectedItem] = React.useState<any>(null);
   
   const { data: order, isLoading, error: fetchError } = useGuestOrderDetail(orderCode, contact);
   const { addItem } = useCart();
-  const { success } = useToast();
+  const { success, error: toastError } = useToast();
 
   const handleReorder = () => {
     if (!order?.orderItems) return;
@@ -92,29 +124,44 @@ export function GuestOrderDetailView() {
     success("Đã thêm các sản phẩm vào giỏ hàng");
   };
 
+  const handleCancel = async () => {
+    setIsCancelModalOpen(true);
+  };
+
+  const handleConfirmCancel = async () => {
+    if (!order?.orderCode || !contact) {
+      toastError("Thiếu thông tin xác thực để huỷ đơn hàng");
+      return;
+    }
+    
+    setIsCancelling(true);
+    try {
+      await ordersApi.cancelGuestOrder(order.orderCode, contact);
+      success("Đã gửi yêu cầu hủy đơn hàng thành công");
+      // Cập nhật lại cache hoặc reload
+      window.location.reload();
+    } catch (err: any) {
+      console.error("Cancel guest order error:", err);
+      toastError(err.response?.data?.message || err.message || "Có lỗi xảy ra khi hủy đơn hàng");
+    } finally {
+      setIsCancelling(false);
+      setIsCancelModalOpen(false);
+    }
+  };
+
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-white">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 md:py-10">
+      <div className="min-h-screen bg-brand-cream">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-8">
           <div className="space-y-4">
-            <div className="flex items-center gap-4">
-              <Skeleton className="h-12 w-12 rounded-2xl" />
-              <div className="space-y-2">
-                <Skeleton className="h-8 w-64 rounded-lg" />
-                <Skeleton className="h-4 w-40 rounded-lg" />
-              </div>
-            </div>
+            <Skeleton className="h-10 w-48 rounded-full" />
+            <Skeleton className="h-12 w-96 rounded-xl" />
+            <Skeleton className="h-4 w-64 rounded-full" />
           </div>
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             <div className="lg:col-span-8 space-y-8">
               <Skeleton className="h-32 w-full rounded-2xl" />
-              <div className="border border-slate-100 rounded-2xl overflow-hidden">
-                <div className="h-12 bg-slate-50/50 border-b border-slate-100" />
-                <div className="p-6 space-y-6">
-                  <Skeleton className="h-24 w-full rounded-xl" />
-                  <Skeleton className="h-24 w-full rounded-xl" />
-                </div>
-              </div>
+              <Skeleton className="h-[400px] w-full rounded-2xl" />
             </div>
             <div className="lg:col-span-4 space-y-8">
               <Skeleton className="h-64 w-full rounded-2xl" />
@@ -128,15 +175,19 @@ export function GuestOrderDetailView() {
 
   if (!order || fetchError) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-6 bg-slate-50/30">
-        <div className="h-20 w-20 bg-white rounded-full flex items-center justify-center shadow-sm border border-slate-100">
-          <AlertCircle className="h-10 w-10 text-rose-500" />
+      <div className="min-h-screen flex flex-col items-center justify-center gap-6 bg-brand-cream px-6">
+        <div className="h-24 w-24 bg-white rounded-full flex items-center justify-center shadow-sm border border-brand-border">
+          <AlertCircle className="h-12 w-12 text-rose-500 opacity-50" />
         </div>
-        <div className="text-center space-y-2 px-4">
-          <h2 className="text-2xl font-semibold text-slate-900">Không tìm thấy đơn hàng</h2>
-          <p className="text-slate-500">Vui lòng kiểm tra lại mã đơn hàng và số điện thoại/email.</p>
+        <div className="text-center space-y-2">
+          <h2 className="text-3xl font-bold text-brand-espresso font-serif">
+            Không tìm thấy đơn hàng
+          </h2>
+          <p className="text-brand-taupe text-sm max-w-xs mx-auto">
+            Vui lòng kiểm tra lại mã đơn hàng và số điện thoại/email.
+          </p>
         </div>
-        <Button asChild variant="outline" className="rounded-full px-8">
+        <Button asChild className="rounded-full px-10 h-12 bg-brand-espresso text-white hover:bg-brand-espresso/90">
           <Link href="/">Quay lại trang chủ</Link>
         </Button>
       </div>
@@ -151,106 +202,154 @@ export function GuestOrderDetailView() {
   const isCancelled = order.status === OrderStatus.CANCELLED;
 
   return (
-    <div className="min-h-screen bg-slate-50/50 text-slate-900 pb-20 relative font-sans">
-      <div className="max-w-[1100px] mx-auto px-4 sm:px-6 py-6 md:py-10">
-        <GuestDetailHeader 
-          orderId={order.id}
-          orderCode={order.orderCode}
-          createdAt={order.createdAt}
-          deliveredAt={order.deliveredAt}
-          status={order.status}
-          isPaid={isPaid}
-          statusConfig={statusConfig}
-          contact={contact}
-          onReorder={handleReorder}
-          onReturn={() => setIsReturnModalOpen(true)}
-          returnStatus={order.returnRequest?.status}
-          onConfirmReturn={async () => {
-            try {
-              await returnsApi.confirmGuestSent(order.returnRequest.id, {
-                orderCode: order.orderCode,
-                contact: contact
-              });
-              window.location.reload();
-            } catch (err: any) {
-              alert(err.response?.data?.message || "Có lỗi xảy ra");
-            }
-          }}
-        />
+    <div className="min-h-screen bg-brand-cream text-brand-espresso pb-20 relative font-sans-brand">
+      <div className="no-print">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <GuestDetailHeader 
+            orderId={order.id}
+            orderCode={order.orderCode}
+            createdAt={order.createdAt}
+            deliveredAt={order.deliveredAt}
+            status={order.status}
+            isPaid={isPaid}
+            isCancelled={isCancelled}
+            statusConfig={statusConfig}
+            contact={contact}
+            onReorder={handleReorder}
+            onCancel={handleCancel}
+            onReturn={() => setIsReturnModalOpen(true)}
+            returnStatus={order.returnRequest?.status}
+            paymentMethod={order.paymentMethod}
+            totalItems={order.orderItems?.length || 0}
+            onReview={() => {
+              if (order.orderItems?.[0]) setSelectedItem(order.orderItems[0]);
+            }}
+            onConfirmReturn={async () => {
+              try {
+                await returnsApi.confirmGuestSent(order.returnRequest.id, {
+                  orderCode: order.orderCode,
+                  contact: contact
+                });
+                window.location.reload();
+              } catch (err: any) {
+                toastError(err.response?.data?.message || "Có lỗi xảy ra");
+              }
+            }}
+          />
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <div className="lg:col-span-7 space-y-6">
-            <DetailStepper 
-              status={order.status} 
-              isCancelled={isCancelled} 
-              returnStatus={order.returnRequest?.status}
-            />
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            <div className="lg:col-span-8 space-y-8">
+              <DetailStepper 
+                status={order.status} 
+                isCancelled={isCancelled} 
+                returnStatus={order.returnRequest?.status}
+                createdAt={order.createdAt}
+                deliveredAt={order.deliveredAt}
+                shippingCode={order.shippingCode}
+                userEmail={order.guestEmail || order.user?.email}
+              />
 
-            {order.returnRequest && (
-              <div className="bg-white border border-slate-100 rounded-2xl p-6 lg:p-8 space-y-6 shadow-sm">
-                <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-600 border border-amber-100">
-                    <RotateCcw size={22} />
+              {isCancelled && (
+                <div className="p-6 bg-[#FCEAEA] border border-[#F0C0C0] rounded-2xl flex items-start gap-4 shadow-sm animate-in fade-in slide-in-from-left-4 duration-500">
+                  <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-[#C44040] shadow-sm shrink-0">
+                    <AlertCircle size={22} />
                   </div>
-                  <div>
-                    <h3 className="text-base font-semibold text-slate-900">Chi tiết yêu cầu trả hàng</h3>
-                    <p className="text-xs text-slate-400 font-medium mt-1">Cập nhật: {new Date(order.returnRequest?.updatedAt || order.updatedAt).toLocaleString("vi-VN")}</p>
+                  <div className="space-y-1">
+                    <h4 className="text-[15px] font-bold text-[#C44040]">Đơn hàng đã bị huỷ</h4>
+                    <p className="text-[13px] text-[#C44040]/80 font-medium leading-relaxed">
+                      Đơn hàng của bạn đã được hủy thành công. Nếu bạn đã thanh toán trước, số tiền sẽ được hoàn trả trong vòng 3–5 ngày làm việc.
+                    </p>
                   </div>
                 </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-6 border-t border-slate-50">
-                  <div className="space-y-2">
-                    <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Lý do của bạn</p>
-                    <p className="text-sm text-slate-700 font-medium leading-relaxed">{order.returnRequest.reason}</p>
-                  </div>
-                  {order.returnRequest?.adminNote && (
-                    <div className="space-y-2">
-                      <p className="text-[11px] font-bold text-amber-600 uppercase tracking-widest">Phản hồi từ Shop</p>
-                      <div className="p-4 bg-amber-50/50 rounded-xl border border-amber-100/50">
-                        <p className="text-sm text-slate-700 font-medium italic leading-relaxed">"{order.returnRequest.adminNote}"</p>
-                      </div>
+              )}
+
+              {order.returnRequest && (
+                <div className="bg-white border border-[#DDD6C8] rounded-2xl p-10 space-y-8 shadow-sm font-sans-brand">
+                  <div className="flex items-center gap-5">
+                    <div className="h-14 w-14 rounded-2xl bg-[#F3EFE8] flex items-center justify-center text-[#8A7966] border border-[#DDD6C8]">
+                      <RotateCcw size={24} />
                     </div>
-                  )}
+                    <div>
+                      <h3 className="text-lg font-bold text-[#3D2B1A] font-serif-brand">Chi tiết yêu cầu trả hàng</h3>
+                      <p className="text-[10px] text-[#8A7966] font-black uppercase tracking-[0.2em] mt-1">Cập nhật: {new Date(order.returnRequest?.updatedAt || order.updatedAt).toLocaleString("vi-VN")}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-10 pt-8 border-t border-[#DDD6C8]">
+                    <div className="space-y-3">
+                      <p className="text-[10px] font-black text-[#8A7966] uppercase tracking-[0.2em]">Lý do của bạn</p>
+                      <p className="text-sm text-[#3D2B1A] font-medium leading-relaxed italic">"{order.returnRequest.reason}"</p>
+                    </div>
+                    {order.returnRequest?.adminNote && (
+                      <div className="space-y-3">
+                        <p className="text-[10px] font-black text-[#C4783A] uppercase tracking-[0.2em]">Phản hồi từ Shop</p>
+                        <div className="p-5 bg-[#FAF8F4] rounded-xl border border-[#DDD6C8]">
+                          <p className="text-sm text-[#3D2B1A] font-medium leading-relaxed italic">"{order.returnRequest.adminNote}"</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            <DetailItems 
-              orderItems={order.orderItems}
-              total={order.total}
-              shippingFee={order.shippingFee}
-              discountAmount={order.discountAmount}
-              status={order.status}
-              orderId={order.id}
-              reviews={order.reviews}
-            />
+              <DetailItems 
+                orderItems={order.orderItems}
+                total={order.total}
+                shippingFee={order.shippingFee}
+                discountAmount={order.discountAmount}
+                status={order.status}
+                orderId={order.id}
+                reviews={order.reviews}
+              />
+            </div>
+
+            <div className="lg:col-span-4">
+              <GuestDetailSidebar 
+                shippingSnapshot={order.shippingSnapshot || {}}
+                fullName={(order as any).fullName}
+                phone={(order as any).phone}
+                email={(order as any).guestEmail || order.user?.email}
+                address={order.address}
+                paymentMethod={order.paymentMethod}
+                isPaid={isPaid}
+                paymentStatus={order.paymentStatus || (order as any).payment?.status || ""}
+                shippingCode={order.shippingCode}
+                total={order.total}
+              />
+            </div>
           </div>
 
-          <div className="lg:col-span-5">
-            <GuestDetailSidebar 
-              shippingSnapshot={order.shippingSnapshot || {}}
-              fullName={(order as any).fullName}
-              phone={(order as any).phone}
-              email={(order as any).guestEmail || order.user?.email}
-              address={order.address}
-              paymentMethod={order.paymentMethod}
-              isPaid={isPaid}
-              paymentStatus={order.paymentStatus || (order as any).payment?.status || ""}
-              shippingCode={order.shippingCode}
-            />
-          </div>
+          <ReorderBanner 
+            itemCount={order.orderItems?.length || 0}
+            onReorder={handleReorder}
+          />
         </div>
       </div>
-      <RequestReturnModal
-        isOpen={isReturnModalOpen}
-        onClose={() => setIsReturnModalOpen(false)}
-        orderId={order.id}
-        orderCode={order.orderCode}
-        onSuccess={() => window.location.reload()}
-        isGuest={true}
-        contact={contact}
+
+      <ConfirmCancelModal
+        isOpen={isCancelModalOpen}
+        onClose={() => setIsCancelModalOpen(false)}
+        onConfirm={handleConfirmCancel}
+        isLoading={isCancelling}
       />
 
+      <ReviewModal 
+        isOpen={!!selectedItem}
+        onClose={() => setSelectedItem(null)}
+        productId={Number(selectedItem?.variant?.productId || selectedItem?.productId)}
+        orderId={order.id || 0}
+        productName={selectedItem?.productName || selectedItem?.variant?.product?.name || ""}
+        productSlug={selectedItem?.variant?.product?.slug}
+        productImage={(() => {
+          const getUrl = (img: any) => typeof img === 'string' ? img : img?.url;
+          const path = (selectedItem?.variantSnapshot as { image?: string })?.image || getUrl(selectedItem?.variant?.images?.[0]) || getUrl(selectedItem?.variant?.product?.images?.[0]);
+          if (!path) return "/placeholder.png";
+          if (path.startsWith('http')) return path;
+          return `/${path.replace(/\\/g, '/').replace(/^\//, '')}`;
+        })()}
+      />
+
+      <PrintInvoice order={order} />
     </div>
   );
 }

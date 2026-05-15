@@ -9,6 +9,7 @@ import { ApplyDiscountDto } from './dto/apply-discount.dto';
 import * as OrderHelper from './order.helper';
 import { GHNService } from '../ghn/ghn.service';
 import { MailService } from '../mail/mail.service';
+import { NotificationService } from '../notification/notification.service';
 import dayjs from 'dayjs';
 
 @Injectable()
@@ -21,6 +22,7 @@ export class OrderManagement {
     private paymentService: PaymentService,
     private ghnService: GHNService,
     private mailService: MailService,
+    private notificationService: NotificationService,
   ) {}
 
   /**
@@ -88,6 +90,16 @@ export class OrderManagement {
     }
 
     const order = await this.repository.update(id, updateData);
+
+    // Create Notification if status changed and it's a member order
+    if (dto.status && dto.status !== oldOrder.status && order.userId) {
+      this.notificationService.createNotification(order.userId, {
+        title: 'Cập nhật đơn hàng',
+        content: `Đơn hàng #${order.orderCode} đã chuyển sang trạng thái: ${dto.status}`,
+        type: 'ORDER_STATUS',
+        link: `/account?tab=orders&id=${order.id}`
+      }).catch(err => this.logger.error('Failed to create order notification:', err));
+    }
 
     await this.handlePaymentCreation(order, oldOrder, dto);
 

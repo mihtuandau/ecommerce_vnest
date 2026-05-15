@@ -10,6 +10,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { CartModule } from '../cart/cart.module'; 
 import { MailModule } from '../mail/mail.module';
 import { PaymentModule } from '../payment/payment.module';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
   imports: [
@@ -17,7 +18,8 @@ import { PaymentModule } from '../payment/payment.module';
     CacheModule.register(),
     CartModule, 
     MailModule, 
-    PaymentModule
+    PaymentModule,
+    NotificationModule
   ],  
   controllers: [OrderController],
   providers: [

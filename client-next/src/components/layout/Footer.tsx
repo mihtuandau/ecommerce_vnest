@@ -23,8 +23,7 @@ export function Footer() {
                  <Image src="/logoMT.png" alt="Logo" width={36} height={36} className="h-9 w-auto object-contain" />
                </div>
                 <div className="flex flex-col">
-                  <span className="text-lg font-semibold tracking-tight text-brand-cream font-serif">MINHTUAN</span>
-                  <span className="text-[10px] font-medium text-brand-taupe tracking-[0.2em] uppercase">Store</span>
+                  <span className="text-lg font-semibold tracking-tight text-brand-cream font-serif">MINH TUAN SHOP</span>
                 </div>
             </Link>
             
@@ -34,12 +33,12 @@ export function Footer() {
             
             <div className="flex gap-3">
               {[
-                { icon: Facebook, href: "#" },
-                { icon: Instagram, href: "#" },
-                { icon: Twitter, href: "#" },
-                { icon: Send, href: "#" }
+                { icon: Facebook, href: "#", style:"hover:text-blue-600" },
+                { icon: Instagram, href: "#",style:"hover:text-pink-500" },
+                { icon: Twitter, href: "#",style:"hover:text-blue-400" },
+                { icon: Send, href: "#",style:"hover:text-pink-500" }
               ].map((social, i) => (
-                <Link key={i} href={social.href} className="h-9 w-9 rounded-lg flex items-center justify-center bg-white/[0.07] border border-white/10 text-brand-taupe hover:bg-brand-bronze hover:text-white hover:border-brand-bronze transition-all duration-300">
+                <Link key={i} href={social.href} className={`h-9 w-9 rounded-lg flex items-center border border-white/10 justify-center text-brand-taupe transition-all duration-300 ${social.style}`}>
                   <social.icon size={16} />
                 </Link>
               ))}
@@ -94,10 +93,10 @@ export function Footer() {
           <div className="lg:col-span-3 space-y-5">
             <h3 className="text-[14px] font-bold text-brand-cream font-serif">Liên hệ</h3>
             <ul className="space-y-4">
-              <li className="text-[13.5px] text-brand-taupe">📍 Tòa nhà Innovation, Khu CNC, TP. Thủ Đức</li>
-              <li className="text-[13.5px] text-brand-taupe">📞 1900 8888 (miễn phí)</li>
-              <li className="text-[13.5px] text-brand-taupe">✉️ support@minhtuan.vn</li>
-              <li className="text-[13.5px] text-brand-taupe">⏰ 8:00 – 22:00 hàng ngày</li>
+              <li className="text-[13.5px] text-brand-taupe">109/47/1A Đường số 8, Khu Phố 11, Đường số 8, Phường Linh Xuân, TP Thủ Đức, TP Hồ Chí Minh</li>
+              <li className="text-[13.5px] text-brand-taupe">(+84) 325 586 629</li>
+              <li className="text-[13.5px] text-brand-taupe">dautuan032004@gmail.com</li>
+              <li className="text-[13.5px] text-brand-taupe">8:00 – 22:00 hàng ngày</li>
             </ul>
           </div>
         </div>
@@ -105,10 +104,10 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="mt-12 pt-6 border-t border-white/[0.08] flex flex-col md:flex-row justify-between items-center gap-4">
           <span className="text-[12px] text-brand-taupe/50">
-            © 2025 MINHTUAN SHOP. Bảo lưu mọi quyền.
+            © 2025 MINHTUAN SHOP All rights reserved.
           </span>
           <div className="flex gap-2">
-            {["CASH", "VNPAY", "MoMo", "PayOS"].map(p => (
+            {["CASH", "VNPAY", "MoMo"].map(p => (
               <span key={p} className="px-2.5 py-1 text-[11px] text-brand-taupe bg-white/[0.07] border border-white/10 rounded">
                 {p}
               </span>

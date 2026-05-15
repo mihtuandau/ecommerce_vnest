@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Trash2, Check } from "lucide-react";
+import { Trash2, Check, ChevronLeft } from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
 import { ROUTES } from "@/constants/routes";
@@ -30,54 +31,50 @@ function CheckoutSteps({ currentStep }: { currentStep: number }) {
   ];
 
   return (
-    <div className="flex items-center justify-center mb-10">
-      <div className="flex items-center w-full max-w-2xl">
-        {steps.map((step, index) => (
-          <React.Fragment key={step.id}>
-            <div className="flex flex-col items-center relative group">
+    <div className="flex items-center justify-center">
+      <div className="relative w-full">
+        {/* Guaranteed visible background line - full width of parent */}
+        <div className="absolute top-[18px] left-20 right-20 h-[1px] bg-brand-sand z-0" />
+        
+        <div className="flex justify-between items-start relative z-10">
+          {steps.map((step) => (
+            <div key={step.id} className="flex flex-col items-center gap-3">
               <div className={cn(
-                "w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300",
+                "w-9 h-9 rounded-full flex items-center justify-center text-[14px] font-bold border-2 transition-all duration-300 ring-[12px] ring-brand-cream",
                 currentStep >= step.id 
-                  ? "bg-[#3D2B1A] text-white shadow-lg shadow-[#3D2B1A]/20 scale-110" 
-                  : "bg-white border border-[#DDD6C8] text-[#8A7966]"
+                  ? "bg-brand-espresso border-brand-espresso text-white shadow-lg shadow-brand-espresso/20" 
+                  : "bg-white border-brand-sand text-brand-taupe"
               )}>
-                {currentStep > step.id ? <Check size={16} strokeWidth={3} /> : step.id}
+                {step.id}
               </div>
               <span className={cn(
-                "absolute -bottom-6 whitespace-nowrap text-[12px] font-bold tracking-tight transition-colors",
-                currentStep >= step.id ? "text-[#3D2B1A]" : "text-[#8A7966]"
+                "text-[12px] font-bold uppercase tracking-wider transition-colors bg-brand-cream px-2",
+                currentStep >= step.id ? "text-brand-espresso" : "text-brand-taupe"
               )}>
                 {step.label}
               </span>
             </div>
-            {index < steps.length - 1 && (
-              <div className="flex-1 h-[1px] mx-4 bg-[#DDD6C8] relative">
-                <div className={cn(
-                  "absolute inset-0 bg-[#3D2B1A] transition-transform duration-700 origin-left",
-                  currentStep > step.id ? "scale-x-100" : "scale-x-0"
-                )} />
-              </div>
-            )}
-          </React.Fragment>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );
 }
 
 export function CartContainer() {
+  const router = useRouter();
   const { recentlyViewed } = useRecentlyViewed();
 
   function RecentlyViewedSection() {
     if (recentlyViewed.length === 0) return null;
 
     return (
-      <div className="mt-12 border-t border-[#DDD6C8] pt-10">
-        <h3 className="text-xl font-bold text-[#3D2B1A] font-serif mb-8 flex items-center gap-3">
-          Bạn đã <span className="text-[#C4783A] italic font-medium">xem gần đây</span>
-          <div className="h-[1px] flex-1 bg-[#F3EFE8]" />
+      <div className="mt-20 border-t border-brand-sand/50 pt-16">
+        <h3 className="text-xl font-bold text-brand-espresso font-serif-brand mb-10 flex items-center gap-4">
+          Bạn đã <span className="text-brand-bronze italic font-medium">xem gần đây</span>
+          <div className="h-[1px] flex-1 bg-brand-sand/30" />
         </h3>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8">
           {recentlyViewed.slice(0, 4).map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
@@ -148,35 +145,58 @@ export function CartContainer() {
     }
   }, [selectedTotalPrice, appliedDiscount, calculateDiscountAmount, setAppliedDiscount, warning]);
 
-  if (!mounted) return <div className="min-h-screen bg-[#FAF8F4] pt-12 pb-24"><div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8"><Skeleton className="h-20 w-full rounded-full" /></div></div>;
+  if (!mounted) return <div className="min-h-screen bg-brand-cream pt-12 pb-24"><div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8"><Skeleton className="h-20 w-full rounded-full" /></div></div>;
   if (items.length === 0) return <EmptyCart />;
 
   return (
-    <div className="bg-[#FAF8F4] min-h-screen pt-12 pb-24">
+    <div className="bg-brand-cream min-h-screen pt-8 pb-24 font-sans-brand">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <CheckoutSteps currentStep={1} />
-        <div className="flex flex-col gap-8">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-            <h1 className="text-2xl font-bold text-[#3D2B1A] font-serif leading-none tracking-tight">
-              Giỏ hàng <span className="text-[#C4783A] italic font-medium">của bạn</span>
-              <span className="text-[11px] font-black text-[#8A7966] ml-4 bg-[#F3EFE8] px-2.5 py-1 rounded-full tracking-[0.1em] uppercase">
-                {items.length} SẢN PHẨM
-              </span>
-            </h1>
-            <div className="flex items-center gap-6">
-              <button onClick={() => toggleSelectAll(!isAllSelected)} className="flex items-center gap-2 text-[13px] font-bold text-[#3D2B1A] group">
-                <div className={cn("w-4.5 h-4.5 rounded-md border-2 flex items-center justify-center transition-all", isAllSelected ? "bg-[#3D2B1A] border-[#3D2B1A] text-white" : "border-[#DDD6C8] bg-white group-hover:border-[#3D2B1A]")}>
-                  {isAllSelected && <Check size={10} strokeWidth={4} />}
-                </div>
-                Chọn tất cả
-              </button>
-              <div className="w-[1px] h-3.5 bg-[#DDD6C8]" />
-              <button className="text-[13px] font-bold text-[#8A7966] hover:text-red-500 transition-colors flex items-center gap-1.5" onClick={clearCart}><Trash2 size={16} /> Xoá tất cả</button>
-            </div>
-          </div>
+        <button 
+          onClick={() => router.back()}
+          className="flex items-center gap-1 text-[13px] text-brand-taupe hover:text-brand-espresso transition-colors mb-10 group"
+        >
+          <ChevronLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+          <span className="font-medium">Quay lại</span>
+        </button>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            <div className="lg:col-span-8 flex flex-col gap-6">
+        <div className="max-w-3xl mx-auto mb-16">
+          <CheckoutSteps currentStep={1} />
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+          <div className="lg:col-span-8">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-5 border-b border-brand-sand">
+              <h1 className="text-2xl md:text-3xl font-bold text-brand-espresso font-serif-brand leading-none tracking-tight">
+                Giỏ hàng <em className="italic text-brand-bronze font-medium font-serif-brand">của bạn</em>
+                <span className="text-[14px] font-medium text-brand-taupe ml-2">({items.length} sản phẩm)</span>
+              </h1>
+              
+              <div className="flex items-center gap-6">
+                <button onClick={() => toggleSelectAll(!isAllSelected)} className="flex items-center gap-2 text-[13px] font-bold text-brand-espresso group">
+                  <div className={cn("w-4.5 h-4.5 rounded-md border-2 flex items-center justify-center transition-all", isAllSelected ? "bg-brand-espresso border-brand-espresso text-white" : "border-brand-sand bg-white group-hover:border-brand-espresso")}>
+                    {isAllSelected && <Check size={10} strokeWidth={4} />}
+                  </div>
+                  Chọn tất cả
+                </button>
+                <div className="w-[1px] h-3.5 bg-brand-sand" />
+                <button 
+                  className="text-[13px] font-bold text-brand-taupe hover:text-red-500 transition-colors flex items-center gap-1.5" 
+                  onClick={() => {
+                    const selectedIds = items.filter(i => i.selected).map(i => i.variantId);
+                    if (selectedIds.length === 0) {
+                      warning("Vui lòng chọn sản phẩm cần xóa");
+                      return;
+                    }
+                    selectedIds.forEach(id => removeItem(id));
+                    success("Đã xóa các sản phẩm đã chọn");
+                  }}
+                >
+                  <Trash2 size={16} /> Xoá đã chọn
+                </button>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-6">
               {(() => {
                 const groups = items.reduce((acc: { [key: string]: typeof items }, item) => {
                   const key = item.productId || item.name; // Fallback to name if productId is missing
@@ -186,17 +206,17 @@ export function CartContainer() {
                 }, {});
 
                 return Object.entries(groups).map(([key, groupItems]) => (
-                  <div key={key} className="bg-white rounded-[2rem] border border-[#DDD6C8] shadow-sm overflow-hidden transition-all hover:shadow-md">
-                    <div className="px-6 py-4 border-b border-[#F3EFE8] bg-[#FAF8F4]/30">
+                  <div key={key} className="bg-white rounded-[24px] border border-brand-sand shadow-sm overflow-hidden transition-all hover:shadow-xl hover:shadow-brand-espresso/5">
+                    <div className="px-6 py-4 border-b border-brand-cream bg-brand-cream/30">
                       <div className="flex items-center gap-3">
-                        <div className="h-6 w-1 bg-[#3D2B1A] rounded-full" />
-                        <h3 className="font-serif font-semibold text-[#3D2B1A] text-[15px] leading-snug tracking-tight">
+                        <div className="h-6 w-1 bg-brand-espresso rounded-full" />
+                        <h3 className="font-serif font-bold text-brand-espresso text-[15px] leading-snug tracking-tight">
                           {groupItems[0].name}
                         </h3>
                       </div>
                     </div>
 
-                    <div className="divide-y divide-[#F3EFE8]/80">
+                    <div className="divide-y divide-brand-cream">
                       {groupItems.map((item) => (
                         <CartItem 
                           key={item.variantId} 
@@ -212,8 +232,9 @@ export function CartContainer() {
                 ));
               })()}
             </div>
+          </div>
 
-            <div className="lg:col-span-4 sticky top-40">
+          <div className="lg:col-span-4 sticky top-40">
               <CartSummary
                 selectedCount={selectedCount}
                 selectedTotalPrice={selectedTotalPrice}
@@ -231,6 +252,5 @@ export function CartContainer() {
           )}
         </div>
       </div>
-    </div>
   );
 }

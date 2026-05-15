@@ -20,12 +20,12 @@ export function RecentlyViewedProducts({ currentProductId }: { currentProductId:
           <Sparkles size={20} />
         </div>
         <div>
-          <h2 className="text-[28px] font-bold text-primary tracking-tight font-serif">Sản phẩm vừa xem</h2>
+          <h2 className="text-[28px] font-bold text-primary tracking-tight">Sản phẩm vừa xem</h2>
           <p className="text-[13px] text-brand-taupe font-medium mt-0.5">Dựa trên lịch sử duyệt web của bạn</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {items.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}

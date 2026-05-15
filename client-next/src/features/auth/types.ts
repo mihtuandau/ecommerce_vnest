@@ -13,7 +13,9 @@ export interface RegisterPayload {
 }
 
 export interface AuthResponse {
-  accessToken: string;
+  accessToken?: string;
   refreshToken?: string;
-  user: User;
+  user?: User;
+  requires2FA?: boolean;
+  message?: string;
 }
