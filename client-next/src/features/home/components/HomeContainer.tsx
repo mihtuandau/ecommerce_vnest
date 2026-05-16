@@ -69,11 +69,25 @@ export default function HomeContainer() {
           <section className="max-w-[1440px] mx-auto px-6 lg:px-12 w-full">
             <FlashSaleSkeleton />
           </section>
-        ) : flashSale && (
-          <section className="max-w-[1440px] mx-auto px-6 lg:px-12 w-full">
-            <FlashSale data={flashSale} />
-          </section>
-        )}
+        ) : (() => {
+          const sessions = Array.isArray(flashSale) ? flashSale : [];
+          if (sessions.length === 0) return null;
+
+          // Backend already filters for active/future sessions.
+          // Just pick the one that is most "relevant" (LIVE first, then SOON).
+          const now = new Date();
+          const activeSession = sessions.find(s => {
+            const start = new Date(s.startDate);
+            const end = s.endDate ? new Date(s.endDate) : null;
+            return start <= now && (!end || end >= now);
+          }) || sessions[0]; // Fallback to first session if date check is fuzzy
+
+          return (
+            <section className="max-w-[1440px] mx-auto px-6 lg:px-12 w-full">
+              <FlashSale data={activeSession} />
+            </section>
+          );
+        })()}
 
         {/* ── Voucher Banner ── */}
         <VoucherBanner />

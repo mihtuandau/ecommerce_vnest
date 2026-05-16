@@ -126,10 +126,10 @@ export function Header({ initialHasToken }: { initialHasToken?: boolean }) {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent 
                             align="end" 
-                            className="w-[280px] rounded-[24px] p-2.5 bg-white shadow-[0_20px_50px_rgba(61,43,26,0.12)] border border-brand-sand animate-in fade-in zoom-in-95 duration-300 mt-2.5"
+                            className="w-[280px] rounded-[24px] p-2.5 bg-white opacity-100 shadow-[0_30px_60px_rgba(61,43,26,0.18)] border border-brand-sand/60 animate-in fade-in zoom-in-95 duration-300 mt-2.5 z-[100]"
                           >
                             {/* ── USER PROFILE SECTION ── */}
-                            <div className="px-3.5 py-4 mb-2 bg-brand-cream/50 rounded-[18px] flex items-center gap-3.5 border border-brand-sand/30">
+                            <div className="px-3.5 py-4 mb-2 bg-brand-cream rounded-[18px] flex items-center gap-3.5 border border-brand-sand/20">
                               <div className="relative w-12 h-12 rounded-full border-2 border-white overflow-hidden shrink-0 shadow-md">
                                 {user.avatar ? (
                                   <Image src={getImageUrl(user.avatar)} alt="User" fill className="object-cover" />

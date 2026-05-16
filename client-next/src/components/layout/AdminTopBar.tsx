@@ -22,6 +22,7 @@ import {
 import { useAuthStore } from "@/store/useAuthStore";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import Image from "next/image";
+import { Badge } from "@/components/ui/Badge";
 
 import { useState, useEffect } from "react";
 
@@ -43,6 +44,9 @@ export function AdminTopBar() {
             <span>K</span>
           </div>
         </div>
+        <Badge className="bg-primary/10 text-primary border-primary/20 rounded-full px-3 py-1 font-bold text-[10px] tracking-widest uppercase shadow-sm">
+          Admin Mode
+        </Badge>
       </div>
 
       <div className="flex items-center gap-3">

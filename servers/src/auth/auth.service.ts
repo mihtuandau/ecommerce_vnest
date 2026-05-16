@@ -145,8 +145,12 @@ export class AuthService {
       this.checkNewDevice(u, deviceInfo).catch(err => console.error('New device check failed:', err));
     }
 
+    const jti = crypto.randomBytes(16).toString('hex');
     const common = { sub: u.id, email: u.email, role: u.role };
-    const refreshToken = this.jwtService.sign({ sub: u.id }, { secret: process.env.JWT_REFRESH_SECRET, expiresIn: '7d' });
+    const refreshToken = this.jwtService.sign(
+      { sub: u.id, jti },
+      { secret: process.env.JWT_REFRESH_SECRET, expiresIn: '7d' },
+    );
 
     // Lưu hash của refresh token vào DB để có thể revoke
     const tokenHash = crypto.createHash('sha256').update(refreshToken).digest('hex');
@@ -184,19 +188,28 @@ export class AuthService {
         throw new UnauthorizedException('Token đã hết hạn hoặc bị thu hồi');
       }
 
-      // 2. TOKEN ROTATION: Revoke token cũ ngay lập tức
-      await this.prisma.refreshToken.update({
-        where: { id: stored.id },
+      // 2. TOKEN ROTATION: Revoke token cũ ngay lập tức (Sử dụng updateMany để tránh race condition)
+      const updateResult = await this.prisma.refreshToken.updateMany({
+        where: { id: stored.id, revoked: false },
         data: { revoked: true },
       });
+
+      if (updateResult.count === 0) {
+        throw new UnauthorizedException('Phiên đăng nhập không hợp lệ');
+      }
 
       // 3. Tạo cặp token mới
       const u = await this.userService.findOne(p.sub);
       if (!u) throw new UnauthorizedException();
 
+      // Thêm jti để đảm bảo tính duy nhất của refresh token ngay cả khi tạo cùng 1 giây
+      const jti = crypto.randomBytes(16).toString('hex');
       const common = { sub: u.id, email: u.email, role: u.role };
       const newAccessToken = this.jwtService.sign(common, { secret: process.env.JWT_SECRET, expiresIn: '2h' });
-      const newRefreshToken = this.jwtService.sign({ sub: u.id }, { secret: process.env.JWT_REFRESH_SECRET, expiresIn: '7d' });
+      const newRefreshToken = this.jwtService.sign(
+        { sub: u.id, jti },
+        { secret: process.env.JWT_REFRESH_SECRET, expiresIn: '7d' },
+      );
 
       // 4. Lưu token mới vào DB
       const newTokenHash = crypto.createHash('sha256').update(newRefreshToken).digest('hex');
@@ -205,6 +218,8 @@ export class AuthService {
           userId: u.id,
           tokenHash: newTokenHash,
           expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+          ipAddress: stored.ipAddress,
+          userAgent: stored.userAgent,
         },
       });
 
@@ -477,14 +492,26 @@ export class AuthService {
   }
 
   private async generateTokens(u: any, deviceInfo?: { ip?: string; userAgent?: string }) {
-    const payload = { sub: u.id };
-    const accessToken = this.jwtService.sign(payload);
-    const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
-    const tokenHash = await bcrypt.hash(refreshToken, 10);
+    const jti = crypto.randomBytes(16).toString('hex');
+    const common = { sub: u.id, email: u.email, role: u.role };
+
+    const accessToken = this.jwtService.sign(common, {
+      secret: process.env.JWT_SECRET,
+      expiresIn: '2h',
+    });
+
+    const refreshToken = this.jwtService.sign(
+      { sub: u.id, jti },
+      { secret: process.env.JWT_REFRESH_SECRET, expiresIn: '7d' },
+    );
+
+    const tokenHash = crypto.createHash('sha256').update(refreshToken).digest('hex');
 
     // Security check for new device
     if (deviceInfo && u.id) {
-      this.checkNewDevice(u, deviceInfo).catch(err => console.error('New device check failed:', err));
+      this.checkNewDevice(u, deviceInfo).catch((err) =>
+        console.error('New device check failed:', err),
+      );
     }
 
     await this.prisma.refreshToken.create({
@@ -496,6 +523,8 @@ export class AuthService {
         expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 ngày
       },
     });
+
+    await this.cleanupOldTokens(u.id);
 
     return { accessToken, refreshToken, user: u };
   }

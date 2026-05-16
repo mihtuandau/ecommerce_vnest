@@ -272,6 +272,7 @@ model Discount {
   usageCount             Int                @default(0)
   usageLimit             Int?
   isFlashSale            Boolean            @default(false)
+  deletedAt              DateTime?
   applicableToCategories DiscountCategory[]
   applicableToProducts   DiscountProduct[]
   discountUsages         DiscountUsage[]
@@ -280,6 +281,7 @@ model Discount {
   @@index([code])
   @@index([isActive])
   @@index([isFlashSale])
+  @@index([deletedAt])
   @@index([startDate, endDate])
 }
 
@@ -296,11 +298,16 @@ model DiscountCategory {
 }
 
 model DiscountProduct {
-  discountId Int
-  productId  Int
-  createdAt  DateTime @default(now())
-  discount   Discount @relation(fields: [discountId], references: [id], onDelete: Cascade)
-  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  discountId  Int
+  productId   Int
+  stockLimit  Int      @default(0)
+  soldCount   Int      @default(0)
+  badge       String?
+  percentage  Float?
+  fixedAmount Float?
+  createdAt   DateTime @default(now())
+  discount    Discount @relation(fields: [discountId], references: [id], onDelete: Cascade)
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@id([discountId, productId])
   @@index([discountId])

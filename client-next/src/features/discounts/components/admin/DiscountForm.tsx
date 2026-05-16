@@ -7,11 +7,10 @@ import * as z from "zod";
 import { Form } from "@/components/ui/Form";
 import { Button } from "@/components/ui/Button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs";
-import { Save } from "lucide-react";
+import { Save, ChevronLeft } from "lucide-react";
 import { Spinner } from "@/components/ui/Spinner";
 import { useRouter } from "next/navigation";
 import { useProducts } from "@/features/products/hooks";
-import { Product } from "@/types/models";
 
 // Sub-components
 import { BasicInfoSection, ValueSection, UsageSection, ScopeSection } from "./form";
@@ -88,9 +87,13 @@ export function DiscountForm({ initialData, onSubmit, isLoading }: DiscountFormP
         usageLimit: initialData.usageLimit || 100,
         startDate: formatDateForInput(initialData.startDate),
         endDate: formatDateForInput(initialData.endDate),
-        applicableToProducts: (initialData.applicableToProducts || []).map((p: any) =>
-          String(p.productId || p)
-        ),
+        applicableToProducts: (initialData.applicableToProducts || []).map((p: any) => ({
+          productId: String(p.productId || p),
+          stockLimit: p.stockLimit || 0,
+          percentage: p.percentage || null,
+          fixedAmount: p.fixedAmount || null,
+          badge: p.badge || null,
+        })),
       });
     }
   }, [initialData, form]);
@@ -98,72 +101,94 @@ export function DiscountForm({ initialData, onSubmit, isLoading }: DiscountFormP
   const onFormSubmit = (values: any) => {
     const submissionValues = {
       ...values,
-      applicableToProducts: (values.applicableToProducts || []).map((id: any) => Number(id))
+      percentage: values.type === "PERCENTAGE" ? Number(values.value) : null,
+      fixedAmount: values.type === "FIXED" ? Number(values.value) : null,
+      applicableToProducts: values.applicableToProducts.map((p: any) => ({
+        productId: Number(p.productId),
+        stockLimit: (p.stockLimit !== "" && p.stockLimit !== null) ? Number(p.stockLimit) : 0,
+        percentage: (p.percentage !== "" && p.percentage !== null) ? Number(p.percentage) : null,
+        fixedAmount: (p.fixedAmount !== "" && p.fixedAmount !== null) ? Number(p.fixedAmount) : null,
+        badge: p.badge || null,
+      })),
     };
+    
+    delete (submissionValues as any).type;
+    delete (submissionValues as any).value;
+    
     onSubmit(submissionValues);
   };
-
-  const products = Array.isArray(productsData)
-    ? productsData
-    : (productsData as { data?: Product[] })?.data || [];
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-8">
-        <div className="flex justify-end mb-6">
-          <Button
-            type="submit"
-            className="h-10 px-8 rounded-lg font-semibold gap-2 bg-primary text-white hover:bg-slate-800 shadow-sm"
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <Spinner size="sm" variant="white" />
-            ) : (
-              <Save className="h-5 w-5" />
-            )}
-            {initialData ? "Lưu thay đổi" : "Kích hoạt mã"}
-          </Button>
-        </div>
-
         <Tabs defaultValue="general" className="w-full">
-          <TabsList className="bg-slate-100 p-1 rounded-xl border border-slate-200 mb-8">
-            <TabsTrigger
-              value="general"
-              className="rounded-lg px-8 py-2 text-sm font-semibold data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm text-slate-500 transition-all"
-            >
-              Thông tin chung
-            </TabsTrigger>
-            <TabsTrigger
-              value="usage"
-              className="rounded-lg px-8 py-2 text-sm font-semibold data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm text-slate-500 transition-all"
-            >
-              Cấu hình & Sản phẩm
-            </TabsTrigger>
-          </TabsList>
+          {/* Professional Tab Navigation */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 border-b border-slate-200 pb-1 mb-8">
+            <TabsList className="bg-transparent h-auto p-0 flex gap-10">
+              <TabsTrigger 
+                value="general" 
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-1 pb-4 text-slate-500 data-[state=active]:text-slate-900 font-bold text-[15px] transition-all"
+              >
+                Cấu hình & Mức giảm
+              </TabsTrigger>
+              <TabsTrigger 
+                value="rules" 
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-1 pb-4 text-slate-500 data-[state=active]:text-slate-900 font-bold text-[15px] transition-all"
+              >
+                Điều kiện & Thời gian
+              </TabsTrigger>
+              <TabsTrigger 
+                value="scope" 
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-1 pb-4 text-slate-500 data-[state=active]:text-slate-900 font-bold text-[15px] transition-all"
+              >
+                Sản phẩm áp dụng
+              </TabsTrigger>
+            </TabsList>
 
-          <TabsContent value="general" className="space-y-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="flex items-center gap-3 pb-3">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-10 px-5 rounded-xl font-bold text-xs hover:bg-slate-50"
+                onClick={() => router.back()}
+              >
+                Hủy
+              </Button>
+              <Button type="submit" size="sm" disabled={isLoading} className="h-10 px-6 rounded-xl font-bold text-xs shadow-lg shadow-primary/10">
+                {isLoading ? (
+                  <Spinner size="sm" className="mr-2" />
+                ) : (
+                  <Save className="mr-2 h-4 w-4" />
+                )}
+                Lưu thay đổi
+              </Button>
+            </div>
+          </div>
+
+          <div className="max-w-[1200px]">
+            {/* Tab 1: General + Value */}
+            <TabsContent value="general" className="mt-0 space-y-10 animate-in fade-in slide-in-from-bottom-2 duration-300">
               <BasicInfoSection form={form} />
               <ValueSection form={form} />
-            </div>
-          </TabsContent>
+            </TabsContent>
 
-          <TabsContent value="usage" className="space-y-8">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-              <div className="lg:col-span-5">
-                <UsageSection form={form} />
-              </div>
-              <div className="lg:col-span-7">
-                <ScopeSection
-                  form={form}
-                  products={products}
-                  isLoading={isLoadingProducts}
-                  searchQuery={searchQuery}
-                  onSearchChange={setSearchQuery}
-                />
-              </div>
-            </div>
-          </TabsContent>
+            {/* Tab 2: Rules (Usage) */}
+            <TabsContent value="rules" className="mt-0 animate-in fade-in slide-in-from-bottom-2 duration-300">
+              <UsageSection form={form} />
+            </TabsContent>
+
+            {/* Tab 3: Scope */}
+            <TabsContent value="scope" className="mt-0 animate-in fade-in slide-in-from-bottom-2 duration-300">
+              <ScopeSection 
+                form={form} 
+                products={productsData?.data || []}
+                isLoading={isLoadingProducts}
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
+              />
+            </TabsContent>
+          </div>
         </Tabs>
       </form>
     </Form>

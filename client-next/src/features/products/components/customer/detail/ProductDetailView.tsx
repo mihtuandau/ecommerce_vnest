@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useEffect } from "react";
 import { useProductDetail, useIncrementView } from "@/features/products/hooks";
-import { useFlashSale } from "@/features/discounts/hooks";
+import { useFlashSale, useDiscounts } from "@/features/discounts/hooks";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
@@ -16,6 +16,7 @@ import { RecentlyViewedProducts } from "../RecentlyViewedProducts";
 import { useRecentlyViewed } from "@/features/products/hooks/useRecentlyViewed";
 import { ProductTabs } from "./ProductTabs";
 import { RelatedProducts } from "../RelatedProducts";
+import { calculateDiscountedPrice } from "@/features/discounts/utils/discount";
 
 interface ProductDetailViewProps {
   slug: string;
@@ -24,11 +25,29 @@ interface ProductDetailViewProps {
 export function ProductDetailView({ slug }: ProductDetailViewProps) {
   const { data: product, isLoading, error } = useProductDetail(slug);
   const { data: flashSale } = useFlashSale();
+  const { data: discountsData } = useDiscounts({ type: "PROMOTION" });
   const { mutate: incrementView } = useIncrementView();
   const { addProduct } = useRecentlyViewed();
   
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
+  
+  const allDiscounts = useMemo(() => {
+    const fs = Array.isArray(flashSale) ? flashSale : [];
+    const ds = Array.isArray(discountsData) ? discountsData : [];
+    return [...fs, ...ds];
+  }, [flashSale, discountsData]);
+
+  const activeFlashSession = useMemo(() => {
+    const sessions = Array.isArray(flashSale) ? flashSale : [];
+    const now = new Date();
+    // Chỉ lấy phiên Flash Sale đang diễn ra (LIVE)
+    return sessions.find(s => 
+      new Date(s.startDate) <= now && 
+      (!s.endDate || new Date(s.endDate) >= now) &&
+      s.products?.some((p: any) => String(p.id) === String(product?.id) || String(p.productId) === String(product?.id))
+    );
+  }, [flashSale, product?.id]);
 
   // Track Recently Viewed & Increment view count
   useEffect(() => {
@@ -126,15 +145,11 @@ export function ProductDetailView({ slug }: ProductDetailViewProps) {
     );
   }
 
-  const isFlashSale = flashSale?.products?.some((p: any) => String(p.id) === String(product.id));
-  const flashSalePercent = isFlashSale ? (flashSale!.percentage || 0) : 0;
-  
   const currentBasePrice = selectedVariant?.price || product.price || product.basePrice || 0;
+  const finalPrice = calculateDiscountedPrice(product, allDiscounts);
+  const isFlashSale = finalPrice < currentBasePrice;
+  const flashSalePercent = isFlashSale ? Math.round(((currentBasePrice - finalPrice) / currentBasePrice) * 100) : 0;
   
-  const finalPrice = isFlashSale 
-    ? Math.round(currentBasePrice * (1 - flashSalePercent / 100))
-    : currentBasePrice;
-    
   const originalPriceVal = selectedVariant?.originalPrice || product.originalPrice;
   const finalOriginalPrice = isFlashSale 
       ? currentBasePrice 
@@ -164,7 +179,7 @@ export function ProductDetailView({ slug }: ProductDetailViewProps) {
               <div className="space-y-10 animate-in fade-in slide-in-from-right-4 duration-700">
                 <ProductInfo 
                   product={product} 
-                  flashSale={flashSale} 
+                  flashSale={activeFlashSession} 
                   finalPrice={finalPrice} 
                   finalOriginalPrice={finalOriginalPrice} 
                 />

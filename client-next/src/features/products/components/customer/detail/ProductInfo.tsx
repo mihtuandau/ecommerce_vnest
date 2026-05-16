@@ -39,19 +39,21 @@ function ProductCountdown({ endDate }: { endDate: string }) {
   if (!time || time.expired) return null;
 
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-2">
       {[
         { val: time.days, label: "Ngày" },
         { val: time.hours, label: "Giờ" },
         { val: time.minutes, label: "Phút" },
         { val: time.seconds, label: "Giây" }
-      ].map((item, i) => (
+      ].slice(time.days > 0 ? 0 : 1).map((item, i) => (
         <React.Fragment key={i}>
-          <div className="flex flex-col items-center">
-            <span className="text-[14px] font-bold text-primary tabular-nums leading-none mb-1">{pad(item.val)}</span>
-            <span className="text-[9px] font-bold text-brand-taupe uppercase tracking-[0.1em]">{item.label}</span>
+          {i > 0 && <span className="text-[14px] font-bold text-brand-bronze animate-pulse mb-3">:</span>}
+          <div className="flex flex-col items-center gap-1">
+            <div className="w-9 h-9 bg-white rounded-lg flex items-center justify-center shadow-sm border border-brand-sand/30">
+              <span className="text-[15px] font-bold text-brand-espresso tabular-nums leading-none">{pad(item.val)}</span>
+            </div>
+            <span className="text-[8px] font-extrabold text-brand-taupe uppercase tracking-wider">{item.label}</span>
           </div>
-          {i < 3 && <span className="text-brand-ivory font-light self-start mt-0.5">:</span>}
         </React.Fragment>
       ))}
     </div>
@@ -59,7 +61,10 @@ function ProductCountdown({ endDate }: { endDate: string }) {
 }
 
 export function ProductInfo({ product, flashSale, finalPrice, finalOriginalPrice }: ProductInfoProps) {
-  const isFlashSale = flashSale?.products?.some((p) => String(p.id) === String(product.id));
+  const isFlashSale = flashSale?.products?.some((p: any) => 
+    String(p.id) === String(product.id) || 
+    String(p.productId) === String(product.id)
+  );
   const flashSalePercent = isFlashSale ? (flashSale!.percentage || 0) : 0;
 
   return (
@@ -92,23 +97,25 @@ export function ProductInfo({ product, flashSale, finalPrice, finalOriginalPrice
         </div>
       </div>
 
-      <div className="pt-8 border-t border-brand-ivory space-y-8">
+      <div className="pt-8 border-t border-brand-ivory space-y-6">
         <div className="flex flex-col gap-3">
           {isFlashSale && (
-            <div className="flex items-center gap-2 mb-1">
-              <span className="bg-brand-bronze text-white px-3 py-1 rounded-full text-[10px] font-bold flex items-center gap-1.5">
+            <div className="flex items-center gap-2.5">
+              <div className="bg-red-500 text-white px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-tighter flex items-center gap-1 animate-pulse">
                 <Zap size={11} fill="currentColor" /> Flash Sale
-              </span>
-              <span className="text-brand-bronze text-[13px] font-bold">Tiết kiệm {flashSalePercent}%</span>
+              </div>
+              <div className="bg-brand-bronze/10 text-brand-bronze px-3 py-1 rounded-md text-[11px] font-bold">
+                Tiết kiệm {flashSalePercent}%
+              </div>
             </div>
           )}
           
           <div className="flex items-baseline gap-4">
-            <span className="text-[32px] font-bold tabular-nums leading-none text-primary">
+            <span className="text-[36px] font-bold tabular-nums leading-none text-brand-espresso">
               {formatCurrency(finalPrice)}
             </span>
             {finalOriginalPrice && finalOriginalPrice > finalPrice && (
-              <span className="text-[16px] text-brand-taupe/80 line-through font-medium tabular-nums">
+              <span className="text-[18px] text-brand-taupe/60 line-through font-medium tabular-nums">
                 {formatCurrency(finalOriginalPrice)}
               </span>
             )}
@@ -116,11 +123,21 @@ export function ProductInfo({ product, flashSale, finalPrice, finalOriginalPrice
         </div>
 
         {isFlashSale && flashSale?.endDate && (
-          <div className="flex items-center justify-between p-6 bg-white rounded-3xl border border-brand-ivory max-w-sm">
-            <div className="text-[11px] font-bold text-brand-taupe">
-              Kết thúc sau
+          <div className="flex items-center justify-between p-5 bg-brand-espresso rounded-[28px] border border-brand-bronze/30 shadow-[0_20px_40px_rgba(61,43,26,0.15)] relative overflow-hidden group">
+            {/* Background Accent */}
+            <div className="absolute top-0 right-0 w-32 h-32 bg-brand-bronze/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
+            
+            <div className="flex flex-col gap-1.5 relative z-10">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
+                <span className="text-[11px] font-black text-brand-sand uppercase tracking-[0.2em]">Sắp kết thúc</span>
+              </div>
+              <span className="text-[12px] font-medium text-brand-ivory/80">Đừng bỏ lỡ ưu đãi này</span>
             </div>
-            <ProductCountdown endDate={flashSale.endDate} />
+            
+            <div className="relative z-10">
+              <ProductCountdown endDate={flashSale.endDate} />
+            </div>
           </div>
         )}
       </div>
