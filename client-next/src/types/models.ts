@@ -21,6 +21,10 @@ export interface User {
   birthDate?: string;
   createdAt: string;
   updatedAt: string;
+  // Populated on detail endpoints (e.g. GET /users/:id)
+  addresses?: Address[];
+  orders?: Order[];
+  reviews?: Review[];
 }
 
 export interface ProductImage {
@@ -60,6 +64,12 @@ export interface Product {
   createdAt: string;
   updatedAt: string;
   averageRating?: number; // Add for consistency
+  metaTitle?: string;
+  metaDesc?: string;
+  packageWeight?: number;
+  packageLength?: number;
+  packageWidth?: number;
+  packageHeight?: number;
 }
 
 export interface ProductVariant {
@@ -73,6 +83,10 @@ export interface ProductVariant {
   stock: number;
   isActive: boolean;
   images?: ProductImage[] | string[];
+  weight?: number;
+  length?: number;
+  width?: number;
+  height?: number;
   product?: Product;
 }
 
@@ -120,6 +134,7 @@ export interface Order {
     district: string;
     ward: string;
     street: string;
+    email?: string;
   };
   note?: string;
   fullName?: string;

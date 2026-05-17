@@ -92,7 +92,7 @@ export function DataTable<TData, TValue>({
                   return (
                     <TableHead
                       key={header.id}
-                      className="h-11 px-4 text-xs font-semibold text-slate-600 uppercase"
+                      className="h-12 px-4 text-xs font-semibold text-slate-500 uppercase tracking-wide border-b border-slate-200"
                     >
                       {header.isPlaceholder
                         ? null
@@ -112,7 +112,7 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  className={cn("hover:bg-slate-50 transition-colors", rowClassName?.(row))}
+                  className={cn("h-16 hover:bg-slate-50 border-b border-slate-100 transition-colors", rowClassName?.(row))}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id} className="px-4 py-3 text-sm">

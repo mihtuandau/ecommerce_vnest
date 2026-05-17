@@ -9,6 +9,8 @@ import { Items } from "@/features/orders/components/admin/detail/Items";
 import { Customer } from "@/features/orders/components/admin/detail/Customer";
 import { Actions } from "@/features/orders/components/admin/detail/Actions";
 import { PrintInvoice } from "@/features/orders/components/admin/detail/PrintInvoice";
+import { Timeline } from "@/features/orders/components/admin/detail/Timeline";
+import { Notes } from "@/features/orders/components/admin/detail/Notes";
 import { Spinner } from "@/components/ui/Spinner";
 
 export default function AdminOrderDetailPage() {
@@ -41,18 +43,18 @@ export default function AdminOrderDetailPage() {
           onUpdateStatus={(id, status) => updateStatus({ id, status })} 
         />
 
-        {/* Progress Stepper */}
-        <Stepper 
-          status={order.status} 
-          id={id} 
-          isPending={isPending} 
-          onUpdateStatus={(id, status) => updateStatus({ id, status })} 
-        />
-
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column: Items */}
+          {/* Left Column: Stepper, Items, Timeline, Notes */}
           <div className="lg:col-span-2 space-y-6">
+            <Stepper 
+              status={order.status} 
+              id={id} 
+              isPending={isPending} 
+              onUpdateStatus={(id, status) => updateStatus({ id, status })} 
+            />
             <Items order={order} />
+            <Timeline order={order} />
+            <Notes order={order} />
           </div>
 
           {/* Right Column: Customer & Actions */}

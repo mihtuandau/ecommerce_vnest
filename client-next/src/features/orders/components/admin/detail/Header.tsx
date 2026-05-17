@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/DropdownMenu";
 import { cn } from "@/utils/cn";
 import { useRouter } from "next/navigation";
+import { adminUI } from "@/constants/admin-ui";
 import { OrderStatus, PaymentStatus } from "@/types/enums";
 
 interface HeaderProps {
@@ -37,52 +38,36 @@ export function Header({ order, onUpdateStatus, id }: HeaderProps) {
         >
           <ChevronLeft className="h-4 w-4" />
         </Button>
-        <div>
-          <div className="flex items-center gap-3">
-            <h1 className="text-xl font-semibold text-slate-800">Chi tiết đơn hàng #{order.orderCode}</h1>
-            {isCancelled && (
-              <Badge variant="outline" className="rounded-full px-3 py-1.5 text-[11px] font-medium bg-rose-50 text-rose-600 border-none h-fit leading-none flex items-center justify-center">
-                Đã hủy
-              </Badge>
-            )}
-            {order.status === OrderStatus.RETURN_REQUESTED && (
-              <Badge variant="outline" className="rounded-full px-3 py-1.5 text-[11px] font-medium bg-amber-50 text-amber-600 border-none h-fit leading-none flex items-center justify-center">
-                Yêu cầu trả hàng
-              </Badge>
-            )}
-            {order.status === OrderStatus.RETURNED && (
-              <Badge variant="outline" className="rounded-full px-3 py-1.5 text-[11px] font-medium bg-purple-50 text-purple-600 border-none h-fit leading-none flex items-center justify-center">
-                Đã trả hàng
-              </Badge>
-            )}
-          </div>
-          <div className="flex items-center gap-3 mt-1.5 text-xs font-medium">
-            <span className="text-slate-600">
-              Ngày đặt: {dayjs(order.createdAt).format("HH:mm, DD/MM/YYYY")}
-            </span>
-            {order.deliveredAt && (
-              <>
-                <span className="w-1 h-1 bg-slate-300 rounded-full" />
-                <span className="text-emerald-600 font-semibold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
-                  Giao hàng: {dayjs(order.deliveredAt).format("HH:mm, DD/MM/YYYY")}
-                </span>
-              </>
-            )}
-          </div>
+        <div className="flex items-center gap-3">
+          <h1 className={adminUI.typography.heading}>Chi tiết đơn hàng #{order.orderCode}</h1>
+          {isCancelled && (
+            <Badge variant="outline" className="rounded-full px-3 py-1.5 text-[11px] font-medium bg-rose-50 text-rose-600 border-none h-fit leading-none flex items-center justify-center">
+              Đã hủy
+            </Badge>
+          )}
+          {order.status === OrderStatus.RETURN_REQUESTED && (
+            <Badge variant="outline" className="rounded-full px-3 py-1.5 text-[11px] font-medium bg-amber-50 text-amber-600 border-none h-fit leading-none flex items-center justify-center">
+              Yêu cầu trả hàng
+            </Badge>
+          )}
+          {order.status === OrderStatus.RETURNED && (
+            <Badge variant="outline" className="rounded-full px-3 py-1.5 text-[11px] font-medium bg-purple-50 text-purple-600 border-none h-fit leading-none flex items-center justify-center">
+              Đã trả hàng
+            </Badge>
+          )}
         </div>
       </div>
       <div className="flex items-center gap-2 no-print">
         <Button 
           variant="outline" 
-          size="sm" 
-          className="font-medium gap-2 border-slate-200"
+          className={cn(adminUI.button.base, adminUI.button.secondary)}
           onClick={() => window.print()}
         >
-          <Printer className="h-4 w-4" /> In đơn
+          <Printer className={cn(adminUI.icon.action, "mr-2")} /> In đơn
         </Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="font-medium gap-2 border-slate-200">
+            <Button variant="outline" className={cn(adminUI.button.base, adminUI.button.secondary)}>
               Thao tác khác
             </Button>
           </DropdownMenuTrigger>

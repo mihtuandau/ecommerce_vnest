@@ -5,6 +5,7 @@ import { RefreshCw, Download, Plus } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/utils/cn";
+import { adminUI } from "@/constants/admin-ui";
 import Link from "next/link";
 
 interface OrderListHeaderProps {
@@ -15,30 +16,30 @@ interface OrderListHeaderProps {
 
 export function OrderListHeader({ totalOrders, onRefresh, isFetching }: OrderListHeaderProps) {
   return (
-    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900">Quản lý đơn hàng</h1>
-        <p className="text-slate-500 text-sm">
-          Tổng cộng {totalOrders} đơn hàng trong hệ thống
-        </p>
+        <h1 className={adminUI.typography.heading}>Quản lý đơn hàng</h1>
+        <div className="flex items-center gap-1.5 text-[12px] font-medium text-slate-400 mt-1">
+          <span>Bán hàng</span>
+          <span className="text-[10px]">›</span>
+          <span className="text-slate-800">Đơn hàng</span>
+        </div>
       </div>
       <div className="flex items-center gap-2">
         <Button 
           variant="ghost" 
-          size="sm" 
-          className="font-bold gap-2 text-slate-500 hover:text-primary hover:bg-slate-50"
+          className={cn(adminUI.button.base, adminUI.button.ghost)}
           onClick={onRefresh}
           disabled={isFetching}
         >
-          {isFetching ? <Spinner size="sm" /> : <RefreshCw className="h-4 w-4" />}
-          {isFetching ? "Đang tải..." : "Làm mới"}
+          {isFetching ? <Spinner size="sm" /> : <RefreshCw className={adminUI.icon.action} />}
         </Button>
-        <Button variant="outline" size="sm" className="font-bold gap-2 border-slate-200 hover:bg-slate-50">
-          <Download className="h-4 w-4 text-slate-400" /> Xuất Excel
+        <Button variant="outline" className={cn(adminUI.button.base, adminUI.button.secondary)}>
+          <Download className={cn(adminUI.icon.action, "mr-2")} /> Xuất Excel
         </Button>
         <Link href="/admin/orders/create">
-          <Button size="sm" className="font-bold gap-2 bg-primary text-white hover:bg-slate-800 shadow-sm">
-            <Plus className="h-4 w-4" /> Tạo đơn mới
+          <Button className={cn(adminUI.button.base, adminUI.button.primary)}>
+            <Plus className={cn(adminUI.icon.action, "mr-2")} /> Tạo đơn mới
           </Button>
         </Link>
       </div>

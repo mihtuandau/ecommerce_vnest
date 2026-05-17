@@ -221,6 +221,12 @@
    Print Styles
    ────────────────────────────────────────────── */
 @media print {
+  html, body {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #000000 !important;
+  }
+
   @page {
     size: A4;
     margin: 15mm;
@@ -276,23 +282,47 @@
 }
 .admin-theme {
   /* 
-     Admin Color Palette — Professional Cobalt & Slate
-     Directly overriding Tailwind theme variables for immediate effect.
+     Admin Color Palette — Soft, Minimalist White & Slate
   */
-  --color-primary: hsl(221.2 83.2% 53.3%) !important;
-  --color-primary-foreground: hsl(210 40% 98%) !important;
+  --primary: 215 27.9% 16.9% !important; /* Soft Slate-800 */
+  --primary-foreground: 0 0% 100% !important;
+
+  --color-primary: hsl(215 27.9% 16.9%) !important; /* Soft Slate-800 */
+  --color-primary-foreground: hsl(0 0% 100%) !important;
   
-  --color-brand-bronze: hsl(221.2 83.2% 53.3%) !important;
-  --color-brand-sand: hsl(214.3 31.8% 91.4%) !important;
-  --color-brand-taupe: hsl(215.4 16.3% 46.9%) !important;
-  --color-brand-cream: hsl(210 40% 98%) !important;
-  --color-brand-ivory: hsl(210 40% 96.1%) !important;
+  --background: 210 40% 98% !important; /* Slate-50 */
+  --foreground: 222.2 47.4% 11.2% !important; /* Slate-900 */
 
-  --color-background: hsl(210 40% 98%) !important;
-  --color-foreground: hsl(222.2 47.4% 11.2%) !important;
+  --color-background: hsl(210 40% 98%) !important; /* Slate-50 */
+  --color-foreground: hsl(222.2 47.4% 11.2%) !important; /* Slate-900 */
 
-  --color-border: hsl(214.3 31.8% 91.4%) !important;
+  --border: 214.3 31.8% 91.4% !important; /* Slate-200 */
+  --color-border: hsl(214.3 31.8% 91.4%) !important; /* Slate-200 */
+
+  --ring: 221.2 83.2% 53.3% !important;
   --color-ring: hsl(221.2 83.2% 53.3%) !important;
+
+  /* Standard slate overrides for muted, accent, secondary and inputs to fully isolate admin panel */
+  --muted: 210 40% 96.1% !important; /* Slate-100 */
+  --color-muted: hsl(210 40% 96.1%) !important;
+
+  --muted-foreground: 215.4 16.3% 46.9% !important; /* Slate-500 */
+  --color-muted-foreground: hsl(215.4 16.3% 46.9%) !important;
+
+  --accent: 210 40% 96.1% !important; /* Slate-100 */
+  --color-accent: hsl(210 40% 96.1%) !important;
+
+  --accent-foreground: 222.2 47.4% 11.2% !important; /* Slate-900 */
+  --color-accent-foreground: hsl(222.2 47.4% 11.2%) !important;
+
+  --secondary: 210 40% 96.1% !important; /* Slate-100 */
+  --color-secondary: hsl(210 40% 96.1%) !important;
+
+  --secondary-foreground: 222.2 47.4% 11.2% !important; /* Slate-900 */
+  --color-secondary-foreground: hsl(222.2 47.4% 11.2%) !important;
+
+  --input: 214.3 31.8% 91.4% !important;
+  --color-input: hsl(214.3 31.8% 91.4%) !important;
 
   /* Force background */
   background-color: hsl(210 40% 98%) !important;

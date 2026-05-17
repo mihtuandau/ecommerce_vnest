@@ -32,6 +32,8 @@ export class ProductRepository {
         averageRating: true, 
         reviewCount: true, 
         isActive: true,
+        categoryId: true,
+        createdAt: true,
         category: { select: { name: true } },
         images: { 
           where: { isThumbnail: true }, 
@@ -56,6 +58,7 @@ export class ProductRepository {
           where: { isActive: true, deletedAt: null }, 
           select: { 
             id: true, size: true, color: true, stock: true, price: true, originalPrice: true, sku: true, isActive: true, 
+            weight: true, length: true, width: true, height: true,
             images: { select: { id: true, url: true, isPrimary: true }, orderBy: { displayOrder: 'asc' } } 
           } 
         };

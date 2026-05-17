@@ -7,7 +7,7 @@ import { ShoppingBag, Clock, CheckCircle2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { cn } from "@/utils/cn";
-import { OrderTabs } from "@/features/orders/components/admin/list/Tabs";
+import { OrderStats } from "@/features/orders/components/admin/list/OrderStats";
 import { OrderListToolbar } from "@/features/orders/components/admin/list/ListToolbar";
 import { OrderListHeader } from "@/features/orders/components/admin/list/ListHeader";
 import { OrderStatus } from "@/types/enums";
@@ -17,7 +17,10 @@ export default function AdminOrdersPage() {
   const { data: orders = [], isLoading, refetch, isFetching } = useOrders({ limit: 1000 });
   const { mutate: updateStatus } = useUpdateOrderStatus();
   const [searchTerm, setSearchTerm] = React.useState("");
-  const [activeTab, setActiveTab] = React.useState("ALL");
+  const [statusFilter, setStatusFilter] = React.useState("ALL");
+  const [paymentFilter, setPaymentFilter] = React.useState("ALL");
+  const [startDate, setStartDate] = React.useState("");
+  const [endDate, setEndDate] = React.useState("");
 
   const counts = React.useMemo(() => ({
     ALL: orders.length,
@@ -33,9 +36,26 @@ export default function AdminOrdersPage() {
   const filteredOrders = React.useMemo(() => {
     let result = orders;
     
-    // Tab filter
-    if (activeTab !== "ALL") {
-      result = result.filter(o => o.status === activeTab);
+    // Status filter
+    if (statusFilter !== "ALL") {
+      result = result.filter(o => o.status === statusFilter);
+    }
+
+    // Payment method filter
+    if (paymentFilter !== "ALL") {
+      result = result.filter(o => o.paymentMethod === paymentFilter);
+    }
+
+    // Date range filter
+    if (startDate) {
+      const start = new Date(startDate);
+      start.setHours(0, 0, 0, 0);
+      result = result.filter(o => new Date(o.createdAt) >= start);
+    }
+    if (endDate) {
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59, 999);
+      result = result.filter(o => new Date(o.createdAt) <= end);
     }
 
     // Search filter
@@ -51,7 +71,15 @@ export default function AdminOrdersPage() {
     }
     
     return result;
-  }, [orders, activeTab, searchTerm]);
+  }, [orders, statusFilter, paymentFilter, startDate, endDate, searchTerm]);
+
+  const handleReset = () => {
+    setSearchTerm("");
+    setStatusFilter("ALL");
+    setPaymentFilter("ALL");
+    setStartDate("");
+    setEndDate("");
+  };
 
 
   return (
@@ -63,17 +91,25 @@ export default function AdminOrdersPage() {
         isFetching={isFetching} 
       />
 
-      {/* Main Table Container - Rounded & Shadow */}
-      <div className="bg-white rounded-2xl border-none shadow-sm overflow-hidden">
-        <OrderTabs 
-          activeTab={activeTab} 
-          onTabChange={setActiveTab} 
-          counts={counts} 
-        />
+      {/* Statistics Cards */}
+      <OrderStats 
+        counts={counts} 
+      />
 
+      {/* Main Table Container - Rounded & Shadow */}
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <OrderListToolbar 
           searchTerm={searchTerm} 
-          onSearchChange={setSearchTerm} 
+          onSearchChange={setSearchTerm}
+          statusFilter={statusFilter}
+          onStatusChange={setStatusFilter}
+          paymentFilter={paymentFilter}
+          onPaymentChange={setPaymentFilter}
+          startDate={startDate}
+          onStartDateChange={setStartDate}
+          endDate={endDate}
+          onEndDateChange={setEndDate}
+          onReset={handleReset}
         />
         
         {/* Table Content */}

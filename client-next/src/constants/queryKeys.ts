@@ -36,4 +36,7 @@ export const queryKeys = {
   categories: {
     all: ["categories"] as const,
   },
+  payments: {
+    all: ["payments"] as const,
+  },
 } as const;

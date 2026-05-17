@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { 
   X, Send, Paperclip, Smile, Image as ImageIcon, 
   User, MessageSquare, Phone, Clock, ChevronLeft, 
-  Zap, ShieldCheck, Heart
+  Zap, ShieldCheck, Heart, ExternalLink
 } from "lucide-react";
 import { useSocket, useChatMessages, chatApi } from "@/features/chat";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -12,6 +12,8 @@ import { cn } from "@/utils/cn";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/vi";
+import { productsApi } from "@/features/products/api";
+import { toast } from "sonner";
 
 dayjs.extend(relativeTime);
 dayjs.locale("vi");
@@ -29,8 +31,21 @@ export default function LuxeCustomerChat({ onClose }: LuxeCustomerChatProps) {
   const { socket, isConnected } = useSocket();
   const [isTyping, setIsTyping] = useState(false);
   const [staffTyping, setStaffTyping] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [pendingAttachment, setPendingAttachment] = useState<string | null>(null);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
+
+  const isImageMessage = (msgText: string) => {
+    return msgText.startsWith("http") && (msgText.match(/\.(jpeg|jpg|gif|png|webp|svg)/i) || msgText.includes("/uploads/"));
+  };
+
+  const isFileMessage = (msgText: string) => {
+    return msgText.startsWith("http") && !isImageMessage(msgText);
+  };
+
 
   // Sync messages
   useEffect(() => {
@@ -73,17 +88,52 @@ export default function LuxeCustomerChat({ onClose }: LuxeCustomerChatProps) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, staffTyping]);
 
-  const handleSendMessage = () => {
-    if (!inputText.trim() || !socket || !roomId) return;
+  const handleSendMessage = (customText?: string) => {
+    const textToSend = customText !== undefined ? customText : inputText.trim();
+    if (!textToSend || !socket || !roomId) return;
 
     socket.emit("sendMessage", {
       roomId,
-      message: inputText.trim(),
+      message: textToSend,
     });
 
-    setInputText("");
-    setIsTyping(false);
-    socket.emit("typing", { roomId, isTyping: false });
+    if (customText === undefined) {
+      setInputText("");
+      setIsTyping(false);
+      socket.emit("typing", { roomId, isTyping: false });
+    }
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>, isImageOnly: boolean) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setIsUploading(true);
+      toast.loading(isImageOnly ? "Đang tải hình ảnh lên..." : "Đang tải tệp lên...", { id: "customer-uploading-chat" });
+      
+      const url = await productsApi.uploadImage(file);
+      
+      toast.success(isImageOnly ? "Tải ảnh lên thành công!" : "Tải tệp lên thành công!", { id: "customer-uploading-chat" });
+      
+      setPendingAttachment(url);
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast.error("Không thể tải tệp lên. Vui lòng thử lại!", { id: "customer-uploading-chat" });
+    } finally {
+      setIsUploading(false);
+      if (e.target) e.target.value = "";
+    }
+  };
+
+  const handleSend = () => {
+    if (pendingAttachment) {
+      handleSendMessage(pendingAttachment);
+      setPendingAttachment(null);
+    }
+    if (inputText.trim()) {
+      handleSendMessage();
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -164,9 +214,9 @@ export default function LuxeCustomerChat({ onClose }: LuxeCustomerChatProps) {
           </div>
         )}
 
-        {messages.map((m, i) => {
+        {messages.filter(m => !m.message.startsWith("[INTERNAL]")).map((m, i, filteredList) => {
           const isUser = m.senderId === user.id;
-          const showTime = i === messages.length - 1 || dayjs(messages[i+1].createdAt).diff(dayjs(m.createdAt), 'minute') > 5;
+          const showTime = i === filteredList.length - 1 || dayjs(filteredList[i+1].createdAt).diff(dayjs(m.createdAt), 'minute') > 5;
           
           return (
             <div key={m.id || i} className={cn("flex gap-3 items-end group", isUser ? "flex-row-reverse" : "flex-row")}>
@@ -176,14 +226,43 @@ export default function LuxeCustomerChat({ onClose }: LuxeCustomerChatProps) {
                 </div>
               )}
               <div className={cn("max-w-[80%] flex flex-col", isUser ? "items-end" : "items-start")}>
-                <div className={cn(
-                  "p-3 text-[13px] leading-relaxed shadow-sm transition-all duration-300",
-                  isUser 
-                    ? "bg-[#3D2B1A] text-[#FAF8F4] rounded-[18px] rounded-br-none hover:bg-[#2A2420]" 
-                    : "bg-white text-[#3D2B1A] border border-[#DDD6C8] rounded-[18px] rounded-bl-none hover:border-[#C4B49A]"
-                )}>
-                  {m.message}
-                </div>
+                {isImageMessage(m.message) ? (
+                  <div className="rounded-2xl overflow-hidden shadow-xs border border-[#DDD6C8]/60 bg-white p-1">
+                    <img 
+                      src={m.message} 
+                      alt="Attachment" 
+                      className="max-w-[240px] max-h-[180px] rounded-xl object-cover cursor-pointer hover:opacity-90 transition-opacity" 
+                      onClick={() => window.open(m.message, "_blank")} 
+                    />
+                  </div>
+                ) : (
+                  <div className={cn(
+                    "p-3 text-[13px] leading-relaxed shadow-sm transition-all duration-300",
+                    isUser 
+                      ? "bg-[#3D2B1A] text-[#FAF8F4] rounded-[18px] rounded-br-none hover:bg-[#2A2420]" 
+                      : "bg-white text-[#3D2B1A] border border-[#DDD6C8] rounded-[18px] rounded-bl-none hover:border-[#C4B49A]"
+                  )}>
+                    {isFileMessage(m.message) ? (
+                      <a 
+                        href={m.message} 
+                        target="_blank" 
+                        rel="noreferrer" 
+                        className={cn(
+                          "flex items-center gap-2 p-2 rounded-xl border transition-colors",
+                          isUser 
+                            ? "border-stone-700 bg-stone-800/30 text-[#FAF8F4] hover:bg-stone-900/40" 
+                            : "border-slate-100 bg-slate-50 text-[#3D2B1A] hover:bg-slate-100"
+                        )}
+                      >
+                        <Paperclip size={13} className="shrink-0" />
+                        <span className="text-xs font-medium truncate max-w-[180px]">Tải tệp đính kèm</span>
+                        <ExternalLink size={10} className="shrink-0 opacity-60" />
+                      </a>
+                    ) : (
+                      m.message
+                    )}
+                  </div>
+                )}
                 {showTime && (
                   <div className="flex items-center gap-1.5 px-2 mt-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
                     <span className="text-[9px] font-bold text-[#8A7966] uppercase tracking-tighter">{dayjs(m.createdAt).format("HH:mm")}</span>
@@ -212,8 +291,48 @@ export default function LuxeCustomerChat({ onClose }: LuxeCustomerChatProps) {
 
       {/* Input Area */}
       <div className="p-4 bg-white border-t border-[#DDD6C8] shrink-0">
+        {/* Hidden File Inputs */}
+        <input 
+          type="file" 
+          ref={fileInputRef} 
+          onChange={(e) => handleFileChange(e, false)} 
+          className="hidden" 
+          accept="*/*"
+        />
+        <input 
+          type="file" 
+          ref={imageInputRef} 
+          onChange={(e) => handleFileChange(e, true)} 
+          className="hidden" 
+          accept="image/*"
+        />
+
         <div className="flex items-end gap-3">
-          <div className="flex-1 bg-[#F3EFE8]/50 border border-[#DDD6C8] rounded-[20px] overflow-hidden focus-within:border-[#C4B49A] focus-within:bg-white transition-all duration-300">
+          <div className="flex-1 bg-[#F3EFE8]/50 border border-[#DDD6C8] rounded-[20px] overflow-hidden focus-within:border-[#C4B49A] focus-within:bg-white transition-all duration-300 flex flex-col">
+            {pendingAttachment && (
+              <div className="px-3 pt-3 pb-1 flex bg-white border-b border-[#DDD6C8]/10 shrink-0">
+                <div className="relative inline-block bg-stone-50 border border-stone-200 rounded-xl p-1 shadow-xs group animate-in zoom-in-95 duration-200">
+                  {isImageMessage(pendingAttachment) ? (
+                    <img 
+                      src={pendingAttachment} 
+                      alt="Attachment Preview" 
+                      className="w-12 h-12 rounded-lg object-cover"
+                    />
+                  ) : (
+                    <div className="w-12 h-12 rounded-lg flex items-center justify-center bg-stone-100 border border-stone-200">
+                      <Paperclip size={18} className="text-stone-400" />
+                    </div>
+                  )}
+                  <button 
+                    type="button"
+                    onClick={() => setPendingAttachment(null)}
+                    className="absolute -top-1.5 -right-1.5 w-4.5 h-4.5 bg-stone-800 text-white rounded-full flex items-center justify-center hover:bg-black transition-colors cursor-pointer shadow-sm border border-white"
+                  >
+                    <X size={8} strokeWidth={2.5} />
+                  </button>
+                </div>
+              </div>
+            )}
             <textarea 
               placeholder="Gửi tin nhắn cho chúng tôi..."
               className="w-full p-3 bg-transparent border-none outline-none resize-none text-[13px] min-h-[44px] max-h-[100px] text-[#3D2B1A] font-medium"
@@ -223,14 +342,26 @@ export default function LuxeCustomerChat({ onClose }: LuxeCustomerChatProps) {
               onKeyDown={(e) => {
                  if (e.key === "Enter" && !e.shiftKey) {
                     e.preventDefault();
-                    handleSendMessage();
+                    handleSend();
                  }
               }}
             />
             <div className="px-3 py-1.5 border-t border-[#DDD6C8]/20 flex items-center justify-between">
               <div className="flex gap-2">
-                <button className="text-[#8A7966] hover:text-[#3D2B1A] transition-colors"><Paperclip size={16} /></button>
-                <button className="text-[#8A7966] hover:text-[#3D2B1A] transition-colors"><ImageIcon size={16} /></button>
+                <button 
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isUploading}
+                  className="text-[#8A7966] hover:text-[#3D2B1A] transition-colors disabled:opacity-50 cursor-pointer"
+                >
+                  <Paperclip size={16} />
+                </button>
+                <button 
+                  onClick={() => imageInputRef.current?.click()}
+                  disabled={isUploading}
+                  className="text-[#8A7966] hover:text-[#3D2B1A] transition-colors disabled:opacity-50 cursor-pointer"
+                >
+                  <ImageIcon size={16} />
+                </button>
               </div>
               <div className="flex items-center gap-1">
                  <span className="text-[9px] font-bold text-[#8A7966]">{inputText.length}</span>
@@ -239,16 +370,16 @@ export default function LuxeCustomerChat({ onClose }: LuxeCustomerChatProps) {
             </div>
           </div>
           <button 
-            onClick={handleSendMessage}
-            disabled={!inputText.trim()}
+            onClick={handleSend}
+            disabled={(!inputText.trim() && !pendingAttachment) || isUploading}
             className={cn(
-              "w-11 h-11 rounded-[18px] flex items-center justify-center transition-all transform active:scale-90 shrink-0 shadow-lg",
-              inputText.trim() 
+              "w-11 h-11 rounded-[18px] flex items-center justify-center transition-all transform active:scale-90 shrink-0 shadow-lg cursor-pointer",
+              (inputText.trim() || pendingAttachment) && !isUploading
                 ? "bg-[#3D2B1A] text-white hover:bg-[#2A2420] shadow-[#3D2B1A]/20" 
                 : "bg-[#E8E0D0] text-[#FAF8F4] opacity-50 cursor-not-allowed"
             )}
           >
-            <Send size={18} className={cn("transition-transform", inputText.trim() ? "translate-x-0.5 -translate-y-0.5" : "")} />
+            <Send size={18} className={cn("transition-transform", (inputText.trim() || pendingAttachment) ? "translate-x-0.5 -translate-y-0.5" : "")} />
           </button>
         </div>
         <p className="text-center text-[9px] text-[#8A7966] font-bold uppercase tracking-widest mt-3">

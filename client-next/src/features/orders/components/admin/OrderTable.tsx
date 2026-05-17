@@ -81,57 +81,55 @@ export const columns: ColumnDef<Order>[] = [
   {
     accessorKey: "orderCode",
     header: "Mã đơn",
-    cell: ({ row }) => (
-      <Link
-        href={`${ROUTES.ADMIN_ORDERS}/${row.original.id}`}
-        className="font-semibold text-primary hover:underline"
-      >
-        #{row.getValue("orderCode")}
-      </Link>
-    ),
+    cell: ({ row }) => {
+      const order = row.original;
+      return (
+        <div className="flex flex-col min-w-[130px]">
+          <Link
+            href={`${ROUTES.ADMIN_ORDERS}/${order.id}`}
+            className="font-semibold text-slate-800 font-mono hover:text-primary transition-colors text-[12.5px]"
+          >
+            #{row.getValue("orderCode")}
+          </Link>
+          <span className="text-[11px] text-slate-500 mt-0.5">
+            {dayjs(order.createdAt).format("DD/MM/YYYY · HH:mm")}
+          </span>
+        </div>
+      );
+    },
   },
   {
     id: "products",
     header: "Sản phẩm",
     cell: ({ row }) => {
       const order = row.original;
-      const firstItem = order.orderItems?.[0];
-      const otherItemsCount = (order.orderItems?.length || 1) - 1;
+      const items = order.orderItems || [];
+      const visibleItems = items.slice(0, 3);
+      const remainingCount = items.length - 3;
 
-      if (!firstItem) return <span className="text-slate-400">--</span>;
-
-      const imageUrl = getImageUrl(firstItem);
+      if (items.length === 0) return <span className="text-slate-400">--</span>;
 
       return (
-        <div className="flex items-center gap-3 py-1">
-          <div className="h-10 w-10 rounded-xl bg-slate-50 border border-slate-100 flex-shrink-0 overflow-hidden p-0.5 flex items-center justify-center relative">
-            <Image
-              src={imageUrl}
-              alt="Product"
-              fill
-              unoptimized
-              className="object-cover rounded-lg"
-            />
+        <div className="flex flex-col gap-1 py-1 cursor-pointer" onClick={() => window.location.href = `${ROUTES.ADMIN_ORDERS}/${order.id}`}>
+          <div className="flex -space-x-2">
+            {visibleItems.map((item: any, idx: number) => (
+              <div key={idx} className="h-8 w-7 rounded border border-slate-200 bg-slate-50 flex items-center justify-center overflow-hidden relative shadow-sm ring-2 ring-white">
+                <Image
+                  src={getImageUrl(item)}
+                  alt="Product"
+                  fill
+                  unoptimized
+                  className="object-cover"
+                />
+              </div>
+            ))}
+            {remainingCount > 0 && (
+              <div className="h-8 w-7 rounded border border-slate-200 bg-slate-100 flex items-center justify-center text-[9px] font-bold text-slate-500 shadow-sm ring-2 ring-white z-10">
+                +{remainingCount}
+              </div>
+            )}
           </div>
-          <div className="flex flex-col min-w-0 max-w-[200px]">
-            <span className="text-xs font-semibold text-slate-800 truncate">
-              {(firstItem as any).productName || (firstItem.variantSnapshot as any)?.productName || firstItem.variant?.product?.name}
-            </span>
-            <div className="flex items-center gap-2 mt-0.5">
-              {(firstItem.variant?.color || firstItem.variant?.size) && (
-                <span className="text-[11px] text-primary font-semibold tracking-tight bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100">
-                  {[firstItem.variant?.color, firstItem.variant?.size]
-                    .filter(Boolean)
-                    .join(" / ")}
-                </span>
-              )}
-              {otherItemsCount > 0 && (
-                <span className="text-[11px] text-slate-500 font-semibold">
-                  +{otherItemsCount} sản phẩm khác
-                </span>
-              )}
-            </div>
-          </div>
+          <span className="text-[11px] text-slate-500 mt-1">{items.length} sản phẩm</span>
         </div>
       );
     },
@@ -141,15 +139,20 @@ export const columns: ColumnDef<Order>[] = [
     header: "Khách hàng",
     cell: ({ row }) => {
       const order = row.original;
-      const name =
-        order.shippingSnapshot?.fullName || order.user?.name || "Khách vãng lai";
-      const phone =
-        order.shippingSnapshot?.phone || (order as any).guestPhone || order.user?.phone || "--";
+      const name = order.shippingSnapshot?.fullName || order.user?.name || "Khách vãng lai";
+      const phone = order.shippingSnapshot?.phone || (order as any).guestPhone || order.user?.phone || "--";
+      const email = order.shippingSnapshot?.email || (order as any).guestEmail || order.user?.email || "";
+      const avatarInitial = name !== "Khách vãng lai" ? name.substring(0, 2).toUpperCase() : "KV";
 
       return (
-        <div className="flex flex-col">
-          <span className="font-semibold text-slate-800">{name}</span>
-          <span className="text-xs text-slate-600">{phone}</span>
+        <div className="flex items-center gap-2.5">
+          <div className="h-8 w-8 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-[11px] font-bold shrink-0">
+            {avatarInitial}
+          </div>
+          <div className="flex flex-col min-w-[120px]">
+            <span className="text-[13px] font-semibold text-slate-800">{name}</span>
+            <span className="text-[11px] text-slate-500">{email || phone}</span>
+          </div>
         </div>
       );
     },
@@ -160,8 +163,12 @@ export const columns: ColumnDef<Order>[] = [
     cell: ({ row }) => {
       const order = row.original;
       const amount = order.total || (order as any).totalAmount || 0;
+      const discount = (order as any).discountAmount || 0;
       return (
-        <span className="font-semibold text-slate-800">{formatCurrency(amount)}</span>
+        <div className="flex flex-col">
+          <span className="text-[14px] font-bold font-serif text-slate-800">{formatCurrency(amount)}</span>
+          {discount > 0 && <span className="text-[11px] font-medium text-rose-500">-{formatCurrency(discount)}</span>}
+        </div>
       );
     },
   },

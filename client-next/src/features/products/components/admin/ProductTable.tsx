@@ -37,34 +37,34 @@ const CellAction = ({ data }: CellActionProps) => {
             <MoreHorizontal className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-48 rounded-xl p-1 shadow-2xl border-muted/50">
-          <DropdownMenuLabel className="text-xs font-semibold tracking-wide text-slate-500 px-2 py-1.5">Hành động</DropdownMenuLabel>
-          <DropdownMenuItem className="rounded-lg cursor-pointer gap-2 py-2 text-sm focus:bg-slate-100 focus:text-slate-900" asChild>
+        <DropdownMenuContent align="end" className="w-48 rounded-2xl p-2 shadow-2xl border-slate-200">
+          <DropdownMenuLabel className="text-xs font-semibold tracking-wide text-slate-500 px-2 py-1.5 uppercase">Hành động</DropdownMenuLabel>
+          <DropdownMenuItem className="rounded-xl cursor-pointer gap-3 py-2.5 text-sm focus:bg-slate-100 focus:text-slate-900" asChild>
             <Link href={`${ROUTES.ADMIN_PRODUCTS}/${data.id}`}>
-              <Pencil className="h-3.5 w-3.5" />
+              <Pencil className="h-4 w-4" />
               Chỉnh sửa
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem className="rounded-lg cursor-pointer gap-2 py-2 text-sm" asChild>
+          <DropdownMenuItem className="rounded-xl cursor-pointer gap-3 py-2.5 text-sm" asChild>
              <Link href={ROUTES.PRODUCT_DETAIL(data.slug)} target="_blank">
-                <ExternalLink className="h-3.5 w-3.5" />
+                <ExternalLink className="h-4 w-4" />
                 Xem trang khách
              </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem className="rounded-lg cursor-pointer gap-2 py-2 text-sm text-amber-600">
-            <History className="h-3.5 w-3.5" />
+          <DropdownMenuItem className="rounded-xl cursor-pointer gap-3 py-2.5 text-sm text-amber-600 focus:bg-amber-50">
+            <History className="h-4 w-4" />
             Lịch sử kho
           </DropdownMenuItem>
-          <DropdownMenuSeparator className="my-1 bg-muted" />
+          <DropdownMenuSeparator className="my-2 bg-slate-100" />
           <DropdownMenuItem
-            className="rounded-lg cursor-pointer gap-2 py-2 text-sm text-destructive focus:bg-destructive/10"
+            className="rounded-xl cursor-pointer gap-3 py-2.5 text-sm text-red-600 focus:bg-red-50 focus:text-red-700 font-medium"
             onClick={() => {
               if (confirm("Bạn có chắc chắn muốn xóa sản phẩm này? Hành động này không thể hoàn tác.")) {
                 deleteProduct(data.id);
               }
             }}
           >
-            <Trash2 className="h-3.5 w-3.5" />
+            <Trash2 className="h-4 w-4" />
             Xóa sản phẩm
           </DropdownMenuItem>
         </DropdownMenuContent>
@@ -130,23 +130,7 @@ export const columns: ColumnDef<Product>[] = [
       );
     },
   },
-  {
-    accessorKey: "variants",
-    header: "Biến thể",
-    cell: ({ row }) => {
-      const product = row.original;
-      const variants = product.variants || [];
-      if (variants.length === 0) return <span className="text-xs text-muted-foreground italic">Không có</span>;
 
-      return (
-        <div className="flex items-center gap-2">
-          <Badge variant="outline" className="text-xs h-6 px-2.5 py-1 font-semibold bg-primary/5 border-primary/20 text-primary tracking-wide">
-             {variants.length} biến thể
-          </Badge>
-        </div>
-      );
-    },
-  },
   {
     accessorKey: "basePrice",
     header: "Giá bán",
@@ -157,7 +141,7 @@ export const columns: ColumnDef<Product>[] = [
 
       return (
         <div className="flex flex-col">
-          <span className="font-semibold text-sm text-primary">{formatCurrency(price)}</span>
+          <span className="font-semibold text-[14px] font-serif text-slate-800">{formatCurrency(price)}</span>
           {originalPrice && originalPrice > 0 && (
             <span className="text-xs text-slate-500 line-through decoration-destructive/50 mt-0.5 font-medium">
               {formatCurrency(originalPrice)}

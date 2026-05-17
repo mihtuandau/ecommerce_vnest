@@ -47,7 +47,7 @@ export function FlashSaleHero({
             </em>
           </h1>
           <p className="text-white/60 text-[16px] max-w-[420px] leading-relaxed">
-            {activeSession.description ||
+            {activeSession?.description ||
               "Hàng ngàn sản phẩm chính hãng giảm đến 70%. Số lượng có hạn — nhanh tay kẻo lỡ!"}
           </p>
           <div className="flex gap-7 mt-1">
@@ -61,7 +61,7 @@ export function FlashSaleHero({
             </div>
             <div className="text-center">
               <strong className="block font-serif text-[28px] text-white">
-                {activeSession.percentage}%
+                {activeSession?.percentage || 0}%
               </strong>
               <span className="text-[11px] text-white/50 uppercase tracking-wider">
                 Giảm tối đa
@@ -90,9 +90,9 @@ export function FlashSaleHero({
           <FlashSaleCountdown
             endDate={
               status === "LIVE"
-                ? activeSession.endDate
+                ? activeSession?.endDate
                 : status === "SOON"
-                ? activeSession.startDate
+                ? activeSession?.startDate
                 : undefined
             }
           />

@@ -81,7 +81,40 @@ export class OrderService {
       throw new NotFoundException(`Đơn hàng #${id} không tồn tại hoặc không thuộc quyền sở hữu của bạn`);
     }
 
-    return OrderHelper.serializeOrder(order);
+    const serializedOrder = OrderHelper.serializeOrder(order);
+
+    // Tính toán tổng số đơn và chi tiêu nếu là Admin
+    if (isStaff) {
+      let statsWhere: any = null;
+      if (order.userId) {
+        statsWhere = { userId: order.userId };
+      } else if (order.guestPhone) {
+        statsWhere = { guestPhone: order.guestPhone };
+      } else if (order.guestEmail) {
+        statsWhere = { guestEmail: order.guestEmail };
+      }
+
+      if (statsWhere) {
+        // Chỉ tính những đơn đã giao và ĐÃ THANH TOÁN THÀNH CÔNG
+        statsWhere.status = 'DELIVERED';
+        statsWhere.payment = { status: 'SUCCESS' };
+
+        const userStats = await this.prisma.order.aggregate({
+          where: statsWhere,
+          _count: { id: true },
+          _sum: { total: true }
+        });
+        
+        serializedOrder.customerStats = {
+          totalOrders: userStats._count.id,
+          totalSpent: userStats._sum.total || 0
+        };
+      } else {
+        serializedOrder.customerStats = { totalOrders: 0, totalSpent: 0 };
+      }
+    }
+
+    return serializedOrder;
   }
 
   async update(id: number, dto: UpdateOrderDto): Promise<any> {

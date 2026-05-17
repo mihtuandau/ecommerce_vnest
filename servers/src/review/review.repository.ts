@@ -180,7 +180,30 @@ export class ReviewRepository {
           select: {
             id: true,
             name: true,
-            images: true,
+            slug: true,
+            images: {
+              select: {
+                url: true,
+                isThumbnail: true,
+              },
+            },
+          },
+        },
+        order: {
+          select: {
+            id: true,
+            orderCode: true,
+            orderItems: {
+              select: {
+                variant: {
+                  select: {
+                    productId: true,
+                    size: true,
+                    color: true,
+                  },
+                },
+              },
+            },
           },
         },
       },

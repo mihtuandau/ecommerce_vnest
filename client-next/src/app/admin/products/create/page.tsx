@@ -3,6 +3,8 @@
 import { useCreateProduct } from "@/features/products/hooks";
 import { ProductForm } from "@/features/products/components/admin/ProductForm";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/Button";
+import { adminUI } from "@/constants/admin-ui";
 import { ChevronLeft } from "lucide-react";
 
 export default function AdminProductCreatePage() {
@@ -30,6 +32,8 @@ export default function AdminProductCreatePage() {
       originalPrice: cleanNumber(data.originalPrice),
       categoryId: Number(data.categoryId || 0),
       status: data.status || "active",
+      metaTitle: data.metaTitle,
+      metaDesc: data.metaDesc,
       images: images || [],
       variants: variants || [],
     };
@@ -39,33 +43,37 @@ export default function AdminProductCreatePage() {
     createProduct(cleanDto, {
       onSuccess: () => {
         router.push("/admin/products");
-      },
-      onError: (err: any) => {
-        const msg = err?.response?.data?.message || err?.message || "Lỗi không xác định";
-        alert(`Lỗi từ Server: ${Array.isArray(msg) ? msg.join(", ") : msg}`);
       }
     });
   };
 
   return (
-    <div className="space-y-6 pb-10">
+    <div className="space-y-6 pb-10 max-w-7xl mx-auto">
+      {/* Header */}
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <button
+        <div className="flex items-center gap-4">
+          <Button 
+            variant="ghost" 
+            size="sm"
+            className="h-9 w-9 p-0 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 shadow-sm transition-all"
             onClick={() => router.back()}
-            className="flex items-center gap-1 text-sm text-slate-400 hover:text-slate-700 font-medium mb-2 transition-colors"
           >
-            <ChevronLeft className="h-4 w-4" />
-            Quay lại danh sách
-          </button>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Thêm sản phẩm mới</h1>
-          <p className="text-slate-500 text-sm">Tạo một mặt hàng mới để thêm vào cửa hàng.</p>
+            <ChevronLeft className="h-4 w-4 text-slate-600" />
+          </Button>
+          <div>
+            <h1 className={adminUI.typography.heading}>Thêm sản phẩm mới</h1>
+            <div className="flex items-center gap-1.5 text-[12px] font-medium text-slate-400 mt-1">
+              <span>Sản phẩm</span>
+              <span className="text-[10px]">›</span>
+              <span className="text-slate-800">Thêm mới</span>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Form */}
-      <div className="max-w-6xl">
+      <div className="w-full">
         <ProductForm onSubmit={handleSubmit} isLoading={isPending} />
       </div>
     </div>

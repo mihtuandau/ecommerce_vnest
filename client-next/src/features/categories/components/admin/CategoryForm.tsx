@@ -166,7 +166,7 @@ export function CategoryForm({ initialData, onSubmit, isLoading }: CategoryFormP
                             <SelectValue placeholder="Chọn danh mục cha" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="rounded-xl border-slate-200 shadow-xl overflow-hidden p-1">
+                        <SelectContent className="rounded-xl border-slate-200 shadow-xl overflow-hidden p-1 admin-theme">
                           <SelectItem value="none" className="rounded-lg text-slate-600 font-medium py-3">
                             Không có (Danh mục gốc)
                           </SelectItem>

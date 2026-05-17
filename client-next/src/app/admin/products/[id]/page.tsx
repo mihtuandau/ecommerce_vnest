@@ -6,6 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
+import { adminUI } from "@/constants/admin-ui";
 
 export default function AdminProductDetailPage() {
   const { id } = useParams() as { id: string };
@@ -34,6 +35,8 @@ export default function AdminProductDetailPage() {
       basePrice: cleanNumber(data.basePrice),
       categoryId: Number(data.categoryId),
       status: data.status,
+      metaTitle: data.metaTitle,
+      metaDesc: data.metaDesc,
       images: images || [],
       variants: variants || [],
     };
@@ -48,34 +51,37 @@ export default function AdminProductDetailPage() {
 
     updateProduct({ id, data: cleanUpdateData }, {
       onSuccess: () => router.push("/admin/products"),
-      onError: (err: any) => {
-        const msg = err?.response?.data?.message || err?.message || "Lỗi không xác định";
-        alert(`Lỗi từ Server: ${Array.isArray(msg) ? msg.join(", ") : msg}`);
-      }
     });
   };
 
   return (
-    <div className="space-y-6 pb-10">
+    <div className="space-y-6 pb-10 max-w-7xl mx-auto">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <button
+        <div className="flex items-center gap-4">
+          <Button 
+            variant="ghost" 
+            size="sm"
+            className="h-9 w-9 p-0 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 shadow-sm transition-all"
             onClick={() => router.back()}
-            className="flex items-center gap-1 text-sm text-slate-400 hover:text-slate-700 font-medium mb-2 transition-colors"
           >
-            <ChevronLeft className="h-4 w-4" />
-            Quay lại danh sách
-          </button>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Chỉnh sửa sản phẩm</h1>
-          <p className="text-slate-500 text-sm">
-            {product ? product.name : "Đang tải thông tin sản phẩm..."}
-          </p>
+            <ChevronLeft className="h-4 w-4 text-slate-600" />
+          </Button>
+          <div>
+            <h1 className={adminUI.typography.heading}>Chỉnh sửa sản phẩm</h1>
+            <div className="flex items-center gap-1.5 text-[12px] font-medium text-slate-400 mt-1">
+              <span>Sản phẩm</span>
+              <span className="text-[10px]">›</span>
+              <span className="text-slate-800">
+                {product ? product.name : "Đang tải..."}
+              </span>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Form */}
-      <div className="max-w-6xl">
+      <div className="w-full">
         {isLoading ? (
           <div className="flex h-96 items-center justify-center bg-white rounded-xl border border-slate-200">
             <div className="flex flex-col items-center gap-3">

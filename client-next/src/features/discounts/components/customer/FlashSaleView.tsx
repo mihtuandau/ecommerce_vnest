@@ -61,27 +61,6 @@ export function FlashSaleView() {
     );
   }
 
-  if (!activeSession) {
-    return (
-      <div className="min-h-screen bg-[#FAF8F4] flex flex-col items-center justify-center p-12 text-center">
-        <div className="relative mb-10">
-          <div className="absolute inset-0 bg-[#E8320A]/5 blur-[60px] rounded-full scale-150" />
-          <div className="relative w-32 h-32 mx-auto bg-white border-2 border-[#DDD6C8] rounded-[32px] flex items-center justify-center transform rotate-6 hover:rotate-0 transition-transform duration-500">
-             <ShoppingBag size={48} className="text-[#DDD6C8]" />
-          </div>
-        </div>
-        <h2 className="font-serif text-4xl font-bold text-[#3D2B1A] mb-4 tracking-tight">Flash Sale đang tạm nghỉ</h2>
-        <p className="text-[#8A7966] max-w-lg mx-auto mb-10 leading-relaxed text-lg italic">
-          Các chương trình ưu đãi bùng nổ đang được chúng tôi chuẩn bị kỹ lưỡng.
-        </p>
-        <Link href="/shop">
-          <Button className="bg-[#3D2B1A] hover:bg-[#E8320A] text-white px-10 h-14 rounded-[16px] font-bold shadow-xl">
-            Khám phá Cửa hàng
-          </Button>
-        </Link>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-[#FAF8F4] font-sans text-[#2A2420]">
@@ -148,14 +127,29 @@ export function FlashSaleView() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-[18px]">
-          {filteredProducts.map((p: any) => (
-            <FlashSaleProductCard 
-              key={p.id} 
-              product={p} 
-              session={activeSession} 
-              nextSession={nextSession}
-            />
-          ))}
+          {filteredProducts.length > 0 ? (
+            filteredProducts.map((p: any) => (
+              <FlashSaleProductCard 
+                key={p.id} 
+                product={p} 
+                session={activeSession} 
+                nextSession={nextSession}
+              />
+            ))
+          ) : (
+            <div className="col-span-full py-24 text-center">
+              <div className="relative mb-6 inline-block">
+                <div className="absolute inset-0 bg-[#E8320A]/5 blur-[40px] rounded-full scale-150" />
+                <div className="relative w-24 h-24 bg-white border-2 border-[#DDD6C8] rounded-[24px] flex items-center justify-center transform rotate-6 hover:rotate-0 transition-transform duration-500">
+                   <ShoppingBag size={36} className="text-[#DDD6C8]" />
+                </div>
+              </div>
+              <h3 className="text-2xl font-bold text-[#3D2B1A] mb-3 font-serif-brand">Flash Sale đang tạm nghỉ</h3>
+              <p className="text-[#8A7966] text-sm max-w-md mx-auto italic">
+                Các chương trình ưu đãi bùng nổ đang được chúng tôi chuẩn bị kỹ lưỡng. Vui lòng quay lại sau!
+              </p>
+            </div>
+          )}
         </div>
       </main>
 

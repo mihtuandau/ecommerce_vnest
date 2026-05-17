@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useChatMessages, useSocket } from "@/features/chat";
 import { useQueryClient } from "@tanstack/react-query";
+import { chatApi } from "../api";
 
 export function useChatSession(selectedRoomId: string | null, refetchRooms: () => void) {
   const queryClient = useQueryClient();
@@ -20,7 +21,16 @@ export function useChatSession(selectedRoomId: string | null, refetchRooms: () =
   // Join room and Socket listeners
   useEffect(() => {
     if (socket && selectedRoomId) {
+      // 1. Join socket channel
       socket.emit("joinRoom", { roomId: selectedRoomId });
+
+      // 2. Immediately mark as read to clear unread counts on both socket and database
+      socket.emit("markAsRead", { roomId: selectedRoomId });
+      chatApi.markAsRead(selectedRoomId)
+        .then(() => {
+          refetchRooms();
+        })
+        .catch(err => console.error("Error marking messages as read:", err));
 
       const handleNewMessage = (newMessage: any) => {
         if (newMessage.roomId === selectedRoomId) {

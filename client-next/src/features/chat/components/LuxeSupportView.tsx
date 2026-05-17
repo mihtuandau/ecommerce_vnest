@@ -8,12 +8,36 @@ import { SupportSidebar } from "./Support/SupportSidebar";
 import { ChatMain } from "./Support/ChatMain";
 import { CustomerInfo } from "./Support/CustomerInfo";
 
+import { useUsers } from "@/features/users/hooks";
+
 export default function LuxeSupportView() {
   const { user } = useAuthStore();
+
+  const hasAccess = user?.role === "ADMIN" || user?.permissions?.includes("chat.support");
+
+  if (!hasAccess) {
+    return (
+      <div className="flex h-full w-full items-center justify-center bg-[#F8FAFC] font-sans p-6">
+        <div className="max-w-md w-full text-center bg-white rounded-[2rem] p-8 border border-slate-100 shadow-xl space-y-6">
+          <div className="w-16 h-16 rounded-[1.5rem] bg-rose-500/10 text-rose-600 flex items-center justify-center font-bold text-2xl mx-auto border border-rose-250/50 shadow-inner">
+            🛡️
+          </div>
+          <div>
+            <h3 className="text-base font-bold text-slate-800">Không có quyền truy cập</h3>
+            <p className="text-xs leading-relaxed text-slate-450 mt-2">
+              Bạn không có quyền <span className="font-semibold text-rose-600">"chat.support"</span> để sử dụng tính năng này. Vui lòng liên hệ Quản trị viên để được phân quyền.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const { data: rooms, isLoading: roomsLoading, refetch: refetchRooms } = useChatRooms();
   const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [inputText, setInputText] = useState("");
+  const [activeTab, setActiveTab] = useState<"customers" | "staff">("customers");
   const [isShortcutMenuOpen, setIsShortcutMenuOpen] = useState(false);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     contact: true,
@@ -23,6 +47,18 @@ export default function LuxeSupportView() {
   });
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  // Fetch all staff members to enable direct chatting between staff
+  const { data: usersResponse } = useUsers({ limit: 100 });
+  const staffMembers = useMemo(() => {
+    const rawList = Array.isArray(usersResponse) 
+      ? usersResponse 
+      : (usersResponse?.data || []);
+    return rawList.filter((u: any) => 
+      ["ADMIN", "KHO", "BAN_HANG"].includes(u.role?.toUpperCase()) && 
+      u.id !== user?.id
+    );
+  }, [usersResponse, user]);
   
   // Custom Hook for chat logic
   const { 
@@ -32,10 +68,23 @@ export default function LuxeSupportView() {
     sendMessage 
   } = useChatSession(selectedRoomId, refetchRooms);
 
-  const selectedRoom = useMemo(() => 
-    rooms?.find(r => r.roomId === selectedRoomId), 
-    [rooms, selectedRoomId]
-  );
+  const selectedRoom = useMemo(() => {
+    if (selectedRoomId?.startsWith("room_staff_")) {
+      const otherStaffId = selectedRoomId.replace("room_staff_", "").split("_").find(id => String(id) !== String(user?.id));
+      const staffObj = staffMembers.find((s: any) => String(s.id) === String(otherStaffId));
+      return {
+        roomId: selectedRoomId,
+        customer: {
+          id: staffObj?.id,
+          name: staffObj?.name || "Nhân viên",
+          role: staffObj?.role || "Staff",
+          email: staffObj?.email,
+        },
+        isStaffChat: true,
+      };
+    }
+    return rooms?.find(r => r.roomId === selectedRoomId);
+  }, [rooms, selectedRoomId, staffMembers, user]);
 
   const filteredRooms = useMemo(() => {
     if (!rooms) return [];
@@ -45,9 +94,12 @@ export default function LuxeSupportView() {
     );
   }, [rooms, searchQuery]);
 
-  const handleSendMessage = () => {
-    sendMessage(inputText);
-    setInputText("");
+  const handleSendMessage = (customText?: string) => {
+    const textToSend = customText !== undefined ? customText : inputText;
+    sendMessage(textToSend);
+    if (customText === undefined) {
+      setInputText("");
+    }
     setIsShortcutMenuOpen(false);
   };
 
@@ -85,6 +137,9 @@ export default function LuxeSupportView() {
         onSelectRoom={setSelectedRoomId}
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        staffMembers={staffMembers}
       />
 
       <ChatMain 
@@ -98,6 +153,7 @@ export default function LuxeSupportView() {
         onSendMessage={handleSendMessage}
         onKeyDown={handleKeyDown}
         isShortcutMenuOpen={isShortcutMenuOpen}
+        setIsShortcutMenuOpen={setIsShortcutMenuOpen}
         shortcuts={shortcuts}
         onUseShortcut={useShortcut}
         messagesEndRef={messagesEndRef}

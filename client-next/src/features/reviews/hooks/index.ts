@@ -75,3 +75,16 @@ export const useLatestReviews = () => {
     queryFn: () => reviewsApi.getLatestReviews(),
   });
 };
+
+export const useDeleteReview = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => reviewsApi.deleteReview(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["reviews"] });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.products.all });
+    },
+  });
+};
+
