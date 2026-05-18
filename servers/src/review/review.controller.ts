@@ -119,8 +119,7 @@ export class ReviewController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   async deleteReview(@Param('id') id: string, @Req() req: any) {
-    const userId = req.user.userId;
-    return this.reviewService.deleteReview(+id, userId);
+    return this.reviewService.deleteReview(+id, req.user);
   }
 
   @Get()

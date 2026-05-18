@@ -24,6 +24,7 @@ interface QuickAddModalProps {
   price: number;
   originalPrice?: number | null;
   flashSalePercent?: number;
+  flashSaleFixedAmount?: number;
 }
 
 export function QuickAddModal({
@@ -33,6 +34,7 @@ export function QuickAddModal({
   price,
   originalPrice,
   flashSalePercent = 0,
+  flashSaleFixedAmount = 0,
 }: QuickAddModalProps) {
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
@@ -83,11 +85,14 @@ export function QuickAddModal({
   const variantBasePrice = selectedVariant?.price ?? price;
   const variantOriginalPriceVal = selectedVariant?.originalPrice ?? originalPrice;
 
-  const currentPrice = flashSalePercent > 0
-    ? Math.round(variantBasePrice * (1 - flashSalePercent / 100))
-    : variantBasePrice;
+  let currentPrice = variantBasePrice;
+  if (flashSaleFixedAmount > 0) {
+    currentPrice = Math.max(0, variantBasePrice - flashSaleFixedAmount);
+  } else if (flashSalePercent > 0) {
+    currentPrice = Math.round(variantBasePrice * (1 - flashSalePercent / 100));
+  }
 
-  const currentOriginalPrice = flashSalePercent > 0
+  const currentOriginalPrice = (flashSalePercent > 0 || flashSaleFixedAmount > 0)
     ? variantBasePrice
     : variantOriginalPriceVal;
 

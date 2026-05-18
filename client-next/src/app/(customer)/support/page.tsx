@@ -1,88 +1,84 @@
 "use client";
 
-import Image from "next/image";
-import { CustomerChatWindow } from "@/features/chat/components/CustomerChatWindow";
-import { 
-  ShieldCheck, 
-  HelpCircle, FileText, Truck, RefreshCw, Phone, ChevronRight
-} from "lucide-react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import CustomerChat from "@/features/chat/components/CustomerChat";
+import CustomerSupportSidebar from "@/features/chat/components/CustomerSupport/CustomerSupportSidebar";
+import CustomerDeliveryView from "@/features/chat/components/CustomerSupport/CustomerDeliveryView";
+import CustomerReturnsView from "@/features/chat/components/CustomerSupport/CustomerReturnsView";
+import CustomerWarrantyView from "@/features/chat/components/CustomerSupport/CustomerWarrantyView";
+import CustomerContactView from "@/features/chat/components/CustomerSupport/CustomerContactView";
+import { useSystemSettings } from "@/features/settings/hooks";
 
 export default function SupportPage() {
-  const FAQ_SHORTCUTS = [
-    { icon: <Truck size={18} />, title: "Theo dõi giao hàng", desc: "Xem trạng thái đơn hàng & thời gian dự kiến" },
-    { icon: <RefreshCw size={18} />, title: "Chính sách đổi trả", desc: "Quy định đổi trả hàng trong vòng 7 ngày" },
-    { icon: <ShieldCheck size={18} />, title: "Trung tâm bảo hành", desc: "Chính sách bảo hành sản phẩm chính hãng" },
-    { icon: <FileText size={18} />, title: "Hóa đơn điện tử", desc: "Yêu cầu xuất hóa đơn cho doanh nghiệp" },
-  ];
+  const { data: settingsData } = useSystemSettings();
+  const settings = settingsData?.data || settingsData;
+  const [activeTab, setActiveTab] = useState<"chat" | "delivery" | "returns" | "warranty" | "contact">("chat");
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const storePhone = mounted ? (settings?.storePhone || "1800 1234") : "1800 1234";
+  const storeEmail = mounted ? (settings?.storeEmail || "dautuan032004@gmail.com") : "dautuan032004@gmail.com";
+  const storeAddress = mounted ? (settings?.storeAddress || "109/47/1A Đường số 8, Phường Linh Xuân, TP Thủ Đức, TP Hồ Chí Minh") : "109/47/1A Đường số 8, Phường Linh Xuân, TP Thủ Đức, TP Hồ Chí Minh";
+  const freeShippingThreshold = mounted && settings?.freeShippingThreshold 
+    ? Number(settings.freeShippingThreshold).toLocaleString("vi-VN") + "đ" 
+    : "500.000đ";
+  const defaultShippingFee = mounted && settings?.shippingFee 
+    ? Number(settings.shippingFee).toLocaleString("vi-VN") + "đ" 
+    : "30.000đ";
 
   return (
-    <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-8 md:py-12">
-      <div className="flex flex-col gap-8">
-        {/* Breadcrumbs - Synchronized Style */}
-        <div className="flex items-center gap-1.5 text-[12.5px] text-[#8A7966]">
+    <div className="bg-[#FAF8F4] lg:min-h-[calc(100vh-146px)] min-h-[calc(100vh-64px)] pt-4 lg:pt-6 pb-6 flex flex-col font-sans">
+      <div className="max-w-[1400px] w-full mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col justify-center">
+        {/* Breadcrumb Nav */}
+        <div className="flex items-center gap-2 text-[11px] font-normal text-[#8A7966] tracking-wide mb-4 shrink-0">
           <Link href="/" className="hover:text-[#3D2B1A] transition-colors">Trang chủ</Link>
-          <span className="opacity-50">›</span>
-          <span className="text-[#3D2B1A] font-medium">Trung tâm hỗ trợ</span >
+          <span className="opacity-30">/</span>
+          <span className="text-[#3D2B1A] font-medium">Trung tâm hỗ trợ</span>
         </div>
 
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-           
-           {/* Left Column: Sidebar Info */}
-           <div className="lg:col-span-4 space-y-6">
-              {/* Quick Contact Card */}
-              <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 space-y-5">
-                 <h2 className="text-sm font-bold text-slate-800 flex items-center gap-2">
-                    <HelpCircle size={18} className="text-[#1565C0]" />
-                    Trợ giúp nhanh
-                 </h2>
-                 
-                 <div className="grid grid-cols-1 gap-2">
-                    {FAQ_SHORTCUTS.map((item, idx) => (
-                       <button key={idx} className="flex items-center gap-4 p-4 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-100 transition-all text-left group">
-                          <div className="h-10 w-10 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 group-hover:text-[#1565C0] group-hover:bg-blue-50 transition-colors shrink-0">
-                             {item.icon}
-                          </div>
-                          <div>
-                             <p className="text-sm font-semibold text-slate-800">{item.title}</p>
-                             <p className="text-xs text-slate-500 mt-0.5">{item.desc}</p>
-                          </div>
-                       </button>
-                    ))}
-                 </div>
-              </div>
+        {/* Dynamic Split Console Layout (Customer Brand Palette) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 bg-white rounded-3xl border border-[#DDD6C8]/50 shadow-[0_20px_50px_rgba(61,43,26,0.015)] overflow-hidden h-[560px]">
+          
+          {/* ──── LEFT PANEL: Channels & Nav ──── */}
+          <CustomerSupportSidebar 
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            storePhone={storePhone}
+          />
 
-              {/* Contact Card */}
-              <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
-                 <div className="flex items-center gap-4 mb-4">
-                    <div className="h-12 w-12 rounded-xl bg-blue-50 flex items-center justify-center text-primary">
-                       <Phone size={20} />
-                    </div>
-                    <div>
-                       <p className="text-xs font-semibold text-slate-500">Hotline hỗ trợ</p>
-                       <p className="text-lg font-bold text-primary">1900 6789</p>
-                    </div>
-                 </div>
-                 <p className="text-xs text-slate-600 leading-relaxed font-medium">
-                    Liên hệ trực tiếp qua số điện thoại nếu bạn cần hỗ trợ xử lý đơn hàng khẩn cấp.
-                 </p>
-              </div>
-           </div>
+          {/* ──── RIGHT PANEL: Dynamic Viewport ──── */}
+          <div className="lg:col-span-8 flex flex-col bg-white overflow-hidden h-full min-h-0">
+            {activeTab === "chat" && <CustomerChat />}
+            
+            {activeTab === "delivery" && (
+              <CustomerDeliveryView 
+                freeShippingThreshold={freeShippingThreshold}
+                defaultShippingFee={defaultShippingFee}
+              />
+            )}
+            
+            {activeTab === "returns" && <CustomerReturnsView />}
+            
+            {activeTab === "warranty" && <CustomerWarrantyView />}
+            
+            {activeTab === "contact" && (
+              <CustomerContactView 
+                storePhone={storePhone}
+                storeEmail={storeEmail}
+                storeAddress={storeAddress}
+              />
+            )}
+          </div>
 
-           {/* Right Column: Chat Interface */}
-           <div className="lg:col-span-8">
-              <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                 <CustomerChatWindow />
-              </div>
-              
-              <div className="mt-8 flex items-center justify-center gap-8 opacity-40 grayscale pointer-events-none">
-                  <Image src="/GHNLogo.png" alt="GHN" width={100} height={20} className="h-5 w-auto" />
-                  <Image src="/vnpaylogo.png" alt="VNPay" width={80} height={12} className="h-3 w-auto" />
-                 <p className="text-xs font-semibold text-slate-500">Minh Tuấn Shop Partners</p>
-              </div>
-           </div>
+        </div>
 
+        {/* Global Support Info Footer */}
+        <div className="mt-8 mb-4 text-center opacity-40">
+          <p className="text-[9px] text-[#8A7966] lowercase tracking-widest font-normal">LUXE care experience ecosystem</p>
         </div>
       </div>
     </div>

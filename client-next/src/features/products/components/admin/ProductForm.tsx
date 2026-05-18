@@ -6,17 +6,18 @@ import * as z from "zod";
 import { nameSchema } from "@/lib/zod";
 import { Form } from "@/components/ui/Form";
 import { Button } from "@/components/ui/Button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs";
 import { useCategories } from "../../hooks";
 import { productsApi } from "../../api";
 import { Product } from "@/types/models";
 import { Save } from "lucide-react";
 import { Spinner } from "@/components/ui/Spinner";
 import { useState, useEffect, useRef } from "react";
-import { GeneralInfo } from "./ProductForm/GeneralInfo";
+import { ProductBasicInfo, ProductCategory, ProductPricing, ProductStatus, ProductSEO, ProductShipping } from "./ProductForm/GeneralInfo";
 import { Variants } from "./ProductForm/Variants";
 import { Media } from "./ProductForm/Media";
 import { slugify } from "@/utils/slugify";
+import { adminUI } from "@/constants/admin-ui";
+import { cn } from "@/utils/cn";
 
 const productSchema = z.object({
   name: nameSchema,
@@ -27,6 +28,12 @@ const productSchema = z.object({
   categoryId: z.coerce.number().min(1, "Vui lòng chọn danh mục"),
   brandId: z.coerce.number().optional(),
   status: z.enum(["active", "draft", "inactive"]),
+  metaTitle: z.string().optional(),
+  metaDesc: z.string().optional(),
+  packageWeight: z.coerce.number().min(0).optional(),
+  packageLength: z.coerce.number().min(0).optional(),
+  packageWidth: z.coerce.number().min(0).optional(),
+  packageHeight: z.coerce.number().min(0).optional(),
   images: z.array(z.string()),
   variants: z
     .array(
@@ -74,6 +81,12 @@ export function ProductForm({ initialData, onSubmit, isLoading }: ProductFormPro
       originalPrice: 0,
       categoryId: 0,
       status: "active",
+      metaTitle: "",
+      metaDesc: "",
+      packageWeight: 0,
+      packageLength: 0,
+      packageWidth: 0,
+      packageHeight: 0,
       images: [],
       variants: [],
     },
@@ -103,6 +116,13 @@ export function ProductForm({ initialData, onSubmit, isLoading }: ProductFormPro
         status:
           (initialData as any).status ||
           ((initialData.isActive ? "active" : "inactive") as any),
+        metaTitle: initialData.metaTitle || "",
+        metaDesc: initialData.metaDesc || "",
+        // We take the dimensions from the first variant if they exist
+        packageWeight: initialData.variants?.[0]?.weight || 0,
+        packageLength: initialData.variants?.[0]?.length || 0,
+        packageWidth: initialData.variants?.[0]?.width || 0,
+        packageHeight: initialData.variants?.[0]?.height || 0,
         images:
           initialData.images?.map((img: string | { url: string }) =>
             typeof img === "string" ? img : img.url
@@ -112,7 +132,11 @@ export function ProductForm({ initialData, onSubmit, isLoading }: ProductFormPro
           price: v.price || 0,
           stock: v.stock || 0,
           image:
-            typeof v.image === "string"
+            v.images && v.images.length > 0
+              ? typeof v.images[0] === "string"
+                ? v.images[0]
+                : v.images[0].url
+              : typeof v.image === "string"
               ? v.image
               : v.image?.url || "",
         })),
@@ -139,8 +163,6 @@ export function ProductForm({ initialData, onSubmit, isLoading }: ProductFormPro
   }, [name, form, initialData]);
 
   const onFormSubmit = (data: ProductFormValues) => {
-    console.log("Form values validated successfully:", data);
-
     const cleanNumber = (val: string | number | undefined | null) => {
       if (typeof val === "string") {
         // Remove all dots and commas for VND
@@ -157,6 +179,10 @@ export function ProductForm({ initialData, onSubmit, isLoading }: ProductFormPro
       price: cleanNumber(v.price) > 0 ? cleanNumber(v.price) : basePrice,
       originalPrice: v.originalPrice ? cleanNumber(v.originalPrice) : null,
       stock: Number(v.stock || 0),
+      weight: Number(data.packageWeight || 0),
+      packageLength: Number(data.packageLength || 0),
+      width: Number(data.packageWidth || 0),
+      height: Number(data.packageHeight || 0),
     }));
 
     // Common payload structure for both Create and Update
@@ -244,69 +270,54 @@ export function ProductForm({ initialData, onSubmit, isLoading }: ProductFormPro
             </div>
           </div>
         ) : (
-          <Tabs defaultValue="general" className="w-full">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-              <TabsList className="bg-slate-100 p-1 rounded-2xl border-none shadow-sm">
-                <TabsTrigger
-                  value="general"
-                  className="rounded-lg px-6 font-bold data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm text-slate-500"
-                >
-                  Thông tin chung
-                </TabsTrigger>
-                <TabsTrigger
-                  value="variants"
-                  className="rounded-lg px-6 font-bold data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm text-slate-500"
-                >
-                  Biến thể & Kho
-                </TabsTrigger>
-                <TabsTrigger
-                  value="media"
-                  className="rounded-lg px-6 font-bold data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm text-slate-500"
-                >
-                  Hình ảnh
-                </TabsTrigger>
-              </TabsList>
-
+          <div className="w-full space-y-6 pb-20">
+            <div className="flex justify-end mb-2">
               <Button
                 type="submit"
-                className="h-10 px-8 rounded-lg font-bold gap-2 bg-primary text-white hover:bg-slate-800 shadow-sm"
+                className="bg-slate-900 hover:bg-slate-800 text-white rounded-lg h-9 px-6 text-[13px] font-semibold shadow-sm flex items-center gap-1.5 transition-all"
                 disabled={isLoading}
               >
                 {isLoading ? (
                   <Spinner size="sm" variant="white" />
                 ) : (
-                  <Save className="h-5 w-5" />
+                  <Save className="h-3.5 w-3.5" />
                 )}
-                {initialData ? "Lưu thay đổi" : "Tạo sản phẩm"}
+                <span>{initialData ? "Lưu thay đổi" : "Tạo sản phẩm"}</span>
               </Button>
             </div>
 
-            <TabsContent value="general">
-              <GeneralInfo form={form as any} categories={categories} />
-            </TabsContent>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+              {/* Left Column */}
+              <div className="lg:col-span-8 space-y-6">
+                <ProductBasicInfo form={form as any} />
+                <ProductCategory form={form as any} categories={categories} />
+                <Variants
+                  form={form as any}
+                  variantUploadingIndex={variantUploadingIndex}
+                  onVariantImageClick={(index) => {
+                    setCurrentVariantIndex(index);
+                    setTimeout(() => variantFileInputRef.current?.click(), 0);
+                  }}
+                />
+                <ProductSEO form={form as any} />
+              </div>
 
-            <TabsContent value="variants">
-              <Variants
-                form={form as any}
-                variantUploadingIndex={variantUploadingIndex}
-                onVariantImageClick={(index) => {
-                  setCurrentVariantIndex(index);
-                  setTimeout(() => variantFileInputRef.current?.click(), 0);
-                }}
-              />
-            </TabsContent>
-
-            <TabsContent value="media">
-              <Media
-                images={images}
-                isUploading={isUploading}
-                onImageAdd={() => fileInputRef.current?.click()}
-                onImageRemove={(index) =>
-                  setImages(images.filter((_, i) => i !== index))
-                }
-              />
-            </TabsContent>
-          </Tabs>
+              {/* Right Column */}
+              <div className="lg:col-span-4 space-y-6">
+                <ProductPricing form={form as any} />
+                <ProductShipping form={form as any} />
+                <ProductStatus form={form as any} />
+                <Media
+                  images={images}
+                  isUploading={isUploading}
+                  onImageAdd={() => fileInputRef.current?.click()}
+                  onImageRemove={(index) =>
+                    setImages(images.filter((_, i) => i !== index))
+                  }
+                />
+              </div>
+            </div>
+          </div>
         )}
       </form>
     </Form>

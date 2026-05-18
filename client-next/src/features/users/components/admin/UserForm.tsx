@@ -115,7 +115,7 @@ export function UserForm({ initialData, onSubmit, isLoading }: UserFormProps) {
                         <SelectValue placeholder="Chọn vai trò" />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent className="rounded-xl">
+                    <SelectContent className="rounded-xl admin-theme">
                       <SelectItem value={Role.CUSTOMER}>Khách hàng</SelectItem>
                       <SelectItem value={Role.ADMIN}>Quản trị viên</SelectItem>
                       <SelectItem value={Role.KHO}>Nhân viên kho</SelectItem>
@@ -138,7 +138,7 @@ export function UserForm({ initialData, onSubmit, isLoading }: UserFormProps) {
                         <SelectValue placeholder="Trạng thái" />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent className="rounded-xl">
+                    <SelectContent className="rounded-xl admin-theme">
                       <SelectItem value={UserStatus.ACTIVE}>Đang hoạt động</SelectItem>
                       <SelectItem value={UserStatus.SUSPENDED}>Vô hiệu hóa</SelectItem>
                       <SelectItem value={UserStatus.PENDING}>Chờ xác minh</SelectItem>

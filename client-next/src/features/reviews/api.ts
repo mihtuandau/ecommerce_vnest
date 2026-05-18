@@ -45,4 +45,10 @@ export const reviewsApi = {
     const response = await api.get("/reviews/public/latest");
     return response.data;
   },
+  
+  deleteReview: async (id: number) => {
+    const response = await api.delete(`/reviews/${id}`);
+    return response.data;
+  },
 };
+

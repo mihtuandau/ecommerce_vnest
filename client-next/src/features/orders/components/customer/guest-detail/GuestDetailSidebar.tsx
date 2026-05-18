@@ -5,14 +5,8 @@ import {
   MapPin, 
   CreditCard, 
   Phone, 
-  User as UserIcon,
-  Store,
-  Star,
+  User, 
   MessageSquare,
-  RotateCcw,
-  AlertCircle,
-  HelpCircle,
-  Truck,
   Wallet,
   Smartphone,
   Mail
@@ -63,7 +57,6 @@ export function GuestDetailSidebar({
 
   return (
     <div className="flex flex-col gap-4 font-sans-brand animate-in fade-in slide-in-from-right-4 duration-700">
-      {/* 📍 DELIVERY INFO */}
       <div className="bg-white border border-[#DDD6C8] rounded-2xl overflow-hidden shadow-sm">
         <div className="px-[18px] py-[14px] border-b border-[#DDD6C8] text-[13px] font-bold text-[#3D2B1A] flex items-center gap-2">
            <MapPin size={16} className="text-[#C4783A]" /> Thông tin giao hàng
@@ -89,7 +82,6 @@ export function GuestDetailSidebar({
         </div>
       </div>
 
-      {/* 💳 PAYMENT INFO */}
       <div className="bg-white border border-[#DDD6C8] rounded-2xl overflow-hidden shadow-sm">
         <div className="px-[18px] py-[14px] border-b border-[#DDD6C8] text-[13px] font-bold text-[#3D2B1A] flex items-center gap-2">
            <CreditCard size={16} className="text-[#C4783A]" /> Thanh toán
@@ -138,7 +130,6 @@ export function GuestDetailSidebar({
         </div>
       </div>
 
-      {/* 📞 SUPPORT BOX */}
       <div className="bg-[#F3EFE8] border border-[#DDD6C8] rounded-2xl p-[18px] text-center space-y-4">
         <div className="space-y-1.5">
           <h4 className="text-[14px] font-bold text-[#3D2B1A]">Cần hỗ trợ?</h4>

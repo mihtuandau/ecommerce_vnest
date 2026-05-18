@@ -4,6 +4,8 @@ import React from "react";
 import Image from "next/image";
 import { Package } from "lucide-react";
 import { formatCurrency } from "@/utils/formatCurrency";
+import { adminUI } from "@/constants/admin-ui";
+import { cn } from "@/utils/cn";
 
 interface ItemsProps {
   order: any;
@@ -20,63 +22,84 @@ export function Items({ order }: ItemsProps) {
   const subtotal = orderAny.subtotal || (totalAmount - shippingFee + discountAmount);
 
   return (
-    <div className="bg-white rounded-2xl border-none shadow-sm overflow-hidden">
+    <div className={cn(adminUI.card.base, "overflow-hidden p-0")}>
       <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/30">
-        <h3 className="font-semibold text-sm text-slate-800 flex items-center gap-2">
-          <Package className="h-4 w-4 text-slate-500" /> Danh sách sản phẩm
+        <h3 className={cn(adminUI.typography.sectionTitle, "flex items-center gap-2")}>
+          <Package className="h-5 w-5 text-slate-500" /> Danh sách sản phẩm
         </h3>
       </div>
-      <div className="divide-y divide-slate-100">
+      <div className="overflow-x-auto">
           {items && items.length > 0 ? (
-            items.map((item: any) => (
-              <div key={item.id} className="p-6 flex items-center gap-4">
-                 <div className="h-16 w-16 rounded-lg bg-slate-50 border border-slate-100 flex-shrink-0 overflow-hidden relative">
-                    <Image 
-                      src={item.variant?.product?.images?.[0]?.url || item.variantSnapshot?.image || "/placeholder.png"} 
-                      alt={item.productName || "Sản phẩm"} 
-                      fill
-                      className="object-cover" 
-                    />
-                 </div>
-                <div className="flex-1 min-w-0">
-                   <p className="font-semibold text-slate-800 text-sm leading-snug line-clamp-2">{item.productName || item.variant?.product?.name || "Sản phẩm"}</p>
-                   <div className="flex items-center gap-2 mt-1.5">
-                       {item.variant?.color && <span className="text-[10px] font-medium text-slate-600 bg-slate-100 px-2 py-0.5 rounded">Màu: {item.variant.color}</span>}
-                       {item.variant?.size && <span className="text-[10px] font-medium text-slate-600 bg-slate-100 px-2 py-0.5 rounded">Size: {item.variant.size}</span>}
-                       <span className="text-[10px] font-medium text-slate-500 bg-slate-50 px-2 py-0.5 rounded border border-slate-100">x{item.quantity}</span>
-                   </div>
-                </div>
-                <div className="text-right">
-                   <p className="font-semibold text-slate-800 text-sm">{formatCurrency(item.price)}</p>
-                </div>
-              </div>
-            ))
+            <table className="w-full border-collapse">
+              <thead>
+                <tr>
+                  <th className="text-[11px] font-semibold text-slate-500 uppercase tracking-widest px-6 py-3 border-b border-slate-200 bg-slate-50/50 text-left">Sản phẩm</th>
+                  <th className="text-[11px] font-semibold text-slate-500 uppercase tracking-widest px-4 py-3 border-b border-slate-200 bg-slate-50/50 text-center">SL</th>
+                  <th className="text-[11px] font-semibold text-slate-500 uppercase tracking-widest px-4 py-3 border-b border-slate-200 bg-slate-50/50 text-right">Đơn giá</th>
+                  <th className="text-[11px] font-semibold text-slate-500 uppercase tracking-widest px-6 py-3 border-b border-slate-200 bg-slate-50/50 text-right">Thành tiền</th>
+                </tr>
+              </thead>
+              <tbody>
+                {items.map((item: any) => (
+                  <tr key={item.id} className="border-b border-slate-100 last:border-none">
+                    <td className="py-4 px-6 align-middle">
+                      <div className="flex items-center gap-3">
+                         <div className="h-14 w-12 rounded-lg bg-slate-50 border border-slate-100 flex-shrink-0 overflow-hidden relative">
+                            <Image 
+                              src={item.variant?.product?.images?.[0]?.url || item.variantSnapshot?.image || "/placeholder.png"} 
+                              alt={item.productName || "Sản phẩm"} 
+                              fill
+                              className="object-cover" 
+                            />
+                         </div>
+                         <div>
+                           <p className="font-semibold text-slate-800 text-[13.5px] leading-snug">{item.productName || item.variant?.product?.name || "Sản phẩm"}</p>
+                           <p className="text-[11.5px] text-slate-500 mt-0.5">
+                              {[item.variant?.color, item.variant?.size].filter(Boolean).join(" · ")}
+                           </p>
+                         </div>
+                      </div>
+                    </td>
+                    <td className="py-4 px-4 align-middle text-center text-[13px] text-slate-600">
+                      ×{item.quantity}
+                    </td>
+                    <td className="py-4 px-4 align-middle text-right text-[14px] font-serif font-bold text-slate-800">
+                      {formatCurrency(item.price)}
+                    </td>
+                    <td className="py-4 px-6 align-middle text-right text-[14px] font-serif font-bold text-slate-800">
+                      {formatCurrency(item.price * item.quantity)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           ) : (
-            <div className="p-10 text-center text-slate-500 italic">Không có thông tin sản phẩm</div>
+            <div className="p-10 text-center text-slate-500 italic border-b border-slate-100">Không có thông tin sản phẩm</div>
           )}
       </div>
       
-      <div className="p-8 bg-slate-50/20 border-t border-slate-100 flex justify-end">
-        <div className="w-full max-w-sm space-y-4">
+      <div className="px-6 py-5">
+        <div className="flex flex-col gap-2.5 max-w-sm ml-auto">
           <div className="flex justify-between text-[13px]">
-            <span className="text-slate-500 font-medium text-[11px]">Tạm tính</span>
-            <span className="font-medium text-slate-700">{formatCurrency(subtotal)}</span>
+            <span className="text-slate-500">Tạm tính</span>
+            <span className="font-medium text-slate-800">{formatCurrency(subtotal)}</span>
           </div>
           {shippingFee > 0 && (
             <div className="flex justify-between text-[13px]">
-              <span className="text-slate-500 font-medium text-[11px]">Phí vận chuyển</span>
-              <span className="font-medium text-slate-700">+{formatCurrency(shippingFee)}</span>
+              <span className="text-slate-500">Phí vận chuyển</span>
+              <span className="font-medium text-slate-800">{formatCurrency(shippingFee)}</span>
             </div>
           )}
           {discountAmount > 0 && (
             <div className="flex justify-between text-[13px]">
-              <span className="text-slate-500 font-medium text-[11px]">Giảm giá</span>
-              <span className="font-medium text-emerald-600">-{formatCurrency(discountAmount)}</span>
+              <span className="text-slate-500">Giảm giá</span>
+              <span className="font-medium text-rose-600">-{formatCurrency(discountAmount)}</span>
             </div>
           )}
-          <div className="pt-5 border-t border-slate-200 flex justify-between items-end">
-            <span className="text-slate-800 font-semibold text-[13px]">Tổng cộng</span>
-            <span className="text-3xl font-bold text-primary tabular-nums tracking-tighter leading-none">
+          <div className="border-t border-slate-200 my-1"></div>
+          <div className="flex justify-between items-center">
+            <span className="text-[14px] font-semibold text-slate-800">Tổng cộng</span>
+            <span className="text-[22px] font-serif font-bold text-slate-800 tracking-tight leading-none">
               {formatCurrency(totalAmount)}
             </span>
           </div>

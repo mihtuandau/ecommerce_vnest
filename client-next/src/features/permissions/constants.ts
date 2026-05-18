@@ -1,7 +1,7 @@
 import { 
   Users, Package, ShoppingCart, BarChart3, 
   MessageCircle, Tag, Image, Warehouse,
-  Settings, ShieldCheck
+  Settings, ShieldCheck, CreditCard
 } from "lucide-react";
 import React from "react";
 import { Role } from "@/types/enums";
@@ -18,6 +18,7 @@ export const PERMISSION_GROUPS: Record<string, { label: string; icon: React.Elem
   banner:    { label: "Banner",     icon: Image,         color: "text-indigo-600", bg: "bg-indigo-50" },
   dashboard: { label: "Tổng quan",  icon: BarChart3,     color: "text-slate-600",  bg: "bg-slate-50" },
   settings:  { label: "Cài đặt",    icon: Settings,      color: "text-slate-600",  bg: "bg-slate-50" },
+  payment:   { label: "Thanh toán", icon: CreditCard,    color: "text-sky-600",    bg: "bg-sky-50" },
 };
 
 export const ROLE_CONFIG: Record<Role, { label: string; desc: string; color: string; border: string; bg: string; icon: React.ElementType }> = {

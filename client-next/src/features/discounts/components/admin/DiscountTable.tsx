@@ -129,16 +129,30 @@ export const columns: ColumnDef<Discount>[] = [
     header: "Giảm giá",
     cell: ({ row }) => {
       const discount = row.original as any;
-      const isPercentage = discount.type === "PERCENTAGE" || !!discount.percentage;
-      const value = discount.value || discount.percentage || discount.fixedAmount || 0;
+      
+      // New priority logic for schema
+      const isPercentage = discount.percentage !== null && discount.percentage !== undefined;
+      const isFixed = discount.fixedAmount !== null && discount.fixedAmount !== undefined;
+      
+      const value = isPercentage 
+        ? discount.percentage 
+        : isFixed 
+          ? discount.fixedAmount 
+          : discount.value || 0;
+
+      const typeLabel = isPercentage || (!isFixed && discount.type === "PERCENTAGE") 
+        ? "Phần trăm" 
+        : "Cố định";
 
       return (
         <div className="flex flex-col">
           <span className="text-sm font-semibold text-slate-800">
-            {isPercentage ? `${value}%` : formatCurrency(value)}
+            {isPercentage || (!isFixed && discount.type === "PERCENTAGE") 
+              ? `${value}%` 
+              : formatCurrency(value)}
           </span>
           <span className="text-xs font-semibold text-slate-500 tracking-tight mt-0.5">
-            {isPercentage ? "Phần trăm" : "Cố định"}
+            {typeLabel}
           </span>
         </div>
       );

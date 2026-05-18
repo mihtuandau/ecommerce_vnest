@@ -128,6 +128,10 @@ export class ProductService implements OnModuleInit {
             price: Number(v.price || rest.basePrice || 0),
             originalPrice: v.originalPrice ? Number(v.originalPrice) : null,
             stock: Number(v.stock || 0),
+            weight: v.weight ? Number(v.weight) : null,
+            length: v.packageLength ? Number(v.packageLength) : null,
+            width: v.width ? Number(v.width) : null,
+            height: v.height ? Number(v.height) : null,
             isActive: true,
           };
 
@@ -361,6 +365,10 @@ export class ProductService implements OnModuleInit {
             price: Number(v.price || rest.basePrice || 0),
             originalPrice: v.originalPrice ? Number(v.originalPrice) : null,
             stock: Number(v.stock || 0),
+            weight: v.weight ? Number(v.weight) : null,
+            length: v.packageLength ? Number(v.packageLength) : null,
+            width: v.width ? Number(v.width) : null,
+            height: v.height ? Number(v.height) : null,
             isActive: true,
           };
 
@@ -406,6 +414,10 @@ export class ProductService implements OnModuleInit {
             price: Number(v.price || rest.basePrice || 0),
             originalPrice: v.originalPrice ? Number(v.originalPrice) : null,
             stock: Number(v.stock || 0),
+            weight: v.weight ? Number(v.weight) : null,
+            length: v.packageLength ? Number(v.packageLength) : null,
+            width: v.width ? Number(v.width) : null,
+            height: v.height ? Number(v.height) : null,
             isActive: true,
           };
 

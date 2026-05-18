@@ -44,7 +44,13 @@ export class CartService {
         ],
       },
       include: {
-        applicableToProducts: { select: { productId: true } },
+        applicableToProducts: { 
+          select: { 
+            productId: true,
+            percentage: true,
+            fixedAmount: true
+          } 
+        },
         applicableToCategories: { select: { categoryId: true } },
       },
     });

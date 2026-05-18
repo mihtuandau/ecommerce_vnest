@@ -5,7 +5,7 @@ import { Menu, X, ChevronDown, Sparkles, Heart, Zap, ChevronRight, Tag, LayoutGr
 import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { CartDropdown } from "@/features/cart/components/CartDropdown";
-import { NotificationBell } from "@/features/notifications/components/NotificationBell";
+import { NotificationBell } from "@/features/notifications/components/customer/NotificationBell";
 import { ROUTES } from "@/constants/routes";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useWishlistStore } from "@/store/useWishlistStore";
@@ -26,11 +26,18 @@ import {
 import { HeaderSearch } from "./HeaderSearch";
 import { MobileMenu } from "./MobileMenu";
 import { getImageUrl } from "@/utils/image";
+import { useSystemSettings } from "@/features/settings/hooks";
 
 export function Header({ initialHasToken }: { initialHasToken?: boolean }) {
   const { user, logout, isLoading: authLoading } = useAuthStore();
   const wishlistCount = useWishlistStore(state => state.items.length);
   const { data: categories } = useCategories({ tree: 'true' });
+  const { data: settingsData } = useSystemSettings();
+  const settings = settingsData?.data || settingsData;
+
+  const formattedThreshold = settings?.freeShippingThreshold 
+    ? Number(settings.freeShippingThreshold).toLocaleString("vi-VN") + "đ"
+    : "500.000đ";
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -84,7 +91,7 @@ export function Header({ initialHasToken }: { initialHasToken?: boolean }) {
             "bg-primary text-brand-bronze/80 text-center text-[12px] tracking-[0.12em] hidden lg:block w-full transition-all duration-500 ease-in-out overflow-hidden",
             isVisible ? "h-[38px] py-2.5" : "h-0 opacity-0"
           )}>
-            Miễn phí vận chuyển cho đơn từ <span className="text-brand-bronze font-medium">500.000đ</span> · Đổi trả trong 30 ngày · Hotline: <span className="text-brand-bronze font-medium">1800 1234</span>
+            Miễn phí vận chuyển cho đơn từ <span className="text-brand-bronze font-medium">{mounted ? formattedThreshold : "500.000đ"}</span> · Đổi trả trong 30 ngày · Hotline: <span className="text-brand-bronze font-medium">{mounted ? (settings?.storePhone || "1800 1234") : "1800 1234"}</span>
           </div>
 
           {/* ── MAIN HEADER CONTENT ── */}
@@ -126,10 +133,10 @@ export function Header({ initialHasToken }: { initialHasToken?: boolean }) {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent 
                             align="end" 
-                            className="w-[280px] rounded-[24px] p-2.5 bg-white shadow-[0_20px_50px_rgba(61,43,26,0.12)] border border-brand-sand animate-in fade-in zoom-in-95 duration-300 mt-2.5"
+                            className="w-[280px] rounded-[24px] p-2.5 bg-white opacity-100 shadow-[0_30px_60px_rgba(61,43,26,0.18)] border border-brand-sand/60 animate-in fade-in zoom-in-95 duration-300 mt-2.5 z-[100]"
                           >
                             {/* ── USER PROFILE SECTION ── */}
-                            <div className="px-3.5 py-4 mb-2 bg-brand-cream/50 rounded-[18px] flex items-center gap-3.5 border border-brand-sand/30">
+                            <div className="px-3.5 py-4 mb-2 bg-brand-cream rounded-[18px] flex items-center gap-3.5 border border-brand-sand/20">
                               <div className="relative w-12 h-12 rounded-full border-2 border-white overflow-hidden shrink-0 shadow-md">
                                 {user.avatar ? (
                                   <Image src={getImageUrl(user.avatar)} alt="User" fill className="object-cover" />

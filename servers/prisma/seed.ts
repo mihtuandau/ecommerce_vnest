@@ -23,6 +23,8 @@ async function main() {
     { name: 'settings.manage', description: 'Cài đặt và phân quyền hệ thống' },
     { name: 'return.manage',   description: 'Quản lý và xử lý yêu cầu đổi trả hàng' },
     { name: 'return.view',     description: 'Xem danh sách yêu cầu đổi trả' },
+    { name: 'payment.manage',  description: 'Quản lý, phê duyệt và hoàn tiền giao dịch thanh toán' },
+    { name: 'payment.view',    description: 'Xem danh sách và lịch sử đối soát thanh toán' },
   ];
 
   console.log('--- Creating Permissions ---');
@@ -64,6 +66,8 @@ async function main() {
       'chat.support',
       'discount.manage',
       'report.view',
+      'payment.view',
+      'payment.manage',
     ],
     [Role.CUSTOMER]: [], // Khách hàng không có quyền truy cập trang quản trị
   };

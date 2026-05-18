@@ -9,6 +9,7 @@ import { Tag, Plus, Trash, ImagePlus } from "lucide-react";
 import { Spinner } from "@/components/ui/Spinner";
 import { UseFormReturn, useFieldArray } from "react-hook-form";
 import { cn } from "@/utils/cn";
+import { adminUI } from "@/constants/admin-ui";
 
 import { ProductFormValues } from "../ProductForm";
 
@@ -29,68 +30,59 @@ export function Variants({
   });
 
   return (
-    <div className="bg-white p-6 rounded-xl border border-slate-200 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h3 className="font-bold text-base text-slate-900 flex items-center gap-2">
-            <Tag className="h-5 w-5 text-primary" />
-            Quản lý biến thể
-          </h3>
-          <p className="text-xs text-slate-500 font-medium mt-1">
-            Thiết lập các phiên bản khác nhau của sản phẩm (Size, Màu sắc...)
-          </p>
-        </div>
+    <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.015)] overflow-hidden">
+      <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/30 flex items-center justify-between gap-4">
+        <h3 className="text-[15px] font-bold text-slate-800 flex items-center gap-2">
+          <Tag className="h-4 w-4 text-slate-500" /> Quản lý biến thể
+        </h3>
         <Button
           type="button"
           variant="outline"
-          className="rounded-lg font-bold gap-2 border-slate-200 hover:bg-slate-50"
+          className="rounded-lg h-9 text-xs font-semibold gap-2 border-slate-200 bg-white text-slate-700 hover:bg-slate-800 hover:bg-slate-50 shadow-sm transition-all"
           onClick={() => append({ size: "", color: "", price: 0, originalPrice: 0, stock: 0, image: "" })}
         >
-          <Plus className="h-4 w-4" /> Thêm biến thể mới
+          <Plus className="h-4 w-4 text-slate-500" /> Thêm biến thể mới
         </Button>
       </div>
+      
+      <div className="p-6 space-y-6">
+        <p className="text-xs text-slate-500 font-medium -mt-2">
+          Thiết lập các phiên bản khác nhau của sản phẩm (Size, Màu sắc...)
+        </p>
 
       {fields.length > 0 ? (
         <div className="grid grid-cols-1 gap-4">
           {fields.map((field, index) => (
             <div
               key={field.id}
-              className="grid grid-cols-1 md:grid-cols-7 gap-6 p-6 bg-slate-50 rounded-xl border border-slate-200 items-end group relative transition-all hover:border-primary/30"
+              className="grid grid-cols-1 md:grid-cols-12 gap-4 p-6 bg-slate-50 rounded-xl border border-slate-200 items-end group relative transition-all hover:border-slate-300"
             >
-              <div className="flex flex-col gap-2">
-                <FormLabel className="text-[10px] font-bold uppercase text-slate-500 tracking-widest">
+              <div className="flex flex-col gap-2 md:col-span-1 items-center">
+                <FormLabel className="text-[11px] font-semibold text-slate-400 block text-center">
                   Ảnh
                 </FormLabel>
                 <FormField
                   control={form.control}
                   name={`variants.${index}.image`}
                   render={({ field }) => (
-                    <div className="flex items-center gap-2">
-                      <div
-                        className="h-11 w-11 rounded-xl bg-white border border-slate-200 flex items-center justify-center overflow-hidden shrink-0 cursor-pointer hover:border-primary/50 relative group"
-                        onClick={() => onVariantImageClick(index)}
-                      >
-                        {variantUploadingIndex === index ? (
-                          <Spinner size="sm" />
-                        ) : field.value ? (
-                          <Image
-                            key={field.value}
-                            src={field.value}
-                            fill
-                            className="object-cover"
-                            alt="Variant"
-                          />
-                        ) : (
-                          <ImagePlus className="h-4 w-4 text-slate-300" />
-                        )}
-                        <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                      </div>
-                      <Input
-                        placeholder="Dán link ảnh..."
-                        className="h-11 rounded-xl border-slate-200 bg-white text-[10px] focus:ring-primary/20"
-                        {...field}
-                        value={field.value || ""}
-                      />
+                    <div
+                      className="h-11 w-11 rounded-xl bg-white border border-slate-200 flex items-center justify-center overflow-hidden shrink-0 cursor-pointer hover:border-slate-400 relative group"
+                      onClick={() => onVariantImageClick(index)}
+                    >
+                      {variantUploadingIndex === index ? (
+                        <Spinner size="sm" />
+                      ) : field.value ? (
+                        <Image
+                          key={field.value}
+                          src={field.value}
+                          fill
+                          className="object-cover"
+                          alt="Variant"
+                        />
+                      ) : (
+                        <ImagePlus className="h-4 w-4 text-slate-300" />
+                      )}
+                      <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
                   )}
                 />
@@ -99,14 +91,14 @@ export function Variants({
                 control={form.control}
                 name={`variants.${index}.size`}
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-[10px] font-bold uppercase text-slate-500 tracking-widest">
-                      Kích cỡ (Size)
+                  <FormItem className="md:col-span-2">
+                    <FormLabel className="text-[11px] font-semibold text-slate-400 block">
+                      Size
                     </FormLabel>
                     <FormControl>
                       <Input
                         placeholder="M, L, XL..."
-                        className="h-11 rounded-xl border-slate-200 bg-white focus:ring-primary/20"
+                        className="h-11 rounded-xl border-slate-200 bg-white text-sm font-semibold text-slate-800 focus:border-slate-400 focus:ring-4 focus:ring-slate-100/50 transition-all duration-200"
                         {...field}
                         value={field.value ?? ""}
                       />
@@ -118,14 +110,14 @@ export function Variants({
                 control={form.control}
                 name={`variants.${index}.color`}
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-[10px] font-bold uppercase text-slate-500 tracking-widest">
+                  <FormItem className="md:col-span-2">
+                    <FormLabel className="text-[11px] font-semibold text-slate-400 block">
                       Màu sắc
                     </FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Trắng, Đen..."
-                        className="h-11 rounded-xl border-slate-200 bg-white focus:ring-primary/20"
+                        className="h-11 rounded-xl border-slate-200 bg-white text-sm font-semibold text-slate-800 focus:border-slate-400 focus:ring-4 focus:ring-slate-100/50 transition-all duration-200"
                         {...field}
                         value={field.value ?? ""}
                       />
@@ -137,15 +129,15 @@ export function Variants({
                 control={form.control}
                 name={`variants.${index}.price`}
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-[10px] font-bold uppercase text-slate-500 tracking-widest">
-                      Giá bán (VNĐ)
+                  <FormItem className="md:col-span-2">
+                    <FormLabel className="text-[11px] font-semibold text-slate-400 block">
+                      Giá bán
                     </FormLabel>
                     <FormControl>
                       <Input
                         type="text"
                         placeholder="Giá bán"
-                        className="h-11 rounded-xl border-slate-200 bg-white focus:ring-primary/20"
+                        className="h-11 rounded-xl border-slate-200 bg-white text-sm font-semibold text-slate-800 focus:border-slate-400 focus:ring-4 focus:ring-slate-100/50 transition-all duration-200"
                         {...field}
                         value={field.value || ""}
                       />
@@ -157,15 +149,15 @@ export function Variants({
                 control={form.control}
                 name={`variants.${index}.originalPrice`}
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-[10px] font-bold uppercase text-slate-500 tracking-widest">
-                      Giá gốc (Gạch ngang)
+                  <FormItem className="md:col-span-2">
+                    <FormLabel className="text-[11px] font-semibold text-slate-400 block">
+                      Giá gốc
                     </FormLabel>
                     <FormControl>
                       <Input
                         type="text"
                         placeholder="Giá niêm yết"
-                        className="h-11 rounded-xl border-slate-200 bg-white focus:ring-primary/20"
+                        className="h-11 rounded-xl border-slate-200 bg-white text-sm font-semibold text-slate-500 focus:border-slate-400 focus:ring-4 focus:ring-slate-100/50 transition-all duration-200"
                         {...field}
                         value={field.value || ""}
                       />
@@ -177,14 +169,14 @@ export function Variants({
                 control={form.control}
                 name={`variants.${index}.stock`}
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-[10px] font-bold uppercase text-slate-500 tracking-widest">
+                  <FormItem className="md:col-span-2">
+                    <FormLabel className="text-[11px] font-semibold text-slate-400 block">
                       Tồn kho
                     </FormLabel>
                     <FormControl>
                       <Input
                         type="number"
-                        className="h-11 rounded-xl border-slate-200 bg-white font-bold text-slate-900 focus:ring-primary/20"
+                        className="h-11 rounded-xl border-slate-200 bg-white text-sm font-semibold text-slate-800 focus:border-slate-400 focus:ring-4 focus:ring-slate-100/50 transition-all duration-200"
                         {...field}
                         value={field.value ?? 0}
                       />
@@ -192,7 +184,7 @@ export function Variants({
                   </FormItem>
                 )}
               />
-              <div className="flex justify-end">
+              <div className="flex justify-center md:col-span-1">
                 <Button
                   type="button"
                   variant="ghost"
@@ -220,7 +212,7 @@ export function Variants({
           </div>
           <Button
             type="button"
-            className="rounded-lg font-bold px-6 bg-primary text-white hover:bg-slate-800 shadow-sm"
+            className="rounded-lg font-bold px-6 bg-slate-900 text-white hover:bg-slate-800 shadow-sm h-9 text-xs"
             onClick={() =>
               append({ size: "", color: "", price: 0, originalPrice: 0, stock: 0, image: "" })
             }
@@ -229,6 +221,7 @@ export function Variants({
           </Button>
         </div>
       )}
+      </div>
     </div>
   );
 }

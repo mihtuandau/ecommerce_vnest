@@ -34,7 +34,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   ) {}
 
   async handleConnection(client: Socket) {
-    console.log(`New socket connection attempt: ${client.id}`);
+    this.logger.log(`New socket connection attempt: ${client.id}`);
     try {
       const authHeader = client.handshake.headers?.authorization;
       const authBody = client.handshake.auth?.token;
@@ -42,7 +42,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
       let token = authBody || (authHeader?.startsWith('Bearer ') ? authHeader.split(' ')[1] : null);
 
-      // If not in auth body/header, try parsing from cookies
       if (!token && cookieHeader) {
         const cookies = cookieHeader.split(';').reduce((acc, curr) => {
           const [key, value] = curr.trim().split('=');
@@ -52,9 +51,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         token = cookies['accessToken'] || cookies['access_token'];
       }
 
-      console.log(`Socket Hook - Token found: ${token ? 'YES (len:' + token.length + ')' : 'NO'}`);
       if (!token) {
-        console.warn(`Socket connection ${client.id} disconnected: No token provided in auth, headers, or cookies`);
+        this.logger.warn(`Socket connection ${client.id} disconnected: No token provided`);
         client.disconnect();
         return;
       }
@@ -64,15 +62,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       });
 
       if (!payload) {
-        console.error('Chat connection failed: Invalid payload after verification');
+        this.logger.error('Chat connection failed: Invalid payload');
         client.disconnect();
         return;
       }
 
-      console.log(`User connected to chat: ${payload.email} (ID: ${payload.sub})`);
+      this.logger.log(`User connected to chat: ${payload.email}`);
       client.data.user = payload; 
     } catch (err) {
-      console.error(`Chat connection failed: ${err.message}`);
+      this.logger.error(`Chat connection failed: ${err.message}`);
       client.disconnect();
     }
   }
@@ -87,13 +85,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const user = client.data.user;
     if (!user) return { error: 'Unauthorized' };
 
-    console.log(`User ${user.email} joining room: ${data.roomId}`);
+    this.logger.log(`User ${user.email} joining room: ${data.roomId}`);
     
     const isStaff = ['ADMIN', 'KHO', 'BAN_HANG'].includes(user.role?.toUpperCase());
     const roomUserId = data.roomId.replace('room_', ''); 
 
     if (!isStaff && String(roomUserId) !== String(user.sub)) {
-      console.warn(`Unauthorized room join attempt: User ${user.sub} tried to join ${data.roomId}`);
+      this.logger.warn(`Unauthorized room join attempt: User ${user.sub} to room ${data.roomId}`);
       return { error: 'Unauthorized' };
     }
 
@@ -110,13 +108,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const user = client.data.user;
     if (!user) return { error: 'Unauthorized' };
 
-    console.log(`Message from ${user.email} to room ${data.roomId}: ${data.message}`);
+    this.logger.log(`Message from ${user.email} to room ${data.roomId}`);
     
     const isStaff = ['ADMIN', 'KHO', 'BAN_HANG'].includes(user.role?.toUpperCase());
     const roomUserId = data.roomId.replace('room_', '');
 
     if (!isStaff && String(roomUserId) !== String(user.sub)) {
-      console.warn(`Unauthorized message attempt: User ${user.sub} to room ${data.roomId}`);
+      this.logger.warn(`Unauthorized message attempt: User ${user.sub} to room ${data.roomId}`);
       return { error: 'Unauthorized' };
     }
 
@@ -139,7 +137,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const user = client.data.user;
     if (!user) return;
 
-    // Security Check: Only staff or room owner can mark as read
     const isStaff = ['ADMIN', 'KHO', 'BAN_HANG'].includes(
       user.role?.toUpperCase(),
     );
@@ -160,7 +157,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const user = client.data.user;
     if (!user) return;
 
-    // Security Check: Only staff or room owner can send typing events
     const isStaff = ['ADMIN', 'KHO', 'BAN_HANG'].includes(
       user.role?.toUpperCase(),
     );

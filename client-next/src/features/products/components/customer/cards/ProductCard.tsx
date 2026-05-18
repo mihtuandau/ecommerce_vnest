@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import { Product } from "@/types/models";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { ShoppingCart, Star, Heart, Zap } from "lucide-react";
@@ -10,11 +10,12 @@ import { useCart } from "@/features/cart/hooks";
 import { useWishlistStore } from "@/store/useWishlistStore";
 import { useToast } from "@/hooks/useToast";
 import { cn } from "@/utils/cn";
-import { useFlashSale } from "@/features/discounts/hooks";
+import { useFlashSale, useDiscounts } from "@/features/discounts/hooks";
 import Image from "next/image";
 import { getImageUrl } from "@/utils/image";
 import { QuickAddModal } from "./QuickAddModal";
 import { animateFlyToCart } from "@/utils/animateCart";
+import { calculateDiscountedPrice } from "@/features/discounts/utils/discount";
 
 interface ProductCardProps {
   product: Product;
@@ -27,6 +28,7 @@ export const ProductCard = React.memo(function ProductCard({ product, view = "gr
   const toggleWishlist = useWishlistStore(state => state.toggleWishlist);
   const { success } = useToast();
   const { data: flashSale } = useFlashSale();
+  const { data: discountsData } = useDiscounts({ type: "PROMOTION" }); // Only get auto-applied promotions
   const router = useRouter();
   const [isQuickAddOpen, setIsQuickAddOpen] = React.useState(false);
 
@@ -38,12 +40,18 @@ export const ProductCard = React.memo(function ProductCard({ product, view = "gr
   };
 
   const basePrice = parsePrice(product.price || product.basePrice);
-  const isFlashSale = flashSale?.products?.some((p: { id: number | string }) => String(p.id) === String(product.id));
-  const flashSalePercent = isFlashSale ? flashSale.percentage || 0 : 0;
-  const price = isFlashSale ? Math.round(basePrice * (1 - flashSalePercent / 100)) : basePrice;
+  
+  const allDiscounts = useMemo(() => {
+    const fs = Array.isArray(flashSale) ? flashSale : [];
+    const ds = Array.isArray(discountsData) ? discountsData : [];
+    return [...fs, ...ds];
+  }, [flashSale, discountsData]);
+
+  const price = calculateDiscountedPrice(product, allDiscounts);
+  const isDiscounted = price < basePrice;
 
   const originalPriceVal = product.variants?.[0]?.originalPrice || product.originalPrice;
-  const originalPrice = isFlashSale ? basePrice : originalPriceVal ? parsePrice(originalPriceVal) : null;
+  const originalPrice = isDiscounted ? basePrice : originalPriceVal ? parsePrice(originalPriceVal) : null;
 
   const discountPercent = originalPrice && originalPrice > price ? Math.round(((originalPrice - price) / originalPrice) * 100) : 0;
 

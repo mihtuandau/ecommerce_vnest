@@ -186,7 +186,38 @@ export class OrderRepository {
           throw new Error('Sản phẩm hết hàng hoặc không đủ số lượng');
         }
 
-        // Increment soldCount if the order is already DELIVERED
+        // 2.5 Check Flash Sale stock limit if applicable
+        if (discountId) {
+          const discountProduct = await tx.discountProduct.findUnique({
+            where: {
+              discountId_productId: {
+                discountId,
+                productId: item.productId,
+              },
+            },
+          });
+
+          if (discountProduct && discountProduct.stockLimit > 0) {
+            const remaining = discountProduct.stockLimit - discountProduct.soldCount;
+            if (item.quantity > remaining) {
+              throw new Error(`Sản phẩm ${item.productName} đã đạt giới hạn số lượng trong chương trình Flash Sale (Chỉ còn ${remaining} suất)`);
+            }
+          }
+        }
+
+        // 3. Update Flash Sale soldCount if applicable
+        if (discountId) {
+          // Increment soldCount specifically for this flash sale item
+          await tx.discountProduct.updateMany({
+            where: {
+              discountId: discountId,
+              productId: item.productId,
+            },
+            data: { soldCount: { increment: item.quantity } }
+          });
+        }
+
+        // Increment global product.soldCount if the order is already DELIVERED
         if (orderData.status === 'DELIVERED') {
           await tx.product.update({
             where: { id: item.productId },
@@ -318,6 +349,7 @@ export class OrderRepository {
         include: {
           orderItems: {
             include: {
+              variant: { select: { productId: true } },
               returnItems: { include: { returnRequest: true } }
             }
           }
@@ -355,6 +387,19 @@ export class OrderRepository {
             where: { id: item.variantId },
             data: { stock: { increment: quantityToRestore } }
           });
+          
+          // Restore Flash Sale soldCount
+          if (order.discountId) {
+            await tx.discountProduct.updateMany({
+              where: {
+                discountId: order.discountId,
+                productId: (item as any).variant.productId,
+              },
+              data: { soldCount: { decrement: quantityToRestore } }
+            });
+            // Note: DB constraints or GREATEST(0, ...) could be used if we want to ensure it doesn't go below 0
+            // but Prisma decrement is generally safe here if data is consistent.
+          }
         }
       }
 

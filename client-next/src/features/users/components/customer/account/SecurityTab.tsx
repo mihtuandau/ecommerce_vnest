@@ -17,6 +17,7 @@ import {
 import { Spinner } from "@/components/ui/Spinner";
 import axios from "axios";
 import { useAuthStore } from "@/store/useAuthStore";
+import { Switch } from "@/components/ui/Switch";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
@@ -123,15 +124,42 @@ export function SecurityTab() {
           <div className="space-y-6">
             <div className="space-y-2.5">
               <label className="text-[12.5px] font-bold text-brand-espresso ml-1">Mật khẩu hiện tại <span className="text-red-500">*</span></label>
-              <Input type="password" placeholder="••••••••" className="h-12 rounded-xl border-brand-sand focus:ring-brand-bronze/20 focus:border-brand-bronze transition-all bg-brand-ivory/10 border-none" />
+              <div className="relative group">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center justify-center w-5 h-5 text-brand-taupe/30 group-focus-within:text-brand-bronze transition-colors z-10">
+                  <Lock size={16} />
+                </div>
+                <Input 
+                  type="password" 
+                  placeholder="••••••••" 
+                  className="h-12 pl-12 pr-5 rounded-xl border border-brand-sand/60 focus:ring-0 focus-visible:ring-0 focus:border-brand-bronze/60 transition-all bg-white focus:shadow-[0_0_0_1px_rgba(196,120,58,0.1)]" 
+                />
+              </div>
             </div>
             <div className="space-y-2.5">
               <label className="text-[12.5px] font-bold text-brand-espresso ml-1">Mật khẩu mới <span className="text-red-500">*</span></label>
-              <Input type="password" placeholder="••••••••" className="h-12 rounded-xl border-brand-sand focus:ring-brand-bronze/20 focus:border-brand-bronze transition-all bg-brand-ivory/10 border-none" />
+              <div className="relative group">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center justify-center w-5 h-5 text-brand-taupe/30 group-focus-within:text-brand-bronze transition-colors z-10">
+                  <ShieldAlert size={16} />
+                </div>
+                <Input 
+                  type="password" 
+                  placeholder="••••••••" 
+                  className="h-12 pl-12 pr-5 rounded-xl border border-brand-sand/60 focus:ring-0 focus-visible:ring-0 focus:border-brand-bronze/60 transition-all bg-white focus:shadow-[0_0_0_1px_rgba(196,120,58,0.1)]" 
+                />
+              </div>
             </div>
             <div className="space-y-2.5">
               <label className="text-[12.5px] font-bold text-brand-espresso ml-1">Xác nhận mật khẩu mới <span className="text-red-500">*</span></label>
-              <Input type="password" placeholder="••••••••" className="h-12 rounded-xl border-brand-sand focus:ring-brand-bronze/20 focus:border-brand-bronze transition-all bg-brand-ivory/10 border-none" />
+              <div className="relative group">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center justify-center w-5 h-5 text-brand-taupe/30 group-focus-within:text-brand-bronze transition-colors z-10">
+                  <CheckCircle2 size={16} />
+                </div>
+                <Input 
+                  type="password" 
+                  placeholder="••••••••" 
+                  className="h-12 pl-12 pr-5 rounded-xl border border-brand-sand/60 focus:ring-0 focus-visible:ring-0 focus:border-brand-bronze/60 transition-all bg-white focus:shadow-[0_0_0_1px_rgba(196,120,58,0.1)]" 
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -154,30 +182,29 @@ export function SecurityTab() {
           
           {/* 2FA */}
           <div 
-            onClick={handleToggle2FA}
-            className="flex items-center justify-between p-5 border border-brand-sand/60 rounded-[20px] hover:bg-brand-ivory/30 transition-all cursor-pointer group"
+            className="flex items-center justify-between p-5 border border-brand-sand/60 rounded-[24px] hover:border-brand-bronze/40 transition-all group bg-brand-cream/10"
           >
             <div className="flex items-center gap-5">
               <div className={cn(
-                "w-12 h-12 rounded-xl flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform",
-                user?.twoFactorEnabled ? "bg-emerald-50 text-emerald-500" : "bg-brand-ivory text-brand-taupe"
+                "w-12 h-12 rounded-2xl flex items-center justify-center shadow-sm transition-all duration-300",
+                user?.twoFactorEnabled ? "bg-emerald-500 text-white shadow-emerald-200" : "bg-brand-ivory text-brand-taupe"
               )}>
-                <Mail size={20} />
+                <Smartphone size={22} />
               </div>
               <div className="space-y-0.5">
-                <p className="text-[14.5px] font-bold text-brand-espresso">Xác thực 2 lớp (2FA)</p>
-                <p className="text-[12.5px] text-brand-taupe">Thêm một lớp bảo mật cho tài khoản của bạn</p>
+                <p className="text-[15px] font-bold text-brand-espresso">Xác thực 2 lớp (2FA)</p>
+                <p className="text-[12.5px] text-brand-taupe font-medium">Bảo mật tài khoản qua mã xác nhận Email</p>
               </div>
             </div>
-            {isLoading2FA ? (
-              <Spinner size="sm" />
-            ) : user?.twoFactorEnabled ? (
-              <span className="px-4 py-1.5 bg-emerald-100 text-emerald-600 text-[11px] font-bold rounded-full tracking-wider flex items-center gap-1.5">
-                <CheckCircle2 size={12} /> ĐÃ BẬT
-              </span>
-            ) : (
-              <span className="px-4 py-1.5 bg-brand-sand/20 text-brand-taupe text-[11px] font-bold rounded-full tracking-wider">CHƯA BẬT</span>
-            )}
+            <div className="flex items-center gap-3">
+              {isLoading2FA && <Spinner size="sm" />}
+              <Switch 
+                checked={!!user?.twoFactorEnabled}
+                onCheckedChange={handleToggle2FA}
+                disabled={isLoading2FA}
+                className="data-[state=checked]:bg-emerald-500"
+              />
+            </div>
           </div>
 
           {/* SESSIONS */}

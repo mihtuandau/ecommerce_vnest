@@ -291,14 +291,27 @@
       return updated;
     }
 
-    async deleteReview(reviewId: number, userId: number) {
+    async deleteReview(reviewId: number, userOrId: number | any) {
       const review = await this.repository.findById(reviewId);
 
       if (!review) {
         throw new NotFoundException('Không tìm thấy đánh giá');
       }
 
-      if (review.userId !== userId) {
+      let canDelete = false;
+
+      if (typeof userOrId === 'number') {
+        canDelete = review.userId === userOrId;
+      } else if (userOrId && typeof userOrId === 'object') {
+        const userId = userOrId.userId || userOrId.id;
+        const role = userOrId.role;
+        const permissions = userOrId.permissions || [];
+        
+        const isAdmin = role === 'ADMIN' || permissions.includes('product.manage') || permissions.includes('settings.manage');
+        canDelete = isAdmin || review.userId === userId;
+      }
+
+      if (!canDelete) {
         throw new BadRequestException('Bạn không có quyền xóa đánh giá này');
       }
 

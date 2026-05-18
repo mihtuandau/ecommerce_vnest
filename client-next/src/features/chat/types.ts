@@ -19,4 +19,5 @@ export interface ChatRoom {
   roomId: string;
   unreadCount: number;
   lastMessage: ChatMessage;
+  customer?: ChatSender;
 }

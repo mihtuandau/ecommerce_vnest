@@ -32,8 +32,8 @@ export function Tabs({ activeTab, onTabChange, counts }: TabsProps) {
               key={item.value}
               value={item.value}
               className={cn(
-                "px-0 py-4 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none shadow-none transition-all gap-2",
-                "text-sm font-bold text-slate-400 hover:text-slate-600 data-[state=active]:text-primary",
+                "px-0 py-4 rounded-none border-b-2 border-transparent data-[state=active]:border-slate-900 data-[state=active]:bg-transparent data-[state=active]:shadow-none shadow-none transition-all gap-2",
+                "text-sm font-bold text-slate-400 hover:text-slate-600 data-[state=active]:text-slate-900",
                 "bg-transparent !bg-transparent !shadow-none"
               )}
             >
@@ -42,7 +42,7 @@ export function Tabs({ activeTab, onTabChange, counts }: TabsProps) {
                 <span className={cn(
                   "text-[10px] px-1.5 py-0.5 rounded-full font-bold transition-colors",
                   activeTab === item.value
-                    ? "bg-primary text-white"
+                    ? "bg-slate-900 text-white"
                     : "bg-slate-100 text-slate-500"
                 )}>
                   {item.count}

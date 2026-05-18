@@ -7,7 +7,7 @@
 
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
-  
+
   --color-primary: hsl(var(--primary));
   --color-primary-foreground: hsl(var(--primary-foreground));
 
@@ -16,7 +16,7 @@
   --color-brand-taupe: hsl(var(--brand-taupe));
   --color-brand-cream: hsl(var(--brand-cream));
   --color-brand-ivory: hsl(var(--brand-ivory));
-  
+
   /* Semantic Aliases */
   --color-brand-espresso: hsl(var(--primary));
   --color-brand-accent: hsl(var(--brand-bronze));
@@ -38,6 +38,11 @@
   --color-input: hsl(var(--input));
   --color-ring: hsl(var(--ring));
 
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
@@ -52,22 +57,22 @@
   --primary-foreground: 0 0% 100%;
 
   --brand-bronze: 27 54% 50%; /* #C4783A - LUXE Bronze */
-  --brand-sand: 40 25% 83%;   /* #DDD6C8 - LUXE Sand (Border) */
-  --brand-taupe: 30 15% 47%;  /* #8A7966 - LUXE Taupe (Muted) */
-  --brand-cream: 40 30% 96.5%;  /* More visible LUXE Linen Background */
-  --brand-ivory: 40 30% 94%;  /* #F3EFE8 - LUXE Ivory (Light Accent) */
+  --brand-sand: 40 25% 83%; /* #DDD6C8 - LUXE Sand (Border) */
+  --brand-taupe: 30 15% 47%; /* #8A7966 - LUXE Taupe (Muted) */
+  --brand-cream: 40 30% 96.5%; /* More visible LUXE Linen Background */
+  --brand-ivory: 40 30% 94%; /* #F3EFE8 - LUXE Ivory (Light Accent) */
 
   --background: 40 30% 96.5%; /* Same as brand-cream */
-  --foreground: 0 0% 10%; 
+  --foreground: 0 0% 10%;
 
-  --border: 40 25% 83%;    /* Same as brand-sand */
+  --border: 40 25% 83%; /* Same as brand-sand */
   --muted-foreground: 30 15% 47%; /* Same as brand-taupe */
-  
+
   --secondary: 30 20% 96%;
   --secondary-foreground: 30 40% 17%;
 
-  --accent: 30 30% 95%; 
-  --accent-foreground: 27 54% 50%; 
+  --accent: 30 30% 95%;
+  --accent-foreground: 27 54% 50%;
 
   --destructive: 17 80% 52%;
   --destructive-foreground: 210 40% 98%;
@@ -78,7 +83,7 @@
   --popover: 0 0% 100%;
   --popover-foreground: 0 0% 10%;
 
-  --ring: 27 54% 50%; 
+  --ring: 27 54% 50%;
   --radius: 1rem;
 
   /* Sidebar */
@@ -136,17 +141,23 @@
     @apply border-border;
   }
 
-  html, body {
+  html,
+  body {
     @apply bg-background text-foreground antialiased;
     font-family: var(--font-dm-sans), sans-serif !important;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-bold font-serif;
   }
-  
+
   .font-serif-brand {
-    font-family: var(--font-playfair), 'Playfair Display', serif !important;
+    font-family: var(--font-playfair), "Playfair Display", serif !important;
   }
 }
 
@@ -210,6 +221,12 @@
    Print Styles
    ────────────────────────────────────────────── */
 @media print {
+  html, body {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #000000 !important;
+  }
+
   @page {
     size: A4;
     margin: 15mm;
@@ -264,63 +281,61 @@
   }
 }
 .admin-theme {
-  /* Admin Color Palette Overrides */
-  --primary: 222 47% 11%;
-  --primary-foreground: 210 40% 98%;
-
-  /* Force font-sans for admin */
-  font-family: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
-
-  h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
-  }
-
-  /* Force black for common primary classes */
-  .bg-primary {
-    @apply !bg-slate-900;
-  }
-  .text-primary {
-    @apply !text-slate-900;
-  }
-  .border-primary {
-    @apply !border-slate-900;
-  }
-
   /* 
-     Admin Border Radius Rules:
-     Badge: 4px, Button/Input: 8px, Card: 12px
+     Admin Color Palette — Soft, Minimalist White & Slate
   */
-  button,
-  input,
-  [role="button"],
-  .rounded-md {
-    border-radius: 8px !important;
-  }
+  --primary: 215 27.9% 16.9% !important; /* Soft Slate-800 */
+  --primary-foreground: 0 0% 100% !important;
 
-  .badge,
-  .rounded-sm {
-    border-radius: 4px !important;
-  }
+  --color-primary: hsl(215 27.9% 16.9%) !important; /* Soft Slate-800 */
+  --color-primary-foreground: hsl(0 0% 100%) !important;
+  
+  --background: 210 40% 98% !important; /* Slate-50 */
+  --foreground: 222.2 47.4% 11.2% !important; /* Slate-900 */
 
-  .card,
-  .rounded-xl,
-  .rounded-2xl {
-    border-radius: 12px !important;
-  }
+  --color-background: hsl(210 40% 98%) !important; /* Slate-50 */
+  --color-foreground: hsl(222.2 47.4% 11.2%) !important; /* Slate-900 */
 
-  /* Force pill for specific elements if absolutely needed, but usually follow the rules */
-  .tabs-trigger-pill {
-    @apply !rounded-full;
-  }
+  --border: 214.3 31.8% 91.4% !important; /* Slate-200 */
+  --color-border: hsl(214.3 31.8% 91.4%) !important; /* Slate-200 */
+
+  --ring: 221.2 83.2% 53.3% !important;
+  --color-ring: hsl(221.2 83.2% 53.3%) !important;
+
+  /* Standard slate overrides for muted, accent, secondary and inputs to fully isolate admin panel */
+  --muted: 210 40% 96.1% !important; /* Slate-100 */
+  --color-muted: hsl(210 40% 96.1%) !important;
+
+  --muted-foreground: 215.4 16.3% 46.9% !important; /* Slate-500 */
+  --color-muted-foreground: hsl(215.4 16.3% 46.9%) !important;
+
+  --accent: 210 40% 96.1% !important; /* Slate-100 */
+  --color-accent: hsl(210 40% 96.1%) !important;
+
+  --accent-foreground: 222.2 47.4% 11.2% !important; /* Slate-900 */
+  --color-accent-foreground: hsl(222.2 47.4% 11.2%) !important;
+
+  --secondary: 210 40% 96.1% !important; /* Slate-100 */
+  --color-secondary: hsl(210 40% 96.1%) !important;
+
+  --secondary-foreground: 222.2 47.4% 11.2% !important; /* Slate-900 */
+  --color-secondary-foreground: hsl(222.2 47.4% 11.2%) !important;
+
+  --input: 214.3 31.8% 91.4% !important;
+  --color-input: hsl(214.3 31.8% 91.4%) !important;
+
+  /* Force background */
+  background-color: hsl(210 40% 98%) !important;
+  color: hsl(222.2 47.4% 11.2%) !important;
 }
 
 .nav-item-standard {
   font-family: "DM Sans", var(--font-dm-sans), sans-serif !important;
   font-size: 13px !important;
-  color: #3D2B1A;
+  color: #3d2b1a;
   font-weight: 500 !important;
 }
 
 .font-sans-brand {
-  font-family: var(--font-dm-sans),  sans-serif !important;
+  font-family: var(--font-dm-sans), sans-serif !important;
 }

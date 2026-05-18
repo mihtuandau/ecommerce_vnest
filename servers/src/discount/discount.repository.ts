@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Discount, Prisma } from '@prisma/client';
 
-
 @Injectable()
 export class DiscountRepository {
   constructor(private prisma: PrismaService) {}
@@ -13,25 +12,30 @@ export class DiscountRepository {
 
   // Transaction Serializable: đảm bảo chỉ 1 flash sale active tại cùng thời điểm
   // 2 admin tạo cùng lúc → chỉ 1 cái thành công, cái kia bị rollback
-  async createFlashSaleTransactional(data: Prisma.DiscountCreateInput): Promise<Discount> {
-    return this.prisma.$transaction(async (tx) => {
-      const now = new Date();
-      const activeFlash = await tx.discount.findFirst({
-        where: {
-          isFlashSale: true,
-          isActive: true,
-          startDate: { lte: now },
-          OR: [{ endDate: null }, { endDate: { gte: now } }],
-        },
-        select: { id: true, code: true },
-      });
+  async createFlashSaleTransactional(
+    data: Prisma.DiscountCreateInput,
+  ): Promise<Discount> {
+    return this.prisma.$transaction(
+      async (tx) => {
+        const now = new Date();
+        const activeFlash = await tx.discount.findFirst({
+          where: {
+            isFlashSale: true,
+            isActive: true,
+            startDate: { lte: now },
+            OR: [{ endDate: null }, { endDate: { gte: now } }],
+          },
+          select: { id: true, code: true },
+        });
 
-      if (activeFlash) {
-        throw new Error(`Đã có flash sale đang chạy: "${activeFlash.code}"`);
-      }
+        if (activeFlash) {
+          throw new Error(`Đã có flash sale đang chạy: "${activeFlash.code}"`);
+        }
 
-      return tx.discount.create({ data });
-    }, { isolationLevel: 'Serializable' });
+        return tx.discount.create({ data });
+      },
+      { isolationLevel: 'Serializable' },
+    );
   }
 
   async findByCode(code: string): Promise<Discount | null> {
@@ -65,31 +69,36 @@ export class DiscountRepository {
     });
   }
 
-  async update(id: number, data: Prisma.DiscountUpdateInput): Promise<Discount> {
+  async update(
+    id: number,
+    data: Prisma.DiscountUpdateInput,
+  ): Promise<Discount> {
     const normalizedData: any = { ...data };
 
     if (Array.isArray(normalizedData.applicableToProducts)) {
       const productIds = normalizedData.applicableToProducts.filter(
         (id: unknown) => typeof id === 'number' && Number.isFinite(id),
       );
-      normalizedData.applicableToProducts = productIds.length > 0
-        ? {
-            deleteMany: {},
-            create: productIds.map((productId: number) => ({ productId })),
-          }
-        : { deleteMany: {} };
+      normalizedData.applicableToProducts =
+        productIds.length > 0
+          ? {
+              deleteMany: {},
+              create: productIds.map((productId: number) => ({ productId })),
+            }
+          : { deleteMany: {} };
     }
 
     if (Array.isArray(normalizedData.applicableToCategories)) {
       const categoryIds = normalizedData.applicableToCategories.filter(
         (id: unknown) => typeof id === 'number' && Number.isFinite(id),
       );
-      normalizedData.applicableToCategories = categoryIds.length > 0
-        ? {
-            deleteMany: {},
-            create: categoryIds.map((categoryId: number) => ({ categoryId })),
-          }
-        : { deleteMany: {} };
+      normalizedData.applicableToCategories =
+        categoryIds.length > 0
+          ? {
+              deleteMany: {},
+              create: categoryIds.map((categoryId: number) => ({ categoryId })),
+            }
+          : { deleteMany: {} };
     }
 
     return this.prisma.discount.update({
@@ -172,16 +181,19 @@ export class DiscountRepository {
     });
   }
 
-  async findFlashSale() {
+  async findFlashSaleSessions() {
     const now = new Date();
-    const flashSale = await this.prisma.discount.findFirst({
+    
+    const flashSales = await this.prisma.discount.findMany({
       where: {
         isFlashSale: true,
         isActive: true,
-        startDate: { lte: now },
-        OR: [{ endDate: null }, { endDate: { gte: now } }],
+        OR: [
+          { endDate: null },
+          { endDate: { gte: new Date(now.getTime() - 24 * 60 * 60 * 1000) } }, // Bao gồm cả phiên đã kết thúc trong 24h qua
+        ],
       },
-      orderBy: { endDate: 'asc' },
+      orderBy: { startDate: 'asc' },
       select: {
         id: true,
         code: true,
@@ -189,40 +201,51 @@ export class DiscountRepository {
         image: true,
         percentage: true,
         fixedAmount: true,
-        minOrderAmount: true,
-        maxDiscountAmount: true,
         startDate: true,
         endDate: true,
         isActive: true,
-        applicableToCategories: true,
-        applicableToProducts: true,
+        isFlashSale: true,
+        applicableToCategories: {
+          select: { categoryId: true }
+        },
+        applicableToProducts: {
+          select: {
+            productId: true,
+            stockLimit: true,
+            soldCount: true,
+            badge: true,
+            percentage: true,
+            fixedAmount: true,
+          },
+        },
+        _count: {
+          select: { orders: true }
+        }
       },
     });
 
-    if (!flashSale) return null;
+    if (flashSales.length === 0) return [];
 
-    if (flashSale.applicableToProducts.length === 0 && flashSale.applicableToCategories.length === 0) {
-      return { ...flashSale, products: [] };
-    }
+    const sessionsWithProducts = await Promise.all(flashSales.map(async (fs) => {
+      const productWhere: any = { isActive: true };
+      
+      // If session has specific products, fetch them
+      if (fs.applicableToProducts.length > 0) {
+        productWhere.id = {
+          in: fs.applicableToProducts.map((dp) => dp.productId),
+        };
+      } else if (fs.applicableToCategories.length > 0) {
+        // Fallback to category-based products if no specific products defined
+        productWhere.categoryId = {
+          in: fs.applicableToCategories.map((dc) => dc.categoryId),
+        };
+      }
 
-    const productWhere: any = { isActive: true };
-    if (flashSale.applicableToProducts.length > 0) {
-      productWhere.id = {
-        in: flashSale.applicableToProducts.map((dp) => dp.productId),
-      };
-    } else if (flashSale.applicableToCategories.length > 0) {
-      productWhere.categoryId = {
-        in: flashSale.applicableToCategories.map((dc) => dc.categoryId),
-      };
-    }
-
-    const products = await this.prisma.product.findMany({
-      where: productWhere,
-      take: 8,
-      orderBy: flashSale.applicableToProducts.length > 0
-        ? { id: 'asc' }
-        : { soldCount: 'desc' },
+      const products = await this.prisma.product.findMany({
+        where: productWhere,
+        take: 24, // Increased take for better grid variety
         include: {
+          brand: true,
           category: true,
           images: {
             orderBy: { isThumbnail: 'desc' },
@@ -231,24 +254,52 @@ export class DiscountRepository {
           variants: {
             where: { isActive: true },
             orderBy: { price: 'asc' },
-            take: 3,
-            include: {
-              images: {
-                orderBy: { isPrimary: 'desc' },
-                take: 1,
-              },
-            },
           },
         },
-    });
+      });
 
-    const orderedProducts = flashSale.applicableToProducts.length > 0
-      ? flashSale.applicableToProducts
-          .map((dp) => products.find((p) => p.id === dp.productId))
-          .filter(Boolean)
-      : products;
+      // Map products with their session-specific metadata
+      let mappedProducts: any[] = [];
+      if (fs.applicableToProducts.length > 0) {
+        mappedProducts = fs.applicableToProducts.map(dp => {
+          const product = products.find(p => p.id === dp.productId);
+          if (!product) return null;
+          const totalStock = (product.variants || []).reduce((acc: number, v: any) => acc + (v.stock || 0), 0);
+          
+          // Use product-specific metadata if it exists, otherwise fallback to session-wide
+          const hasSpecificDiscount = dp.percentage !== null || dp.fixedAmount !== null;
+          
+          return {
+            ...dp,
+            stockLimit: dp.stockLimit > 0 ? dp.stockLimit : 10,
+            percentage: hasSpecificDiscount ? dp.percentage : fs.percentage,
+            fixedAmount: hasSpecificDiscount ? dp.fixedAmount : fs.fixedAmount,
+            product
+          };
+        }).filter(Boolean);
+      } else {
+        // For category-based sessions, they use session-wide percentage/fixedAmount
+        mappedProducts = products.map(p => {
+          const totalStock = (p.variants || []).reduce((acc: number, v: any) => acc + (v.stock || 0), 0);
+          return {
+            productId: p.id,
+            stockLimit: 10, // Default for category-based auto-flash
+            soldCount: 0,
+            badge: null,
+            percentage: fs.percentage,
+            fixedAmount: fs.fixedAmount,
+            product: p
+          };
+        });
+      }
 
-    return { ...flashSale, products: orderedProducts };
+      return {
+        ...fs,
+        products: mappedProducts
+      };
+    }));
+
+    return sessionsWithProducts;
   }
 
   async findDiscountForProduct(productId: number) {
@@ -276,10 +327,7 @@ export class DiscountRepository {
         isFlashSale: true,
         isActive: true,
       },
-      orderBy: [
-        { percentage: 'desc' },
-        { fixedAmount: 'desc' },
-      ],
+      orderBy: [{ percentage: 'desc' }, { fixedAmount: 'desc' }],
     });
 
     return discounts[0] ?? null;
@@ -290,9 +338,21 @@ export class DiscountRepository {
     return this.prisma.discount.findMany({
       where: {
         isActive: true,
-        isFlashSale: true,
         startDate: { lte: now },
-        OR: [{ endDate: null }, { endDate: { gte: now } }],
+        AND: [
+          {
+            OR: [
+              { isFlashSale: true },
+              { code: "" }
+            ],
+          },
+          {
+            OR: [
+              { endDate: null },
+              { endDate: { gte: now } }
+            ],
+          }
+        ]
       },
       select: {
         id: true,
@@ -305,14 +365,14 @@ export class DiscountRepository {
         startDate: true,
         applicableToProducts: true,
       },
-      orderBy: [
-        { percentage: 'desc' },
-        { fixedAmount: 'desc' },
-      ],
+      orderBy: [{ percentage: 'desc' }, { fixedAmount: 'desc' }],
     });
   }
 
-  async hasUserUsedDiscount(userId: number, discountId: number): Promise<boolean> {
+  async hasUserUsedDiscount(
+    userId: number,
+    discountId: number,
+  ): Promise<boolean> {
     const count = await this.prisma.discountUsage.count({
       where: {
         userId,

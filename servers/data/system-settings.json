@@ -1,0 +1,11 @@
+{
+  "storeName": "LUXE",
+  "storeEmail": "dautuan032004@gmail.com",
+  "storePhone": "0325586629",
+  "storeAddress": "109/47/1A, đường số 8, Linh Xuân, Hồ Chí Minh",
+  "shippingFee": 30000,
+  "freeShippingThreshold": 500000,
+  "maintenanceMode": false,
+  "stockAlert": true,
+  "orderNotification": true
+}
