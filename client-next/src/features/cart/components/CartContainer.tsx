@@ -13,7 +13,6 @@ import { formatCurrency } from "@/utils/formatCurrency";
 import { discountsApi } from "@/features/discounts/api";
 import { useToast } from "@/hooks/useToast";
 
-// Sub-components
 import { EmptyCart } from "./EmptyCart";
 import { CartItem } from "./CartItem";
 import { CartSummary } from "./CartSummary";
@@ -21,9 +20,11 @@ import { useCart } from "../hooks";
 import { useRecentlyViewed } from "@/features/products/hooks/useRecentlyViewed";
 import { ProductCard } from "@/features/products/components/customer/cards/ProductCard";
 
+interface CheckoutStepsProps {
+  currentStep: number;
+}
 
-
-function CheckoutSteps({ currentStep }: { currentStep: number }) {
+function CheckoutSteps({ currentStep }: CheckoutStepsProps) {
   const steps = [
     { id: 1, label: "Giỏ hàng" },
     { id: 2, label: "Thanh toán" },
@@ -33,7 +34,6 @@ function CheckoutSteps({ currentStep }: { currentStep: number }) {
   return (
     <div className="flex items-center justify-center">
       <div className="relative w-full">
-        {/* Guaranteed visible background line - full width of parent */}
         <div className="absolute top-[18px] left-20 right-20 h-[1px] bg-brand-sand z-0" />
         
         <div className="flex justify-between items-start relative z-10">
@@ -61,28 +61,31 @@ function CheckoutSteps({ currentStep }: { currentStep: number }) {
   );
 }
 
+interface RecentlyViewedSectionProps {
+  recentlyViewed: any[];
+}
+
+function RecentlyViewedSection({ recentlyViewed }: RecentlyViewedSectionProps) {
+  if (recentlyViewed.length === 0) return null;
+
+  return (
+    <div className="mt-20 border-t border-brand-sand/50 pt-16">
+      <h3 className="text-xl font-bold text-[#3D2B1A] font-serif mb-10 flex items-center gap-4">
+        Bạn đã <span className="text-[#C4783A] italic font-medium">xem gần đây</span>
+        <div className="h-[1px] flex-1 bg-brand-sand/30" />
+      </h3>
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8">
+        {recentlyViewed.slice(0, 4).map((product) => (
+          <ProductCard key={product.id} product={product} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function CartContainer() {
   const router = useRouter();
   const { recentlyViewed } = useRecentlyViewed();
-
-  function RecentlyViewedSection() {
-    if (recentlyViewed.length === 0) return null;
-
-    return (
-      <div className="mt-20 border-t border-brand-sand/50 pt-16">
-        <h3 className="text-xl font-bold text-brand-espresso font-serif-brand mb-10 flex items-center gap-4">
-          Bạn đã <span className="text-brand-bronze italic font-medium">xem gần đây</span>
-          <div className="h-[1px] flex-1 bg-brand-sand/30" />
-        </h3>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8">
-          {recentlyViewed.slice(0, 4).map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
-      </div>
-    );
-  }
-
   const { items, updateQuantity, removeItem, clearCart } = useCart();
   const { toggleSelectItem, toggleSelectAll, appliedDiscount, setAppliedDiscount } = useCartStore();
   const [mounted, setMounted] = useState(false);
@@ -199,7 +202,7 @@ export function CartContainer() {
             <div className="flex flex-col gap-6">
               {(() => {
                 const groups = items.reduce((acc: { [key: string]: typeof items }, item) => {
-                  const key = item.productId || item.name; // Fallback to name if productId is missing
+                  const key = item.productId || item.name;
                   if (!acc[key]) acc[key] = [];
                   acc[key].push(item);
                   return acc;
@@ -235,22 +238,22 @@ export function CartContainer() {
           </div>
 
           <div className="lg:col-span-4 sticky top-40">
-              <CartSummary
-                selectedCount={selectedCount}
-                selectedTotalPrice={selectedTotalPrice}
-                appliedDiscount={appliedDiscount}
-                discountAmount={discountAmount}
-                isApplyingDiscount={isApplyingDiscount}
-                onApplyDiscount={handleApplyDiscount}
-                onRemoveDiscount={handleRemoveDiscount}
-              />
-            </div>
+            <CartSummary
+              selectedCount={selectedCount}
+              selectedTotalPrice={selectedTotalPrice}
+              appliedDiscount={appliedDiscount}
+              discountAmount={discountAmount}
+              isApplyingDiscount={isApplyingDiscount}
+              onApplyDiscount={handleApplyDiscount}
+              onRemoveDiscount={handleRemoveDiscount}
+            />
           </div>
-
-          {mounted && (
-            <RecentlyViewedSection />
-          )}
         </div>
+
+        {mounted && (
+          <RecentlyViewedSection recentlyViewed={recentlyViewed} />
+        )}
       </div>
+    </div>
   );
 }

@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { usePermission } from "@/hooks/usePermission";
 import dayjs from "@/lib/dayjs";
+import { PAYMENT_STATUS_CONFIG, PAYMENT_METHOD_CONFIG } from "../../constants";
 
 interface PaymentsTableProps {
   payments: any[];
@@ -59,92 +60,49 @@ export function PaymentsTable({
   
   // Status Style Helper using standard Lucide Icons
   const getStatusBadge = (statusStr: string) => {
-    switch (statusStr) {
-      case "SUCCESS":
-        return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-600 border border-emerald-200 whitespace-nowrap">
-            <CheckCircle className="h-3.5 w-3.5" /> Thành công
-          </span>
-        );
-      case "PENDING":
-        return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-600 border border-amber-200 whitespace-nowrap">
-            <AlertCircle className="h-3.5 w-3.5 animate-pulse" /> Chờ xử lý
-          </span>
-        );
-      case "FAILED":
-        return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-600 border border-rose-200 whitespace-nowrap">
-            <XCircle className="h-3.5 w-3.5" /> Thất bại
-          </span>
-        );
-      case "REFUNDED":
-        return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-600 border border-blue-200 whitespace-nowrap">
-            <Coins className="h-3.5 w-3.5" /> Đã hoàn tiền
-          </span>
-        );
-      case "CANCELLED":
-        return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-500 border border-slate-200 whitespace-nowrap">
-            <XCircle className="h-3.5 w-3.5" /> Đã hủy
-          </span>
-        );
-      default:
-        return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-50 text-slate-650 border border-slate-200 whitespace-nowrap">
-            <HelpCircle className="h-3.5 w-3.5" /> {statusStr}
-          </span>
-        );
+    const config = PAYMENT_STATUS_CONFIG[statusStr as keyof typeof PAYMENT_STATUS_CONFIG];
+    if (!config) {
+      return (
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-50 text-slate-650 border border-slate-200 whitespace-nowrap">
+          <HelpCircle className="h-3.5 w-3.5" /> {statusStr}
+        </span>
+      );
     }
+
+    const Icon = 
+      statusStr === "SUCCESS" ? CheckCircle :
+      statusStr === "PENDING" ? AlertCircle :
+      statusStr === "FAILED" || statusStr === "CANCELLED" ? XCircle : Coins;
+
+    return (
+      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${config.color} whitespace-nowrap`}>
+        <Icon className={`h-3.5 w-3.5 ${statusStr === "PENDING" ? "animate-pulse" : ""}`} /> {config.label}
+      </span>
+    );
   };
 
   // Method Style Helper using Lucide Icons matching exactly the Prisma Schema Enums
   const getMethodBadge = (methodStr: string) => {
-    switch (methodStr) {
-      case "CASH":
-        return (
-          <span className="inline-flex items-center gap-1 text-[11.5px] text-slate-650 font-bold whitespace-nowrap">
-            <Banknote className="h-3.5 w-3.5 text-slate-450" /> COD
-          </span>
-        );
-      case "CARD":
-        return (
-          <span className="inline-flex items-center gap-1 text-[11.5px] text-teal-650 font-bold whitespace-nowrap">
-            <CreditCard className="h-3.5 w-3.5 text-teal-450" /> Thẻ CARD
-          </span>
-        );
-      case "VNPAY":
-        return (
-          <span className="inline-flex items-center gap-1 text-[11.5px] text-sky-655 font-bold whitespace-nowrap">
-            <CreditCard className="h-3.5 w-3.5 text-sky-450" /> VNPay
-          </span>
-        );
-      case "MOMO":
-        return (
-          <span className="inline-flex items-center gap-1 text-[11.5px] text-pink-650 font-bold whitespace-nowrap">
-            <Smartphone className="h-3.5 w-3.5 text-pink-400" /> MoMo
-          </span>
-        );
-      case "PAYOS":
-        return (
-          <span className="inline-flex items-center gap-1 text-[11.5px] text-amber-650 font-bold whitespace-nowrap">
-            <Zap className="h-3.5 w-3.5 text-amber-450" /> PayOS
-          </span>
-        );
-      case "BANK":
-        return (
-          <span className="inline-flex items-center gap-1 text-[11.5px] text-indigo-650 font-bold whitespace-nowrap">
-            <Landmark className="h-3.5 w-3.5 text-indigo-450" /> Chuyển khoản
-          </span>
-        );
-      default:
-        return (
-          <span className="inline-flex items-center gap-1 text-[11.5px] text-slate-550 font-bold whitespace-nowrap">
-            <CreditCard className="h-3.5 w-3.5 text-slate-450" /> {methodStr}
-          </span>
-        );
+    const config = PAYMENT_METHOD_CONFIG[methodStr as keyof typeof PAYMENT_METHOD_CONFIG];
+    if (!config) {
+      return (
+        <span className="inline-flex items-center gap-1 text-[11.5px] text-slate-550 font-bold whitespace-nowrap">
+          <CreditCard className="h-3.5 w-3.5 text-slate-450" /> {methodStr}
+        </span>
+      );
     }
+
+    const Icon =
+      methodStr === "CASH" ? Banknote :
+      methodStr === "MOMO" ? Smartphone :
+      methodStr === "PAYOS" ? Zap :
+      methodStr === "BANK" ? Landmark : CreditCard;
+
+    return (
+      <span className={`inline-flex items-center gap-1 text-[11.5px] ${config.color} font-bold whitespace-nowrap`}>
+        <Icon className={`h-3.5 w-3.5 ${config.iconColor}`} /> {config.label}
+      </span>
+    );
   };
 
   if (isLoading) {

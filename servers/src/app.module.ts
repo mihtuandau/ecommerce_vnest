@@ -36,6 +36,8 @@ import { BrandModule } from './brand/brand.module';
 import { ReturnModule } from './return/return.module';
 import { MaintenanceModule } from './common/maintenance/maintenance.module';
 import { NotificationModule } from './notification/notification.module';
+import { SystemSettingsModule } from './system-settings/system-settings.module';
+import { MaintenanceGuard } from './common/guards/maintenance.guard';
 
 @Module({
   imports: [
@@ -96,6 +98,7 @@ import { NotificationModule } from './notification/notification.module';
     ReturnModule,
     MaintenanceModule,
     NotificationModule,
+    SystemSettingsModule,
   ],
   controllers: [AppController],
   providers: [
@@ -104,6 +107,10 @@ import { NotificationModule } from './notification/notification.module';
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: MaintenanceGuard,
     },
     {
       provide: APP_INTERCEPTOR,

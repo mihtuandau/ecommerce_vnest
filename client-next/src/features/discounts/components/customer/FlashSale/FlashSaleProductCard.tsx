@@ -86,7 +86,7 @@ export function FlashSaleProductCard({
 
     if (status === "ENDED") return;
     if (status === "SOON") {
-      success("🔔 Chúng tôi sẽ thông báo cho bạn ngay khi phiên này bắt đầu!");
+      success("Chúng tôi sẽ thông báo cho bạn ngay khi phiên này bắt đầu!");
       return;
     }
 
@@ -106,7 +106,7 @@ export function FlashSaleProductCard({
       slug: product.slug,
       quantity: 1,
     });
-    success("🛒 Đã thêm vào giỏ hàng!");
+    success("Đã thêm vào giỏ hàng!");
   };
 
   return (
@@ -131,9 +131,9 @@ export function FlashSaleProductCard({
         {product.badge && (
           <div className="absolute top-[10px] right-[10px] z-10 bg-[#C44040] text-white text-[10px] font-bold px-[9px] py-1 rounded-full uppercase tracking-tighter shadow-sm">
             {product.badge === "hot"
-              ? "🔥 HOT"
+              ? "HOT"
               : product.badge === "last"
-              ? "⚡ SẮP HẾT"
+              ? "SẮP HẾT"
               : product.badge.toUpperCase()}
           </div>
         )}

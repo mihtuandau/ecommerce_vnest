@@ -27,15 +27,23 @@ export class AuditInterceptor implements NestInterceptor {
             // Chỉ theo dõi nội bộ Nhân viên và Admin (Bỏ qua khách hàng thường)
             if (user && user.role !== 'CUSTOMER') {
               // Bóc tách URL để biết nhân viên đang sửa cái gì (VD: /api/products -> PRODUCTS)
-              const entityName = url.split('/')[2] || 'UNKNOWN'; 
-              const entityId = request.params.id || body?.id || 'N/A';
+              const cleanUrlPath = url.split('?')[0];
+              const rawEntityName = cleanUrlPath.split('/')[2] || 'UNKNOWN';
+              const entityName = rawEntityName.toUpperCase();
+              
+              const entityId = request.params.id || 
+                               body?.id || 
+                               response?.id || 
+                               response?.data?.id || 
+                               cleanUrlPath.split('/')[3] || 
+                               'N/A';
 
               // Ghi bằng chứng vào bảng AuditLog (Két sắt)
               await this.prisma.auditLog.create({
                 data: {
                   userId: user.id,
                   action: method, // POST (Tạo mới) / PATCH (Sửa) / DELETE (Xóa)
-                  entityName: entityName.toUpperCase(),
+                  entityName: entityName,
                   entityId: String(entityId),
                   newData: body || {}, // Lưu lại toàn bộ dữ liệu nhân viên đã nhập
                   ipAddress: ip,

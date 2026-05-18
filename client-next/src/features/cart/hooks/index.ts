@@ -96,14 +96,12 @@ export function useSyncCart() {
           let result;
           
           if (isDirty && items.length > 0) {
-            console.log("[useSyncCart] Dirty cart detected. Merging guest items to server...", items);
             const syncItems = items.map(item => ({
               variantId: Number(item.variantId),
               quantity: item.quantity
             }));
             result = await cartApi.syncCart(syncItems);
           } else {
-            console.log("[useSyncCart] Local cart is clean or fresh login. Fetching server state...");
             result = await cartApi.getCart();
           }
           

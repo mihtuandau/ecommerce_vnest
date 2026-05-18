@@ -38,8 +38,6 @@ export default function AdminProductCreatePage() {
       variants: variants || [],
     };
     
-    console.log("Creating product with DTO:", cleanDto);
-    
     createProduct(cleanDto, {
       onSuccess: () => {
         router.push("/admin/products");

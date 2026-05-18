@@ -1,0 +1,46 @@
+export const AUDIT_LOG_ENTITY_MAPPING: Record<string, string> = {
+  USERS: "Người dùng",
+  PRODUCTS: "Sản phẩm",
+  CATEGORIES: "Danh mục",
+  DISCOUNTS: "Khuyến mãi",
+  ORDERS: "Đơn hàng",
+  PAYMENTS: "Thanh toán",
+  SHIPPING: "Vận chuyển",
+  RETURNS: "Đổi trả",
+  SETTINGS: "Cài đặt",
+} as const;
+
+export const AUDIT_LOG_ACTION_TEXTS: Record<string, string> = {
+  POST: "TẠO MỚI",
+  DELETE: "XÓA",
+  PATCH: "CẬP NHẬT",
+  PUT: "CẬP NHẬT",
+} as const;
+
+export const AUDIT_LOG_KEY_TRANSLATIONS: Record<string, string> = {
+  security: "Bảo mật tài khoản",
+  newsletter: "Đăng ký bản tin",
+  promotions: "Khuyến mãi & Tin tức",
+  orderStatus: "Trạng thái đơn hàng",
+  name: "Tên hiển thị",
+  email: "Địa chỉ Email",
+  role: "Phân quyền thành viên",
+  avatar: "Ảnh đại diện",
+  status: "Trạng thái hoạt động",
+  price: "Giá tiền",
+  stock: "Số lượng tồn kho",
+  description: "Mô tả chi tiết",
+  categoryId: "ID Danh mục sản phẩm",
+  slug: "Đường dẫn thân thiện (Slug)",
+  title: "Tiêu đề",
+  content: "Nội dung văn bản",
+  code: "Mã giảm giá (Promo Code)",
+  percentage: "Tỷ lệ chiết khấu (%)",
+  fixedAmount: "Mức giảm cố định",
+  minOrderValue: "Giá trị đơn hàng tối thiểu",
+  maxUses: "Lượt sử dụng tối đa",
+  startDate: "Ngày bắt đầu",
+  endDate: "Ngày kết thúc",
+  rating: "Số sao đánh giá",
+  comment: "Bình luận ý kiến",
+} as const;

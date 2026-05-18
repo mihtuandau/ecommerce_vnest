@@ -4,7 +4,7 @@ import React from "react";
 import { Bell } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
-import { useNotifications, useMarkNotificationRead } from "../hooks";
+import { useNotifications, useMarkNotificationRead } from "../../hooks";
 import { 
   DropdownMenu, 
   DropdownMenuContent, 

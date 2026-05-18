@@ -16,14 +16,10 @@ export const useSocket = () => {
   const accessToken = useAuthStore((state) => state.accessToken);
 
   useEffect(() => {
-    // Token might be null if HttpOnly cookie is used, but io will send cookies if withCredentials is true
-    console.log("Socket Hook - Token found in store:", !!accessToken);
-
-    // Fallback: Nếu store không có token (vd: sau khi refresh), kiểm tra cookies
+    // Check tokens from store or cookie fallback
     let currentToken = accessToken;
     if (!currentToken) {
       currentToken = Cookies.get("accessToken") || Cookies.get("access_token") || null;
-      console.log("Socket Hook - Token fallback to cookie:", !!currentToken);
     }
 
     const socketInstance = io(SOCKET_URL, {
@@ -38,16 +34,14 @@ export const useSocket = () => {
 
     socketInstance.on("connect", () => {
       setIsConnected(true);
-      console.log("Socket Hook - Connected successfully ID:", socketInstance.id);
     });
 
     socketInstance.on("connect_error", (err) => {
-      console.error("Socket Hook - Connection error:", err.message);
+      console.error("Socket connection error:", err.message);
     });
 
-    socketInstance.on("disconnect", (reason) => {
+    socketInstance.on("disconnect", () => {
       setIsConnected(false);
-      console.log("Socket Hook - Disconnected:", reason);
     });
 
     setSocket(socketInstance);

@@ -163,8 +163,6 @@ export function ProductForm({ initialData, onSubmit, isLoading }: ProductFormPro
   }, [name, form, initialData]);
 
   const onFormSubmit = (data: ProductFormValues) => {
-    console.log("Form values validated successfully:", data);
-
     const cleanNumber = (val: string | number | undefined | null) => {
       if (typeof val === "string") {
         // Remove all dots and commas for VND

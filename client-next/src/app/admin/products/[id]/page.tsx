@@ -47,8 +47,6 @@ export default function AdminProductDetailPage() {
       cleanUpdateData.originalPrice = originalPrice;
     }
 
-    console.log("Updating product with data:", cleanUpdateData);
-
     updateProduct({ id, data: cleanUpdateData }, {
       onSuccess: () => router.push("/admin/products"),
     });

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useRef } from "react";
-import { useChatRooms } from "@/features/chat";
+import { useChatRooms, DEFAULT_CHAT_SHORTCUTS } from "@/features/chat";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useChatSession } from "@/features/chat/hooks/useChatSession";
 import { SupportSidebar } from "./Support/SupportSidebar";
@@ -10,28 +10,10 @@ import { CustomerInfo } from "./Support/CustomerInfo";
 
 import { useUsers } from "@/features/users/hooks";
 
-export default function LuxeSupportView() {
+import { ShieldAlert } from "lucide-react";
+
+export default function SupportView() {
   const { user } = useAuthStore();
-
-  const hasAccess = user?.role === "ADMIN" || user?.permissions?.includes("chat.support");
-
-  if (!hasAccess) {
-    return (
-      <div className="flex h-full w-full items-center justify-center bg-[#F8FAFC] font-sans p-6">
-        <div className="max-w-md w-full text-center bg-white rounded-[2rem] p-8 border border-slate-100 shadow-xl space-y-6">
-          <div className="w-16 h-16 rounded-[1.5rem] bg-rose-500/10 text-rose-600 flex items-center justify-center font-bold text-2xl mx-auto border border-rose-250/50 shadow-inner">
-            🛡️
-          </div>
-          <div>
-            <h3 className="text-base font-bold text-slate-800">Không có quyền truy cập</h3>
-            <p className="text-xs leading-relaxed text-slate-450 mt-2">
-              Bạn không có quyền <span className="font-semibold text-rose-600">"chat.support"</span> để sử dụng tính năng này. Vui lòng liên hệ Quản trị viên để được phân quyền.
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   const { data: rooms, isLoading: roomsLoading, refetch: refetchRooms } = useChatRooms();
   const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);
@@ -94,6 +76,26 @@ export default function LuxeSupportView() {
     );
   }, [rooms, searchQuery]);
 
+  const hasAccess = user?.role === "ADMIN" || user?.permissions?.includes("chat.support");
+
+  if (!hasAccess) {
+    return (
+      <div className="flex h-full w-full items-center justify-center bg-[#F8FAFC] font-sans p-6">
+        <div className="max-w-md w-full text-center bg-white rounded-[2rem] p-8 border border-slate-100 shadow-xl space-y-6">
+          <div className="w-16 h-16 rounded-[1.5rem] bg-rose-500/10 text-rose-600 flex items-center justify-center font-bold text-2xl mx-auto border border-rose-250/50 shadow-inner">
+            <ShieldAlert className="h-6 w-6 text-rose-600" />
+          </div>
+          <div>
+            <h3 className="text-base font-bold text-slate-800">Không có quyền truy cập</h3>
+            <p className="text-xs leading-relaxed text-slate-450 mt-2">
+              Bạn không có quyền <span className="font-semibold text-rose-600">"chat.support"</span> để sử dụng tính năng này. Vui lòng liên hệ Quản trị viên để được phân quyền.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const handleSendMessage = (customText?: string) => {
     const textToSend = customText !== undefined ? customText : inputText;
     sendMessage(textToSend);
@@ -121,13 +123,6 @@ export default function LuxeSupportView() {
     inputRef.current?.focus();
   };
 
-  const shortcuts = [
-    { key: "/chào", text: "Xin chào! Tôi là nhân viên hỗ trợ LUXE. Tôi có thể giúp gì cho bạn hôm nay?", label: "Lời chào hỏi" },
-    { key: "/cảmơn", text: "Cảm ơn bạn đã liên hệ với LUXE! Rất vui được hỗ trợ bạn. Vấn đề của bạn đã được ghi nhận và chúng tôi sẽ xử lý trong thời gian sớm nhất.", label: "Lời cảm ơn" },
-    { key: "/vậnchuyển", text: "Đơn hàng của bạn hiện đang được vận chuyển bởi Giao Hàng Nhanh. Dự kiến giao trong 1-2 ngày làm việc.", label: "Thông tin vận chuyển" },
-    { key: "/đổitrả", text: "Chính sách đổi trả của LUXE: Trong vòng 30 ngày kể từ ngày nhận hàng. Sản phẩm còn nguyên tem, chưa qua sử dụng.", label: "Chính sách đổi trả" },
-  ];
-
   return (
     <div className="flex h-full w-full overflow-hidden bg-[#F8FAFC] text-[#0F172A] font-sans">
       <SupportSidebar 
@@ -154,7 +149,7 @@ export default function LuxeSupportView() {
         onKeyDown={handleKeyDown}
         isShortcutMenuOpen={isShortcutMenuOpen}
         setIsShortcutMenuOpen={setIsShortcutMenuOpen}
-        shortcuts={shortcuts}
+        shortcuts={DEFAULT_CHAT_SHORTCUTS as any}
         onUseShortcut={useShortcut}
         messagesEndRef={messagesEndRef}
         inputRef={inputRef}

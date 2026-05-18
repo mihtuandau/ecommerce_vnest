@@ -58,7 +58,7 @@ export interface NavGroup {
 // permission: null → always visible (no guard needed)
 const navGroups: NavGroup[] = [
   {
-    title: "📊 TỔNG QUAN",
+    title: "TỔNG QUAN",
     items: [
       {
         label: "Dashboard",
@@ -75,7 +75,7 @@ const navGroups: NavGroup[] = [
     ],
   },
   {
-    title: "🛍 SẢN PHẨM",
+    title: "SẢN PHẨM",
     items: [
       {
         label: "Sản phẩm",
@@ -110,7 +110,7 @@ const navGroups: NavGroup[] = [
     ],
   },
   {
-    title: "📦 BÁN HÀNG",
+    title: "BÁN HÀNG",
     items: [
       {
         label: "Đơn hàng",
@@ -130,16 +130,10 @@ const navGroups: NavGroup[] = [
         icon: CreditCard,
         permission: "order.manage",
       },
-      {
-        label: "Vận chuyển",
-        href: "/admin/shipping",
-        icon: Truck,
-        permission: "order.manage",
-      },
     ],
   },
   {
-    title: "👥 KHÁCH HÀNG",
+    title: "KHÁCH HÀNG",
     items: [
       {
         label: "Người dùng",
@@ -168,7 +162,7 @@ const navGroups: NavGroup[] = [
     ],
   },
   {
-    title: "⚙ HỆ THỐNG",
+    title: "HỆ THỐNG",
     items: [
       {
         label: "Thông báo",

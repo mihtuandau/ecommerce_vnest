@@ -1,14 +1,24 @@
 "use client";
 
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Facebook, Instagram, Twitter, Mail, Phone, MapPin, Send } from "lucide-react";
 import Image from "next/image";
 import { cn } from "@/utils/cn";
 
 import { useCategories } from "@/features/products/hooks";
+import { useSystemSettings } from "@/features/settings/hooks";
 
 export function Footer() {
   const { data: categoryData } = useCategories();
+  const { data: settingsData } = useSystemSettings();
+  const settings = settingsData?.data || settingsData;
+
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const categories = Array.isArray(categoryData) ? categoryData : categoryData?.data || [];
   const topCategories = categories.slice(0, 5);
 
@@ -23,7 +33,7 @@ export function Footer() {
                  <Image src="/logoMT.png" alt="Logo" width={36} height={36} className="h-9 w-auto object-contain" />
                </div>
                 <div className="flex flex-col">
-                  <span className="text-lg font-semibold tracking-tight text-brand-cream font-serif">MINH TUAN SHOP</span>
+                  <span className="text-lg font-semibold tracking-tight text-brand-cream font-serif">{mounted ? (settings?.storeName || "MINH TUAN SHOP") : "MINH TUAN SHOP"}</span>
                 </div>
             </Link>
             
@@ -93,9 +103,9 @@ export function Footer() {
           <div className="lg:col-span-3 space-y-5">
             <h3 className="text-[14px] font-bold text-brand-cream font-serif">Liên hệ</h3>
             <ul className="space-y-4">
-              <li className="text-[13.5px] text-brand-taupe">109/47/1A Đường số 8, Khu Phố 11, Đường số 8, Phường Linh Xuân, TP Thủ Đức, TP Hồ Chí Minh</li>
-              <li className="text-[13.5px] text-brand-taupe">(+84) 325 586 629</li>
-              <li className="text-[13.5px] text-brand-taupe">dautuan032004@gmail.com</li>
+              <li className="text-[13.5px] text-brand-taupe">{mounted ? (settings?.storeAddress || "109/47/1A Đường số 8, Phường Linh Xuân, TP Thủ Đức, TP Hồ Chí Minh") : "109/47/1A Đường số 8, Phường Linh Xuân, TP Thủ Đức, TP Hồ Chí Minh"}</li>
+              <li className="text-[13.5px] text-brand-taupe">{mounted ? (settings?.storePhone || "(+84) 325 586 629") : "(+84) 325 586 629"}</li>
+              <li className="text-[13.5px] text-brand-taupe">{mounted ? (settings?.storeEmail || "dautuan032004@gmail.com") : "dautuan032004@gmail.com"}</li>
               <li className="text-[13.5px] text-brand-taupe">8:00 – 22:00 hàng ngày</li>
             </ul>
           </div>
@@ -104,7 +114,7 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="mt-12 pt-6 border-t border-white/[0.08] flex flex-col md:flex-row justify-between items-center gap-4">
           <span className="text-[12px] text-brand-taupe/50">
-            © 2025 MINHTUAN SHOP All rights reserved.
+            © 2026 {mounted ? (settings?.storeName || "MINHTUAN SHOP") : "MINHTUAN SHOP"} All rights reserved.
           </span>
           <div className="flex gap-2">
             {["CASH", "VNPAY", "MoMo"].map(p => (

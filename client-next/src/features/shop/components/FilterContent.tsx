@@ -5,6 +5,8 @@ import { Star, Check, ChevronRight, ChevronDown } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { Category, Brand } from "@/types/models";
 
+import { SHOP_PRICE_RANGES } from "../constants";
+
 interface FilterContentProps {
   currentCategory: string | null;
   currentBrand: string | null;

@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { 
   X, Send, Paperclip, Smile, Image as ImageIcon, 
   User, MessageSquare, Phone, Clock, ChevronLeft, 
-  Zap, ShieldCheck, Heart, ExternalLink
+  Zap, ShieldCheck, Heart, ExternalLink, Bot
 } from "lucide-react";
 import { useSocket, useChatMessages, chatApi } from "@/features/chat";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -18,12 +18,18 @@ import { toast } from "sonner";
 dayjs.extend(relativeTime);
 dayjs.locale("vi");
 
-interface LuxeCustomerChatProps {
+interface CustomerChatProps {
   onClose?: () => void;
 }
 
-export default function LuxeCustomerChat({ onClose }: LuxeCustomerChatProps) {
-  const { user } = useAuthStore();
+export default function CustomerChat({ onClose }: CustomerChatProps) {
+  const { user, isLoading } = useAuthStore();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const roomId = user ? `room_${user.id}` : null;
   const { data: initialMessages, isLoading: messagesLoading } = useChatMessages(roomId);
   const [messages, setMessages] = useState<any[]>([]);
@@ -34,7 +40,7 @@ export default function LuxeCustomerChat({ onClose }: LuxeCustomerChatProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [pendingAttachment, setPendingAttachment] = useState<string | null>(null);
   
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
 
@@ -46,15 +52,12 @@ export default function LuxeCustomerChat({ onClose }: LuxeCustomerChatProps) {
     return msgText.startsWith("http") && !isImageMessage(msgText);
   };
 
-
-  // Sync messages
   useEffect(() => {
     if (initialMessages) {
       setMessages(initialMessages);
     }
   }, [initialMessages]);
 
-  // Socket setup
   useEffect(() => {
     if (socket && roomId) {
       socket.emit("joinRoom", { roomId });
@@ -62,7 +65,6 @@ export default function LuxeCustomerChat({ onClose }: LuxeCustomerChatProps) {
       const handleNewMessage = (newMessage: any) => {
         if (newMessage.roomId === roomId) {
           setMessages(prev => [...prev, newMessage]);
-          // If message is from staff, mark as read
           if (newMessage.senderId !== user?.id) {
              socket.emit("markAsRead", { roomId });
           }
@@ -83,9 +85,10 @@ export default function LuxeCustomerChat({ onClose }: LuxeCustomerChatProps) {
     }
   }, [socket, roomId, user?.id]);
 
-  // Scroll to bottom
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
+    }
   }, [messages, staffTyping]);
 
   const handleSendMessage = (customText?: string) => {
@@ -149,17 +152,26 @@ export default function LuxeCustomerChat({ onClose }: LuxeCustomerChatProps) {
     }
   };
 
+  if (!mounted || isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full min-h-[500px] bg-[#FAF8F4]/20 p-8 text-center font-sans">
+        <div className="w-8 h-8 border-2 border-[#C4783A]/20 border-t-[#C4783A] rounded-full animate-spin mb-4" />
+        <p className="text-[12px] text-[#8A7966] font-normal tracking-wide lowercase">đang kết nối LUXE Care...</p>
+      </div>
+    );
+  }
+
   if (!user) {
     return (
-      <div className="flex flex-col items-center justify-center h-[500px] bg-[#FAF8F4] p-10 text-center rounded-[2rem] border border-[#DDD6C8] shadow-2xl">
-        <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mb-6 shadow-sm border border-[#DDD6C8]">
-          <ShieldCheck size={40} className="text-[#C4783A]" />
+      <div className="flex flex-col items-center justify-center h-full min-h-[500px] bg-[#FAF8F4]/40 p-8 text-center font-sans">
+        <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center mb-5 shadow-3xs border border-[#DDD6C8]/60 relative ring-4 ring-[#E8E0D0]/30">
+          <ShieldCheck size={24} className="text-[#3D2B1A]" />
         </div>
-        <h3 className="text-xl font-bold text-[#3D2B1A] mb-3">Vui lòng đăng nhập</h3>
-        <p className="text-[#8A7966] text-sm mb-8 leading-relaxed">Để bắt đầu cuộc hội thoại với nhân viên hỗ trợ, bạn cần đăng nhập tài khoản của mình.</p>
+        <h3 className="text-[14px] font-semibold text-[#3D2B1A] mb-1.5">Vui lòng đăng nhập</h3>
+        <p className="text-[#8A7966] text-[12px] mb-5 max-w-xs leading-relaxed">Để bắt đầu trò chuyện trực tuyến với hỗ trợ viên, vui lòng đăng nhập tài khoản của bạn.</p>
         <button 
            onClick={() => window.location.href = "/auth/login"}
-           className="px-10 py-3.5 bg-[#3D2B1A] text-white rounded-full font-bold hover:bg-[#2A2420] transition-all transform hover:scale-105 active:scale-95 shadow-xl shadow-[#3D2B1A]/20"
+           className="px-5 py-2.5 bg-[#3D2B1A] text-white rounded-xl text-[12px] font-medium hover:bg-[#2A2420] active:scale-98 transition-all shadow-md shadow-[#3D2B1A]/10"
         >
           Đăng nhập ngay
         </button>
@@ -168,49 +180,40 @@ export default function LuxeCustomerChat({ onClose }: LuxeCustomerChatProps) {
   }
 
   return (
-    <div className="flex flex-col h-full w-full bg-[#FAF8F4] overflow-hidden font-sans">
-      {/* Header */}
-      <div className="bg-[#3D2B1A] px-8 py-6 relative overflow-hidden shrink-0">
-        {/* Background Patterns */}
-        <div className="absolute top-0 right-0 w-32 h-32 bg-[#C4783A] opacity-10 rounded-full blur-3xl -mr-16 -mt-16" />
-        <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#FAF8F4] opacity-5 rounded-full blur-2xl -ml-12 -mb-12" />
-        
-        <div className="flex items-center justify-between relative z-10">
-          <div className="flex items-center gap-3.5">
-            <div className="relative">
-              <div className="w-11 h-11 bg-white/10 backdrop-blur-md rounded-[14px] flex items-center justify-center border border-white/20">
-                <Heart size={20} className="text-[#F0D5BB] fill-[#F0D5BB]" />
-              </div>
-              <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-[#3A7D5A] border-2 border-[#3D2B1A] rounded-full" />
+    <div className="flex flex-col h-full w-full bg-white overflow-hidden font-sans border-0">
+      <div className="bg-white border-b border-[#DDD6C8]/40 px-6 py-4 flex items-center justify-between shrink-0 z-10">
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <div className="w-9 h-9 bg-[#FAF8F4] rounded-xl flex items-center justify-center border border-[#DDD6C8]/60 shadow-3xs overflow-hidden relative">
+              <Bot size={18} className="text-[#C4783A]" />
             </div>
-            <div>
-              <h3 className="text-[#FAF8F4] text-[15px] font-bold tracking-tight">LUXE Support</h3>
-              <div className="flex items-center gap-1.5 mt-0.5">
-                <span className="text-[10px] font-bold text-[#F0D5BB] uppercase tracking-[0.1em]">Chúng tôi đang trực tuyến</span>
-              </div>
+            <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 border-2 border-white rounded-full" />
+          </div>
+          <div>
+            <h3 className="text-[#3D2B1A] text-[13px] font-semibold">Hỗ trợ viên LUXE</h3>
+            <div className="flex items-center gap-1.5 mt-0.5">
+              <span className="text-[10px] text-[#8A7966] lowercase">Đang hoạt động trực tuyến</span>
             </div>
           </div>
-          {onClose && (
-            <button 
-              onClick={onClose}
-              className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition-all"
-            >
-              <X size={20} />
-            </button>
-          )}
         </div>
+        {onClose && (
+          <button 
+            onClick={onClose}
+            className="w-7 h-7 flex items-center justify-center rounded-lg bg-[#FAF8F4] hover:bg-[#FAF8F4]/80 text-[#8A7966] hover:text-[#3D2B1A] transition-colors border border-[#DDD6C8]/30"
+          >
+            <X size={14} />
+          </button>
+        )}
       </div>
 
-      {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-[#FAF8F4]/50 [&::-webkit-scrollbar]:w-[5px] [&::-webkit-scrollbar-thumb]:bg-[#DDD6C8] [&::-webkit-scrollbar-thumb]:rounded-full">
-        <div className="text-center mb-8">
-           <span className="px-4 py-1.5 bg-[#E8E0D0]/50 text-[#8A7966] text-[10px] font-bold rounded-full uppercase tracking-widest">Hôm nay</span>
-        </div>
-
+      <div 
+        ref={scrollContainerRef}
+        className="flex-1 overflow-y-auto p-5 space-y-4 [&::-webkit-scrollbar]:w-[4px] [&::-webkit-scrollbar-thumb]:bg-[#E8E0D0] [&::-webkit-scrollbar-thumb]:rounded-full"
+      >
         {messages.length === 0 && !messagesLoading && (
-          <div className="flex flex-col items-center justify-center py-10 opacity-30">
-            <MessageSquare size={48} className="text-[#C4B49A] mb-4" />
-            <p className="text-[13px] font-medium text-[#3D2B1A]">Bắt đầu cuộc hội thoại</p>
+          <div className="flex flex-col items-center justify-center py-20 opacity-40">
+            <MessageSquare size={32} className="text-[#C4B49A] mb-3" />
+            <p className="text-[12px] text-[#8A7966] font-normal">Bắt đầu cuộc trò chuyện với LUXE Care</p>
           </div>
         )}
 
@@ -219,28 +222,29 @@ export default function LuxeCustomerChat({ onClose }: LuxeCustomerChatProps) {
           const showTime = i === filteredList.length - 1 || dayjs(filteredList[i+1].createdAt).diff(dayjs(m.createdAt), 'minute') > 5;
           
           return (
-            <div key={m.id || i} className={cn("flex gap-3 items-end group", isUser ? "flex-row-reverse" : "flex-row")}>
+            <div key={m.id || i} className={cn("flex gap-2.5 items-end group", isUser ? "flex-row-reverse" : "flex-row")}>
               {!isUser && (
-                <div className="w-8 h-8 rounded-full bg-white border border-[#DDD6C8] flex items-center justify-center text-[11px] font-bold text-[#8B6F47] shadow-sm shrink-0">
-                  LX
+                <div className="w-7 h-7 rounded-lg bg-[#FAF8F4] border border-[#DDD6C8]/60 flex items-center justify-center text-[9px] font-medium text-[#8A7966] shadow-3xs shrink-0 overflow-hidden">
+                  VN
                 </div>
               )}
-              <div className={cn("max-w-[80%] flex flex-col", isUser ? "items-end" : "items-start")}>
+              <div className={cn("max-w-[75%] flex flex-col", isUser ? "items-end" : "items-start")}>
                 {isImageMessage(m.message) ? (
-                  <div className="rounded-2xl overflow-hidden shadow-xs border border-[#DDD6C8]/60 bg-white p-1">
+                  <div className="rounded-xl overflow-hidden shadow-3xs border border-[#DDD6C8]/40 bg-white p-1 hover:scale-101 transition-transform">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img 
                       src={m.message} 
                       alt="Attachment" 
-                      className="max-w-[240px] max-h-[180px] rounded-xl object-cover cursor-pointer hover:opacity-90 transition-opacity" 
+                      className="max-w-[200px] max-h-[150px] rounded-lg object-cover cursor-pointer" 
                       onClick={() => window.open(m.message, "_blank")} 
                     />
                   </div>
                 ) : (
                   <div className={cn(
-                    "p-3 text-[13px] leading-relaxed shadow-sm transition-all duration-300",
+                    "p-2.5 text-[12px] leading-relaxed shadow-3xs transition-all duration-200",
                     isUser 
-                      ? "bg-[#3D2B1A] text-[#FAF8F4] rounded-[18px] rounded-br-none hover:bg-[#2A2420]" 
-                      : "bg-white text-[#3D2B1A] border border-[#DDD6C8] rounded-[18px] rounded-bl-none hover:border-[#C4B49A]"
+                      ? "bg-[#3D2B1A] text-white rounded-2xl rounded-br-xs hover:bg-[#2A2420]" 
+                      : "bg-white text-[#3D2B1A] border border-[#DDD6C8]/55 rounded-2xl rounded-bl-xs hover:border-[#C4B49A]"
                   )}>
                     {isFileMessage(m.message) ? (
                       <a 
@@ -248,14 +252,14 @@ export default function LuxeCustomerChat({ onClose }: LuxeCustomerChatProps) {
                         target="_blank" 
                         rel="noreferrer" 
                         className={cn(
-                          "flex items-center gap-2 p-2 rounded-xl border transition-colors",
+                          "flex items-center gap-1.5 p-1.5 rounded-lg border transition-colors text-[11px]",
                           isUser 
-                            ? "border-stone-700 bg-stone-800/30 text-[#FAF8F4] hover:bg-stone-900/40" 
-                            : "border-slate-100 bg-slate-50 text-[#3D2B1A] hover:bg-slate-100"
+                            ? "border-stone-700 bg-stone-800 text-stone-100 hover:bg-stone-900" 
+                            : "border-[#FAF8F4] bg-[#FAF8F4] text-[#3D2B1A] hover:bg-[#FAF8F4]/80"
                         )}
                       >
-                        <Paperclip size={13} className="shrink-0" />
-                        <span className="text-xs font-medium truncate max-w-[180px]">Tải tệp đính kèm</span>
+                        <Paperclip size={12} className="shrink-0 text-[#8A7966]" />
+                        <span className="truncate max-w-[130px] font-normal">Tải tệp đính kèm</span>
                         <ExternalLink size={10} className="shrink-0 opacity-60" />
                       </a>
                     ) : (
@@ -264,9 +268,9 @@ export default function LuxeCustomerChat({ onClose }: LuxeCustomerChatProps) {
                   </div>
                 )}
                 {showTime && (
-                  <div className="flex items-center gap-1.5 px-2 mt-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <span className="text-[9px] font-bold text-[#8A7966] uppercase tracking-tighter">{dayjs(m.createdAt).format("HH:mm")}</span>
-                    {isUser && <span className="text-[#3A7D5A] text-[10px]">✓✓</span>}
+                  <div className="flex items-center gap-1 px-1 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span className="text-[8px] text-[#8A7966] lowercase">{dayjs(m.createdAt).format("HH:mm")}</span>
+                    {isUser && <span className="text-[#C4783A] text-[9px]">✓</span>}
                   </div>
                 )}
               </div>
@@ -275,23 +279,20 @@ export default function LuxeCustomerChat({ onClose }: LuxeCustomerChatProps) {
         })}
 
         {staffTyping && (
-          <div className="flex gap-3 items-center">
-            <div className="w-8 h-8 rounded-full bg-white border border-[#DDD6C8] flex items-center justify-center text-[11px] font-bold text-[#8B6F47] shadow-sm animate-pulse">
-              LX
+          <div className="flex gap-2.5 items-center">
+            <div className="w-7 h-7 rounded-lg bg-[#FAF8F4] border border-[#DDD6C8]/60 flex items-center justify-center text-[9px] font-medium text-[#8A7966] shadow-3xs shrink-0">
+              VN
             </div>
-            <div className="bg-white border border-[#DDD6C8] px-4 py-2.5 rounded-[18px] rounded-bl-none shadow-sm flex gap-1 items-center">
-              <div className="w-1.5 h-1.5 bg-[#C4B49A] rounded-full animate-bounce [animation-delay:0s]" />
-              <div className="w-1.5 h-1.5 bg-[#C4B49A] rounded-full animate-bounce [animation-delay:0.2s]" />
-              <div className="w-1.5 h-1.5 bg-[#C4B49A] rounded-full animate-bounce [animation-delay:0.4s]" />
+            <div className="bg-white border border-[#DDD6C8]/40 px-3.5 py-2.5 rounded-2xl rounded-bl-xs shadow-3xs flex gap-1 items-center">
+              <div className="w-1.2 h-1.2 bg-[#C4B49A] rounded-full animate-bounce [animation-delay:0s]" />
+              <div className="w-1.2 h-1.2 bg-[#C4B49A] rounded-full animate-bounce [animation-delay:0.2s]" />
+              <div className="w-1.2 h-1.2 bg-[#C4B49A] rounded-full animate-bounce [animation-delay:0.4s]" />
             </div>
           </div>
         )}
-        <div ref={messagesEndRef} />
       </div>
 
-      {/* Input Area */}
-      <div className="p-4 bg-white border-t border-[#DDD6C8] shrink-0">
-        {/* Hidden File Inputs */}
+      <div className="p-4 bg-white border-t border-[#DDD6C8]/40 shrink-0">
         <input 
           type="file" 
           ref={fileInputRef} 
@@ -307,26 +308,29 @@ export default function LuxeCustomerChat({ onClose }: LuxeCustomerChatProps) {
           accept="image/*"
         />
 
-        <div className="flex items-end gap-3">
-          <div className="flex-1 bg-[#F3EFE8]/50 border border-[#DDD6C8] rounded-[20px] overflow-hidden focus-within:border-[#C4B49A] focus-within:bg-white transition-all duration-300 flex flex-col">
+        <div className="flex items-end gap-2.5">
+          <div className="flex-1 bg-[#FAF8F4]/40 border border-[#DDD6C8]/60 rounded-2xl overflow-hidden focus-within:border-[#C4B49A] focus-within:bg-white transition-all duration-300 flex flex-col">
             {pendingAttachment && (
               <div className="px-3 pt-3 pb-1 flex bg-white border-b border-[#DDD6C8]/10 shrink-0">
-                <div className="relative inline-block bg-stone-50 border border-stone-200 rounded-xl p-1 shadow-xs group animate-in zoom-in-95 duration-200">
+                <div className="relative inline-block bg-[#FAF8F4] border border-[#DDD6C8]/55 rounded-xl p-1 shadow-3xs group animate-in zoom-in-95 duration-200">
                   {isImageMessage(pendingAttachment) ? (
-                    <img 
-                      src={pendingAttachment} 
-                      alt="Attachment Preview" 
-                      className="w-12 h-12 rounded-lg object-cover"
-                    />
+                    <>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img 
+                        src={pendingAttachment} 
+                        alt="Attachment Preview" 
+                        className="w-11 h-11 rounded-lg object-cover"
+                      />
+                    </>
                   ) : (
-                    <div className="w-12 h-12 rounded-lg flex items-center justify-center bg-stone-100 border border-stone-200">
-                      <Paperclip size={18} className="text-stone-400" />
+                    <div className="w-11 h-11 rounded-lg flex items-center justify-center bg-stone-100 border border-stone-250">
+                      <Paperclip size={16} className="text-stone-400" />
                     </div>
                   )}
                   <button 
                     type="button"
                     onClick={() => setPendingAttachment(null)}
-                    className="absolute -top-1.5 -right-1.5 w-4.5 h-4.5 bg-stone-800 text-white rounded-full flex items-center justify-center hover:bg-black transition-colors cursor-pointer shadow-sm border border-white"
+                    className="absolute -top-1.5 -right-1.5 w-4.5 h-4.5 bg-stone-800 text-white rounded-full flex items-center justify-center hover:bg-black transition-colors cursor-pointer shadow-3xs border border-white"
                   >
                     <X size={8} strokeWidth={2.5} />
                   </button>
@@ -334,8 +338,8 @@ export default function LuxeCustomerChat({ onClose }: LuxeCustomerChatProps) {
               </div>
             )}
             <textarea 
-              placeholder="Gửi tin nhắn cho chúng tôi..."
-              className="w-full p-3 bg-transparent border-none outline-none resize-none text-[13px] min-h-[44px] max-h-[100px] text-[#3D2B1A] font-medium"
+              placeholder="Gửi tin nhắn hỗ trợ trực tuyến..."
+              className="w-full p-3 bg-transparent border-none outline-none resize-none text-[12px] min-h-[40px] max-h-[80px] text-[#3D2B1A] font-normal placeholder-[#8A7966]/60 focus:ring-0"
               rows={1}
               value={inputText}
               onChange={handleInputChange}
@@ -346,26 +350,26 @@ export default function LuxeCustomerChat({ onClose }: LuxeCustomerChatProps) {
                  }
               }}
             />
-            <div className="px-3 py-1.5 border-t border-[#DDD6C8]/20 flex items-center justify-between">
+            <div className="px-3 py-1.5 border-t border-[#DDD6C8]/10 flex items-center justify-between">
               <div className="flex gap-2">
                 <button 
                   onClick={() => fileInputRef.current?.click()}
                   disabled={isUploading}
                   className="text-[#8A7966] hover:text-[#3D2B1A] transition-colors disabled:opacity-50 cursor-pointer"
                 >
-                  <Paperclip size={16} />
+                  <Paperclip size={14} />
                 </button>
                 <button 
                   onClick={() => imageInputRef.current?.click()}
                   disabled={isUploading}
                   className="text-[#8A7966] hover:text-[#3D2B1A] transition-colors disabled:opacity-50 cursor-pointer"
                 >
-                  <ImageIcon size={16} />
+                  <ImageIcon size={14} />
                 </button>
               </div>
               <div className="flex items-center gap-1">
-                 <span className="text-[9px] font-bold text-[#8A7966]">{inputText.length}</span>
-                 <div className="h-1.5 w-1.5 rounded-full bg-[#E8E0D0]" />
+                 <span className="text-[8px] text-[#8A7966]">{inputText.length}</span>
+                 <div className="h-1 w-1 rounded-full bg-[#E8E0D0]" />
               </div>
             </div>
           </div>
@@ -373,18 +377,15 @@ export default function LuxeCustomerChat({ onClose }: LuxeCustomerChatProps) {
             onClick={handleSend}
             disabled={(!inputText.trim() && !pendingAttachment) || isUploading}
             className={cn(
-              "w-11 h-11 rounded-[18px] flex items-center justify-center transition-all transform active:scale-90 shrink-0 shadow-lg cursor-pointer",
+              "w-10 h-10 rounded-xl flex items-center justify-center transition-all transform active:scale-95 shrink-0 shadow-3xs cursor-pointer",
               (inputText.trim() || pendingAttachment) && !isUploading
-                ? "bg-[#3D2B1A] text-white hover:bg-[#2A2420] shadow-[#3D2B1A]/20" 
-                : "bg-[#E8E0D0] text-[#FAF8F4] opacity-50 cursor-not-allowed"
+                ? "bg-[#3D2B1A] text-white hover:bg-[#2A2420] shadow-lg shadow-[#3D2B1A]/15" 
+                : "bg-[#E8E0D0]/50 text-white opacity-50 cursor-not-allowed"
             )}
           >
-            <Send size={18} className={cn("transition-transform", (inputText.trim() || pendingAttachment) ? "translate-x-0.5 -translate-y-0.5" : "")} />
+            <Send size={15} className={cn("transition-transform", (inputText.trim() || pendingAttachment) ? "translate-x-0.5" : "")} />
           </button>
         </div>
-        <p className="text-center text-[9px] text-[#8A7966] font-bold uppercase tracking-widest mt-3">
-          Thời gian phản hồi dự kiến: 2 phút
-        </p>
       </div>
     </div>
   );

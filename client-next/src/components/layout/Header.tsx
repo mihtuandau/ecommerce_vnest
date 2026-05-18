@@ -5,7 +5,7 @@ import { Menu, X, ChevronDown, Sparkles, Heart, Zap, ChevronRight, Tag, LayoutGr
 import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { CartDropdown } from "@/features/cart/components/CartDropdown";
-import { NotificationBell } from "@/features/notifications/components/NotificationBell";
+import { NotificationBell } from "@/features/notifications/components/customer/NotificationBell";
 import { ROUTES } from "@/constants/routes";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useWishlistStore } from "@/store/useWishlistStore";
@@ -26,11 +26,18 @@ import {
 import { HeaderSearch } from "./HeaderSearch";
 import { MobileMenu } from "./MobileMenu";
 import { getImageUrl } from "@/utils/image";
+import { useSystemSettings } from "@/features/settings/hooks";
 
 export function Header({ initialHasToken }: { initialHasToken?: boolean }) {
   const { user, logout, isLoading: authLoading } = useAuthStore();
   const wishlistCount = useWishlistStore(state => state.items.length);
   const { data: categories } = useCategories({ tree: 'true' });
+  const { data: settingsData } = useSystemSettings();
+  const settings = settingsData?.data || settingsData;
+
+  const formattedThreshold = settings?.freeShippingThreshold 
+    ? Number(settings.freeShippingThreshold).toLocaleString("vi-VN") + "đ"
+    : "500.000đ";
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -84,7 +91,7 @@ export function Header({ initialHasToken }: { initialHasToken?: boolean }) {
             "bg-primary text-brand-bronze/80 text-center text-[12px] tracking-[0.12em] hidden lg:block w-full transition-all duration-500 ease-in-out overflow-hidden",
             isVisible ? "h-[38px] py-2.5" : "h-0 opacity-0"
           )}>
-            Miễn phí vận chuyển cho đơn từ <span className="text-brand-bronze font-medium">500.000đ</span> · Đổi trả trong 30 ngày · Hotline: <span className="text-brand-bronze font-medium">1800 1234</span>
+            Miễn phí vận chuyển cho đơn từ <span className="text-brand-bronze font-medium">{mounted ? formattedThreshold : "500.000đ"}</span> · Đổi trả trong 30 ngày · Hotline: <span className="text-brand-bronze font-medium">{mounted ? (settings?.storePhone || "1800 1234") : "1800 1234"}</span>
           </div>
 
           {/* ── MAIN HEADER CONTENT ── */}

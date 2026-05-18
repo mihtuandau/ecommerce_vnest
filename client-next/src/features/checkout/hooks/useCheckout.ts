@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/useToast";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useAddresses } from "@/features/users/hooks";
+import { useSystemSettings } from "@/features/settings/hooks";
 
 export type AddressOption = {
   id?: string | number;
@@ -40,6 +41,7 @@ export function useCheckout() {
   const { success, error, warning } = useToast();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { data: settings } = useSystemSettings();
 
   const [mounted, setMounted] = useState(false);
   const [hasAppliedDefault, setHasAppliedDefault] = useState(false);
@@ -206,6 +208,13 @@ export function useCheckout() {
   }, [addressData, mounted, hasAppliedDefault, user, applySavedAddress]);
 
   useEffect(() => {
+    // If order subtotal qualifies for Free Shipping, enforce 0 shipping fee instantly!
+    const threshold = settings?.freeShippingThreshold ?? 500000;
+    if (settings && subtotal >= threshold) {
+      setShippingFee(0);
+      return;
+    }
+
     const timer = setTimeout(async () => {
       if (form.districtId) {
         setIsCalculatingFee(true);
@@ -216,9 +225,10 @@ export function useCheckout() {
             to_ward_code: form.wardCode || "",
             weight: totalWeight,
           });
-          setShippingFee(res.data?.total || 0);
+          setShippingFee(res.data?.total || settings?.shippingFee || 30000);
         } catch {
-          setShippingFee(0);
+          // If GHN API calculation fails, fallback to user-configured custom shippingFee from settings!
+          setShippingFee(settings?.shippingFee || 30000);
         } finally {
           setIsCalculatingFee(false);
         }
@@ -227,7 +237,7 @@ export function useCheckout() {
       }
     }, 500);
     return () => clearTimeout(timer);
-  }, [form.districtId, form.wardCode, displayItems]);
+  }, [form.districtId, form.wardCode, displayItems, subtotal, settings]);
 
   const handleApplyDiscount = useCallback(async (codeFromModal?: string) => {
     const codeToValidate = (codeFromModal || discountCode).trim().toUpperCase();

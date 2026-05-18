@@ -282,7 +282,7 @@ export function OrderHistoryView() {
                 <div className="px-5 py-3.5 border-b border-[#DDD6C8]">
                   {order.status === OrderStatus.CANCELLED ? (
                     <div className="text-[12.5px] text-[#C44040] flex items-center gap-1.5 font-medium">
-                      ❌ Khách hàng huỷ đơn: Đặt nhầm sản phẩm
+                      Khách hàng huỷ đơn: Đặt nhầm sản phẩm
                     </div>
                   ) : (
                     <>
@@ -299,7 +299,7 @@ export function OrderHistoryView() {
                 <div className="px-5 py-3.5 flex items-center gap-2 bg-[#FAF8F4]/20">
                   <Button 
                     variant="outline" 
-                    onClick={() => success("📍 Đang mở trang theo dõi vận chuyển...")}
+                    onClick={() => success("Đang mở trang theo dõi vận chuyển...")}
                     className="h-[36px] px-4 rounded-[8px] border-[#DDD6C8] text-[#3D2B1A] text-[13px] font-medium hover:bg-[#F3EFE8] flex items-center gap-1.5"
                   >
                     <MapPin size={14} />

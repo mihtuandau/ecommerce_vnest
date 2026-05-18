@@ -1,7 +1,7 @@
-import { AdminNotificationsContainer } from "@/features/notifications/components/AdminNotificationsContainer";
+import { AdminNotificationsContainer } from "@/features/notifications";
 
 export const metadata = {
-  title: "Thông báo hệ thống - Admin Vnest",
+  title: "Thông báo hệ thống - Admin LUXE",
   description: "Quản lý và xem các thông báo hệ thống và đơn hàng",
 };
 

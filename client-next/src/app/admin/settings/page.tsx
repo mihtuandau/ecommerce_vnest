@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Switch } from "@/components/ui/Switch";
@@ -19,54 +19,91 @@ import {
   RefreshCw
 } from "lucide-react";
 import { Spinner } from "@/components/ui/Spinner";
+import { useSystemSettings, useUpdateSystemSettings } from "@/features/settings/hooks";
 
 export default function AdminSettingsPage() {
   const toast = useToast();
-  const [isLoading, setIsLoading] = useState(false);
+  const { data: settings, isLoading: isQueryLoading } = useSystemSettings();
+  const updateSettingsMutation = useUpdateSystemSettings();
 
   // Form State
-  const [storeName, setStoreName] = useState("Vnest E-Commerce");
-  const [storeEmail, setStoreEmail] = useState("contact@vnest.vn");
-  const [storePhone, setStorePhone] = useState("1900 1234");
-  const [storeAddress, setStoreAddress] = useState("Minh Tuấn Shop, Hà Nội");
+  const [storeName, setStoreName] = useState("");
+  const [storeEmail, setStoreEmail] = useState("");
+  const [storePhone, setStorePhone] = useState("");
+  const [storeAddress, setStoreAddress] = useState("");
   
-  const [shippingFee, setShippingFee] = useState("30000");
-  const [freeShippingThreshold, setFreeShippingThreshold] = useState("500000");
+  const [shippingFee, setShippingFee] = useState("");
+  const [freeShippingThreshold, setFreeShippingThreshold] = useState("");
   
   const [maintenanceMode, setMaintenanceMode] = useState(false);
   const [stockAlert, setStockAlert] = useState(true);
   const [orderNotification, setOrderNotification] = useState(true);
 
+  // Sync settings data to form state
+  useEffect(() => {
+    if (settings) {
+      setStoreName(settings.storeName || "LUXE E-Commerce");
+      setStoreEmail(settings.storeEmail || "contact@luxe.vn");
+      setStorePhone(settings.storePhone || "1900 1234");
+      setStoreAddress(settings.storeAddress || "Minh Tuấn Shop, Hà Nội");
+      setShippingFee(String(settings.shippingFee ?? 30000));
+      setFreeShippingThreshold(String(settings.freeShippingThreshold ?? 500000));
+      setMaintenanceMode(!!settings.maintenanceMode);
+      setStockAlert(!!settings.stockAlert);
+      setOrderNotification(!!settings.orderNotification);
+    }
+  }, [settings]);
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      toast.success("Đã lưu tất cả cấu hình hệ thống thành công!");
-    }, 1000);
+    updateSettingsMutation.mutate({
+      storeName,
+      storeEmail,
+      storePhone,
+      storeAddress,
+      shippingFee: Number(shippingFee),
+      freeShippingThreshold: Number(freeShippingThreshold),
+      maintenanceMode,
+      stockAlert,
+      orderNotification,
+    }, {
+      onSuccess: () => {
+        toast.success("Đã lưu cấu hình hệ thống thực tế thành công!");
+      },
+      onError: () => {
+        toast.error("Không thể lưu cấu hình hệ thống. Vui lòng thử lại!");
+      }
+    });
   };
 
+  const isSaving = updateSettingsMutation.isPending;
+
+  if (isQueryLoading) {
+    return (
+      <div className="py-24 flex flex-col items-center justify-center gap-3">
+        <Spinner size="lg" variant="slate" />
+        <p className="text-xs text-slate-400 font-medium animate-pulse">Đang tải cấu hình hệ thống...</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-8 p-6 max-w-6xl mx-auto admin-theme">
-      {/* Header */}
-      <div className="flex items-center justify-between pb-6 border-b border-slate-100">
-        <div>
-          <h1 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-            <SettingsIcon className="h-6 w-6 text-slate-500" /> Cấu hình hệ thống
-          </h1>
-          <p className="text-xs text-slate-500 mt-1 font-medium">
-            Quản lý các thiết lập chung, vận chuyển và chế độ hoạt động của cửa hàng.
-          </p>
-        </div>
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      {/* Unified Header */}
+      <div>
+        <h1 className="text-2xl font-medium tracking-tight text-slate-900 mb-1">
+          Cấu hình hệ thống
+        </h1>
+        <p className="text-slate-500 text-sm">
+          Quản lý các thiết lập chung, vận chuyển và chế độ hoạt động của cửa hàng.
+        </p>
       </div>
 
       <form onSubmit={handleSave} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left 2 Columns: Main Settings Cards */}
         <div className="lg:col-span-2 space-y-6">
           {/* Card 1: Store Information */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.015)] space-y-6">
+          <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-6">
             <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
               <Store className="h-5 w-5 text-slate-400" />
               <h2 className="text-[14px] font-bold text-slate-800 uppercase tracking-wider">Thông tin cửa hàng</h2>
@@ -123,7 +160,7 @@ export default function AdminSettingsPage() {
           </div>
 
           {/* Card 2: Shipping Settings */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.015)] space-y-6">
+          <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-6">
             <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
               <Truck className="h-5 w-5 text-slate-400" />
               <h2 className="text-[14px] font-bold text-slate-800 uppercase tracking-wider">Cấu hình vận chuyển</h2>
@@ -160,7 +197,7 @@ export default function AdminSettingsPage() {
         {/* Right 1 Column: System Switches & Actions */}
         <div className="space-y-6">
           {/* Card 3: System Status Toggle */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.015)] space-y-6">
+          <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-6">
             <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
               <ShieldAlert className="h-5 w-5 text-slate-400" />
               <h2 className="text-[14px] font-bold text-slate-800 uppercase tracking-wider">Trạng thái hệ thống</h2>
@@ -221,13 +258,13 @@ export default function AdminSettingsPage() {
           </div>
 
           {/* Action Save Button Card */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.015)] space-y-4">
+          <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
             <Button
               type="submit"
-              className="w-full h-11 rounded-xl bg-slate-900 text-white hover:bg-slate-800 font-bold gap-2 shadow-lg shadow-slate-200 transition-all active:scale-98"
-              disabled={isLoading}
+              className="w-full h-11 rounded-xl bg-slate-900 text-white hover:bg-slate-800 font-bold gap-2 shadow-lg shadow-slate-200 transition-all active:scale-98 cursor-pointer"
+              disabled={isSaving}
             >
-              {isLoading ? (
+              {isSaving ? (
                 <Spinner size="sm" variant="white" />
               ) : (
                 <Save className="h-4.5 w-4.5" />
@@ -238,8 +275,8 @@ export default function AdminSettingsPage() {
               type="button"
               variant="outline"
               onClick={() => window.history.back()}
-              className="w-full h-11 rounded-xl border-slate-200 text-slate-500 font-semibold hover:bg-slate-50 transition-all"
-              disabled={isLoading}
+              className="w-full h-11 rounded-xl border-slate-200 text-slate-500 font-semibold hover:bg-slate-50 transition-all cursor-pointer"
+              disabled={isSaving}
             >
               Hủy bỏ
             </Button>
