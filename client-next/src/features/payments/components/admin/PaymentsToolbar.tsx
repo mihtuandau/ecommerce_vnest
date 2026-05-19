@@ -2,12 +2,12 @@
 
 import React from "react";
 import { Input } from "@/components/ui/Input";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/Select";
 import { Search, SlidersHorizontal } from "lucide-react";
 import { cn } from "@/utils/cn";

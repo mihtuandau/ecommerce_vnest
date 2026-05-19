@@ -1,7 +1,13 @@
 "use client";
 
 import React from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/Dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/Dialog";
 import { Button } from "@/components/ui/Button";
 
 interface ConfirmReturnModalProps {
@@ -11,14 +17,22 @@ interface ConfirmReturnModalProps {
   isLoading?: boolean;
 }
 
-export function ConfirmReturnModal({ isOpen, onClose, onConfirm, isLoading }: ConfirmReturnModalProps) {
+export function ConfirmReturnModal({
+  isOpen,
+  onClose,
+  onConfirm,
+  isLoading,
+}: ConfirmReturnModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[360px] rounded-2xl p-6 border-slate-100 shadow-xl">
         <DialogHeader className="space-y-3 pt-2">
-          <DialogTitle className="text-[16px] font-bold text-slate-900 text-center">Xác nhận gửi hàng</DialogTitle>
+          <DialogTitle className="text-[16px] font-bold text-slate-900 text-center">
+            Xác nhận gửi hàng
+          </DialogTitle>
           <p className="text-[13px] text-slate-500 font-medium text-center leading-relaxed">
-            Bạn đã chắc chắn bàn giao gói hàng cho bưu cục? Thao tác này sẽ cập nhật tiến trình cho shop theo dõi.
+            Bạn đã chắc chắn bàn giao gói hàng cho bưu cục? Thao tác này sẽ cập nhật
+            tiến trình cho shop theo dõi.
           </p>
         </DialogHeader>
 

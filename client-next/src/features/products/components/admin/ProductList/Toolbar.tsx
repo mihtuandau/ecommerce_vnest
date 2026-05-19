@@ -15,12 +15,16 @@ interface ToolbarProps {
   categories: any[];
 }
 
-export function Toolbar({ 
-  searchTerm, onSearchChange, 
-  categoryId, onCategoryChange, 
-  discountStatus, onDiscountStatusChange,
-  sortBy, onSortChange, 
-  categories 
+export function Toolbar({
+  searchTerm,
+  onSearchChange,
+  categoryId,
+  onCategoryChange,
+  discountStatus,
+  onDiscountStatusChange,
+  sortBy,
+  onSortChange,
+  categories,
 }: ToolbarProps) {
   return (
     <div className="p-4 border-b border-slate-100 bg-slate-50/30 flex flex-col md:flex-row items-center gap-3">
@@ -45,7 +49,9 @@ export function Toolbar({
           >
             <option value="ALL">Tất cả danh mục</option>
             {categories.map((cat: any) => (
-              <option key={cat.id} value={cat.id.toString()}>{cat.name}</option>
+              <option key={cat.id} value={cat.id.toString()}>
+                {cat.name}
+              </option>
             ))}
           </select>
         </div>

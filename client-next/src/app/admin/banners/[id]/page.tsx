@@ -9,8 +9,6 @@ import { ChevronLeft } from "lucide-react";
 import { Spinner } from "@/components/ui/Spinner";
 import { ROUTES } from "@/constants/routes";
 
-
-
 export default function EditBannerPage() {
   const { id } = useParams() as { id: string };
   const router = useRouter();
@@ -32,7 +30,9 @@ export default function EditBannerPage() {
     return (
       <div className="h-96 flex flex-col items-center justify-center gap-4">
         <Spinner size="lg" />
-        <p className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em]">Đang tải dữ liệu Banner...</p>
+        <p className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em]">
+          Đang tải dữ liệu Banner...
+        </p>
       </div>
     );
   }
@@ -51,8 +51,8 @@ export default function EditBannerPage() {
   return (
     <div className="space-y-4 pb-10">
       <div className="flex flex-col gap-1">
-        <Button 
-          variant="ghost" 
+        <Button
+          variant="ghost"
           size="sm"
           className="w-fit pl-0 hover:bg-transparent text-slate-400 hover:text-primary gap-1 font-bold text-xs uppercase tracking-wider"
           onClick={() => router.back()}
@@ -62,7 +62,9 @@ export default function EditBannerPage() {
         </Button>
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900">Chi tiết Banner</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+              Chi tiết Banner
+            </h1>
             <p className="text-slate-500 text-sm">
               Cập nhật hình ảnh, đường dẫn và vị trí hiển thị của banner.
             </p>
@@ -71,7 +73,11 @@ export default function EditBannerPage() {
       </div>
 
       <div className="pt-2">
-        <BannerForm initialData={banner} onSubmit={handleSubmit} isLoading={isPending} />
+        <BannerForm
+          initialData={banner}
+          onSubmit={handleSubmit}
+          isLoading={isPending}
+        />
       </div>
     </div>
   );

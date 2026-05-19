@@ -16,12 +16,21 @@ describe('OrderManagement.applyDiscount', () => {
 
   const paymentService = {} as any;
   const ghnService = {} as any;
+  const mailService = {} as any;
+  const notificationService = {} as any;
 
   let service: OrderManagement;
 
   beforeEach(() => {
     jest.clearAllMocks();
-    service = new OrderManagement(repository, cacheService, paymentService, ghnService);
+    service = new OrderManagement(
+      repository,
+      cacheService,
+      paymentService,
+      ghnService,
+      mailService,
+      notificationService,
+    );
   });
 
   it('throws when order does not exist', async () => {

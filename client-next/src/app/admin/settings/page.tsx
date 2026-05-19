@@ -5,18 +5,18 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Switch } from "@/components/ui/Switch";
 import { useToast } from "@/hooks/useToast";
-import { 
-  Settings as SettingsIcon, 
-  Store, 
-  Truck, 
-  ShieldAlert, 
-  Save, 
-  Globe, 
+import {
+  Settings as SettingsIcon,
+  Store,
+  Truck,
+  ShieldAlert,
+  Save,
+  Globe,
   Volume2,
   Mail,
   Phone,
   MapPin,
-  RefreshCw
+  RefreshCw,
 } from "lucide-react";
 import { Spinner } from "@/components/ui/Spinner";
 import { useSystemSettings, useUpdateSystemSettings } from "@/features/settings/hooks";
@@ -31,10 +31,10 @@ export default function AdminSettingsPage() {
   const [storeEmail, setStoreEmail] = useState("");
   const [storePhone, setStorePhone] = useState("");
   const [storeAddress, setStoreAddress] = useState("");
-  
+
   const [shippingFee, setShippingFee] = useState("");
   const [freeShippingThreshold, setFreeShippingThreshold] = useState("");
-  
+
   const [maintenanceMode, setMaintenanceMode] = useState(false);
   const [stockAlert, setStockAlert] = useState(true);
   const [orderNotification, setOrderNotification] = useState(true);
@@ -45,7 +45,7 @@ export default function AdminSettingsPage() {
       setStoreName(settings.storeName || "LUXE E-Commerce");
       setStoreEmail(settings.storeEmail || "contact@luxe.vn");
       setStorePhone(settings.storePhone || "1900 1234");
-      setStoreAddress(settings.storeAddress || "Minh Tuấn Shop, Hà Nội");
+      setStoreAddress(settings.storeAddress || "LUXE Shop, Hà Nội");
       setShippingFee(String(settings.shippingFee ?? 30000));
       setFreeShippingThreshold(String(settings.freeShippingThreshold ?? 500000));
       setMaintenanceMode(!!settings.maintenanceMode);
@@ -56,24 +56,27 @@ export default function AdminSettingsPage() {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    updateSettingsMutation.mutate({
-      storeName,
-      storeEmail,
-      storePhone,
-      storeAddress,
-      shippingFee: Number(shippingFee),
-      freeShippingThreshold: Number(freeShippingThreshold),
-      maintenanceMode,
-      stockAlert,
-      orderNotification,
-    }, {
-      onSuccess: () => {
-        toast.success("Đã lưu cấu hình hệ thống thực tế thành công!");
+    updateSettingsMutation.mutate(
+      {
+        storeName,
+        storeEmail,
+        storePhone,
+        storeAddress,
+        shippingFee: Number(shippingFee),
+        freeShippingThreshold: Number(freeShippingThreshold),
+        maintenanceMode,
+        stockAlert,
+        orderNotification,
       },
-      onError: () => {
-        toast.error("Không thể lưu cấu hình hệ thống. Vui lòng thử lại!");
+      {
+        onSuccess: () => {
+          toast.success("Đã lưu cấu hình hệ thống thực tế thành công!");
+        },
+        onError: () => {
+          toast.error("Không thể lưu cấu hình hệ thống. Vui lòng thử lại!");
+        },
       }
-    });
+    );
   };
 
   const isSaving = updateSettingsMutation.isPending;
@@ -82,7 +85,9 @@ export default function AdminSettingsPage() {
     return (
       <div className="py-24 flex flex-col items-center justify-center gap-3">
         <Spinner size="lg" variant="slate" />
-        <p className="text-xs text-slate-400 font-medium animate-pulse">Đang tải cấu hình hệ thống...</p>
+        <p className="text-xs text-slate-400 font-medium animate-pulse">
+          Đang tải cấu hình hệ thống...
+        </p>
       </div>
     );
   }
@@ -106,7 +111,9 @@ export default function AdminSettingsPage() {
           <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-6">
             <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
               <Store className="h-5 w-5 text-slate-400" />
-              <h2 className="text-[14px] font-bold text-slate-800 uppercase tracking-wider">Thông tin cửa hàng</h2>
+              <h2 className="text-[14px] font-bold text-slate-800 uppercase tracking-wider">
+                Thông tin cửa hàng
+              </h2>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -163,7 +170,9 @@ export default function AdminSettingsPage() {
           <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-6">
             <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
               <Truck className="h-5 w-5 text-slate-400" />
-              <h2 className="text-[14px] font-bold text-slate-800 uppercase tracking-wider">Cấu hình vận chuyển</h2>
+              <h2 className="text-[14px] font-bold text-slate-800 uppercase tracking-wider">
+                Cấu hình vận chuyển
+              </h2>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -200,7 +209,9 @@ export default function AdminSettingsPage() {
           <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-6">
             <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
               <ShieldAlert className="h-5 w-5 text-slate-400" />
-              <h2 className="text-[14px] font-bold text-slate-800 uppercase tracking-wider">Trạng thái hệ thống</h2>
+              <h2 className="text-[14px] font-bold text-slate-800 uppercase tracking-wider">
+                Trạng thái hệ thống
+              </h2>
             </div>
 
             <div className="space-y-5">
@@ -214,8 +225,8 @@ export default function AdminSettingsPage() {
                     Tạm thời đóng cửa hàng để bảo dưỡng hệ thống.
                   </p>
                 </div>
-                <Switch 
-                  checked={maintenanceMode} 
+                <Switch
+                  checked={maintenanceMode}
                   onCheckedChange={setMaintenanceMode}
                   className="data-[state=checked]:!bg-slate-900"
                 />
@@ -231,8 +242,8 @@ export default function AdminSettingsPage() {
                     Gửi thông báo khi sản phẩm trong kho còn dưới 5.
                   </p>
                 </div>
-                <Switch 
-                  checked={stockAlert} 
+                <Switch
+                  checked={stockAlert}
                   onCheckedChange={setStockAlert}
                   className="data-[state=checked]:!bg-slate-900"
                 />
@@ -248,8 +259,8 @@ export default function AdminSettingsPage() {
                     Phát âm thanh khi có đơn hàng mới được tạo.
                   </p>
                 </div>
-                <Switch 
-                  checked={orderNotification} 
+                <Switch
+                  checked={orderNotification}
                   onCheckedChange={setOrderNotification}
                   className="data-[state=checked]:!bg-slate-900"
                 />

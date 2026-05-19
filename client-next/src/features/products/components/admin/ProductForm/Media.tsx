@@ -26,16 +26,26 @@ export function Media({ images, isUploading, onImageAdd, onImageRemove }: MediaP
           Đã tải: {images.length}/10
         </span>
       </div>
-      
+
       <div className="p-6 space-y-6">
-        <p className="text-xs text-slate-500 font-medium -mt-2">Ảnh đầu tiên sẽ được chọn làm ảnh đại diện cho sản phẩm.</p>
-       
-       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <p className="text-xs text-slate-500 font-medium -mt-2">
+          Ảnh đầu tiên sẽ được chọn làm ảnh đại diện cho sản phẩm.
+        </p>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {images.map((url, index) => (
-            <div key={index} className="relative aspect-square rounded-2xl overflow-hidden border-2 border-transparent hover:border-slate-400 transition-all group shadow-sm bg-slate-50">
-              <Image src={url} alt="Product" fill className="object-cover transition-transform group-hover:scale-110" />
+            <div
+              key={index}
+              className="relative aspect-square rounded-2xl overflow-hidden border-2 border-transparent hover:border-slate-400 transition-all group shadow-sm bg-slate-50"
+            >
+              <Image
+                src={url}
+                alt="Product"
+                fill
+                className="object-cover transition-transform group-hover:scale-110"
+              />
               <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                <button 
+                <button
                   type="button"
                   onClick={() => onImageRemove(index)}
                   className="h-10 w-10 rounded-xl bg-rose-600 text-white flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform"
@@ -64,12 +74,14 @@ export function Media({ images, isUploading, onImageAdd, onImageRemove }: MediaP
                   <div className="h-10 w-10 rounded-full bg-slate-50 group-hover:bg-slate-100 flex items-center justify-center transition-colors">
                     <ImagePlus className="h-5 w-5" />
                   </div>
-                  <span className="text-[9px] font-bold uppercase tracking-wider text-center px-1">Tải ảnh lên</span>
+                  <span className="text-[9px] font-bold uppercase tracking-wider text-center px-1">
+                    Tải ảnh lên
+                  </span>
                 </>
               )}
             </button>
           )}
-       </div>
+        </div>
       </div>
     </div>
   );

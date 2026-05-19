@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Card } from "@/components/ui/Card";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { EmptyState, Price } from "@/components/ui";
 
 import Image from "next/image";
 
@@ -30,14 +31,16 @@ export function WishlistView() {
       <div className="min-h-screen bg-brand-cream">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="space-y-10">
-             <Skeleton className="h-6 w-40" />
-             <div className="border-b border-brand-sand/50 pb-8 space-y-4">
-               <Skeleton className="h-10 w-64" />
-               <Skeleton className="h-4 w-96" />
-             </div>
-             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-               {[1, 2, 3, 4].map(i => <Skeleton key={i} className="aspect-square w-full rounded-2xl" />)}
-             </div>
+            <Skeleton className="h-6 w-40" />
+            <div className="border-b border-brand-sand/50 pb-8 space-y-4">
+              <Skeleton className="h-10 w-64" />
+              <Skeleton className="h-4 w-96" />
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+              {[1, 2, 3, 4].map((i) => (
+                <Skeleton key={i} className="aspect-square w-full rounded-2xl" />
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -47,7 +50,7 @@ export function WishlistView() {
   const handleAddToCart = (item: any) => {
     addItem({
       productId: String(item.id),
-      variantId: String(item.id), 
+      variantId: String(item.id),
       name: item.name,
       price: item.price,
       imageUrl: item.imageUrl,
@@ -63,7 +66,7 @@ export function WishlistView() {
         <div className="space-y-10">
           {/* Header & Navigation */}
           <div className="space-y-6">
-            <button 
+            <button
               onClick={() => router.back()}
               className="flex items-center gap-1 text-[13px] text-brand-taupe hover:text-brand-espresso transition-colors group"
             >
@@ -74,34 +77,30 @@ export function WishlistView() {
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-brand-sand pb-8">
               <div className="space-y-1">
                 <h1 className="text-2xl md:text-3xl font-bold text-brand-espresso font-serif-brand tracking-tight">
-                  Danh sách <em className="italic text-brand-bronze font-medium font-serif-brand">yêu thích</em>
+                  Danh sách{" "}
+                  <em className="italic text-brand-bronze font-medium font-serif-brand">
+                    yêu thích
+                  </em>
                 </h1>
                 <p className="text-brand-taupe text-sm font-medium">
                   Lưu giữ những sản phẩm bạn quan tâm nhất.
                 </p>
               </div>
               <div className="text-[10px] font-bold text-brand-taupe bg-white px-4 py-2 rounded-xl border border-brand-sand w-fit uppercase tracking-widest shadow-sm">
-                <span className="text-brand-espresso font-bold">{items.length}</span> sản phẩm
+                <span className="text-brand-espresso font-bold">{items.length}</span>{" "}
+                sản phẩm
               </div>
             </div>
           </div>
 
           {items.length === 0 ? (
-            <div className="py-24 text-center bg-white rounded-[32px] border border-brand-sand px-6 shadow-sm">
-              <div className="h-20 w-20 bg-brand-cream rounded-full flex items-center justify-center mx-auto mb-6">
-                <Heart className="h-8 w-8 text-brand-sand" />
-              </div>
-              <h3 className="text-brand-espresso font-bold text-xl font-serif-brand">Danh sách trống</h3>
-              <p className="text-brand-taupe text-sm mt-2 max-w-xs mx-auto font-medium">
-                Hãy bắt đầu khám phá và lưu lại những sản phẩm bạn yêu thích nhé!
-              </p>
-              <Button
-                className="mt-8 rounded-full px-10 h-12 bg-brand-espresso hover:bg-brand-espresso/90 text-white font-bold transition-all shadow-lg shadow-brand-espresso/10"
-                asChild
-              >
-                <Link href="/shop">Mua sắm ngay</Link>
-              </Button>
-            </div>
+            <EmptyState
+              icon={Heart}
+              title="Danh sách trống"
+              description="Hãy bắt đầu khám phá và lưu lại những sản phẩm bạn yêu thích nhé!"
+              actionText="Mua sắm ngay"
+              onAction={() => router.push("/shop")}
+            />
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
               {items.map((item) => (
@@ -111,16 +110,21 @@ export function WishlistView() {
                 >
                   {/* Card Actions Overlay */}
                   <div className="absolute top-4 right-4 z-30">
-                    <button
+                    <Button
                       onClick={() => removeFromWishlist(item.id)}
-                      className="h-9 w-9 rounded-full bg-white/90 backdrop-blur-sm shadow-md flex items-center justify-center text-brand-taupe hover:text-red-500 transition-all duration-300 border border-brand-sand/50"
+                      variant="outline"
+                      size="icon"
+                      className="h-9 w-9 rounded-full bg-white/90 backdrop-blur-sm shadow-md flex items-center justify-center text-brand-taupe hover:text-red-500 transition-all duration-300 border border-brand-sand/50 shadow-none hover:bg-white"
                     >
                       <Trash2 size={15} />
-                    </button>
+                    </Button>
                   </div>
 
                   {/* ── IMAGE SECTION ── */}
-                  <Link href={`/shop/${item.slug}`} className="relative aspect-[4/5] w-full overflow-hidden rounded-xl bg-brand-cream/50 block">
+                  <Link
+                    href={`/shop/${item.slug}`}
+                    className="relative aspect-[4/5] w-full overflow-hidden rounded-xl bg-brand-cream/50 block"
+                  >
                     <Image
                       src={item.imageUrl}
                       alt={item.name}
@@ -129,7 +133,11 @@ export function WishlistView() {
                     />
                     {item.originalPrice && item.originalPrice > item.price && (
                       <div className="absolute top-4 left-4 bg-brand-bronze text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm uppercase tracking-widest">
-                        -{Math.round(((item.originalPrice - item.price) / item.originalPrice) * 100)}%
+                        -
+                        {Math.round(
+                          ((item.originalPrice - item.price) / item.originalPrice) * 100
+                        )}
+                        %
                       </div>
                     )}
                   </Link>
@@ -143,16 +151,7 @@ export function WishlistView() {
                       >
                         {item.name}
                       </Link>
-                      <div className="flex items-baseline gap-2 mt-1">
-                        <p className="text-[15px] font-bold text-brand-espresso tabular-nums">
-                          {formatCurrency(item.price)}
-                        </p>
-                        {item.originalPrice && item.originalPrice > item.price && (
-                          <p className="text-[12px] text-brand-taupe line-through tabular-nums font-medium">
-                            {formatCurrency(item.originalPrice)}
-                          </p>
-                        )}
-                      </div>
+                      <Price amount={item.price} originalAmount={item.originalPrice} showBadge size="md" />
                     </div>
 
                     <div className="mt-auto">
@@ -189,5 +188,3 @@ export function WishlistView() {
     </div>
   );
 }
-
-

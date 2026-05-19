@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import Cookies from "js-cookie";
 import { useAuthStore } from "@/store/useAuthStore";
+import { CHAT_SOCKET_CONSTANTS, CHAT_SOCKET_TRANSPORTS } from "./constants";
 
 const SOCKET_URL =
   process.env.NEXT_PUBLIC_SOCKET_URL ||
@@ -26,10 +27,10 @@ export const useSocket = () => {
       auth: { token: currentToken },
       withCredentials: true,
       reconnection: true,
-      reconnectionAttempts: 15,
-      reconnectionDelay: 1000,
+      reconnectionAttempts: CHAT_SOCKET_CONSTANTS.RECONNECTION_ATTEMPTS,
+      reconnectionDelay: CHAT_SOCKET_CONSTANTS.RECONNECTION_DELAY,
       autoConnect: true,
-      transports: ["websocket", "polling"],
+      transports: CHAT_SOCKET_TRANSPORTS,
     });
 
     socketInstance.on("connect", () => {

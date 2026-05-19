@@ -16,13 +16,21 @@ interface HeaderProps {
   className?: string;
 }
 
-export function Header({ totalProducts, onRefresh, isFetching, className }: HeaderProps) {
+export function Header({
+  totalProducts,
+  onRefresh,
+  isFetching,
+  className,
+}: HeaderProps) {
   return (
-    <div className={cn("flex flex-col md:flex-row md:items-center justify-between gap-4", className)}>
+    <div
+      className={cn(
+        "flex flex-col md:flex-row md:items-center justify-between gap-4",
+        className
+      )}
+    >
       <div>
-        <h1 className={adminUI.typography.heading}>
-          Quản lý sản phẩm
-        </h1>
+        <h1 className={adminUI.typography.heading}>Quản lý sản phẩm</h1>
         <div className="flex items-center gap-1.5 text-[12px] font-medium text-slate-400 mt-1">
           <span>Sản phẩm</span>
           <span className="text-[10px]">›</span>
@@ -37,7 +45,11 @@ export function Header({ totalProducts, onRefresh, isFetching, className }: Head
           onClick={onRefresh}
           disabled={isFetching}
         >
-          {isFetching ? <Spinner size="sm" /> : <RefreshCw className={adminUI.icon.action} />}
+          {isFetching ? (
+            <Spinner size="sm" />
+          ) : (
+            <RefreshCw className={adminUI.icon.action} />
+          )}
           {isFetching ? "Đang tải..." : "Làm mới"}
         </Button>
         <Button

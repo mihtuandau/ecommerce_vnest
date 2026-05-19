@@ -37,7 +37,6 @@ export default function RootLayout({
         <link rel="icon" href="/logoMT.png" />
       </head>
       <body className={`${dmSans.variable} ${playfair.variable} font-sans antialiased`}>
-        
         <Providers>{children}</Providers>
       </body>
     </html>

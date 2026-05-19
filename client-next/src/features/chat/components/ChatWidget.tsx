@@ -1,12 +1,7 @@
 "use client";
 
 import React, { useRef, useEffect } from "react";
-import {
-  X,
-  Send,
-  Sparkles,
-  MessageSquare,
-} from "lucide-react";
+import { X, Send, Sparkles, MessageSquare } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { useChatWidget } from "@/features/chat/hooks/useChatWidget";
 import { ChatProductCard } from "./Widget/ChatProductCard";
@@ -21,7 +16,7 @@ export function ChatWidget() {
     messages,
     isLoading,
     handleSendMessage,
-    clearHistory
+    clearHistory,
   } = useChatWidget();
 
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -48,7 +43,7 @@ export function ChatWidget() {
           <div className="bg-[#3D2B1A] px-6 py-5 relative overflow-hidden shrink-0">
             <div className="absolute top-0 right-0 w-32 h-32 bg-[#C4783A] opacity-10 rounded-full blur-3xl -mr-16 -mt-16" />
             <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#FAF8F4] opacity-5 rounded-full blur-2xl -ml-12 -mb-12" />
-            
+
             <div className="flex items-center justify-between relative z-10">
               <div className="flex items-center gap-3.5">
                 <div className="relative">
@@ -58,9 +53,13 @@ export function ChatWidget() {
                   <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-green-500 border-2 border-[#3D2B1A] rounded-full" />
                 </div>
                 <div>
-                  <h3 className="text-[#FAF8F4] text-[15px] font-bold tracking-tight">Trợ lý Mua sắm AI</h3>
+                  <h3 className="text-[#FAF8F4] text-[15px] font-bold tracking-tight">
+                    Trợ lý Mua sắm AI
+                  </h3>
                   <div className="flex items-center gap-1.5 mt-0.5">
-                    <span className="text-[10px] font-bold text-[#F0D5BB] uppercase tracking-[0.1em]">Sẵn sàng hỗ trợ bạn 24/7</span>
+                    <span className="text-[10px] font-bold text-[#F0D5BB] uppercase tracking-[0.1em]">
+                      Sẵn sàng hỗ trợ bạn 24/7
+                    </span>
                   </div>
                 </div>
               </div>
@@ -93,7 +92,12 @@ export function ChatWidget() {
                       AI
                     </div>
                   )}
-                  <div className={cn("flex flex-col max-w-[85%]", isBot ? "items-start" : "items-end")}>
+                  <div
+                    className={cn(
+                      "flex flex-col max-w-[85%]",
+                      isBot ? "items-start" : "items-end"
+                    )}
+                  >
                     <div
                       className={cn(
                         "p-3.5 rounded-[20px] text-[13.5px] leading-relaxed w-full break-words shadow-sm transition-all duration-300",
@@ -102,15 +106,23 @@ export function ChatWidget() {
                           : "bg-[#3D2B1A] text-[#FAF8F4] rounded-tr-none hover:bg-[#2A2420]"
                       )}
                     >
-                      {msg.content.replace(/\[\s*(ids?|suggests?|code)\s*:[^\]]+\]/gi, "").trim()}
+                      {msg.content
+                        .replace(/\[\s*(ids?|suggests?|code)\s*:[^\]]+\]/gi, "")
+                        .trim()}
 
-                      {isBot && msg.discounts?.map((d: any, i: number) => (
-                        <ChatDiscountCard key={i} discount={d} />
-                      ))}
+                      {isBot &&
+                        msg.discounts?.map((d: any, i: number) => (
+                          <ChatDiscountCard key={i} discount={d} />
+                        ))}
 
-                      {isBot && msg.productIds?.map((id: number) => (
-                        <ChatProductCard key={id} productId={id} salePrice={msg.flashSalePrice?.[id]} />
-                      ))}
+                      {isBot &&
+                        msg.productIds?.map((id: number) => (
+                          <ChatProductCard
+                            key={id}
+                            productId={id}
+                            salePrice={msg.flashSalePrice?.[id]}
+                          />
+                        ))}
                     </div>
                   </div>
                 </div>
@@ -185,7 +197,13 @@ export function ChatWidget() {
                     : "bg-[#E8E0D0] text-[#FAF8F4] opacity-50 cursor-not-allowed"
                 )}
               >
-                <Send size={20} className={cn("transition-transform", message.trim() ? "translate-x-0.5 -translate-y-0.5" : "")} />
+                <Send
+                  size={20}
+                  className={cn(
+                    "transition-transform",
+                    message.trim() ? "translate-x-0.5 -translate-y-0.5" : ""
+                  )}
+                />
               </button>
             </div>
           </form>
@@ -197,11 +215,22 @@ export function ChatWidget() {
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
           "h-14 w-14 rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.15)] flex items-center justify-center text-white transition-all duration-500 hover:scale-110 active:scale-95 relative group",
-          isOpen ? "bg-[#3D2B1A] rotate-90 shadow-[#3D2B1A]/40" : "bg-[#3D2B1A] shadow-[#3D2B1A]/20"
+          isOpen
+            ? "bg-[#3D2B1A] rotate-90 shadow-[#3D2B1A]/40"
+            : "bg-[#3D2B1A] shadow-[#3D2B1A]/20"
         )}
       >
-        {isOpen ? <X size={24} /> : <Sparkles size={28} className="group-hover:rotate-12 transition-transform text-[#F0D5BB]" />}
-        {!isOpen && <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 rounded-full border-2 border-white animate-bounce" />}
+        {isOpen ? (
+          <X size={24} />
+        ) : (
+          <Sparkles
+            size={28}
+            className="group-hover:rotate-12 transition-transform text-[#F0D5BB]"
+          />
+        )}
+        {!isOpen && (
+          <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 rounded-full border-2 border-white animate-bounce" />
+        )}
       </button>
     </div>
   );

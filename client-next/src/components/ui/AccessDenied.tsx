@@ -2,6 +2,7 @@
 
 import { ShieldOff } from "lucide-react";
 import Link from "next/link";
+import { ROUTES } from "@/constants/routes";
 
 interface AccessDeniedProps {
   permission?: string;
@@ -15,18 +16,21 @@ export function AccessDenied({ permission, message }: AccessDeniedProps) {
         <ShieldOff className="h-8 w-8 text-red-400" />
       </div>
       <div>
-        <h2 className="text-xl font-bold text-slate-800">Không có quyền truy cập</h2>
-        <p className="text-sm text-slate-500 mt-1.5 max-w-sm">
-          {message ?? "Bạn không có quyền xem trang này. Vui lòng liên hệ quản trị viên để được cấp quyền."}
+        <h2 className="text-xl font-bold text-brand-espresso font-serif-brand">
+          Không có quyền truy cập
+        </h2>
+        <p className="text-sm text-brand-taupe mt-1.5 max-w-sm font-medium">
+          {message ??
+            "Bạn không có quyền xem trang này. Vui lòng liên hệ quản trị viên để được cấp quyền."}
         </p>
         {permission && (
-          <p className="text-xs text-slate-400 mt-2 font-mono bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100 inline-block">
-            Cần quyền: <span className="text-violet-600 font-bold">{permission}</span>
+          <p className="text-[11px] text-brand-taupe mt-2.5 font-mono bg-brand-cream/70 px-3 py-1.5 rounded-xl border border-brand-sand inline-block font-bold">
+            Cần quyền: <span className="text-brand-bronze font-bold">{permission}</span>
           </p>
         )}
       </div>
       <Link
-        href="/admin"
+        href={ROUTES.ADMIN}
         className="text-sm font-semibold text-primary hover:underline underline-offset-4"
       >
         ← Về Dashboard

@@ -5,12 +5,12 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Category } from "@/types/models";
 import { DataTable } from "@/components/ui/DataTable";
 import { Button } from "@/components/ui/Button";
-import { 
-  Pencil, 
-  Trash, 
-  CornerDownRight, 
-  ChevronRight, 
-  ChevronDown 
+import {
+  Pencil,
+  Trash,
+  CornerDownRight,
+  ChevronRight,
+  ChevronDown,
 } from "lucide-react";
 import { useDeleteCategory } from "../../hooks";
 import { cn } from "@/utils/cn";
@@ -38,7 +38,7 @@ export function CategoryTable({ data }: { data: any[] }) {
     let currentParentId = item.parentId;
     while (currentParentId) {
       if (!expandedIds.has(currentParentId)) return false;
-      const parent = data.find(c => c.id === currentParentId);
+      const parent = data.find((c) => c.id === currentParentId);
       if (!parent) break;
       currentParentId = parent.parentId;
     }
@@ -65,7 +65,7 @@ export function CategoryTable({ data }: { data: any[] }) {
       cell: ({ row }) => {
         const depth = (row.original as any).depth || 0;
         return (
-          <div 
+          <div
             className={cn(
               "relative rounded-xl overflow-hidden border border-slate-100 shadow-sm bg-slate-50 group transition-all",
               depth === 0 ? "h-12 w-12" : "h-9 w-9"
@@ -89,11 +89,11 @@ export function CategoryTable({ data }: { data: any[] }) {
       cell: ({ row }) => {
         const cat = row.original;
         const depth = cat.depth || 0;
-        const hasChildren = data.some(c => c.parentId === cat.id);
+        const hasChildren = data.some((c) => c.parentId === cat.id);
         const isExpanded = expandedIds.has(cat.id);
 
         return (
-          <div 
+          <div
             className="flex items-center gap-2"
             style={{ paddingLeft: `${depth * 3.5}rem` }}
           >
@@ -109,10 +109,14 @@ export function CategoryTable({ data }: { data: any[] }) {
                 depth > 0 && <CornerDownRight size={14} className="text-slate-300" />
               )}
             </div>
-            <span className={cn(
-              "tracking-tight",
-              depth === 0 ? "text-slate-800 font-bold text-sm" : "text-slate-500 font-semibold text-[13px]"
-            )}>
+            <span
+              className={cn(
+                "tracking-tight",
+                depth === 0
+                  ? "text-slate-800 font-bold text-sm"
+                  : "text-slate-500 font-semibold text-[13px]"
+              )}
+            >
               {cat.name}
             </span>
           </div>
@@ -125,10 +129,14 @@ export function CategoryTable({ data }: { data: any[] }) {
       cell: ({ row }) => {
         const parent = row.original.parent;
         const depth = row.original.depth || 0;
-        if (depth === 0) return <span className="text-xs text-slate-300 italic">Gốc</span>;
-        
+        if (depth === 0)
+          return <span className="text-xs text-slate-300 italic">Gốc</span>;
+
         return (
-          <Badge variant="secondary" className="bg-slate-50 text-slate-500 border-none font-bold text-[10px]">
+          <Badge
+            variant="secondary"
+            className="bg-slate-50 text-slate-500 border-none font-bold text-[10px]"
+          >
             {parent?.name || "N/A"}
           </Badge>
         );
@@ -138,10 +146,12 @@ export function CategoryTable({ data }: { data: any[] }) {
       accessorKey: "slug",
       header: "Đường dẫn (Slug)",
       cell: ({ row }) => (
-        <code className={cn(
-          "px-2 py-0.5 rounded bg-slate-50 text-xs font-semibold border border-slate-100",
-          (row.original as any).depth > 0 ? "text-slate-400" : "text-slate-600"
-        )}>
+        <code
+          className={cn(
+            "px-2 py-0.5 rounded bg-slate-50 text-xs font-semibold border border-slate-100",
+            (row.original as any).depth > 0 ? "text-slate-400" : "text-slate-600"
+          )}
+        >
           {row.getValue("slug") || "N/A"}
         </code>
       ),
@@ -182,12 +192,14 @@ export function CategoryTable({ data }: { data: any[] }) {
 
   return (
     <div className="category-table-container">
-      <DataTable 
-        columns={columns} 
-        data={visibleData} 
-        searchKey="name" 
-        hideSearch 
-        rowClassName={(row) => (row.original as any).depth > 0 ? "bg-slate-50/30" : ""}
+      <DataTable
+        columns={columns}
+        data={visibleData}
+        searchKey="name"
+        hideSearch
+        rowClassName={(row) =>
+          (row.original as any).depth > 0 ? "bg-slate-50/30" : ""
+        }
       />
     </div>
   );

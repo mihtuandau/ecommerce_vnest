@@ -49,7 +49,11 @@ export function ProductBasicInfo({ form }: { form: UseFormReturn<ProductFormValu
                 Tên sản phẩm
               </FormLabel>
               <FormControl>
-                <Input placeholder="Ví dụ: Áo thun nam" className="h-12 rounded-xl border-slate-200 bg-slate-50/30 focus:bg-white focus:border-slate-400 focus:ring-4 focus:ring-slate-100/50 transition-all duration-200" {...field} />
+                <Input
+                  placeholder="Ví dụ: Áo thun nam"
+                  className="h-12 rounded-xl border-slate-200 bg-slate-50/30 focus:bg-white focus:border-slate-400 focus:ring-4 focus:ring-slate-100/50 transition-all duration-200"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -64,7 +68,11 @@ export function ProductBasicInfo({ form }: { form: UseFormReturn<ProductFormValu
                 Đường dẫn (Slug)
               </FormLabel>
               <FormControl>
-                <Input placeholder="ao-thun-nam" className="h-12 rounded-xl font-mono text-sm border-slate-200 bg-slate-50/30 focus:bg-white focus:border-slate-400 focus:ring-4 focus:ring-slate-100/50 transition-all duration-200" {...field} />
+                <Input
+                  placeholder="ao-thun-nam"
+                  className="h-12 rounded-xl font-mono text-sm border-slate-200 bg-slate-50/30 focus:bg-white focus:border-slate-400 focus:ring-4 focus:ring-slate-100/50 transition-all duration-200"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -94,7 +102,13 @@ export function ProductBasicInfo({ form }: { form: UseFormReturn<ProductFormValu
   );
 }
 
-export function ProductCategory({ form, categories }: { form: UseFormReturn<ProductFormValues>; categories: Category[] }) {
+export function ProductCategory({
+  form,
+  categories,
+}: {
+  form: UseFormReturn<ProductFormValues>;
+  categories: Category[];
+}) {
   return (
     <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.015)] overflow-hidden">
       <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/30">
@@ -123,7 +137,11 @@ export function ProductCategory({ form, categories }: { form: UseFormReturn<Prod
                 </FormControl>
                 <SelectContent className="rounded-xl admin-theme">
                   {categories?.map((cat) => (
-                    <SelectItem key={cat.id} value={String(cat.id)} className="rounded-lg">
+                    <SelectItem
+                      key={cat.id}
+                      value={String(cat.id)}
+                      className="rounded-lg"
+                    >
                       {cat.name}
                     </SelectItem>
                   ))}
@@ -157,7 +175,12 @@ export function ProductPricing({ form }: { form: UseFormReturn<ProductFormValues
                   Giá bán (VNĐ)
                 </FormLabel>
                 <FormControl>
-                  <Input type="text" placeholder="Ví dụ: 36.990.000" className="h-12 rounded-xl font-semibold text-sm text-slate-800 border-slate-200 bg-slate-50/30 focus:bg-white focus:border-slate-400 focus:ring-4 focus:ring-slate-100/50 transition-all duration-200" {...field} />
+                  <Input
+                    type="text"
+                    placeholder="Ví dụ: 36.990.000"
+                    className="h-12 rounded-xl font-semibold text-sm text-slate-800 border-slate-200 bg-slate-50/30 focus:bg-white focus:border-slate-400 focus:ring-4 focus:ring-slate-100/50 transition-all duration-200"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -172,7 +195,12 @@ export function ProductPricing({ form }: { form: UseFormReturn<ProductFormValues
                   Giá gốc (VNĐ)
                 </FormLabel>
                 <FormControl>
-                  <Input type="text" placeholder="Ví dụ: 40.000.000" className="h-12 rounded-xl font-semibold text-sm text-slate-800 border-slate-200 bg-slate-50/30 focus:bg-white focus:border-slate-400 focus:ring-4 focus:ring-slate-100/50 transition-all duration-200" {...field} />
+                  <Input
+                    type="text"
+                    placeholder="Ví dụ: 40.000.000"
+                    className="h-12 rounded-xl font-semibold text-sm text-slate-800 border-slate-200 bg-slate-50/30 focus:bg-white focus:border-slate-400 focus:ring-4 focus:ring-slate-100/50 transition-all duration-200"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -199,15 +227,19 @@ export function ProductStatus({ form }: { form: UseFormReturn<ProductFormValues>
           render={({ field }) => (
             <FormItem className="flex flex-row items-center justify-between">
               <div className="space-y-0.5">
-                <FormLabel className="text-sm font-bold text-slate-900">Trạng thái hiển thị</FormLabel>
+                <FormLabel className="text-sm font-bold text-slate-900">
+                  Trạng thái hiển thị
+                </FormLabel>
                 <FormDescription className="text-[10px] text-slate-500">
                   Bật để hiển thị trên cửa hàng
                 </FormDescription>
               </div>
               <FormControl>
-                <Switch 
-                  checked={field.value === "active"} 
-                  onCheckedChange={(checked) => field.onChange(checked ? "active" : "inactive")}
+                <Switch
+                  checked={field.value === "active"}
+                  onCheckedChange={(checked) =>
+                    field.onChange(checked ? "active" : "inactive")
+                  }
                   className="data-[state=checked]:!bg-green-500"
                 />
               </FormControl>

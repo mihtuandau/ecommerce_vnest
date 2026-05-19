@@ -1,12 +1,12 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogTrigger 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/Dialog";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
@@ -52,7 +52,11 @@ export function UserSelector({ onSelect }: UserSelectorProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button type="button" variant="outline" className="gap-2 bg-white shadow-sm hover:bg-slate-50 border-slate-200">
+        <Button
+          type="button"
+          variant="outline"
+          className="gap-2 bg-white shadow-sm hover:bg-slate-50 border-slate-200"
+        >
           <Search className="h-4 w-4" />
           Tìm khách hàng đã có
         </Button>
@@ -62,8 +66,8 @@ export function UserSelector({ onSelect }: UserSelectorProps) {
           <DialogTitle className="text-xl font-bold">Chọn khách hàng</DialogTitle>
           <form onSubmit={handleSearch} className="relative mt-4">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-            <Input 
-              placeholder="Tìm theo tên, email hoặc SĐT..." 
+            <Input
+              placeholder="Tìm theo tên, email hoặc SĐT..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-10 h-11 rounded-xl border-slate-200"
@@ -85,8 +89,8 @@ export function UserSelector({ onSelect }: UserSelectorProps) {
           ) : (
             <div className="space-y-2">
               {users.map((user) => (
-                <div 
-                  key={user.id} 
+                <div
+                  key={user.id}
                   className="flex items-center justify-between p-4 bg-white border border-slate-100 rounded-2xl hover:border-primary/30 hover:bg-primary/5 transition-all cursor-pointer group"
                   onClick={() => {
                     onSelect(user);
@@ -102,14 +106,24 @@ export function UserSelector({ onSelect }: UserSelectorProps) {
                           width={48}
                           height={48}
                           className="h-full w-full object-cover"
-                          onError={(e) => handleAvatarError(e as any, user.fullName || user.name, user.email)}
+                          onError={(e) =>
+                            handleAvatarError(
+                              e as any,
+                              user.fullName || user.name,
+                              user.email
+                            )
+                          }
                         />
                       ) : (
-                        user.fullName?.charAt(0).toUpperCase() || <User className="h-6 w-6" />
+                        user.fullName?.charAt(0).toUpperCase() || (
+                          <User className="h-6 w-6" />
+                        )
                       )}
                     </div>
                     <div>
-                      <h4 className="font-bold text-slate-900">{user.fullName || "Chưa đặt tên"}</h4>
+                      <h4 className="font-bold text-slate-900">
+                        {user.fullName || "Chưa đặt tên"}
+                      </h4>
                       <div className="flex items-center gap-4 mt-1">
                         <div className="flex items-center gap-1.5 text-xs font-medium text-slate-500">
                           <Mail className="h-3 w-3" />

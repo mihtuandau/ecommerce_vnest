@@ -3,12 +3,12 @@
 import React from "react";
 import { MapPin, User, Truck, Mail } from "lucide-react";
 import { Input } from "@/components/ui/Input";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/Select";
 
 type Province = {
@@ -66,7 +66,9 @@ export const ShippingForm = React.memo(function ShippingForm({
         <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/20">
           <MapPin size={16} />
         </div>
-        <h2 className="text-[18px] font-bold text-primary font-serif tracking-widest">1. Thông tin giao hàng</h2>
+        <h2 className="text-[18px] font-bold text-primary font-serif tracking-widest">
+          1. Thông tin giao hàng
+        </h2>
       </div>
 
       <div className="p-6 space-y-6">
@@ -75,11 +77,11 @@ export const ShippingForm = React.memo(function ShippingForm({
             <label className="text-[13px] font-medium text-primary ml-1 flex items-center gap-2">
               <User size={14} className="text-brand-bronze" /> Họ và tên người nhận
             </label>
-            <Input 
-              required 
-              placeholder="Nhập họ và tên..." 
+            <Input
+              required
+              placeholder="Nhập họ và tên..."
               value={form.fullName}
-              onChange={(e) => setForm({...form, fullName: e.target.value})}
+              onChange={(e) => setForm({ ...form, fullName: e.target.value })}
               className="rounded-[12px] h-12 border-brand-sand bg-white focus-visible:ring-1 focus-visible:ring-brand-bronze/30 focus-visible:border-brand-bronze transition-all text-sm font-medium text-primary placeholder:text-brand-taupe/40"
             />
           </div>
@@ -87,11 +89,11 @@ export const ShippingForm = React.memo(function ShippingForm({
             <label className="text-[13px] font-medium text-primary ml-1 flex items-center gap-2">
               <Truck size={14} className="text-brand-bronze" /> Số điện thoại
             </label>
-            <Input 
-              required 
-              placeholder="09xx xxx xxx" 
+            <Input
+              required
+              placeholder="09xx xxx xxx"
               value={form.phone}
-              onChange={(e) => setForm({...form, phone: e.target.value})}
+              onChange={(e) => setForm({ ...form, phone: e.target.value })}
               className="rounded-[12px] h-12 border-brand-sand bg-white focus-visible:ring-1 focus-visible:ring-brand-bronze/30 focus-visible:border-brand-bronze transition-all text-sm font-medium text-primary placeholder:text-brand-taupe/40"
             />
           </div>
@@ -99,12 +101,12 @@ export const ShippingForm = React.memo(function ShippingForm({
             <label className="text-[13px] font-medium text-primary ml-1 flex items-center gap-2">
               <Mail size={14} className="text-brand-bronze" /> Email nhận thông báo
             </label>
-            <Input 
-              required 
+            <Input
+              required
               type="email"
-              placeholder="example@gmail.com" 
+              placeholder="example@gmail.com"
               value={form.email}
-              onChange={(e) => setForm({...form, email: e.target.value})}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
               className="rounded-[12px] h-12 border-brand-sand bg-white focus-visible:ring-1 focus-visible:ring-brand-bronze/30 focus-visible:border-brand-bronze transition-all text-sm font-medium text-primary placeholder:text-brand-taupe/40"
             />
           </div>
@@ -112,14 +114,20 @@ export const ShippingForm = React.memo(function ShippingForm({
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           <div className="space-y-2">
-            <label className="text-[13px] font-medium text-primary ml-1">Tỉnh / Thành phố</label>
+            <label className="text-[13px] font-medium text-primary ml-1">
+              Tỉnh / Thành phố
+            </label>
             <Select value={form.provinceId} onValueChange={handleProvinceChange}>
               <SelectTrigger className="rounded-[12px] h-12 border-brand-sand bg-white focus-visible:ring-1 focus-visible:ring-brand-bronze/30 focus-visible:border-brand-bronze transition-all text-sm font-medium text-primary">
                 <SelectValue placeholder="Chọn Tỉnh/Thành" />
               </SelectTrigger>
               <SelectContent className="rounded-[12px]">
                 {provinces.map((p) => (
-                  <SelectItem key={p.ProvinceID} value={p.ProvinceID.toString()} className="text-sm">
+                  <SelectItem
+                    key={p.ProvinceID}
+                    value={p.ProvinceID.toString()}
+                    className="text-sm"
+                  >
                     {p.ProvinceName}
                   </SelectItem>
                 ))}
@@ -127,18 +135,26 @@ export const ShippingForm = React.memo(function ShippingForm({
             </Select>
           </div>
           <div className="space-y-2">
-            <label className="text-[13px] font-medium text-primary ml-1">Quận / Huyện</label>
-            <Select 
-              value={form.districtId} 
+            <label className="text-[13px] font-medium text-primary ml-1">
+              Quận / Huyện
+            </label>
+            <Select
+              value={form.districtId}
               onValueChange={handleDistrictChange}
               disabled={!form.provinceId || isLoadingDistricts}
             >
               <SelectTrigger className="rounded-[12px] h-12 border-brand-sand bg-white focus-visible:ring-1 focus-visible:ring-brand-bronze/30 focus-visible:border-brand-bronze transition-all text-sm font-medium text-primary">
-                <SelectValue placeholder={isLoadingDistricts ? "Đang tải..." : "Chọn Quận/Huyện"} />
+                <SelectValue
+                  placeholder={isLoadingDistricts ? "Đang tải..." : "Chọn Quận/Huyện"}
+                />
               </SelectTrigger>
               <SelectContent className="rounded-[12px]">
                 {districts.map((d) => (
-                  <SelectItem key={d.DistrictID} value={d.DistrictID.toString()} className="text-sm">
+                  <SelectItem
+                    key={d.DistrictID}
+                    value={d.DistrictID.toString()}
+                    className="text-sm"
+                  >
                     {d.DistrictName}
                   </SelectItem>
                 ))}
@@ -146,14 +162,18 @@ export const ShippingForm = React.memo(function ShippingForm({
             </Select>
           </div>
           <div className="space-y-2">
-            <label className="text-[13px] font-medium text-primary ml-1">Phường / Xã</label>
-            <Select 
-              value={form.wardCode} 
+            <label className="text-[13px] font-medium text-primary ml-1">
+              Phường / Xã
+            </label>
+            <Select
+              value={form.wardCode}
               onValueChange={handleWardChange}
               disabled={!form.districtId || isLoadingWards}
             >
               <SelectTrigger className="rounded-[12px] h-12 border-brand-sand bg-white focus-visible:ring-1 focus-visible:ring-brand-bronze/30 focus-visible:border-brand-bronze transition-all text-sm font-medium text-primary">
-                <SelectValue placeholder={isLoadingWards ? "Đang tải..." : "Chọn Phường/Xã"} />
+                <SelectValue
+                  placeholder={isLoadingWards ? "Đang tải..." : "Chọn Phường/Xã"}
+                />
               </SelectTrigger>
               <SelectContent className="rounded-[12px]">
                 {wards.map((w) => (
@@ -168,13 +188,13 @@ export const ShippingForm = React.memo(function ShippingForm({
 
         <div className="space-y-2">
           <label className="text-[13px] font-medium text-primary ml-1 flex items-center gap-2">
-             <MapPin size={14} className="text-brand-bronze" /> Địa chỉ cụ thể
+            <MapPin size={14} className="text-brand-bronze" /> Địa chỉ cụ thể
           </label>
-          <Input 
-            required 
-            placeholder="Số nhà, tên đường..." 
+          <Input
+            required
+            placeholder="Số nhà, tên đường..."
             value={form.street}
-            onChange={(e) => setForm({...form, street: e.target.value})}
+            onChange={(e) => setForm({ ...form, street: e.target.value })}
             className="rounded-[12px] h-12 border-brand-sand bg-white focus-visible:ring-1 focus-visible:ring-brand-bronze/30 focus-visible:border-brand-bronze transition-all text-sm font-medium text-primary placeholder:text-brand-taupe/40"
           />
         </div>

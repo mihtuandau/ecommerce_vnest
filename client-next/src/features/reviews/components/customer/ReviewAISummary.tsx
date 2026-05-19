@@ -31,7 +31,7 @@ export function ReviewAISummary({ productId }: ReviewAISummaryProps) {
           </div>
         </div>
       </div>
-    ); 
+    );
   }
 
   if (error || !data) return null;
@@ -50,15 +50,15 @@ export function ReviewAISummary({ productId }: ReviewAISummaryProps) {
           <Sparkles size={18} className="fill-primary/10" />
         </div>
         <div>
-          <h3 className="text-sm font-semibold text-slate-900 tracking-tight font-serif">Phân tích đánh giá bởi AI</h3>
+          <h3 className="text-sm font-semibold text-slate-900 tracking-tight font-serif">
+            Phân tích đánh giá bởi AI
+          </h3>
         </div>
       </div>
 
       <div className="p-6 md:p-8">
         {isNotEnoughData ? (
-          <p className="text-sm text-slate-500 italic">
-            {verdict}
-          </p>
+          <p className="text-sm text-slate-500 italic">{verdict}</p>
         ) : (
           <div className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -66,11 +66,16 @@ export function ReviewAISummary({ productId }: ReviewAISummaryProps) {
               <div className="space-y-4">
                 <div className="flex items-center gap-2 text-emerald-600">
                   <CheckCircle2 size={16} />
-                  <span className="text-xs font-semibold text-slate-500">Ưu điểm nổi bật</span>
+                  <span className="text-xs font-semibold text-slate-500">
+                    Ưu điểm nổi bật
+                  </span>
                 </div>
                 <ul className="space-y-2.5">
                   {pros.map((pro: string, i: number) => (
-                    <li key={i} className="flex items-start gap-3 text-sm text-slate-600 leading-relaxed">
+                    <li
+                      key={i}
+                      className="flex items-start gap-3 text-sm text-slate-600 leading-relaxed"
+                    >
                       <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-emerald-400 shrink-0" />
                       {pro}
                     </li>
@@ -82,11 +87,16 @@ export function ReviewAISummary({ productId }: ReviewAISummaryProps) {
               <div className="space-y-4">
                 <div className="flex items-center gap-2 text-amber-600">
                   <AlertCircle size={16} />
-                  <span className="text-xs font-semibold text-slate-500">Lưu ý hạn chế</span>
+                  <span className="text-xs font-semibold text-slate-500">
+                    Lưu ý hạn chế
+                  </span>
                 </div>
                 <ul className="space-y-2.5">
                   {cons.map((con: string, i: number) => (
-                    <li key={i} className="flex items-start gap-3 text-sm text-slate-600 leading-relaxed">
+                    <li
+                      key={i}
+                      className="flex items-start gap-3 text-sm text-slate-600 leading-relaxed"
+                    >
                       <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-amber-400 shrink-0" />
                       {con}
                     </li>
@@ -100,7 +110,9 @@ export function ReviewAISummary({ productId }: ReviewAISummaryProps) {
               <div className="flex items-start gap-4">
                 <Quote size={20} className="text-primary shrink-0 opacity-30" />
                 <div className="space-y-1">
-                  <span className="text-xs font-semibold text-primary/70">Tổng kết từ AI</span>
+                  <span className="text-xs font-semibold text-primary/70">
+                    Tổng kết từ AI
+                  </span>
                   <p className="text-sm md:text-base text-slate-700 font-medium leading-relaxed italic">
                     "{verdict}"
                   </p>

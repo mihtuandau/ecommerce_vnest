@@ -10,7 +10,10 @@ interface BannerListToolbarProps {
   onSearchChange: (value: string) => void;
 }
 
-export function BannerListToolbar({ searchTerm, onSearchChange }: BannerListToolbarProps) {
+export function BannerListToolbar({
+  searchTerm,
+  onSearchChange,
+}: BannerListToolbarProps) {
   return (
     <div className="flex items-center justify-between p-4 bg-slate-50/50 gap-4 border-b border-slate-100">
       <div className="relative flex-1 max-w-md group">
@@ -23,7 +26,11 @@ export function BannerListToolbar({ searchTerm, onSearchChange }: BannerListTool
         />
       </div>
       <div className="flex items-center gap-2">
-        <Button variant="outline" size="sm" className="h-10 rounded-xl border-slate-200 font-bold text-xs uppercase tracking-wider gap-2 bg-white">
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-10 rounded-xl border-slate-200 font-bold text-xs uppercase tracking-wider gap-2 bg-white"
+        >
           <Filter className="h-4 w-4 text-slate-400" />
           Bộ lọc
         </Button>

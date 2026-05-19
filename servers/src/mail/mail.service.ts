@@ -308,23 +308,54 @@ export class MailService {
   ) {
     const { 
       customerName, 
+      customerPhone,
       items, 
       subtotal, 
       discountAmount, 
       shippingFee, 
       total, 
       paymentMethod, 
-      shippingAddress 
+      shippingAddress,
+      createdAt,
+      shippingMethodName,
+      estimatedDays,
+      discountCode
     } = orderDetails;
+
+    // 1. Format order date
+    const orderDate = createdAt ? new Date(createdAt) : new Date();
+    const day = String(orderDate.getDate()).padStart(2, '0');
+    const month = String(orderDate.getMonth() + 1).padStart(2, '0');
+    const year = orderDate.getFullYear();
+    const hours = String(orderDate.getHours()).padStart(2, '0');
+    const minutes = String(orderDate.getMinutes()).padStart(2, '0');
+    const formattedDate = `${day}/${month}/${year} ${hours}:${minutes}`;
+
+    // 6. Expected delivery range calculation
+    const estDays = estimatedDays || 3;
+    const minDeliveryDate = new Date(orderDate);
+    minDeliveryDate.setDate(orderDate.getDate() + Math.max(1, estDays - 1));
+    const maxDeliveryDate = new Date(orderDate);
+    maxDeliveryDate.setDate(orderDate.getDate() + estDays + 1);
+
+    const formatDateOnly = (d: Date) => {
+      const dd = String(d.getDate()).padStart(2, '0');
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const yy = d.getFullYear();
+      return `${dd}/${mm}/${yy}`;
+    };
+
+    const estimatedDeliveryRange = `${formatDateOnly(minDeliveryDate)} - ${formatDateOnly(maxDeliveryDate)}`;
 
     const itemRows = items
       .map((item: any) => {
+        // 4. Product variation styling size/color
         const variants = [
-          item.size ? `Size: ${item.size}` : '',
           item.color ? `Màu: ${item.color}` : '',
+          item.size ? `Size: ${item.size}` : '',
         ]
           .filter(Boolean)
-          .join(' · ');
+          .join(' | ');
 
         const paidPrice = Number(item.price);
         const originalPrice = Number(item.originalPrice);
@@ -334,7 +365,7 @@ export class MailService {
           <tr>
             <td>
               <div class="item-name">${item.productName}</div>
-              ${variants ? `<div class="item-variant">${variants}</div>` : ''}
+              ${variants ? `<div class="item-variant" style="font-size:12px; color:#666; margin-top:2px;">${variants}</div>` : ''}
             </td>
             <td class="center">${item.quantity}</td>
             <td class="right">
@@ -369,13 +400,30 @@ export class MailService {
 
       <div class="divider"></div>
 
+      <!-- Customer Details Row -->
       <div class="meta-row">
         <span class="meta-label">Người nhận</span>
-        <span class="meta-value">${customerName}</span>
+        <span class="meta-value" style="font-weight: 600;">${customerName}</span>
+      </div>
+      <div class="meta-row">
+        <span class="meta-label">Số điện thoại</span>
+        <span class="meta-value">${customerPhone}</span>
+      </div>
+      <div class="meta-row">
+        <span class="meta-label">Ngày đặt</span>
+        <span class="meta-value">${formattedDate}</span>
       </div>
       <div class="meta-row">
         <span class="meta-label">Phương thức thanh toán</span>
         <span class="meta-value">${paymentMethod}</span>
+      </div>
+      <div class="meta-row">
+        <span class="meta-label">Đơn vị vận chuyển</span>
+        <span class="meta-value">${shippingMethodName}</span>
+      </div>
+      <div class="meta-row">
+        <span class="meta-label">Dự kiến giao hàng</span>
+        <span class="meta-value" style="color:#16a34a; font-weight:600;">${estimatedDeliveryRange}</span>
       </div>
       <div class="meta-row">
         <span class="meta-label">Địa chỉ giao hàng</span>
@@ -400,7 +448,9 @@ export class MailService {
           </tr>
           ${discountAmount > 0 ? `
           <tr class="total-row">
-            <td colspan="2" class="total-label" style="font-weight:400; color:#888">Giảm giá</td>
+            <td colspan="2" class="total-label" style="font-weight:400; color:#888">
+              Giảm giá ${discountCode ? `<span style="background:#fef2f2; border:1px solid #fca5a5; color:#ef4444; padding:2px 8px; border-radius:4px; font-size:11px; margin-left:6px; font-weight:600">${discountCode}</span>` : ''}
+            </td>
             <td class="right" style="padding-top:8px; color:#ef4444; font-variant-numeric:tabular-nums">-${this.formatCurrency(discountAmount)}</td>
           </tr>
           ` : ''}

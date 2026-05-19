@@ -46,8 +46,8 @@ export default function EditDiscountPage() {
   return (
     <div className="space-y-4 pb-10 mx-auto">
       <div className="flex flex-col gap-1">
-        <Button 
-          variant="ghost" 
+        <Button
+          variant="ghost"
           size="sm"
           className="w-fit pl-0 hover:bg-transparent text-slate-400 hover:text-primary gap-1 font-bold text-xs uppercase tracking-wider"
           onClick={() => router.back()}
@@ -57,7 +57,9 @@ export default function EditDiscountPage() {
         </Button>
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900">Chi tiết chương trình</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+              Chi tiết chương trình
+            </h1>
             <p className="text-slate-500 text-sm">
               Cập nhật cấu hình và thời gian áp dụng mã giảm giá.
             </p>
@@ -66,7 +68,11 @@ export default function EditDiscountPage() {
       </div>
 
       <div className="pt-2">
-        <DiscountForm initialData={discount} onSubmit={handleSubmit} isLoading={isPending} />
+        <DiscountForm
+          initialData={discount}
+          onSubmit={handleSubmit}
+          isLoading={isPending}
+        />
       </div>
     </div>
   );

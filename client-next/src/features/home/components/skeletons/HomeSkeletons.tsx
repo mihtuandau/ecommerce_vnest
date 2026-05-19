@@ -20,7 +20,7 @@ export function HeroBannerSkeleton() {
         <div className="hidden lg:flex w-1/2 h-full items-center justify-center relative">
           <Skeleton className="w-[450px] h-[450px] rounded-full" />
           <div className="absolute bottom-12 right-12 w-72 h-80 rounded-3xl bg-white shadow-xl p-4 border border-brand-sand/40">
-             <Skeleton className="w-full h-full rounded-2xl" />
+            <Skeleton className="w-full h-full rounded-2xl" />
           </div>
         </div>
       </div>
@@ -28,7 +28,11 @@ export function HeroBannerSkeleton() {
   );
 }
 
-export function ProductCardSkeleton({ variant }: { variant: "featured" | "bestseller" | "toprated" }) {
+export function ProductCardSkeleton({
+  variant,
+}: {
+  variant: "featured" | "bestseller" | "toprated";
+}) {
   if (variant === "featured") {
     return <Skeleton className="h-[400px] w-full rounded-2xl" />;
   }
@@ -59,7 +63,11 @@ export function ProductCardSkeleton({ variant }: { variant: "featured" | "bestse
   );
 }
 
-export function ProductSectionSkeleton({ variant = "bestseller" }: { variant?: "featured" | "bestseller" | "toprated" }) {
+export function ProductSectionSkeleton({
+  variant = "bestseller",
+}: {
+  variant?: "featured" | "bestseller" | "toprated";
+}) {
   return (
     <div className="space-y-10">
       <div className="flex justify-between items-end">
@@ -69,10 +77,14 @@ export function ProductSectionSkeleton({ variant = "bestseller" }: { variant?: "
         </div>
         <Skeleton className="h-12 w-32 rounded-full" />
       </div>
-      <div className={cn(
-        "grid gap-8",
-        variant === "toprated" ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" : "grid-cols-2 lg:grid-cols-4"
-      )}>
+      <div
+        className={cn(
+          "grid gap-8",
+          variant === "toprated"
+            ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+            : "grid-cols-2 lg:grid-cols-4"
+        )}
+      >
         {Array.from({ length: variant === "toprated" ? 6 : 4 }).map((_, i) => (
           <ProductCardSkeleton key={i} variant={variant} />
         ))}
@@ -92,20 +104,23 @@ export function FlashSaleSkeleton() {
             <Skeleton className="h-10 w-48 rounded-xl" />
           </div>
           <div className="flex gap-2">
-             <Skeleton className="h-12 w-12 rounded-xl" />
-             <Skeleton className="h-12 w-12 rounded-xl" />
-             <Skeleton className="h-12 w-12 rounded-xl" />
+            <Skeleton className="h-12 w-12 rounded-xl" />
+            <Skeleton className="h-12 w-12 rounded-xl" />
+            <Skeleton className="h-12 w-12 rounded-xl" />
           </div>
         </div>
         <Skeleton className="h-12 w-32 rounded-full" />
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="bg-white rounded-2xl p-4 space-y-4 border border-brand-sand/40">
-             <Skeleton className="aspect-square rounded-xl" />
-             <Skeleton className="h-4 w-full rounded-full" />
-             <Skeleton className="h-6 w-24 rounded-lg" />
-             <Skeleton className="h-2 w-full rounded-full" />
+          <div
+            key={i}
+            className="bg-white rounded-2xl p-4 space-y-4 border border-brand-sand/40"
+          >
+            <Skeleton className="aspect-square rounded-xl" />
+            <Skeleton className="h-4 w-full rounded-full" />
+            <Skeleton className="h-6 w-24 rounded-lg" />
+            <Skeleton className="h-2 w-full rounded-full" />
           </div>
         ))}
       </div>

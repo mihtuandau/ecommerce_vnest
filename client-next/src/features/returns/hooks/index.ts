@@ -10,8 +10,15 @@ export function useUpdateReturnStatus() {
   const { success, error } = useToast();
 
   return useMutation({
-    mutationFn: ({ id, status, adminNote }: { id: number; status: ReturnStatus; adminNote?: string }) =>
-      returnsApi.updateReturnStatus(id, { status, adminNote }),
+    mutationFn: ({
+      id,
+      status,
+      adminNote,
+    }: {
+      id: number;
+      status: ReturnStatus;
+      adminNote?: string;
+    }) => returnsApi.updateReturnStatus(id, { status, adminNote }),
     onSuccess: (data, variables) => {
       // Invalidate both the order detail and the return list
       queryClient.invalidateQueries({ queryKey: ["order"] });

@@ -11,7 +11,12 @@ interface DiscountStatsProps {
   expired: number;
 }
 
-export function DiscountStats({ total, active, flashSale, expired }: DiscountStatsProps) {
+export function DiscountStats({
+  total,
+  active,
+  flashSale,
+  expired,
+}: DiscountStatsProps) {
   const stats = [
     {
       label: "Tổng chương trình",
@@ -46,12 +51,19 @@ export function DiscountStats({ total, active, flashSale, expired }: DiscountSta
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       {stats.map((stat, i) => (
-        <div key={i} className="bg-white p-5 rounded-xl border border-slate-200 flex items-center gap-4">
-          <div className={`h-10 w-10 rounded-lg ${stat.bg} flex items-center justify-center`}>
+        <div
+          key={i}
+          className="bg-white p-5 rounded-xl border border-slate-200 flex items-center gap-4"
+        >
+          <div
+            className={`h-10 w-10 rounded-lg ${stat.bg} flex items-center justify-center`}
+          >
             <stat.icon className={`h-5 w-5 ${stat.color}`} />
           </div>
           <div>
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{stat.label}</p>
+            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+              {stat.label}
+            </p>
             <p className="text-xl font-bold text-slate-900">{stat.value}</p>
           </div>
         </div>

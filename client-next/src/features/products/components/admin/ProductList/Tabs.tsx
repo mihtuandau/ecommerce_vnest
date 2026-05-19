@@ -39,12 +39,14 @@ export function Tabs({ activeTab, onTabChange, counts }: TabsProps) {
             >
               <span>{item.label}</span>
               {item.count > 0 && (
-                <span className={cn(
-                  "text-[10px] px-1.5 py-0.5 rounded-full font-bold transition-colors",
-                  activeTab === item.value
-                    ? "bg-slate-900 text-white"
-                    : "bg-slate-100 text-slate-500"
-                )}>
+                <span
+                  className={cn(
+                    "text-[10px] px-1.5 py-0.5 rounded-full font-bold transition-colors",
+                    activeTab === item.value
+                      ? "bg-slate-900 text-white"
+                      : "bg-slate-100 text-slate-500"
+                  )}
+                >
                   {item.count}
                 </span>
               )}

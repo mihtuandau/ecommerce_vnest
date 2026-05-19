@@ -16,15 +16,16 @@ import {
 } from "@/components/ui/Form";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
-import { 
-  Image as ImageIcon, 
-  Link as LinkIcon, 
-  Hash, 
+import { Switch } from "@/components/ui/Switch";
+import {
+  Image as ImageIcon,
+  Link as LinkIcon,
+  Hash,
   Zap,
   Save,
   Upload,
   X,
-  Type
+  Type,
 } from "lucide-react";
 import { Spinner } from "@/components/ui/Spinner";
 
@@ -87,7 +88,7 @@ export function BannerForm({ initialData, onSubmit, isLoading }: BannerFormProps
     if (values.link) formData.append("link", values.link);
     formData.append("displayOrder", String(values.displayOrder));
     formData.append("isActive", String(values.isActive));
-    
+
     if (selectedFile) {
       formData.append("image", selectedFile);
     }
@@ -116,7 +117,9 @@ export function BannerForm({ initialData, onSubmit, isLoading }: BannerFormProps
                   name="title"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-[11px] font-bold text-slate-500 tracking-wider">Tiêu đề Banner</FormLabel>
+                      <FormLabel className="text-[11px] font-bold text-slate-500 tracking-wider">
+                        Tiêu đề Banner
+                      </FormLabel>
                       <FormControl>
                         <Input
                           placeholder="VD: Chương trình khuyến mãi hè 2024"
@@ -134,7 +137,9 @@ export function BannerForm({ initialData, onSubmit, isLoading }: BannerFormProps
                   name="link"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-[11px] font-bold text-slate-500 tracking-wider">Đường dẫn liên kết (Link)</FormLabel>
+                      <FormLabel className="text-[11px] font-bold text-slate-500 tracking-wider">
+                        Đường dẫn liên kết (Link)
+                      </FormLabel>
                       <FormControl>
                         <div className="relative group">
                           <LinkIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-slate-900 transition-colors" />
@@ -172,7 +177,7 @@ export function BannerForm({ initialData, onSubmit, isLoading }: BannerFormProps
                   accept="image/*"
                   onChange={handleFileChange}
                 />
-                
+
                 {previewUrl ? (
                   <div className="relative group rounded-2xl overflow-hidden border border-slate-200 bg-slate-50 aspect-[21/9]">
                     <Image
@@ -206,7 +211,7 @@ export function BannerForm({ initialData, onSubmit, isLoading }: BannerFormProps
                     </div>
                   </div>
                 ) : (
-                  <div 
+                  <div
                     className="border-2 border-dashed border-slate-200 rounded-2xl p-12 flex flex-col items-center justify-center gap-4 hover:border-slate-400 hover:bg-slate-50 transition-all cursor-pointer group"
                     onClick={() => fileInputRef.current?.click()}
                   >
@@ -214,13 +219,19 @@ export function BannerForm({ initialData, onSubmit, isLoading }: BannerFormProps
                       <Upload className="h-8 w-8 text-slate-400 group-hover:text-slate-600" />
                     </div>
                     <div className="text-center">
-                      <p className="text-sm font-bold text-slate-900">Tải ảnh Banner lên</p>
-                      <p className="text-xs text-slate-400 mt-1">Hỗ trợ JPG, PNG. Tỷ lệ khuyên dùng 21:9</p>
+                      <p className="text-sm font-bold text-slate-900">
+                        Tải ảnh Banner lên
+                      </p>
+                      <p className="text-xs text-slate-400 mt-1">
+                        Hỗ trợ JPG, PNG. Tỷ lệ khuyên dùng 21:9
+                      </p>
                     </div>
                   </div>
                 )}
                 {!selectedFile && !initialData?.imageUrl && (
-                  <p className="text-[11px] font-bold text-red-500 uppercase tracking-wider text-center">Vui lòng chọn hình ảnh banner</p>
+                  <p className="text-[11px] font-bold text-red-500 uppercase tracking-wider text-center">
+                    Vui lòng chọn hình ảnh banner
+                  </p>
                 )}
               </div>
             </div>
@@ -242,7 +253,9 @@ export function BannerForm({ initialData, onSubmit, isLoading }: BannerFormProps
                   name="displayOrder"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-[11px] font-bold text-slate-500 tracking-wider">Thứ tự hiển thị</FormLabel>
+                      <FormLabel className="text-[11px] font-bold text-slate-500 tracking-wider">
+                        Thứ tự hiển thị
+                      </FormLabel>
                       <FormControl>
                         <div className="relative group">
                           <Hash className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-slate-900 transition-colors" />
@@ -275,15 +288,10 @@ export function BannerForm({ initialData, onSubmit, isLoading }: BannerFormProps
                         </FormDescription>
                       </div>
                       <FormControl>
-                        <label className="relative inline-flex items-center cursor-pointer">
-                          <input
-                            type="checkbox"
-                            className="sr-only peer"
-                            checked={field.value}
-                            onChange={field.onChange}
-                          />
-                          <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-slate-900"></div>
-                        </label>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
                       </FormControl>
                     </FormItem>
                   )}

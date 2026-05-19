@@ -3,6 +3,10 @@
 import React from "react";
 import { cn } from "@/utils/cn";
 import { getSessionStatus, formatTimeRange } from "../../../utils/flashSaleUtils";
+import {
+  FLASH_SALE_CONSTANTS,
+  FLASH_SALE_COLORS,
+} from "@/features/discounts/constants";
 
 interface FlashSaleSessionBarProps {
   sessions: any[];
@@ -27,31 +31,41 @@ export function FlashSaleSessionBar({
               onClick={() => onSelectSession(s.id)}
               className={cn(
                 "flex flex-col items-center gap-0.5 py-[14px] px-[22px] border-b-[2.5px] transition-all min-w-[170px]",
-                isActive ? "border-[#E8320A]" : "border-transparent opacity-60 hover:opacity-100"
+                isActive
+                  ? `border-[${FLASH_SALE_COLORS.ACTIVE_BORDER}]`
+                  : "border-transparent opacity-60 hover:opacity-100"
               )}
             >
               <span
                 className={cn(
                   "text-[9.5px] font-bold px-[7px] py-[2px] rounded-full uppercase tracking-widest",
-                  sStatus === "LIVE"
-                    ? "bg-[#E8320A] text-white shadow-[0_0_8px_rgba(232,50,10,0.6)]"
-                    : sStatus === "SOON"
-                    ? "bg-[#FFF8E6] text-[#C49A00] border border-[#F0D080]"
-                    : "bg-[#F3EFE8] text-[#8A7966]"
+                  sStatus === FLASH_SALE_CONSTANTS.STATUS.LIVE
+                    ? `bg-[${FLASH_SALE_COLORS.LIVE_BG}] text-white shadow-[0_0_8px_${FLASH_SALE_COLORS.LIVE_GLOW}]`
+                    : sStatus === FLASH_SALE_CONSTANTS.STATUS.SOON
+                      ? `bg-[${FLASH_SALE_COLORS.SOON_BG}] text-[${FLASH_SALE_COLORS.SOON_TEXT}] border border-[#F0D080]`
+                      : `bg-[${FLASH_SALE_COLORS.ENDED_BG}] text-[${FLASH_SALE_COLORS.ENDED_TEXT}]`
                 )}
               >
-                {sStatus === "LIVE" ? "🔴 LIVE" : sStatus === "SOON" ? "Sắp tới" : "Đã xong"}
+                {sStatus === FLASH_SALE_CONSTANTS.STATUS.LIVE
+                  ? FLASH_SALE_CONSTANTS.STATUS_LABELS.LIVE
+                  : sStatus === FLASH_SALE_CONSTANTS.STATUS.SOON
+                    ? FLASH_SALE_CONSTANTS.STATUS_LABELS.SOON
+                    : FLASH_SALE_CONSTANTS.STATUS_LABELS.ENDED}
               </span>
               <span
                 className={cn(
                   "text-[13px] font-medium",
-                  isActive ? "text-[#E8320A] font-bold" : "text-[#8A7966]"
+                  isActive
+                    ? `text-[${FLASH_SALE_COLORS.ACTIVE_BORDER}] font-bold`
+                    : `text-[${FLASH_SALE_COLORS.INACTIVE_TEXT}]`
                 )}
               >
                 {formatTimeRange(s.startDate, s.endDate)}
               </span>
-              <span className="text-[11px] text-[#8A7966]">
-                {sStatus === "LIVE" ? "Giảm đến 70%" : s.description || "Ưu đãi sốc"}
+              <span className={`text-[11px] text-[${FLASH_SALE_COLORS.INACTIVE_TEXT}]`}>
+                {sStatus === FLASH_SALE_CONSTANTS.STATUS.LIVE
+                  ? "Giảm đến 70%"
+                  : s.description || "Ưu đãi sốc"}
               </span>
             </button>
           );

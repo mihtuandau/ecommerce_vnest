@@ -25,8 +25,6 @@ export function ReviewsContainer() {
     limit: 1000,
   });
 
-  const reviewsList = data?.reviews || [];
-
   // Delete Mutation Hook
   const deleteMutation = useDeleteReview();
 
@@ -39,13 +37,16 @@ export function ReviewsContainer() {
       }
     } catch (error: any) {
       toast.error(
-        error?.response?.data?.message || "Không thể xóa đánh giá này. Vui lòng kiểm tra quyền hạn."
+        error?.response?.data?.message ||
+          "Không thể xóa đánh giá này. Vui lòng kiểm tra quyền hạn."
       );
     }
   };
 
   // Filter reviews based on search query, rating selection or dashboard ID highlight
   const filteredReviews = useMemo(() => {
+    const reviewsList = data?.reviews || [];
+
     if (highlightId) {
       const match = reviewsList.find((r: any) => String(r.id) === highlightId);
       return match ? [match] : [];
@@ -57,7 +58,7 @@ export function ReviewsContainer() {
         return false;
       }
 
-      // 2. Filter by search query (product name, comment, guest email, user name)
+      // 2. Filter by search query
       if (searchQuery.trim()) {
         const query = searchQuery.toLowerCase().trim();
         const productName = r.product?.name?.toLowerCase() || "";
@@ -77,7 +78,7 @@ export function ReviewsContainer() {
 
       return true;
     });
-  }, [reviewsList, searchQuery, ratingFilter, highlightId]);
+  }, [data?.reviews, searchQuery, ratingFilter, highlightId]);
 
   // Handle client-side pagination
   const itemsPerPage = 10;
@@ -103,7 +104,8 @@ export function ReviewsContainer() {
             Đối soát và quản lý đánh giá
           </h1>
           <p className="text-slate-500 text-sm">
-            Theo dõi ý kiến khách hàng, kiểm duyệt nội dung phản hồi và thống kê chỉ số hài lòng.
+            Theo dõi ý kiến khách hàng, kiểm duyệt nội dung phản hồi và thống kê chỉ số
+            hài lòng.
           </p>
         </div>
       </div>
@@ -115,7 +117,8 @@ export function ReviewsContainer() {
             <div className="h-2 w-2 rounded-full bg-amber-500 animate-pulse shrink-0" />
             <AlertCircle className="h-4 w-4 text-amber-600 shrink-0" />
             <p className="text-xs text-amber-800 font-medium truncate">
-              Đang hiển thị duy nhất đánh giá cần duyệt được chọn từ dashboard (mã: #{highlightId}).
+              Đang hiển thị duy nhất đánh giá cần duyệt được chọn từ dashboard (mã: #
+              {highlightId}).
             </p>
           </div>
           <button
@@ -152,7 +155,7 @@ export function ReviewsContainer() {
           total={totalItems}
           setPage={setPage}
         />
-        
+
         {/* Subtle fetching overlay */}
         {isFetching && !isLoading && (
           <div className="absolute top-3 right-3 bg-white/80 backdrop-blur-sm px-2.5 py-1 rounded-full border border-slate-100 flex items-center gap-1.5 shadow-sm">

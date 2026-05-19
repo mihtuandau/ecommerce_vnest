@@ -8,7 +8,9 @@ import { formatCurrency } from "@/utils/formatCurrency";
 import { getImageUrl } from "@/utils/image";
 import { useCart } from "@/features/cart/hooks";
 import { useWishlistStore } from "@/store/useWishlistStore";
+import { useAuthStore } from "@/store/useAuthStore";
 import { useToast } from "@/hooks/useToast";
+import { useRouter } from "next/navigation";
 import { QuickAddModal } from "@/features/products/components/customer/cards/QuickAddModal";
 import { cn } from "@/utils/cn";
 import { getSessionStatus } from "../../../utils/flashSaleUtils";
@@ -26,7 +28,9 @@ export function FlashSaleProductCard({
 }: FlashSaleProductCardProps) {
   const { addItem } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlistStore();
-  const { success } = useToast();
+  const user = useAuthStore((state) => state.user);
+  const { success, error } = useToast();
+  const router = useRouter();
   const [isQuickAddOpen, setIsQuickAddOpen] = useState(false);
 
   const isFavorite = isInWishlist(String(product.id));
@@ -47,8 +51,7 @@ export function FlashSaleProductCard({
     appliedFixedAmount = targetSource.fixedAmount;
     salePrice = Math.max(0, originalPrice - appliedFixedAmount);
     discountPercent =
-      targetSource.percentage ||
-      Math.round((appliedFixedAmount / originalPrice) * 100);
+      targetSource.percentage || Math.round((appliedFixedAmount / originalPrice) * 100);
   } else if (targetSource.percentage) {
     discountPercent = targetSource.percentage;
     salePrice = Math.round(originalPrice * (1 - discountPercent / 100));
@@ -133,8 +136,8 @@ export function FlashSaleProductCard({
             {product.badge === "hot"
               ? "HOT"
               : product.badge === "last"
-              ? "SẮP HẾT"
-              : product.badge.toUpperCase()}
+                ? "SẮP HẾT"
+                : product.badge.toUpperCase()}
           </div>
         )}
 
@@ -142,7 +145,12 @@ export function FlashSaleProductCard({
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
+            if (!user) {
+              error("Vui lòng đăng nhập để sử dụng chức năng yêu thích!");
+              return;
+            }
             toggleWishlist(product);
+            if (!isFavorite) success(`Đã thêm ${product.name} vào yêu thích`);
           }}
           className={cn(
             "absolute top-[10px] right-[10px] w-[30px] h-[30px] rounded-full flex items-center justify-center bg-white border border-[#DDD6C8] transition-all z-20",
@@ -245,15 +253,15 @@ export function FlashSaleProductCard({
                 status === "LIVE"
                   ? "bg-[#3D2B1A] hover:bg-[#E8320A] text-[#FAF8F4] shadow-sm"
                   : status === "SOON"
-                  ? "bg-white border border-[#DDD6C8] text-[#8A7966] hover:bg-[#FAF8F4]"
-                  : "bg-[#F3EFE8] text-[#8A7966] opacity-60 cursor-not-allowed"
+                    ? "bg-white border border-[#DDD6C8] text-[#8A7966] hover:bg-[#FAF8F4]"
+                    : "bg-[#F3EFE8] text-[#8A7966] opacity-60 cursor-not-allowed"
               )}
             >
               {status === "LIVE"
                 ? "Mua ngay"
                 : status === "SOON"
-                ? "Nhắc tôi"
-                : "Đã kết thúc"}
+                  ? "Nhắc tôi"
+                  : "Đã kết thúc"}
             </button>
           </div>
         </div>

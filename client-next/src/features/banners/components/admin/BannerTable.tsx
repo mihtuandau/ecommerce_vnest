@@ -21,9 +21,9 @@ const CellAction = ({ data }: CellActionProps) => {
 
   return (
     <div className="flex items-center justify-end gap-2">
-      <Button 
-        variant="ghost" 
-        size="icon" 
+      <Button
+        variant="ghost"
+        size="icon"
         className="h-8 w-8 rounded-lg border border-slate-100 text-slate-500 hover:text-slate-900 hover:bg-white hover:shadow-sm transition-all"
         onClick={() => router.push(`/admin/banners/${data.id}`)}
       >
@@ -50,9 +50,7 @@ export const columns: ColumnDef<Banner>[] = [
     id: "stt",
     header: "STT",
     cell: ({ row }) => (
-      <span className="text-xs font-semibold text-slate-500">
-        {row.index + 1}
-      </span>
+      <span className="text-xs font-semibold text-slate-500">{row.index + 1}</span>
     ),
   },
   {
@@ -75,10 +73,14 @@ export const columns: ColumnDef<Banner>[] = [
     header: "Thông tin Banner",
     cell: ({ row }) => (
       <div className="flex flex-col gap-0.5">
-        <span className="font-semibold text-slate-800 tracking-tight text-sm">{row.getValue("title")}</span>
+        <span className="font-semibold text-slate-800 tracking-tight text-sm">
+          {row.getValue("title")}
+        </span>
         <div className="flex items-center gap-2">
-           <ImageIcon className="h-3 w-3 text-slate-500" />
-           <span className="text-xs font-medium text-slate-500 tracking-wide">Thứ tự: {row.original.displayOrder || 0}</span>
+          <ImageIcon className="h-3 w-3 text-slate-500" />
+          <span className="text-xs font-medium text-slate-500 tracking-wide">
+            Thứ tự: {row.original.displayOrder || 0}
+          </span>
         </div>
       </div>
     ),
@@ -89,16 +91,18 @@ export const columns: ColumnDef<Banner>[] = [
     cell: ({ row }) => {
       const link = row.getValue("link") as string;
       return link ? (
-        <a 
-          href={link} 
-          target="_blank" 
-          rel="noreferrer" 
+        <a
+          href={link}
+          target="_blank"
+          rel="noreferrer"
           className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-50 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all text-xs font-semibold border border-slate-100"
         >
           Truy cập <ExternalLink className="h-3 w-3" />
         </a>
       ) : (
-        <span className="text-slate-400 text-xs font-medium italic tracking-wide">Chưa cập nhật</span>
+        <span className="text-slate-400 text-xs font-medium italic tracking-wide">
+          Chưa cập nhật
+        </span>
       );
     },
   },
@@ -108,11 +112,11 @@ export const columns: ColumnDef<Banner>[] = [
     cell: ({ row }) => {
       const isActive = row.getValue("isActive");
       return (
-        <Badge 
+        <Badge
           className={cn(
             "px-2.5 py-0.5 rounded-lg font-semibold text-xs border-none tracking-wide",
-            isActive 
-              ? "bg-emerald-50 text-emerald-600 shadow-sm shadow-emerald-100" 
+            isActive
+              ? "bg-emerald-50 text-emerald-600 shadow-sm shadow-emerald-100"
               : "bg-slate-100 text-slate-600"
           )}
         >
@@ -132,7 +136,5 @@ interface BannerTableProps {
 }
 
 export function BannerTable({ data }: BannerTableProps) {
-  return (
-    <DataTable columns={columns} data={data} searchKey="title" hideSearch />
-  );
+  return <DataTable columns={columns} data={data} searchKey="title" hideSearch />;
 }

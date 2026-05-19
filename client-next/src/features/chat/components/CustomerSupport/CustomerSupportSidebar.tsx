@@ -16,11 +16,36 @@ export default function CustomerSupportSidebar({
   storePhone,
 }: CustomerSupportSidebarProps) {
   const menuItems = [
-    { id: "chat", icon: <MessageSquare size={15} />, label: "Trò chuyện trực tuyến", desc: "Hỗ trợ trực tiếp từ nhân viên" },
-    { id: "delivery", icon: <Truck size={15} />, label: "Giao nhận & Vận chuyển", desc: "Thời gian & ngưỡng miễn phí ship" },
-    { id: "returns", icon: <RefreshCw size={15} />, label: "Chính sách đổi trả", desc: "Quy định hoàn tiền trong 30 ngày" },
-    { id: "warranty", icon: <ShieldCheck size={15} />, label: "Bảo hành chính hãng", desc: "Thông tin & trung tâm bảo hành" },
-    { id: "contact", icon: <Phone size={15} />, label: "Kênh liên hệ & Hotline", desc: "Email, điện thoại & mạng xã hội" },
+    {
+      id: "chat",
+      icon: <MessageSquare size={15} />,
+      label: "Trò chuyện trực tuyến",
+      desc: "Hỗ trợ trực tiếp từ nhân viên",
+    },
+    {
+      id: "delivery",
+      icon: <Truck size={15} />,
+      label: "Giao nhận & Vận chuyển",
+      desc: "Thời gian & ngưỡng miễn phí ship",
+    },
+    {
+      id: "returns",
+      icon: <RefreshCw size={15} />,
+      label: "Chính sách đổi trả",
+      desc: "Quy định hoàn tiền trong 30 ngày",
+    },
+    {
+      id: "warranty",
+      icon: <ShieldCheck size={15} />,
+      label: "Bảo hành chính hãng",
+      desc: "Thông tin & trung tâm bảo hành",
+    },
+    {
+      id: "contact",
+      icon: <Phone size={15} />,
+      label: "Kênh liên hệ & Hotline",
+      desc: "Email, điện thoại & mạng xã hội",
+    },
   ] as const;
 
   return (
@@ -32,10 +57,14 @@ export default function CustomerSupportSidebar({
             lx
           </div>
           <div>
-            <h2 className="text-[#3D2B1A] text-[14px] font-semibold tracking-normal">LUXE Help Center</h2>
+            <h2 className="text-[#3D2B1A] text-[14px] font-semibold tracking-normal">
+              LUXE Help Center
+            </h2>
             <div className="flex items-center gap-1.5 mt-0.5">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-[10px] text-[#8A7966] font-normal">Hỗ trợ trực tuyến đang hoạt động</span>
+              <span className="text-[10px] text-[#8A7966] font-normal">
+                Hỗ trợ trực tuyến đang hoạt động
+              </span>
             </div>
           </div>
         </div>
@@ -43,8 +72,10 @@ export default function CustomerSupportSidebar({
 
       {/* Navigation links */}
       <div className="p-4 flex-1 space-y-1 overflow-y-auto">
-        <div className="px-3 mb-2.5 text-[10px] font-semibold text-[#8A7966] tracking-wider uppercase">Danh mục hỗ trợ</div>
-        {menuItems.map(item => {
+        <div className="px-3 mb-2.5 text-[10px] font-semibold text-[#8A7966] tracking-wider uppercase">
+          Danh mục hỗ trợ
+        </div>
+        {menuItems.map((item) => {
           const isActive = activeTab === item.id;
           return (
             <button
@@ -57,17 +88,21 @@ export default function CustomerSupportSidebar({
                   : "hover:bg-[#FAF8F4]/40 border-transparent text-[#8A7966] hover:text-[#3D2B1A]"
               )}
             >
-              <div className={cn(
-                "h-8.5 w-8.5 rounded-xl flex items-center justify-center shadow-3xs shrink-0 transition-transform duration-300 border",
-                isActive
-                  ? "bg-[#3D2B1A] text-white border-transparent"
-                  : "bg-white text-[#8A7966] border-[#DDD6C8]/30"
-              )}>
+              <div
+                className={cn(
+                  "h-8.5 w-8.5 rounded-xl flex items-center justify-center shadow-3xs shrink-0 transition-transform duration-300 border",
+                  isActive
+                    ? "bg-[#3D2B1A] text-white border-transparent"
+                    : "bg-white text-[#8A7966] border-[#DDD6C8]/30"
+                )}
+              >
                 {item.icon}
               </div>
               <div>
                 <p className="text-[13px] font-medium tracking-normal">{item.label}</p>
-                <p className="text-[11px] text-[#8A7966] mt-0.5 line-clamp-1 leading-normal font-normal">{item.desc}</p>
+                <p className="text-[11px] text-[#8A7966] mt-0.5 line-clamp-1 leading-normal font-normal">
+                  {item.desc}
+                </p>
               </div>
             </button>
           );
@@ -80,7 +115,12 @@ export default function CustomerSupportSidebar({
           <Phone size={15} className="text-[#C4783A]" />
           <div>
             <p className="text-[10px] text-[#8A7966]">Gọi hotline 24/7</p>
-            <a href={`tel:${storePhone}`} className="text-[13px] font-semibold text-[#3D2B1A] hover:text-[#C4783A] transition-colors">{storePhone}</a>
+            <a
+              href={`tel:${storePhone}`}
+              className="text-[13px] font-semibold text-[#3D2B1A] hover:text-[#C4783A] transition-colors"
+            >
+              {storePhone}
+            </a>
           </div>
         </div>
       </div>

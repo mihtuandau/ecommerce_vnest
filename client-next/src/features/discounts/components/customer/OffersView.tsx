@@ -41,9 +41,10 @@ function VoucherCard({ voucher }: { voucher: OfferVoucher }) {
   const isActive =
     voucher.isActive && new Date(voucher.startDate) <= new Date() && !isExpired;
 
-  const displayValue = voucher.type === "PERCENTAGE" || voucher.percentage
-    ? `${voucher.percentage || voucher.value}%` 
-    : formatCurrency(voucher.fixedAmount || voucher.value || 0);
+  const displayValue =
+    voucher.type === "PERCENTAGE" || voucher.percentage
+      ? `${voucher.percentage || voucher.value}%`
+      : formatCurrency(voucher.fixedAmount || voucher.value || 0);
 
   return (
     <div
@@ -73,11 +74,11 @@ function VoucherCard({ voucher }: { voucher: OfferVoucher }) {
           <div className="flex items-start justify-between gap-4">
             <div>
               <h3 className="text-base font-bold text-slate-900 leading-tight">
-                {voucher.name || `Ưu đãi Minh Tuấn Shop - Giảm ${displayValue}`}
+                {voucher.name || `Ưu đãi LUXE - Giảm ${displayValue}`}
               </h3>
               <p className="text-sm text-slate-500 font-normal mt-1.5 line-clamp-2">
                 {voucher.description ||
-                  "Áp dụng cho khách hàng của Minh Tuấn Shop. Tiết kiệm ngay khi thanh toán đơn hàng hợp lệ."}
+                  "Áp dụng cho khách hàng của LUXE. Tiết kiệm ngay khi thanh toán đơn hàng hợp lệ."}
               </p>
             </div>
             <div className="bg-slate-50 text-slate-600 text-xs px-2 py-0.5 rounded border border-slate-100 whitespace-nowrap font-semibold">
@@ -89,7 +90,12 @@ function VoucherCard({ voucher }: { voucher: OfferVoucher }) {
             {(voucher.minOrderValue || 0) > 0 && (
               <div className="flex items-center gap-1.5">
                 <div className="h-1 w-1 rounded-full bg-primary" />
-                <span className="text-xs font-semibold text-slate-500">Đơn từ <span className="font-bold text-slate-900">{formatCurrency(voucher.minOrderValue || 0)}</span></span>
+                <span className="text-xs font-semibold text-slate-500">
+                  Đơn từ{" "}
+                  <span className="font-bold text-slate-900">
+                    {formatCurrency(voucher.minOrderValue || 0)}
+                  </span>
+                </span>
               </div>
             )}
             <div className="flex items-center gap-1.5 text-slate-500">
@@ -142,7 +148,7 @@ export function OffersView() {
   const rawData = React.useMemo(() => {
     if (!discountsData) return [];
     const body = discountsData as any;
-    const items = Array.isArray(body) ? body : (body.data || []);
+    const items = Array.isArray(body) ? body : body.data || [];
     return items as OfferVoucher[];
   }, [discountsData]);
 
@@ -151,7 +157,7 @@ export function OffersView() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-white">
-        <div className="h-48 bg-slate-50 animate-pulse" />
+        <Skeleton className="h-48 rounded-none" />
         <div className="max-w-[1400px] mx-auto px-4 py-12">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {[1, 2, 3, 4].map((i) => (

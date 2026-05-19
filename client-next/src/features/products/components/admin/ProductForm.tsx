@@ -12,7 +12,14 @@ import { Product } from "@/types/models";
 import { Save } from "lucide-react";
 import { Spinner } from "@/components/ui/Spinner";
 import { useState, useEffect, useRef } from "react";
-import { ProductBasicInfo, ProductCategory, ProductPricing, ProductStatus, ProductSEO, ProductShipping } from "./ProductForm/GeneralInfo";
+import {
+  ProductBasicInfo,
+  ProductCategory,
+  ProductPricing,
+  ProductStatus,
+  ProductSEO,
+  ProductShipping,
+} from "./ProductForm/GeneralInfo";
 import { Variants } from "./ProductForm/Variants";
 import { Media } from "./ProductForm/Media";
 import { slugify } from "@/utils/slugify";
@@ -61,7 +68,9 @@ interface ProductFormProps {
 
 export function ProductForm({ initialData, onSubmit, isLoading }: ProductFormProps) {
   const { data: categoryData = [] } = useCategories();
-  const categories = Array.isArray(categoryData) ? categoryData : (categoryData as any)?.data || [];
+  const categories = Array.isArray(categoryData)
+    ? categoryData
+    : (categoryData as any)?.data || [];
   const fileInputRef = useRef<HTMLInputElement>(null);
   const variantFileInputRef = useRef<HTMLInputElement>(null);
   const [currentVariantIndex, setCurrentVariantIndex] = useState<number | null>(null);
@@ -137,8 +146,8 @@ export function ProductForm({ initialData, onSubmit, isLoading }: ProductFormPro
                 ? v.images[0]
                 : v.images[0].url
               : typeof v.image === "string"
-              ? v.image
-              : v.image?.url || "",
+                ? v.image
+                : v.image?.url || "",
         })),
       });
       setImages(

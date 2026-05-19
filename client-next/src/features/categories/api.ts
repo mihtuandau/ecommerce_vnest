@@ -2,9 +2,7 @@ import { api } from "@/lib/axios";
 import type { Category } from "@/types/models";
 
 export const categoriesApi = {
-  getCategories: async (
-    params?: Record<string, any>
-  ): Promise<Category[]> => {
+  getCategories: async (params?: Record<string, any>): Promise<Category[]> => {
     const { data } = await api.get<Category[]>("/categories", {
       params,
     });
@@ -23,7 +21,10 @@ export const categoriesApi = {
     return data;
   },
 
-  updateCategory: async (id: string | number, formData: FormData): Promise<Category> => {
+  updateCategory: async (
+    id: string | number,
+    formData: FormData
+  ): Promise<Category> => {
     const { data } = await api.put<Category>(`/categories/${id}`, formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });

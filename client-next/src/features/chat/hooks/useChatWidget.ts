@@ -15,7 +15,8 @@ export function useChatWidget() {
   const [isLoading, setIsLoading] = useState(false);
   const { user } = useAuthStore();
 
-  const storage = typeof window !== "undefined" ? (user ? localStorage : sessionStorage) : null;
+  const storage =
+    typeof window !== "undefined" ? (user ? localStorage : sessionStorage) : null;
 
   useEffect(() => {
     if (!storage) return;
@@ -30,7 +31,8 @@ export function useChatWidget() {
       setMessages([
         {
           role: "bot",
-          content: "Xin chào! Tôi là Trợ lý ảo của Minh Tuấn Shop. Tôi có thể giúp gì cho bạn hôm nay?",
+          content:
+            "Xin chào! Tôi là Trợ lý ảo của LUXE. Tôi có thể giúp gì cho bạn hôm nay?",
           timestamp: new Date().toISOString(),
         },
       ]);
@@ -89,7 +91,8 @@ export function useChatWidget() {
         ...prev,
         {
           role: "bot",
-          content: "Xin lỗi, tôi đang gặp một chút sự cố kỹ thuật. Bạn vui lòng thử lại sau nhé!",
+          content:
+            "Xin lỗi, tôi đang gặp một chút sự cố kỹ thuật. Bạn vui lòng thử lại sau nhé!",
           timestamp: new Date().toISOString(),
         },
       ]);
@@ -117,6 +120,6 @@ export function useChatWidget() {
     messages,
     isLoading,
     handleSendMessage,
-    clearHistory
+    clearHistory,
   };
 }

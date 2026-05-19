@@ -48,14 +48,18 @@ api.interceptors.response.use(
         if (
           typeof window !== "undefined" &&
           !window.location.pathname.includes("/login") &&
-          (window.location.pathname.startsWith("/admin") || window.location.pathname.startsWith("/account"))
+          (window.location.pathname.startsWith("/admin") ||
+            window.location.pathname.startsWith("/account"))
         ) {
           window.location.href = "/login";
         }
       }
     }
 
-    if (error.response?.status === 503 && error.response?.data?.error === "MAINTENANCE_MODE") {
+    if (
+      error.response?.status === 503 &&
+      error.response?.data?.error === "MAINTENANCE_MODE"
+    ) {
       if (typeof window !== "undefined") {
         window.location.reload();
       }

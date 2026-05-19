@@ -79,21 +79,28 @@ export function DiscountForm({ initialData, onSubmit, isLoading }: DiscountFormP
         image: initialData.image || "",
         isFlashSale: !!initialData.isFlashSale,
         isActive: initialData.isActive ?? true,
-        type: initialData.percentage ? "PERCENTAGE" : initialData.fixedAmount ? "FIXED" : (initialData.type || "PERCENTAGE"),
-        value: initialData.percentage || initialData.fixedAmount || initialData.value || 0,
+        type: initialData.percentage
+          ? "PERCENTAGE"
+          : initialData.fixedAmount
+            ? "FIXED"
+            : initialData.type || "PERCENTAGE",
+        value:
+          initialData.percentage || initialData.fixedAmount || initialData.value || 0,
         minOrderAmount: initialData.minOrderValue || initialData.minOrderAmount || 0,
         maxDiscountAmount:
           initialData.maxDiscount || initialData.maxDiscountAmount || 0,
         usageLimit: initialData.usageLimit || 100,
         startDate: formatDateForInput(initialData.startDate),
         endDate: formatDateForInput(initialData.endDate),
-        applicableToProducts: (initialData.applicableToProducts || []).map((p: any) => ({
-          productId: String(p.productId || p),
-          stockLimit: p.stockLimit || 0,
-          percentage: p.percentage || null,
-          fixedAmount: p.fixedAmount || null,
-          badge: p.badge || null,
-        })),
+        applicableToProducts: (initialData.applicableToProducts || []).map(
+          (p: any) => ({
+            productId: String(p.productId || p),
+            stockLimit: p.stockLimit || 0,
+            percentage: p.percentage || null,
+            fixedAmount: p.fixedAmount || null,
+            badge: p.badge || null,
+          })
+        ),
       });
     }
   }, [initialData, form]);
@@ -105,16 +112,19 @@ export function DiscountForm({ initialData, onSubmit, isLoading }: DiscountFormP
       fixedAmount: values.type === "FIXED" ? Number(values.value) : null,
       applicableToProducts: values.applicableToProducts.map((p: any) => ({
         productId: Number(p.productId),
-        stockLimit: (p.stockLimit !== "" && p.stockLimit !== null) ? Number(p.stockLimit) : 0,
-        percentage: (p.percentage !== "" && p.percentage !== null) ? Number(p.percentage) : null,
-        fixedAmount: (p.fixedAmount !== "" && p.fixedAmount !== null) ? Number(p.fixedAmount) : null,
+        stockLimit:
+          p.stockLimit !== "" && p.stockLimit !== null ? Number(p.stockLimit) : 0,
+        percentage:
+          p.percentage !== "" && p.percentage !== null ? Number(p.percentage) : null,
+        fixedAmount:
+          p.fixedAmount !== "" && p.fixedAmount !== null ? Number(p.fixedAmount) : null,
         badge: p.badge || null,
       })),
     };
-    
+
     delete (submissionValues as any).type;
     delete (submissionValues as any).value;
-    
+
     onSubmit(submissionValues);
   };
 
@@ -125,20 +135,20 @@ export function DiscountForm({ initialData, onSubmit, isLoading }: DiscountFormP
           {/* Professional Tab Navigation */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 border-b border-slate-200 pb-1 mb-8">
             <TabsList className="bg-transparent h-auto p-0 flex gap-10">
-              <TabsTrigger 
-                value="general" 
+              <TabsTrigger
+                value="general"
                 className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-1 pb-4 text-slate-500 data-[state=active]:text-slate-900 font-bold text-[15px] transition-all"
               >
                 Cấu hình & Mức giảm
               </TabsTrigger>
-              <TabsTrigger 
-                value="rules" 
+              <TabsTrigger
+                value="rules"
                 className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-1 pb-4 text-slate-500 data-[state=active]:text-slate-900 font-bold text-[15px] transition-all"
               >
                 Điều kiện & Thời gian
               </TabsTrigger>
-              <TabsTrigger 
-                value="scope" 
+              <TabsTrigger
+                value="scope"
                 className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-1 pb-4 text-slate-500 data-[state=active]:text-slate-900 font-bold text-[15px] transition-all"
               >
                 Sản phẩm áp dụng
@@ -155,7 +165,12 @@ export function DiscountForm({ initialData, onSubmit, isLoading }: DiscountFormP
               >
                 Hủy
               </Button>
-              <Button type="submit" size="sm" disabled={isLoading} className="h-10 px-6 rounded-xl font-bold text-xs shadow-lg shadow-primary/10">
+              <Button
+                type="submit"
+                size="sm"
+                disabled={isLoading}
+                className="h-10 px-6 rounded-xl font-bold text-xs shadow-lg shadow-primary/10"
+              >
                 {isLoading ? (
                   <Spinner size="sm" className="mr-2" />
                 ) : (
@@ -168,20 +183,29 @@ export function DiscountForm({ initialData, onSubmit, isLoading }: DiscountFormP
 
           <div className="max-w-[1200px]">
             {/* Tab 1: General + Value */}
-            <TabsContent value="general" className="mt-0 space-y-10 animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <TabsContent
+              value="general"
+              className="mt-0 space-y-10 animate-in fade-in slide-in-from-bottom-2 duration-300"
+            >
               <BasicInfoSection form={form} />
               <ValueSection form={form} />
             </TabsContent>
 
             {/* Tab 2: Rules (Usage) */}
-            <TabsContent value="rules" className="mt-0 animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <TabsContent
+              value="rules"
+              className="mt-0 animate-in fade-in slide-in-from-bottom-2 duration-300"
+            >
               <UsageSection form={form} />
             </TabsContent>
 
             {/* Tab 3: Scope */}
-            <TabsContent value="scope" className="mt-0 animate-in fade-in slide-in-from-bottom-2 duration-300">
-              <ScopeSection 
-                form={form} 
+            <TabsContent
+              value="scope"
+              className="mt-0 animate-in fade-in slide-in-from-bottom-2 duration-300"
+            >
+              <ScopeSection
+                form={form}
                 products={productsData?.data || []}
                 isLoading={isLoadingProducts}
                 searchQuery={searchQuery}

@@ -2,12 +2,12 @@
 
 import React from "react";
 import { UseFormReturn } from "react-hook-form";
-import { 
-  FormField, 
-  FormItem, 
-  FormLabel, 
-  FormControl, 
-  FormMessage 
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
 } from "@/components/ui/Form";
 import { Input } from "@/components/ui/Input";
 import { Hash, ImagePlus, FileText, Layout } from "lucide-react";
@@ -24,7 +24,9 @@ export function BasicInfoSection({ form }: BasicInfoSectionProps) {
           <div className="p-2 bg-white rounded-lg shadow-sm">
             <Layout className="h-4 w-4 text-primary" />
           </div>
-          <h3 className="font-bold text-slate-800 text-sm tracking-tight">Thông tin nhận diện</h3>
+          <h3 className="font-bold text-slate-800 text-sm tracking-tight">
+            Thông tin nhận diện
+          </h3>
         </div>
       </div>
 
@@ -42,14 +44,16 @@ export function BasicInfoSection({ form }: BasicInfoSectionProps) {
                   </FormLabel>
                 </div>
                 <FormControl>
-                  <Input 
-                    placeholder="Ví dụ: SUMMER2024" 
-                    className="h-11 rounded-xl border-slate-200 focus:ring-primary/10 font-bold uppercase tracking-wider text-slate-800 placeholder:font-medium placeholder:tracking-normal placeholder:text-slate-300" 
-                    {...field} 
+                  <Input
+                    placeholder="Ví dụ: SUMMER2024"
+                    className="h-11 rounded-xl border-slate-200 focus:ring-primary/10 font-bold uppercase tracking-wider text-slate-800 placeholder:font-medium placeholder:tracking-normal placeholder:text-slate-300"
+                    {...field}
                     value={field.value ?? ""}
                   />
                 </FormControl>
-                <p className="text-[10px] text-slate-400 font-medium italic">Khách hàng sẽ nhập mã này tại màn hình thanh toán.</p>
+                <p className="text-[10px] text-slate-400 font-medium italic">
+                  Khách hàng sẽ nhập mã này tại màn hình thanh toán.
+                </p>
                 <FormMessage />
               </FormItem>
             )}
@@ -67,20 +71,20 @@ export function BasicInfoSection({ form }: BasicInfoSectionProps) {
                 <FormControl>
                   <div className="space-y-4">
                     <div className="relative group">
-                      <Input 
-                        placeholder="Liên kết hình ảnh quảng bá..." 
-                        className="h-11 rounded-xl border-slate-200 focus:ring-primary/10 text-sm" 
-                        {...field} 
+                      <Input
+                        placeholder="Liên kết hình ảnh quảng bá..."
+                        className="h-11 rounded-xl border-slate-200 focus:ring-primary/10 text-sm"
+                        {...field}
                         value={field.value ?? ""}
                       />
                       <ImagePlus className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-primary transition-colors" />
                     </div>
-                    
+
                     {field.value && (
                       <div className="relative aspect-[21/9] w-full rounded-xl overflow-hidden border border-slate-100 bg-slate-50 shadow-inner group cursor-zoom-in">
-                        <img 
-                          src={field.value} 
-                          alt="Banner Preview" 
+                        <img
+                          src={field.value}
+                          alt="Banner Preview"
                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                           onError={(e) => {
                             (e.target as HTMLImageElement).src = "/placeholder.png";

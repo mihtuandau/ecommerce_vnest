@@ -12,6 +12,8 @@ import { User, Lock, Mail, Phone, Facebook, Eye, EyeOff, Check } from "lucide-re
 import { Spinner } from "@/components/ui/Spinner";
 import Image from "next/image";
 import { cn } from "@/utils/cn";
+import { Checkbox } from "@/components/ui/Checkbox";
+import { AUTH_CONSTANTS, AUTH_MESSAGES } from "@/features/auth/constants";
 
 export function RegisterForm() {
   const [form, setForm] = useState({
@@ -32,16 +34,16 @@ export function RegisterForm() {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
-    
+
     const newErrors: Record<string, string> = {};
-    if (!form.name) newErrors.name = "Vui lòng nhập họ tên";
-    if (!form.phone) newErrors.phone = "Vui lòng nhập số điện thoại";
-    if (!form.email) newErrors.email = "Vui lòng nhập email";
-    if (!form.password) newErrors.password = "Vui lòng nhập mật khẩu";
+    if (!form.name) newErrors.name = AUTH_MESSAGES.NAME_REQUIRED;
+    if (!form.phone) newErrors.phone = AUTH_MESSAGES.PHONE_REQUIRED;
+    if (!form.email) newErrors.email = AUTH_MESSAGES.EMAIL_REQUIRED;
+    if (!form.password) newErrors.password = AUTH_MESSAGES.PASSWORD_REQUIRED;
     if (form.password !== form.confirmPassword) {
-      newErrors.confirmPassword = "Mật khẩu xác nhận không khớp";
+      newErrors.confirmPassword = AUTH_MESSAGES.PASSWORD_MISMATCH;
     }
-    
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
@@ -54,18 +56,17 @@ export function RegisterForm() {
         email: form.email,
         password: form.password,
       });
-      success("Đăng ký thành công! Vui lòng đăng nhập.");
+      success(AUTH_MESSAGES.REGISTER_SUCCESS);
       router.push(ROUTES.LOGIN);
     } catch (err: any) {
-      error(
-        err?.response?.data?.message || "Email đã tồn tại hoặc dữ liệu không hợp lệ"
-      );
-      setErrors({ global: "Lỗi đăng ký" });
+      error(err?.response?.data?.message || AUTH_MESSAGES.REGISTER_ERROR);
+      setErrors({ global: AUTH_MESSAGES.REGISTER_ERROR_GENERIC });
     }
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/auth/google?_t=${Date.now()}`;
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    window.location.href = `${apiUrl}${AUTH_CONSTANTS.GOOGLE_AUTH_ENDPOINT}?${AUTH_CONSTANTS.CACHE_BUST_PARAM}=${Date.now()}`;
   };
 
   return (
@@ -83,10 +84,10 @@ export function RegisterForm() {
           </div>
         </Link>
         <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight drop-shadow-sm">
-          Tạo tài khoản
+          {AUTH_MESSAGES.REGISTER_TITLE}
         </h1>
         <p className="text-slate-200 mt-1 font-medium text-[13px] drop-shadow-sm">
-          Đăng ký để bắt đầu mua sắm
+          {AUTH_MESSAGES.REGISTER_DESC}
         </p>
       </div>
 
@@ -94,7 +95,7 @@ export function RegisterForm() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
           <div className="space-y-1.5">
             <label className="text-xs font-semibold text-slate-200 ml-1.5 drop-shadow-sm">
-              Họ và tên
+              {AUTH_MESSAGES.FULL_NAME}
             </label>
             <div className="relative group">
               <User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-white transition-colors" />
@@ -103,10 +104,12 @@ export function RegisterForm() {
                 placeholder="Nhập tên..."
                 className={cn(
                   "pl-11 h-12 rounded-[1.25rem] border-white/20 bg-black/40 backdrop-blur-md !text-white font-medium placeholder:text-white/60 hover:border-white/40 hover:bg-black/50 focus-visible:outline-none focus-visible:ring-2 transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)]",
-                  errors.name ? "border-red-500/50 ring-2 ring-red-500/20 bg-red-500/10" : "focus-visible:ring-primary/50 focus-visible:border-primary"
+                  errors.name
+                    ? "border-red-500/50 ring-2 ring-red-500/20 bg-red-500/10"
+                    : "focus-visible:ring-primary/50 focus-visible:border-primary"
                 )}
                 value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
               />
               {errors.name && (
                 <span className="absolute -bottom-5 left-2 text-[10px] font-bold text-red-400 drop-shadow-sm animate-in fade-in slide-in-from-top-1">
@@ -118,7 +121,7 @@ export function RegisterForm() {
 
           <div className="space-y-1.5">
             <label className="text-xs font-semibold text-slate-200 ml-1.5 drop-shadow-sm">
-              Số điện thoại
+              {AUTH_MESSAGES.PHONE}
             </label>
             <div className="relative group">
               <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-white transition-colors" />
@@ -128,10 +131,14 @@ export function RegisterForm() {
                 placeholder="0912..."
                 className={cn(
                   "pl-11 h-12 rounded-[1.25rem] border-white/20 bg-black/40 backdrop-blur-md !text-white font-medium placeholder:text-white/60 hover:border-white/40 hover:bg-black/50 focus-visible:outline-none focus-visible:ring-2 transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)]",
-                  errors.phone ? "border-red-500/50 ring-2 ring-red-500/20 bg-red-500/10" : "focus-visible:ring-primary/50 focus-visible:border-primary"
+                  errors.phone
+                    ? "border-red-500/50 ring-2 ring-red-500/20 bg-red-500/10"
+                    : "focus-visible:ring-primary/50 focus-visible:border-primary"
                 )}
                 value={form.phone}
-                onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                onChange={(e) =>
+                  setForm((prev) => ({ ...prev, phone: e.target.value }))
+                }
               />
               {errors.phone && (
                 <span className="absolute -bottom-5 left-2 text-[10px] font-bold text-red-400 drop-shadow-sm animate-in fade-in slide-in-from-top-1">
@@ -144,7 +151,7 @@ export function RegisterForm() {
 
         <div className="space-y-1.5">
           <label className="text-xs font-semibold text-slate-200 ml-1.5 drop-shadow-sm">
-            Email
+            {AUTH_MESSAGES.EMAIL}
           </label>
           <div className="relative group">
             <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-white transition-colors" />
@@ -154,10 +161,12 @@ export function RegisterForm() {
               placeholder="name@example.com"
               className={cn(
                 "pl-11 h-12 rounded-[1.25rem] border-white/20 bg-black/40 backdrop-blur-md !text-white font-medium placeholder:text-white/60 hover:border-white/40 hover:bg-black/50 focus-visible:outline-none focus-visible:ring-2 transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)]",
-                errors.email ? "border-red-500/50 ring-2 ring-red-500/20 bg-red-500/10" : "focus-visible:ring-primary/50 focus-visible:border-primary"
+                errors.email
+                  ? "border-red-500/50 ring-2 ring-red-500/20 bg-red-500/10"
+                  : "focus-visible:ring-primary/50 focus-visible:border-primary"
               )}
               value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              onChange={(e) => setForm((prev) => ({ ...prev, email: e.target.value }))}
             />
             {errors.email && (
               <span className="absolute -bottom-5 left-2 text-[10px] font-bold text-red-400 drop-shadow-sm animate-in fade-in slide-in-from-top-1">
@@ -170,7 +179,7 @@ export function RegisterForm() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
           <div className="space-y-1.5">
             <label className="text-xs font-semibold text-slate-200 ml-1.5 drop-shadow-sm">
-              Mật khẩu
+              {AUTH_MESSAGES.PASSWORD}
             </label>
             <div className="relative group">
               <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-white transition-colors" />
@@ -180,10 +189,14 @@ export function RegisterForm() {
                 placeholder="••••••••"
                 className={cn(
                   "pl-11 pr-11 h-12 rounded-[1.25rem] border-white/20 bg-black/40 backdrop-blur-md !text-white font-medium placeholder:text-white/60 hover:border-white/40 hover:bg-black/50 focus-visible:outline-none focus-visible:ring-2 transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)]",
-                  errors.password ? "border-red-500/50 ring-2 ring-red-500/20 bg-red-500/10" : "focus-visible:ring-primary/50 focus-visible:border-primary"
+                  errors.password
+                    ? "border-red-500/50 ring-2 ring-red-500/20 bg-red-500/10"
+                    : "focus-visible:ring-primary/50 focus-visible:border-primary"
                 )}
                 value={form.password}
-                onChange={(e) => setForm({ ...form, password: e.target.value })}
+                onChange={(e) =>
+                  setForm((prev) => ({ ...prev, password: e.target.value }))
+                }
               />
               {errors.password && (
                 <span className="absolute -bottom-5 left-2 text-[10px] font-bold text-red-400 drop-shadow-sm animate-in fade-in slide-in-from-top-1">
@@ -205,7 +218,7 @@ export function RegisterForm() {
           </div>
           <div className="space-y-1.5">
             <label className="text-xs font-semibold text-slate-200 ml-1.5 drop-shadow-sm">
-              Xác nhận
+              {AUTH_MESSAGES.CONFIRM_PASSWORD}
             </label>
             <div className="relative group">
               <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-white transition-colors" />
@@ -215,10 +228,14 @@ export function RegisterForm() {
                 placeholder="••••••••"
                 className={cn(
                   "pl-11 pr-11 h-12 rounded-[1.25rem] border-white/20 bg-black/40 backdrop-blur-md !text-white font-medium placeholder:text-white/60 hover:border-white/40 hover:bg-black/50 focus-visible:outline-none focus-visible:ring-2 transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)]",
-                  errors.confirmPassword ? "border-red-500/50 ring-2 ring-red-500/20 bg-red-500/10" : "focus-visible:ring-primary/50 focus-visible:border-primary"
+                  errors.confirmPassword
+                    ? "border-red-500/50 ring-2 ring-red-500/20 bg-red-500/10"
+                    : "focus-visible:ring-primary/50 focus-visible:border-primary"
                 )}
                 value={form.confirmPassword}
-                onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
+                onChange={(e) =>
+                  setForm((prev) => ({ ...prev, confirmPassword: e.target.value }))
+                }
               />
               {errors.confirmPassword && (
                 <span className="absolute -bottom-5 left-2 text-[10px] font-bold text-red-400 drop-shadow-sm animate-in fade-in slide-in-from-top-1">
@@ -240,22 +257,15 @@ export function RegisterForm() {
           </div>
         </div>
 
-        <div className="flex items-start pt-2 ml-1 group/check">
-          <div className="relative flex items-center mt-0.5">
-            <input
-              type="checkbox"
-              id="terms"
-              required
-              className="peer h-5 w-5 cursor-pointer appearance-none rounded-md border-2 border-white/30 bg-white/5 transition-all checked:bg-primary checked:border-primary hover:border-white/50"
-            />
-            <Check 
-              className="absolute left-1 top-1 h-3 w-3 pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity text-white" 
-              strokeWidth={4}
-            />
-          </div>
+        <div className="flex items-start pt-2 ml-1 group/check gap-3">
+          <Checkbox
+            id="terms"
+            required
+            className="h-5 w-5 rounded-md border-white/30 bg-white/5 data-[state=checked]:bg-white data-[state=checked]:border-white data-[state=checked]:text-black hover:border-white/50"
+          />
           <label
             htmlFor="terms"
-            className="ml-3 text-[13px] text-slate-200 font-medium leading-tight select-none cursor-pointer drop-shadow-sm mt-0.5"
+            className="text-[13px] text-slate-200 font-medium leading-tight select-none cursor-pointer drop-shadow-sm"
           >
             Tôi đồng ý với{" "}
             <Link href="/terms" className="text-white font-bold hover:underline">
@@ -276,10 +286,10 @@ export function RegisterForm() {
           {isRegistering ? (
             <>
               <Spinner size="sm" variant="slate" />
-              Đang xử lý...
+              {AUTH_MESSAGES.PROCESSING}
             </>
           ) : (
-            "Đăng ký ngay"
+            AUTH_MESSAGES.REGISTER_BUTTON
           )}
         </Button>
 
@@ -289,7 +299,7 @@ export function RegisterForm() {
           </div>
           <div className="relative flex justify-center text-sm">
             <span className="px-3 bg-transparent text-slate-200 font-semibold text-xs drop-shadow-sm">
-              Hoặc
+              {AUTH_MESSAGES.OR_DIVIDER}
             </span>
           </div>
         </div>
@@ -319,7 +329,7 @@ export function RegisterForm() {
                 fill="#EA4335"
               />
             </svg>
-            Google
+            {AUTH_MESSAGES.GOOGLE_LOGIN}
           </Button>
           <Button
             type="button"
@@ -327,17 +337,17 @@ export function RegisterForm() {
             className="h-12 rounded-[1rem] gap-2 font-bold text-[14px] border-white/15 bg-white/[0.05] backdrop-blur-md text-white hover:bg-white/15 hover:border-white/30 hover:-translate-y-0.5 shadow-[inset_0_2px_4px_rgba(0,0,0,0.1),0_4px_12px_rgba(0,0,0,0.2)] transition-all duration-300"
           >
             <Facebook className="h-5 w-5 text-[#1877F2]" />
-            Facebook
+            {AUTH_MESSAGES.FACEBOOK_LOGIN}
           </Button>
         </div>
 
         <p className="text-center text-[13px] text-slate-300 pt-3 font-medium drop-shadow-sm">
-          Đã có tài khoản?{" "}
+          {AUTH_MESSAGES.ALREADY_HAVE_ACCOUNT_LOGIN}{" "}
           <Link
             href={ROUTES.LOGIN}
             className="text-white font-extrabold hover:underline transition-all drop-shadow-sm"
           >
-            Đăng nhập
+            {AUTH_MESSAGES.LOGIN_BUTTON.replace("ngay", "")}
           </Link>
         </p>
       </form>

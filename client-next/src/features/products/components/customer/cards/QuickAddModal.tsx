@@ -78,10 +78,19 @@ export function QuickAddModal({
   }, [isOpen]);
 
   const totalVariantsStock = useMemo(() => {
-    return product.variants?.reduce((acc, v) => acc + (v.isActive !== false ? (v.stock ?? 0) : 0), 0) ?? 0;
+    return (
+      product.variants?.reduce(
+        (acc, v) => acc + (v.isActive !== false ? (v.stock ?? 0) : 0),
+        0
+      ) ?? 0
+    );
   }, [product.variants]);
 
-  const currentStock = selectedVariant?.stock ?? (product.variants && product.variants.length > 0 ? totalVariantsStock : (product.stock ?? 0));
+  const currentStock =
+    selectedVariant?.stock ??
+    (product.variants && product.variants.length > 0
+      ? totalVariantsStock
+      : (product.stock ?? 0));
   const variantBasePrice = selectedVariant?.price ?? price;
   const variantOriginalPriceVal = selectedVariant?.originalPrice ?? originalPrice;
 
@@ -92,9 +101,10 @@ export function QuickAddModal({
     currentPrice = Math.round(variantBasePrice * (1 - flashSalePercent / 100));
   }
 
-  const currentOriginalPrice = (flashSalePercent > 0 || flashSaleFixedAmount > 0)
-    ? variantBasePrice
-    : variantOriginalPriceVal;
+  const currentOriginalPrice =
+    flashSalePercent > 0 || flashSaleFixedAmount > 0
+      ? variantBasePrice
+      : variantOriginalPriceVal;
 
   const handleAddToCart = () => {
     if (sizes.length > 0 && !selectedSize) {
@@ -110,9 +120,7 @@ export function QuickAddModal({
       return;
     }
 
-    const imageUrl = getImageUrl(
-      selectedVariant.images?.[0] || product.images?.[0]
-    );
+    const imageUrl = getImageUrl(selectedVariant.images?.[0] || product.images?.[0]);
 
     addItem({
       productId: String(product.id),
@@ -143,44 +151,50 @@ export function QuickAddModal({
           </DialogHeader>
         </div>
 
-        <div className="relative grid grid-cols-1 md:grid-cols-12 min-h-[450px]" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="relative grid grid-cols-1 md:grid-cols-12 min-h-[450px]"
+          onClick={(e) => e.stopPropagation()}
+        >
           {/* Left: Product Image */}
           <div className="md:col-span-5 bg-white flex items-center justify-center p-8 relative border-b md:border-b-0 border-brand-ivory">
-             <div className="relative w-full aspect-[4/5]">
-                <Image
-                  src={productImageUrl}
-                  alt={product.name}
-                  fill
-                  className="object-contain"
-                  priority
-                />
-             </div>
-             <button 
-               onClick={onClose}
-               className="absolute top-6 left-6 h-10 w-10 rounded-full bg-white/80 backdrop-blur-md border border-brand-ivory flex items-center justify-center text-primary hover:bg-white transition-all z-50 md:hidden"
-             >
-               <X size={18} />
-             </button>
+            <div className="relative w-full aspect-[4/5]">
+              <Image
+                src={productImageUrl}
+                alt={product.name}
+                fill
+                className="object-contain"
+                priority
+              />
+            </div>
+            <button
+              onClick={onClose}
+              className="absolute top-6 left-6 h-10 w-10 rounded-full bg-white/80 backdrop-blur-md border border-brand-ivory flex items-center justify-center text-primary hover:bg-white transition-all z-50 md:hidden"
+            >
+              <X size={18} />
+            </button>
           </div>
 
           {/* Right: Info & Actions */}
           <div className="md:col-span-7 p-8 md:p-10 flex flex-col justify-center bg-white border-l border-brand-ivory">
             <div className="mb-6">
-               <span className="text-[10px] font-bold text-brand-taupe uppercase tracking-[0.3em] mb-2 block">
-                 LUXE Storefront
-               </span>
-               <h2 className="text-[20px] font-bold text-primary leading-tight mb-3">
+              <span className="text-[10px] font-bold text-brand-taupe uppercase tracking-[0.3em] mb-2 block">
+                LUXE Storefront
+              </span>
+              <h2 className="text-[20px] font-bold text-primary leading-tight mb-3">
                 {product.name}
               </h2>
               <div className="flex items-center gap-3">
-                 <span className="text-[24px] font-bold text-primary" style={{ fontFamily: "'Playfair Display', serif" }}>
-                   {formatCurrency(currentPrice)}
-                 </span>
-                 {currentOriginalPrice && currentOriginalPrice > currentPrice && (
-                   <span className="text-[14px] font-medium text-brand-taupe/80 line-through">
-                     {formatCurrency(currentOriginalPrice)}
-                   </span>
-                 )}
+                <span
+                  className="text-[24px] font-bold text-primary"
+                  style={{ fontFamily: "'Playfair Display', serif" }}
+                >
+                  {formatCurrency(currentPrice)}
+                </span>
+                {currentOriginalPrice && currentOriginalPrice > currentPrice && (
+                  <span className="text-[14px] font-medium text-brand-taupe/80 line-through">
+                    {formatCurrency(currentOriginalPrice)}
+                  </span>
+                )}
               </div>
             </div>
 
@@ -189,8 +203,12 @@ export function QuickAddModal({
               {colors.length > 0 && (
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="text-[11px] font-bold text-primary uppercase tracking-widest">Màu sắc</span>
-                    <span className="text-[11px] font-bold text-brand-bronze">{selectedColor || "Chưa chọn"}</span>
+                    <span className="text-[11px] font-bold text-primary uppercase tracking-widest">
+                      Màu sắc
+                    </span>
+                    <span className="text-[11px] font-bold text-brand-bronze">
+                      {selectedColor || "Chưa chọn"}
+                    </span>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {colors.map((color) => (
@@ -215,8 +233,12 @@ export function QuickAddModal({
               {sizes.length > 0 && (
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="text-[11px] font-bold text-primary uppercase tracking-widest">Kích thước</span>
-                    <span className="text-[11px] font-bold text-brand-bronze">{selectedSize || "Chưa chọn"}</span>
+                    <span className="text-[11px] font-bold text-primary uppercase tracking-widest">
+                      Kích thước
+                    </span>
+                    <span className="text-[11px] font-bold text-brand-bronze">
+                      {selectedSize || "Chưa chọn"}
+                    </span>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {sizes.map((size) => (
@@ -239,18 +261,42 @@ export function QuickAddModal({
 
               {/* Quantity */}
               <div className="flex items-center justify-between pt-2">
-                 <div className="flex items-center bg-brand-cream rounded-full p-1 border border-brand-ivory">
-                    <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="h-9 w-9 flex items-center justify-center hover:bg-white rounded-full transition-all text-primary"><Minus size={12} /></button>
-                    <span className="w-10 text-center text-[14px] font-bold text-primary">{quantity}</span>
-                    <button onClick={() => setQuantity(Math.min(currentStock || 1, quantity + 1))} className="h-9 w-9 flex items-center justify-center hover:bg-white rounded-full transition-all text-primary"><Plus size={12} /></button>
-                 </div>
-                 
-                 <div className="flex items-center gap-2">
-                    <div className={cn("h-1.5 w-1.5 rounded-full", currentStock > 0 ? "bg-emerald-500" : "bg-rose-500")} />
-                    <span className={cn("text-[11px] font-bold", currentStock > 0 ? "text-emerald-600" : "text-rose-600")}>
-                      {currentStock > 0 ? `Còn ${currentStock}` : "Hết hàng"}
-                    </span>
-                 </div>
+                <div className="flex items-center bg-brand-cream rounded-full p-1 border border-brand-ivory">
+                  <button
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                    className="h-9 w-9 flex items-center justify-center hover:bg-white rounded-full transition-all text-primary"
+                  >
+                    <Minus size={12} />
+                  </button>
+                  <span className="w-10 text-center text-[14px] font-bold text-primary">
+                    {quantity}
+                  </span>
+                  <button
+                    onClick={() =>
+                      setQuantity(Math.min(currentStock || 1, quantity + 1))
+                    }
+                    className="h-9 w-9 flex items-center justify-center hover:bg-white rounded-full transition-all text-primary"
+                  >
+                    <Plus size={12} />
+                  </button>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <div
+                    className={cn(
+                      "h-1.5 w-1.5 rounded-full",
+                      currentStock > 0 ? "bg-emerald-500" : "bg-rose-500"
+                    )}
+                  />
+                  <span
+                    className={cn(
+                      "text-[11px] font-bold",
+                      currentStock > 0 ? "text-emerald-600" : "text-rose-600"
+                    )}
+                  >
+                    {currentStock > 0 ? `Còn ${currentStock}` : "Hết hàng"}
+                  </span>
+                </div>
               </div>
             </div>
 
@@ -265,13 +311,13 @@ export function QuickAddModal({
             </div>
           </div>
         </div>
-        
+
         {/* Desktop Close Button */}
-        <button 
-           onClick={onClose}
-           className="absolute top-6 right-6 h-10 w-10 rounded-full bg-white/80 backdrop-blur-md border border-brand-ivory hidden md:flex items-center justify-center text-primary hover:bg-white transition-all z-50"
+        <button
+          onClick={onClose}
+          className="absolute top-6 right-6 h-10 w-10 rounded-full bg-white/80 backdrop-blur-md border border-brand-ivory hidden md:flex items-center justify-center text-primary hover:bg-white transition-all z-50"
         >
-           <X size={18} />
+          <X size={18} />
         </button>
       </DialogContent>
     </Dialog>

@@ -5,15 +5,15 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
-import { 
-  Star, 
-  Trash2, 
-  ChevronLeft, 
-  ChevronRight, 
+import {
+  Star,
+  Trash2,
+  ChevronLeft,
+  ChevronRight,
   ExternalLink,
   ShoppingBag,
   Eye,
-  X
+  X,
 } from "lucide-react";
 import { usePermission } from "@/hooks/usePermission";
 import dayjs from "@/lib/dayjs";
@@ -41,10 +41,10 @@ export function ReviewsTable({
 }: ReviewsTableProps) {
   const { can } = usePermission();
   const canManage = can("product.manage") || can("settings.manage");
-  
+
   // State for image lightbox zoom
   const [activeZoomImage, setActiveZoomImage] = useState<string | null>(null);
-  
+
   // State for review delete confirmation
   const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
 
@@ -79,12 +79,24 @@ export function ReviewsTable({
         <table className="w-full text-left border-collapse table-fixed">
           <thead>
             <tr className="border-b border-slate-200 bg-slate-50/70">
-              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-slate-500 w-[25%] align-middle">Sản phẩm</th>
-              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-slate-500 w-[16%] align-middle">Khách hàng</th>
-              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-slate-500 w-[12%] align-middle">Điểm số</th>
-              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-slate-500 w-[24%] align-middle">Nội dung đánh giá</th>
-              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-slate-500 w-[11%] align-middle">Thời gian</th>
-              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-slate-500 w-[12%] text-right align-middle">Thao tác</th>
+              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-slate-500 w-[25%] align-middle">
+                Sản phẩm
+              </th>
+              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-slate-500 w-[16%] align-middle">
+                Khách hàng
+              </th>
+              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-slate-500 w-[12%] align-middle">
+                Điểm số
+              </th>
+              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-slate-500 w-[24%] align-middle">
+                Nội dung đánh giá
+              </th>
+              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-slate-500 w-[11%] align-middle">
+                Thời gian
+              </th>
+              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-slate-500 w-[12%] text-right align-middle">
+                Thao tác
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -95,7 +107,8 @@ export function ReviewsTable({
 
               // Safe retrieval of the product image url
               const firstImage = product?.images?.[0];
-              const productImageUrl = typeof firstImage === "string" ? firstImage : firstImage?.url || "";
+              const productImageUrl =
+                typeof firstImage === "string" ? firstImage : firstImage?.url || "";
 
               // Locate the variant size & color purchased for this product in this order
               const purchaseItem = r.order?.orderItems?.find(
@@ -132,7 +145,7 @@ export function ReviewsTable({
                         >
                           {product?.name || "Sản phẩm không khả dụng"}
                         </Link>
-                        
+
                         {/* Variant details (size, color) */}
                         {(size || color) && (
                           <div className="flex flex-wrap items-center gap-1 mt-0.5">
@@ -154,7 +167,8 @@ export function ReviewsTable({
                             href={`/admin/orders/${r.order.id}`}
                             className="text-xs text-slate-400 hover:text-slate-655 transition-colors inline-flex items-center gap-0.5 mt-1"
                           >
-                            Đơn hàng: #{r.order.orderCode} <ExternalLink className="h-2.5 w-2.5" />
+                            Đơn hàng: #{r.order.orderCode}{" "}
+                            <ExternalLink className="h-2.5 w-2.5" />
                           </Link>
                         )}
                       </div>
@@ -174,7 +188,9 @@ export function ReviewsTable({
                   {/* Column 3: Điểm số */}
                   <td className="px-6 py-4 align-middle">
                     <div className="flex items-center gap-0.5 bg-amber-50/50 border border-amber-250/30 px-2 py-1 rounded-lg w-fit">
-                      <span className="text-xs font-semibold text-amber-700 mr-1">{r.rating}</span>
+                      <span className="text-xs font-semibold text-amber-700 mr-1">
+                        {r.rating}
+                      </span>
                       {[1, 2, 3, 4, 5].map((star) => (
                         <Star
                           key={star}
@@ -191,13 +207,18 @@ export function ReviewsTable({
                   {/* Column 4: Nội dung đánh giá */}
                   <td className="px-6 py-4 align-middle">
                     <p className="text-sm text-slate-650 leading-relaxed break-words line-clamp-3">
-                      {r.comment || <em className="text-slate-350 font-normal italic">Không có bình luận chữ</em>}
+                      {r.comment || (
+                        <em className="text-slate-350 font-normal italic">
+                          Không có bình luận chữ
+                        </em>
+                      )}
                     </p>
                     {/* Review Images */}
                     {r.images && r.images.length > 0 && (
                       <div className="flex flex-wrap gap-1.5 mt-2">
                         {r.images.map((imgObj: any) => {
-                          const imgUrl = typeof imgObj === "string" ? imgObj : imgObj.url;
+                          const imgUrl =
+                            typeof imgObj === "string" ? imgObj : imgObj.url;
                           return (
                             <button
                               key={imgUrl}
@@ -302,7 +323,7 @@ export function ReviewsTable({
 
       {/* Premium Lightbox Modal */}
       {activeZoomImage && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/85 z-[99999] flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in"
           onClick={() => setActiveZoomImage(null)}
         >
@@ -313,7 +334,7 @@ export function ReviewsTable({
             >
               <X className="h-5 w-5" />
             </button>
-            <div 
+            <div
               className="relative w-full h-full rounded-2xl overflow-hidden shadow-2xl border border-white/5"
               onClick={(e) => e.stopPropagation()}
             >

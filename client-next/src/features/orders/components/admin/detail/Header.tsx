@@ -5,11 +5,11 @@ import dayjs from "@/lib/dayjs";
 import { ChevronLeft, Printer, Share2, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuTrigger 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from "@/components/ui/DropdownMenu";
 import { cn } from "@/utils/cn";
 import { useRouter } from "next/navigation";
@@ -30,8 +30,8 @@ export function Header({ order, onUpdateStatus, id }: HeaderProps) {
   return (
     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
       <div className="flex items-center gap-4">
-        <Button 
-          variant="ghost" 
+        <Button
+          variant="ghost"
           size="sm"
           className="h-9 w-9 p-0 rounded-lg border border-slate-200"
           onClick={() => router.back()}
@@ -39,27 +39,38 @@ export function Header({ order, onUpdateStatus, id }: HeaderProps) {
           <ChevronLeft className="h-4 w-4" />
         </Button>
         <div className="flex items-center gap-3">
-          <h1 className={adminUI.typography.heading}>Chi tiết đơn hàng #{order.orderCode}</h1>
+          <h1 className={adminUI.typography.heading}>
+            Chi tiết đơn hàng #{order.orderCode}
+          </h1>
           {isCancelled && (
-            <Badge variant="outline" className="rounded-full px-3 py-1.5 text-[11px] font-medium bg-rose-50 text-rose-600 border-none h-fit leading-none flex items-center justify-center">
+            <Badge
+              variant="outline"
+              className="rounded-full px-3 py-1.5 text-[11px] font-medium bg-rose-50 text-rose-600 border-none h-fit leading-none flex items-center justify-center"
+            >
               Đã hủy
             </Badge>
           )}
           {order.status === OrderStatus.RETURN_REQUESTED && (
-            <Badge variant="outline" className="rounded-full px-3 py-1.5 text-[11px] font-medium bg-amber-50 text-amber-600 border-none h-fit leading-none flex items-center justify-center">
+            <Badge
+              variant="outline"
+              className="rounded-full px-3 py-1.5 text-[11px] font-medium bg-amber-50 text-amber-600 border-none h-fit leading-none flex items-center justify-center"
+            >
               Yêu cầu trả hàng
             </Badge>
           )}
           {order.status === OrderStatus.RETURNED && (
-            <Badge variant="outline" className="rounded-full px-3 py-1.5 text-[11px] font-medium bg-purple-50 text-purple-600 border-none h-fit leading-none flex items-center justify-center">
+            <Badge
+              variant="outline"
+              className="rounded-full px-3 py-1.5 text-[11px] font-medium bg-purple-50 text-purple-600 border-none h-fit leading-none flex items-center justify-center"
+            >
               Đã trả hàng
             </Badge>
           )}
         </div>
       </div>
       <div className="flex items-center gap-2 no-print">
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           className={cn(adminUI.button.base, adminUI.button.secondary)}
           onClick={() => window.print()}
         >
@@ -67,7 +78,10 @@ export function Header({ order, onUpdateStatus, id }: HeaderProps) {
         </Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className={cn(adminUI.button.base, adminUI.button.secondary)}>
+            <Button
+              variant="outline"
+              className={cn(adminUI.button.base, adminUI.button.secondary)}
+            >
               Thao tác khác
             </Button>
           </DropdownMenuTrigger>
@@ -76,7 +90,7 @@ export function Header({ order, onUpdateStatus, id }: HeaderProps) {
               <Share2 className="h-4 w-4 mr-2" /> Chia sẻ
             </DropdownMenuItem>
             {!isCancelled && (
-              <DropdownMenuItem 
+              <DropdownMenuItem
                 className="text-sm font-medium py-2 text-rose-600"
                 onClick={() => onUpdateStatus(id, OrderStatus.CANCELLED)}
               >

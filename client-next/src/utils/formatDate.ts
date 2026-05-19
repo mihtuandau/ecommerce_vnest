@@ -32,6 +32,6 @@ export function getTimeLeft(endDate: string) {
     hours,
     minutes,
     seconds,
-    expired: total <= 0
+    expired: total <= 0,
   };
 }

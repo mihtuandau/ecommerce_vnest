@@ -15,11 +15,14 @@ export default function AdminBannersPage() {
 
   const banners = Array.isArray(data) ? data : (data as any)?.data || [];
 
-  const counts = React.useMemo(() => ({
-    ALL: banners.length,
-    ACTIVE: banners.filter((b: any) => b.isActive).length,
-    INACTIVE: banners.filter((b: any) => !b.isActive).length,
-  }), [banners]);
+  const counts = React.useMemo(
+    () => ({
+      ALL: banners.length,
+      ACTIVE: banners.filter((b: any) => b.isActive).length,
+      INACTIVE: banners.filter((b: any) => !b.isActive).length,
+    }),
+    [banners]
+  );
 
   const filteredBanners = React.useMemo(() => {
     let result = banners;
@@ -32,9 +35,7 @@ export default function AdminBannersPage() {
 
     if (searchTerm) {
       const lowerSearch = searchTerm.toLowerCase();
-      result = result.filter((b: any) => 
-        b.title?.toLowerCase().includes(lowerSearch)
-      );
+      result = result.filter((b: any) => b.title?.toLowerCase().includes(lowerSearch));
     }
 
     return result;
@@ -42,30 +43,25 @@ export default function AdminBannersPage() {
 
   return (
     <div className="space-y-4 pb-10">
-      <BannerListHeader 
-        totalBanners={banners.length} 
-        onRefresh={refetch} 
-        isFetching={isFetching} 
+      <BannerListHeader
+        totalBanners={banners.length}
+        onRefresh={refetch}
+        isFetching={isFetching}
       />
 
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
-        <BannerTabs 
-          activeTab={activeTab} 
-          onTabChange={setActiveTab} 
-          counts={counts} 
-        />
+        <BannerTabs activeTab={activeTab} onTabChange={setActiveTab} counts={counts} />
 
-        <BannerListToolbar 
-          searchTerm={searchTerm} 
-          onSearchChange={setSearchTerm} 
-        />
+        <BannerListToolbar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
 
         <div className="overflow-x-auto">
           {isLoading ? (
             <div className="flex h-96 items-center justify-center">
               <div className="flex flex-col items-center gap-3">
                 <Spinner size="lg" />
-                <p className="text-sm font-semibold text-slate-400">Đang tải dữ liệu...</p>
+                <p className="text-sm font-semibold text-slate-400">
+                  Đang tải dữ liệu...
+                </p>
               </div>
             </div>
           ) : (

@@ -15,14 +15,18 @@ const orderFormSchema = z.object({
   status: z.string(),
   shippingFee: z.number(),
   discountCode: z.string().optional(),
-  items: z.array(z.object({
-    variantId: z.string(),
-    quantity: z.number().min(1),
-    productName: z.string(),
-    price: z.number(),
-    image: z.string().optional(),
-    stock: z.number().optional(),
-  })).min(1, "Vui lòng chọn ít nhất 1 sản phẩm"),
+  items: z
+    .array(
+      z.object({
+        variantId: z.string(),
+        quantity: z.number().min(1),
+        productName: z.string(),
+        price: z.number(),
+        image: z.string().optional(),
+        stock: z.number().optional(),
+      })
+    )
+    .min(1, "Vui lòng chọn ít nhất 1 sản phẩm"),
 });
 
 export type OrderFormValues = z.infer<typeof orderFormSchema>;
@@ -57,74 +61,100 @@ export function useOrderCart(): {
 
   const items = form.watch("items") || [];
 
-  const addVariantToCart = useCallback((product: Product, variant: ProductVariant) => {
-    if (variant.stock <= 0) {
-      toast.error("Sản phẩm đã hết hàng");
-      return;
-    }
-    
-    const currentItems = form.getValues("items") || [];
-    const existingIndex = currentItems.findIndex((i: any) => i.variantId === String(variant.id));
-    const variantLabel = [variant.size, variant.color].filter(Boolean).join(" • ") || "Mặc định";
-    const productName = `${product.name} (${variantLabel})`;
-
-    if (existingIndex > -1) {
-      const currentQty = currentItems[existingIndex].quantity;
-      if (currentQty + 1 > variant.stock) {
-        toast.error("Vượt quá số lượng tồn kho");
+  const addVariantToCart = useCallback(
+    (product: Product, variant: ProductVariant) => {
+      if (variant.stock <= 0) {
+        toast.error("Sản phẩm đã hết hàng");
         return;
       }
-      form.setValue(`items.${existingIndex}.quantity`, currentQty + 1);
-    } else {
-      form.setValue("items", [
-        ...currentItems,
-        {
-          variantId: String(variant.id),
-          quantity: 1,
-          productName,
-          price: variant.price,
-          image: (variant.images?.[0] as any)?.url || (product.images?.[0] as any)?.url,
-          stock: variant.stock
+
+      const currentItems = form.getValues("items") || [];
+      const existingIndex = currentItems.findIndex(
+        (i: any) => i.variantId === String(variant.id)
+      );
+      const variantLabel = [variant.size, variant.color].filter(Boolean).join(" • ");
+      const productName = variantLabel
+        ? `${product.name} (${variantLabel})`
+        : product.name;
+
+      if (existingIndex > -1) {
+        const currentQty = currentItems[existingIndex].quantity;
+        if (currentQty + 1 > variant.stock) {
+          toast.error("Vượt quá số lượng tồn kho");
+          return;
         }
-      ]);
-    }
-    toast.success(`Đã thêm ${product.name}`);
-  }, [form]);
+        form.setValue(`items.${existingIndex}.quantity`, currentQty + 1);
+      } else {
+        form.setValue("items", [
+          ...currentItems,
+          {
+            variantId: String(variant.id),
+            quantity: 1,
+            productName,
+            price: variant.price,
+            image:
+              (variant.images?.[0] as any)?.url || (product.images?.[0] as any)?.url,
+            stock: variant.stock,
+          },
+        ]);
+      }
+      toast.success(`Đã thêm ${product.name}`);
+    },
+    [form]
+  );
 
-  const updateQuantity = useCallback((index: number, delta: number) => {
-    const currentItems = form.getValues("items");
-    const item = currentItems[index];
-    const stock = item.stock || 999;
-    const next = item.quantity + delta;
-    
-    if (next >= 1 && next <= stock) {
-      form.setValue(`items.${index}.quantity`, next);
-    } else if (next > stock) {
-      toast.error("Vượt quá số lượng tồn kho");
-    }
-  }, [form]);
+  const updateQuantity = useCallback(
+    (index: number, delta: number) => {
+      const currentItems = form.getValues("items");
+      const item = currentItems[index];
+      const stock = item.stock || 999;
+      const next = item.quantity + delta;
 
-  const removeListItem = useCallback((index: number) => {
-    const currentItems = form.getValues("items");
-    form.setValue("items", currentItems.filter((_, i) => i !== index));
-  }, [form]);
+      if (next >= 1 && next <= stock) {
+        form.setValue(`items.${index}.quantity`, next);
+      } else if (next > stock) {
+        toast.error("Vượt quá số lượng tồn kho");
+      }
+    },
+    [form]
+  );
 
-  const subtotal = useMemo(() => 
-    items.reduce((sum, item) => sum + (item.price * item.quantity), 0),
+  const removeListItem = useCallback(
+    (index: number) => {
+      const currentItems = form.getValues("items");
+      form.setValue(
+        "items",
+        currentItems.filter((_, i) => i !== index)
+      );
+    },
+    [form]
+  );
+
+  const subtotal = useMemo(
+    () => items.reduce((sum, item) => sum + item.price * item.quantity, 0),
     [items]
   );
 
   const calculateDiscountAmount = useCallback(() => {
     if (!appliedDiscount) return 0;
-    
-    const minOrder = Number(appliedDiscount.minOrderAmount || appliedDiscount.minOrderValue || 0);
-    const maxDiscount = Number(appliedDiscount.maxDiscountAmount || appliedDiscount.maxDiscount || 0);
-    const discountVal = Number(appliedDiscount.discountValue || appliedDiscount.value || 0);
+
+    const minOrder = Number(
+      appliedDiscount.minOrderAmount || appliedDiscount.minOrderValue || 0
+    );
+    const maxDiscount = Number(
+      appliedDiscount.maxDiscountAmount || appliedDiscount.maxDiscount || 0
+    );
+    const discountVal = Number(
+      appliedDiscount.discountValue || appliedDiscount.value || 0
+    );
 
     if (minOrder && subtotal < minOrder) return 0;
 
     let amount = 0;
-    if (appliedDiscount.discountType === 'PERCENTAGE' || appliedDiscount.type === 'PERCENTAGE') {
+    if (
+      appliedDiscount.discountType === "PERCENTAGE" ||
+      appliedDiscount.type === "PERCENTAGE"
+    ) {
       amount = Math.round((subtotal * discountVal) / 100);
     } else {
       amount = discountVal;
@@ -134,7 +164,10 @@ export function useOrderCart(): {
     return Math.min(amount, subtotal);
   }, [appliedDiscount, subtotal]);
 
-  const discountAmount = useMemo(() => calculateDiscountAmount(), [calculateDiscountAmount]);
+  const discountAmount = useMemo(
+    () => calculateDiscountAmount(),
+    [calculateDiscountAmount]
+  );
   const total = useMemo(() => subtotal - discountAmount, [subtotal, discountAmount]);
 
   const validateDiscount = async (code: string) => {
@@ -173,6 +206,6 @@ export function useOrderCart(): {
     updateQuantity,
     removeListItem,
     validateDiscount,
-    setAppliedDiscount
+    setAppliedDiscount,
   };
 }

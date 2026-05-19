@@ -27,8 +27,8 @@ export const CAT_ICONS: Record<string, string> = {
   "Áo khoác": "🧥",
   "Mỹ phẩm": "💄",
   "Phụ kiện": "⌚",
-  "Áo": "👕",
-  "Quần": "👖",
+  Áo: "👕",
+  Quần: "👖",
   "Tất cả": "🔥",
 };
 

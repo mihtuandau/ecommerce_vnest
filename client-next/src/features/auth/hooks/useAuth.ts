@@ -25,7 +25,8 @@ export function useAuth() {
   });
 
   const verify2FALoginMutation = useMutation({
-    mutationFn: (data: { email: string; code: string }) => authApi.verify2FALogin(data.email, data.code),
+    mutationFn: (data: { email: string; code: string }) =>
+      authApi.verify2FALogin(data.email, data.code),
     onSuccess: (data) => {
       if (data.accessToken) {
         setTokens(data.accessToken, data.refreshToken);

@@ -9,13 +9,17 @@ import { ChatMain } from "./Support/ChatMain";
 import { CustomerInfo } from "./Support/CustomerInfo";
 
 import { useUsers } from "@/features/users/hooks";
-
+import { Role } from "@/types/enums";
 import { ShieldAlert } from "lucide-react";
 
 export default function SupportView() {
   const { user } = useAuthStore();
 
-  const { data: rooms, isLoading: roomsLoading, refetch: refetchRooms } = useChatRooms();
+  const {
+    data: rooms,
+    isLoading: roomsLoading,
+    refetch: refetchRooms,
+  } = useChatRooms();
   const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [inputText, setInputText] = useState("");
@@ -33,27 +37,31 @@ export default function SupportView() {
   // Fetch all staff members to enable direct chatting between staff
   const { data: usersResponse } = useUsers({ limit: 100 });
   const staffMembers = useMemo(() => {
-    const rawList = Array.isArray(usersResponse) 
-      ? usersResponse 
-      : (usersResponse?.data || []);
-    return rawList.filter((u: any) => 
-      ["ADMIN", "KHO", "BAN_HANG"].includes(u.role?.toUpperCase()) && 
-      u.id !== user?.id
+    const rawList = Array.isArray(usersResponse)
+      ? usersResponse
+      : usersResponse?.data || [];
+    return rawList.filter(
+      (u: any) =>
+        [Role.ADMIN, Role.KHO, Role.BAN_HANG].includes(u.role?.toUpperCase()) &&
+        u.id !== user?.id
     );
   }, [usersResponse, user]);
-  
+
   // Custom Hook for chat logic
-  const { 
-    messages, 
-    messagesLoading, 
-    messagesEndRef, 
-    sendMessage 
-  } = useChatSession(selectedRoomId, refetchRooms);
+  const { messages, messagesLoading, messagesEndRef, sendMessage } = useChatSession(
+    selectedRoomId,
+    refetchRooms
+  );
 
   const selectedRoom = useMemo(() => {
     if (selectedRoomId?.startsWith("room_staff_")) {
-      const otherStaffId = selectedRoomId.replace("room_staff_", "").split("_").find(id => String(id) !== String(user?.id));
-      const staffObj = staffMembers.find((s: any) => String(s.id) === String(otherStaffId));
+      const otherStaffId = selectedRoomId
+        .replace("room_staff_", "")
+        .split("_")
+        .find((id) => String(id) !== String(user?.id));
+      const staffObj = staffMembers.find(
+        (s: any) => String(s.id) === String(otherStaffId)
+      );
       return {
         roomId: selectedRoomId,
         customer: {
@@ -65,18 +73,20 @@ export default function SupportView() {
         isStaffChat: true,
       };
     }
-    return rooms?.find(r => r.roomId === selectedRoomId);
+    return rooms?.find((r) => r.roomId === selectedRoomId);
   }, [rooms, selectedRoomId, staffMembers, user]);
 
   const filteredRooms = useMemo(() => {
     if (!rooms) return [];
-    return rooms.filter(r => 
-      (r.customer?.name || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
-      r.roomId.toLowerCase().includes(searchQuery.toLowerCase())
+    return rooms.filter(
+      (r) =>
+        (r.customer?.name || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+        r.roomId.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [rooms, searchQuery]);
 
-  const hasAccess = user?.role === "ADMIN" || user?.permissions?.includes("chat.support");
+  const hasAccess =
+    user?.role === Role.ADMIN || user?.permissions?.includes("chat.support");
 
   if (!hasAccess) {
     return (
@@ -86,9 +96,13 @@ export default function SupportView() {
             <ShieldAlert className="h-6 w-6 text-rose-600" />
           </div>
           <div>
-            <h3 className="text-base font-bold text-slate-800">Không có quyền truy cập</h3>
+            <h3 className="text-base font-bold text-slate-800">
+              Không có quyền truy cập
+            </h3>
             <p className="text-xs leading-relaxed text-slate-450 mt-2">
-              Bạn không có quyền <span className="font-semibold text-rose-600">"chat.support"</span> để sử dụng tính năng này. Vui lòng liên hệ Quản trị viên để được phân quyền.
+              Bạn không có quyền{" "}
+              <span className="font-semibold text-rose-600">"chat.support"</span> để sử
+              dụng tính năng này. Vui lòng liên hệ Quản trị viên để được phân quyền.
             </p>
           </div>
         </div>
@@ -125,7 +139,7 @@ export default function SupportView() {
 
   return (
     <div className="flex h-full w-full overflow-hidden bg-[#F8FAFC] text-[#0F172A] font-sans">
-      <SupportSidebar 
+      <SupportSidebar
         rooms={filteredRooms}
         roomsLoading={roomsLoading}
         selectedRoomId={selectedRoomId}
@@ -137,7 +151,7 @@ export default function SupportView() {
         staffMembers={staffMembers}
       />
 
-      <ChatMain 
+      <ChatMain
         selectedRoomId={selectedRoomId}
         selectedRoom={selectedRoom}
         messages={messages}
@@ -156,11 +170,11 @@ export default function SupportView() {
         onHandleInput={handleInput}
       />
 
-      <CustomerInfo 
+      <CustomerInfo
         selectedRoomId={selectedRoomId}
         selectedRoom={selectedRoom}
         openSections={openSections}
-        onToggleSection={(s) => setOpenSections(prev => ({ ...prev, [s]: !prev[s] }))}
+        onToggleSection={(s) => setOpenSections((prev) => ({ ...prev, [s]: !prev[s] }))}
       />
     </div>
   );

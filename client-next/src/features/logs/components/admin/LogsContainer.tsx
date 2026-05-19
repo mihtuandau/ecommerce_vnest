@@ -56,7 +56,8 @@ export function LogsContainer() {
             Nhật ký hoạt động hệ thống
           </h1>
           <p className="text-slate-500 text-sm">
-            Camera an ninh ghi lại toàn bộ hoạt động tạo mới, cập nhật hoặc xóa dữ liệu của ban quản trị hệ thống.
+            Camera an ninh ghi lại toàn bộ hoạt động tạo mới, cập nhật hoặc xóa dữ liệu
+            của ban quản trị hệ thống.
           </p>
         </div>
         <Button
@@ -66,7 +67,12 @@ export function LogsContainer() {
           onClick={() => refetch()}
           disabled={isFetching}
         >
-          <RefreshCw className={cn("h-3.5 w-3.5 mr-2 text-slate-500", isFetching && "animate-spin")} />
+          <RefreshCw
+            className={cn(
+              "h-3.5 w-3.5 mr-2 text-slate-500",
+              isFetching && "animate-spin"
+            )}
+          />
           Làm mới dữ liệu
         </Button>
       </div>

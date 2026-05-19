@@ -33,30 +33,30 @@ export function RevenueChart({ data, isLoading }: RevenueChartProps) {
 
   const params = useMemo(() => {
     const vnNow = dayjs().tz("Asia/Ho_Chi_Minh");
-    
+
     switch (timeRange) {
       case "7_days": {
         const start = vnNow.subtract(7, "day").startOf("day");
         const end = vnNow.endOf("day");
-        return { 
-          startDate: start.toISOString(), 
-          endDate: end.toISOString() 
+        return {
+          startDate: start.toISOString(),
+          endDate: end.toISOString(),
         };
       }
       case "30_days": {
         const start = vnNow.subtract(30, "day").startOf("day");
         const end = vnNow.endOf("day");
-        return { 
-          startDate: start.toISOString(), 
-          endDate: end.toISOString() 
+        return {
+          startDate: start.toISOString(),
+          endDate: end.toISOString(),
         };
       }
       case "3_months": {
         const start = vnNow.subtract(3, "month").startOf("day");
         const end = vnNow.endOf("day");
-        return { 
-          startDate: start.toISOString(), 
-          endDate: end.toISOString() 
+        return {
+          startDate: start.toISOString(),
+          endDate: end.toISOString(),
         };
       }
       case "năm": {

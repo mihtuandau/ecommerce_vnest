@@ -4,7 +4,11 @@ import React, { useState, useEffect, useMemo } from "react";
 import { Shield } from "lucide-react";
 import { Spinner } from "@/components/ui/Spinner";
 import { Tabs, TabsContent } from "@/components/ui/Tabs";
-import { useAllPermissions, useRolesWithPermissions, useUpdateRolePermissions } from "../hooks";
+import {
+  useAllPermissions,
+  useRolesWithPermissions,
+  useUpdateRolePermissions,
+} from "../hooks";
 import { PermissionHeader } from "./PermissionHeader";
 import { RoleTabsList } from "./RoleTabsList";
 import { RoleInfoCard } from "./RoleInfoCard";
@@ -14,8 +18,16 @@ import { Permission } from "../api";
 import { Role } from "@/types/enums";
 
 export function PermissionsContainer() {
-  const { data: allPermissions = [], isLoading: loadingPerms, refetch: refetchPerms } = useAllPermissions();
-  const { data: rolesData = [], isLoading: loadingRoles, refetch: refetchRoles } = useRolesWithPermissions();
+  const {
+    data: allPermissions = [],
+    isLoading: loadingPerms,
+    refetch: refetchPerms,
+  } = useAllPermissions();
+  const {
+    data: rolesData = [],
+    isLoading: loadingRoles,
+    refetch: refetchRoles,
+  } = useRolesWithPermissions();
   const { mutate: updateRole, isPending } = useUpdateRolePermissions();
 
   const [localPerms, setLocalPerms] = useState<Record<string, Set<number>>>({});
@@ -24,9 +36,13 @@ export function PermissionsContainer() {
 
   useEffect(() => {
     const map: Record<string, Set<number>> = {};
-    MANAGED_ROLES.forEach((r) => { map[r] = new Set<number>(); });
+    MANAGED_ROLES.forEach((r) => {
+      map[r] = new Set<number>();
+    });
     rolesData.forEach((r: { role: string; permissions: { id: number }[] }) => {
-      map[r.role] = new Set<number>((r.permissions ?? []).map((p: { id: number }) => Number(p.id)));
+      map[r.role] = new Set<number>(
+        (r.permissions ?? []).map((p: { id: number }) => Number(p.id))
+      );
     });
     setLocalPerms(map);
     setDirtyRoles(new Set());
@@ -54,12 +70,19 @@ export function PermissionsContainer() {
 
   function handleSave() {
     const ids = Array.from(localPerms[activeRole] ?? []).map(Number);
-    updateRole({ role: activeRole, permissionIds: ids }, {
-      onSuccess: () => {
-        setDirtyRoles((prev) => { const n = new Set(prev); n.delete(activeRole); return n; });
-        refetchRoles();
-      },
-    });
+    updateRole(
+      { role: activeRole, permissionIds: ids },
+      {
+        onSuccess: () => {
+          setDirtyRoles((prev) => {
+            const n = new Set(prev);
+            n.delete(activeRole);
+            return n;
+          });
+          refetchRoles();
+        },
+      }
+    );
   }
 
   const isLoading = loadingPerms || loadingRoles;
@@ -69,7 +92,9 @@ export function PermissionsContainer() {
     return (
       <div className="h-[60vh] flex flex-col items-center justify-center gap-2">
         <Spinner size="lg" />
-        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Đang tải dữ liệu...</p>
+        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+          Đang tải dữ liệu...
+        </p>
       </div>
     );
   }
@@ -80,10 +105,17 @@ export function PermissionsContainer() {
         isPending={isPending}
         hasChanges={dirtyRoles.has(activeRole)}
         onSave={handleSave}
-        onRefresh={() => { refetchPerms(); refetchRoles(); }}
+        onRefresh={() => {
+          refetchPerms();
+          refetchRoles();
+        }}
       />
 
-      <Tabs value={activeRole} onValueChange={(val) => setActiveRole(val as Role)} className="w-full">
+      <Tabs
+        value={activeRole}
+        onValueChange={(val) => setActiveRole(val as Role)}
+        className="w-full"
+      >
         <RoleTabsList dirtyRoles={dirtyRoles} />
 
         <TabsContent value={activeRole} className="mt-0">
@@ -102,12 +134,15 @@ export function PermissionsContainer() {
                 activePerms={activePerms}
                 onToggle={toggle}
                 onSelectAll={() => {
-                  setLocalPerms(prev => ({ ...prev, [activeRole]: new Set(allPermissions.map(p => p.id)) }));
-                  setDirtyRoles(prev => new Set(prev).add(activeRole));
+                  setLocalPerms((prev) => ({
+                    ...prev,
+                    [activeRole]: new Set(allPermissions.map((p) => p.id)),
+                  }));
+                  setDirtyRoles((prev) => new Set(prev).add(activeRole));
                 }}
                 onClearAll={() => {
-                  setLocalPerms(prev => ({ ...prev, [activeRole]: new Set() }));
-                  setDirtyRoles(prev => new Set(prev).add(activeRole));
+                  setLocalPerms((prev) => ({ ...prev, [activeRole]: new Set() }));
+                  setDirtyRoles((prev) => new Set(prev).add(activeRole));
                 }}
               />
             </div>
@@ -118,7 +153,9 @@ export function PermissionsContainer() {
       {allPermissions.length === 0 && (
         <div className="bg-white rounded-3xl p-20 text-center border-2 border-dashed border-slate-200">
           <Shield className="h-10 w-10 text-slate-200 mx-auto mb-4" />
-          <h3 className="text-lg font-bold text-slate-900">Hệ thống chưa có quyền nào</h3>
+          <h3 className="text-lg font-bold text-slate-900">
+            Hệ thống chưa có quyền nào
+          </h3>
           <p className="text-slate-400 text-sm mt-2 max-w-xs mx-auto">
             Vui lòng kiểm tra lại quá trình khởi tạo dữ liệu mẫu (seed) trên backend.
           </p>

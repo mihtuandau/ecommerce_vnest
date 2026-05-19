@@ -18,7 +18,9 @@ export function RoleTabsList({ dirtyRoles }: RoleTabsListProps) {
           className="flex-1 rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-primary font-bold text-xs uppercase tracking-wider"
         >
           {ROLE_CONFIG[role].label}
-          {dirtyRoles.has(role) && <div className="ml-2 h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />}
+          {dirtyRoles.has(role) && (
+            <div className="ml-2 h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />
+          )}
         </TabsTrigger>
       ))}
     </TabsList>

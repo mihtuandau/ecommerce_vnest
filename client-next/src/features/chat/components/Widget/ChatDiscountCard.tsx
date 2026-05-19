@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { ShoppingCart } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { formatCurrency } from "@/utils/formatCurrency";
+import { Button } from "@/components/ui/Button";
 
 export const ChatDiscountCard = ({ discount }: { discount: any }) => {
   const [copied, setCopied] = useState(false);
@@ -55,21 +56,21 @@ export const ChatDiscountCard = ({ discount }: { discount: any }) => {
             </p>
           </div>
         </div>
-        <button
+        <Button
           onClick={handleCopy}
           className={cn(
-            "px-3 py-1 rounded-lg text-[10px] font-bold transition-all",
+            "px-3 py-1 rounded-lg text-[10px] font-bold transition-all h-auto min-h-0",
             copied
               ? isFlash
-                ? "bg-red-500 text-white"
-                : "bg-emerald-500 text-white"
+                ? "bg-red-500 text-white hover:bg-red-650"
+                : "bg-emerald-500 text-white hover:bg-emerald-650"
               : isFlash
                 ? "bg-white text-red-600 border border-red-200 hover:bg-red-500 hover:text-white"
                 : "bg-white text-emerald-600 border border-emerald-200 hover:bg-emerald-500 hover:text-white"
           )}
         >
           {copied ? "Đã lưu!" : "Sao chép"}
-        </button>
+        </Button>
       </div>
       {discount.description && (
         <p className="text-[10px] text-slate-500 italic leading-tight border-t border-slate-100 pt-2 mt-1">

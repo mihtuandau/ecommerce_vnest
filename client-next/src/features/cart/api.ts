@@ -8,7 +8,7 @@ export const cartApi = {
 
   getCart: async () => {
     const { data } = await api.get("/cart");
-    return data;  
+    return data;
   },
 
   addItem: async (variantId: number, quantity: number) => {

@@ -27,15 +27,21 @@ export function ShortcutMenu({
         Phím tắt trả lời nhanh
       </div>
       {shortcuts.map((s, idx) => (
-        <div 
-          key={idx} 
+        <div
+          key={idx}
           onClick={() => onUseShortcut(s.text)}
           className="p-3.5 hover:bg-slate-50/50 cursor-pointer flex gap-3 items-start border-b border-slate-100 last:border-none group transition-colors"
         >
-          <span className="px-2 py-0.5 bg-slate-100 text-slate-650 text-[10px] font-mono font-semibold rounded">{s.key}</span>
+          <span className="px-2 py-0.5 bg-slate-100 text-slate-650 text-[10px] font-mono font-semibold rounded">
+            {s.key}
+          </span>
           <div>
-            <div className="text-xs font-semibold text-slate-700 group-hover:text-indigo-650 transition-colors">{s.label}</div>
-            <div className="text-[10px] text-slate-400 mt-0.5 line-clamp-1">{s.text}</div>
+            <div className="text-xs font-semibold text-slate-700 group-hover:text-indigo-650 transition-colors">
+              {s.label}
+            </div>
+            <div className="text-[10px] text-slate-400 mt-0.5 line-clamp-1">
+              {s.text}
+            </div>
           </div>
         </div>
       ))}

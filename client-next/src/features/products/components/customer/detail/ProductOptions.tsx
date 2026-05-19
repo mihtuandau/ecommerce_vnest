@@ -23,19 +23,30 @@ export function ProductOptions({
 }: ProductOptionsProps) {
   const sizes = useMemo(() => {
     if (!product?.variants) return [];
-    return [...new Set(product.variants?.map((v: ProductVariant) => v.size).filter(Boolean) as string[])];
+    return [
+      ...new Set(
+        product.variants?.map((v: ProductVariant) => v.size).filter(Boolean) as string[]
+      ),
+    ];
   }, [product?.variants]);
 
   const colors = useMemo(() => {
     if (!product?.variants) return [];
-    return [...new Set(product.variants?.map((v: ProductVariant) => v.color).filter(Boolean) as string[])];
+    return [
+      ...new Set(
+        product.variants
+          ?.map((v: ProductVariant) => v.color)
+          .filter(Boolean) as string[]
+      ),
+    ];
   }, [product?.variants]);
 
   const availableSizes = useMemo(() => {
     if (!selectedColor || !product?.variants) return sizes;
     return sizes.filter((size) =>
       product?.variants?.some(
-        (v: ProductVariant) => v.size === size && v.color === selectedColor && (v.stock || 0) > 0
+        (v: ProductVariant) =>
+          v.size === size && v.color === selectedColor && (v.stock || 0) > 0
       )
     );
   }, [selectedColor, product?.variants, sizes]);
@@ -44,7 +55,8 @@ export function ProductOptions({
     if (!selectedSize || !product?.variants) return colors;
     return colors.filter((color) =>
       product?.variants?.some(
-        (v: ProductVariant) => v.color === color && v.size === selectedSize && (v.stock || 0) > 0
+        (v: ProductVariant) =>
+          v.color === color && v.size === selectedSize && (v.stock || 0) > 0
       )
     );
   }, [selectedSize, product?.variants, colors]);

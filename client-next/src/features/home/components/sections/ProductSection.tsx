@@ -37,7 +37,10 @@ export function ProductSection({
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
           <h2 className="text-[30px] text-[#3D2B1A] font-serif-brand font-semibold">
-            {title.split(" ")[0]} <em className="text-[#C4783A]" style={{ fontStyle: 'italic' }}>{title.split(" ").slice(1).join(" ") || title}</em>
+            {title.split(" ")[0]}{" "}
+            <em className="text-[#C4783A]" style={{ fontStyle: "italic" }}>
+              {title.split(" ").slice(1).join(" ") || title}
+            </em>
           </h2>
           <p className="text-[#8A7966] text-sm mt-2 max-w-md leading-relaxed">
             {subtitle}
@@ -45,16 +48,23 @@ export function ProductSection({
         </div>
 
         {viewAllLink && (
-          <Link href={viewAllLink} className="hidden md:flex items-center gap-1 text-[13px] text-[#8B6F47] border-b border-[#C4B49A] pb-0.5 hover:text-[#C4783A] hover:border-[#C4783A] transition-colors">
+          <Link
+            href={viewAllLink}
+            className="hidden md:flex items-center gap-1 text-[13px] text-[#8B6F47] border-b border-[#C4B49A] pb-0.5 hover:text-[#C4783A] hover:border-[#C4783A] transition-colors"
+          >
             Xem tất cả <ChevronRight className="h-3.5 w-3.5" />
           </Link>
         )}
       </div>
 
-      <div className={cn(
-        "grid gap-4 md:gap-6",
-        variant === "toprated" ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" : "grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
-      )}>
+      <div
+        className={cn(
+          "grid gap-4 md:gap-6",
+          variant === "toprated"
+            ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+            : "grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+        )}
+      >
         {products.slice(0, variant === "toprated" ? 6 : 4).map((product) => (
           <HomeProductCard key={product.id} product={product} variant={variant} />
         ))}
@@ -62,7 +72,11 @@ export function ProductSection({
 
       {viewAllLink && (
         <div className="md:hidden pt-4">
-          <Button asChild variant="outline" className="w-full rounded-full h-12 font-medium text-sm border-[#DDD6C8] text-[#3D2B1A] bg-white hover:bg-[#F3EFE8] hover:border-[#C4B49A] transition-all">
+          <Button
+            asChild
+            variant="outline"
+            className="w-full rounded-full h-12 font-medium text-sm border-[#DDD6C8] text-[#3D2B1A] bg-white hover:bg-[#F3EFE8] hover:border-[#C4B49A] transition-all"
+          >
             <Link href={viewAllLink}>Xem tất cả bộ sưu tập</Link>
           </Button>
         </div>

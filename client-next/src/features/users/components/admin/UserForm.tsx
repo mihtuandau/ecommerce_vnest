@@ -6,12 +6,26 @@ import * as z from "zod";
 import { nameSchema, emailSchema } from "@/lib/zod";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/Select";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/Form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/Select";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/Form";
 import { User } from "@/types/models";
 import { useEffect } from "react";
 import { Save, X } from "lucide-react";
 import { Role, UserStatus } from "@/types/enums";
+import { ROLE_CONFIG } from "@/features/permissions/constants";
 
 const userSchema = z.object({
   name: nameSchema,
@@ -19,7 +33,11 @@ const userSchema = z.object({
   phone: z.string().optional(),
   role: z.nativeEnum(Role),
   status: z.nativeEnum(UserStatus),
-  password: z.string().min(6, "Mật khẩu phải có ít nhất 6 ký tự").optional().or(z.literal("")),
+  password: z
+    .string()
+    .min(6, "Mật khẩu phải có ít nhất 6 ký tự")
+    .optional()
+    .or(z.literal("")),
 });
 
 type UserFormValues = z.infer<typeof userSchema>;
@@ -51,7 +69,7 @@ export function UserForm({ initialData, onSubmit, isLoading }: UserFormProps) {
         phone: initialData.phone || "",
         role: initialData.role || Role.CUSTOMER,
         status: initialData.status || UserStatus.ACTIVE,
-        password: "", 
+        password: "",
       });
     }
   }, [initialData, form]);
@@ -66,9 +84,15 @@ export function UserForm({ initialData, onSubmit, isLoading }: UserFormProps) {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-xs font-semibold tracking-wide text-slate-600">Họ và tên</FormLabel>
+                  <FormLabel className="text-xs font-semibold tracking-wide text-slate-600">
+                    Họ và tên
+                  </FormLabel>
                   <FormControl>
-                    <Input placeholder="Ví dụ: Nguyễn Văn A" {...field} className="rounded-xl h-12 border-slate-200 focus:ring-primary/20" />
+                    <Input
+                      placeholder="Ví dụ: Nguyễn Văn A"
+                      {...field}
+                      className="rounded-xl h-12 border-slate-200 focus:ring-primary/20"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -79,9 +103,15 @@ export function UserForm({ initialData, onSubmit, isLoading }: UserFormProps) {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-xs font-semibold tracking-wide text-slate-600">Email liên hệ</FormLabel>
+                  <FormLabel className="text-xs font-semibold tracking-wide text-slate-600">
+                    Email liên hệ
+                  </FormLabel>
                   <FormControl>
-                    <Input placeholder="name@example.com" {...field} className="rounded-xl h-12 border-slate-200 focus:ring-primary/20" />
+                    <Input
+                      placeholder="name@example.com"
+                      {...field}
+                      className="rounded-xl h-12 border-slate-200 focus:ring-primary/20"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -95,9 +125,15 @@ export function UserForm({ initialData, onSubmit, isLoading }: UserFormProps) {
               name="phone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-xs font-semibold tracking-wide text-slate-600">Số điện thoại</FormLabel>
+                  <FormLabel className="text-xs font-semibold tracking-wide text-slate-600">
+                    Số điện thoại
+                  </FormLabel>
                   <FormControl>
-                    <Input placeholder="0987xxxxxx" {...field} className="rounded-xl h-12 border-slate-200 focus:ring-primary/20" />
+                    <Input
+                      placeholder="0987xxxxxx"
+                      {...field}
+                      className="rounded-xl h-12 border-slate-200 focus:ring-primary/20"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -108,18 +144,25 @@ export function UserForm({ initialData, onSubmit, isLoading }: UserFormProps) {
               name="role"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-xs font-semibold tracking-wide text-slate-600">Vai trò</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                  <FormLabel className="text-xs font-semibold tracking-wide text-slate-600">
+                    Vai trò
+                  </FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    value={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger className="rounded-xl h-12 border-slate-200 focus:ring-primary/20">
                         <SelectValue placeholder="Chọn vai trò" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent className="rounded-xl admin-theme">
-                      <SelectItem value={Role.CUSTOMER}>Khách hàng</SelectItem>
-                      <SelectItem value={Role.ADMIN}>Quản trị viên</SelectItem>
-                      <SelectItem value={Role.KHO}>Nhân viên kho</SelectItem>
-                      <SelectItem value={Role.BAN_HANG}>Nhân viên bán hàng</SelectItem>
+                      {Object.entries(ROLE_CONFIG).map(([key, config]) => (
+                        <SelectItem key={key} value={key}>
+                          {config.label}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -131,8 +174,14 @@ export function UserForm({ initialData, onSubmit, isLoading }: UserFormProps) {
               name="status"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-xs font-semibold tracking-wide text-slate-600">Trạng thái</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                  <FormLabel className="text-xs font-semibold tracking-wide text-slate-600">
+                    Trạng thái
+                  </FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    value={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger className="rounded-xl h-12 border-slate-200 focus:ring-primary/20">
                         <SelectValue placeholder="Trạng thái" />
@@ -160,7 +209,12 @@ export function UserForm({ initialData, onSubmit, isLoading }: UserFormProps) {
                 Mật khẩu {initialData && "(Để trống nếu không muốn đổi)"}
               </FormLabel>
               <FormControl>
-                <Input type="password" placeholder="••••••••" {...field} className="rounded-xl h-12 border-slate-200 focus:ring-primary/20" />
+                <Input
+                  type="password"
+                  placeholder="••••••••"
+                  {...field}
+                  className="rounded-xl h-12 border-slate-200 focus:ring-primary/20"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -181,7 +235,9 @@ export function UserForm({ initialData, onSubmit, isLoading }: UserFormProps) {
             className="rounded-xl px-8 h-12 font-semibold bg-primary text-white hover:bg-slate-800 shadow-sm gap-2"
             disabled={isLoading}
           >
-            {isLoading ? "Đang xử lý..." : (
+            {isLoading ? (
+              "Đang xử lý..."
+            ) : (
               <>
                 <Save className="h-4 w-4" />
                 {initialData ? "Lưu thay đổi" : "Tạo người dùng"}

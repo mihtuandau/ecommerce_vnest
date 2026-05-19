@@ -13,15 +13,15 @@ export default function AdminUserCreatePage() {
 
   const handleSubmit = (data: any) => {
     createUser(data, {
-      onSuccess: () => router.push("/admin/users")
+      onSuccess: () => router.push("/admin/users"),
     });
   };
 
   return (
     <div className="space-y-4 pb-10 max-w-5xl mx-auto">
       <div className="flex flex-col gap-1">
-        <Button 
-          variant="ghost" 
+        <Button
+          variant="ghost"
           size="sm"
           className="w-fit pl-0 hover:bg-transparent text-slate-400 hover:text-primary gap-1 font-bold text-xs uppercase tracking-wider"
           onClick={() => router.back()}
@@ -31,7 +31,9 @@ export default function AdminUserCreatePage() {
         </Button>
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900">Tạo tài khoản mới</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+              Tạo tài khoản mới
+            </h1>
             <p className="text-slate-500 text-sm">
               Điền thông tin để đăng ký thành viên mới cho hệ thống.
             </p>

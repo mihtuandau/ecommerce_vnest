@@ -1,7 +1,15 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { ShoppingCart, Trash2, Plus, Minus, ArrowRight, ShoppingBag, ShoppingBasket } from "lucide-react";
+import {
+  ShoppingCart,
+  Trash2,
+  Plus,
+  Minus,
+  ArrowRight,
+  ShoppingBag,
+  ShoppingBasket,
+} from "lucide-react";
 import { useCart } from "@/features/cart/hooks";
 import { useCartStore } from "@/store/useCartStore";
 import { formatCurrency } from "@/utils/formatCurrency";
@@ -11,6 +19,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { ROUTES } from "@/constants/routes";
 import { cn } from "@/utils/cn";
+import { CART_CONSTANTS, CART_MESSAGES, CART_COLORS } from "@/features/cart/constants";
 
 export function CartDropdown() {
   const { items, updateQuantity, removeItem, totalPrice } = useCart();
@@ -41,25 +50,29 @@ export function CartDropdown() {
   const handleMouseLeave = () => {
     timeoutRef.current = setTimeout(() => {
       setIsOpen(false);
-    }, 300);
+    }, CART_CONSTANTS.DROPDOWN_TIMEOUT);
   };
 
   if (!mounted) {
     return (
-      <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full text-slate-600">
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-10 w-10 rounded-full text-slate-600"
+      >
         <ShoppingCart className="h-6 w-6" />
       </Button>
     );
   }
 
   return (
-    <div 
+    <div
       className="relative"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       {/* Trigger */}
-      <Link 
+      <Link
         href={ROUTES.CART}
         onClick={(e) => {
           if (typeof window !== "undefined" && window.innerWidth < 1024) {
@@ -70,19 +83,22 @@ export function CartDropdown() {
           }
         }}
       >
-        <Button 
+        <Button
           id="cart-icon"
-          variant="ghost" 
-          size="icon" 
+          variant="ghost"
+          size="icon"
           className={cn(
             "relative h-10 w-10 rounded-full transition-all duration-300",
-            isOpen ? "text-[#C4783A] bg-[#C4783A]/5" : "text-[#8A7966] hover:text-[#C4783A] hover:bg-[#C4783A]/5"
+            isOpen
+              ? `text-[${CART_COLORS.TRIGGER_ICON_ACTIVE}] bg-[${CART_COLORS.TRIGGER_BG_HOVER}]`
+              : `text-[${CART_COLORS.TRIGGER_ICON_DEFAULT}] hover:text-[${CART_COLORS.TRIGGER_ICON_ACTIVE}] hover:bg-[${CART_COLORS.TRIGGER_BG_HOVER}]`
           )}
         >
-
           <ShoppingCart className="h-6 w-6" />
           {totalCount > 0 && (
-            <span className="absolute -top-0.5 -right-0.5 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-[#3D2B1A] text-xs font-bold text-[#FAF8F4] shadow-sm ring-2 ring-white">
+            <span
+              className={`absolute -top-0.5 -right-0.5 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-[${CART_COLORS.BADGE_BG}] text-xs font-bold text-[${CART_COLORS.BADGE_TEXT}] shadow-sm ring-2 ring-white`}
+            >
               {totalCount}
             </span>
           )}
@@ -90,21 +106,27 @@ export function CartDropdown() {
       </Link>
 
       {/* Dropdown Box */}
-      <div 
+      <div
         className={cn(
           "absolute right-0 top-full pt-4 z-50 transition-all duration-300 transform origin-top-right w-[380px] hidden lg:block",
-          isOpen ? "opacity-100 scale-100 pointer-events-auto" : "opacity-0 scale-95 pointer-events-none translate-y-2"
+          isOpen
+            ? "opacity-100 scale-100 pointer-events-auto"
+            : "opacity-0 scale-95 pointer-events-none translate-y-2"
         )}
       >
-        <div className="bg-[#FAF8F4] rounded-3xl border border-[#DDD6C8] shadow-[0_20px_50px_rgba(61,43,26,0.1)] overflow-hidden flex flex-col max-h-[580px]">
+        <div
+          className={`bg-[${CART_COLORS.DROPDOWN_BG}] rounded-3xl border border-[${CART_COLORS.DROPDOWN_BORDER}] shadow-[0_20px_50px_${CART_COLORS.DROPDOWN_SHADOW}] overflow-hidden flex flex-col ${CART_CONSTANTS.MAX_HEIGHT}`}
+        >
           {/* Header */}
-          <div className="px-6 py-4 border-b border-[#DDD6C8] flex items-center justify-between bg-white sticky top-0 z-10">
+          <div
+            className={`px-6 py-4 border-b border-[${CART_COLORS.DROPDOWN_BORDER}] flex items-center justify-between bg-white sticky top-0 z-10`}
+          >
             <h3 className="text-sm font-bold text-[#3D2B1A] flex items-center gap-2 font-serif">
               <ShoppingBasket className="w-4 h-4 text-[#C4783A]" />
-              Giỏ hàng của bạn
+              {CART_MESSAGES.YOUR_CART}
             </h3>
             <span className="text-xs font-semibold text-[#8A7966] bg-[#F3EFE8] px-2.5 py-0.5 rounded-full">
-              {totalCount} món
+              {CART_MESSAGES.ITEMS_IN_CART(totalCount)}
             </span>
           </div>
 
@@ -116,14 +138,21 @@ export function CartDropdown() {
                   <ShoppingCart className="h-8 w-8 text-[#C4B49A]" />
                 </div>
                 <div className="space-y-1">
-                  <p className="text-sm font-bold text-[#3D2B1A]">Giỏ hàng trống</p>
-                  <p className="text-xs text-[#8A7966] font-normal">Hãy thêm vài món vào giỏ nhé!</p>
+                  <p className="text-sm font-bold text-[#3D2B1A]">
+                    {CART_MESSAGES.EMPTY_CART}
+                  </p>
+                  <p className="text-xs text-[#8A7966] font-normal">
+                    {CART_MESSAGES.CONTINUE_SHOPPING}
+                  </p>
                 </div>
               </div>
             ) : (
               <div className="space-y-4">
                 {items.map((item) => (
-                  <div key={item.variantId} className="group relative flex gap-4 p-2 rounded-2xl hover:bg-[#FAF8F4] transition-all duration-200">
+                  <div
+                    key={item.variantId}
+                    className="group relative flex gap-4 p-2 rounded-2xl hover:bg-[#FAF8F4] transition-all duration-200"
+                  >
                     <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl bg-[#F3EFE8] border border-[#DDD6C8] p-1 flex items-center justify-center">
                       <Image
                         src={item.imageUrl}
@@ -153,21 +182,28 @@ export function CartDropdown() {
                         )}
                         <div className="flex items-center justify-between">
                           <div className="flex flex-col">
-                            <p className="text-xs font-semibold text-[#3D2B1A] font-serif">{formatCurrency(item.discountedPrice || item.price)}</p>
-                            {item.discountedPrice && item.discountedPrice < item.price ? (
+                            <p className="text-xs font-semibold text-[#3D2B1A] font-serif">
+                              {formatCurrency(item.discountedPrice || item.price)}
+                            </p>
+                            {item.discountedPrice &&
+                            item.discountedPrice < item.price ? (
                               <span className="text-[10px] text-[#8A7966] line-through font-bold tabular-nums">
                                 {formatCurrency(item.price)}
                               </span>
-                            ) : (item.originalPrice && item.originalPrice > (item.discountedPrice || item.price)) ? (
+                            ) : item.originalPrice &&
+                              item.originalPrice >
+                                (item.discountedPrice || item.price) ? (
                               <span className="text-[10px] text-[#8A7966] line-through font-bold tabular-nums">
                                 {formatCurrency(item.originalPrice)}
                               </span>
                             ) : null}
                           </div>
-                          <span className="text-[10px] text-[#8A7966] font-bold uppercase tracking-widest">x {item.quantity}</span>
+                          <span className="text-[10px] text-[#8A7966] font-bold uppercase tracking-widest">
+                            x {item.quantity}
+                          </span>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center justify-between mt-3">
                         {/* Minimized controls */}
                         <div className="flex items-center bg-white border border-[#DDD6C8] rounded-lg p-0.5">
@@ -193,7 +229,7 @@ export function CartDropdown() {
                             <Plus className="h-2.5 w-2.5" />
                           </button>
                         </div>
-                        
+
                         <button
                           className="h-7 w-7 text-[#C4B49A] hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-colors flex items-center justify-center"
                           onClick={(e) => {
@@ -215,24 +251,26 @@ export function CartDropdown() {
           {items.length > 0 && (
             <div className="p-6 bg-[#FAF8F4] border-t border-[#DDD6C8] space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-bold text-[#8A7966] uppercase tracking-widest">Tạm tính:</span>
+                <span className="text-[10px] font-bold text-[#8A7966] uppercase tracking-widest">
+                  Tạm tính:
+                </span>
                 <span className="text-[20px] font-semibold text-[#3D2B1A] tabular-nums tracking-tighter font-serif">
                   {formatCurrency(totalPrice)}
                 </span>
               </div>
               <div className="flex flex-col gap-2.5">
-                <Button 
+                <Button
                   onClick={(e) => {
                     e.preventDefault();
                     handleCheckout();
-                  }} 
+                  }}
                   className="w-full rounded-full h-12 bg-[#3D2B1A] hover:bg-[#C4783A] text-[#FAF8F4] font-semibold text-xs shadow-xl shadow-[#3D2B1A]/10 group active:scale-95 transition-all border-none"
                 >
                   Thanh toán ngay
                   <ArrowRight className="ml-2 w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                 </Button>
-                <Link 
-                  href={ROUTES.CART} 
+                <Link
+                  href={ROUTES.CART}
                   onClick={() => setIsOpen(false)}
                   className="w-full rounded-full h-10 text-[#8A7966] hover:text-[#3D2B1A] hover:bg-[#E8E0D0]/50 flex items-center justify-center text-xs font-medium transition-all"
                 >

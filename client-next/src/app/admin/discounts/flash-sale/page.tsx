@@ -13,7 +13,9 @@ import { Spinner } from "@/components/ui/Spinner";
 
 export default function AdminFlashSalePage() {
   // Chỉ lấy Flash Sale
-  const { data, isLoading, refetch, isFetching } = useAdminDiscounts({ isFlashSale: true });
+  const { data, isLoading, refetch, isFetching } = useAdminDiscounts({
+    isFlashSale: true,
+  });
 
   const discounts: Discount[] = Array.isArray(data) ? data : (data as any)?.data || [];
 

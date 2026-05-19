@@ -34,7 +34,9 @@ export function NotificationsToolbar({
           onClick={() => setFilterType("ALL")}
           className={cn(
             "px-4 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer",
-            filterType === "ALL" ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700"
+            filterType === "ALL"
+              ? "bg-white text-slate-800 shadow-sm"
+              : "text-slate-500 hover:text-slate-700"
           )}
         >
           Tất cả
@@ -43,7 +45,9 @@ export function NotificationsToolbar({
           onClick={() => setFilterType("UNREAD")}
           className={cn(
             "px-4 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-1.5",
-            filterType === "UNREAD" ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700"
+            filterType === "UNREAD"
+              ? "bg-white text-slate-800 shadow-sm"
+              : "text-slate-500 hover:text-slate-700"
           )}
         >
           Chưa đọc
@@ -55,7 +59,9 @@ export function NotificationsToolbar({
           onClick={() => setFilterType("ORDER")}
           className={cn(
             "px-4 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer",
-            filterType === "ORDER" ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700"
+            filterType === "ORDER"
+              ? "bg-white text-slate-800 shadow-sm"
+              : "text-slate-500 hover:text-slate-700"
           )}
         >
           Đơn hàng
@@ -64,7 +70,9 @@ export function NotificationsToolbar({
           onClick={() => setFilterType("SECURITY")}
           className={cn(
             "px-4 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer",
-            filterType === "SECURITY" ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700"
+            filterType === "SECURITY"
+              ? "bg-white text-slate-800 shadow-sm"
+              : "text-slate-500 hover:text-slate-700"
           )}
         >
           Bảo mật
@@ -73,7 +81,9 @@ export function NotificationsToolbar({
           onClick={() => setFilterType("SYSTEM")}
           className={cn(
             "px-4 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer",
-            filterType === "SYSTEM" ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700"
+            filterType === "SYSTEM"
+              ? "bg-white text-slate-800 shadow-sm"
+              : "text-slate-500 hover:text-slate-700"
           )}
         >
           Hệ thống
@@ -102,7 +112,12 @@ export function NotificationsToolbar({
           onClick={refetch}
           disabled={isFetching}
         >
-          <RefreshCw className={cn("h-3.5 w-3.5 mr-2 text-slate-500", isFetching && "animate-spin")} />
+          <RefreshCw
+            className={cn(
+              "h-3.5 w-3.5 mr-2 text-slate-500",
+              isFetching && "animate-spin"
+            )}
+          />
           Làm mới
         </Button>
       </div>

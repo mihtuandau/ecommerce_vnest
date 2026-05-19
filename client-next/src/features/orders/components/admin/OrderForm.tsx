@@ -45,7 +45,9 @@ export function AdminOrderForm() {
         const catRes = await productsApi.getCategories();
         setCategories(catRes.data || catRes || []);
         fetchProducts("", null);
-      } catch (e) { console.error(e); }
+      } catch (e) {
+        console.error(e);
+      }
     };
     init();
   }, []);
@@ -57,8 +59,11 @@ export function AdminOrderForm() {
       if (catId) params.categoryId = catId.toString();
       const res = await productsApi.getProducts(params);
       setProducts(res.data || []);
-    } catch (e) { console.error(e); }
-    finally { setIsLoading(false); }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -70,7 +75,7 @@ export function AdminOrderForm() {
 
   const handleProductClick = async (product: Product) => {
     let targetProduct = product;
-    
+
     // Fallback: If variants are missing, fetch full product details
     if (!product.variants || product.variants.length === 0) {
       try {
@@ -81,8 +86,9 @@ export function AdminOrderForm() {
       }
     }
 
-    const activeVariants = targetProduct.variants?.filter((v: ProductVariant) => v.isActive !== false) || [];
-    
+    const activeVariants =
+      targetProduct.variants?.filter((v: ProductVariant) => v.isActive !== false) || [];
+
     if (activeVariants.length === 0) {
       toast.error("Sản phẩm hiện không có biến thể nào khả dụng");
       return;
@@ -98,10 +104,10 @@ export function AdminOrderForm() {
   const onSubmit: SubmitHandler<OrderFormValues> = async (values) => {
     try {
       setIsSubmitting(true);
-      const cleanItems = (values.items || []).map(item => ({
+      const cleanItems = (values.items || []).map((item) => ({
         variantId: item.variantId,
         quantity: item.quantity,
-        price: item.price
+        price: item.price,
       }));
 
       const payload = { ...values, items: cleanItems };
@@ -118,8 +124,11 @@ export function AdminOrderForm() {
   return (
     <div className="flex h-[calc(100vh-140px)] overflow-hidden bg-white rounded-xl border border-slate-200 shadow-sm font-sans">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit((data) => onSubmit(data))} className="flex w-full">
-          <ProductBrowser 
+        <form
+          onSubmit={form.handleSubmit((data) => onSubmit(data))}
+          className="flex w-full"
+        >
+          <ProductBrowser
             categories={categories}
             products={products}
             selectedCat={selectedCat}
@@ -130,7 +139,7 @@ export function AdminOrderForm() {
             onProductClick={handleProductClick}
           />
 
-          <OrderCart 
+          <OrderCart
             orderId={orderId}
             items={items}
             onRemoveAll={() => {
@@ -150,7 +159,7 @@ export function AdminOrderForm() {
         </form>
       </Form>
 
-      <VariantSelector 
+      <VariantSelector
         product={activeProduct}
         onClose={() => setActiveProduct(null)}
         onSelectVariant={(p, v) => {

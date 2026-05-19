@@ -6,7 +6,14 @@ import { DataTable } from "@/components/ui/DataTable";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { formatDate } from "@/utils/formatDate";
 import { Button } from "@/components/ui/Button";
-import { MoreHorizontal, Pencil, Trash2, ExternalLink, Package, History } from "lucide-react";
+import {
+  MoreHorizontal,
+  Pencil,
+  Trash2,
+  ExternalLink,
+  Package,
+  History,
+} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,23 +40,38 @@ const CellAction = ({ data }: CellActionProps) => {
     <div className="flex justify-end">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg transition-colors">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 rounded-lg transition-colors"
+          >
             <MoreHorizontal className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-48 rounded-2xl p-2 shadow-2xl border-slate-200">
-          <DropdownMenuLabel className="text-xs font-semibold tracking-wide text-slate-500 px-2 py-1.5 uppercase">Hành động</DropdownMenuLabel>
-          <DropdownMenuItem className="rounded-xl cursor-pointer gap-3 py-2.5 text-sm focus:bg-slate-100 focus:text-slate-900" asChild>
+        <DropdownMenuContent
+          align="end"
+          className="w-48 rounded-2xl p-2 shadow-2xl border-slate-200"
+        >
+          <DropdownMenuLabel className="text-xs font-semibold tracking-wide text-slate-500 px-2 py-1.5 uppercase">
+            Hành động
+          </DropdownMenuLabel>
+          <DropdownMenuItem
+            className="rounded-xl cursor-pointer gap-3 py-2.5 text-sm focus:bg-slate-100 focus:text-slate-900"
+            asChild
+          >
             <Link href={`${ROUTES.ADMIN_PRODUCTS}/${data.id}`}>
               <Pencil className="h-4 w-4" />
               Chỉnh sửa
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem className="rounded-xl cursor-pointer gap-3 py-2.5 text-sm" asChild>
-             <Link href={ROUTES.PRODUCT_DETAIL(data.slug)} target="_blank">
-                <ExternalLink className="h-4 w-4" />
-                Xem trang khách
-             </Link>
+          <DropdownMenuItem
+            className="rounded-xl cursor-pointer gap-3 py-2.5 text-sm"
+            asChild
+          >
+            <Link href={ROUTES.PRODUCT_DETAIL(data.slug)} target="_blank">
+              <ExternalLink className="h-4 w-4" />
+              Xem trang khách
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuItem className="rounded-xl cursor-pointer gap-3 py-2.5 text-sm text-amber-600 focus:bg-amber-50">
             <History className="h-4 w-4" />
@@ -59,7 +81,11 @@ const CellAction = ({ data }: CellActionProps) => {
           <DropdownMenuItem
             className="rounded-xl cursor-pointer gap-3 py-2.5 text-sm text-red-600 focus:bg-red-50 focus:text-red-700 font-medium"
             onClick={() => {
-              if (confirm("Bạn có chắc chắn muốn xóa sản phẩm này? Hành động này không thể hoàn tác.")) {
+              if (
+                confirm(
+                  "Bạn có chắc chắn muốn xóa sản phẩm này? Hành động này không thể hoàn tác."
+                )
+              ) {
                 deleteProduct(data.id);
               }
             }}
@@ -78,9 +104,7 @@ export const columns: ColumnDef<Product>[] = [
     id: "stt",
     header: "STT",
     cell: ({ row }) => (
-      <span className="text-xs font-semibold text-slate-500">
-        {row.index + 1}
-      </span>
+      <span className="text-xs font-semibold text-slate-500">{row.index + 1}</span>
     ),
   },
   {
@@ -94,7 +118,7 @@ export const columns: ColumnDef<Product>[] = [
       return (
         <div className="flex items-center gap-4">
           <div className="h-12 w-12 rounded-xl bg-muted overflow-hidden border border-muted-foreground/10 shrink-0 shadow-sm relative">
-            {imageUrl && typeof imageUrl === 'string' ? (
+            {imageUrl && typeof imageUrl === "string" ? (
               <Image
                 src={imageUrl}
                 alt={product.name}
@@ -104,12 +128,15 @@ export const columns: ColumnDef<Product>[] = [
               />
             ) : (
               <div className="h-full w-full flex items-center justify-center text-muted-foreground">
-                 <Package className="h-6 w-6" />
+                <Package className="h-6 w-6" />
               </div>
             )}
           </div>
           <div className="flex flex-col min-w-0 max-w-[200px]">
-            <span className="font-semibold text-sm truncate leading-none text-slate-800" title={product.name}>
+            <span
+              className="font-semibold text-sm truncate leading-none text-slate-800"
+              title={product.name}
+            >
               {product.name}
             </span>
           </div>
@@ -124,7 +151,10 @@ export const columns: ColumnDef<Product>[] = [
       const product = row.original;
       const categoryName = product.category?.name || product.category?.slug || "—";
       return (
-        <Badge variant="outline" className="rounded-lg px-2.5 py-1 font-semibold text-xs bg-slate-50 text-slate-600 border-slate-200">
+        <Badge
+          variant="outline"
+          className="rounded-lg px-2.5 py-1 font-semibold text-xs bg-slate-50 text-slate-600 border-slate-200"
+        >
           {categoryName}
         </Badge>
       );
@@ -141,7 +171,9 @@ export const columns: ColumnDef<Product>[] = [
 
       return (
         <div className="flex flex-col">
-          <span className="font-semibold text-[14px] font-serif text-slate-800">{formatCurrency(price)}</span>
+          <span className="font-semibold text-[14px] font-serif text-slate-800">
+            {formatCurrency(price)}
+          </span>
           {originalPrice && originalPrice > 0 && (
             <span className="text-xs text-slate-500 line-through decoration-destructive/50 mt-0.5 font-medium">
               {formatCurrency(originalPrice)}
@@ -157,10 +189,13 @@ export const columns: ColumnDef<Product>[] = [
     cell: ({ row }) => {
       const product = row.original;
       let stock = product.stock;
-      
+
       // Calculate total stock from variants if available
       if (Array.isArray(product.variants) && product.variants.length > 0) {
-        stock = product.variants.reduce((sum: number, v: ProductVariant) => sum + (v.stock || 0), 0);
+        stock = product.variants.reduce(
+          (sum: number, v: ProductVariant) => sum + (v.stock || 0),
+          0
+        );
       }
 
       const isLowStock = stock !== undefined && stock < 10 && stock > 0;
@@ -168,14 +203,26 @@ export const columns: ColumnDef<Product>[] = [
 
       return (
         <div className="flex items-center gap-2">
-          <div className={cn(
-            "h-1.5 w-1.5 rounded-full",
-            isOutOfStock ? "bg-destructive" : isLowStock ? "bg-amber-500" : "bg-emerald-500"
-          )} />
-          <span className={cn(
-            "text-sm font-semibold",
-            isOutOfStock ? "text-destructive" : isLowStock ? "text-amber-600" : "text-slate-800"
-          )}>
+          <div
+            className={cn(
+              "h-1.5 w-1.5 rounded-full",
+              isOutOfStock
+                ? "bg-destructive"
+                : isLowStock
+                  ? "bg-amber-500"
+                  : "bg-emerald-500"
+            )}
+          />
+          <span
+            className={cn(
+              "text-sm font-semibold",
+              isOutOfStock
+                ? "text-destructive"
+                : isLowStock
+                  ? "text-amber-600"
+                  : "text-slate-800"
+            )}
+          >
             {stock ?? 0}
           </span>
         </div>
@@ -197,7 +244,9 @@ export const columns: ColumnDef<Product>[] = [
       const rating = (row.original as { averageRating?: number }).averageRating || 0;
       return (
         <div className="flex items-center gap-1">
-          <span className="font-semibold text-sm text-slate-800">{Number(rating).toFixed(1)}</span>
+          <span className="font-semibold text-sm text-slate-800">
+            {Number(rating).toFixed(1)}
+          </span>
           <span className="text-amber-400">★</span>
         </div>
       );
@@ -209,12 +258,12 @@ export const columns: ColumnDef<Product>[] = [
     cell: ({ row }) => {
       const product = row.original;
       return (
-        <Badge 
-          variant="outline" 
+        <Badge
+          variant="outline"
           className={cn(
             "rounded-lg px-2.5 py-1 font-semibold text-xs tracking-wide",
-            product.isActive 
-              ? "bg-emerald-50 text-emerald-700 border-emerald-100" 
+            product.isActive
+              ? "bg-emerald-50 text-emerald-700 border-emerald-100"
               : "bg-rose-50 text-rose-700 border-rose-100"
           )}
         >
@@ -243,7 +292,5 @@ interface ProductTableProps {
 }
 
 export function ProductTable({ data }: ProductTableProps) {
-  return (
-    <DataTable columns={columns} data={data} searchKey="name" hideSearch={true} />
-  );
+  return <DataTable columns={columns} data={data} searchKey="name" hideSearch={true} />;
 }

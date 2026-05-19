@@ -24,9 +24,16 @@ import {
 import { useAuthStore } from "@/store/useAuthStore";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import Image from "next/image";
-import { useNotifications, useMarkNotificationRead } from "@/features/notifications/hooks";
+import { Role } from "@/types/enums";
+import { ROLE_CONFIG } from "@/features/permissions/constants";
+import {
+  useNotifications,
+  useMarkNotificationRead,
+} from "@/features/notifications/hooks";
 import { useRouter } from "next/navigation";
+import { ROUTES } from "@/constants/routes";
 import { cn } from "@/utils/cn";
+import { getImageUrl } from "@/utils/image";
 
 export function AdminTopBar() {
   const { user } = useAuthStore();
@@ -111,7 +118,9 @@ export function AdminTopBar() {
             className="w-80 mt-2.5 rounded-2xl p-2 shadow-2xl border border-slate-100 bg-white animate-in fade-in zoom-in-95 duration-200 space-y-1"
           >
             <div className="flex items-center justify-between px-3 py-2 border-b border-slate-50">
-              <span className="font-bold text-[10px] tracking-wider text-slate-400 uppercase">Thông báo mới</span>
+              <span className="font-bold text-[10px] tracking-wider text-slate-400 uppercase">
+                Thông báo mới
+              </span>
               {unreadCount > 0 && (
                 <span className="text-[9px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-full font-bold">
                   {unreadCount} chưa đọc
@@ -134,12 +143,21 @@ export function AdminTopBar() {
                       !n.isRead && "bg-slate-50/40"
                     )}
                   >
-                    <div className={cn(
-                      "w-1.5 h-1.5 rounded-full mt-1.5 shrink-0",
-                      !n.isRead ? "bg-slate-900 animate-pulse" : "bg-transparent"
-                    )} />
+                    <div
+                      className={cn(
+                        "w-1.5 h-1.5 rounded-full mt-1.5 shrink-0",
+                        !n.isRead ? "bg-slate-900 animate-pulse" : "bg-transparent"
+                      )}
+                    />
                     <div className="flex-1 min-w-0">
-                      <p className={cn("text-[11.5px] truncate", !n.isRead ? "text-slate-800 font-bold" : "text-slate-500 font-medium")}>
+                      <p
+                        className={cn(
+                          "text-[11.5px] truncate",
+                          !n.isRead
+                            ? "text-slate-800 font-bold"
+                            : "text-slate-500 font-medium"
+                        )}
+                      >
                         {n.title}
                       </p>
                       <p className="text-[10px] text-slate-400 truncate mt-0.5 font-medium">
@@ -155,7 +173,7 @@ export function AdminTopBar() {
 
             <DropdownMenuItem asChild>
               <Link
-                href="/admin/notifications"
+                href={ROUTES.ADMIN_NOTIFICATIONS}
                 className="rounded-xl cursor-pointer py-2 px-3 text-center text-xs font-bold text-slate-750 justify-center hover:bg-slate-50 transition-colors w-full block"
               >
                 Xem tất cả thông báo
@@ -165,8 +183,13 @@ export function AdminTopBar() {
         </DropdownMenu>
 
         {/* Quick Settings Gear */}
-        <Button variant="ghost" size="icon" className="rounded-xl hover:bg-slate-50 size-9 flex items-center justify-center text-slate-500 hover:text-slate-700 transition-colors" asChild>
-          <Link href="/admin/settings">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="rounded-xl hover:bg-slate-50 size-9 flex items-center justify-center text-slate-500 hover:text-slate-700 transition-colors"
+          asChild
+        >
+          <Link href={ROUTES.ADMIN_SETTINGS}>
             <Settings className="h-4.5 w-4.5" />
           </Link>
         </Button>
@@ -183,7 +206,7 @@ export function AdminTopBar() {
               <div className="h-7 w-7 rounded-lg bg-slate-100 flex items-center justify-center border border-slate-200 shadow-3xs overflow-hidden relative shrink-0 group-hover:ring-2 group-hover:ring-slate-900/10 transition-all duration-300">
                 {user?.avatar ? (
                   <Image
-                    src={user.avatar}
+                    src={getImageUrl(user.avatar)}
                     alt={user.name || "User"}
                     width={28}
                     height={28}
@@ -200,16 +223,7 @@ export function AdminTopBar() {
                   {user?.name || "Người dùng"}
                 </p>
                 <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider leading-none">
-                  {(
-                    {
-                      ADMIN: "Quản trị viên",
-                      KHO: "Quản lý kho",
-                      BAN_HANG: "Bán hàng",
-                      CUSTOMER: "Khách hàng",
-                    } as Record<string, string>
-                  )[(user as any)?.role] ??
-                    (user as any)?.role ??
-                    "Người dùng"}
+                  {ROLE_CONFIG[user?.role as Role]?.label ?? user?.role ?? "Người dùng"}
                 </p>
               </div>
             </Button>
@@ -224,7 +238,7 @@ export function AdminTopBar() {
 
             <DropdownMenuItem asChild>
               <Link
-                href="/admin/profile"
+                href={ROUTES.ADMIN_PROFILE}
                 className="rounded-xl cursor-pointer py-2 px-3 flex items-center gap-2.5 focus:bg-slate-50 transition-colors group"
               >
                 <UserIcon className="h-4 w-4 text-slate-400 group-focus:text-slate-800" />
@@ -236,7 +250,7 @@ export function AdminTopBar() {
 
             <DropdownMenuItem asChild>
               <Link
-                href="/admin/settings"
+                href={ROUTES.ADMIN_SETTINGS}
                 className="rounded-xl cursor-pointer py-2 px-3 flex items-center gap-2.5 focus:bg-slate-50 transition-colors group"
               >
                 <Shield className="h-4 w-4 text-slate-400 group-focus:text-slate-800" />

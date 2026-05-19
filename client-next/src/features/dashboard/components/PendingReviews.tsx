@@ -115,9 +115,7 @@ export function PendingReviews({ reviews, isLoading }: PendingReviewsProps) {
               <p className="text-sm text-slate-900 font-medium line-clamp-2 leading-relaxed mb-1 tracking-tight">
                 {review.comment || "Không có nội dung"}
               </p>
-              <p className="text-xs text-slate-500 truncate">
-                {review.product?.name}
-              </p>
+              <p className="text-xs text-slate-500 truncate">{review.product?.name}</p>
             </div>
 
             {/* Action */}
@@ -127,7 +125,9 @@ export function PendingReviews({ reviews, isLoading }: PendingReviewsProps) {
               className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 hover:text-slate-600 transition-colors"
               asChild
             >
-              <Link href={`${ROUTES.ADMIN_REVIEWS || "/admin/reviews"}?id=${review.id}`}>
+              <Link
+                href={`${ROUTES.ADMIN_REVIEWS || "/admin/reviews"}?id=${review.id}`}
+              >
                 <Eye className="h-4 w-4" />
               </Link>
             </Button>

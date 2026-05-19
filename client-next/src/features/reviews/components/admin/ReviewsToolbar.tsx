@@ -3,12 +3,13 @@
 import React from "react";
 import { Search, Star, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import { Input } from "@/components/ui/Input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/Select";
 
 interface ReviewsToolbarProps {
@@ -24,7 +25,6 @@ export function ReviewsToolbar({
   ratingFilter,
   setRatingFilter,
 }: ReviewsToolbarProps) {
-
   const handleReset = () => {
     setSearchQuery("");
     setRatingFilter(null);
@@ -34,8 +34,8 @@ export function ReviewsToolbar({
     <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
       {/* Search Input */}
       <div className="relative w-full md:w-[360px]">
-        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-        <input
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 z-10" />
+        <Input
           type="text"
           placeholder="Tìm sản phẩm, đánh giá hoặc người dùng..."
           value={searchQuery}

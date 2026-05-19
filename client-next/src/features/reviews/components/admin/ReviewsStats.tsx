@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Star, MessageSquare, Award, AlertCircle } from "lucide-react";
+import { Star, MessageSquare } from "lucide-react";
 
 interface ReviewsStatsProps {
   reviews: any[];
@@ -11,7 +11,7 @@ interface ReviewsStatsProps {
 export function ReviewsStats({ reviews, total }: ReviewsStatsProps) {
   // Compute local stats based on the returned reviews page or global average
   const count = total || reviews.length;
-  
+
   // Calculate average rating
   const avgRating = React.useMemo(() => {
     if (reviews.length === 0) return 0;
@@ -23,7 +23,7 @@ export function ReviewsStats({ reviews, total }: ReviewsStatsProps) {
   const distribution = React.useMemo(() => {
     const dist = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
     if (reviews.length === 0) return dist;
-    
+
     reviews.forEach((r) => {
       const rate = Math.round(r.rating) as 1 | 2 | 3 | 4 | 5;
       if (dist[rate] !== undefined) {
@@ -83,9 +83,7 @@ export function ReviewsStats({ reviews, total }: ReviewsStatsProps) {
                 }`}
               />
             ))}
-            <span className="text-[10px] text-slate-400 ml-1.5">
-              Độ hài lòng cao
-            </span>
+            <span className="text-[10px] text-slate-400 ml-1.5">Độ hài lòng cao</span>
           </div>
         </div>
       </div>
@@ -98,9 +96,13 @@ export function ReviewsStats({ reviews, total }: ReviewsStatsProps) {
         {[5, 4, 3, 2, 1].map((rating) => {
           const pct = distribution[rating as 5 | 4 | 3 | 2 | 1] || 0;
           return (
-            <div key={rating} className="flex items-center gap-2 text-xs text-slate-500">
+            <div
+              key={rating}
+              className="flex items-center gap-2 text-xs text-slate-500"
+            >
               <span className="w-8 flex items-center justify-end gap-0.5 text-slate-400 text-[11px]">
-                {rating} <Star className="h-3 w-3 fill-amber-400 text-amber-400 flex-shrink-0" />
+                {rating}{" "}
+                <Star className="h-3 w-3 fill-amber-400 text-amber-400 flex-shrink-0" />
               </span>
               <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
                 <div
@@ -108,7 +110,9 @@ export function ReviewsStats({ reviews, total }: ReviewsStatsProps) {
                   style={{ width: `${pct}%` }}
                 />
               </div>
-              <span className="w-8 text-right text-slate-400 text-[10.5px]">{pct}%</span>
+              <span className="w-8 text-right text-slate-400 text-[10.5px]">
+                {pct}%
+              </span>
             </div>
           );
         })}

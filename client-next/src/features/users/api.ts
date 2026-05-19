@@ -3,10 +3,12 @@ import type { User, Address } from "@/types/models";
 import type { PaginatedResponse } from "@/types/api";
 
 export const usersApi = {
-  getUsers: async (params?: Record<string, string | number>): Promise<PaginatedResponse<User>> => {
+  getUsers: async (
+    params?: Record<string, string | number>
+  ): Promise<PaginatedResponse<User>> => {
     const { data: body } = await api.get<any>("/users", { params });
-    
-    const data = Array.isArray(body) ? body : (body.data || body.users || []);
+
+    const data = Array.isArray(body) ? body : body.data || body.users || [];
     const meta = {
       total: body.meta?.total || body.total || data.length,
       page: body.meta?.page || body.page || 1,
@@ -59,12 +61,17 @@ export const usersApi = {
     return data;
   },
 
-  createAddress: async (addressData: Partial<Address>): Promise<{ address: Address }> => {
+  createAddress: async (
+    addressData: Partial<Address>
+  ): Promise<{ address: Address }> => {
     const { data } = await api.post("/addresses", addressData);
     return data;
   },
 
-  updateAddress: async (id: string, addressData: Partial<Address>): Promise<{ address: Address }> => {
+  updateAddress: async (
+    id: string,
+    addressData: Partial<Address>
+  ): Promise<{ address: Address }> => {
     const { data } = await api.patch(`/addresses/${id}`, addressData);
     return data;
   },

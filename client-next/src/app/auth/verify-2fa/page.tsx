@@ -27,8 +27,12 @@ function Verify2FAContent() {
     try {
       const response = await verify2FALogin({ email, code: otpCode });
       success("Xác thực thành công!");
-      
-      if (response.user?.role === Role.ADMIN) {
+
+      const isStaff =
+        response.user?.role === Role.ADMIN ||
+        response.user?.role === Role.KHO ||
+        response.user?.role === Role.BAN_HANG;
+      if (isStaff) {
         router.push(ROUTES.ADMIN);
       } else {
         router.push(ROUTES.HOME);
@@ -46,7 +50,9 @@ function Verify2FAContent() {
             <ShieldCheck className="text-brand-bronze" size={40} />
           </div>
 
-          <h1 className="text-2xl font-bold text-brand-espresso mb-2">Xác thực bảo mật</h1>
+          <h1 className="text-2xl font-bold text-brand-espresso mb-2">
+            Xác thực bảo mật
+          </h1>
           <p className="text-[14px] text-brand-taupe mb-8">
             Vui lòng nhập mã xác thực 6 chữ số đã được gửi đến email <br />
             <span className="font-bold text-brand-espresso">{email}</span>
@@ -59,7 +65,9 @@ function Verify2FAContent() {
               placeholder="000000"
               className="h-16 text-center text-3xl tracking-[12px] font-bold rounded-2xl border-brand-sand bg-brand-ivory/10 focus:ring-brand-bronze/20 focus:border-brand-bronze"
               value={otpCode}
-              onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+              onChange={(e) =>
+                setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6))
+              }
             />
 
             <Button
@@ -67,7 +75,11 @@ function Verify2FAContent() {
               disabled={isLoggingIn || otpCode.length < 6}
               className="w-full h-14 rounded-full bg-brand-espresso text-white font-bold text-base shadow-lg shadow-brand-espresso/10 hover:scale-[1.02] transition-all"
             >
-              {isLoggingIn ? <Spinner size="sm" variant="white" /> : "Xác nhận đăng nhập"}
+              {isLoggingIn ? (
+                <Spinner size="sm" variant="white" />
+              ) : (
+                "Xác nhận đăng nhập"
+              )}
             </Button>
 
             <button
@@ -79,7 +91,7 @@ function Verify2FAContent() {
             </button>
           </form>
         </div>
-        
+
         <div className="mt-8 text-center">
           <Image
             src="/logoMT.png"
@@ -96,7 +108,13 @@ function Verify2FAContent() {
 
 export default function Verify2FAPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><Spinner /></div>}>
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          <Spinner />
+        </div>
+      }
+    >
       <Verify2FAContent />
     </Suspense>
   );

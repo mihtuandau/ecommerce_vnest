@@ -16,12 +16,19 @@ export default function AdminProductDetailPage() {
 
   const handleSubmit = (data: any) => {
     // Filter data to only include fields allowed by UpdateProductDto
-    const { images, variants, id: _, createdAt: __, updatedAt: ___, ...updateData } = data;
-    
+    const {
+      images,
+      variants,
+      id: _,
+      createdAt: __,
+      updatedAt: ___,
+      ...updateData
+    } = data;
+
     // Clean numeric values
     const cleanNumber = (val: any) => {
-      if (typeof val === 'string') {
-        const cleaned = val.replace(/[.,\s]/g, '');
+      if (typeof val === "string") {
+        const cleaned = val.replace(/[.,\s]/g, "");
         return cleaned ? Number(cleaned) : 0;
       }
       return Number(val || 0);
@@ -47,18 +54,20 @@ export default function AdminProductDetailPage() {
       cleanUpdateData.originalPrice = originalPrice;
     }
 
-    updateProduct({ id, data: cleanUpdateData }, {
-      onSuccess: () => router.push("/admin/products"),
-    });
+    updateProduct(
+      { id, data: cleanUpdateData },
+      {
+        onSuccess: () => router.push("/admin/products"),
+      }
+    );
   };
 
   return (
     <div className="space-y-6 pb-10 max-w-7xl mx-auto">
-      {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             size="sm"
             className="h-9 w-9 p-0 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 shadow-sm transition-all"
             onClick={() => router.back()}
@@ -84,15 +93,17 @@ export default function AdminProductDetailPage() {
           <div className="flex h-96 items-center justify-center bg-white rounded-xl border border-slate-200">
             <div className="flex flex-col items-center gap-3">
               <Spinner size="lg" />
-              <p className="text-sm font-semibold text-slate-400">Đang tải dữ liệu...</p>
+              <p className="text-sm font-semibold text-slate-400">
+                Đang tải dữ liệu...
+              </p>
             </div>
           </div>
         ) : (
-          <ProductForm 
-            key={product?.id || 'new'} 
-            initialData={product} 
-            onSubmit={handleSubmit} 
-            isLoading={isPending} 
+          <ProductForm
+            key={product?.id || "new"}
+            initialData={product}
+            onSubmit={handleSubmit}
+            isLoading={isPending}
           />
         )}
       </div>

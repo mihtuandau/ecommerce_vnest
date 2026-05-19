@@ -4,8 +4,10 @@ import { useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
 import { api } from "@/lib/axios";
+import { Role } from "@/types/enums";
 import { toast } from "sonner";
 import confetti from "canvas-confetti";
+import { ROUTES } from "@/constants/routes";
 
 function AuthHandlerContent() {
   const router = useRouter();
@@ -14,7 +16,7 @@ function AuthHandlerContent() {
 
   useEffect(() => {
     const authSuccess = searchParams.get("auth_success");
-    
+
     if (authSuccess === "true") {
       const handleLoginSuccess = async () => {
         try {
@@ -33,16 +35,20 @@ function AuthHandlerContent() {
             particleCount: 150,
             spread: 70,
             origin: { y: 0.6 },
-            colors: ["#1565C0", "#ffffff", "#64b5f6"]
+            colors: ["#1565C0", "#ffffff", "#64b5f6"],
           });
 
           // 4. Clean up URL
           const newUrl = window.location.pathname;
           window.history.replaceState({}, "", newUrl);
 
-          // 5. Redirect if admin
-          if (data.role === "ADMIN") {
-            router.push("/admin");
+          // 5. Redirect if staff
+          const isStaff =
+            data.role === Role.ADMIN ||
+            data.role === Role.KHO ||
+            data.role === Role.BAN_HANG;
+          if (isStaff) {
+            router.push(ROUTES.ADMIN);
           }
         } catch (error) {
           console.error("Auth sync failed:", error);

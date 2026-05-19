@@ -3,15 +3,11 @@
 import React, { useState } from "react";
 import { useParams } from "next/navigation";
 import { useOrderDetail, useCancelOrder } from "@/features/orders/hooks";
-import { ORDER_STATUS_CONFIG } from "@/features/orders";
+import { ORDER_STATUS_CONFIG, ORDERS_CONTACT } from "@/features/orders";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useCart } from "@/features/cart/hooks";
 import { useToast } from "@/hooks/useToast";
-import {
-  AlertCircle,
-  Clock,
-  RotateCcw,
-} from "lucide-react";
+import { AlertCircle, Clock, RotateCcw } from "lucide-react";
 import { OrderStatus, PaymentStatus } from "@/types/enums";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
@@ -31,7 +27,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useUpdateReturnStatus } from "@/features/returns/hooks";
 import { queryKeys } from "@/constants/queryKeys";
 
-
 export function OrderDetailView() {
   const { id } = useParams() as { id: string };
   const { data: order, isLoading } = useOrderDetail(id);
@@ -49,17 +44,22 @@ export function OrderDetailView() {
     if (!order || !order.orderItems) return;
 
     order.orderItems.forEach((item) => {
-      const getUrl = (img: any) => typeof img === 'string' ? img : img?.url;
+      const getUrl = (img: any) => (typeof img === "string" ? img : img?.url);
       addItem({
         productId: String(item.variant?.productId || item.productId || ""),
         variantId: String(item.variantId),
-        name: item.productName || item.variantSnapshot?.productName || item.variant?.product?.name || "Sản phẩm",
+        name:
+          item.productName ||
+          item.variantSnapshot?.productName ||
+          item.variant?.product?.name ||
+          "Sản phẩm",
         price: item.price,
         quantity: item.quantity,
-        imageUrl:
-          getUrl(item.variantSnapshot?.image ||
-          item.variant?.images?.[0] ||
-          item.variant?.product?.images?.[0]),
+        imageUrl: getUrl(
+          item.variantSnapshot?.image ||
+            item.variant?.images?.[0] ||
+            item.variant?.product?.images?.[0]
+        ),
         slug: item.variant?.product?.slug || "",
         color: item.variant?.color,
         size: item.variant?.size,
@@ -111,7 +111,10 @@ export function OrderDetailView() {
             Đơn hàng có thể đã bị xóa hoặc không tồn tại trong hệ thống của chúng tôi.
           </p>
         </div>
-        <Button asChild className="rounded-full px-10 h-12 bg-brand-espresso text-white hover:bg-brand-espresso/90">
+        <Button
+          asChild
+          className="rounded-full px-10 h-12 bg-brand-espresso text-white hover:bg-brand-espresso/90"
+        >
           <Link href="/orders">Quay lại danh sách</Link>
         </Button>
       </div>
@@ -181,9 +184,12 @@ export function OrderDetailView() {
                     <AlertCircle size={22} />
                   </div>
                   <div className="space-y-1">
-                    <h4 className="text-[15px] font-bold text-[#C44040]">Đơn hàng đã bị huỷ</h4>
+                    <h4 className="text-[15px] font-bold text-[#C44040]">
+                      Đơn hàng đã bị huỷ
+                    </h4>
                     <p className="text-[13px] text-[#C44040]/80 font-medium leading-relaxed">
-                      Đơn hàng của bạn đã được hủy thành công. Nếu bạn đã thanh toán trước, số tiền sẽ được hoàn trả trong vòng 3–5 ngày làm việc.
+                      Đơn hàng của bạn đã được hủy thành công. Nếu bạn đã thanh toán
+                      trước, số tiền sẽ được hoàn trả trong vòng 3–5 ngày làm việc.
                     </p>
                   </div>
                 </div>
@@ -196,21 +202,36 @@ export function OrderDetailView() {
                       <RotateCcw size={24} />
                     </div>
                     <div>
-                      <h3 className="text-lg font-bold text-[#3D2B1A] font-serif-brand">Chi tiết yêu cầu trả hàng</h3>
-                      <p className="text-[10px] text-[#8A7966] font-black tracking-[0.05em] mt-1">Cập nhật: {new Date(order.returnRequest?.updatedAt || order.updatedAt).toLocaleString("vi-VN")}</p>
+                      <h3 className="text-lg font-bold text-brand-espresso font-serif-brand">
+                        Chi tiết yêu cầu trả hàng
+                      </h3>
+                      <p className="text-[11px] text-brand-taupe font-bold uppercase tracking-widest mt-1">
+                        Cập nhật:{" "}
+                        {new Date(
+                          order.returnRequest?.updatedAt || order.updatedAt
+                        ).toLocaleString("vi-VN")}
+                      </p>
                     </div>
                   </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-10 pt-8 border-t border-[#DDD6C8]">
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-10 pt-8 border-t border-brand-sand">
                     <div className="space-y-3">
-                      <p className="text-[10px] font-black text-[#8A7966] tracking-[0.05em]">Lý do từ bạn</p>
-                      <p className="text-sm text-[#3D2B1A] font-medium leading-relaxed italic">"{order.returnRequest.reason}"</p>
+                      <p className="text-[11px] font-bold text-brand-taupe uppercase tracking-widest">
+                        Lý do từ bạn
+                      </p>
+                      <p className="text-sm text-brand-espresso font-medium leading-relaxed italic">
+                        "{order.returnRequest.reason}"
+                      </p>
                     </div>
                     {order.returnRequest?.adminNote && (
                       <div className="space-y-3">
-                        <p className="text-[10px] font-black text-[#C4783A] tracking-[0.05em]">Phản hồi LUXE</p>
-                        <div className="p-5 bg-[#FAF8F4] rounded-xl border border-[#DDD6C8]">
-                          <p className="text-sm text-[#3D2B1A] font-medium leading-relaxed italic">"{order.returnRequest.adminNote}"</p>
+                        <p className="text-[11px] font-bold text-brand-bronze uppercase tracking-widest">
+                          Phản hồi LUXE
+                        </p>
+                        <div className="p-5 bg-brand-cream/50 rounded-xl border border-brand-sand">
+                          <p className="text-sm text-brand-espresso font-medium leading-relaxed italic">
+                            "{order.returnRequest.adminNote}"
+                          </p>
                         </div>
                       </div>
                     )}
@@ -227,7 +248,6 @@ export function OrderDetailView() {
                 orderId={order.id}
                 reviews={order.reviews}
               />
-
             </div>
 
             <div className="lg:col-span-4">
@@ -245,7 +265,12 @@ export function OrderDetailView() {
                 shippingCode={order.shippingCode}
                 status={order.status}
                 onReturn={() => setIsReturnModalOpen(true)}
-                onReport={() => window.open('https://zalo.me/0987654321', '_blank')}
+                onReport={() =>
+                  window.open(
+                    `${ORDERS_CONTACT.ZALO_BASE_URL}/${process.env.NEXT_PUBLIC_ZALO}`,
+                    "_blank"
+                  )
+                }
                 onReview={() => {
                   if (order.orderItems?.[0]) {
                     setSelectedItem(order.orderItems[0]);
@@ -258,7 +283,7 @@ export function OrderDetailView() {
             </div>
           </div>
 
-          <ReorderBanner 
+          <ReorderBanner
             itemCount={order.orderItems?.length || 0}
             onReorder={handleReorder}
           />
@@ -282,19 +307,24 @@ export function OrderDetailView() {
         }}
       />
 
-      <ReviewModal 
+      <ReviewModal
         isOpen={!!selectedItem}
         onClose={() => setSelectedItem(null)}
         productId={Number(selectedItem?.variant?.productId || selectedItem?.productId)}
         orderId={order.id || 0}
-        productName={selectedItem?.productName || selectedItem?.variant?.product?.name || ""}
+        productName={
+          selectedItem?.productName || selectedItem?.variant?.product?.name || ""
+        }
         productSlug={selectedItem?.variant?.product?.slug}
         productImage={(() => {
-          const getUrl = (img: any) => typeof img === 'string' ? img : img?.url;
-          const path = (selectedItem?.variantSnapshot as { image?: string })?.image || getUrl(selectedItem?.variant?.images?.[0]) || getUrl(selectedItem?.variant?.product?.images?.[0]);
+          const getUrl = (img: any) => (typeof img === "string" ? img : img?.url);
+          const path =
+            (selectedItem?.variantSnapshot as { image?: string })?.image ||
+            getUrl(selectedItem?.variant?.images?.[0]) ||
+            getUrl(selectedItem?.variant?.product?.images?.[0]);
           if (!path) return "/placeholder.png";
-          if (path.startsWith('http')) return path;
-          return `/${path.replace(/\\/g, '/').replace(/^\//, '')}`;
+          if (path.startsWith("http")) return path;
+          return `/${path.replace(/\\/g, "/").replace(/^\//, "")}`;
         })()}
       />
 

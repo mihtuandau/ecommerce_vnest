@@ -7,7 +7,7 @@ export function fallbackAvatarUrl(name?: string | null, email?: string | null) {
 export function handleAvatarError(
   event: SyntheticEvent<HTMLImageElement, Event>,
   name?: string | null,
-  email?: string | null,
+  email?: string | null
 ) {
   const fallback = fallbackAvatarUrl(name, email);
   if (event.currentTarget.src !== fallback) {

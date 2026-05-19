@@ -29,7 +29,9 @@ export default function EditCategoryPage() {
     return (
       <div className="h-96 flex flex-col items-center justify-center gap-4">
         <Spinner size="lg" />
-        <p className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em]">Đang tải dữ liệu danh mục...</p>
+        <p className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em]">
+          Đang tải dữ liệu danh mục...
+        </p>
       </div>
     );
   }
@@ -48,8 +50,8 @@ export default function EditCategoryPage() {
   return (
     <div className="space-y-4 pb-10">
       <div className="flex flex-col gap-1">
-        <Button 
-          variant="ghost" 
+        <Button
+          variant="ghost"
           size="sm"
           className="w-fit pl-0 hover:bg-transparent text-slate-400 hover:text-primary gap-1 font-bold text-xs uppercase tracking-wider"
           onClick={() => router.back()}
@@ -59,7 +61,9 @@ export default function EditCategoryPage() {
         </Button>
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900">Chi tiết danh mục</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+              Chi tiết danh mục
+            </h1>
             <p className="text-slate-500 text-sm">
               Cập nhật tên và hình ảnh hiển thị cho danh mục "{category.name}".
             </p>
@@ -68,7 +72,11 @@ export default function EditCategoryPage() {
       </div>
 
       <div className="pt-2">
-        <CategoryForm initialData={category} onSubmit={handleSubmit} isLoading={isPending} />
+        <CategoryForm
+          initialData={category}
+          onSubmit={handleSubmit}
+          isLoading={isPending}
+        />
       </div>
     </div>
   );

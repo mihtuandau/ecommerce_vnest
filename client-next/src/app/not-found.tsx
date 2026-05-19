@@ -22,7 +22,9 @@ export default function NotFound() {
           <h1 className="text-8xl font-extrabold tracking-tight text-[#3D2B1A] font-serif">
             404
           </h1>
-          <span className="text-[10px] uppercase font-bold tracking-widest text-[#8A7966] mt-1">Not Found</span>
+          <span className="text-[10px] uppercase font-bold tracking-widest text-[#8A7966] mt-1">
+            Not Found
+          </span>
         </div>
 
         <div className="space-y-3">
@@ -30,7 +32,8 @@ export default function NotFound() {
             Đường dẫn không tồn tại
           </h3>
           <p className="text-[13px] text-[#8A7966] leading-relaxed font-medium px-4">
-            Địa chỉ trang bạn đang tìm kiếm không tồn tại, đã bị gỡ bỏ hoặc thay đổi sang một đường dẫn khác.
+            Địa chỉ trang bạn đang tìm kiếm không tồn tại, đã bị gỡ bỏ hoặc thay đổi
+            sang một đường dẫn khác.
           </p>
         </div>
 
@@ -39,7 +42,10 @@ export default function NotFound() {
             href="/"
             className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-[#3D2B1A] text-white hover:bg-black rounded-xl text-xs font-semibold shadow-sm hover:shadow transition-all group cursor-pointer"
           >
-            <ArrowLeft size={13} className="group-hover:-translate-x-0.5 transition-transform" />
+            <ArrowLeft
+              size={13}
+              className="group-hover:-translate-x-0.5 transition-transform"
+            />
             Về Trang Chủ
           </Link>
           <Link

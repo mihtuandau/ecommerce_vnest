@@ -26,6 +26,7 @@ export class OrderRepository {
     payment: true, 
     address: true, 
     shippingMethod: true,
+    discount: { select: { code: true } },
     returnRequests: { include: { returnItems: true } },
     reviews: { select: { productId: true } }
   };

@@ -11,7 +11,12 @@ interface CustomerStatsProps {
   lastOrderDate?: string;
 }
 
-export function CustomerStats({ totalSpent, totalOrders, totalReviews, lastOrderDate }: CustomerStatsProps) {
+export function CustomerStats({
+  totalSpent,
+  totalOrders,
+  totalReviews,
+  lastOrderDate,
+}: CustomerStatsProps) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       <div className="bg-white p-5 rounded-xl border border-slate-200 flex items-center gap-4">
@@ -19,8 +24,12 @@ export function CustomerStats({ totalSpent, totalOrders, totalReviews, lastOrder
           <Wallet className="h-5 w-5 text-slate-400" />
         </div>
         <div>
-          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Tổng chi tiêu</p>
-          <p className="text-xl font-bold text-slate-900">{formatCurrency(totalSpent)}</p>
+          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+            Tổng chi tiêu
+          </p>
+          <p className="text-xl font-bold text-slate-900">
+            {formatCurrency(totalSpent)}
+          </p>
         </div>
       </div>
 
@@ -29,7 +38,9 @@ export function CustomerStats({ totalSpent, totalOrders, totalReviews, lastOrder
           <ShoppingBag className="h-5 w-5 text-slate-400" />
         </div>
         <div>
-          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Đơn hàng</p>
+          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+            Đơn hàng
+          </p>
           <p className="text-xl font-bold text-slate-900">{totalOrders}</p>
         </div>
       </div>
@@ -39,7 +50,9 @@ export function CustomerStats({ totalSpent, totalOrders, totalReviews, lastOrder
           <Star className="h-5 w-5 text-slate-400" />
         </div>
         <div>
-          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Đánh giá</p>
+          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+            Đánh giá
+          </p>
           <p className="text-xl font-bold text-slate-900">{totalReviews}</p>
         </div>
       </div>
@@ -49,13 +62,20 @@ export function CustomerStats({ totalSpent, totalOrders, totalReviews, lastOrder
           <Clock className="h-5 w-5 text-slate-400" />
         </div>
         <div>
-          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Lần mua cuối</p>
+          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+            Lần mua cuối
+          </p>
           <p className="text-lg font-bold text-slate-900">
-            {lastOrderDate ? (() => {
-              const days = Math.floor((new Date().getTime() - new Date(lastOrderDate).getTime()) / (1000 * 60 * 60 * 24));
-              if (days === 0) return "Hôm nay";
-              return `${days} ngày trước`;
-            })() : "—"}
+            {lastOrderDate
+              ? (() => {
+                  const days = Math.floor(
+                    (new Date().getTime() - new Date(lastOrderDate).getTime()) /
+                      (1000 * 60 * 60 * 24)
+                  );
+                  if (days === 0) return "Hôm nay";
+                  return `${days} ngày trước`;
+                })()
+              : "—"}
           </p>
         </div>
       </div>

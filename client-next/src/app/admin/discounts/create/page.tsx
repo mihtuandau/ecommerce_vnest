@@ -16,15 +16,15 @@ export default function CreateDiscountPage() {
     createDiscount(data, {
       onSuccess: () => {
         router.push(ROUTES.ADMIN_DISCOUNTS);
-      }
+      },
     });
   };
 
   return (
     <div className="space-y-4 pb-10 mx-auto">
       <div className="flex flex-col gap-1">
-        <Button 
-          variant="ghost" 
+        <Button
+          variant="ghost"
           size="sm"
           className="w-fit pl-0 hover:bg-transparent text-slate-400 hover:text-primary gap-1 font-bold text-xs uppercase tracking-wider"
           onClick={() => router.back()}
@@ -34,7 +34,9 @@ export default function CreateDiscountPage() {
         </Button>
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900">Tạo chương trình mới</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+              Tạo chương trình mới
+            </h1>
             <p className="text-slate-500 text-sm">
               Cấu hình mã giảm giá & chiến dịch Flash Sale cho hệ thống.
             </p>

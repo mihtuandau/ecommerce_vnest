@@ -38,9 +38,12 @@ export function SocialProof() {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    const showRandomOrder = () => {
-      if (products.length === 0) return;
+    if (products.length === 0) return;
 
+    let timeoutId: ReturnType<typeof setTimeout>;
+    let intervalId: ReturnType<typeof setInterval>;
+
+    const showRandomOrder = () => {
       const randomProduct = products[Math.floor(Math.random() * products.length)];
       const randomCustomer = CUSTOMERS[Math.floor(Math.random() * CUSTOMERS.length)];
       const randomTime = TIMES[Math.floor(Math.random() * TIMES.length)];
@@ -58,30 +61,27 @@ export function SocialProof() {
 
       setIsVisible(true);
 
-      // Tự động đóng sau 6 giây
-      setTimeout(() => {
+      if (timeoutId) clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
         setIsVisible(false);
       }, 6000);
     };
 
-    // Lần đầu xuất hiện sau 8 giây (để khách hàng kịp làm quen trang web)
     const initialTimer = setTimeout(showRandomOrder, 8000);
 
-    // Chu kỳ xuất hiện ngẫu nhiên từ 20 - 45 giây (để không quá dồn dập)
-    const interval = setInterval(
+    intervalId = setInterval(
       () => {
-        if (!isVisible) {
-          showRandomOrder();
-        }
+        showRandomOrder();
       },
       Math.random() * (45000 - 20000) + 20000
     );
 
     return () => {
       clearTimeout(initialTimer);
-      clearInterval(interval);
+      if (timeoutId) clearTimeout(timeoutId);
+      clearInterval(intervalId);
     };
-  }, [isVisible, products]);
+  }, [products]);
 
   if (!currentOrder) return null;
 

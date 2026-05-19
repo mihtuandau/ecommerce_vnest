@@ -7,6 +7,7 @@ import { cookies } from "next/headers";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Wrench, Phone, Mail, Clock } from "lucide-react";
 import { env } from "@/config/env";
+import { Role } from "@/types/enums";
 
 export default async function CustomerLayout({
   children,
@@ -40,7 +41,10 @@ export default async function CustomerLayout({
       const payloadBase64 = token.split(".")[1];
       const decodedJson = Buffer.from(payloadBase64, "base64").toString("utf-8");
       const decoded = JSON.parse(decodedJson);
-      isAdmin = decoded?.role === "ADMIN";
+      isAdmin =
+        decoded?.role === Role.ADMIN ||
+        decoded?.role === Role.KHO ||
+        decoded?.role === Role.BAN_HANG;
     } catch {}
   }
 
@@ -73,7 +77,8 @@ export default async function CustomerLayout({
               Hệ thống đang bảo trì
             </h1>
             <p className="text-[13.5px] text-[#8A7966] leading-relaxed font-medium">
-              Chúng tôi đang tiến hành bảo dưỡng định kỳ hệ thống của cửa hàng để mang lại chất lượng phục vụ và trải nghiệm mua sắm hoàn mỹ nhất cho quý khách.
+              Chúng tôi đang tiến hành bảo dưỡng định kỳ hệ thống của cửa hàng để mang
+              lại chất lượng phục vụ và trải nghiệm mua sắm hoàn mỹ nhất cho quý khách.
             </p>
           </div>
 
@@ -81,26 +86,33 @@ export default async function CustomerLayout({
           <div className="p-4 bg-[#F9F6F0] rounded-2xl border border-[#EFEBE4] flex items-center gap-3.5 text-left max-w-sm mx-auto shadow-2xs">
             <Clock className="h-5 w-5 text-[#C4783A] shrink-0" />
             <div className="space-y-0.5">
-              <p className="text-xs font-bold text-[#3D2B1A]">Thời gian dự kiến hoàn thành</p>
-              <p className="text-[11px] text-[#8A7966] leading-relaxed font-semibold">Thường mất khoảng 1 - 2 tiếng. Xin trân trọng cảm ơn sự kiên nhẫn của quý khách hàng!</p>
+              <p className="text-xs font-bold text-[#3D2B1A]">
+                Thời gian dự kiến hoàn thành
+              </p>
+              <p className="text-[11px] text-[#8A7966] leading-relaxed font-semibold">
+                Thường mất khoảng 1 - 2 tiếng. Xin trân trọng cảm ơn sự kiên nhẫn của
+                quý khách hàng!
+              </p>
             </div>
           </div>
 
           {/* Contact Details */}
           <div className="pt-5 space-y-3.5 border-t border-[#DDD6C8] max-w-sm mx-auto">
-            <p className="text-[10px] font-bold text-[#8A7966] uppercase tracking-[0.12em]">Hỗ trợ trực tuyến</p>
+            <p className="text-[10px] font-bold text-[#8A7966] uppercase tracking-[0.12em]">
+              Hỗ trợ trực tuyến
+            </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4 text-xs font-semibold text-[#3D2B1A]">
               {settings?.storePhone && (
-                <a 
-                  href={`tel:${settings.storePhone}`} 
+                <a
+                  href={`tel:${settings.storePhone}`}
                   className="flex items-center justify-center gap-2 text-[#3D2B1A] hover:text-[#C4783A] transition-colors"
                 >
                   <Phone className="h-3.5 w-3.5 text-[#C4783A]" /> {settings.storePhone}
                 </a>
               )}
               {settings?.storeEmail && (
-                <a 
-                  href={`mailto:${settings.storeEmail}`} 
+                <a
+                  href={`mailto:${settings.storeEmail}`}
                   className="flex items-center justify-center gap-2 text-[#3D2B1A] hover:text-[#C4783A] transition-colors"
                 >
                   <Mail className="h-3.5 w-3.5 text-[#C4783A]" /> {settings.storeEmail}
@@ -116,36 +128,38 @@ export default async function CustomerLayout({
   // 4. Normal flow if not under maintenance or user is admin
   return (
     <div className="flex min-h-screen flex-col">
-      <Suspense fallback={
-        <div className="flex flex-col w-full">
-          {/* TOP ANNOUNCEMENT BAR SKELETON */}
-          <div className="bg-primary h-[38px] w-full hidden lg:block" />
-          
-          <div className="w-full bg-white border-b border-brand-sand h-16 lg:h-[108px] fixed top-0 left-0 z-50">
-            {/* Top Bar Skeleton inside fixed header */}
+      <Suspense
+        fallback={
+          <div className="flex flex-col w-full">
+            {/* TOP ANNOUNCEMENT BAR SKELETON */}
             <div className="bg-primary h-[38px] w-full hidden lg:block" />
-            
-            <div className="h-16 flex items-center max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-              <Skeleton className="w-40 h-8 rounded-md" />
-              <div className="flex-1 max-w-xl mx-auto h-10 hidden lg:block px-8">
-                <Skeleton className="w-full h-full rounded-full" />
+
+            <div className="w-full bg-white border-b border-brand-sand h-16 lg:h-[108px] fixed top-0 left-0 z-50">
+              {/* Top Bar Skeleton inside fixed header */}
+              <div className="bg-primary h-[38px] w-full hidden lg:block" />
+
+              <div className="h-16 flex items-center max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+                <Skeleton className="w-40 h-8 rounded-md" />
+                <div className="flex-1 max-w-xl mx-auto h-10 hidden lg:block px-8">
+                  <Skeleton className="w-full h-full rounded-full" />
+                </div>
+                <div className="flex items-center gap-3 ml-auto">
+                  <Skeleton className="w-10 h-10 rounded-full" />
+                  <Skeleton className="h-10 w-10 rounded-full" />
+                  <Skeleton className="h-10 w-10 lg:w-24 rounded-full" />
+                </div>
               </div>
-              <div className="flex items-center gap-3 ml-auto">
-                <Skeleton className="w-10 h-10 rounded-full" />
-                <Skeleton className="h-10 w-10 rounded-full" />
-                <Skeleton className="h-10 w-10 lg:w-24 rounded-full" />
+              <div className="h-11 border-t border-brand-sand/30 hidden lg:flex items-center justify-center gap-6">
+                <Skeleton className="w-20 h-4 rounded-md" />
+                <Skeleton className="w-20 h-4 rounded-md" />
+                <Skeleton className="w-20 h-4 rounded-md" />
+                <Skeleton className="w-20 h-4 rounded-md" />
               </div>
             </div>
-            <div className="h-11 border-t border-brand-sand/30 hidden lg:flex items-center justify-center gap-6">
-              <Skeleton className="w-20 h-4 rounded-md" />
-              <Skeleton className="w-20 h-4 rounded-md" />
-              <Skeleton className="w-20 h-4 rounded-md" />
-              <Skeleton className="w-20 h-4 rounded-md" />
-            </div>
+            <div className="h-[64px] lg:h-[146px] w-full" />
           </div>
-          <div className="h-[64px] lg:h-[146px] w-full" />
-        </div>
-      }>
+        }
+      >
         <Header initialHasToken={hasToken} />
       </Suspense>
       <main className="flex-1">{children}</main>

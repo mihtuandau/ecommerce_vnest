@@ -9,6 +9,7 @@ import * as OrderHelper from './order.helper';
 import { PrismaService } from '../prisma/prisma.service';
 import { GHNService } from '../ghn/ghn.service';
 import { ConfigService } from '@nestjs/config';
+import { SystemSettingsService } from '../system-settings/system-settings.service';
 
 @Injectable()
 export class OrderCreation {
@@ -23,6 +24,7 @@ export class OrderCreation {
     private prisma: PrismaService,
     private ghnService: GHNService,
     private configService: ConfigService,
+    private systemSettingsService: SystemSettingsService,
   ) {}
 
   async create(userId: number | null, dto: CreateOrderDto, requester: { role: string }, ipAddr: string = '127.0.0.1'): Promise<any> {
@@ -124,7 +126,6 @@ export class OrderCreation {
         if (isOnlinePayment && !isPOS) {
           throw new BadRequestException('Không thể tính phí vận chuyển. Vui lòng kiểm tra lại địa chỉ giao hàng.');
         }
-        // Nếu là COD và GHN fail, chúng ta ép giá tối thiểu 20k nếu user gửi lên 0
         if (!isPOS && ghnShippingFee < 20000) {
           ghnShippingFee = 30000; 
         }
@@ -150,6 +151,14 @@ export class OrderCreation {
       ghnShippingFee,
       finalDiscount ? discountData : undefined,
     );
+
+    // Áp dụng chính sách miễn phí vận chuyển từ cấu hình hệ thống
+    const systemSettings = await this.systemSettingsService.getSettings();
+    if (totals.totalItems >= systemSettings.freeShippingThreshold) {
+      totals.shippingFee = 0;
+      totals.total = totals.totalItems;
+      totals.discountedTotal = Math.max(0, totals.totalItems - totals.discountAmount);
+    }
 
     const orderCode = await OrderHelper.generateOrderCode((code) =>
       this.repository.findByCode(code),
@@ -235,9 +244,30 @@ export class OrderCreation {
         product: { deletedAt: null, isActive: true } 
       },
       select: {
-        id: true, productId: true, price: true, originalPrice: true, weight: true, length: true, width: true, height: true,
+        id: true, 
+        productId: true, 
+        price: true, 
+        originalPrice: true, 
+        weight: true, 
+        length: true, 
+        width: true, 
+        height: true,
+        size: true,
+        color: true,
+        images: { select: { url: true } },
         product: {
-          select: { id: true, name: true, isActive: true, deletedAt: true, originalPrice: true, categoryId: true, category: { select: { name: true } } },
+          select: { 
+            id: true, 
+            name: true, 
+            slug: true,
+            isActive: true, 
+            deletedAt: true, 
+            originalPrice: true, 
+            categoryId: true, 
+            category: { select: { name: true } },
+            brand: { select: { name: true } },
+            images: { select: { url: true }, take: 1 }
+          },
         },
       },
     });
@@ -261,6 +291,8 @@ export class OrderCreation {
 
     return items.map((item) => {
       const variant = variantMap.get(item.variantId)!;
+      const brandName = (variant.product as any)?.brand?.name || 'LUXE Boutique';
+      const variantImage = variant.images?.[0]?.url || variant.product?.images?.[0]?.url || null;
 
       return {
         variantId: item.variantId,
@@ -277,6 +309,15 @@ export class OrderCreation {
         width: variant.width,
         height: variant.height,
         category: (variant.product as any)?.category?.name,
+        variantSnapshot: {
+          color: variant.color,
+          size: variant.size,
+          image: variantImage,
+          productName: variant.product?.name,
+          productSlug: (variant.product as any)?.slug || null,
+          brandName: brandName,
+          originalPrice: variant.originalPrice || variant.product?.originalPrice || variant.price,
+        }
       };
     });
   }
@@ -307,6 +348,10 @@ export class OrderCreation {
     }
 
     return cart.cartItems.map((item) => {
+      const v = item.variant;
+      const brandName = (v as any)?.product?.brand?.name || 'LUXE Boutique';
+      const variantImage = v?.images?.[0]?.url || v?.product?.images?.[0]?.url || null;
+
       return {
         variantId: item.variantId,
         productId: item.variant?.productId,
@@ -320,6 +365,15 @@ export class OrderCreation {
         width: item.variant?.width,
         height: item.variant?.height,
         category: item.variant?.product?.category?.name,
+        variantSnapshot: {
+          color: v?.color,
+          size: v?.size,
+          image: variantImage,
+          productName: v?.product?.name,
+          productSlug: v?.product?.slug || null,
+          brandName: brandName,
+          originalPrice: v?.originalPrice || v?.product?.originalPrice || v?.price,
+        }
       };
     });
   }

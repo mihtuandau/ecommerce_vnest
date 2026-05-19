@@ -34,12 +34,14 @@ export function BannerTabs({ activeTab, onTabChange, counts }: BannerTabsProps) 
           )}
         >
           {tab.label}
-          <span className={cn(
-            "flex h-5 min-w-[20px] items-center justify-center rounded-full px-1.5 text-[10px] font-black transition-all",
-            activeTab === tab.id
-              ? "bg-slate-900 text-white"
-              : "bg-slate-100 text-slate-500"
-          )}>
+          <span
+            className={cn(
+              "flex h-5 min-w-[20px] items-center justify-center rounded-full px-1.5 text-[10px] font-black transition-all",
+              activeTab === tab.id
+                ? "bg-slate-900 text-white"
+                : "bg-slate-100 text-slate-500"
+            )}
+          >
             {tab.count}
           </span>
           {activeTab === tab.id && (

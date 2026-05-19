@@ -10,8 +10,9 @@ import Image from "next/image";
 
 export function FeaturedCategories() {
   const { data: categoryData, isLoading } = useCategories();
-  const categories = (Array.isArray(categoryData) ? categoryData : categoryData?.data || [])
-    .filter((cat: any) => !cat.parentId); // Only show top-level categories
+  const categories = (
+    Array.isArray(categoryData) ? categoryData : categoryData?.data || []
+  ).filter((cat: any) => !cat.parentId); // Only show top-level categories
 
   if (isLoading) {
     return (
@@ -31,10 +32,19 @@ export function FeaturedCategories() {
   return (
     <div className="space-y-10 overflow-visible py-12">
       <div className="flex items-end justify-between border-b border-[#DDD6C8]/40 pb-4">
-        <h2 className="text-[28px] md:text-[32px] text-[#3D2B1A]" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600 }}>
-          Danh mục <em className="text-[#C4783A]" style={{ fontStyle: 'italic' }}>nổi bật</em>
+        <h2
+          className="text-[28px] md:text-[32px] text-[#3D2B1A]"
+          style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600 }}
+        >
+          Danh mục{" "}
+          <em className="text-[#C4783A]" style={{ fontStyle: "italic" }}>
+            nổi bật
+          </em>
         </h2>
-        <Link href="/shop" className="text-[12px] text-[#8A7966] uppercase tracking-[0.1em] hover:text-[#C4783A] transition-colors pb-1">
+        <Link
+          href="/shop"
+          className="text-[12px] text-[#8A7966] uppercase tracking-[0.1em] hover:text-[#C4783A] transition-colors pb-1"
+        >
           Xem tất cả →
         </Link>
       </div>
@@ -44,10 +54,14 @@ export function FeaturedCategories() {
         <div className="flex gap-10 animate-marquee whitespace-nowrap pause-on-hover">
           {[...categories, ...categories].map((category: Category, index: number) => {
             // Calculate a semi-realistic count if it's 0 (optional, or just show 0)
-            // But user said it's showing 0, so let's try to show the actual count from variants if possible, 
+            // But user said it's showing 0, so let's try to show the actual count from variants if possible,
             // or just ensure we're accessing the right property.
-            const pCount = (category as any).productsCount ?? (category as any)._count?.products ?? (category as any).productCount ?? 0;
-            
+            const pCount =
+              (category as any).productsCount ??
+              (category as any)._count?.products ??
+              (category as any).productCount ??
+              0;
+
             return (
               <Link
                 key={`${category.id}-${index}`}
@@ -58,8 +72,12 @@ export function FeaturedCategories() {
                 <div className="w-32 h-32 md:w-44 md:h-44 rounded-full border border-[#DDD6C8]/50 bg-white p-1.5 transition-all duration-700 group-hover/card:border-[#C4783A] group-hover/card:shadow-[0_10px_30px_rgba(61,43,26,0.08)] flex items-center justify-center relative overflow-hidden">
                   <div className="w-full h-full rounded-full bg-white flex items-center justify-center overflow-hidden relative">
                     {category.image ? (
-                      <Image 
-                        src={category.image.startsWith('http') ? category.image : `https://api.vnest.vn/uploads/${category.image}`} 
+                      <Image
+                        src={
+                          category.image.startsWith("http")
+                            ? category.image
+                            : `https://api.vnest.vn/uploads/${category.image}`
+                        }
                         alt={category.name}
                         fill
                         className="object-contain p-7 group-hover/card:scale-110 transition-all duration-700"
@@ -91,8 +109,12 @@ export function FeaturedCategories() {
         {/* CSS for Animation */}
         <style jsx>{`
           @keyframes marquee {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(calc(-50% - 1.25rem)); }
+            0% {
+              transform: translateX(0);
+            }
+            100% {
+              transform: translateX(calc(-50% - 1.25rem));
+            }
           }
           .animate-marquee {
             display: flex;

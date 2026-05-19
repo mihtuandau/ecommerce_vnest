@@ -17,7 +17,7 @@ export const discountsApi = {
     });
 
     if (Array.isArray(body)) return { data: body };
-    if (body && typeof body === 'object' && Array.isArray(body.data)) {
+    if (body && typeof body === "object" && Array.isArray(body.data)) {
       return { data: body.data, total: body.total };
     }
     return { data: [] };
@@ -33,7 +33,10 @@ export const discountsApi = {
     return data;
   },
 
-  updateDiscount: async (id: string, discountData: Partial<Discount>): Promise<Discount> => {
+  updateDiscount: async (
+    id: string,
+    discountData: Partial<Discount>
+  ): Promise<Discount> => {
     const { data } = await api.patch<Discount>(`/discounts/${id}`, discountData);
     return data;
   },

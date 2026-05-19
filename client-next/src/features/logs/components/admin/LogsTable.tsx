@@ -48,9 +48,9 @@ export function LogsTable({
   const [showRawJsonMap, setShowRawJsonMap] = useState<Record<number, boolean>>({});
 
   const toggleRawJson = (id: number) => {
-    setShowRawJsonMap(prev => ({
+    setShowRawJsonMap((prev) => ({
       ...prev,
-      [id]: !prev[id]
+      [id]: !prev[id],
     }));
   };
 
@@ -74,13 +74,21 @@ export function LogsTable({
     }
 
     if (val === null || val === undefined) {
-      return <span className="text-slate-400 italic font-normal text-xs">Chưa điền</span>;
+      return (
+        <span className="text-slate-400 italic font-normal text-xs">Chưa điền</span>
+      );
     }
 
-    if (["price", "fixedAmount", "minOrderValue"].includes(key) && typeof val === "number") {
+    if (
+      ["price", "fixedAmount", "minOrderValue"].includes(key) &&
+      typeof val === "number"
+    ) {
       return (
         <span className="text-slate-800 font-bold text-xs">
-          {new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(val)}
+          {new Intl.NumberFormat("vi-VN", {
+            style: "currency",
+            currency: "VND",
+          }).format(val)}
         </span>
       );
     }
@@ -93,7 +101,11 @@ export function LogsTable({
       );
     }
 
-    return <span className="text-slate-700 font-semibold text-xs leading-relaxed break-all">{String(val)}</span>;
+    return (
+      <span className="text-slate-700 font-semibold text-xs leading-relaxed break-all">
+        {String(val)}
+      </span>
+    );
   };
 
   const formatEntityName = (name: string) => {
@@ -126,7 +138,8 @@ export function LogsTable({
     else if (ua.includes("Windows NT 6.3")) os = "Windows 8.1";
     else if (ua.includes("Windows NT 6.2")) os = "Windows 8";
     else if (ua.includes("Windows NT 6.1")) os = "Windows 7";
-    else if (ua.includes("Macintosh") || ua.includes("Mac OS X")) os = "macOS (Apple Mac)";
+    else if (ua.includes("Macintosh") || ua.includes("Mac OS X"))
+      os = "macOS (Apple Mac)";
     else if (ua.includes("iPhone")) os = "iPhone (iOS)";
     else if (ua.includes("iPad")) os = "iPad (iOS)";
     else if (ua.includes("Android")) os = "Android OS";
@@ -163,7 +176,9 @@ export function LogsTable({
         ) : logs.length === 0 ? (
           <div className="p-20 text-center flex flex-col items-center justify-center">
             <EyeOff className="h-12 w-12 text-slate-200 mb-4" />
-            <h3 className="text-base font-bold text-slate-800">Không tìm thấy bản ghi nào</h3>
+            <h3 className="text-base font-bold text-slate-800">
+              Không tìm thấy bản ghi nào
+            </h3>
             <p className="text-xs text-slate-400 mt-1 max-w-sm">
               Hãy thử thay đổi từ khóa tìm kiếm hoặc các tiêu chí bộ lọc đã chọn.
             </p>
@@ -172,13 +187,27 @@ export function LogsTable({
           <table className="w-full text-left border-collapse table-fixed">
             <thead>
               <tr className="border-b border-slate-200 bg-slate-50/70">
-                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-slate-500 w-[22%] align-middle">Nhân viên</th>
-                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-slate-500 w-[11%] align-middle">Phương thức</th>
-                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-slate-500 w-[12%] align-middle">Bảng dữ liệu</th>
-                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-slate-500 w-[12%] align-middle">ID Entity</th>
-                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-slate-500 w-[15%] align-middle">IP Address</th>
-                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-slate-500 w-[18%] align-middle">Thời gian</th>
-                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-slate-500 w-[10%] text-right align-middle">Chi tiết</th>
+                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-slate-500 w-[22%] align-middle">
+                  Nhân viên
+                </th>
+                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-slate-500 w-[11%] align-middle">
+                  Phương thức
+                </th>
+                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-slate-500 w-[12%] align-middle">
+                  Bảng dữ liệu
+                </th>
+                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-slate-500 w-[12%] align-middle">
+                  ID Entity
+                </th>
+                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-slate-500 w-[15%] align-middle">
+                  IP Address
+                </th>
+                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-slate-500 w-[18%] align-middle">
+                  Thời gian
+                </th>
+                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-slate-500 w-[10%] text-right align-middle">
+                  Chi tiết
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -186,7 +215,11 @@ export function LogsTable({
                 const isExpanded = expandedLogId === log.id;
                 const formattedTime = dayjs(log.createdAt).format("HH:mm - DD/MM/YYYY");
                 const relative = dayjs(log.createdAt).fromNow();
-                const actor = log.user || { name: "Hệ thống", email: "system@dautuan.com", role: "SYSTEM" };
+                const actor = log.user || {
+                  name: "Hệ thống",
+                  email: "system@dautuan.com",
+                  role: "SYSTEM",
+                };
 
                 return (
                   <React.Fragment key={log.id}>
@@ -198,18 +231,24 @@ export function LogsTable({
                             {actor.name?.charAt(0).toUpperCase() || "S"}
                           </div>
                           <div className="min-w-0">
-                            <p className="text-xs font-semibold text-slate-800 truncate">{actor.name || "Hệ thống"}</p>
-                            <p className="text-[10px] text-slate-400 font-medium truncate mt-0.5">{actor.email}</p>
+                            <p className="text-xs font-semibold text-slate-800 truncate">
+                              {actor.name || "Hệ thống"}
+                            </p>
+                            <p className="text-[10px] text-slate-400 font-medium truncate mt-0.5">
+                              {actor.email}
+                            </p>
                           </div>
                         </div>
                       </td>
 
                       {/* Action badge */}
                       <td className="px-6 py-4 align-middle">
-                        <span className={cn(
-                          "px-2 py-0.5 rounded border text-[9px] font-bold tracking-wider uppercase inline-flex items-center",
-                          getActionBadgeColor(log.action)
-                        )}>
+                        <span
+                          className={cn(
+                            "px-2 py-0.5 rounded border text-[9px] font-bold tracking-wider uppercase inline-flex items-center",
+                            getActionBadgeColor(log.action)
+                          )}
+                        >
                           {getActionText(log.action)}
                         </span>
                       </td>
@@ -230,7 +269,11 @@ export function LogsTable({
                       <td className="px-6 py-4 align-middle">
                         <div className="flex items-center gap-1.5 text-slate-500 text-xs font-semibold">
                           <Laptop size={12} className="text-slate-400" />
-                          <span className="font-mono text-[10px]">{log.ipAddress === "::1" ? "127.0.0.1 (Local)" : log.ipAddress || "N/A"}</span>
+                          <span className="font-mono text-[10px]">
+                            {log.ipAddress === "::1"
+                              ? "127.0.0.1 (Local)"
+                              : log.ipAddress || "N/A"}
+                          </span>
                         </div>
                       </td>
 
@@ -238,7 +281,9 @@ export function LogsTable({
                       <td className="px-6 py-4 align-middle">
                         <div>
                           <p className="text-xs font-bold text-slate-700">{relative}</p>
-                          <p className="text-[9px] text-slate-400 font-medium mt-0.5">{formattedTime}</p>
+                          <p className="text-[9px] text-slate-400 font-medium mt-0.5">
+                            {formattedTime}
+                          </p>
                         </div>
                       </td>
 
@@ -250,8 +295,8 @@ export function LogsTable({
                             size="icon"
                             className={cn(
                               "h-8 w-8 rounded-full flex items-center justify-center transition-all cursor-pointer border-0 bg-transparent focus:ring-0 focus:outline-none",
-                              isExpanded 
-                                ? "bg-rose-50 text-rose-600 hover:bg-rose-100" 
+                              isExpanded
+                                ? "bg-rose-50 text-rose-600 hover:bg-rose-100"
                                 : "text-slate-400 hover:text-indigo-650 hover:bg-slate-50"
                             )}
                             onClick={() => setExpandedLogId(isExpanded ? null : log.id)}
@@ -275,9 +320,12 @@ export function LogsTable({
                                   <Terminal size={16} />
                                 </div>
                                 <div>
-                                  <h4 className="text-sm font-bold text-slate-850">Thông tin thay đổi chi tiết</h4>
+                                  <h4 className="text-sm font-bold text-slate-850">
+                                    Thông tin thay đổi chi tiết
+                                  </h4>
                                   <p className="text-[10px] text-slate-455 font-semibold mt-0.5 uppercase tracking-wider">
-                                    Bảng: {log.entityName} • Hành động: {getActionText(log.action)}
+                                    Bảng: {log.entityName} • Hành động:{" "}
+                                    {getActionText(log.action)}
                                   </p>
                                 </div>
                               </div>
@@ -293,7 +341,9 @@ export function LogsTable({
                                       : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
                                   )}
                                 >
-                                  {showRawJsonMap[log.id] ? "💻 Xem giao diện thân thiện" : "💻 Xem dữ liệu JSON gốc"}
+                                  {showRawJsonMap[log.id]
+                                    ? "💻 Xem giao diện thân thiện"
+                                    : "💻 Xem dữ liệu JSON gốc"}
                                 </button>
                               )}
                             </div>
@@ -307,7 +357,8 @@ export function LogsTable({
                                     📡 Payload Data chi tiết (JSON gốc)
                                   </span>
                                   <span className="font-mono text-[9px] lowercase text-slate-500">
-                                    actor_id: {log.userId} • target: {log.entityName.toLowerCase()}
+                                    actor_id: {log.userId} • target:{" "}
+                                    {log.entityName.toLowerCase()}
                                   </span>
                                 </div>
                                 <div className="font-mono text-xs text-emerald-450 leading-relaxed overflow-x-auto max-h-[300px] scrollbar-thin">
@@ -321,7 +372,9 @@ export function LogsTable({
                               <div>
                                 {log.action === "LOGIN" && log.newData?.userAgent ? (
                                   (() => {
-                                    const { browser, os } = parseUserAgent(log.newData.userAgent);
+                                    const { browser, os } = parseUserAgent(
+                                      log.newData.userAgent
+                                    );
                                     return (
                                       <div className="space-y-4">
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -330,8 +383,12 @@ export function LogsTable({
                                               💻
                                             </div>
                                             <div>
-                                              <p className="text-[10px] text-slate-450 uppercase font-bold tracking-wider">Hệ điều hành</p>
-                                              <p className="text-xs font-bold text-slate-805 mt-0.5">{os}</p>
+                                              <p className="text-[10px] text-slate-450 uppercase font-bold tracking-wider">
+                                                Hệ điều hành
+                                              </p>
+                                              <p className="text-xs font-bold text-slate-805 mt-0.5">
+                                                {os}
+                                              </p>
                                             </div>
                                           </div>
                                           <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200/60 flex items-center gap-3">
@@ -339,22 +396,33 @@ export function LogsTable({
                                               🌐
                                             </div>
                                             <div>
-                                              <p className="text-[10px] text-slate-450 uppercase font-bold tracking-wider">Trình duyệt sử dụng</p>
-                                              <p className="text-xs font-bold text-slate-805 mt-0.5">{browser}</p>
+                                              <p className="text-[10px] text-slate-450 uppercase font-bold tracking-wider">
+                                                Trình duyệt sử dụng
+                                              </p>
+                                              <p className="text-xs font-bold text-slate-805 mt-0.5">
+                                                {browser}
+                                              </p>
                                             </div>
                                           </div>
                                         </div>
                                         <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200/60 font-mono text-[10px] text-slate-500 break-all leading-normal whitespace-pre-wrap">
-                                          <span className="font-bold text-slate-600 uppercase tracking-wider block mb-1.5 text-[9px]">Chuỗi nhận diện trình duyệt gốc (User Agent):</span>
+                                          <span className="font-bold text-slate-600 uppercase tracking-wider block mb-1.5 text-[9px]">
+                                            Chuỗi nhận diện trình duyệt gốc (User
+                                            Agent):
+                                          </span>
                                           {log.newData.userAgent}
                                         </div>
                                       </div>
                                     );
                                   })()
-                                ) : log.newData && Object.keys(log.newData).length > 0 ? (
+                                ) : log.newData &&
+                                  Object.keys(log.newData).length > 0 ? (
                                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     {Object.entries(log.newData).map(([key, val]) => (
-                                      <div key={key} className="p-3 bg-slate-50/50 hover:bg-slate-50 rounded-xl border border-slate-200/40 transition-colors flex flex-col justify-center">
+                                      <div
+                                        key={key}
+                                        className="p-3 bg-slate-50/50 hover:bg-slate-50 rounded-xl border border-slate-200/40 transition-colors flex flex-col justify-center"
+                                      >
                                         <span className="text-[10px] text-slate-450 font-bold uppercase tracking-wider mb-1.5">
                                           {translateKey(key)}
                                         </span>
@@ -366,7 +434,8 @@ export function LogsTable({
                                   </div>
                                 ) : (
                                   <div className="text-slate-400 italic text-xs py-8 text-center bg-slate-50/50 rounded-2xl border border-dashed border-slate-200/60">
-                                    Không có trường thông tin payload nào được cập nhật cho hành động này.
+                                    Không có trường thông tin payload nào được cập nhật
+                                    cho hành động này.
                                   </div>
                                 )}
                               </div>
@@ -374,7 +443,10 @@ export function LogsTable({
 
                             {/* Tip info */}
                             <div className="text-[10px] font-bold text-slate-455 uppercase tracking-wider flex items-center gap-2 mt-2 bg-slate-50 p-3 rounded-xl border border-slate-200/50">
-                              <span>Gợi ý: Hệ thống mã hóa thông tin bảo mật và giám sát thao tác nhân viên theo tiêu chuẩn an ninh Vnest.</span>
+                              <span>
+                                Gợi ý: Hệ thống mã hóa thông tin bảo mật và giám sát
+                                thao tác nhân viên theo tiêu chuẩn an ninh Vnest.
+                              </span>
                             </div>
                           </div>
                         </td>
@@ -392,9 +464,13 @@ export function LogsTable({
       {meta.totalPages > 1 && (
         <div className="px-6 py-4 border-t border-slate-100 flex items-center justify-between bg-white">
           <p className="text-xs text-slate-500 font-medium">
-            Đang hiển thị bản ghi <span className="font-bold text-slate-700">{(page - 1) * limit + 1}</span> -{" "}
-            <span className="font-bold text-slate-700">{Math.min(page * limit, meta.total)}</span> trong tổng số{" "}
-            <span className="font-bold text-slate-700">{meta.total}</span> lượt.
+            Đang hiển thị bản ghi{" "}
+            <span className="font-bold text-slate-700">{(page - 1) * limit + 1}</span> -{" "}
+            <span className="font-bold text-slate-700">
+              {Math.min(page * limit, meta.total)}
+            </span>{" "}
+            trong tổng số <span className="font-bold text-slate-700">{meta.total}</span>{" "}
+            lượt.
           </p>
 
           <div className="flex items-center gap-2">
@@ -402,7 +478,7 @@ export function LogsTable({
               variant="outline"
               size="sm"
               className="h-9 w-9 p-0 rounded-lg border-slate-200 text-slate-500 hover:text-primary transition-all disabled:opacity-50 cursor-pointer"
-              onClick={() => setPage(p => Math.max(p - 1, 1))}
+              onClick={() => setPage((p) => Math.max(p - 1, 1))}
               disabled={page === 1}
             >
               <ChevronLeft size={16} />
@@ -416,8 +492,8 @@ export function LogsTable({
                   size="sm"
                   className={cn(
                     "h-9 w-9 p-0 rounded-lg font-bold transition-all text-xs cursor-pointer",
-                    page === pNum 
-                      ? "bg-indigo-600 text-white shadow-sm hover:bg-indigo-700" 
+                    page === pNum
+                      ? "bg-indigo-600 text-white shadow-sm hover:bg-indigo-700"
                       : "border-slate-200 text-slate-500 hover:text-slate-800 hover:bg-slate-50"
                   )}
                   onClick={() => setPage(pNum)}
@@ -430,7 +506,7 @@ export function LogsTable({
               variant="outline"
               size="sm"
               className="h-9 w-9 p-0 rounded-lg border-slate-200 text-slate-500 hover:text-primary transition-all disabled:opacity-50 cursor-pointer"
-              onClick={() => setPage(p => Math.min(p + 1, meta.totalPages))}
+              onClick={() => setPage((p) => Math.min(p + 1, meta.totalPages))}
               disabled={page === meta.totalPages}
             >
               <ChevronRight size={16} />
