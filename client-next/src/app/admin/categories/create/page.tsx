@@ -26,7 +26,7 @@ export default function CreateCategoryPage() {
         <Button
           variant="ghost"
           size="sm"
-          className="w-fit pl-0 hover:bg-transparent text-slate-400 hover:text-primary gap-1 font-bold text-xs uppercase tracking-wider"
+          className="w-fit pl-0 hover:bg-transparent text-slate-400 hover:text-primary gap-1 font-semibold text-xs tracking-wider"
           onClick={() => router.back()}
         >
           <ChevronLeft className="h-3.5 w-3.5" />

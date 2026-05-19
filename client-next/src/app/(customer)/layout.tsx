@@ -52,12 +52,12 @@ export default async function CustomerLayout({
   if (isMaintenance && !isAdmin) {
     return (
       <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#FAF8F4] text-[#3D2B1A] p-6 font-sans-brand min-h-screen">
-        {/* Luxury abstract background ambient highlights */}
+        
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full bg-[#C4783A]/5 blur-3xl" />
         <div className="absolute bottom-1/4 left-1/3 -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full bg-[#8A7966]/5 blur-3xl" />
 
         <div className="max-w-md w-full text-center space-y-8 relative z-10 animate-in fade-in zoom-in-95 duration-700">
-          {/* Logo / Brand name */}
+          
           <div className="space-y-2">
             <h2 className="text-xl font-bold tracking-[0.15em] text-[#3D2B1A] uppercase">
               {settings?.storeName || "LUXE E-Commerce"}
@@ -65,13 +65,13 @@ export default async function CustomerLayout({
             <div className="h-[1px] w-12 bg-[#C4783A]/40 mx-auto rounded-full" />
           </div>
 
-          {/* Maintenance Icon Card */}
+          
           <div className="relative mx-auto w-24 h-24 bg-white rounded-3xl border border-[#DDD6C8] flex items-center justify-center shadow-xs">
             <div className="absolute inset-0 bg-gradient-to-tr from-[#C4783A]/5 to-[#8A7966]/5 rounded-3xl" />
             <Wrench className="h-9 w-9 text-[#C4783A] animate-bounce duration-1000" />
           </div>
 
-          {/* Messages */}
+          
           <div className="space-y-3 px-2">
             <h1 className="text-[22px] font-bold text-[#3D2B1A] tracking-tight">
               Hệ thống đang bảo trì
@@ -82,7 +82,7 @@ export default async function CustomerLayout({
             </p>
           </div>
 
-          {/* Expected time card */}
+          
           <div className="p-4 bg-[#F9F6F0] rounded-2xl border border-[#EFEBE4] flex items-center gap-3.5 text-left max-w-sm mx-auto shadow-2xs">
             <Clock className="h-5 w-5 text-[#C4783A] shrink-0" />
             <div className="space-y-0.5">
@@ -96,7 +96,7 @@ export default async function CustomerLayout({
             </div>
           </div>
 
-          {/* Contact Details */}
+          
           <div className="pt-5 space-y-3.5 border-t border-[#DDD6C8] max-w-sm mx-auto">
             <p className="text-[10px] font-bold text-[#8A7966] uppercase tracking-[0.12em]">
               Hỗ trợ trực tuyến
@@ -131,11 +131,11 @@ export default async function CustomerLayout({
       <Suspense
         fallback={
           <div className="flex flex-col w-full">
-            {/* TOP ANNOUNCEMENT BAR SKELETON */}
+            
             <div className="bg-primary h-[38px] w-full hidden lg:block" />
 
             <div className="w-full bg-white border-b border-brand-sand h-16 lg:h-[108px] fixed top-0 left-0 z-50">
-              {/* Top Bar Skeleton inside fixed header */}
+              
               <div className="bg-primary h-[38px] w-full hidden lg:block" />
 
               <div className="h-16 flex items-center max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">

@@ -148,7 +148,7 @@ export function DetailItems({
           </tbody>
         </table>
 
-        {/* ── PRICE SUMMARY ── */}
+        
         <div className="mt-4 pt-4 border-t border-brand-sand space-y-2.5 max-w-sm ml-auto font-sans">
           <div className="flex justify-between text-[13.5px]">
             <span className="text-brand-taupe">Tạm tính</span>

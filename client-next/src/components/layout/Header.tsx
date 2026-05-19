@@ -105,7 +105,7 @@ export function Header({ initialHasToken }: { initialHasToken?: boolean }) {
     <>
       <div className="fixed top-0 left-0 w-full z-50 pointer-events-none">
         <div className="flex flex-col w-full pointer-events-auto">
-          {/* ── TOP ANNOUNCEMENT BAR ── */}
+          
           <div
             className={cn(
               "bg-primary text-brand-bronze/80 text-center text-[12px] tracking-[0.12em] hidden lg:block w-full transition-all duration-500 ease-in-out overflow-hidden",
@@ -122,7 +122,7 @@ export function Header({ initialHasToken }: { initialHasToken?: boolean }) {
             </span>
           </div>
 
-          {/* ── MAIN HEADER CONTENT ── */}
+          
           <header
             className={cn(
               "w-full bg-white transition-all duration-500 ease-in-out font-sans",
@@ -131,7 +131,7 @@ export function Header({ initialHasToken }: { initialHasToken?: boolean }) {
                 : "border-b border-brand-ivory/50"
             )}
           >
-            {/* MAIN BAR: Logo / Search / Actions */}
+            
             <div className="border-b border-brand-sand/40 h-16 flex items-center bg-white">
               <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 w-full flex items-center gap-4">
                 <div className="flex shrink-0 items-center gap-1 sm:gap-2 lg:min-w-[160px]">
@@ -198,7 +198,7 @@ export function Header({ initialHasToken }: { initialHasToken?: boolean }) {
                             align="end"
                             className="w-[280px] rounded-[24px] p-2.5 bg-white opacity-100 shadow-[0_30px_60px_rgba(61,43,26,0.18)] border border-brand-sand/60 animate-in fade-in zoom-in-95 duration-300 mt-2.5 z-[100]"
                           >
-                            {/* ── USER PROFILE SECTION ── */}
+                            
                             <div className="px-3.5 py-4 mb-2 bg-brand-cream rounded-[18px] flex items-center gap-3.5 border border-brand-sand/20">
                               <div className="relative w-12 h-12 rounded-full border-2 border-white overflow-hidden shrink-0 shadow-md">
                                 {user.avatar ? (
@@ -362,7 +362,7 @@ export function Header({ initialHasToken }: { initialHasToken?: boolean }) {
               </div>
             </div>
 
-            {/* BOTTOM BAR: Navigation (Navbar) */}
+            
             <div
               className={cn(
                 "hidden lg:block border-b border-brand-sand/30 bg-white transition-all duration-500 ease-in-out overflow-hidden",
@@ -441,7 +441,7 @@ export function Header({ initialHasToken }: { initialHasToken?: boolean }) {
           </header>
         </div>
 
-        {/* MEGA MENU OVERLAY */}
+        
         {catOpen && activeCategory && (
           <div
             className="absolute top-full left-0 w-full bg-white border-b border-brand-sand shadow-2xl animate-in fade-in slide-in-from-top-2 duration-300 z-[50] pointer-events-auto"
@@ -481,10 +481,10 @@ export function Header({ initialHasToken }: { initialHasToken?: boolean }) {
         )}
       </div>
 
-      {/* Spacer - FIXED HEIGHT to avoid jitter during scroll */}
+      
       <div className="h-[64px] lg:h-[146px] w-full" />
 
-      {/* MOBILE SEARCH & MENU */}
+      
       <div
         className={cn(
           "fixed inset-0 z-[100] bg-brand-cream transition-all duration-300",

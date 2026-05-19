@@ -50,7 +50,7 @@ export function FeaturedCategories() {
       </div>
 
       <div className="relative flex overflow-hidden group py-10 -my-10">
-        {/* Infinite Marquee Wrapper */}
+        
         <div className="flex gap-10 animate-marquee whitespace-nowrap pause-on-hover">
           {[...categories, ...categories].map((category: Category, index: number) => {
             // Calculate a semi-realistic count if it's 0 (optional, or just show 0)
@@ -68,7 +68,7 @@ export function FeaturedCategories() {
                 href={`/shop?categoryId=${category.id}`}
                 className="group/card flex flex-col items-center gap-5 transition-all duration-500 hover:-translate-y-2 shrink-0"
               >
-                {/* Circular Outer Container */}
+                
                 <div className="w-32 h-32 md:w-44 md:h-44 rounded-full border border-[#DDD6C8]/50 bg-white p-1.5 transition-all duration-700 group-hover/card:border-[#C4783A] group-hover/card:shadow-[0_10px_30px_rgba(61,43,26,0.08)] flex items-center justify-center relative overflow-hidden">
                   <div className="w-full h-full rounded-full bg-white flex items-center justify-center overflow-hidden relative">
                     {category.image ? (
@@ -106,7 +106,7 @@ export function FeaturedCategories() {
           })}
         </div>
 
-        {/* CSS for Animation */}
+        
         <style jsx>{`
           @keyframes marquee {
             0% {

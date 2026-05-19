@@ -70,7 +70,7 @@ export function MessageBubble({
             <div className="text-[13px] leading-relaxed font-medium">
               {isImageMessage(displayMessage) ? (
                 <div className="rounded-xl overflow-hidden border border-amber-200 bg-white p-1 mt-1.5 inline-block">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  
                   <img
                     src={displayMessage}
                     alt="Internal Attachment"
@@ -148,7 +148,7 @@ export function MessageBubble({
         )}
         {isImageMessage(m.message) ? (
           <div className="rounded-2xl overflow-hidden shadow-xs border border-slate-100/80 bg-white p-1">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
+            
             <img
               src={m.message}
               alt="Attachment"

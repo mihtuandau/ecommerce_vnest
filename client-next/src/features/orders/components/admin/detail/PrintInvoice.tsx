@@ -23,7 +23,7 @@ export function PrintInvoice({ order }: PrintInvoiceProps) {
       id="print-area"
       className="hidden print:block print:p-8 !bg-white text-black font-sans leading-normal"
     >
-      {/* Header Hóa Đơn */}
+      
       <div className="flex justify-between items-start border-b-2 border-black pb-6 mb-8 !bg-transparent">
         <div className="!bg-transparent">
           <h1 className="text-2xl font-black tracking-tighter uppercase mb-1">
@@ -49,7 +49,7 @@ export function PrintInvoice({ order }: PrintInvoiceProps) {
         </div>
       </div>
 
-      {/* Thông tin khách hàng */}
+      
       <div className="grid grid-cols-2 gap-8 mb-10 !bg-transparent">
         <div className="!bg-transparent">
           <h3 className="text-[10px] font-black uppercase tracking-widest text-black mb-2">
@@ -110,7 +110,7 @@ export function PrintInvoice({ order }: PrintInvoiceProps) {
         </div>
       </div>
 
-      {/* Bảng sản phẩm */}
+      
       <table className="w-full mb-10 border-collapse !bg-transparent">
         <thead>
           <tr className="border-y-2 border-black !bg-transparent">
@@ -166,7 +166,7 @@ export function PrintInvoice({ order }: PrintInvoiceProps) {
         </tbody>
       </table>
 
-      {/* Tổng cộng */}
+      
       <div className="flex justify-end !bg-transparent">
         <div className="w-64 space-y-2 !bg-transparent">
           <div className="flex justify-between text-xs !bg-transparent">
@@ -198,7 +198,7 @@ export function PrintInvoice({ order }: PrintInvoiceProps) {
         </div>
       </div>
 
-      {/* Footer */}
+      
       <div className="mt-20 grid grid-cols-2 text-center !bg-transparent">
         <div className="!bg-transparent">
           <p className="text-xs font-bold uppercase mb-16">Người mua hàng</p>

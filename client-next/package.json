@@ -7,6 +7,7 @@
     "build": "next build",
     "build:prod": "npm run clean:logs && next build",
     "clean:logs": "node scripts/clean-console-logs.js",
+    "clean:comments": "node scripts/clean-comments.js",
     "lint": "next lint",
     "start": "next start",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\""

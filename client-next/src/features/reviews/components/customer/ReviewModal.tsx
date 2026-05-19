@@ -153,7 +153,7 @@ export function ReviewModal({
       <DialogContent className="sm:max-w-[600px] p-0 border-none rounded-2xl bg-white shadow-2xl flex flex-col overflow-visible">
         <DialogTitle className="sr-only">Đánh giá sản phẩm</DialogTitle>
 
-        {/* Header */}
+        
         <div className="p-6 pb-4 bg-slate-50/50 border-b border-slate-100 rounded-t-2xl flex items-center justify-between">
           <div className="space-y-0.5">
             <h2 className="text-xl font-bold text-slate-900">Đánh giá sản phẩm</h2>
@@ -164,9 +164,9 @@ export function ReviewModal({
         </div>
 
         <div className="p-6 space-y-5">
-          {/* Always side-by-side on sm+ screens */}
+          
           <div className="grid grid-cols-1 sm:grid-cols-[1fr,200px] gap-5 items-center">
-            {/* Product Summary */}
+            
             <div className="flex items-center gap-4 p-3.5 bg-slate-50/50 rounded-2xl border border-slate-100 min-w-0">
               <div className="h-16 w-16 rounded-xl bg-white p-1 border border-slate-200 shrink-0 shadow-sm relative overflow-hidden">
                 <Image
@@ -198,7 +198,7 @@ export function ReviewModal({
               </div>
             </div>
 
-            {/* Rating Stars */}
+            
             <div className="flex flex-col items-center justify-center gap-2.5 sm:border-l sm:border-slate-100 pl-0 sm:pl-5">
               <div className="flex items-center gap-1">
                 {[1, 2, 3, 4, 5].map((star) => (
@@ -233,7 +233,7 @@ export function ReviewModal({
             </div>
           </div>
 
-          {/* Comment Area & Upload */}
+          
           <div className="space-y-3">
             <label className="text-xs font-bold text-slate-500 px-1 tracking-wide">
               Nhận xét của bạn
@@ -246,7 +246,7 @@ export function ReviewModal({
                 className="w-full min-h-[100px] max-h-[200px] p-4 bg-transparent outline-none text-sm text-slate-800 placeholder:text-slate-400"
               />
 
-              {/* Media Upload Area */}
+              
               <div className="px-4 pb-3 flex items-center gap-2">
                 <input
                   type="file"
@@ -298,7 +298,7 @@ export function ReviewModal({
           </div>
         </div>
 
-        {/* Footer */}
+        
         <div className="p-6 pt-0 mt-auto flex items-center gap-3">
           <Button
             variant="outline"

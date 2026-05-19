@@ -63,7 +63,7 @@ export default function AdminDiscountsPage() {
 
       <DiscountStats {...stats} />
 
-      <div className="bg-white rounded-2xl border-none shadow-sm overflow-hidden">
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] overflow-hidden">
         {isLoading ? (
           <div className="flex h-96 items-center justify-center">
             <div className="flex flex-col items-center gap-3">

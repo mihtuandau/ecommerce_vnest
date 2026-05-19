@@ -126,10 +126,10 @@ export function SecurityTab() {
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      {/* ── SECTION: ĐỔI MẬT KHẨU ── */}
+      
       <div className="bg-white border border-brand-sand rounded-[24px] overflow-hidden shadow-sm">
         <div className="px-6 py-5 border-b border-brand-sand/50">
-          <h2 className="text-base font-bold text-brand-espresso flex items-center gap-2.5">
+          <h2 className="text-base font-semibold text-brand-espresso flex items-center gap-2.5">
             <Lock size={18} className="text-brand-bronze" /> Đổi mật khẩu
           </h2>
         </div>
@@ -146,7 +146,7 @@ export function SecurityTab() {
 
           <div className="space-y-6">
             <div className="space-y-2.5">
-              <label className="text-[12.5px] font-bold text-brand-espresso ml-1">
+              <label htmlFor="current-password" className="text-sm font-medium text-brand-espresso ml-1">
                 Mật khẩu hiện tại <span className="text-red-500">*</span>
               </label>
               <div className="relative group">
@@ -154,6 +154,7 @@ export function SecurityTab() {
                   <Lock size={16} />
                 </div>
                 <Input
+                  id="current-password"
                   type="password"
                   placeholder="••••••••"
                   className="h-12 pl-12 pr-5 rounded-xl border border-brand-sand/60 focus:ring-0 focus-visible:ring-0 focus:border-brand-bronze/60 transition-all bg-white focus:shadow-[0_0_0_1px_rgba(196,120,58,0.1)]"
@@ -161,7 +162,7 @@ export function SecurityTab() {
               </div>
             </div>
             <div className="space-y-2.5">
-              <label className="text-[12.5px] font-bold text-brand-espresso ml-1">
+              <label htmlFor="new-password" className="text-sm font-medium text-brand-espresso ml-1">
                 Mật khẩu mới <span className="text-red-500">*</span>
               </label>
               <div className="relative group">
@@ -169,6 +170,7 @@ export function SecurityTab() {
                   <ShieldAlert size={16} />
                 </div>
                 <Input
+                  id="new-password"
                   type="password"
                   placeholder="••••••••"
                   className="h-12 pl-12 pr-5 rounded-xl border border-brand-sand/60 focus:ring-0 focus-visible:ring-0 focus:border-brand-bronze/60 transition-all bg-white focus:shadow-[0_0_0_1px_rgba(196,120,58,0.1)]"
@@ -176,7 +178,7 @@ export function SecurityTab() {
               </div>
             </div>
             <div className="space-y-2.5">
-              <label className="text-[12.5px] font-bold text-brand-espresso ml-1">
+              <label htmlFor="confirm-password" className="text-sm font-medium text-brand-espresso ml-1">
                 Xác nhận mật khẩu mới <span className="text-red-500">*</span>
               </label>
               <div className="relative group">
@@ -184,6 +186,7 @@ export function SecurityTab() {
                   <CheckCircle2 size={16} />
                 </div>
                 <Input
+                  id="confirm-password"
                   type="password"
                   placeholder="••••••••"
                   className="h-12 pl-12 pr-5 rounded-xl border border-brand-sand/60 focus:ring-0 focus-visible:ring-0 focus:border-brand-bronze/60 transition-all bg-white focus:shadow-[0_0_0_1px_rgba(196,120,58,0.1)]"
@@ -205,15 +208,15 @@ export function SecurityTab() {
         </div>
       </div>
 
-      {/* ── SECTION: BẢO MẬT & ĐĂNG NHẬP ── */}
+      
       <div className="bg-white border border-brand-sand rounded-[24px] overflow-hidden shadow-sm">
         <div className="px-6 py-5 border-b border-brand-sand/50">
-          <h2 className="text-base font-bold text-brand-espresso flex items-center gap-2.5">
+          <h2 className="text-base font-semibold text-brand-espresso flex items-center gap-2.5">
             <ShieldAlert size={20} className="text-brand-bronze" /> Bảo mật & Đăng nhập
           </h2>
         </div>
         <div className="p-6 lg:p-8 space-y-5">
-          {/* 2FA */}
+          
           <div className="flex items-center justify-between p-5 border border-brand-sand/60 rounded-[24px] hover:border-brand-bronze/40 transition-all group bg-brand-cream/10">
             <div className="flex items-center gap-5">
               <div
@@ -227,10 +230,10 @@ export function SecurityTab() {
                 <Smartphone size={22} />
               </div>
               <div className="space-y-0.5">
-                <p className="text-[15px] font-bold text-brand-espresso">
+                <p className="text-[15px] font-semibold text-brand-espresso">
                   Xác thực 2 lớp (2FA)
                 </p>
-                <p className="text-[12.5px] text-brand-taupe font-medium">
+                <p className="text-[13px] text-brand-taupe font-medium">
                   Bảo mật tài khoản qua mã xác nhận Email
                 </p>
               </div>
@@ -246,7 +249,7 @@ export function SecurityTab() {
             </div>
           </div>
 
-          {/* SESSIONS */}
+          
           <div
             onClick={() => setIsSessionModalOpen(true)}
             className="flex items-center justify-between p-5 border border-brand-sand/60 rounded-[20px] hover:bg-brand-ivory/30 transition-all cursor-pointer group"
@@ -256,30 +259,30 @@ export function SecurityTab() {
                 <Eye size={20} />
               </div>
               <div className="space-y-0.5">
-                <p className="text-[14.5px] font-bold text-brand-espresso">
+                <p className="text-[14.5px] font-semibold text-brand-espresso">
                   Quản lý phiên đăng nhập
                 </p>
-                <p className="text-[12.5px] text-brand-taupe">
+                <p className="text-[13px] text-brand-taupe">
                   Xem và đăng xuất khỏi các thiết bị khác
                 </p>
               </div>
             </div>
-            <button className="text-[13px] font-bold text-brand-bronze hover:underline flex items-center gap-1">
+            <button className="text-sm font-semibold text-brand-bronze hover:underline flex items-center gap-1">
               Chi tiết <ChevronRight size={14} />
             </button>
           </div>
 
-          {/* DELETE ACCOUNT */}
+          
           <div className="flex items-center justify-between p-5 border border-red-100 rounded-[20px] bg-red-50/20 hover:bg-red-50/40 transition-all group">
             <div className="flex items-center gap-5">
               <div className="w-12 h-12 rounded-xl bg-red-50 flex items-center justify-center text-red-500 shadow-sm group-hover:scale-105 transition-transform">
                 <Smartphone size={20} />
               </div>
               <div className="space-y-0.5">
-                <p className="text-[14.5px] font-bold text-brand-espresso">
+                <p className="text-[14.5px] font-semibold text-brand-espresso">
                   Xóa tài khoản
                 </p>
-                <p className="text-[12.5px] text-red-500/80">
+                <p className="text-[13px] text-red-500/80">
                   Hành động này không thể hoàn tác
                 </p>
               </div>
@@ -294,7 +297,7 @@ export function SecurityTab() {
         </div>
       </div>
 
-      {/* ── 2FA VERIFICATION MODAL ── */}
+      
       <Dialog open={is2FAModalOpen} onOpenChange={setIs2FAModalOpen}>
         <DialogContent className="sm:max-w-[450px] rounded-[32px] p-0 overflow-hidden border-none shadow-2xl">
           <DialogHeader className="px-8 py-8 bg-brand-ivory/30 text-center">
@@ -349,7 +352,7 @@ export function SecurityTab() {
         </DialogContent>
       </Dialog>
 
-      {/* ── SESSION MANAGEMENT MODAL ── */}
+      
       <Dialog open={isSessionModalOpen} onOpenChange={setIsSessionModalOpen}>
         <DialogContent className="sm:max-w-[550px] rounded-[32px] p-0 overflow-hidden border-none shadow-2xl">
           <DialogHeader className="px-8 py-6 bg-brand-ivory/30 border-b border-brand-sand/50">

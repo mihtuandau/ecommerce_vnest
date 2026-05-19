@@ -37,28 +37,31 @@ export default function ContactPage() {
           <h2 className="font-bold text-slate-900 mb-6">Gửi yêu cầu trực tuyến</h2>
           <form className="space-y-4">
             <div>
-              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">
+              <label htmlFor="contact-name" className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">
                 Họ và tên
               </label>
               <input
+                id="contact-name"
                 type="text"
                 className="w-full px-4 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-slate-400"
               />
             </div>
             <div>
-              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">
+              <label htmlFor="contact-phone" className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">
                 Số điện thoại
               </label>
               <input
+                id="contact-phone"
                 type="text"
                 className="w-full px-4 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-slate-400"
               />
             </div>
             <div>
-              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">
+              <label htmlFor="contact-message" className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">
                 Nội dung
               </label>
               <textarea
+                id="contact-message"
                 rows={4}
                 className="w-full px-4 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-slate-400"
               ></textarea>

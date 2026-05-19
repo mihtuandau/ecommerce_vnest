@@ -34,7 +34,7 @@ export function OrderListToolbar({
 }: OrderListToolbarProps) {
   return (
     <div className="p-4 border-b border-slate-100 bg-slate-50/30 flex flex-col md:flex-row items-center gap-3">
-      {/* Search */}
+      
       <div className="relative flex-1 min-w-[200px] w-full md:w-auto">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
         <input
@@ -46,7 +46,7 @@ export function OrderListToolbar({
       </div>
 
       <div className="flex items-center gap-3 w-full md:w-auto flex-wrap">
-        {/* Status Filter */}
+        
         <select
           className="h-[36px] px-3 border border-slate-200 rounded-lg text-[13px] bg-white text-slate-700 focus:outline-none focus:ring-1 focus:ring-slate-800 min-w-[150px] shadow-sm cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M7%2010l5%205%205-5H7z%22%20fill%3D%22%2394a3b8%22%2F%3E%3C%2Fsvg%3E')] bg-no-repeat bg-[position:right_4px_center] pr-8"
           value={statusFilter}
@@ -61,7 +61,7 @@ export function OrderListToolbar({
           <option value={OrderStatus.RETURN_REQUESTED}>Yêu cầu trả hàng</option>
         </select>
 
-        {/* Payment Filter */}
+        
         <select
           className="h-[36px] px-3 border border-slate-200 rounded-lg text-[13px] bg-white text-slate-700 focus:outline-none focus:ring-1 focus:ring-slate-800 min-w-[150px] shadow-sm cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M7%2010l5%205%205-5H7z%22%20fill%3D%22%2394a3b8%22%2F%3E%3C%2Fsvg%3E')] bg-no-repeat bg-[position:right_4px_center] pr-8"
           value={paymentFilter}
@@ -73,7 +73,7 @@ export function OrderListToolbar({
           <option value={PaymentMethod.PAYOS}>Thanh toán PayOS</option>
         </select>
 
-        {/* Date Filter */}
+        
         <div className="flex items-center gap-2 h-[36px] px-3 border border-slate-200 rounded-lg bg-white shadow-sm text-slate-600 text-[13px]">
           <input
             type="date"

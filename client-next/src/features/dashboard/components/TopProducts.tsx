@@ -27,7 +27,7 @@ export function TopProducts({ products, isLoading }: TopProductsProps) {
   const topProducts = Array.isArray(products) ? products : [];
 
   return (
-    <Card className="border-none shadow-sm rounded-2xl overflow-hidden bg-white h-full transition-all hover:shadow-md">
+    <Card className="border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] bg-white rounded-2xl overflow-hidden h-full">
       <CardHeader className="flex flex-row items-center justify-between pb-4 px-6 border-b border-slate-50">
         <CardTitle className="text-base font-semibold text-slate-900">
           Top sản phẩm bán chạy

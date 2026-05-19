@@ -92,7 +92,7 @@ export function PermissionsContainer() {
     return (
       <div className="h-[60vh] flex flex-col items-center justify-center gap-2">
         <Spinner size="lg" />
-        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+        <p className="text-xs font-semibold text-slate-400">
           Đang tải dữ liệu...
         </p>
       </div>

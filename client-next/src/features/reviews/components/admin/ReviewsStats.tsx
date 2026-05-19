@@ -43,8 +43,8 @@ export function ReviewsStats({ reviews, total }: ReviewsStatsProps) {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      {/* Total Reviews Card */}
-      <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-5">
+      
+      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] flex items-center gap-5">
         <div className="h-12 w-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 flex-shrink-0">
           <MessageSquare className="h-6 w-6" />
         </div>
@@ -59,8 +59,8 @@ export function ReviewsStats({ reviews, total }: ReviewsStatsProps) {
         </div>
       </div>
 
-      {/* Average Rating Card */}
-      <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-5">
+      
+      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] flex items-center gap-5">
         <div className="h-12 w-12 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-500 flex-shrink-0">
           <Star className="h-6 w-6 fill-amber-400 text-amber-400" />
         </div>
@@ -88,8 +88,8 @@ export function ReviewsStats({ reviews, total }: ReviewsStatsProps) {
         </div>
       </div>
 
-      {/* Breakdown Card */}
-      <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-center gap-1.5">
+      
+      <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] flex flex-col justify-center gap-1.5">
         <span className="text-[10.5px] text-slate-450 block mb-1">
           Tỷ lệ phân bổ điểm số (trang này)
         </span>

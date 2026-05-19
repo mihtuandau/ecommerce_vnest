@@ -58,12 +58,12 @@ export function AdminTopBar() {
 
   return (
     <header className="h-16 border-b border-slate-100/90 bg-white/80 backdrop-blur-md px-6 flex items-center justify-between sticky top-0 z-20 transition-all font-sans select-none">
-      {/* Left side: Search & Admin Badge */}
+      
       <div className="flex items-center gap-3.5 w-1/3">
         <div className="relative w-full max-w-[280px] group">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 group-focus-within:text-slate-800 transition-colors" />
           <Input
-            placeholder="Tìm kiếm nhanh... (Ctrl + K)"
+            placeholder="Tìm kiếm nhanh... (Ctrl + K)"  
             className="pl-9 pr-10 h-9 bg-slate-50/80 border border-slate-100 hover:bg-slate-50 focus:bg-white focus:border-slate-200 transition-all rounded-xl text-[12px] focus:ring-0 focus-visible:ring-0 focus-visible:outline-none placeholder-slate-400 text-slate-700"
           />
           <div className="absolute right-2.5 top-1/2 -translate-y-1/2 hidden md:flex items-center gap-0.5 px-1.5 py-0.5 rounded border border-slate-200 bg-white text-[9px] font-medium text-slate-400 shadow-3xs">
@@ -71,33 +71,27 @@ export function AdminTopBar() {
             <span>K</span>
           </div>
         </div>
-
-        {/* Live Admin Mode Pill */}
-        <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-50 border border-slate-200/60 text-[9px] font-bold text-slate-500 tracking-wider uppercase">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-          SYSTEM ACTIVE
-        </div>
       </div>
 
-      {/* Right side: Actions, Notifications & Profile */}
+      
       <div className="flex items-center gap-2">
-        {/* Visit Shop Button */}
+        
         <Button
           variant="outline"
           size="sm"
-          className="hidden md:flex items-center gap-1.5 rounded-xl h-9 px-3 border border-slate-200 bg-white text-[12px] font-bold text-slate-600 hover:bg-slate-50 hover:text-slate-850 hover:border-slate-300 transition-all shadow-3xs"
+          className="hidden md:flex items-center gap-1.5 rounded-xl h-9 px-3 border border-slate-200 bg-white text-[13px] text-slate-600 hover:bg-slate-50 hover:text-slate-850 hover:border-slate-300 transition-all shadow-3xs"
           asChild
         >
-          <Link href="/" target="_blank">
+          <Link href="/" target="_blank"> 
             <Globe className="h-3.5 w-3.5 text-slate-400" />
             Xem cửa hàng
-            <ExternalLink className="h-3 w-3 ml-0.5 opacity-40 shrink-0" />
+            <ExternalLink className="h-3 w-3 ml-0.5 text-slate-400 opacity-40 shrink-0" />
           </Link>
         </Button>
 
         <div className="h-4 w-[1px] bg-slate-200 mx-1.5 hidden md:block" />
 
-        {/* Live Notifications Dropdown */}
+        
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
@@ -182,7 +176,7 @@ export function AdminTopBar() {
           </DropdownMenuContent>
         </DropdownMenu>
 
-        {/* Quick Settings Gear */}
+        
         <Button
           variant="ghost"
           size="icon"
@@ -196,7 +190,7 @@ export function AdminTopBar() {
 
         <div className="h-6 w-[1px] bg-slate-100 mx-1" />
 
-        {/* User Account Menu */}
+        
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
@@ -213,17 +207,17 @@ export function AdminTopBar() {
                     className="h-full w-full object-cover rounded-lg"
                   />
                 ) : (
-                  <span className="text-slate-650 font-bold text-xs">
+                  <span className="text-slate-650 font-bold text-sm">
                     {user?.name ? user.name.charAt(0).toUpperCase() : "A"}
                   </span>
                 )}
               </div>
               <div className="text-left hidden md:block space-y-0.5">
-                <p className="text-[12px] font-bold text-slate-800 line-clamp-1 leading-none">
-                  {user?.name || "Người dùng"}
+                <p className="text-[13px] font-bold text-slate-800 line-clamp-1 leading-none">
+                  {user?.name}
                 </p>
-                <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider leading-none">
-                  {ROLE_CONFIG[user?.role as Role]?.label ?? user?.role ?? "Người dùng"}
+                <p className="text-[9px] text-slate-400 font-semibold uppercase">
+                  {ROLE_CONFIG[user?.role as Role]?.label ?? user?.role }
                 </p>
               </div>
             </Button>
@@ -232,7 +226,7 @@ export function AdminTopBar() {
             align="end"
             className="w-56 mt-2.5 rounded-2xl p-2 shadow-2xl border border-slate-100 bg-white animate-in fade-in zoom-in-95 duration-200"
           >
-            <DropdownMenuLabel className="font-bold text-[9px] tracking-wider text-slate-450 px-3 py-2 uppercase">
+            <DropdownMenuLabel className="font-semibold text-[13px] text-slate-750 px-3 py-2">
               Tài khoản
             </DropdownMenuLabel>
 
@@ -242,7 +236,7 @@ export function AdminTopBar() {
                 className="rounded-xl cursor-pointer py-2 px-3 flex items-center gap-2.5 focus:bg-slate-50 transition-colors group"
               >
                 <UserIcon className="h-4 w-4 text-slate-400 group-focus:text-slate-800" />
-                <span className="font-semibold text-xs text-slate-600 group-focus:text-slate-850">
+                <span className="font-semibold text-sm text-slate-600 group-focus:text-slate-850">
                   Thông tin cá nhân
                 </span>
               </Link>
@@ -254,7 +248,7 @@ export function AdminTopBar() {
                 className="rounded-xl cursor-pointer py-2 px-3 flex items-center gap-2.5 focus:bg-slate-50 transition-colors group"
               >
                 <Shield className="h-4 w-4 text-slate-400 group-focus:text-slate-800" />
-                <span className="font-semibold text-xs text-slate-600 group-focus:text-slate-850">
+                <span className="font-semibold text-sm text-slate-600 group-focus:text-slate-850">
                   Cài đặt hệ thống
                 </span>
               </Link>
@@ -263,7 +257,7 @@ export function AdminTopBar() {
             <DropdownMenuSeparator className="my-1.5 bg-slate-50" />
 
             <DropdownMenuItem
-              className="rounded-xl cursor-pointer py-2 px-3 text-rose-500 hover:bg-rose-50/50 focus:bg-rose-50/50 font-bold text-xs"
+              className="rounded-xl cursor-pointer py-2 px-3 text-rose-500 hover:bg-rose-50/50 focus:bg-rose-50/50 font-semibold text-sm"
               onClick={logout}
             >
               Đăng xuất

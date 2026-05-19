@@ -73,7 +73,7 @@ export function PaymentsContainer() {
 
   return (
     <div className="space-y-4 pb-10">
-      {/* Header */}
+      
       <div className="flex items-center justify-between pb-4 border-b border-slate-200">
         <div>
           <h1 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
@@ -97,12 +97,12 @@ export function PaymentsContainer() {
         </Button>
       </div>
 
-      {/* Summary Cards Grid */}
+      
       <PaymentsStats payments={statsPayments} formatCurrency={formatCurrency} />
 
-      {/* Filters & Actions Panel */}
+      
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-        {/* Toolbar (Status, Method, Search) */}
+        
         <PaymentsToolbar
           status={status}
           setStatus={setStatus}
@@ -113,7 +113,7 @@ export function PaymentsContainer() {
           setPage={setPage}
         />
 
-        {/* Payments Table with Pagination */}
+        
         <PaymentsTable
           payments={paginatedPayments}
           isLoading={isLoading}

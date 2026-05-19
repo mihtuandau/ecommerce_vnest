@@ -47,7 +47,7 @@ export default function AdminOrderDetailPage() {
   return (
     <div className="space-y-4 pb-10 mx-auto relative">
       <div className="no-print space-y-4">
-        {/* Top Header */}
+        
         <Header
           order={order}
           id={id}
@@ -55,7 +55,7 @@ export default function AdminOrderDetailPage() {
         />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column: Stepper, Items, Timeline, Notes */}
+          
           <div className="lg:col-span-2 space-y-6">
             <Stepper
               status={order.status}
@@ -68,7 +68,7 @@ export default function AdminOrderDetailPage() {
             <Notes order={order} />
           </div>
 
-          {/* Right Column: Customer & Actions */}
+          
           <div className="space-y-6">
             <Customer order={order} />
             <Actions
@@ -83,7 +83,7 @@ export default function AdminOrderDetailPage() {
         </div>
       </div>
 
-      {/* DEDICATED PRINT COMPONENT */}
+      
       <PrintInvoice order={order} />
     </div>
   );

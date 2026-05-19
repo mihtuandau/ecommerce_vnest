@@ -5,6 +5,7 @@ import Image from "next/image";
 import { CreditCard, Wallet, Banknote, CheckCircle2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/Card";
 import { cn } from "@/utils/cn";
+import { CheckoutCard } from "./CheckoutCard";
 
 interface PaymentMethodsProps {
   paymentMethod: string;
@@ -46,14 +47,10 @@ export const PaymentMethods = React.memo(function PaymentMethods({
   ];
 
   return (
-    <div className="bg-white rounded-[16px] border border-brand-sand overflow-hidden">
-      <div className="px-6 py-[18px] border-b border-brand-sand flex items-center justify-between">
-        <div className="flex items-center gap-[10px]">
-          <div className="w-[26px] h-[26px] rounded-full bg-primary flex items-center justify-center text-white text-[12px] font-bold">
-            {stepNumber}
-          </div>
-          <h2 className="text-[15px] font-bold text-primary">Phương thức thanh toán</h2>
-        </div>
+    <CheckoutCard
+      step={stepNumber}
+      title="Phương thức thanh toán"
+      action={
         <div className="flex items-center gap-1.5 text-[11.5px] text-brand-taupe">
           <svg
             width="12"
@@ -69,9 +66,9 @@ export const PaymentMethods = React.memo(function PaymentMethods({
           </svg>
           Bảo mật SSL
         </div>
-      </div>
-
-      <div className="p-6 space-y-[10px]">
+      }
+    >
+      <div className="space-y-[10px]">
         {methods.map((method) => (
           <div
             key={method.id}
@@ -122,7 +119,7 @@ export const PaymentMethods = React.memo(function PaymentMethods({
               <span className="text-[12px] text-brand-taupe">{method.desc}</span>
             </div>
 
-            {/* Expandable Body */}
+            
             {paymentMethod === method.id && (
               <div className="px-4 pb-[18px] pt-4 border-t border-brand-sand animate-in fade-in duration-300">
                 {method.id === "MOMO" ? (
@@ -133,7 +130,7 @@ export const PaymentMethods = React.memo(function PaymentMethods({
                     <p className="text-[12px] text-brand-taupe">
                       Quét mã bằng ứng dụng MoMo
                     </p>
-                    <p className="text-[13px] font-bold text-[#A50064] mt-1">
+                    <p className="text-[13px] font-semibold text-[#A50064] mt-1">
                       Sử dụng ví MoMo để thanh toán
                     </p>
                   </div>
@@ -157,6 +154,6 @@ export const PaymentMethods = React.memo(function PaymentMethods({
           </div>
         ))}
       </div>
-    </div>
+    </CheckoutCard>
   );
 });

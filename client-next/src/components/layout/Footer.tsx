@@ -28,7 +28,7 @@ export function Footer() {
     <footer className="bg-primary text-brand-taupe overflow-hidden relative">
       <div className="max-w-[1440px] mx-auto px-6 lg:px-12 py-14 lg:py-16 relative z-10">
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-12">
-          {/* Brand Column */}
+          
           <div className="lg:col-span-4 space-y-6">
             <Link href="/" className="flex items-center gap-3 group">
               <div className="bg-white p-2 rounded-2xl transition-transform duration-300 group-hover:scale-105">
@@ -70,7 +70,7 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Links Columns */}
+          
           <div className="lg:col-span-5 grid grid-cols-2 gap-8">
             <div className="space-y-5">
               <h3 className="text-[14px] font-bold text-brand-cream font-serif">
@@ -127,7 +127,7 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Contact Column */}
+          
           <div className="lg:col-span-3 space-y-5">
             <h3 className="text-[14px] font-bold text-brand-cream font-serif">
               Liên hệ
@@ -152,7 +152,7 @@ export function Footer() {
           </div>
         </div>
 
-        {/* Bottom Bar */}
+        
         <div className="mt-12 pt-6 border-t border-white/[0.08] flex flex-col md:flex-row justify-between items-center gap-4">
           <span className="text-[12px] text-brand-taupe/50">
             © 2026 {mounted ? settings?.storeName || "LUXE" : "LUXE"} All rights

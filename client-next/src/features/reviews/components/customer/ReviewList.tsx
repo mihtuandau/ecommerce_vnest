@@ -71,7 +71,7 @@ const RatingSummary = ({
 
   return (
     <div className="flex flex-col md:flex-row items-center md:items-start gap-8 md:gap-16 mb-10 pb-10 border-b border-slate-100">
-      {/* Average Score */}
+      
       <div className="flex flex-col items-center justify-center bg-slate-50/50 rounded-3xl p-8 min-w-[160px] border border-slate-100">
         <span className="text-6xl font-semibold text-slate-900 leading-none mb-2 tracking-tighter">
           {avg.toFixed(1)}
@@ -82,7 +82,7 @@ const RatingSummary = ({
         </span>
       </div>
 
-      {/* Progress Bars */}
+      
       <div className="flex-1 w-full max-w-md flex flex-col gap-3 justify-center">
         {counts.map(({ star, count }) => {
           const pct = total > 0 ? (count / total) * 100 : 0;
@@ -156,7 +156,7 @@ export function ReviewList({ productId, product }: ReviewListProps) {
     <div className="animate-in fade-in duration-700">
       <RatingSummary reviews={reviews} product={product} />
 
-      {/* AI Review Summary Section */}
+      
       <ReviewAISummary productId={productId} />
 
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">

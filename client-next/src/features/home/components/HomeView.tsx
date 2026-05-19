@@ -20,7 +20,7 @@ import { useFlashSale } from "@/features/discounts/hooks";
 import { useProducts } from "@/features/products/hooks";
 import { useLatestReviews } from "@/features/reviews/hooks";
 
-export default function HomeContainer() {
+export function HomeView() {
   // Banners
   const { data: bannerData, isLoading: isBannersLoading } = useBanners({
     active: "true",
@@ -60,25 +60,25 @@ export default function HomeContainer() {
       className="flex flex-col bg-brand-cream"
       style={{ fontFamily: "'DM Sans', sans-serif" }}
     >
-      {/* ── Hero Banner ── */}
+      
       {isBannersLoading ? (
         <HeroBannerSkeleton />
       ) : (
         <HeroBanner banners={Array.isArray(banners) ? banners : []} />
       )}
 
-      {/* ── Trust Badges ── */}
+      
       <section className="max-w-[1440px] mx-auto px-6 lg:px-12 w-full mt-12 md:mt-16">
         <TrustBadges />
       </section>
 
       <div className="space-y-20 md:space-y-28 mt-16 md:mt-24">
-        {/* ── Featured Categories ── */}
+        
         <section className="max-w-[1440px] mx-auto px-6 lg:px-12 w-full">
           <FeaturedCategories />
         </section>
 
-        {/* ── Flash Sale ── */}
+        
         {isFlashSaleLoading ? (
           <section className="max-w-[1440px] mx-auto px-6 lg:px-12 w-full">
             <FlashSaleSkeleton />
@@ -106,10 +106,10 @@ export default function HomeContainer() {
           })()
         )}
 
-        {/* ── Voucher Banner ── */}
+        
         <VoucherBanner />
 
-        {/* ── Best Selling Products ── */}
+        
         <section className="w-full">
           <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
             {isBestSellingLoading ? (
@@ -127,7 +127,7 @@ export default function HomeContainer() {
           </div>
         </section>
 
-        {/* ── Featured Products ── */}
+        
         <section className="max-w-[1440px] mx-auto px-6 lg:px-12 w-full">
           {isFeaturedLoading ? (
             <ProductSectionSkeleton variant="featured" />
@@ -143,7 +143,7 @@ export default function HomeContainer() {
           )}
         </section>
 
-        {/* ── Top Rated Products ── */}
+        
         <section className="max-w-[1440px] mx-auto px-6 lg:px-12 w-full pb-8">
           {isTopRatedLoading ? (
             <ProductSectionSkeleton variant="toprated" />
@@ -160,7 +160,7 @@ export default function HomeContainer() {
         </section>
       </div>
 
-      {/* ── Reviews ── */}
+      
       <section className="w-full mt-12 pb-24">
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
           <h2

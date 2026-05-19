@@ -63,7 +63,7 @@ export function VoucherModal({
         </DialogHeader>
 
         <div className="p-6 space-y-6">
-          {/* Input field */}
+          
           <div className="flex gap-2">
             <Input
               type="text"
@@ -114,7 +114,7 @@ export function VoucherModal({
                         !isEligible && "opacity-60 cursor-not-allowed bg-slate-50"
                       )}
                     >
-                      {/* Decoration circle */}
+                      
                       <div className="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-slate-50 border-r border-slate-200/50" />
 
                       <div className="flex gap-4 items-center pl-4">

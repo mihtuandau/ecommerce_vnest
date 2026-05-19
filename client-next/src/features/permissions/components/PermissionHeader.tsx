@@ -22,15 +22,7 @@ export function PermissionHeader({
   return (
     <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 font-sans">
       <div className="space-y-1">
-        <div className="flex items-center gap-2 mb-1">
-          <div className="h-6 w-6 rounded-md bg-slate-100 flex items-center justify-center">
-            <Lock className="h-3.5 w-3.5 text-slate-500" />
-          </div>
-          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-            Hệ thống
-          </span>
-        </div>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+        <h1 className="text-2xl font-medium tracking-tight text-slate-900">
           Phân quyền người dùng
         </h1>
         <p className="text-slate-500 text-sm max-w-xl">
@@ -42,7 +34,7 @@ export function PermissionHeader({
         <Button
           variant="outline"
           size="sm"
-          className="h-9 rounded-lg gap-2 text-xs font-bold bg-white shadow-sm border-slate-200"
+          className="h-9 rounded-xl gap-2 text-xs font-semibold bg-white shadow-sm border-slate-200"
           onClick={onRefresh}
         >
           <RefreshCw className="h-3.5 w-3.5 text-slate-400" />
@@ -50,9 +42,9 @@ export function PermissionHeader({
         </Button>
         <Button
           className={cn(
-            "h-9 px-6 rounded-lg gap-2 text-xs font-bold shadow-lg shadow-primary/20 transition-all duration-300",
+            "h-9 px-6 rounded-xl gap-2 text-xs font-semibold shadow-sm transition-all duration-300",
             hasChanges
-              ? "bg-primary text-white hover:bg-primary/90 hover:-translate-y-0.5"
+              ? "bg-slate-800 text-white hover:bg-slate-700 hover:-translate-y-0.5"
               : "bg-slate-100 text-slate-400 pointer-events-none"
           )}
           onClick={onSave}

@@ -82,7 +82,7 @@ export function ScopeSection({
   };
 
   return (
-    <div className="space-y-6 bg-white p-6 rounded-xl border border-slate-200">
+    <div className="space-y-6 bg-white p-6 rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)]">
       <div className="flex items-center justify-between pb-2 border-b border-slate-50">
         <div className="flex items-center gap-2">
           <Package className="h-5 w-5 text-primary" />
@@ -171,13 +171,13 @@ export function ScopeSection({
                       {isSelected && (
                         <div className="px-12 py-4 bg-white/50 grid grid-cols-2 lg:grid-cols-4 gap-4 border-b border-slate-100">
                           <div className="space-y-1.5">
-                            <label className="text-[10px] font-bold uppercase text-slate-400">
+                            <label className="text-[11px] font-semibold text-slate-500">
                               Giới hạn (Flash)
                             </label>
                             <Input
                               type="number"
                               placeholder="Vô hạn"
-                              className="h-8 text-xs"
+                              className="h-9 rounded-lg border-slate-200 text-xs font-semibold text-slate-800"
                               value={selection.stockLimit ?? ""}
                               onChange={(e) =>
                                 updateProductMetadata(
@@ -190,13 +190,13 @@ export function ScopeSection({
                             />
                           </div>
                           <div className="space-y-1.5">
-                            <label className="text-[10px] font-bold uppercase text-slate-400">
+                            <label className="text-[11px] font-semibold text-slate-500">
                               % Giảm (Ghi đè)
                             </label>
                             <Input
                               type="number"
                               placeholder="Mặc định"
-                              className="h-8 text-xs"
+                              className="h-9 rounded-lg border-slate-200 text-xs font-semibold text-slate-800"
                               value={selection.percentage ?? ""}
                               onChange={(e) =>
                                 updateProductMetadata(
@@ -209,13 +209,13 @@ export function ScopeSection({
                             />
                           </div>
                           <div className="space-y-1.5">
-                            <label className="text-[10px] font-bold uppercase text-slate-400">
+                            <label className="text-[11px] font-semibold text-slate-500">
                               Tiền giảm (Ghi đè)
                             </label>
                             <Input
                               type="number"
                               placeholder="Mặc định"
-                              className="h-8 text-xs"
+                              className="h-9 rounded-lg border-slate-200 text-xs font-semibold text-slate-800"
                               value={selection.fixedAmount ?? ""}
                               onChange={(e) =>
                                 updateProductMetadata(
@@ -228,12 +228,12 @@ export function ScopeSection({
                             />
                           </div>
                           <div className="space-y-1.5">
-                            <label className="text-[10px] font-bold uppercase text-slate-400">
+                            <label className="text-[11px] font-semibold text-slate-500">
                               Badge (Nhãn)
                             </label>
                             <Input
                               placeholder="VD: HOT"
-                              className="h-8 text-xs"
+                              className="h-9 rounded-lg border-slate-200 text-xs font-semibold text-slate-800"
                               value={selection.badge || ""}
                               onChange={(e) =>
                                 updateProductMetadata(

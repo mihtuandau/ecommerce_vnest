@@ -91,7 +91,7 @@ export function SocialProof() {
         ${isVisible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0 pointer-events-none"}`}
     >
       <div className="bg-white/95 backdrop-blur-xl border border-slate-200 p-3 pr-5 rounded-2xl shadow-sm flex items-center gap-4 max-w-[340px] group relative overflow-hidden">
-        {/* Progress bar - Minimalist */}
+        
         {isVisible && (
           <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-slate-50 overflow-hidden">
             <div

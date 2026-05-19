@@ -64,7 +64,7 @@ export function WishlistView() {
     <div className="min-h-screen bg-brand-cream font-sans-brand">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
         <div className="space-y-10">
-          {/* Header & Navigation */}
+          
           <div className="space-y-6">
             <button
               onClick={() => router.back()}
@@ -108,7 +108,7 @@ export function WishlistView() {
                   key={item.id}
                   className="group relative flex flex-col h-full bg-white rounded-2xl border border-brand-sand p-2 transition-all duration-300 hover:shadow-xl hover:shadow-brand-espresso/5"
                 >
-                  {/* Card Actions Overlay */}
+                  
                   <div className="absolute top-4 right-4 z-30">
                     <Button
                       onClick={() => removeFromWishlist(item.id)}
@@ -120,7 +120,7 @@ export function WishlistView() {
                     </Button>
                   </div>
 
-                  {/* ── IMAGE SECTION ── */}
+                  
                   <Link
                     href={`/shop/${item.slug}`}
                     className="relative aspect-[4/5] w-full overflow-hidden rounded-xl bg-brand-cream/50 block"
@@ -142,7 +142,7 @@ export function WishlistView() {
                     )}
                   </Link>
 
-                  {/* ── CONTENT SECTION ── */}
+                  
                   <div className="flex-1 flex flex-col py-5 px-3">
                     <div className="flex flex-col gap-1.5 mb-4">
                       <Link
@@ -169,7 +169,7 @@ export function WishlistView() {
             </div>
           )}
 
-          {/* Footer Navigation */}
+          
           {items.length > 0 && (
             <div className="pt-12 border-t border-brand-sand flex justify-center">
               <Button

@@ -31,8 +31,8 @@ export function ReviewsToolbar({
   };
 
   return (
-    <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
-      {/* Search Input */}
+    <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] flex flex-col md:flex-row items-center justify-between gap-4">
+      
       <div className="relative w-full md:w-[360px]">
         <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 z-10" />
         <Input
@@ -44,7 +44,7 @@ export function ReviewsToolbar({
         />
       </div>
 
-      {/* Filter Dropdown */}
+      
       <div className="flex flex-wrap items-center gap-3 w-full md:w-auto md:justify-end">
         <Select
           value={ratingFilter === null ? "ALL" : String(ratingFilter)}
@@ -66,7 +66,7 @@ export function ReviewsToolbar({
           </SelectContent>
         </Select>
 
-        {/* Reset Button */}
+        
         {(searchQuery || ratingFilter !== null) && (
           <Button
             variant="ghost"

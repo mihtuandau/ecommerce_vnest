@@ -12,7 +12,7 @@ interface ReorderBannerProps {
 export function ReorderBanner({ itemCount, onReorder }: ReorderBannerProps) {
   return (
     <div className="mt-10 bg-[#3D2B1A] rounded-[24px] p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-8 shadow-xl shadow-[#3D2B1A]/10 font-sans-brand overflow-hidden relative group border border-[#4D3B2A]">
-      {/* Subtle Texture */}
+      
       <div className="absolute inset-0 bg-[url('/textures/paper.png')] opacity-[0.03] mix-blend-overlay pointer-events-none" />
       <div className="absolute -top-24 -right-24 w-64 h-64 bg-[#C4783A]/10 rounded-full blur-3xl pointer-events-none" />
 

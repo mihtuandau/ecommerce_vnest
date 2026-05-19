@@ -286,7 +286,7 @@ export default function CustomerChat({ onClose }: CustomerChatProps) {
                 >
                   {isImageMessage(m.message) ? (
                     <div className="rounded-xl overflow-hidden shadow-3xs border border-[#DDD6C8]/40 bg-white p-1 hover:scale-101 transition-transform">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      
                       <img
                         src={m.message}
                         alt="Attachment"
@@ -376,7 +376,7 @@ export default function CustomerChat({ onClose }: CustomerChatProps) {
                 <div className="relative inline-block bg-[#FAF8F4] border border-[#DDD6C8]/55 rounded-xl p-1 shadow-3xs group animate-in zoom-in-95 duration-200">
                   {isImageMessage(pendingAttachment) ? (
                     <>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      
                       <img
                         src={pendingAttachment}
                         alt="Attachment Preview"

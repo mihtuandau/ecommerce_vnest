@@ -21,13 +21,13 @@ interface UsageSectionProps {
 
 export function UsageSection({ form }: UsageSectionProps) {
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+    <div className="bg-white rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] overflow-hidden">
       <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <div className="p-2 bg-white rounded-lg shadow-sm">
             <Lock className="h-4 w-4 text-primary" />
           </div>
-          <h3 className="font-bold text-slate-800 text-sm tracking-tight">
+          <h3 className="font-semibold text-slate-800 text-sm tracking-tight">
             Quy tắc & Thời hạn
           </h3>
         </div>
@@ -40,15 +40,15 @@ export function UsageSection({ form }: UsageSectionProps) {
             name="startDate"
             render={({ field }) => (
               <FormItem className="space-y-2">
-                <FormLabel className="font-bold text-xs uppercase tracking-widest text-slate-500 flex items-center gap-2">
-                  <Calendar className="h-3 w-3" />
+                <FormLabel className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                  <Calendar className="h-3 w-3 text-slate-400" />
                   Bắt đầu vào lúc
                 </FormLabel>
                 <FormControl>
                   <div className="relative group">
                     <Input
                       type="datetime-local"
-                      className="h-11 rounded-xl border-slate-200 focus:ring-primary/10 font-bold text-sm pr-10 cursor-pointer text-slate-700"
+                      className="h-11 rounded-xl border-slate-200 focus:ring-primary/10 font-medium text-sm pr-10 cursor-pointer text-slate-800"
                       {...field}
                       value={field.value ?? ""}
                       onClick={(e) => e.currentTarget.showPicker?.()}
@@ -66,15 +66,15 @@ export function UsageSection({ form }: UsageSectionProps) {
             name="endDate"
             render={({ field }) => (
               <FormItem className="space-y-2">
-                <FormLabel className="font-bold text-xs uppercase tracking-widest text-slate-500 flex items-center gap-2">
-                  <Calendar className="h-3 w-3" />
+                <FormLabel className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                  <Calendar className="h-3 w-3 text-slate-400" />
                   Kết thúc vào lúc
                 </FormLabel>
                 <FormControl>
                   <div className="relative group">
                     <Input
                       type="datetime-local"
-                      className="h-11 rounded-xl border-slate-200 focus:ring-primary/10 font-bold text-sm pr-10 cursor-pointer text-slate-700"
+                      className="h-11 rounded-xl border-slate-200 focus:ring-primary/10 font-medium text-sm pr-10 cursor-pointer text-slate-800"
                       {...field}
                       value={field.value ?? ""}
                       onClick={(e) => e.currentTarget.showPicker?.()}
@@ -96,8 +96,8 @@ export function UsageSection({ form }: UsageSectionProps) {
           name="usageLimit"
           render={({ field }) => (
             <FormItem className="space-y-2">
-              <FormLabel className="font-bold text-xs uppercase tracking-widest text-slate-500 flex items-center gap-2">
-                <Users className="h-3 w-3" />
+              <FormLabel className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                <Users className="h-3 w-3 text-slate-400" />
                 Tổng số lượt dùng tối đa
               </FormLabel>
               <FormControl>
@@ -105,14 +105,14 @@ export function UsageSection({ form }: UsageSectionProps) {
                   <Input
                     type="number"
                     placeholder="Ví dụ: 500"
-                    className="h-11 rounded-xl border-slate-200 focus:ring-primary/10 font-bold text-lg pl-4 pr-12"
+                    className="h-11 rounded-xl border-slate-200 focus:ring-primary/10 font-medium text-sm pl-4 pr-12 text-slate-800"
                     {...field}
                     value={field.value ?? ""}
                     onChange={(e) =>
                       field.onChange(e.target.value === "" ? 0 : Number(e.target.value))
                     }
                   />
-                  <div className="absolute right-4 top-1/2 -translate-y-1/2 font-bold text-slate-400 text-xs">
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 font-semibold text-slate-400 text-xs">
                     LƯỢT
                   </div>
                 </div>
@@ -123,7 +123,7 @@ export function UsageSection({ form }: UsageSectionProps) {
         />
 
         <div className="space-y-4 pt-4 border-t border-slate-100">
-          <h4 className="font-bold text-xs uppercase tracking-widest text-slate-400 mb-4">
+          <h4 className="font-semibold text-[11px] uppercase tracking-wider text-slate-500 mb-4">
             Trạng thái vận hành
           </h4>
 
@@ -134,7 +134,7 @@ export function UsageSection({ form }: UsageSectionProps) {
               render={({ field }) => (
                 <FormItem className="flex flex-row items-center justify-between rounded-2xl border border-slate-100 p-5 bg-slate-50 transition-all hover:bg-slate-100/50">
                   <div className="space-y-0.5">
-                    <FormLabel className="text-sm font-bold text-slate-800">
+                    <FormLabel className="text-sm font-semibold text-slate-800">
                       Kích hoạt mã
                     </FormLabel>
                     <FormDescription className="text-[10px] text-slate-500 font-medium italic">
@@ -159,7 +159,7 @@ export function UsageSection({ form }: UsageSectionProps) {
                 <FormItem className="flex flex-row items-center justify-between rounded-2xl border border-rose-100 p-5 bg-rose-50/20 transition-all hover:bg-rose-50/40">
                   <div className="space-y-0.5">
                     <div className="flex items-center gap-2">
-                      <FormLabel className="text-sm font-bold text-rose-600">
+                      <FormLabel className="text-sm font-semibold text-rose-600">
                         Flash Sale
                       </FormLabel>
                       <div className="bg-rose-500 rounded-full p-0.5">

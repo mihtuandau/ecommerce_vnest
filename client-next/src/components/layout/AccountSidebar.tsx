@@ -59,7 +59,7 @@ export function AccountSidebar({ orderCount = 0 }: { orderCount?: number }) {
   return (
     <aside className="w-full lg:w-64 shrink-0">
       <div className="bg-white border border-brand-sand rounded-2xl overflow-hidden sticky top-32 shadow-[0_10px_30px_rgba(61,43,26,0.05)]">
-        {/* Profile Section */}
+        
         <div className="p-6 border-b border-brand-sand/50 text-center bg-brand-ivory/20">
           <div className="relative w-20 h-20 mx-auto mb-4">
             <div className="w-full h-full rounded-full border-4 border-white shadow-md overflow-hidden bg-brand-ivory ring-1 ring-brand-sand flex items-center justify-center">
@@ -77,18 +77,18 @@ export function AccountSidebar({ orderCount = 0 }: { orderCount?: number }) {
             </div>
           </div>
 
-          <h3 className="text-[15px] font-bold text-brand-espresso mb-1">
+          <h3 className="text-base font-semibold text-brand-espresso mb-1">
             {user.name}
           </h3>
-          <p className="text-[11px] text-brand-taupe">{user.email}</p>
+          <p className="text-[12px] text-brand-taupe">{user.email}</p>
         </div>
 
-        {/* Menu Items */}
+        
         <nav className="p-2 space-y-4 py-4">
           {menuGroups.map((group) => (
             <div key={group.title}>
-              <div className="px-4 mb-1">
-                <span className="text-[10px] font-bold text-brand-taupe tracking-wider">
+              <div className="px-4 mb-1.5">
+                <span className="text-[11px] font-semibold text-brand-taupe/80 uppercase tracking-wider">
                   {group.title}
                 </span>
               </div>
@@ -100,10 +100,10 @@ export function AccountSidebar({ orderCount = 0 }: { orderCount?: number }) {
                       key={item.label}
                       href={item.href}
                       className={cn(
-                        "flex items-center gap-3 px-4 py-2.5 rounded-xl text-[13px] transition-all group relative",
+                        "flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm transition-all group relative",
                         isActive
-                          ? "bg-brand-ivory text-brand-espresso font-bold"
-                          : "text-brand-taupe hover:bg-brand-ivory/50 hover:text-brand-espresso"
+                          ? "bg-brand-ivory text-brand-espresso font-semibold"
+                          : "text-brand-taupe hover:bg-brand-ivory/50 hover:text-brand-espresso font-medium"
                       )}
                     >
                       {isActive && (
@@ -114,7 +114,7 @@ export function AccountSidebar({ orderCount = 0 }: { orderCount?: number }) {
                         className={cn(
                           "shrink-0",
                           isActive
-                            ? "text-brand-espresso"
+                             ? "text-brand-espresso"
                             : "text-brand-taupe group-hover:text-brand-espresso"
                         )}
                       />
@@ -134,10 +134,10 @@ export function AccountSidebar({ orderCount = 0 }: { orderCount?: number }) {
           <div className="px-2 pt-2 border-t border-brand-sand/50">
             <button
               onClick={() => logout()}
-              className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-[13px] text-red-500 hover:bg-red-50 transition-all group"
+              className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-red-500 hover:bg-red-50 transition-all group font-medium"
             >
               <LogOut size={16} className="shrink-0" />
-              <span className="font-medium">Đăng xuất</span>
+              <span>Đăng xuất</span>
             </button>
           </div>
         </nav>

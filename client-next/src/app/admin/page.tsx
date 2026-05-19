@@ -53,10 +53,10 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="space-y-8">
-      {/* Welcome Header */}
+      
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 mb-1">
+          <h1 className="text-2xl font-semibold tracking-tight text-slate-900 mb-1">
             Tổng quan Dashboard
           </h1>
           <p className="text-slate-500 text-sm">
@@ -66,7 +66,7 @@ export default function AdminDashboardPage() {
         <div className="flex gap-2">
           <Button
             variant="ghost"
-            className="rounded-lg font-bold text-xs h-10 text-slate-500"
+            className="rounded-lg font-semibold text-sm h-10 text-slate-500"
             asChild
           >
             <Link href={ROUTES.ADMIN_ORDERS}>Xem báo cáo chi tiết</Link>
@@ -74,24 +74,24 @@ export default function AdminDashboardPage() {
         </div>
       </div>
 
-      {/* Stats Grid */}
+      
       <DashboardStats summary={stats} isLoading={isStatsLoading} />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Revenue Chart */}
+        
         <RevenueChart data={revenueData} isLoading={isRevenueLoading} />
 
-        {/* Order Status Distribution */}
+        
         <OrderStatusChart data={stats?.orders} isLoading={isStatsLoading} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Top Selling Products */}
+        
         <div className="lg:col-span-2">
           <TopProducts products={topProducts} isLoading={isTopProductsLoading} />
         </div>
 
-        {/* Pending Reviews Section */}
+        
         <div className="lg:col-span-1">
           <PendingReviews
             reviews={pendingReviews}
@@ -100,7 +100,7 @@ export default function AdminDashboardPage() {
         </div>
       </div>
 
-      {/* Recent Orders - Full Width at Bottom */}
+      
       <div className="w-full">
         <RecentOrders orders={recentOrders} isLoading={isRecentOrdersLoading} />
       </div>

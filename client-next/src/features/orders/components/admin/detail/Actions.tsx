@@ -47,7 +47,7 @@ export function Actions({
 
   return (
     <>
-      {/* Thẻ Thanh toán */}
+      
       <div className={cn(adminUI.card.base, "p-0 overflow-hidden")}>
         <div className="px-5 py-4 border-b border-slate-100 bg-white">
           <h3
@@ -104,7 +104,7 @@ export function Actions({
             </span>
           </div>
 
-          {/* Payment Action Button relocated here inside Payment Card */}
+          
           {!(orderAny.payment?.status === PaymentStatus.SUCCESS) &&
             order.status !== OrderStatus.CANCELLED &&
             order.status !== OrderStatus.RETURNED && (

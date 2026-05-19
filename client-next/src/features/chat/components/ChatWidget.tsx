@@ -36,10 +36,10 @@ export function ChatWidget() {
 
   return (
     <div className="fixed bottom-12 right-6 z-[9999] hidden md:flex flex-col items-end gap-4">
-      {/* AI Chat Window */}
+      
       {isOpen && (
         <div className="w-full max-w-[420px] h-[640px] bg-[#FAF8F4] shadow-[0_32px_64px_rgba(61,43,26,0.15)] rounded-[2.5rem] border border-[#DDD6C8] flex flex-col overflow-hidden animate-in slide-in-from-bottom-8 duration-500 font-sans">
-          {/* AI Header */}
+          
           <div className="bg-[#3D2B1A] px-6 py-5 relative overflow-hidden shrink-0">
             <div className="absolute top-0 right-0 w-32 h-32 bg-[#C4783A] opacity-10 rounded-full blur-3xl -mr-16 -mt-16" />
             <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#FAF8F4] opacity-5 rounded-full blur-2xl -ml-12 -mb-12" />
@@ -72,7 +72,7 @@ export function ChatWidget() {
             </div>
           </div>
 
-          {/* Messages Area */}
+          
           <div
             ref={scrollRef}
             className="flex-1 overflow-y-auto p-6 space-y-6 bg-[#FAF8F4]/50 [&::-webkit-scrollbar]:w-[5px] [&::-webkit-scrollbar-thumb]:bg-[#DDD6C8] [&::-webkit-scrollbar-thumb]:rounded-full"
@@ -144,7 +144,7 @@ export function ChatWidget() {
             <div ref={scrollRef} />
           </div>
 
-          {/* Dynamic Suggestions */}
+          
           {!isLoading && (
             <div className="px-6 py-4 flex flex-wrap gap-2 bg-white border-t border-[#DDD6C8]/50 shrink-0">
               {(
@@ -168,7 +168,7 @@ export function ChatWidget() {
             </div>
           )}
 
-          {/* AI Input Area */}
+          
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -210,7 +210,7 @@ export function ChatWidget() {
         </div>
       )}
 
-      {/* Toggle Button */}
+      
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={cn(

@@ -146,7 +146,7 @@ export const HomeProductCard = React.memo(function HomeProductCard({
           onClick={() => router.push(`/shop/${product.slug}`)}
           className="group relative flex flex-col h-full bg-white rounded-2xl overflow-hidden border border-[#DDD6C8] hover:-translate-y-1 hover:shadow-[0_16px_48px_rgba(61,43,26,0.1)] transition-all duration-300 cursor-pointer"
         >
-          {/* Image Section */}
+          
           <div
             className={cn(
               "relative h-[280px] w-full flex items-center justify-center overflow-hidden",
@@ -190,7 +190,7 @@ export const HomeProductCard = React.memo(function HomeProductCard({
             </button>
           </div>
 
-          {/* Content Section */}
+          
           <div className="relative z-10 flex-1 flex flex-col p-4 md:p-5">
             <div className="text-[11px] font-bold text-[#8A7966] tracking-[0.1em] mb-1">
               {product.category?.name || "Bộ sưu tập LUXE"}

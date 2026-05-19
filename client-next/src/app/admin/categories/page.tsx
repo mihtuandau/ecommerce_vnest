@@ -65,7 +65,7 @@ export default function AdminCategoriesPage() {
         isFetching={isFetching}
       />
 
-      <div className="bg-white rounded-2xl border-none shadow-sm overflow-hidden">
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] overflow-hidden">
         <CategoryTabs
           activeTab={activeTab}
           onTabChange={setActiveTab}

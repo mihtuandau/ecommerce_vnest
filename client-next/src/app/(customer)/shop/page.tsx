@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ShopContainer } from "@/features/products/components/customer/shop/ShopContainer";
+import { ShopView } from "@/features/products/components/customer/shop/ShopView";
 import { Suspense } from "react";
 
 export const metadata: Metadata = {
@@ -12,7 +12,7 @@ import { ShopSkeleton } from "@/features/products/components/customer/shop/skele
 export default function ProductListingPage() {
   return (
     <Suspense fallback={<ShopSkeleton />}>
-      <ShopContainer />
+      <ShopView />
     </Suspense>
   );
 }

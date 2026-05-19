@@ -36,7 +36,7 @@ export function Customer({ order }: CustomerProps) {
 
   return (
     <>
-      {/* Thẻ Thông tin khách hàng */}
+      
       <div className={cn(adminUI.card.base, "p-0 overflow-hidden")}>
         <div className="px-5 py-4 border-b border-slate-100 bg-white flex justify-between items-center">
           <h3
@@ -104,7 +104,7 @@ export function Customer({ order }: CustomerProps) {
         </div>
       </div>
 
-      {/* Thẻ Địa chỉ giao hàng */}
+      
       <div className={cn(adminUI.card.base, "p-0 overflow-hidden")}>
         <div className="px-5 py-4 border-b border-slate-100 bg-white">
           <h3

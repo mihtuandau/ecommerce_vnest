@@ -18,13 +18,13 @@ interface BasicInfoSectionProps {
 
 export function BasicInfoSection({ form }: BasicInfoSectionProps) {
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+    <div className="bg-white rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] overflow-hidden">
       <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <div className="p-2 bg-white rounded-lg shadow-sm">
             <Layout className="h-4 w-4 text-primary" />
           </div>
-          <h3 className="font-bold text-slate-800 text-sm tracking-tight">
+          <h3 className="font-semibold text-slate-800 text-sm tracking-tight">
             Thông tin nhận diện
           </h3>
         </div>
@@ -38,15 +38,15 @@ export function BasicInfoSection({ form }: BasicInfoSectionProps) {
             render={({ field }) => (
               <FormItem className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <FormLabel className="font-bold text-xs uppercase tracking-widest text-slate-500 flex items-center gap-2">
-                    <Hash className="h-3 w-3" />
+                  <FormLabel className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                    <Hash className="h-3 w-3 text-slate-400" />
                     Mã chương trình
                   </FormLabel>
                 </div>
                 <FormControl>
                   <Input
                     placeholder="Ví dụ: SUMMER2024"
-                    className="h-11 rounded-xl border-slate-200 focus:ring-primary/10 font-bold uppercase tracking-wider text-slate-800 placeholder:font-medium placeholder:tracking-normal placeholder:text-slate-300"
+                    className="h-11 rounded-xl border-slate-200 focus:ring-primary/10 font-semibold uppercase text-slate-850 placeholder:font-medium placeholder:text-slate-300 text-sm"
                     {...field}
                     value={field.value ?? ""}
                   />
@@ -64,8 +64,8 @@ export function BasicInfoSection({ form }: BasicInfoSectionProps) {
             name="image"
             render={({ field }) => (
               <FormItem className="space-y-2">
-                <FormLabel className="font-bold text-xs uppercase tracking-widest text-slate-500 flex items-center gap-2">
-                  <ImagePlus className="h-3 w-3" />
+                <FormLabel className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                  <ImagePlus className="h-3 w-3 text-slate-400" />
                   Ảnh Banner (URL)
                 </FormLabel>
                 <FormControl>
@@ -73,7 +73,7 @@ export function BasicInfoSection({ form }: BasicInfoSectionProps) {
                     <div className="relative group">
                       <Input
                         placeholder="Liên kết hình ảnh quảng bá..."
-                        className="h-11 rounded-xl border-slate-200 focus:ring-primary/10 text-sm"
+                        className="h-11 rounded-xl border-slate-200 focus:ring-primary/10 text-sm font-medium text-slate-800"
                         {...field}
                         value={field.value ?? ""}
                       />
@@ -106,13 +106,13 @@ export function BasicInfoSection({ form }: BasicInfoSectionProps) {
           name="description"
           render={({ field }) => (
             <FormItem className="space-y-2">
-              <FormLabel className="font-bold text-xs uppercase tracking-widest text-slate-500 flex items-center gap-2">
-                <FileText className="h-3 w-3" />
+              <FormLabel className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                <FileText className="h-3 w-3 text-slate-400" />
                 Mô tả chiến dịch
               </FormLabel>
               <FormControl>
                 <textarea
-                  className="w-full min-h-[100px] rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium focus:outline-none focus:ring-4 focus:ring-primary/5 transition-all leading-relaxed text-slate-700 resize-none placeholder:text-slate-300"
+                  className="w-full min-h-[100px] rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-normal focus:outline-none focus:ring-4 focus:ring-primary/5 transition-all leading-relaxed text-slate-800 resize-none placeholder:text-slate-300"
                   placeholder="Viết một vài dòng mô tả về mục tiêu hoặc thông điệp của chương trình này..."
                   {...field}
                   value={field.value ?? ""}

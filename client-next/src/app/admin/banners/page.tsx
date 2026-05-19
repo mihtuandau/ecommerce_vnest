@@ -49,7 +49,7 @@ export default function AdminBannersPage() {
         isFetching={isFetching}
       />
 
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+      <div className="bg-white rounded-xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] overflow-hidden">
         <BannerTabs activeTab={activeTab} onTabChange={setActiveTab} counts={counts} />
 
         <BannerListToolbar searchTerm={searchTerm} onSearchChange={setSearchTerm} />

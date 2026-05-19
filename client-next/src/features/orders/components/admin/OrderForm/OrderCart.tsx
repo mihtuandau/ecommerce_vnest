@@ -55,7 +55,7 @@ export function OrderCart({
 
   return (
     <div className="w-[360px] flex flex-col bg-white border-l border-slate-200">
-      {/* Header */}
+      
       <div className="p-4 border-b border-slate-100 flex items-center justify-between">
         <span className="text-xs font-bold text-slate-900 uppercase tracking-tighter">
           Đơn hàng #{orderId || "..."}
@@ -69,7 +69,7 @@ export function OrderCart({
         </button>
       </div>
 
-      {/* Cart List */}
+      
       <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50/20">
         {items.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full opacity-30 text-slate-400">
@@ -146,7 +146,7 @@ export function OrderCart({
         )}
       </div>
 
-      {/* Footer Summary */}
+      
       <div className="p-4 border-t border-slate-100 space-y-4 shadow-[0_-4px_20px_rgba(0,0,0,0.03)]">
         <div className="grid grid-cols-1 gap-2">
           <div className="relative">

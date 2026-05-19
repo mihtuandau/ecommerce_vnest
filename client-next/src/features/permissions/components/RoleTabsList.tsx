@@ -15,7 +15,7 @@ export function RoleTabsList({ dirtyRoles }: RoleTabsListProps) {
         <TabsTrigger
           key={role}
           value={role}
-          className="flex-1 rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-primary font-bold text-xs uppercase tracking-wider"
+          className="flex-1 rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-slate-900 font-semibold   text-sm transition-all"
         >
           {ROLE_CONFIG[role].label}
           {dirtyRoles.has(role) && (

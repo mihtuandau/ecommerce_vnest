@@ -24,7 +24,7 @@ export function PaymentsStats({ payments, formatCurrency }: PaymentsStatsProps) 
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      {/* Card 1: Doanh thu thực nhận */}
+      
       <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden flex flex-col justify-between h-32">
         <div className="flex items-center justify-between">
           <span className="text-[11px] font-bold text-slate-450 uppercase tracking-wider">
@@ -44,7 +44,7 @@ export function PaymentsStats({ payments, formatCurrency }: PaymentsStatsProps) 
         </div>
       </div>
 
-      {/* Card 2: COD chờ thu tiền */}
+      
       <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden flex flex-col justify-between h-32">
         <div className="flex items-center justify-between">
           <span className="text-[11px] font-bold text-slate-450 uppercase tracking-wider">
@@ -64,7 +64,7 @@ export function PaymentsStats({ payments, formatCurrency }: PaymentsStatsProps) 
         </div>
       </div>
 
-      {/* Card 3: Số tiền đã hoàn trả */}
+      
       <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden flex flex-col justify-between h-32">
         <div className="flex items-center justify-between">
           <span className="text-[11px] font-bold text-slate-450 uppercase tracking-wider">

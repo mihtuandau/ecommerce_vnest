@@ -113,7 +113,7 @@ export function CategoryTable({ data }: { data: any[] }) {
               className={cn(
                 "tracking-tight",
                 depth === 0
-                  ? "text-slate-800 font-bold text-sm"
+                  ? "text-slate-800 font-semibold text-sm"
                   : "text-slate-500 font-semibold text-[13px]"
               )}
             >
@@ -135,7 +135,7 @@ export function CategoryTable({ data }: { data: any[] }) {
         return (
           <Badge
             variant="secondary"
-            className="bg-slate-50 text-slate-500 border-none font-bold text-[10px]"
+            className="bg-slate-50 text-slate-500 border-none font-semibold text-[11px]"
           >
             {parent?.name || "N/A"}
           </Badge>

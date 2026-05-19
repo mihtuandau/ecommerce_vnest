@@ -28,7 +28,7 @@ export function RecentOrders({ orders, isLoading }: RecentOrdersProps) {
     (Array.isArray(orders) ? orders : (orders as any))?.data || orders || [];
 
   return (
-    <Card className="border-none shadow-sm rounded-2xl overflow-hidden bg-white">
+    <Card className="border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] bg-white rounded-2xl overflow-hidden">
       <CardHeader className="flex flex-row items-center justify-between pb-4 px-6 border-b border-slate-50">
         <CardTitle className="text-base font-semibold text-slate-900">
           Đơn hàng gần đây
@@ -110,7 +110,7 @@ export function RecentOrders({ orders, isLoading }: RecentOrdersProps) {
                   <TableCell className="py-4 pl-6">
                     <Link
                       href={`${ROUTES.ADMIN_ORDERS}/${order.id}`}
-                      className="text-xs font-bold text-primary hover:underline"
+                      className="text-sm font-semibold text-primary hover:underline"
                     >
                       {order.orderCode || `#${order.id}`}
                     </Link>

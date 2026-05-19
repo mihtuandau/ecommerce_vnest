@@ -1,10 +1,9 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Trash2, Check, ChevronLeft } from "lucide-react";
+import { Trash2, ChevronLeft } from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
 import { useRouter } from "next/navigation";
-import { cn } from "@/utils/cn";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { discountsApi } from "@/features/discounts/api";
@@ -41,7 +40,7 @@ function RecentlyViewedSection({ recentlyViewed }: RecentlyViewedSectionProps) {
   );
 }
 
-export function CartContainer() {
+export function CartView() {
   const router = useRouter();
   const { recentlyViewed } = useRecentlyViewed();
   const { items, updateQuantity, removeItem } = useCart();

@@ -28,7 +28,7 @@ export function NotificationsToolbar({
 }: NotificationsToolbarProps) {
   return (
     <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 border-b border-slate-100 pb-5">
-      {/* Filtering Tab buttons */}
+      
       <div className="flex flex-wrap items-center gap-2 p-1.5 bg-slate-100/80 rounded-2xl border border-slate-100 max-w-2xl">
         <button
           onClick={() => setFilterType("ALL")}
@@ -90,7 +90,7 @@ export function NotificationsToolbar({
         </button>
       </div>
 
-      {/* Action buttons */}
+      
       <div className="flex items-center gap-3">
         {unreadCount > 0 && (
           <Button

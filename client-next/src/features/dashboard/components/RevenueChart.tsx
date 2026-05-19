@@ -83,7 +83,7 @@ export function RevenueChart({ data, isLoading }: RevenueChartProps) {
   const displayLoading = isLoading || isFilteredLoading;
 
   return (
-    <Card className="lg:col-span-2 border-none shadow-sm rounded-2xl overflow-hidden bg-white">
+    <Card className="lg:col-span-2 border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] bg-white rounded-2xl overflow-hidden">
       <CardHeader className="flex flex-row items-center justify-between pb-4 px-6 border-b border-slate-50">
         <div>
           <CardTitle className="text-base font-semibold text-slate-900">

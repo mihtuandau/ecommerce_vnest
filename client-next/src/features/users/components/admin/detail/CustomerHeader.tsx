@@ -36,7 +36,7 @@ export function CustomerHeader({ user }: CustomerHeaderProps) {
 
   return (
     <div className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white/50 backdrop-blur-xl shadow-sm">
-      {/* Decorative background element */}
+      
       <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full -mr-32 -mt-32 blur-3xl pointer-events-none" />
 
       <div className="relative p-6 md:p-8 space-y-6">

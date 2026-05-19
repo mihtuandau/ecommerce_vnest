@@ -137,7 +137,7 @@ function FlashProductCard({
         <span className="sr-only">Xem chi tiết {product.name}</span>
       </Link>
 
-      {/* ── IMAGE SECTION ── */}
+      
       <div className="relative h-[240px] w-full flex items-center justify-center overflow-hidden bg-white border-b border-[#F3EFE8]">
         <Image
           src={imageUrl}
@@ -154,7 +154,7 @@ function FlashProductCard({
         </div>
       </div>
 
-      {/* ── CONTENT SECTION ── */}
+      
       <div className="relative z-10 flex-1 flex flex-col p-4 md:p-5">
         <h3 className="text-[14.5px] font-medium text-[#3D2B1A] mb-2 line-clamp-2 leading-snug">
           {product.name}
@@ -178,7 +178,7 @@ function FlashProductCard({
           </div>
         </div>
 
-        {/* Progress bar */}
+        
         <div className="mt-4 pt-4 border-t border-[#DDD6C8] space-y-1.5">
           <div className="relative h-1.5 bg-[#E8E0D0] rounded-full overflow-hidden">
             <div
@@ -215,7 +215,7 @@ export function FlashSale({ data }: FlashSaleProps) {
 
   return (
     <section className="relative w-full overflow-hidden bg-[#3D2B1A] text-[#FAF8F4] py-16 md:py-20 my-8 md:my-16 rounded-[2.5rem] md:rounded-[3.5rem] mx-auto max-w-[1440px]">
-      {/* Decorative Light Effects */}
+      
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#C4783A]/20 blur-[120px] rounded-full -translate-y-1/2" />
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-[#C4783A]/10 blur-[120px] rounded-full translate-y-1/2" />
 
@@ -251,7 +251,7 @@ export function FlashSale({ data }: FlashSaleProps) {
         </Link>
       </div>
 
-      {/* Products */}
+      
       <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
           {data.products.slice(0, 4).map((product: Product) => (

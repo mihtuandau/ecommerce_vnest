@@ -24,7 +24,7 @@ export function Notes({ order }: { order: any }) {
       )}
 
       <div className="space-y-3 mb-4">
-        {/* Placeholder for future backend integration of Admin Notes */}
+        
         <div className="bg-slate-50 border border-slate-100 rounded-xl p-3">
           <div className="flex justify-between items-center mb-1">
             <span className="text-[11px] font-bold text-slate-600">Admin</span>

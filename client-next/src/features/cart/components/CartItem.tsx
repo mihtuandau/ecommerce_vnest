@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Trash2, Plus, Minus, Check, Heart, X } from "lucide-react";
+import {  Plus, Minus, Check, Heart, X } from "lucide-react";
 import { formatCurrency } from "@/utils/formatCurrency";
 import Link from "next/link";
 import Image from "next/image";
@@ -38,7 +38,7 @@ export const CartItem = React.memo(function CartItem({
       )}
     >
       <div className="flex gap-4 items-center">
-        {/* Checkbox */}
+        
         <button
           onClick={() => toggleSelectItem(item.variantId)}
           className={cn(
@@ -51,7 +51,7 @@ export const CartItem = React.memo(function CartItem({
           {item.selected && <Check size={10} strokeWidth={4} />}
         </button>
 
-        {/* Product Image */}
+        
         <div className="h-24 w-24 flex-shrink-0 rounded-xl bg-[#FAF8F4] flex items-center justify-center p-2 relative overflow-hidden">
           <Image
             src={getImageUrl(item.imageUrl)}
@@ -61,9 +61,9 @@ export const CartItem = React.memo(function CartItem({
           />
         </div>
 
-        {/* Content Section */}
+        
         <div className="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          {/* Info Side */}
+          
           <div className="flex-1 min-w-0 space-y-3">
             <div className="space-y-1">
               {!isGrouped && (
@@ -114,7 +114,7 @@ export const CartItem = React.memo(function CartItem({
             </div>
           </div>
 
-          {/* Pricing & Control Side */}
+          
           <div className="flex flex-col items-end gap-3 min-w-[120px]">
             <div className="text-right">
               <div className="text-[16px] font-bold text-brand-espresso font-sans tabular-nums">
@@ -132,7 +132,7 @@ export const CartItem = React.memo(function CartItem({
               )}
             </div>
 
-            {/* Quantity Selector */}
+            
             <div className="flex items-center h-8 bg-brand-cream border border-brand-sand rounded-lg overflow-hidden">
               <button
                 onClick={() => updateQuantity(item.variantId, item.quantity - 1)}

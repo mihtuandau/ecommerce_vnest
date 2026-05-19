@@ -56,7 +56,7 @@ export function PendingReviews({ reviews, isLoading }: PendingReviewsProps) {
     return (
       <Card className="rounded-2xl border-none shadow-sm h-full">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
-          <CardTitle className="text-lg font-bold text-slate-800">
+          <CardTitle className="text-lg font-semibold text-slate-800">
             Đánh giá chờ duyệt
           </CardTitle>
         </CardHeader>
@@ -68,7 +68,7 @@ export function PendingReviews({ reviews, isLoading }: PendingReviewsProps) {
   }
 
   return (
-    <Card className="border-none shadow-sm rounded-2xl overflow-hidden bg-white h-full flex flex-col transition-all hover:shadow-md">
+    <Card className="border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] bg-white rounded-2xl overflow-hidden h-full flex flex-col">
       <CardHeader className="flex flex-row items-center justify-between pb-4 px-6 border-b border-slate-50">
         <CardTitle className="text-base font-semibold text-slate-900">
           Đánh giá chờ duyệt
@@ -91,14 +91,14 @@ export function PendingReviews({ reviews, isLoading }: PendingReviewsProps) {
               index !== reviews.length - 1 ? "border-b border-slate-50" : ""
             }`}
           >
-            {/* Avatar */}
+            
             <div className="h-10 w-10 rounded-xl bg-slate-100 flex items-center justify-center shrink-0 border border-slate-200">
               <span className="text-slate-500 font-semibold text-sm">
                 {(review.user?.name || "K").charAt(0).toUpperCase()}
               </span>
             </div>
 
-            {/* Content */}
+            
             <div className="flex-1 min-w-0 pr-8">
               <div className="flex gap-0.5 mb-1.5">
                 {[1, 2, 3, 4, 5].map((star) => (
@@ -118,7 +118,7 @@ export function PendingReviews({ reviews, isLoading }: PendingReviewsProps) {
               <p className="text-xs text-slate-500 truncate">{review.product?.name}</p>
             </div>
 
-            {/* Action */}
+            
             <Button
               size="icon"
               variant="ghost"

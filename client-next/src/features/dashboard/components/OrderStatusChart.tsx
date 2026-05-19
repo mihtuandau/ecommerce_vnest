@@ -56,7 +56,7 @@ export function OrderStatusChart({ data, isLoading }: OrderStatusChartProps) {
   }, [data]);
 
   return (
-    <Card className="border-none shadow-sm rounded-2xl overflow-hidden bg-white h-full flex flex-col">
+    <Card className="border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] bg-white rounded-2xl overflow-hidden h-full flex flex-col">
       <CardHeader className="border-b border-slate-50 px-6 py-4">
         <CardTitle className="text-base font-semibold text-slate-900">
           Trạng thái đơn hàng

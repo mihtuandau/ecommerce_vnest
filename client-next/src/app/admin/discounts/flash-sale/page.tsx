@@ -33,7 +33,7 @@ export default function AdminFlashSalePage() {
 
   return (
     <div className="space-y-6 pb-10">
-      {/* Page Header */}
+      
       <div className="flex items-center justify-between border-b border-slate-100 pb-4">
         <div className="flex items-center gap-4">
           <div className="h-12 w-12 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-600 shadow-sm border border-amber-100">
@@ -69,11 +69,11 @@ export default function AdminFlashSalePage() {
         </div>
       </div>
 
-      {/* Stats Bar */}
+      
       <DiscountStats {...stats} />
 
-      {/* Main Content Area */}
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+      
+      <div className="bg-white rounded-xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] overflow-hidden">
         {isLoading ? (
           <div className="flex h-96 items-center justify-center">
             <div className="flex flex-col items-center gap-3">

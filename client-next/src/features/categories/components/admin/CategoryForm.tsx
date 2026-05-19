@@ -114,12 +114,12 @@ export function CategoryForm({ initialData, onSubmit, isLoading }: CategoryFormP
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column: Basic Info */}
+          
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white p-7 rounded-2xl border border-slate-200 shadow-sm space-y-7">
+            <div className="bg-white p-7 rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] space-y-7">
               <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
                 <Type className="h-5 w-5 text-slate-400" />
-                <h2 className="text-sm font-bold text-slate-900 tracking-tight">
+                <h2 className="text-sm font-semibold text-slate-900 tracking-tight">
                   Thông tin danh mục
                 </h2>
               </div>
@@ -130,7 +130,7 @@ export function CategoryForm({ initialData, onSubmit, isLoading }: CategoryFormP
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-[11px] font-bold text-slate-500 tracking-wider uppercase">
+                      <FormLabel className="text-[11px] font-semibold text-slate-500 tracking-wider uppercase">
                         Tên danh mục
                       </FormLabel>
                       <FormControl>
@@ -150,7 +150,7 @@ export function CategoryForm({ initialData, onSubmit, isLoading }: CategoryFormP
                   name="parentId"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-[11px] font-bold text-slate-500 tracking-wider uppercase flex items-center gap-2">
+                      <FormLabel className="text-[11px] font-semibold text-slate-500 tracking-wider uppercase flex items-center gap-2">
                         <Layers size={12} />
                         Danh mục cha
                       </FormLabel>
@@ -176,7 +176,7 @@ export function CategoryForm({ initialData, onSubmit, isLoading }: CategoryFormP
                             <SelectItem
                               key={cat.id}
                               value={String(cat.id)}
-                              className="rounded-lg font-bold text-slate-900 py-3"
+                              className="rounded-lg font-semibold text-slate-900 py-3"
                             >
                               {cat.name}
                             </SelectItem>
@@ -193,11 +193,11 @@ export function CategoryForm({ initialData, onSubmit, isLoading }: CategoryFormP
               </div>
             </div>
 
-            {/* Image Upload Card */}
-            <div className="bg-white p-7 rounded-2xl border border-slate-200 shadow-sm space-y-7">
+            
+            <div className="bg-white p-7 rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] space-y-7">
               <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
                 <ImageIcon className="h-5 w-5 text-slate-400" />
-                <h2 className="text-sm font-bold text-slate-900 tracking-tight">
+                <h2 className="text-sm font-semibold text-slate-900 tracking-tight">
                   Ảnh đại diện danh mục
                 </h2>
               </div>
@@ -224,7 +224,7 @@ export function CategoryForm({ initialData, onSubmit, isLoading }: CategoryFormP
                         type="button"
                         variant="secondary"
                         size="sm"
-                        className="rounded-lg font-bold h-8 text-[10px] uppercase tracking-wider"
+                        className="rounded-lg font-semibold h-8 text-[10px] uppercase tracking-wider"
                         onClick={() => fileInputRef.current?.click()}
                       >
                         Đổi ảnh
@@ -233,7 +233,7 @@ export function CategoryForm({ initialData, onSubmit, isLoading }: CategoryFormP
                         type="button"
                         variant="destructive"
                         size="sm"
-                        className="rounded-lg font-bold h-8 text-[10px] uppercase tracking-wider"
+                        className="rounded-lg font-semibold h-8 text-[10px] uppercase tracking-wider"
                         onClick={() => {
                           setPreviewUrl(null);
                           setSelectedFile(null);
@@ -252,7 +252,7 @@ export function CategoryForm({ initialData, onSubmit, isLoading }: CategoryFormP
                       <Upload className="h-8 w-8 text-slate-400 group-hover:text-slate-600" />
                     </div>
                     <div className="text-center">
-                      <p className="text-[11px] font-black text-slate-900 uppercase tracking-widest">
+                      <p className="text-[11px] font-semibold text-slate-900 uppercase tracking-widest">
                         Tải ảnh lên
                       </p>
                       <p className="text-[10px] text-slate-400 mt-1 font-medium">
@@ -265,13 +265,13 @@ export function CategoryForm({ initialData, onSubmit, isLoading }: CategoryFormP
             </div>
           </div>
 
-          {/* Right Column: Actions */}
+          
           <div className="space-y-6">
-            <div className="bg-white p-7 rounded-2xl border border-slate-200 shadow-sm space-y-7 sticky top-8">
+            <div className="bg-white p-7 rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] space-y-7 sticky top-8">
               <div className="space-y-4">
                 <Button
                   type="submit"
-                  className="w-full h-12 rounded-xl bg-slate-900 text-white hover:bg-slate-800 font-bold gap-2 shadow-lg shadow-slate-200 transition-all hover:-translate-y-0.5 active:translate-y-0"
+                  className="w-full h-12 rounded-xl bg-slate-900 text-white hover:bg-slate-800 font-semibold gap-2 shadow-lg shadow-slate-200 transition-all hover:-translate-y-0.5 active:translate-y-0"
                   disabled={isLoading}
                 >
                   {isLoading ? (
@@ -285,7 +285,7 @@ export function CategoryForm({ initialData, onSubmit, isLoading }: CategoryFormP
                 <Button
                   type="button"
                   variant="outline"
-                  className="w-full h-12 rounded-xl border-slate-200 text-slate-600 font-bold hover:bg-slate-50 transition-all"
+                  className="w-full h-12 rounded-xl border-slate-200 text-slate-600 font-semibold hover:bg-slate-50 transition-all"
                   onClick={() => window.history.back()}
                   disabled={isLoading}
                 >
@@ -294,7 +294,7 @@ export function CategoryForm({ initialData, onSubmit, isLoading }: CategoryFormP
               </div>
 
               <div className="p-4 rounded-xl bg-amber-50 border border-amber-100">
-                <p className="text-[11px] font-bold text-amber-800 leading-relaxed uppercase tracking-wider">
+                <p className="text-[11px] font-semibold text-amber-800 leading-relaxed uppercase tracking-wider">
                   Lưu ý: Tên danh mục nên ngắn gọn và dễ hiểu để hiển thị tốt nhất trên
                   giao diện người dùng.
                 </p>

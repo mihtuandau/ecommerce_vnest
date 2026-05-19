@@ -17,7 +17,7 @@ interface MediaProps {
 
 export function Media({ images, isUploading, onImageAdd, onImageRemove }: MediaProps) {
   return (
-    <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.015)] overflow-hidden">
+    <div className="bg-white rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] overflow-hidden">
       <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/30 flex items-center justify-between gap-4">
         <h3 className="text-[15px] font-bold text-slate-800 flex items-center gap-2">
           <ImagePlus className="h-4 w-4 text-slate-500" /> Hình ảnh sản phẩm

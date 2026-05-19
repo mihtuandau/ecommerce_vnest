@@ -14,8 +14,8 @@ interface CustomerAddressesProps {
 export function CustomerAddresses({ addresses }: CustomerAddressesProps) {
   if (!addresses || addresses.length === 0) {
     return (
-      <div className="p-12 text-center border-2 border-dashed border-slate-100 rounded-xl">
-        <p className="text-slate-400 font-bold text-sm">
+      <div className="p-12 text-center border-2 border-dashed border-slate-200 rounded-2xl">
+        <p className="text-slate-400 font-semibold text-sm">
           Khách hàng chưa cập nhật địa chỉ.
         </p>
       </div>
@@ -28,7 +28,7 @@ export function CustomerAddresses({ addresses }: CustomerAddressesProps) {
         <div
           key={address.id}
           className={cn(
-            "group bg-white p-5 rounded-xl border transition-all duration-200 flex flex-col md:flex-row md:items-center justify-between gap-4",
+            "group bg-white p-5 rounded-2xl border transition-all duration-200 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-[0_4px_20px_rgba(15,23,42,0.03)]",
             address.isDefault
               ? "border-slate-900 bg-slate-50/30"
               : "border-slate-100 hover:border-slate-200"
@@ -37,7 +37,7 @@ export function CustomerAddresses({ addresses }: CustomerAddressesProps) {
           <div className="flex-1 min-w-0 flex items-start gap-4">
             <div
               className={cn(
-                "h-10 w-10 rounded-lg flex items-center justify-center shrink-0 border",
+                "h-10 w-10 rounded-xl flex items-center justify-center shrink-0 border",
                 address.isDefault
                   ? "bg-slate-900 border-slate-900 text-white"
                   : "bg-slate-50 border-slate-100 text-slate-400"
@@ -48,15 +48,15 @@ export function CustomerAddresses({ addresses }: CustomerAddressesProps) {
 
             <div className="space-y-1">
               <div className="flex items-center gap-3">
-                <span className="text-sm font-bold text-slate-900">
+                <span className="text-sm font-semibold text-slate-900">
                   {address.fullName}
                 </span>
                 <span className="text-slate-300">|</span>
-                <span className="text-sm font-bold text-slate-600">
+                <span className="text-sm font-semibold text-slate-600">
                   {address.phone}
                 </span>
                 {address.isDefault && (
-                  <Badge className="bg-slate-900 text-white text-[9px] font-black uppercase tracking-wider h-5 px-1.5 rounded-md">
+                  <Badge className="bg-slate-900 text-white text-[10px] font-semibold h-5 px-1.5 rounded-lg border-none shadow-sm">
                     Mặc định
                   </Badge>
                 )}
@@ -73,7 +73,7 @@ export function CustomerAddresses({ addresses }: CustomerAddressesProps) {
             <Button
               variant="ghost"
               size="sm"
-              className="h-8 rounded-lg text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900"
+              className="h-8 rounded-xl text-xs font-semibold text-slate-500 hover:bg-slate-100 hover:text-slate-900"
             >
               Chỉnh sửa
             </Button>

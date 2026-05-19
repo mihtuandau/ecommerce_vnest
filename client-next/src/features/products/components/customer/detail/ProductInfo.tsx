@@ -149,7 +149,7 @@ export function ProductInfo({
 
         {isFlashSale && flashSale?.endDate && (
           <div className="flex items-center justify-between p-5 bg-brand-espresso rounded-[28px] border border-brand-bronze/30 shadow-[0_20px_40px_rgba(61,43,26,0.15)] relative overflow-hidden group">
-            {/* Background Accent */}
+            
             <div className="absolute top-0 right-0 w-32 h-32 bg-brand-bronze/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
 
             <div className="flex flex-col gap-1.5 relative z-10">

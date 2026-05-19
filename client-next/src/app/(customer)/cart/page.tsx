@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { CartContainer } from "@/features/cart/components/CartContainer";
+import { CartView } from "@/features/cart/components/CartView";
 
 export const metadata: Metadata = {
   title: "Giỏ hàng — LUXE",
@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function CartPage() {
-  return <CartContainer />;
+  return <CartView />;
 }

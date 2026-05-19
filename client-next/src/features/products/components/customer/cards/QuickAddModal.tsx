@@ -155,7 +155,7 @@ export function QuickAddModal({
           className="relative grid grid-cols-1 md:grid-cols-12 min-h-[450px]"
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Left: Product Image */}
+          
           <div className="md:col-span-5 bg-white flex items-center justify-center p-8 relative border-b md:border-b-0 border-brand-ivory">
             <div className="relative w-full aspect-[4/5]">
               <Image
@@ -174,7 +174,7 @@ export function QuickAddModal({
             </button>
           </div>
 
-          {/* Right: Info & Actions */}
+          
           <div className="md:col-span-7 p-8 md:p-10 flex flex-col justify-center bg-white border-l border-brand-ivory">
             <div className="mb-6">
               <span className="text-[10px] font-bold text-brand-taupe uppercase tracking-[0.3em] mb-2 block">
@@ -199,7 +199,7 @@ export function QuickAddModal({
             </div>
 
             <div className="space-y-6">
-              {/* Colors */}
+              
               {colors.length > 0 && (
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
@@ -229,7 +229,7 @@ export function QuickAddModal({
                 </div>
               )}
 
-              {/* Sizes */}
+              
               {sizes.length > 0 && (
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
@@ -259,7 +259,7 @@ export function QuickAddModal({
                 </div>
               )}
 
-              {/* Quantity */}
+              
               <div className="flex items-center justify-between pt-2">
                 <div className="flex items-center bg-brand-cream rounded-full p-1 border border-brand-ivory">
                   <button
@@ -312,7 +312,7 @@ export function QuickAddModal({
           </div>
         </div>
 
-        {/* Desktop Close Button */}
+        
         <button
           onClick={onClose}
           className="absolute top-6 right-6 h-10 w-10 rounded-full bg-white/80 backdrop-blur-md border border-brand-ivory hidden md:flex items-center justify-center text-primary hover:bg-white transition-all z-50"

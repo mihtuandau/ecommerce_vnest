@@ -87,7 +87,7 @@ export default function AdminProductDetailPage() {
         </div>
       </div>
 
-      {/* Form */}
+      
       <div className="w-full">
         {isLoading ? (
           <div className="flex h-96 items-center justify-center bg-white rounded-xl border border-slate-200">

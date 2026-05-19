@@ -71,7 +71,7 @@ export function CartDropdown() {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      {/* Trigger */}
+      
       <Link
         href={ROUTES.CART}
         onClick={(e) => {
@@ -105,7 +105,7 @@ export function CartDropdown() {
         </Button>
       </Link>
 
-      {/* Dropdown Box */}
+      
       <div
         className={cn(
           "absolute right-0 top-full pt-4 z-50 transition-all duration-300 transform origin-top-right w-[380px] hidden lg:block",
@@ -117,7 +117,7 @@ export function CartDropdown() {
         <div
           className={`bg-[${CART_COLORS.DROPDOWN_BG}] rounded-3xl border border-[${CART_COLORS.DROPDOWN_BORDER}] shadow-[0_20px_50px_${CART_COLORS.DROPDOWN_SHADOW}] overflow-hidden flex flex-col ${CART_CONSTANTS.MAX_HEIGHT}`}
         >
-          {/* Header */}
+          
           <div
             className={`px-6 py-4 border-b border-[${CART_COLORS.DROPDOWN_BORDER}] flex items-center justify-between bg-white sticky top-0 z-10`}
           >
@@ -130,7 +130,7 @@ export function CartDropdown() {
             </span>
           </div>
 
-          {/* Content */}
+          
           <div className="flex-1 overflow-y-auto custom-scrollbar px-6 py-4 bg-white">
             {items.length === 0 ? (
               <div className="py-12 flex flex-col items-center justify-center text-center space-y-4">
@@ -205,7 +205,7 @@ export function CartDropdown() {
                       </div>
 
                       <div className="flex items-center justify-between mt-3">
-                        {/* Minimized controls */}
+                        
                         <div className="flex items-center bg-white border border-[#DDD6C8] rounded-lg p-0.5">
                           <button
                             className="h-6 w-6 rounded-md hover:bg-[#F3EFE8] hover:text-[#C4783A] transition-all flex items-center justify-center text-[#8A7966]"
@@ -247,7 +247,7 @@ export function CartDropdown() {
             )}
           </div>
 
-          {/* Footer */}
+          
           {items.length > 0 && (
             <div className="p-6 bg-[#FAF8F4] border-t border-[#DDD6C8] space-y-4">
               <div className="flex items-center justify-between">

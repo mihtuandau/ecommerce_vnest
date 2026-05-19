@@ -3,6 +3,14 @@
 import React from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/Breadcrumb";
 import { useGuestOrderDetail } from "@/features/orders/hooks";
 import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/Skeleton";
@@ -160,7 +168,25 @@ export function GuestOrderDetailView() {
   return (
     <div className="min-h-screen bg-brand-cream text-brand-espresso pb-20 relative font-sans-brand">
       <div className="no-print">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {/* Breadcrumb Container */}
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-5">
+          <Breadcrumb>
+            <BreadcrumbList className="text-sm font-medium">
+              <BreadcrumbItem>
+                <BreadcrumbLink asChild>
+                  <Link href="/">Trang chủ</Link>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>#{order.orderCode}</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </div>
+
+        {/* Main Content Container */}
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-6">
           <GuestDetailHeader
             orderId={order.id}
             orderCode={order.orderCode}

@@ -166,7 +166,7 @@ export function LogsTable({
   };
 
   return (
-    <div className="w-full overflow-hidden bg-white rounded-2xl border border-slate-200/80 shadow-sm">
+    <div className="w-full overflow-hidden bg-white rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)]">
       <div className="overflow-x-auto">
         {isLoading ? (
           <div className="p-20 flex flex-col items-center justify-center gap-3">
@@ -224,7 +224,7 @@ export function LogsTable({
                 return (
                   <React.Fragment key={log.id}>
                     <tr className="hover:bg-slate-50/30 transition-colors">
-                      {/* Actor Profile */}
+                      
                       <td className="px-6 py-4 align-middle">
                         <div className="flex items-center gap-3">
                           <div className="w-9 h-9 rounded-xl bg-slate-100 border border-slate-200/80 flex items-center justify-center font-bold text-slate-500 shrink-0 text-xs shadow-xs">
@@ -241,7 +241,7 @@ export function LogsTable({
                         </div>
                       </td>
 
-                      {/* Action badge */}
+                      
                       <td className="px-6 py-4 align-middle">
                         <span
                           className={cn(
@@ -253,19 +253,19 @@ export function LogsTable({
                         </span>
                       </td>
 
-                      {/* Entity badge */}
+                      
                       <td className="px-6 py-4 align-middle">
                         <span className="px-2 py-0.5 bg-slate-100 text-slate-700 font-bold uppercase tracking-wider text-[8px] rounded border border-slate-200">
                           {formatEntityName(log.entityName)}
                         </span>
                       </td>
 
-                      {/* Entity ID */}
+                      
                       <td className="px-6 py-4 font-mono text-xs text-slate-550 font-semibold align-middle">
                         {log.entityId === "N/A" ? "N/A" : `#${log.entityId}`}
                       </td>
 
-                      {/* IP Address */}
+                      
                       <td className="px-6 py-4 align-middle">
                         <div className="flex items-center gap-1.5 text-slate-500 text-xs font-semibold">
                           <Laptop size={12} className="text-slate-400" />
@@ -277,7 +277,7 @@ export function LogsTable({
                         </div>
                       </td>
 
-                      {/* Timestamp */}
+                      
                       <td className="px-6 py-4 align-middle">
                         <div>
                           <p className="text-xs font-bold text-slate-700">{relative}</p>
@@ -287,7 +287,7 @@ export function LogsTable({
                         </div>
                       </td>
 
-                      {/* Toggle button */}
+                      
                       <td className="px-6 py-4 text-right align-middle">
                         <div className="flex items-center justify-end">
                           <Button
@@ -308,12 +308,12 @@ export function LogsTable({
                       </td>
                     </tr>
 
-                    {/* Log details expansion panel */}
+                    
                     {isExpanded && (
                       <tr className="bg-slate-50/50">
                         <td colSpan={7} className="px-8 py-6 border-b border-slate-100">
-                          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-5 max-w-4xl animate-in slide-in-from-top-2 duration-300">
-                            {/* Panel Header */}
+                          <div className="bg-white rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] p-6 space-y-5 max-w-4xl animate-in slide-in-from-top-2 duration-300">
+                            
                             <div className="flex items-center justify-between border-b border-slate-100 pb-4">
                               <div className="flex items-center gap-2.5">
                                 <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
@@ -330,7 +330,7 @@ export function LogsTable({
                                 </div>
                               </div>
 
-                              {/* Toggle Raw JSON */}
+                              
                               {log.newData && Object.keys(log.newData).length > 0 && (
                                 <button
                                   onClick={() => toggleRawJson(log.id)}
@@ -348,7 +348,7 @@ export function LogsTable({
                               )}
                             </div>
 
-                            {/* Panel Content */}
+                            
                             {showRawJsonMap[log.id] ? (
                               /* Dark JSON block */
                               <div className="bg-slate-900 rounded-2xl border border-slate-800 p-5 shadow-inner space-y-4">
@@ -441,7 +441,7 @@ export function LogsTable({
                               </div>
                             )}
 
-                            {/* Tip info */}
+                            
                             <div className="text-[10px] font-bold text-slate-455 uppercase tracking-wider flex items-center gap-2 mt-2 bg-slate-50 p-3 rounded-xl border border-slate-200/50">
                               <span>
                                 Gợi ý: Hệ thống mã hóa thông tin bảo mật và giám sát
@@ -460,7 +460,7 @@ export function LogsTable({
         )}
       </div>
 
-      {/* Paginated Footer */}
+      
       {meta.totalPages > 1 && (
         <div className="px-6 py-4 border-t border-slate-100 flex items-center justify-between bg-white">
           <p className="text-xs text-slate-500 font-medium">

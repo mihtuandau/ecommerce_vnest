@@ -61,7 +61,7 @@ export function DashboardStats({ summary, isLoading }: DashboardStatsProps) {
       {stats.map((stat, index) => (
         <Card
           key={index}
-          className="border-none shadow-sm rounded-2xl overflow-hidden bg-white"
+          className="border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] bg-white rounded-2xl overflow-hidden"
         >
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">

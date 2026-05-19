@@ -79,7 +79,7 @@ export default function CustomerDeliveryView({
         </div>
       </div>
 
-      {/* FAQ Accordions for Delivery */}
+      
       <div className="space-y-3.5 pt-4">
         <h4 className="text-[11px] text-[#8A7966] uppercase tracking-wider font-semibold">
           Câu hỏi thường gặp về vận chuyển

@@ -42,7 +42,7 @@ export default function SupportPage() {
   return (
     <div className="bg-[#FAF8F4] lg:min-h-[calc(100vh-146px)] min-h-[calc(100vh-64px)] pt-4 lg:pt-6 pb-6 flex flex-col font-sans">
       <div className="max-w-[1400px] w-full mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col justify-center">
-        {/* Breadcrumb Nav */}
+        
         <div className="flex items-center gap-2 text-[11px] font-normal text-[#8A7966] tracking-wide mb-4 shrink-0">
           <Link href="/" className="hover:text-[#3D2B1A] transition-colors">
             Trang chủ
@@ -51,16 +51,16 @@ export default function SupportPage() {
           <span className="text-[#3D2B1A] font-medium">Trung tâm hỗ trợ</span>
         </div>
 
-        {/* Dynamic Split Console Layout (Customer Brand Palette) */}
+        
         <div className="grid grid-cols-1 lg:grid-cols-12 bg-white rounded-3xl border border-[#DDD6C8]/50 shadow-[0_20px_50px_rgba(61,43,26,0.015)] overflow-hidden h-[560px]">
-          {/* ──── LEFT PANEL: Channels & Nav ──── */}
+          
           <CustomerSupportSidebar
             activeTab={activeTab}
             setActiveTab={setActiveTab}
             storePhone={storePhone}
           />
 
-          {/* ──── RIGHT PANEL: Dynamic Viewport ──── */}
+          
           <div className="lg:col-span-8 flex flex-col bg-white overflow-hidden h-full min-h-0">
             {activeTab === "chat" && <CustomerChat />}
 
@@ -85,7 +85,7 @@ export default function SupportPage() {
           </div>
         </div>
 
-        {/* Global Support Info Footer */}
+        
         <div className="mt-8 mb-4 text-center opacity-40">
           <p className="text-[9px] text-[#8A7966] lowercase tracking-widest font-normal">
             LUXE care experience ecosystem

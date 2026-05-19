@@ -18,6 +18,14 @@ import { cn } from "@/utils/cn";
 import { FilterContent } from "./FilterContent";
 import { SHOP_SORT_OPTIONS } from "@/features/products/constants";
 import { Input, Button } from "@/components/ui";
+import {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/Breadcrumb";
 
 function findCategoryRecursive(cats: any[], id: string | null): any {
   if (!id) return null;
@@ -31,7 +39,7 @@ function findCategoryRecursive(cats: any[], id: string | null): any {
   return null;
 }
 
-export function ShopContainer() {
+export function ShopView() {
   const [view, setView] = useState<"grid" | "list">("grid");
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
 
@@ -105,34 +113,47 @@ export function ShopContainer() {
 
   return (
     <div className="bg-brand-cream min-h-screen font-sans-brand">
-      {/* ── BREADCRUMBS ── */}
-      <div className="max-w-[1400px] mx-auto px-6 lg:px-12 py-5 flex items-center gap-1.5 text-[12.5px] text-brand-taupe">
-        <Link href="/" className="hover:text-brand-espresso transition-colors">
-          Trang chủ
-        </Link>
-        <span className="opacity-50 text-[10px]">›</span>
-        <Link
-          href="/shop"
-          className={cn(
-            "hover:text-brand-espresso transition-colors",
-            !currentCategory && "text-brand-espresso font-semibold"
-          )}
-        >
-          Cửa hàng
-        </Link>
-        {currentCategory && (
-          <>
-            <span className="opacity-50 text-[10px]">›</span>
-            <span className="text-brand-espresso font-semibold">
-              {findCategoryRecursive(categories, currentCategory)?.name || "Danh mục"}
-            </span>
-          </>
-        )}
+      
+      {/* Breadcrumb Container */}
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-5">
+        <Breadcrumb>
+          <BreadcrumbList className="text-[13px] font-medium">
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href="/" className="hover:text-brand-espresso transition-all">
+                  Trang chủ
+                </Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              {!currentCategory ? (
+                <BreadcrumbPage>Cửa hàng</BreadcrumbPage>
+              ) : (
+                <BreadcrumbLink asChild>
+                  <Link href="/shop" className="hover:text-brand-espresso transition-colors">
+                    Cửa hàng
+                  </Link>
+                </BreadcrumbLink>
+              )}
+            </BreadcrumbItem>
+            {currentCategory && (
+              <>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>
+                    {findCategoryRecursive(categories, currentCategory)?.name || "Danh mục"}
+                  </BreadcrumbPage>
+                </BreadcrumbItem>
+              </>
+            )}
+          </BreadcrumbList>
+        </Breadcrumb>
       </div>
 
-      <div className="max-w-[1400px] mx-auto px-6 lg:px-12 pt-10 pb-20">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-20">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-x-12">
-          {/* ── SIDEBAR ── */}
+          
           <aside className="hidden lg:block lg:col-span-1 sticky top-32 h-fit">
             <div className="bg-white rounded-2xl p-6 border border-brand-sand shadow-[0_8px_30px_rgba(61,43,26,0.04)]">
               <FilterContent
@@ -149,7 +170,7 @@ export function ShopContainer() {
             </div>
           </aside>
 
-          {/* ── MAIN ── */}
+          
           <main className="lg:col-span-3 space-y-8">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-brand-ivory pb-6">
               <div className="flex items-center gap-6">
@@ -243,7 +264,7 @@ export function ShopContainer() {
               </div>
             </div>
 
-            {/* Active Filter Chips */}
+            
             {(currentCategory ||
               currentBrand ||
               currentMinPrice ||

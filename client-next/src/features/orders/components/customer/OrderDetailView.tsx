@@ -11,6 +11,14 @@ import { AlertCircle, Clock, RotateCcw } from "lucide-react";
 import { OrderStatus, PaymentStatus } from "@/types/enums";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
+import {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/Breadcrumb";
 
 // Sub-components
 import { DetailHeader } from "./detail/DetailHeader";
@@ -131,7 +139,31 @@ export function OrderDetailView() {
   return (
     <div className="min-h-screen bg-brand-cream text-brand-espresso pb-20 relative font-sans-brand">
       <div className="no-print">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {/* Breadcrumb Container */}
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-5">
+          <Breadcrumb>
+            <BreadcrumbList className="text-sm font-medium">
+              <BreadcrumbItem>
+                <BreadcrumbLink asChild>
+                  <Link href="/">Trang chủ</Link>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbLink asChild>
+                  <Link href="/orders">Đơn hàng</Link>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>#{order.orderCode}</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </div>
+
+        {/* Main Content Container */}
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-6">
           <DetailHeader
             orderCode={order.orderCode}
             orderId={order.id}
@@ -328,7 +360,7 @@ export function OrderDetailView() {
         })()}
       />
 
-      {/* DEDICATED PRINT COMPONENT */}
+      
       <PrintInvoice order={order} />
     </div>
   );

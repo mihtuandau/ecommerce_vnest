@@ -93,18 +93,18 @@ export default function AdminOrdersPage() {
 
   return (
     <div className="space-y-4 pb-10">
-      {/* Header Section */}
+      
       <OrderListHeader
         totalOrders={orders.length}
         onRefresh={refetch}
         isFetching={isFetching}
       />
 
-      {/* Statistics Cards */}
+      
       <OrderStats counts={counts} />
 
-      {/* Main Table Container - Rounded & Shadow */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] overflow-hidden">
         <OrderListToolbar
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
@@ -119,7 +119,7 @@ export default function AdminOrdersPage() {
           onReset={handleReset}
         />
 
-        {/* Table Content */}
+        
         <div className="overflow-x-auto">
           {isLoading ? (
             <div className="flex h-96 items-center justify-center">
