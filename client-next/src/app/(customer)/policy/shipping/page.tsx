@@ -5,14 +5,14 @@ export default function ShippingPolicyPage() {
     <div className="max-w-[1000px] mx-auto py-12 md:py-20 px-4 sm:px-6">
       <header className="mb-12 border-b border-slate-100 pb-8">
         <h1 className="text-2xl font-bold text-slate-900 mb-2">Chính sách vận chuyển</h1>
-        <p className="text-slate-500 text-sm">Áp dụng cho tất cả đơn hàng tại Minh Tuấn Shop</p>
+        <p className="text-slate-500 text-sm">Áp dụng cho tất cả đơn hàng tại LUXE</p>
       </header>
 
       <div className="space-y-10 text-slate-700 leading-relaxed text-base font-normal">
         <section>
           <h2 className="font-bold text-slate-900 mb-3">01. Phạm vi và đối tác vận chuyển</h2>
           <p>
-            Chúng tôi thực hiện giao hàng trên toàn lãnh thổ Việt Nam (63 tỉnh thành). Minh Tuấn Shop hợp tác cùng các đơn vị vận chuyển uy tín như Giao hàng nhanh (GHN), Giao hàng tiết kiệm (GHTK) và Viettel Post để đảm bảo hàng hóa đến tay khách hàng an toàn.
+            Chúng tôi thực hiện giao hàng trên toàn lãnh thổ Việt Nam (63 tỉnh thành). LUXE hợp tác cùng các đơn vị vận chuyển uy tín như Giao hàng nhanh (GHN), Giao hàng tiết kiệm (GHTK) và Viettel Post để đảm bảo hàng hóa đến tay khách hàng an toàn.
           </p>
         </section>
 

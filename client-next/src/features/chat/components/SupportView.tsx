@@ -9,7 +9,7 @@ import { ChatMain } from "./Support/ChatMain";
 import { CustomerInfo } from "./Support/CustomerInfo";
 
 import { useUsers } from "@/features/users/hooks";
-
+import { Role } from "@/types/enums";
 import { ShieldAlert } from "lucide-react";
 
 export default function SupportView() {
@@ -37,7 +37,7 @@ export default function SupportView() {
       ? usersResponse 
       : (usersResponse?.data || []);
     return rawList.filter((u: any) => 
-      ["ADMIN", "KHO", "BAN_HANG"].includes(u.role?.toUpperCase()) && 
+      [Role.ADMIN, Role.KHO, Role.BAN_HANG].includes(u.role?.toUpperCase()) && 
       u.id !== user?.id
     );
   }, [usersResponse, user]);
@@ -76,7 +76,7 @@ export default function SupportView() {
     );
   }, [rooms, searchQuery]);
 
-  const hasAccess = user?.role === "ADMIN" || user?.permissions?.includes("chat.support");
+  const hasAccess = user?.role === Role.ADMIN || user?.permissions?.includes("chat.support");
 
   if (!hasAccess) {
     return (

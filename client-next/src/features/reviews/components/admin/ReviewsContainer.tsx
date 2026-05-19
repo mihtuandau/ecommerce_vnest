@@ -25,8 +25,6 @@ export function ReviewsContainer() {
     limit: 1000,
   });
 
-  const reviewsList = data?.reviews || [];
-
   // Delete Mutation Hook
   const deleteMutation = useDeleteReview();
 
@@ -46,38 +44,40 @@ export function ReviewsContainer() {
 
   // Filter reviews based on search query, rating selection or dashboard ID highlight
   const filteredReviews = useMemo(() => {
-    if (highlightId) {
-      const match = reviewsList.find((r: any) => String(r.id) === highlightId);
-      return match ? [match] : [];
+  const reviewsList = data?.reviews || [];
+
+  if (highlightId) {
+    const match = reviewsList.find((r: any) => String(r.id) === highlightId);
+    return match ? [match] : [];
+  }
+
+  return reviewsList.filter((r: any) => {
+    // 1. Filter by star rating
+    if (ratingFilter !== null && Math.round(r.rating) !== ratingFilter) {
+      return false;
     }
 
-    return reviewsList.filter((r: any) => {
-      // 1. Filter by star rating
-      if (ratingFilter !== null && Math.round(r.rating) !== ratingFilter) {
-        return false;
-      }
+    // 2. Filter by search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      const productName = r.product?.name?.toLowerCase() || "";
+      const comment = r.comment?.toLowerCase() || "";
+      const userName = r.user?.name?.toLowerCase() || "";
+      const userEmail = r.user?.email?.toLowerCase() || "";
+      const orderCode = r.order?.orderCode?.toLowerCase() || "";
 
-      // 2. Filter by search query (product name, comment, guest email, user name)
-      if (searchQuery.trim()) {
-        const query = searchQuery.toLowerCase().trim();
-        const productName = r.product?.name?.toLowerCase() || "";
-        const comment = r.comment?.toLowerCase() || "";
-        const userName = r.user?.name?.toLowerCase() || "";
-        const userEmail = r.user?.email?.toLowerCase() || "";
-        const orderCode = r.order?.orderCode?.toLowerCase() || "";
+      return (
+        productName.includes(query) ||
+        comment.includes(query) ||
+        userName.includes(query) ||
+        userEmail.includes(query) ||
+        orderCode.includes(query)
+      );
+    }
 
-        return (
-          productName.includes(query) ||
-          comment.includes(query) ||
-          userName.includes(query) ||
-          userEmail.includes(query) ||
-          orderCode.includes(query)
-        );
-      }
-
-      return true;
-    });
-  }, [reviewsList, searchQuery, ratingFilter, highlightId]);
+    return true;
+  });
+}, [data?.reviews, searchQuery, ratingFilter, highlightId]);
 
   // Handle client-side pagination
   const itemsPerPage = 10;

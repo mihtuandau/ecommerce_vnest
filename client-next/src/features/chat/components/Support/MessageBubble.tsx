@@ -4,6 +4,8 @@ import React from "react";
 import dayjs from "dayjs";
 import { cn } from "@/utils/cn";
 import { Paperclip, ExternalLink, Lock } from "lucide-react";
+import { Role } from "@/types/enums";
+import { ROLE_CONFIG } from "@/features/permissions/constants";
 
 interface Message {
   id: string;
@@ -91,7 +93,7 @@ export function MessageBubble({
 
   const isStaffRoom = selectedRoomId?.startsWith("room_staff_");
   const senderName = m.sender?.name || "Nhân viên";
-  const senderRole = m.sender?.role || "Staff";
+  const senderRole = ROLE_CONFIG[m.sender?.role as Role]?.label || m.sender?.role || "Nhân viên";
   const initials = senderName.split(" ").map((n: string) => n[0]).join("").slice(0, 2).toUpperCase() || "NV";
 
   return (

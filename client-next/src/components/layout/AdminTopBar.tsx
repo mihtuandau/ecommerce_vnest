@@ -24,9 +24,13 @@ import {
 import { useAuthStore } from "@/store/useAuthStore";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import Image from "next/image";
+import { Role } from "@/types/enums";
+import { ROLE_CONFIG } from "@/features/permissions/constants";
 import { useNotifications, useMarkNotificationRead } from "@/features/notifications/hooks";
 import { useRouter } from "next/navigation";
+import { ROUTES } from "@/constants/routes";
 import { cn } from "@/utils/cn";
+import { getImageUrl } from "@/utils/image";
 
 export function AdminTopBar() {
   const { user } = useAuthStore();
@@ -155,7 +159,7 @@ export function AdminTopBar() {
 
             <DropdownMenuItem asChild>
               <Link
-                href="/admin/notifications"
+                href={ROUTES.ADMIN_NOTIFICATIONS}
                 className="rounded-xl cursor-pointer py-2 px-3 text-center text-xs font-bold text-slate-750 justify-center hover:bg-slate-50 transition-colors w-full block"
               >
                 Xem tất cả thông báo
@@ -166,7 +170,7 @@ export function AdminTopBar() {
 
         {/* Quick Settings Gear */}
         <Button variant="ghost" size="icon" className="rounded-xl hover:bg-slate-50 size-9 flex items-center justify-center text-slate-500 hover:text-slate-700 transition-colors" asChild>
-          <Link href="/admin/settings">
+          <Link href={ROUTES.ADMIN_SETTINGS}>
             <Settings className="h-4.5 w-4.5" />
           </Link>
         </Button>
@@ -183,7 +187,7 @@ export function AdminTopBar() {
               <div className="h-7 w-7 rounded-lg bg-slate-100 flex items-center justify-center border border-slate-200 shadow-3xs overflow-hidden relative shrink-0 group-hover:ring-2 group-hover:ring-slate-900/10 transition-all duration-300">
                 {user?.avatar ? (
                   <Image
-                    src={user.avatar}
+                    src={getImageUrl(user.avatar)}
                     alt={user.name || "User"}
                     width={28}
                     height={28}
@@ -200,16 +204,7 @@ export function AdminTopBar() {
                   {user?.name || "Người dùng"}
                 </p>
                 <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider leading-none">
-                  {(
-                    {
-                      ADMIN: "Quản trị viên",
-                      KHO: "Quản lý kho",
-                      BAN_HANG: "Bán hàng",
-                      CUSTOMER: "Khách hàng",
-                    } as Record<string, string>
-                  )[(user as any)?.role] ??
-                    (user as any)?.role ??
-                    "Người dùng"}
+                  {ROLE_CONFIG[user?.role as Role]?.label ?? user?.role ?? "Người dùng"}
                 </p>
               </div>
             </Button>
@@ -224,7 +219,7 @@ export function AdminTopBar() {
 
             <DropdownMenuItem asChild>
               <Link
-                href="/admin/profile"
+                href={ROUTES.ADMIN_PROFILE}
                 className="rounded-xl cursor-pointer py-2 px-3 flex items-center gap-2.5 focus:bg-slate-50 transition-colors group"
               >
                 <UserIcon className="h-4 w-4 text-slate-400 group-focus:text-slate-800" />
@@ -236,7 +231,7 @@ export function AdminTopBar() {
 
             <DropdownMenuItem asChild>
               <Link
-                href="/admin/settings"
+                href={ROUTES.ADMIN_SETTINGS}
                 className="rounded-xl cursor-pointer py-2 px-3 flex items-center gap-2.5 focus:bg-slate-50 transition-colors group"
               >
                 <Shield className="h-4 w-4 text-slate-400 group-focus:text-slate-800" />

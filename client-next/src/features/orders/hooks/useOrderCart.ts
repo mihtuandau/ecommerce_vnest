@@ -65,8 +65,8 @@ export function useOrderCart(): {
     
     const currentItems = form.getValues("items") || [];
     const existingIndex = currentItems.findIndex((i: any) => i.variantId === String(variant.id));
-    const variantLabel = [variant.size, variant.color].filter(Boolean).join(" • ") || "Mặc định";
-    const productName = `${product.name} (${variantLabel})`;
+    const variantLabel = [variant.size, variant.color].filter(Boolean).join(" • ");
+    const productName = variantLabel ? `${product.name} (${variantLabel})` : product.name;
 
     if (existingIndex > -1) {
       const currentQty = currentItems[existingIndex].quantity;

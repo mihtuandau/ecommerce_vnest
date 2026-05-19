@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { OrderStatus, ReturnStatus } from "@/types/enums";
 import { cn } from "@/utils/cn";
+import { CUSTOMER_ORDER_STATUS_CONFIG } from "../../../constants";
 
 interface DetailStepperProps {
   status: OrderStatus;
@@ -48,10 +49,10 @@ export function DetailStepper({
   };
 
   const steps = [
-    { key: OrderStatus.PENDING, label: "Đặt hàng", icon: <ClipboardList size={18} /> },
-    { key: OrderStatus.PROCESSING, label: "Xác nhận", icon: <CheckCircle size={18} /> },
-    { key: OrderStatus.SHIPPED, label: "Vận chuyển", icon: <Truck size={18} /> },
-    { key: OrderStatus.DELIVERED, label: "Hoàn tất", icon: <Home size={18} /> },
+    { key: OrderStatus.PENDING, label: CUSTOMER_ORDER_STATUS_CONFIG[OrderStatus.PENDING].label, icon: <ClipboardList size={18} /> },
+    { key: OrderStatus.PROCESSING, label: CUSTOMER_ORDER_STATUS_CONFIG[OrderStatus.PROCESSING].label, icon: <CheckCircle size={18} /> },
+    { key: OrderStatus.SHIPPED, label: CUSTOMER_ORDER_STATUS_CONFIG[OrderStatus.SHIPPED].label, icon: <Truck size={18} /> },
+    { key: OrderStatus.DELIVERED, label: CUSTOMER_ORDER_STATUS_CONFIG[OrderStatus.DELIVERED].label, icon: <Home size={18} /> },
   ];
 
   const getStatusIndex = (status: string) => {

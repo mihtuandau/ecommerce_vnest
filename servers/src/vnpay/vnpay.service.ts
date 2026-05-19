@@ -28,9 +28,27 @@ export class VNPayService {
     const createDate = this.formatDate(date);
     const expireDate = this.formatDate(new Date(date.getTime() + 15 * 60000)); // Hết hạn sau 15 phút
 
-    // Xử lý IP Address
+    // Xử lý IP Address: Chỉ chấp nhận định dạng IPv4 chuẩn cho VNPay
     let ipAddr = params.ipAddr;
-    if (ipAddr === '::1' || ipAddr === 'localhost' || !ipAddr) {
+    if (ipAddr) {
+      // 1. Nếu là chuỗi nhiều IP (qua proxy/load balancer như x-forwarded-for), lấy IP đầu tiên
+      if (ipAddr.includes(',')) {
+        ipAddr = ipAddr.split(',')[0].trim();
+      }
+      // 2. Nếu là IPv4-mapped IPv6 (e.g., ::ffff:127.0.0.1)
+      if (ipAddr.startsWith('::ffff:')) {
+        ipAddr = ipAddr.substring(7);
+      }
+      // 3. Nếu là IPv6 local hoặc localhost
+      if (ipAddr === '::1' || ipAddr === 'localhost') {
+        ipAddr = '127.0.0.1';
+      }
+      // 4. Kiểm tra xem có phải IPv4 hợp lệ không, nếu không thì fallback về 127.0.0.1
+      const ipv4Regex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+      if (!ipv4Regex.test(ipAddr)) {
+        ipAddr = '127.0.0.1';
+      }
+    } else {
       ipAddr = '127.0.0.1';
     }
 
@@ -41,7 +59,7 @@ export class VNPayService {
       vnp_Locale: 'vn',
       vnp_CurrCode: 'VND',
       vnp_TxnRef: params.vnp_TxnRef,
-      vnp_OrderInfo: 'Thanh toan don hang:' + params.vnp_TxnRef,
+      vnp_OrderInfo: 'Thanh toan don hang ' + params.vnp_TxnRef,
       vnp_OrderType: 'other',
       vnp_Amount: Math.round(params.amount * 100),
       vnp_ReturnUrl: returnUrl,

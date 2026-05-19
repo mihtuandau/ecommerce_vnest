@@ -111,12 +111,14 @@ export function WishlistView() {
                 >
                   {/* Card Actions Overlay */}
                   <div className="absolute top-4 right-4 z-30">
-                    <button
+                    <Button
                       onClick={() => removeFromWishlist(item.id)}
-                      className="h-9 w-9 rounded-full bg-white/90 backdrop-blur-sm shadow-md flex items-center justify-center text-brand-taupe hover:text-red-500 transition-all duration-300 border border-brand-sand/50"
+                      variant="outline"
+                      size="icon"
+                      className="h-9 w-9 rounded-full bg-white/90 backdrop-blur-sm shadow-md flex items-center justify-center text-brand-taupe hover:text-red-500 transition-all duration-300 border border-brand-sand/50 shadow-none hover:bg-white"
                     >
                       <Trash2 size={15} />
-                    </button>
+                    </Button>
                   </div>
 
                   {/* ── IMAGE SECTION ── */}

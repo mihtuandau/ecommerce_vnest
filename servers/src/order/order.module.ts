@@ -11,6 +11,7 @@ import { CartModule } from '../cart/cart.module';
 import { MailModule } from '../mail/mail.module';
 import { PaymentModule } from '../payment/payment.module';
 import { NotificationModule } from '../notification/notification.module';
+import { SystemSettingsModule } from '../system-settings/system-settings.module';
 
 @Module({
   imports: [
@@ -19,7 +20,8 @@ import { NotificationModule } from '../notification/notification.module';
     CartModule, 
     MailModule, 
     PaymentModule,
-    NotificationModule
+    NotificationModule,
+    SystemSettingsModule
   ],  
   controllers: [OrderController],
   providers: [

@@ -12,6 +12,7 @@ import { User } from "@/types/models";
 import { useEffect } from "react";
 import { Save, X } from "lucide-react";
 import { Role, UserStatus } from "@/types/enums";
+import { ROLE_CONFIG } from "@/features/permissions/constants";
 
 const userSchema = z.object({
   name: nameSchema,
@@ -116,10 +117,11 @@ export function UserForm({ initialData, onSubmit, isLoading }: UserFormProps) {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent className="rounded-xl admin-theme">
-                      <SelectItem value={Role.CUSTOMER}>Khách hàng</SelectItem>
-                      <SelectItem value={Role.ADMIN}>Quản trị viên</SelectItem>
-                      <SelectItem value={Role.KHO}>Nhân viên kho</SelectItem>
-                      <SelectItem value={Role.BAN_HANG}>Nhân viên bán hàng</SelectItem>
+                      {Object.entries(ROLE_CONFIG).map(([key, config]) => (
+                        <SelectItem key={key} value={key}>
+                          {config.label}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />

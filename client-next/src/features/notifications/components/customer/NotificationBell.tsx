@@ -5,6 +5,7 @@ import { Bell } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { useNotifications, useMarkNotificationRead } from "../../hooks";
+import { NOTIFICATIONS_LIMITS } from "../../constants";
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -14,7 +15,7 @@ import {
 import { cn } from "@/utils/cn";
 
 export function NotificationBell() {
-  const { data: notificationsData } = useNotifications({ limit: 5 });
+  const { data: notificationsData } = useNotifications({ limit: NOTIFICATIONS_LIMITS.BELL });
   const markRead = useMarkNotificationRead();
   const notifications = (notificationsData as any)?.data || [];
   const unreadCount = notifications.filter((n: any) => !n.isRead).length;
@@ -63,7 +64,9 @@ export function NotificationBell() {
                   <div className="flex-1">
                     <p className="text-[13px] font-bold text-brand-espresso leading-snug">{n.title}</p>
                     <p className="text-[12px] text-brand-taupe mt-0.5 line-clamp-2 leading-relaxed">{n.content}</p>
-                    <p className="text-[10px] text-brand-taupe/60 mt-1.5">{new Date(n.createdAt).toLocaleDateString('vi-VN')}</p>
+                    <p className="text-[10px] text-brand-taupe/60 mt-1.5" suppressHydrationWarning>
+                      {new Date(n.createdAt).toLocaleDateString('vi-VN')}
+                    </p>
                   </div>
                 </div>
               </DropdownMenuItem>

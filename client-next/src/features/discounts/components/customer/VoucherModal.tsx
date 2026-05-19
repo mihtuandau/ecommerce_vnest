@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/Dialog";
 import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
+import { Input } from "@/components/ui/Input";
 import { discountsApi } from "@/features/discounts/api";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { Tag, CheckCircle2 } from "lucide-react";
@@ -49,12 +50,12 @@ export function VoucherModal({ isOpen, onClose, onApply, isApplying, appliedCode
         <div className="p-6 space-y-6">
           {/* Input field */}
           <div className="flex gap-2">
-            <input
+            <Input
               type="text"
               placeholder="Nhập mã giảm giá..."
               value={inputCode}
               onChange={(e) => setInputCode(e.target.value.toUpperCase())}
-              className="flex-1 bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-medium"
+              className="flex-1 bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-medium h-[46px]"
             />
             <Button 
               onClick={() => handleApply(inputCode)}

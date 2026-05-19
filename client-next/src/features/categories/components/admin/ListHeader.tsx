@@ -36,7 +36,7 @@ export function CategoryListHeader({ totalCategories, onRefresh, isFetching }: C
             Làm mới
           </Button>
           <Button asChild size="sm" className="h-9 rounded-lg bg-slate-900 text-white hover:bg-slate-800 font-bold text-xs uppercase tracking-wider gap-2 px-4 shadow-sm">
-            <Link href="/admin/categories/create">
+            <Link href={ROUTES.ADMIN_CATEGORIES_CREATE}>
               <Plus className="h-4 w-4" /> Thêm danh mục
             </Link>
           </Button>

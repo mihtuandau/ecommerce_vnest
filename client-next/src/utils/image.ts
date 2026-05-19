@@ -11,7 +11,7 @@ import { env } from "@/config/env";
  * @returns A full URL or local asset path
  */
 export function getImageUrl(input?: any): string {
-  const placeholder = "https://placehold.co/600x400/f8fafc/64748b?text=Minh Tuấn Shop";
+  const placeholder = "https://placehold.co/600x400/f8fafc/64748b?text=LUXE";
   
   if (!input) return placeholder;
 

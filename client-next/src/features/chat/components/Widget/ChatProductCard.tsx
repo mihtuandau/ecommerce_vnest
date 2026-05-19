@@ -7,6 +7,7 @@ import { ChevronRight } from "lucide-react";
 import { productsApi } from "@/features/products/api";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { getImageUrl } from "@/utils/image";
+import { Skeleton } from "@/components/ui/Skeleton";
 
 const productCache: Record<number, any> = {};
 
@@ -21,6 +22,9 @@ export const ChatProductCard = ({
   const [loading, setLoading] = useState(!productCache[productId]);
 
   useEffect(() => {
+    let timeoutId: ReturnType<typeof setTimeout>;
+    let active = true;
+
     if (productCache[productId]) {
       setProduct(productCache[productId]);
       setLoading(false);
@@ -30,24 +34,31 @@ export const ChatProductCard = ({
     const fetchProduct = async () => {
       try {
         const data = await productsApi.getProduct(productId.toString());
+        if (!active) return;
         productCache[productId] = data;
         setProduct(data);
       } catch (error: any) {
+        if (!active) return;
         if (error?.response?.status === 429) {
-          setTimeout(fetchProduct, 2000);
+          timeoutId = setTimeout(fetchProduct, 2000);
           return;
         }
         console.error("Failed to fetch chat product:", error);
       } finally {
-        setLoading(false);
+        if (active) setLoading(false);
       }
     };
     fetchProduct();
+
+    return () => {
+      active = false;
+      if (timeoutId) clearTimeout(timeoutId);
+    };
   }, [productId]);
 
   if (loading)
     return (
-      <div className="w-full h-20 bg-slate-50 animate-pulse rounded-xl border border-slate-100" />
+      <Skeleton className="w-full h-20 rounded-xl" />
     );
 
   if (!product) return null;

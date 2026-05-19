@@ -1,8 +1,8 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Đơn hàng của tôi — Minh Tuấn Store",
-  description: "Quản lý và theo dõi lịch sử đơn hàng của bạn tại Minh Tuấn Store.",
+  title: "Đơn hàng của tôi — LUXE",
+  description: "Quản lý và theo dõi lịch sử đơn hàng của bạn tại LUXE.",
 };
 
 export default function OrdersLayout({ children }: { children: React.ReactNode }) {

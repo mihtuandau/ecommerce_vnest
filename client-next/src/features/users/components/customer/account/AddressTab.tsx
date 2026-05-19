@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Spinner } from "@/components/ui/Spinner";
 import { Input } from "@/components/ui/Input";
+import { Checkbox } from "@/components/ui/Checkbox";
 import {
   Dialog,
   DialogContent,
@@ -282,8 +283,12 @@ export function AddressTab() {
                 <Input required placeholder="Số nhà, tên đường..." value={newAddress.street} onChange={e => setNewAddress({...newAddress, street: e.target.value})} className="h-11 rounded-xl border-brand-sand" />
               </div>
               <div className="flex items-center gap-3 bg-brand-ivory/20 p-4 rounded-xl border border-brand-sand">
-                <input type="checkbox" id="isDefault" className="h-5 w-5 rounded-md border-brand-sand text-brand-bronze cursor-pointer accent-brand-bronze" checked={newAddress.isDefault} onChange={e => setNewAddress({...newAddress, isDefault: e.target.checked})} />
-                <label htmlFor="isDefault" className="text-brand-espresso cursor-pointer font-bold text-[11px] tracking-wider">Đặt làm mặc định</label>
+                <Checkbox 
+                  id="isDefault" 
+                  checked={newAddress.isDefault} 
+                  onCheckedChange={(checked) => setNewAddress({...newAddress, isDefault: !!checked})} 
+                />
+                <label htmlFor="isDefault" className="text-brand-espresso cursor-pointer font-bold text-[11px] tracking-wider select-none">Đặt làm mặc định</label>
               </div>
             </div>
             <DialogFooter className="px-10 py-6 bg-brand-ivory/30 border-t border-brand-sand/50 gap-4">
@@ -341,8 +346,12 @@ export function AddressTab() {
                 <Input required placeholder="Số nhà, tên đường..." value={newAddress.street} onChange={e => setNewAddress({...newAddress, street: e.target.value})} className="h-11 rounded-xl border-brand-sand" />
               </div>
               <div className="flex items-center gap-3 bg-brand-ivory/20 p-4 rounded-xl border border-brand-sand">
-                <input type="checkbox" id="isDefaultEdit" className="h-5 w-5 rounded-md border-brand-sand text-brand-bronze cursor-pointer accent-brand-bronze" checked={newAddress.isDefault} onChange={e => setNewAddress({...newAddress, isDefault: e.target.checked})} />
-                <label htmlFor="isDefaultEdit" className="text-brand-espresso cursor-pointer font-bold text-[11px] tracking-wider">Đặt làm mặc định</label>
+                <Checkbox 
+                  id="isDefaultEdit" 
+                  checked={newAddress.isDefault} 
+                  onCheckedChange={(checked) => setNewAddress({...newAddress, isDefault: !!checked})} 
+                />
+                <label htmlFor="isDefaultEdit" className="text-brand-espresso cursor-pointer font-bold text-[11px] tracking-wider select-none">Đặt làm mặc định</label>
               </div>
             </div>
             <DialogFooter className="px-10 py-6 bg-brand-ivory/30 border-t border-brand-sand/50 gap-4">

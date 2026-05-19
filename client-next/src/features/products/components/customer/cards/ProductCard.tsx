@@ -8,9 +8,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/features/cart/hooks";
 import { useWishlistStore } from "@/store/useWishlistStore";
+import { useAuthStore } from "@/store/useAuthStore";
 import { useToast } from "@/hooks/useToast";
 import { cn } from "@/utils/cn";
 import { useFlashSale, useDiscounts } from "@/features/discounts/hooks";
+import { Button } from "@/components/ui/Button";
 import Image from "next/image";
 import { getImageUrl } from "@/utils/image";
 import { QuickAddModal } from "./QuickAddModal";
@@ -26,7 +28,8 @@ export const ProductCard = React.memo(function ProductCard({ product, view = "gr
   const { addItem } = useCart();
   const isFavorite = useWishlistStore(state => state.items.some(i => i.id === String(product.id)));
   const toggleWishlist = useWishlistStore(state => state.toggleWishlist);
-  const { success } = useToast();
+  const { success, error } = useToast();
+  const user = useAuthStore(state => state.user);
   const { data: flashSale } = useFlashSale();
   const { data: discountsData } = useDiscounts({ type: "PROMOTION" }); // Only get auto-applied promotions
   const router = useRouter();
@@ -65,6 +68,10 @@ export const ProductCard = React.memo(function ProductCard({ product, view = "gr
   const handleToggleWishlist = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    if (!user) {
+      error("Vui lòng đăng nhập để sử dụng chức năng yêu thích!");
+      return;
+    }
     toggleWishlist({
       id: String(product.id),
       name: product.name,
@@ -125,9 +132,14 @@ export const ProductCard = React.memo(function ProductCard({ product, view = "gr
                   <p className="text-[10px] font-bold text-brand-taupe uppercase tracking-[0.12em]">{product.category?.name || "Luxurious"}</p>
                   <h3 className="text-[16px] md:text-[18px] font-medium text-primary leading-tight hover:text-brand-bronze transition-colors">{product.name}</h3>
                 </div>
-                <button onClick={handleToggleWishlist} className={cn("relative z-30 w-8 h-8 rounded-full flex items-center justify-center border transition-all duration-300", isFavorite ? "bg-brand-bronze border-brand-bronze text-white" : "bg-white border-brand-sand text-brand-taupe hover:bg-brand-cream hover:text-brand-bronze")}>
+                <Button 
+                  onClick={handleToggleWishlist} 
+                  variant="outline"
+                  size="icon"
+                  className={cn("relative z-30 h-8 w-8 border transition-all duration-300", isFavorite ? "bg-brand-bronze border-brand-bronze text-white hover:bg-brand-bronze/95 hover:text-white" : "bg-white border-brand-sand text-brand-taupe hover:bg-brand-cream hover:text-brand-bronze")}
+                >
                   <Heart size={14} fill={isFavorite ? "currentColor" : "none"} strokeWidth={isFavorite ? 0 : 2} />
-                </button>
+                </Button>
               </div>
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-1">
@@ -149,9 +161,12 @@ export const ProductCard = React.memo(function ProductCard({ product, view = "gr
                 <span className="text-[22px] font-bold text-primary leading-none font-sans">{formatCurrency(price)}</span>
                 {originalPrice && originalPrice > price && <span className="text-[14px] text-brand-taupe/80 line-through font-medium">{formatCurrency(originalPrice)}</span>}
               </div>
-              <button onClick={handleAddToCart} className="relative z-30 flex items-center gap-2 px-5 h-10 rounded-full bg-primary text-white text-[11px] font-bold uppercase tracking-widest hover:bg-brand-bronze transition-all duration-300">
+              <Button 
+                onClick={handleAddToCart} 
+                className="relative z-30 px-5 h-10 text-[11px] font-bold uppercase tracking-widest bg-primary text-white hover:bg-brand-bronze transition-all duration-300"
+              >
                 <ShoppingCart size={14} /> Thêm vào giỏ
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -173,9 +188,14 @@ export const ProductCard = React.memo(function ProductCard({ product, view = "gr
             {discountPercent > 0 && <span className="bg-brand-bronze text-white text-[9px] font-bold px-2 py-1 rounded uppercase tracking-wider">-{discountPercent}%</span>}
             {product.isNew && <span className="bg-primary text-white text-[9px] font-bold px-2 py-1 rounded uppercase tracking-wider">Mới</span>}
           </div>
-          <button onClick={handleToggleWishlist} className={cn("absolute top-4 right-4 z-30 w-8 h-8 rounded-full flex items-center justify-center border transition-all duration-300", isFavorite ? "bg-brand-bronze border-brand-bronze text-white" : "bg-white/80 backdrop-blur-sm border-brand-sand text-brand-taupe hover:bg-white hover:text-brand-bronze")}>
+          <Button 
+            onClick={handleToggleWishlist} 
+            variant="outline"
+            size="icon"
+            className={cn("absolute top-4 right-4 z-30 h-8 w-8 border transition-all duration-300", isFavorite ? "bg-brand-bronze border-brand-bronze text-white hover:bg-brand-bronze/95 hover:text-white" : "bg-white/80 backdrop-blur-sm border-brand-sand text-brand-taupe hover:bg-white hover:text-brand-bronze")}
+          >
             <Heart size={14} fill={isFavorite ? "currentColor" : "none"} strokeWidth={isFavorite ? 0 : 2} />
-          </button>
+          </Button>
         </div>
 
         <div className="p-4 md:p-5 flex flex-col flex-1">

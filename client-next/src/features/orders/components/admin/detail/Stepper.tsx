@@ -1,12 +1,13 @@
 "use client";
 
 import React from "react";
-import { Clock, Package, Truck, CheckCircle2, RotateCcw } from "lucide-react";
+import { Clock } from "lucide-react";
 import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/utils/cn";
 import { adminUI } from "@/constants/admin-ui";
-import { OrderStatus } from "@/types/enums";
+import { OrderStatus, Role } from "@/types/enums";
 import { useAuthStore } from "@/store/useAuthStore";
+import { ADMIN_ORDER_STATUS_CONFIG } from "../../../constants";
 
 interface StepperProps {
   status: OrderStatus | string;
@@ -16,18 +17,17 @@ interface StepperProps {
 }
 
 const statusSteps = [
-  { key: OrderStatus.PENDING, label: "Chờ xử lý", icon: Clock },
-  { key: OrderStatus.PROCESSING, label: "Đang xử lý", icon: Package },
-  { key: OrderStatus.SHIPPED, label: "Đang giao", icon: Truck },
-  { key: OrderStatus.DELIVERED, label: "Đã giao", icon: CheckCircle2 },
-  { key: OrderStatus.RETURN_REQUESTED, label: "Trả hàng", icon: RotateCcw },
-  { key: OrderStatus.RETURNED, label: "Đã trả", icon: CheckCircle2 },
+  { key: OrderStatus.PENDING, label: ADMIN_ORDER_STATUS_CONFIG[OrderStatus.PENDING].label, icon: ADMIN_ORDER_STATUS_CONFIG[OrderStatus.PENDING].icon },
+  { key: OrderStatus.PROCESSING, label: ADMIN_ORDER_STATUS_CONFIG[OrderStatus.PROCESSING].label, icon: ADMIN_ORDER_STATUS_CONFIG[OrderStatus.PROCESSING].icon },
+  { key: OrderStatus.SHIPPED, label: ADMIN_ORDER_STATUS_CONFIG[OrderStatus.SHIPPED].label, icon: ADMIN_ORDER_STATUS_CONFIG[OrderStatus.SHIPPED].icon },
+  { key: OrderStatus.DELIVERED, label: ADMIN_ORDER_STATUS_CONFIG[OrderStatus.DELIVERED].label, icon: ADMIN_ORDER_STATUS_CONFIG[OrderStatus.DELIVERED].icon },
+  { key: OrderStatus.RETURN_REQUESTED, label: ADMIN_ORDER_STATUS_CONFIG[OrderStatus.RETURN_REQUESTED].label, icon: ADMIN_ORDER_STATUS_CONFIG[OrderStatus.RETURN_REQUESTED].icon },
+  { key: OrderStatus.RETURNED, label: ADMIN_ORDER_STATUS_CONFIG[OrderStatus.RETURNED].label, icon: ADMIN_ORDER_STATUS_CONFIG[OrderStatus.RETURNED].icon },
 ];
 
 export function Stepper({ status, isPending, onUpdateStatus, id }: StepperProps) {
-  const [showManualSelect, setShowManualSelect] = React.useState(false);
   const user = useAuthStore(state => state.user);
-  const isAdmin = user?.role === "ADMIN";
+  const isAdmin = user?.role === Role.ADMIN;
 
   const currentStepIndex = statusSteps.findIndex(s => s.key === status);
   const isCancelled = status === OrderStatus.CANCELLED;
@@ -111,66 +111,17 @@ export function Stepper({ status, isPending, onUpdateStatus, id }: StepperProps)
 
          {/* Right Side: Action Buttons */}
          <div className="flex items-center gap-2">
-           {!showManualSelect ? (
-             <>
-               {nextStep ? (
-                 <>
-                   <button
-                     className="h-9 px-5 rounded-lg bg-slate-900 text-white text-[13px] font-semibold hover:bg-slate-800 transition-all flex items-center justify-center gap-1.5 shadow-sm"
-                     onClick={() => !isPending && onUpdateStatus(id, nextStep!)}
-                     disabled={isPending}
-                   >
-                     {isPending && <Spinner size="sm" />}
-                     {nextLabel}
-                   </button>
-                   {isAdmin && (
-                     <button
-                       className="h-9 px-3.5 rounded-lg border border-slate-200 bg-white text-slate-600 text-[12.5px] font-semibold hover:bg-slate-50 transition-all shadow-sm"
-                       onClick={() => setShowManualSelect(true)}
-                     >
-                       Chỉnh sửa thủ công
-                     </button>
-                   )}
-                 </>
-               ) : (
-                 <>
-                   <span className="text-[12.5px] font-semibold text-emerald-600">✓ Đơn hàng hoàn tất</span>
-                   {isAdmin && (
-                     <button
-                       className="h-9 px-3.5 rounded-lg border border-slate-200 bg-white text-slate-600 text-[12.5px] font-semibold hover:bg-slate-50 transition-all shadow-sm ml-2"
-                       onClick={() => setShowManualSelect(true)}
-                     >
-                       Chỉnh sửa thủ công
-                     </button>
-                   )}
-                 </>
-               )}
-             </>
+           {nextStep ? (
+             <button
+               className="h-9 px-5 rounded-lg bg-slate-900 text-white text-[13px] font-semibold hover:bg-slate-800 transition-all flex items-center justify-center gap-1.5 shadow-sm"
+               onClick={() => !isPending && onUpdateStatus(id, nextStep!)}
+               disabled={isPending}
+             >
+               {isPending && <Spinner size="sm" />}
+               {nextLabel}
+             </button>
            ) : (
-             <div className="flex items-center gap-2">
-               <select 
-                 className="px-3 h-9 border border-slate-200 rounded-lg text-[13px] font-semibold bg-white outline-none cursor-pointer focus:ring-1 focus:ring-slate-800 shadow-sm min-w-[150px]"
-                 value={status}
-                 onChange={(e) => {
-                   if (!isPending) {
-                     onUpdateStatus(id, e.target.value as OrderStatus);
-                     setShowManualSelect(false);
-                   }
-                 }}
-                 disabled={isPending}
-               >
-                 {statusSteps.map(s => (
-                   <option key={s.key} value={s.key}>{s.label}</option>
-                 ))}
-                 <option value={OrderStatus.CANCELLED}>Đã huỷ</option>
-               </select>
-               <button
-                 className="h-9 px-3 rounded-lg border border-slate-200 bg-white text-slate-500 text-[12.5px] font-semibold hover:bg-slate-50 transition-all shadow-sm"
-                 onClick={() => setShowManualSelect(false)}
-               >
-                 Hủy
-               </button>
-             </div>
+             <span className="text-[12.5px] font-semibold text-emerald-600">✓ Đơn hàng hoàn tất</span>
            )}
          </div>
        </div>

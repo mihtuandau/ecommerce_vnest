@@ -7,6 +7,7 @@ import { cookies } from "next/headers";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Wrench, Phone, Mail, Clock } from "lucide-react";
 import { env } from "@/config/env";
+import { Role } from "@/types/enums";
 
 export default async function CustomerLayout({
   children,
@@ -40,7 +41,7 @@ export default async function CustomerLayout({
       const payloadBase64 = token.split(".")[1];
       const decodedJson = Buffer.from(payloadBase64, "base64").toString("utf-8");
       const decoded = JSON.parse(decodedJson);
-      isAdmin = decoded?.role === "ADMIN";
+      isAdmin = decoded?.role === Role.ADMIN || decoded?.role === Role.KHO || decoded?.role === Role.BAN_HANG;
     } catch {}
   }
 

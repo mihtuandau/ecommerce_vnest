@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { WishlistView } from "@/features/wishlist/components/WishlistView";
 
 export const metadata: Metadata = {
-  title: "Danh sách yêu thích | Minh Tuấn Shop",
+  title: "Danh sách yêu thích | LUXE",
   description: "Sản phẩm bạn đã lưu để mua sắm sau.",
 };
 

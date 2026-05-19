@@ -18,15 +18,7 @@ import { Textarea } from "@/components/ui/Textarea";
 import { Label } from "@/components/ui/Label";
 import Link from "next/link";
 import { cn } from "@/utils/cn";
-
-const statusConfig: Record<string, { label: string; color: string }> = {
-  [ReturnStatus.PENDING]: { label: "Chờ duyệt", color: "bg-amber-50 text-amber-600 border-amber-100" },
-  [ReturnStatus.APPROVED]: { label: "Đã duyệt", color: "bg-blue-50 text-blue-600 border-blue-100" },
-  [ReturnStatus.REJECTED]: { label: "Từ chối", color: "bg-rose-50 text-rose-600 border-rose-100" },
-  [ReturnStatus.RETURNING]: { label: "Khách đang gửi hàng", color: "bg-indigo-50 text-indigo-600 border-indigo-100" },
-  [ReturnStatus.RECEIVED]: { label: "Shop đã nhận hàng", color: "bg-cyan-50 text-cyan-600 border-cyan-100" },
-  [ReturnStatus.COMPLETED]: { label: "Hoàn tất", color: "bg-emerald-50 text-emerald-600 border-emerald-100" },
-};
+import { RETURN_STATUS_CONFIG, RETURNS_MESSAGES } from "@/features/returns/constants";
 
 export default function AdminReturnDetailPage() {
   const { id } = useParams() as { id: string };
@@ -58,10 +50,10 @@ export default function AdminReturnDetailPage() {
     setIsSubmitting(true);
     try {
       await returnsApi.updateReturnStatus(+id, { status, adminNote });
-      success("Đã cập nhật trạng thái");
+      success(RETURNS_MESSAGES.UPDATE_STATUS_SUCCESS);
       fetchDetail();
     } catch (err) {
-      error("Lỗi khi cập nhật trạng thái");
+      error(RETURNS_MESSAGES.UPDATE_STATUS_ERROR);
     } finally {
       setIsSubmitting(false);
     }
@@ -94,9 +86,9 @@ export default function AdminReturnDetailPage() {
               <h1 className="text-xl font-bold text-slate-900 tracking-tight">Chi tiết yêu cầu trả hàng</h1>
               <Badge variant="outline" className={cn(
                 "rounded-lg px-2.5 py-1 border font-semibold text-[10px]",
-                statusConfig[request.status]?.color
+                RETURN_STATUS_CONFIG[request.status as ReturnStatus]?.color
               )}>
-                {statusConfig[request.status]?.label}
+                {RETURN_STATUS_CONFIG[request.status as ReturnStatus]?.label}
               </Badge>
             </div>
             <p className="text-xs text-slate-500 font-medium">Yêu cầu tạo bởi {request.user?.name} • Mã đơn #{request.order?.orderCode}</p>

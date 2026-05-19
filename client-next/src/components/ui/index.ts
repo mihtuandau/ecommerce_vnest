@@ -24,3 +24,4 @@ export * from "./Skeleton";
 export * from "./Tabs";
 export { Textarea } from "./Textarea";
 export { Switch } from "./Switch";
+export { Checkbox } from "./Checkbox";

@@ -17,15 +17,7 @@ import { Spinner } from "@/components/ui/Spinner";
 import { ReturnStatus } from "@/types/enums";
 import Link from "next/link";
 import { cn } from "@/utils/cn";
-
-const statusConfig: Record<string, { label: string; color: string }> = {
-  [ReturnStatus.PENDING]: { label: "Chờ duyệt", color: "bg-amber-50 text-amber-600 border-amber-100" },
-  [ReturnStatus.APPROVED]: { label: "Đã duyệt", color: "bg-blue-50 text-blue-600 border-blue-100" },
-  [ReturnStatus.REJECTED]: { label: "Từ chối", color: "bg-rose-50 text-rose-600 border-rose-100" },
-  [ReturnStatus.RETURNING]: { label: "Khách đang gửi hàng", color: "bg-indigo-50 text-indigo-600 border-indigo-100" },
-  [ReturnStatus.RECEIVED]: { label: "Shop đã nhận hàng", color: "bg-cyan-50 text-cyan-600 border-cyan-100" },
-  [ReturnStatus.COMPLETED]: { label: "Hoàn tất", color: "bg-emerald-50 text-emerald-600 border-emerald-100" },
-};
+import { RETURN_STATUS_CONFIG } from "@/features/returns/constants";
 
 export default function AdminReturnsPage() {
   const [returns, setReturns] = useState<any[]>([]);
@@ -85,12 +77,11 @@ export default function AdminReturnsPage() {
                 className="pl-9 pr-8 h-10 bg-white border border-slate-200 rounded-lg text-[13px] font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all appearance-none cursor-pointer hover:border-primary/50"
               >
                 <option value="">Tất cả trạng thái</option>
-                <option value="PENDING">Chờ duyệt</option>
-                <option value="APPROVED">Đã duyệt</option>
-                <option value="REJECTED">Từ chối</option>
-                <option value="RETURNING">Khách đang gửi hàng</option>
-                <option value="RECEIVED">Shop đã nhận hàng</option>
-                <option value="COMPLETED">Hoàn tất</option>
+                {Object.entries(RETURN_STATUS_CONFIG).map(([key, config]) => (
+                  <option key={key} value={key}>
+                    {config.label}
+                  </option>
+                ))}
               </select>
            </div>
         </div>
@@ -165,9 +156,9 @@ export default function AdminReturnsPage() {
                   <TableCell>
                     <Badge variant="outline" className={cn(
                       "rounded-lg px-2 py-1 font-semibold text-[10px] border",
-                      statusConfig[item.status]?.color
+                      RETURN_STATUS_CONFIG[item.status as ReturnStatus]?.color
                     )}>
-                      {statusConfig[item.status]?.label}
+                      {RETURN_STATUS_CONFIG[item.status as ReturnStatus]?.label}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right pr-6">

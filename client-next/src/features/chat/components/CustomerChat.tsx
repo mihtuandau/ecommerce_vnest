@@ -14,6 +14,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/vi";
 import { productsApi } from "@/features/products/api";
 import { toast } from "sonner";
+import { Spinner } from "@/components/ui/Spinner";
 
 dayjs.extend(relativeTime);
 dayjs.locale("vi");
@@ -155,7 +156,7 @@ export default function CustomerChat({ onClose }: CustomerChatProps) {
   if (!mounted || isLoading) {
     return (
       <div className="flex flex-col items-center justify-center h-full min-h-[500px] bg-[#FAF8F4]/20 p-8 text-center font-sans">
-        <div className="w-8 h-8 border-2 border-[#C4783A]/20 border-t-[#C4783A] rounded-full animate-spin mb-4" />
+        <Spinner size="lg" className="mb-4 text-[#C4783A]" />
         <p className="text-[12px] text-[#8A7966] font-normal tracking-wide lowercase">đang kết nối LUXE Care...</p>
       </div>
     );

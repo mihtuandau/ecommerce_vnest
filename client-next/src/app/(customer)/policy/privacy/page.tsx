@@ -5,7 +5,7 @@ export default function PrivacyPolicyPage() {
     <div className="max-w-[1000px] mx-auto py-12 md:py-20 px-4 sm:px-6">
       <header className="mb-12 border-b border-slate-100 pb-8">
         <h1 className="text-2xl font-bold text-slate-900 mb-2">Chính sách bảo mật</h1>
-        <p className="text-slate-500 text-sm">Bảo vệ dữ liệu cá nhân là ưu tiên hàng đầu tại Minh Tuấn Shop</p>
+        <p className="text-slate-500 text-sm">Bảo vệ dữ liệu cá nhân là ưu tiên hàng đầu tại LUXE</p>
       </header>
 
       <div className="space-y-10 text-slate-700 leading-relaxed text-base font-normal">
@@ -32,7 +32,7 @@ export default function PrivacyPolicyPage() {
         <section>
           <h2 className="font-bold text-slate-900 mb-3">03. Bảo mật thanh toán</h2>
           <p>
-            Minh Tuấn Shop áp dụng các tiêu chuẩn bảo mật cao nhất cho giao dịch trực tuyến. Chúng tôi sử dụng chứng chỉ SSL để mã hóa dữ liệu truyền tải. Mọi giao dịch qua thẻ hoặc ví điện tử đều được xử lý thông qua cổng thanh toán uy tín và không lưu trữ thông tin thẻ tại hệ thống của chúng tôi.
+            LUXE áp dụng các tiêu chuẩn bảo mật cao nhất cho giao dịch trực tuyến. Chúng tôi sử dụng chứng chỉ SSL để mã hóa dữ liệu truyền tải. Mọi giao dịch qua thẻ hoặc ví điện tử đều được xử lý thông qua cổng thanh toán uy tín và không lưu trữ thông tin thẻ tại hệ thống của chúng tôi.
           </p>
         </section>
 
@@ -46,7 +46,7 @@ export default function PrivacyPolicyPage() {
         <section>
           <h2 className="font-bold text-slate-900 mb-3">05. Quyền của khách hàng</h2>
           <p>
-            Quý khách có quyền truy cập, chỉnh sửa hoặc yêu cầu xóa dữ liệu cá nhân của mình bất kỳ lúc nào thông qua trang quản lý tài khoản hoặc liên hệ trực tiếp với bộ phận hỗ trợ của Minh Tuấn Shop.
+            Quý khách có quyền truy cập, chỉnh sửa hoặc yêu cầu xóa dữ liệu cá nhân của mình bất kỳ lúc nào thông qua trang quản lý tài khoản hoặc liên hệ trực tiếp với bộ phận hỗ trợ của LUXE.
           </p>
         </section>
       </div>

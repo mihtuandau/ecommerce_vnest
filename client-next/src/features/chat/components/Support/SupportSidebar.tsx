@@ -7,6 +7,8 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/vi";
 import { useAuthStore } from "@/store/useAuthStore";
+import { Skeleton } from "@/components/ui/Skeleton";
+import { Input, Button } from "@/components/ui";
 
 dayjs.extend(relativeTime);
 dayjs.locale("vi");
@@ -47,19 +49,19 @@ export function SupportSidebar({
       <div className="p-5 border-b border-slate-100 shrink-0">
         <div className="flex items-center justify-between mb-4">
           <span className="text-sm font-semibold text-slate-800">Hội thoại hỗ trợ</span>
-          <button className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-semibold hover:bg-indigo-700 transition-all shadow-sm cursor-pointer">
+          <Button className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-semibold hover:bg-indigo-700 transition-all shadow-sm cursor-pointer h-auto">
             <Plus size={14} /> Mới
-          </button>
+          </Button>
         </div>
         <div className="relative">
-          <input 
+          <Input 
             type="text" 
             placeholder={activeTab === "staff" ? "Tìm kiếm nhân viên..." : "Tìm kiếm khách hàng..."} 
             className="w-full pl-3 pr-10 py-2.5 bg-slate-550/10 border border-slate-200/80 rounded-xl text-xs outline-none focus:border-indigo-600 focus:bg-white transition-all text-slate-700"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
-          <Search className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
+          <Search className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 z-10" size={14} />
         </div>
       </div>
       
@@ -133,7 +135,7 @@ export function SupportSidebar({
         ) : (
           roomsLoading ? (
             <div className="p-4 space-y-4">
-              {[1, 2, 3, 4, 5].map(i => <div key={i} className="h-20 bg-slate-50 rounded-xl animate-pulse" />)}
+              {[1, 2, 3, 4, 5].map(i => <Skeleton key={i} className="h-20 bg-slate-50 rounded-xl" />)}
             </div>
           ) : rooms.map((room) => {
             const isActive = selectedRoomId === room.roomId;

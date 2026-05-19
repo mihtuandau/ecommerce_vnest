@@ -12,10 +12,10 @@ import { ProductGallery } from "./ProductGallery";
 import { ProductInfo } from "./ProductInfo";
 import { ProductActions } from "./ProductActions";
 import { ProductTrustBadges } from "./ProductTrustBadges";
-import { RecentlyViewedProducts } from "../RecentlyViewedProducts";
+import { RecentlyViewedProducts } from "./RecentlyViewedProducts";
 import { useRecentlyViewed } from "@/features/products/hooks/useRecentlyViewed";
 import { ProductTabs } from "./ProductTabs";
-import { RelatedProducts } from "../RelatedProducts";
+import { RelatedProducts } from "./RelatedProducts";
 import { calculateDiscountedPrice } from "@/features/discounts/utils/discount";
 
 interface ProductDetailViewProps {
@@ -104,9 +104,9 @@ export function ProductDetailView({ slug }: ProductDetailViewProps) {
 
   if (isLoading) {
     return (
-      <div className="bg-brand-cream min-h-screen font-sans">
+      <div className="bg-brand-cream min-h-screen font-sans-brand">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-          <div className="h-6 w-48 bg-brand-sand/20 animate-pulse rounded-full mb-8" />
+          <Skeleton className="h-6 w-48 bg-brand-sand/20 rounded-full mb-8" />
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
             <div className="lg:col-span-7">
               <Skeleton className="aspect-square rounded-[2rem] bg-white border border-brand-sand/40" />
@@ -146,7 +146,7 @@ export function ProductDetailView({ slug }: ProductDetailViewProps) {
   }
 
   const currentBasePrice = selectedVariant?.price || product.price || product.basePrice || 0;
-  const finalPrice = calculateDiscountedPrice(product, allDiscounts);
+  const finalPrice = calculateDiscountedPrice({ ...product, price: currentBasePrice }, allDiscounts);
   const isFlashSale = finalPrice < currentBasePrice;
   const flashSalePercent = isFlashSale ? Math.round(((currentBasePrice - finalPrice) / currentBasePrice) * 100) : 0;
   
@@ -158,7 +158,7 @@ export function ProductDetailView({ slug }: ProductDetailViewProps) {
     const currentStock = selectedVariant?.stock ?? product.stock;
     
     return (
-      <div className="bg-brand-cream min-h-screen font-sans">
+      <div className="bg-brand-cream min-h-screen font-sans-brand">
         <ProductBreadcrumbs product={product} />
 
         <div className="max-w-[1400px] mx-auto px-6 lg:px-12 pt-8 pb-24">

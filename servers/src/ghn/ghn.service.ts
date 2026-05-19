@@ -43,16 +43,55 @@ export class GHNService {
   }
 
   /**
+   * Lấy danh sách dịch vụ vận chuyển khả dụng giữa 2 quận/huyện
+   */
+  async getAvailableServices(fromDistrict: number, toDistrict: number) {
+    if (!fromDistrict || !toDistrict) return [];
+    try {
+      const response = await firstValueFrom(
+        this.httpService.post(
+          `${this.apiUrl}/v2/shipping-order/available-services`,
+          {
+            shop_id: this.shopId,
+            from_district: fromDistrict,
+            to_district: toDistrict,
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Token: this.ghnToken,
+            },
+          },
+        ),
+      );
+      return response.data?.data || [];
+    } catch (error) {
+      this.logger.error(
+        `GHN Get Available Services Error (From ${fromDistrict} to ${toDistrict}):`,
+        error.response?.data || error.message,
+      );
+      return [];
+    }
+  }
+
+  /**
    * Tính phí vận chuyển
    */
   async calculateFee(feeData: any) {
     const fromDistrictId = Number(this.configService.get<string>('GHN_FROM_DISTRICT_ID') || 0);
+    const toDistrictId = Number(feeData.to_district_id || 0);
+
+    let serviceId = 0;
+    if (fromDistrictId && toDistrictId) {
+      const services = await this.getAvailableServices(fromDistrictId, toDistrictId);
+      if (services && services.length > 0) {
+        serviceId = services[0].service_id;
+      }
+    }
     
     // Đảm bảo các thông số mặc định nếu thiếu
-    const finalData = {
+    const finalData: any = {
       from_district_id: fromDistrictId,
-      service_id: 0,
-      service_type_id: 2, 
       height: 10,
       length: 10,
       width: 10,
@@ -61,6 +100,14 @@ export class GHNService {
       coupon: null,
       ...feeData,
     };
+
+    if (serviceId) {
+      finalData.service_id = serviceId;
+    } else {
+      // Nếu không tìm thấy dịch vụ nào hoặc API lỗi, loại bỏ hoàn toàn service_id để không bị lỗi 400 tag validation
+      delete finalData.service_id;
+      finalData.service_type_id = 2; // Hàng nhẹ/tiêu chuẩn
+    }
 
     // Chuyển đổi các trường số nếu cần
     if (finalData.to_district_id) finalData.to_district_id = Number(finalData.to_district_id);

@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { ROUTES } from "@/constants/routes";
 import { cn } from "@/utils/cn";
+import { CART_CONSTANTS, CART_MESSAGES, CART_COLORS } from "@/features/cart/constants";
 
 export function CartDropdown() {
   const { items, updateQuantity, removeItem, totalPrice } = useCart();
@@ -41,7 +42,7 @@ export function CartDropdown() {
   const handleMouseLeave = () => {
     timeoutRef.current = setTimeout(() => {
       setIsOpen(false);
-    }, 300);
+    }, CART_CONSTANTS.DROPDOWN_TIMEOUT);
   };
 
   if (!mounted) {
@@ -76,13 +77,13 @@ export function CartDropdown() {
           size="icon" 
           className={cn(
             "relative h-10 w-10 rounded-full transition-all duration-300",
-            isOpen ? "text-[#C4783A] bg-[#C4783A]/5" : "text-[#8A7966] hover:text-[#C4783A] hover:bg-[#C4783A]/5"
+            isOpen ? `text-[${CART_COLORS.TRIGGER_ICON_ACTIVE}] bg-[${CART_COLORS.TRIGGER_BG_HOVER}]` : `text-[${CART_COLORS.TRIGGER_ICON_DEFAULT}] hover:text-[${CART_COLORS.TRIGGER_ICON_ACTIVE}] hover:bg-[${CART_COLORS.TRIGGER_BG_HOVER}]`
           )}
         >
 
           <ShoppingCart className="h-6 w-6" />
           {totalCount > 0 && (
-            <span className="absolute -top-0.5 -right-0.5 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-[#3D2B1A] text-xs font-bold text-[#FAF8F4] shadow-sm ring-2 ring-white">
+            <span className={`absolute -top-0.5 -right-0.5 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-[${CART_COLORS.BADGE_BG}] text-xs font-bold text-[${CART_COLORS.BADGE_TEXT}] shadow-sm ring-2 ring-white`}>
               {totalCount}
             </span>
           )}
@@ -96,15 +97,15 @@ export function CartDropdown() {
           isOpen ? "opacity-100 scale-100 pointer-events-auto" : "opacity-0 scale-95 pointer-events-none translate-y-2"
         )}
       >
-        <div className="bg-[#FAF8F4] rounded-3xl border border-[#DDD6C8] shadow-[0_20px_50px_rgba(61,43,26,0.1)] overflow-hidden flex flex-col max-h-[580px]">
+        <div className={`bg-[${CART_COLORS.DROPDOWN_BG}] rounded-3xl border border-[${CART_COLORS.DROPDOWN_BORDER}] shadow-[0_20px_50px_${CART_COLORS.DROPDOWN_SHADOW}] overflow-hidden flex flex-col ${CART_CONSTANTS.MAX_HEIGHT}`}>
           {/* Header */}
-          <div className="px-6 py-4 border-b border-[#DDD6C8] flex items-center justify-between bg-white sticky top-0 z-10">
+          <div className={`px-6 py-4 border-b border-[${CART_COLORS.DROPDOWN_BORDER}] flex items-center justify-between bg-white sticky top-0 z-10`}>
             <h3 className="text-sm font-bold text-[#3D2B1A] flex items-center gap-2 font-serif">
               <ShoppingBasket className="w-4 h-4 text-[#C4783A]" />
-              Giỏ hàng của bạn
+              {CART_MESSAGES.YOUR_CART}
             </h3>
             <span className="text-xs font-semibold text-[#8A7966] bg-[#F3EFE8] px-2.5 py-0.5 rounded-full">
-              {totalCount} món
+              {CART_MESSAGES.ITEMS_IN_CART(totalCount)}
             </span>
           </div>
 
@@ -116,8 +117,8 @@ export function CartDropdown() {
                   <ShoppingCart className="h-8 w-8 text-[#C4B49A]" />
                 </div>
                 <div className="space-y-1">
-                  <p className="text-sm font-bold text-[#3D2B1A]">Giỏ hàng trống</p>
-                  <p className="text-xs text-[#8A7966] font-normal">Hãy thêm vài món vào giỏ nhé!</p>
+                  <p className="text-sm font-bold text-[#3D2B1A]">{CART_MESSAGES.EMPTY_CART}</p>
+                  <p className="text-xs text-[#8A7966] font-normal">{CART_MESSAGES.CONTINUE_SHOPPING}</p>
                 </div>
               </div>
             ) : (

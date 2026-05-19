@@ -40,37 +40,52 @@ export function Items({ order }: ItemsProps) {
                 </tr>
               </thead>
               <tbody>
-                {items.map((item: any) => (
-                  <tr key={item.id} className="border-b border-slate-100 last:border-none">
-                    <td className="py-4 px-6 align-middle">
-                      <div className="flex items-center gap-3">
-                         <div className="h-14 w-12 rounded-lg bg-slate-50 border border-slate-100 flex-shrink-0 overflow-hidden relative">
-                            <Image 
-                              src={item.variant?.product?.images?.[0]?.url || item.variantSnapshot?.image || "/placeholder.png"} 
-                              alt={item.productName || "Sản phẩm"} 
-                              fill
-                              className="object-cover" 
-                            />
-                         </div>
-                         <div>
-                           <p className="font-semibold text-slate-800 text-[13.5px] leading-snug">{item.productName || item.variant?.product?.name || "Sản phẩm"}</p>
-                           <p className="text-[11.5px] text-slate-500 mt-0.5">
-                              {[item.variant?.color, item.variant?.size].filter(Boolean).join(" · ")}
-                           </p>
-                         </div>
-                      </div>
-                    </td>
-                    <td className="py-4 px-4 align-middle text-center text-[13px] text-slate-600">
-                      ×{item.quantity}
-                    </td>
-                    <td className="py-4 px-4 align-middle text-right text-[14px] font-serif font-bold text-slate-800">
-                      {formatCurrency(item.price)}
-                    </td>
-                    <td className="py-4 px-6 align-middle text-right text-[14px] font-serif font-bold text-slate-800">
-                      {formatCurrency(item.price * item.quantity)}
-                    </td>
-                  </tr>
-                ))}
+                {items.map((item: any) => {
+                  let variant = item.variantSnapshot || item.variant;
+                  if (typeof variant === "string") {
+                    try {
+                      variant = JSON.parse(variant);
+                    } catch (e) {}
+                  }
+                  const color = variant?.color || "";
+                  const size = variant?.size || "";
+                  const imageSrc = variant?.image || variant?.images?.[0]?.url || variant?.product?.images?.[0]?.url || "/placeholder.png";
+                  const productName = item.productName || variant?.productName || variant?.product?.name || "Sản phẩm";
+
+                  return (
+                    <tr key={item.id} className="border-b border-slate-100 last:border-none">
+                      <td className="py-4 px-6 align-middle">
+                        <div className="flex items-center gap-3">
+                           <div className="h-14 w-12 rounded-lg bg-slate-50 border border-slate-100 flex-shrink-0 overflow-hidden relative">
+                              <Image 
+                                src={imageSrc} 
+                                alt={productName} 
+                                fill
+                                className="object-cover" 
+                              />
+                           </div>
+                           <div>
+                             <p className="font-semibold text-slate-800 text-[13.5px] leading-snug">{productName}</p>
+                             {(color || size) && (
+                               <p className="text-[11.5px] text-slate-500 mt-0.5">
+                                 {[color, size].filter(Boolean).join(" · ")}
+                               </p>
+                             )}
+                           </div>
+                        </div>
+                      </td>
+                      <td className="py-4 px-4 align-middle text-center text-[13px] text-slate-600">
+                        ×{item.quantity}
+                      </td>
+                      <td className="py-4 px-4 align-middle text-right text-[14px] font-serif font-bold text-slate-800">
+                        {formatCurrency(item.price)}
+                      </td>
+                      <td className="py-4 px-6 align-middle text-right text-[14px] font-serif font-bold text-slate-800">
+                        {formatCurrency(item.price * item.quantity)}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           ) : (

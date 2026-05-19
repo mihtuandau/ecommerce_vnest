@@ -9,17 +9,13 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { useCart } from "@/features/cart/hooks";
 import { useToast } from "@/hooks/useToast";
 import { 
-  Package, 
-  Clock, 
-  Truck, 
-  CheckCircle2, 
   AlertCircle,
-  XCircle,
   RotateCcw
 } from "lucide-react";
 import { OrderStatus, PaymentStatus } from "@/types/enums";
 import { ordersApi } from "@/features/orders/api";
 import { returnsApi } from "@/features/returns/api";
+import { ORDER_STATUS_CONFIG } from "../../constants";
 
 // Shared sub-components
 import { DetailStepper } from "./detail/DetailStepper";
@@ -34,57 +30,7 @@ import { ConfirmCancelModal } from "./detail/ConfirmCancelModal";
 import { PrintInvoice } from "../admin/detail/PrintInvoice";
 import { ReviewModal } from "@/features/reviews/components/customer/ReviewModal";
 
-const statusConfig: Record<string, { label: string; color: string; bg: string; dot: string; icon: any }> = {
-  [OrderStatus.PENDING]: {
-    label: "Đang chờ LUXE xác nhận",
-    color: "text-[#C49A00]",
-    bg: "bg-[#FFF8E6]",
-    dot: "bg-[#C49A00]",
-    icon: Clock,
-  },
-  [OrderStatus.PROCESSING]: {
-    label: "Đơn hàng đã được xác nhận",
-    color: "text-[#2C5F8A]",
-    bg: "bg-[#E8F0F8]",
-    dot: "bg-[#2C5F8A]",
-    icon: Package,
-  },
-  [OrderStatus.SHIPPED]: {
-    label: "Đang được vận chuyển",
-    color: "text-[#2C5F8A]",
-    bg: "bg-[#E8F0F8]",
-    dot: "bg-[#2C5F8A]",
-    icon: Truck,
-  },
-  [OrderStatus.DELIVERED]: {
-    label: "Giao hàng thành công",
-    color: "text-[#3A7D5A]",
-    bg: "bg-[#E6F3EC]",
-    dot: "bg-[#3A7D5A]",
-    icon: CheckCircle2,
-  },
-  [OrderStatus.CANCELLED]: {
-    label: "Đã hủy đơn hàng",
-    color: "text-[#C44040]",
-    bg: "bg-[#FCEAEA]",
-    dot: "bg-[#C44040]",
-    icon: XCircle,
-  },
-  [OrderStatus.RETURN_REQUESTED]: {
-    label: "Yêu cầu trả hàng",
-    color: "text-[#C4783A]",
-    bg: "bg-[#FFF2E6]",
-    dot: "bg-[#C4783A]",
-    icon: RotateCcw,
-  },
-  [OrderStatus.RETURNED]: {
-    label: "Đã trả hàng",
-    color: "text-[#3D2B1A]",
-    bg: "bg-[#F3EFE8]",
-    dot: "bg-[#3D2B1A]",
-    icon: RotateCcw,
-  },
-};
+const statusConfig = ORDER_STATUS_CONFIG;
 
 export function GuestOrderDetailView() {
   const { id: orderCode } = useParams() as { id: string };
@@ -270,21 +216,21 @@ export function GuestOrderDetailView() {
                       <RotateCcw size={24} />
                     </div>
                     <div>
-                      <h3 className="text-lg font-bold text-[#3D2B1A] font-serif-brand">Chi tiết yêu cầu trả hàng</h3>
-                      <p className="text-[10px] text-[#8A7966] font-black uppercase tracking-[0.2em] mt-1">Cập nhật: {new Date(order.returnRequest?.updatedAt || order.updatedAt).toLocaleString("vi-VN")}</p>
+                      <h3 className="text-lg font-bold text-brand-espresso font-serif-brand">Chi tiết yêu cầu trả hàng</h3>
+                      <p className="text-[11px] text-brand-taupe font-bold uppercase tracking-widest mt-1">Cập nhật: {new Date(order.returnRequest?.updatedAt || order.updatedAt).toLocaleString("vi-VN")}</p>
                     </div>
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-10 pt-8 border-t border-[#DDD6C8]">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-10 pt-8 border-t border-brand-sand">
                     <div className="space-y-3">
-                      <p className="text-[10px] font-black text-[#8A7966] uppercase tracking-[0.2em]">Lý do của bạn</p>
-                      <p className="text-sm text-[#3D2B1A] font-medium leading-relaxed italic">"{order.returnRequest.reason}"</p>
+                      <p className="text-[11px] font-bold text-brand-taupe uppercase tracking-widest">Lý do của bạn</p>
+                      <p className="text-sm text-brand-espresso font-medium leading-relaxed italic">"{order.returnRequest.reason}"</p>
                     </div>
                     {order.returnRequest?.adminNote && (
                       <div className="space-y-3">
-                        <p className="text-[10px] font-black text-[#C4783A] uppercase tracking-[0.2em]">Phản hồi từ Shop</p>
-                        <div className="p-5 bg-[#FAF8F4] rounded-xl border border-[#DDD6C8]">
-                          <p className="text-sm text-[#3D2B1A] font-medium leading-relaxed italic">"{order.returnRequest.adminNote}"</p>
+                        <p className="text-[11px] font-bold text-brand-bronze uppercase tracking-widest">Phản hồi từ Shop</p>
+                        <div className="p-5 bg-brand-cream/50 rounded-xl border border-brand-sand">
+                          <p className="text-sm text-brand-espresso font-medium leading-relaxed italic">"{order.returnRequest.adminNote}"</p>
                         </div>
                       </div>
                     )}

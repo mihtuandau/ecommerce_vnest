@@ -34,6 +34,9 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { handleAvatarError } from "@/utils/avatar";
 import Image from "next/image";
 import { usePermission } from "@/hooks/usePermission";
+import { Role } from "@/types/enums";
+import { ROLE_CONFIG } from "@/features/permissions/constants";
+import { ROUTES } from "@/constants/routes";
 
 export interface NavSubItem {
   label: string;
@@ -62,13 +65,13 @@ const navGroups: NavGroup[] = [
     items: [
       {
         label: "Dashboard",
-        href: "/admin",
+        href: ROUTES.ADMIN,
         icon: LayoutDashboard,
         permission: "dashboard.view",
       },
       {
         label: "Thống kê",
-        href: "/admin/reports",
+        href: ROUTES.ADMIN_REPORTS,
         icon: BarChart3,
         permission: "report.view",
       },
@@ -79,31 +82,31 @@ const navGroups: NavGroup[] = [
     items: [
       {
         label: "Sản phẩm",
-        href: "/admin/products",
+        href: ROUTES.ADMIN_PRODUCTS,
         icon: Package,
         permission: "product.manage",
       },
       {
         label: "Danh mục",
-        href: "/admin/categories",
+        href: ROUTES.ADMIN_CATEGORIES,
         icon: Layers,
         permission: "category.manage",
       },
       {
         label: "Thương hiệu",
-        href: "/admin/brands",
+        href: ROUTES.ADMIN_BRANDS,
         icon: ShieldCheck,
         permission: "product.manage",
       },
       {
         label: "Banner",
-        href: "/admin/banners",
+        href: ROUTES.ADMIN_BANNERS,
         icon: ImageIcon,
         permission: "banner.manage",
       },
       {
         label: "Khuyến mãi",
-        href: "/admin/discounts",
+        href: ROUTES.ADMIN_DISCOUNTS,
         icon: Tag,
         permission: "discount.manage",
       },
@@ -114,19 +117,19 @@ const navGroups: NavGroup[] = [
     items: [
       {
         label: "Đơn hàng",
-        href: "/admin/orders",
+        href: ROUTES.ADMIN_ORDERS,
         icon: ShoppingCart,
         permission: "order.manage",
       },
       {
         label: "Trả hàng",
-        href: "/admin/returns",
+        href: ROUTES.ADMIN_RETURNS,
         icon: RotateCcw,
         permission: "order.manage",
       },
       {
         label: "Thanh toán",
-        href: "/admin/payments",
+        href: ROUTES.ADMIN_PAYMENTS,
         icon: CreditCard,
         permission: "order.manage",
       },
@@ -137,25 +140,25 @@ const navGroups: NavGroup[] = [
     items: [
       {
         label: "Người dùng",
-        href: "/admin/users",
+        href: ROUTES.ADMIN_USERS,
         icon: Users,
         permission: "user.manage",
       },
       {
         label: "Đánh giá",
-        href: "/admin/reviews",
+        href: ROUTES.ADMIN_REVIEWS,
         icon: Star,
         permission: "product.manage",
       },
       {
         label: "Chat hỗ trợ",
-        href: "/admin/chat",
+        href: ROUTES.ADMIN_CHAT,
         icon: MessageCircle,
         permission: "chat.support",
       },
       {
         label: "AI chatbot",
-        href: "/admin/ai-chatbot",
+        href: ROUTES.ADMIN_AI_CHATBOT,
         icon: Bot,
         permission: "settings.manage",
       },
@@ -166,25 +169,25 @@ const navGroups: NavGroup[] = [
     items: [
       {
         label: "Thông báo",
-        href: "/admin/notifications",
+        href: ROUTES.ADMIN_NOTIFICATIONS,
         icon: Bell,
         permission: "settings.manage",
       },
       {
         label: "Nhật ký",
-        href: "/admin/logs",
+        href: ROUTES.ADMIN_LOGS,
         icon: History,
         permission: "settings.manage",
       },
       {
         label: "Phân quyền",
-        href: "/admin/permissions",
+        href: ROUTES.ADMIN_PERMISSIONS,
         icon: Key,
         permission: "user.manage",
       },
       {
         label: "Cài đặt",
-        href: "/admin/settings",
+        href: ROUTES.ADMIN_SETTINGS,
         icon: Settings,
         permission: null,
       },
@@ -235,7 +238,7 @@ export function Sidebar() {
     >
       {/* Header */}
       <div className="flex h-16 items-center px-6 mb-2 mt-2">
-        <Link href="/admin" className="flex items-center gap-3 group">
+        <Link href={ROUTES.ADMIN} className="flex items-center gap-3 group">
           <div className="h-8 w-8 rounded-lg bg-gradient-to-tr from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-extrabold text-sm shadow-md group-hover:scale-105 transition-transform duration-300">
             V
           </div>
@@ -381,12 +384,7 @@ export function Sidebar() {
                 {user.name || "Người dùng"}
               </p>
               <p className="text-[10px] text-slate-500 font-normal mt-0.5">
-                {{
-                  ADMIN: "Quản trị viên",
-                  KHO: "Quản lý kho",
-                  BAN_HANG: "Bán hàng",
-                  CUSTOMER: "Khách hàng",
-                }[user.role as string] ?? user.role}
+                {ROLE_CONFIG[user.role as Role]?.label ?? user.role}
               </p>
             </div>
             {/* Logout */}

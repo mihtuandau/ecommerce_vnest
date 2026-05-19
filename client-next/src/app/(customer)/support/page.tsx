@@ -20,8 +20,8 @@ export default function SupportPage() {
     setMounted(true);
   }, []);
 
-  const storePhone = mounted ? (settings?.storePhone || "1800 1234") : "1800 1234";
-  const storeEmail = mounted ? (settings?.storeEmail || "dautuan032004@gmail.com") : "dautuan032004@gmail.com";
+  const storePhone = mounted ? (settings?.storePhone || "1900 8888") : "1900 8888";
+  const storeEmail = mounted ? (settings?.storeEmail || "support@luxe.vn") : "support@luxe.vn";
   const storeAddress = mounted ? (settings?.storeAddress || "109/47/1A Đường số 8, Phường Linh Xuân, TP Thủ Đức, TP Hồ Chí Minh") : "109/47/1A Đường số 8, Phường Linh Xuân, TP Thủ Đức, TP Hồ Chí Minh";
   const freeShippingThreshold = mounted && settings?.freeShippingThreshold 
     ? Number(settings.freeShippingThreshold).toLocaleString("vi-VN") + "đ" 

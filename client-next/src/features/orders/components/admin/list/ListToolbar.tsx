@@ -3,6 +3,7 @@
 import React from "react";
 import { Search, Filter, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { OrderStatus, PaymentMethod } from "@/types/enums";
 
 interface OrderListToolbarProps {
   searchTerm: string;
@@ -52,12 +53,12 @@ export function OrderListToolbar({
           onChange={(e) => onStatusChange(e.target.value)}
         >
           <option value="ALL">Tất cả trạng thái</option>
-          <option value="PENDING">Chờ xác nhận</option>
-          <option value="PROCESSING">Đang xử lý</option>
-          <option value="SHIPPED">Đang giao hàng</option>
-          <option value="DELIVERED">Đã giao hàng</option>
-          <option value="CANCELLED">Đã hủy</option>
-          <option value="RETURN_REQUESTED">Yêu cầu trả hàng</option>
+          <option value={OrderStatus.PENDING}>Chờ xác nhận</option>
+          <option value={OrderStatus.PROCESSING}>Đang xử lý</option>
+          <option value={OrderStatus.SHIPPED}>Đang giao hàng</option>
+          <option value={OrderStatus.DELIVERED}>Đã giao hàng</option>
+          <option value={OrderStatus.CANCELLED}>Đã hủy</option>
+          <option value={OrderStatus.RETURN_REQUESTED}>Yêu cầu trả hàng</option>
         </select>
 
         {/* Payment Filter */}
@@ -67,9 +68,9 @@ export function OrderListToolbar({
           onChange={(e) => onPaymentChange(e.target.value)}
         >
           <option value="ALL">Tất cả thanh toán</option>
-          <option value="CASH">Thanh toán khi nhận hàng (COD)</option>
-          <option value="VNPAY">Thanh toán VNPay</option>
-          <option value="PAYOS">Thanh toán PayOS</option>
+          <option value={PaymentMethod.CASH}>Thanh toán khi nhận hàng (COD)</option>
+          <option value={PaymentMethod.VNPAY}>Thanh toán VNPay</option>
+          <option value={PaymentMethod.PAYOS}>Thanh toán PayOS</option>
         </select>
 
         {/* Date Filter */}

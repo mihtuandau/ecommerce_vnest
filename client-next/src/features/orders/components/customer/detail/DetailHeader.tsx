@@ -20,6 +20,7 @@ import { OrderStatus, ReturnStatus } from "@/types/enums";
 import { cn } from "@/utils/cn";
 import Link from "next/link";
 import { formatCurrency } from "@/utils/formatCurrency";
+import { CUSTOMER_ORDER_STATUS_CONFIG } from "../../../constants";
 
 interface DetailHeaderProps {
   orderCode: string;
@@ -70,17 +71,7 @@ export function DetailHeader({
 }: DetailHeaderProps & { order?: any }) {
   const totalItems = order?.orderItems?.length || 0;
 
-  const scMap: Record<string, { label: string; cls: string }> = {
-    [OrderStatus.PENDING]: { label: "Chờ xác nhận", cls: "bg-[#FFF8E6] text-[#C49A00]" },
-    [OrderStatus.PROCESSING]: { label: "Đã xác nhận", cls: "bg-[#E8F0F8] text-[#2C5F8A]" },
-    [OrderStatus.SHIPPED]: { label: "Đang giao hàng", cls: "bg-[#F0D5BB] text-[#C4783A]" },
-    [OrderStatus.DELIVERED]: { label: "Đã giao hàng", cls: "bg-[#E6F3EC] text-[#3A7D5A]" },
-    [OrderStatus.CANCELLED]: { label: "Đã huỷ", cls: "bg-[#FCEAEA] text-[#C44040]" },
-    [OrderStatus. RETURN_REQUESTED]: { label: "Yêu cầu trả hàng", cls: "bg-[#FFF8E6] text-[#C49A00]" },
-    [OrderStatus.RETURNED]: { label: "Đã trả hàng", cls: "bg-[#E6F3EC] text-[#3A7D5A]" },
-  };
-
-  const sc = scMap[status] || { label: status, cls: "bg-[#F3EFE8] text-[#8A7966]" };
+  const sc = CUSTOMER_ORDER_STATUS_CONFIG[status] || { label: status, cls: "bg-[#F3EFE8] text-[#8A7966]" };
 
   return (
     <div className="space-y-5 mb-5 font-sans-brand animate-in fade-in slide-in-from-top-4 duration-500">

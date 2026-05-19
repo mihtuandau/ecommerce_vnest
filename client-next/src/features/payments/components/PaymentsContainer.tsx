@@ -20,38 +20,36 @@ export function PaymentsContainer() {
   const { data, isLoading, isFetching, refetch } = usePayments({ limit: 1000 });
   const { mutate: updateStatus, isPending: isUpdating } = useUpdatePaymentStatus();
 
-  const allPayments = data?.payments || [];
 
-  // 1. Calculate stats globally using the full list of payments
-  const statsPayments = useMemo(() => allPayments, [allPayments]);
+ const statsPayments = useMemo(() => {
+  return data?.payments || [];
+}, [data?.payments]);
 
   // 2. Perform client-side filtering matching other dashboard list pages
   const filteredPayments = useMemo(() => {
-    let result = allPayments;
+  const allPayments = data?.payments || [];
+  let result = allPayments;
 
-    // Status filter
-    if (status !== "ALL") {
-      result = result.filter((p: any) => p.status === status);
-    }
+  if (status !== "ALL") {
+    result = result.filter((p: any) => p.status === status);
+  }
 
-    // Method filter
-    if (method !== "ALL") {
-      result = result.filter((p: any) => p.method === method);
-    }
+  if (method !== "ALL") {
+    result = result.filter((p: any) => p.method === method);
+  }
 
-    // Search text query filter
-    if (searchQuery) {
-      const term = searchQuery.toLowerCase().trim();
-      result = result.filter((p: any) => 
-        (p.transactionId && p.transactionId.toLowerCase().includes(term)) ||
-        (p.order?.orderCode && p.order.orderCode.toLowerCase().includes(term)) ||
-        (p.order?.user?.name && p.order.user.name.toLowerCase().includes(term)) ||
-        (p.order?.guestEmail && p.order.guestEmail.toLowerCase().includes(term))
-      );
-    }
+  if (searchQuery.trim()) {
+    const term = searchQuery.toLowerCase().trim();
+    result = result.filter((p: any) =>
+      (p.transactionId && p.transactionId.toLowerCase().includes(term)) ||
+      (p.order?.orderCode && p.order.orderCode.toLowerCase().includes(term)) ||
+      (p.order?.user?.name && p.order.user.name.toLowerCase().includes(term)) ||
+      (p.order?.guestEmail && p.order.guestEmail.toLowerCase().includes(term))
+    );
+  }
 
-    return result;
-  }, [allPayments, status, method, searchQuery]);
+  return result;
+}, [data?.payments, status, method, searchQuery]);
 
   // 3. Client-side pagination based on filtered list
   const total = filteredPayments.length;

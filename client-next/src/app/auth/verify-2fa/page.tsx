@@ -28,7 +28,8 @@ function Verify2FAContent() {
       const response = await verify2FALogin({ email, code: otpCode });
       success("Xác thực thành công!");
       
-      if (response.user?.role === Role.ADMIN) {
+      const isStaff = response.user?.role === Role.ADMIN || response.user?.role === Role.KHO || response.user?.role === Role.BAN_HANG;
+      if (isStaff) {
         router.push(ROUTES.ADMIN);
       } else {
         router.push(ROUTES.HOME);

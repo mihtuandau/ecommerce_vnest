@@ -9,6 +9,8 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useCartStore } from "@/store/useCartStore";
+import { useCart } from "@/features/cart/hooks";
+import { CheckoutSteps } from "@/features/checkout/components/CheckoutSteps";
 
 function SuccessContent() {
   const router = useRouter();
@@ -19,17 +21,17 @@ function SuccessContent() {
 
   const { user } = useAuthStore();
   const isGuest = !user;
-  const { clearCart, clearBuyNowItem } = useCartStore();
+  const { clearSelectedItems, clearBuyNowItem } = useCart();
 
   useEffect(() => {
-    // Clear cart locally to ensure UI is in sync
+    // Clear cart locally and backend DB to ensure UI is in sync
     const isBuyNow = searchParams.get("buyNow") === "true";
     if (isBuyNow) {
       clearBuyNowItem();
     } else {
-      clearCart();
+      clearSelectedItems();
     }
-  }, [clearCart, clearBuyNowItem, searchParams]);
+  }, [clearSelectedItems, clearBuyNowItem, searchParams]);
   useEffect(() => {
     // Pháo hoa chào mừng đặt hàng thành công
     const duration = 4 * 1000;
@@ -62,6 +64,10 @@ function SuccessContent() {
 
   return (
     <div className="min-h-screen bg-brand-cream flex flex-col items-center justify-center p-6">
+      <div className="w-full max-w-lg mb-8">
+        <CheckoutSteps currentStep={3} />
+      </div>
+
       <motion.div 
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -78,7 +84,7 @@ function SuccessContent() {
             Đặt hàng thành công
           </h1>
           <p className="text-brand-taupe text-sm font-medium leading-relaxed">
-            Cảm ơn bạn đã tin tưởng Minh Tuấn Shop.<br />Đơn hàng của bạn đang được xử lý.
+            Cảm ơn bạn đã tin tưởng LUXE.<br />Đơn hàng của bạn đang được xử lý.
           </p>
         </div>
 
@@ -118,7 +124,7 @@ function SuccessContent() {
 
       <div className="mt-8 flex items-center gap-2 text-brand-taupe/20 text-[10px] font-bold uppercase tracking-widest">
         <Package className="h-3 w-3" />
-        Minh Tuấn Shop • Delivery Excellence
+        LUXE • Delivery Excellence
       </div>
     </div>
   );

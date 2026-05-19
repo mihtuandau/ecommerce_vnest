@@ -1,9 +1,8 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Star, Zap, ShoppingCart, Heart } from "lucide-react";
+import { Star, Zap, Heart } from "lucide-react";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { Product } from "@/types/models";
 import { useCart } from "@/features/cart/hooks";
@@ -14,6 +13,8 @@ import { getImageUrl } from "@/utils/image";
 import { QuickAddModal } from "./QuickAddModal";
 import { animateFlyToCart } from "@/utils/animateCart";
 import { useWishlistStore } from "@/store/useWishlistStore";
+import { useAuthStore } from "@/store/useAuthStore";
+import { useToast } from "@/hooks/useToast";
 
 interface HomeProductCardProps {
   product: Product;
@@ -26,6 +27,8 @@ export const HomeProductCard = React.memo(function HomeProductCard({
 }: HomeProductCardProps) {
   const { addItem } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlistStore();
+  const user = useAuthStore(state => state.user);
+  const { success, error } = useToast();
   const router = useRouter();
   const [isQuickAddOpen, setIsQuickAddOpen] = React.useState(false);
 
@@ -79,6 +82,10 @@ export const HomeProductCard = React.memo(function HomeProductCard({
   const handleToggleWishlist = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    if (!user) {
+      error("Vui lòng đăng nhập để sử dụng chức năng yêu thích!");
+      return;
+    }
     toggleWishlist({
       id: String(product.id),
       name: product.name,
@@ -88,6 +95,7 @@ export const HomeProductCard = React.memo(function HomeProductCard({
       slug: product.slug,
       stock: stock,
     });
+    if (!isFavorite) success(`Đã thêm ${product.name} vào yêu thích`);
   };
 
   const handleAddToCart = (e: React.MouseEvent) => {

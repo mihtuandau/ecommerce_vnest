@@ -34,6 +34,7 @@ interface CartStore {
   removeItem: (variantId: string) => void;
   updateQuantity: (variantId: string, quantity: number) => void;
   clearCart: () => void;
+  clearSelectedItems: () => void;
   setItems: (items: CartItem[], isFromServer?: boolean) => void;
   setBuyNowItem: (item: CartItem) => void;
   clearBuyNowItem: () => void;
@@ -87,6 +88,12 @@ export const useCartStore = create<CartStore>()(
         })),
 
       clearCart: () => set({ items: [], isDirty: false }),
+      
+      clearSelectedItems: () =>
+        set((state) => ({
+          items: state.items.filter((i) => !i.selected),
+          isDirty: false,
+        })),
       
       setItems: (newItems, isFromServer = false) =>
         set((state) => {

@@ -38,8 +38,8 @@ export function useCreateDiscount() {
       const { type, value, ...rest } = values;
       const data = {
         ...rest,
-        percentage: type === "PERCENTAGE" ? value : undefined,
-        fixedAmount: type === "FIXED" ? value : undefined,
+        percentage: type === "PERCENTAGE" ? value : null,
+        fixedAmount: type === "FIXED" ? value : null,
       };
       return discountsApi.createDiscount(data);
     },
@@ -62,8 +62,8 @@ export function useUpdateDiscount() {
       const { type, value, ...rest } = values;
       const data = {
         ...rest,
-        percentage: type === "PERCENTAGE" ? value : undefined,
-        fixedAmount: type === "FIXED" ? value : undefined,
+        percentage: type === "PERCENTAGE" ? value : null,
+        fixedAmount: type === "FIXED" ? value : null,
       };
       return discountsApi.updateDiscount(id, data);
     },

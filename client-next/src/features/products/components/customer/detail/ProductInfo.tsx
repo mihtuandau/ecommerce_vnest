@@ -101,7 +101,7 @@ export function ProductInfo({ product, flashSale, finalPrice, finalOriginalPrice
         <div className="flex flex-col gap-3">
           {isFlashSale && (
             <div className="flex items-center gap-2.5">
-              <div className="bg-red-500 text-white px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-tighter flex items-center gap-1 animate-pulse">
+              <div className="bg-red-500 text-white px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 animate-pulse">
                 <Zap size={11} fill="currentColor" /> Flash Sale
               </div>
               <div className="bg-brand-bronze/10 text-brand-bronze px-3 py-1 rounded-md text-[11px] font-bold">
@@ -121,7 +121,7 @@ export function ProductInfo({ product, flashSale, finalPrice, finalOriginalPrice
             )}
           </div>
         </div>
-
+ 
         {isFlashSale && flashSale?.endDate && (
           <div className="flex items-center justify-between p-5 bg-brand-espresso rounded-[28px] border border-brand-bronze/30 shadow-[0_20px_40px_rgba(61,43,26,0.15)] relative overflow-hidden group">
             {/* Background Accent */}
@@ -130,7 +130,7 @@ export function ProductInfo({ product, flashSale, finalPrice, finalOriginalPrice
             <div className="flex flex-col gap-1.5 relative z-10">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
-                <span className="text-[11px] font-black text-brand-sand uppercase tracking-[0.2em]">Sắp kết thúc</span>
+                <span className="text-[11px] font-bold text-brand-sand uppercase tracking-[0.15em]">Sắp kết thúc</span>
               </div>
               <span className="text-[12px] font-medium text-brand-ivory/80">Đừng bỏ lỡ ưu đãi này</span>
             </div>

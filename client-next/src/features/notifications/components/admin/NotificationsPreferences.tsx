@@ -5,6 +5,7 @@ import { Settings, Info } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
 import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/utils/cn";
+import { NOTIFICATIONS_PREFERENCE_OPTIONS } from "../../constants";
 
 interface NotificationsPreferencesProps {
   settings: {
@@ -43,74 +44,32 @@ export function NotificationsPreferences({
             </div>
           ) : (
             <div className="space-y-4">
-              {/* Toggle order status */}
-              <div className="flex items-start justify-between gap-4 p-3 rounded-xl border border-slate-50 hover:bg-slate-50/50 transition-colors">
-                <div className="space-y-1">
-                  <p className="text-xs font-bold text-slate-800">Biến động Đơn hàng</p>
-                  <p className="text-[10px] text-slate-400 font-medium">Nhận thông báo khi có đơn hàng mới hoặc đổi trả.</p>
-                </div>
-                <button
-                  onClick={() => handleToggleSetting("orderStatus")}
-                  disabled={isUpdatingSettings}
-                  className={cn(
-                    "w-11 h-6 rounded-full transition-all duration-200 relative focus:outline-none cursor-pointer border shadow-sm",
-                    settings.orderStatus 
-                      ? "bg-indigo-600 border-indigo-600" 
-                      : "bg-slate-200 border-slate-300"
-                  )}
+              {NOTIFICATIONS_PREFERENCE_OPTIONS.map((option) => (
+                <div 
+                  key={option.key} 
+                  className="flex items-start justify-between gap-4 p-3 rounded-xl border border-slate-50 hover:bg-slate-50/50 transition-colors"
                 >
-                  <span className={cn(
-                    "w-4.5 h-4.5 rounded-full bg-white absolute top-0.5 transition-all shadow-xs",
-                    settings.orderStatus ? "right-0.5" : "left-0.5"
-                  )} />
-                </button>
-              </div>
-
-              {/* Toggle security */}
-              <div className="flex items-start justify-between gap-4 p-3 rounded-xl border border-slate-50 hover:bg-slate-50/50 transition-colors">
-                <div className="space-y-1">
-                  <p className="text-xs font-bold text-slate-800">Nhật ký Bảo mật</p>
-                  <p className="text-[10px] text-slate-400 font-medium">Cảnh báo hoạt động đáng ngờ từ thiết bị lạ.</p>
+                  <div className="space-y-1">
+                    <p className="text-xs font-bold text-slate-800">{option.title}</p>
+                    <p className="text-[10px] text-slate-400 font-medium">{option.description}</p>
+                  </div>
+                  <button
+                    onClick={() => handleToggleSetting(option.key)}
+                    disabled={isUpdatingSettings}
+                    className={cn(
+                      "w-11 h-6 rounded-full transition-all duration-200 relative focus:outline-none cursor-pointer border shadow-sm",
+                      settings[option.key] 
+                        ? "bg-indigo-600 border-indigo-600" 
+                        : "bg-slate-200 border-slate-300"
+                    )}
+                  >
+                    <span className={cn(
+                      "w-4.5 h-4.5 rounded-full bg-white absolute top-0.5 transition-all shadow-xs",
+                      settings[option.key] ? "right-0.5" : "left-0.5"
+                    )} />
+                  </button>
                 </div>
-                <button
-                  onClick={() => handleToggleSetting("security")}
-                  disabled={isUpdatingSettings}
-                  className={cn(
-                    "w-11 h-6 rounded-full transition-all duration-200 relative focus:outline-none cursor-pointer border shadow-sm",
-                    settings.security 
-                      ? "bg-indigo-600 border-indigo-600" 
-                      : "bg-slate-200 border-slate-300"
-                  )}
-                >
-                  <span className={cn(
-                    "w-4.5 h-4.5 rounded-full bg-white absolute top-0.5 transition-all shadow-xs",
-                    settings.security ? "right-0.5" : "left-0.5"
-                  )} />
-                </button>
-              </div>
-
-              {/* Toggle promotions */}
-              <div className="flex items-start justify-between gap-4 p-3 rounded-xl border border-slate-50 hover:bg-slate-50/50 transition-colors">
-                <div className="space-y-1">
-                  <p className="text-xs font-bold text-slate-800">Chiến dịch Khuyến mãi</p>
-                  <p className="text-[10px] text-slate-400 font-medium">Thông báo các chương trình flash sale bắt đầu.</p>
-                </div>
-                <button
-                  onClick={() => handleToggleSetting("promotions")}
-                  disabled={isUpdatingSettings}
-                  className={cn(
-                    "w-11 h-6 rounded-full transition-all duration-200 relative focus:outline-none cursor-pointer border shadow-sm",
-                    settings.promotions 
-                      ? "bg-indigo-600 border-indigo-600" 
-                      : "bg-slate-200 border-slate-300"
-                  )}
-                >
-                  <span className={cn(
-                    "w-4.5 h-4.5 rounded-full bg-white absolute top-0.5 transition-all shadow-xs",
-                    settings.promotions ? "right-0.5" : "left-0.5"
-                  )} />
-                </button>
-              </div>
+              ))}
             </div>
           )}
         </CardContent>

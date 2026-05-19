@@ -1,7 +1,7 @@
 "use client";
 
 import { useProducts } from "@/features/products/hooks";
-import { ProductCard } from "./cards/ProductCard";
+import { ProductCard } from "@/features/products/components/customer/cards/ProductCard";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Product } from "@/types/models";
 import { Zap } from "lucide-react";

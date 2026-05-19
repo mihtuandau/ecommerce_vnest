@@ -33,7 +33,7 @@ export function Footer() {
                  <Image src="/logoMT.png" alt="Logo" width={36} height={36} className="h-9 w-auto object-contain" />
                </div>
                 <div className="flex flex-col">
-                  <span className="text-lg font-semibold tracking-tight text-brand-cream font-serif">{mounted ? (settings?.storeName || "MINH TUAN SHOP") : "MINH TUAN SHOP"}</span>
+                  <span className="text-lg font-semibold tracking-tight text-brand-cream font-serif">{mounted ? (settings?.storeName || "LUXE") : "LUXE"}</span>
                 </div>
             </Link>
             
@@ -104,8 +104,8 @@ export function Footer() {
             <h3 className="text-[14px] font-bold text-brand-cream font-serif">Liên hệ</h3>
             <ul className="space-y-4">
               <li className="text-[13.5px] text-brand-taupe">{mounted ? (settings?.storeAddress || "109/47/1A Đường số 8, Phường Linh Xuân, TP Thủ Đức, TP Hồ Chí Minh") : "109/47/1A Đường số 8, Phường Linh Xuân, TP Thủ Đức, TP Hồ Chí Minh"}</li>
-              <li className="text-[13.5px] text-brand-taupe">{mounted ? (settings?.storePhone || "(+84) 325 586 629") : "(+84) 325 586 629"}</li>
-              <li className="text-[13.5px] text-brand-taupe">{mounted ? (settings?.storeEmail || "dautuan032004@gmail.com") : "dautuan032004@gmail.com"}</li>
+              <li className="text-[13.5px] text-brand-taupe">{mounted ? (settings?.storePhone || "1900 8888") : "1900 8888"}</li>
+              <li className="text-[13.5px] text-brand-taupe">{mounted ? (settings?.storeEmail || "support@luxe.vn") : "support@luxe.vn"}</li>
               <li className="text-[13.5px] text-brand-taupe">8:00 – 22:00 hàng ngày</li>
             </ul>
           </div>
@@ -114,7 +114,7 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="mt-12 pt-6 border-t border-white/[0.08] flex flex-col md:flex-row justify-between items-center gap-4">
           <span className="text-[12px] text-brand-taupe/50">
-            © 2026 {mounted ? (settings?.storeName || "MINHTUAN SHOP") : "MINHTUAN SHOP"} All rights reserved.
+            © 2026 {mounted ? (settings?.storeName || "LUXE") : "LUXE"} All rights reserved.
           </span>
           <div className="flex gap-2">
             {["CASH", "VNPAY", "MoMo"].map(p => (

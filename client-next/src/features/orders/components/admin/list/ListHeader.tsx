@@ -7,6 +7,7 @@ import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/utils/cn";
 import { adminUI } from "@/constants/admin-ui";
 import Link from "next/link";
+import { ROUTES } from "@/constants/routes";
 
 interface OrderListHeaderProps {
   totalOrders: number;
@@ -37,7 +38,7 @@ export function OrderListHeader({ totalOrders, onRefresh, isFetching }: OrderLis
         <Button variant="outline" className={cn(adminUI.button.base, adminUI.button.secondary)}>
           <Download className={cn(adminUI.icon.action, "mr-2")} /> Xuất Excel
         </Button>
-        <Link href="/admin/orders/create">
+        <Link href={ROUTES.ADMIN_ORDERS_CREATE}>
           <Button className={cn(adminUI.button.base, adminUI.button.primary)}>
             <Plus className={cn(adminUI.icon.action, "mr-2")} /> Tạo đơn mới
           </Button>

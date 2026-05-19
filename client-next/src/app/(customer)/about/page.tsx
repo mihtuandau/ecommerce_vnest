@@ -12,7 +12,7 @@ export default function AboutPage() {
             src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=2070&auto=format&fit=crop" 
             fill
             className="object-cover opacity-60 scale-105"
-            alt="Minh Tuấn Shop Hero"
+            alt="LUXE Hero"
             priority
           />
           <div className="absolute inset-0 bg-gradient-to-b from-slate-900/40 via-slate-900/60 to-slate-900/90" />
@@ -21,7 +21,7 @@ export default function AboutPage() {
         <div className="relative z-10 max-w-[1400px] mx-auto px-4 text-center space-y-8">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/20 border border-primary/30 text-white text-xs font-semibold tracking-wider">
             <Sparkles className="w-4 h-4 text-primary" />
-            Chào mừng đến với Minh Tuấn Shop
+            Chào mừng đến với LUXE
           </div>
           <h1 className="text-5xl md:text-7xl font-bold text-white tracking-tight">
             Kiến tạo tương lai <br /> 
@@ -40,10 +40,10 @@ export default function AboutPage() {
             <h2 className="text-4xl font-bold text-slate-900 tracking-tight">Câu chuyện của chúng tôi</h2>
             <div className="space-y-6 text-slate-600 leading-relaxed text-lg font-normal">
               <p>
-                Ra đời từ năm 2024, Minh Tuấn Shop bắt đầu với một ý tưởng đơn giản: Làm thế nào để việc mua sắm trực tuyến trở nên an toàn, nhanh chóng và tinh tế hơn?
+                Ra đời từ năm 2024, LUXE bắt đầu với một ý tưởng đơn giản: Làm thế nào để việc mua sắm trực tuyến trở nên an toàn, nhanh chóng và tinh tế hơn?
               </p>
               <p>
-                Chúng tôi hiểu rằng đằng sau mỗi đơn hàng là một niềm hy vọng, một món quà dành cho người thân, hay đơn giản là một phần thưởng cho bản thân. Vì thế, Minh Tuấn Shop chăm chút từng chi tiết nhỏ nhất.
+                Chúng tôi hiểu rằng đằng sau mỗi đơn hàng là một niềm hy vọng, một món quà dành cho người thân, hay đơn giản là một phần thưởng cho bản thân. Vì thế, LUXE chăm chút từng chi tiết nhỏ nhất.
               </p>
             </div>
             <div className="grid grid-cols-2 gap-12 pt-4">
@@ -76,7 +76,7 @@ export default function AboutPage() {
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-20">
           <div className="space-y-4">
             <h2 className="text-4xl font-bold text-slate-900 tracking-tight">Giá trị cốt lõi</h2>
-            <p className="text-slate-500 font-medium">Ba trụ cột tạo nên sự khác biệt của Minh Tuấn Shop</p>
+            <p className="text-slate-500 font-medium">Ba trụ cột tạo nên sự khác biệt của LUXE</p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">

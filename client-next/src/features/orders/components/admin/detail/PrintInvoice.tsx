@@ -3,6 +3,7 @@
 import React from "react";
 import dayjs from "@/lib/dayjs";
 import { formatCurrency } from "@/utils/formatCurrency";
+import { PaymentMethod, PaymentStatus } from "@/types/enums";
 
 interface PrintInvoiceProps {
   order: any;
@@ -26,15 +27,15 @@ export function PrintInvoice({ order }: PrintInvoiceProps) {
       <div className="flex justify-between items-start border-b-2 border-black pb-6 mb-8 !bg-transparent">
         <div className="!bg-transparent">
           <h1 className="text-2xl font-black tracking-tighter uppercase mb-1">
-            Minh Tuấn Shop
+            LUXE SHOP
           </h1>
           <p className="text-[10px] font-medium leading-relaxed">
             Địa chỉ: 109/47 Đường số 8 Khu Phố 11, Phường Linh Xuân, Thành phố Thủ Đức,
             TP.HCM
             <br />
-            Hotline: 0984 340 962
+            Hotline: 1900 8888
             <br />
-            Website: dautuan.com
+            Website: luxe.vn
           </p>
         </div>
         <div className="text-right !bg-transparent">
@@ -95,12 +96,12 @@ export function PrintInvoice({ order }: PrintInvoiceProps) {
           <p className="text-xs mt-1 font-medium">
             Thanh toán:{" "}
             <span className="font-bold">
-              {order.paymentMethod === "CASH" ? "Tiền mặt" : order.paymentMethod}
+              {order.paymentMethod === PaymentMethod.CASH ? "Tiền mặt" : order.paymentMethod}
             </span>
           </p>
           <p className="text-xs mt-1 uppercase font-black">
             Trạng thái:{" "}
-            {order.payment?.status === "SUCCESS" ? "Đã thanh toán" : "Chờ thanh toán"}
+            {order.payment?.status === PaymentStatus.SUCCESS ? "Đã thanh toán" : "Chờ thanh toán"}
           </p>
         </div>
       </div>
@@ -207,7 +208,7 @@ export function PrintInvoice({ order }: PrintInvoiceProps) {
 
       <div className="mt-24 text-center border-t border-black/10 pt-8 !bg-transparent">
         <p className="text-sm font-black italic tracking-tight">
-          Cảm ơn quý khách đã mua sắm tại Minh Tuấn Shop!
+          Cảm ơn quý khách đã mua sắm tại LUXE!
         </p>
         <p className="text-[9px] mt-2 italic">
           Hóa đơn có giá trị trong ngày. Vui lòng kiểm tra kỹ hàng trước khi thanh toán.

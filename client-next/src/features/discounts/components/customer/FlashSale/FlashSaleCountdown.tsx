@@ -3,20 +3,21 @@
 import React, { useState, useEffect } from "react";
 import { getTimeLeft } from "@/utils/formatDate";
 import { pad } from "../../../utils/flashSaleUtils";
+import { FLASH_SALE_CONSTANTS, FLASH_SALE_MESSAGES } from "@/features/discounts/constants";
 
 export function FlashSaleCountdown({ endDate }: { endDate?: string }) {
   const [time, setTime] = useState(() => (endDate ? getTimeLeft(endDate) : null));
 
   useEffect(() => {
     if (!endDate) return;
-    const id = setInterval(() => setTime(getTimeLeft(endDate)), 1000);
+    const id = setInterval(() => setTime(getTimeLeft(endDate)), FLASH_SALE_CONSTANTS.COUNTDOWN_INTERVAL);
     return () => clearInterval(id);
   }, [endDate]);
 
   if (!time || time.expired) {
     return (
       <span className="text-white/40 text-xs font-medium uppercase tracking-widest">
-        Đã kết thúc
+        {FLASH_SALE_MESSAGES.ENDED}
       </span>
     );
   }

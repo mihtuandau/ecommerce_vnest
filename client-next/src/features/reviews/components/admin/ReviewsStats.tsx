@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Star, MessageSquare, Award, AlertCircle } from "lucide-react";
+import { Star, MessageSquare} from "lucide-react";
 
 interface ReviewsStatsProps {
   reviews: any[];

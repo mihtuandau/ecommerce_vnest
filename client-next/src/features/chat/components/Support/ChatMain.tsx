@@ -4,6 +4,8 @@ import React, { useRef, useState } from "react";
 import { MessageSquare } from "lucide-react";
 import { productsApi } from "@/features/products/api";
 import { toast } from "sonner";
+import { Skeleton } from "@/components/ui/Skeleton";
+import { Spinner } from "@/components/ui/Spinner";
 
 import { ChatHeader } from "./ChatHeader";
 import { MessageBubble } from "./MessageBubble";
@@ -46,9 +48,7 @@ export function ChatMain({
   messagesLoading,
   user,
   inputText,
-  setInputText,
   onSendMessage,
-  onKeyDown,
   isShortcutMenuOpen,
   setIsShortcutMenuOpen,
   shortcuts,
@@ -111,9 +111,9 @@ export function ChatMain({
   if (!selectedRoomId) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center text-center p-12 bg-white">
-        <div className="w-20 h-20 bg-slate-50 rounded-[2rem] flex items-center justify-center mb-6 shadow-inner border border-slate-100 animate-pulse">
+        <Skeleton className="w-20 h-20 bg-slate-50 rounded-[2rem] flex items-center justify-center mb-6 shadow-inner border border-slate-100">
           <MessageSquare size={36} className="text-slate-350" />
-        </div>
+        </Skeleton>
         <h2 className="text-xl font-bold text-slate-800 mb-2">Tổng đài hỗ trợ LUXE</h2>
         <p className="text-slate-400 max-w-xs text-xs leading-relaxed font-medium">
           Vui lòng chọn một cuộc hội thoại từ danh sách bên trái để bắt đầu hỗ trợ khách hàng.
@@ -145,7 +145,7 @@ export function ChatMain({
         {messagesLoading && messages.length === 0 ? (
           <div className="flex items-center justify-center h-full">
             <div className="flex flex-col items-center gap-3">
-              <div className="w-8 h-8 border-3 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+              <Spinner size="lg" className="text-indigo-600" />
               <span className="text-xs font-semibold text-slate-400">Đang đồng bộ tin nhắn...</span>
             </div>
           </div>

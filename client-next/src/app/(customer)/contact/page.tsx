@@ -22,8 +22,8 @@ export default function ContactPage() {
 
           <section>
             <h2 className="font-bold text-slate-900 mb-4">03. Email liên hệ</h2>
-            <p className="text-slate-700">Bộ phận CSKH: support@minhtuan.vn</p>
-            <p className="text-slate-700">Hợp tác kinh doanh: partnership@minhtuan.vn</p>
+            <p className="text-slate-700">Bộ phận CSKH: support@luxe.vn</p>
+            <p className="text-slate-700">Hợp tác kinh doanh: partnership@luxe.vn</p>
           </section>
         </div>
 

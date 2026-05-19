@@ -8,6 +8,7 @@ import { useSearchParams } from "next/navigation";
 import { PackageSearch, RefreshCcw, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/utils/cn";
+import { PRODUCTS_CONSTANTS, PRODUCTS_MESSAGES, PRODUCTS_VIEW_MODES } from "@/features/products/constants";
 
 interface ProductListProps {
   initialProducts?: Product[];
@@ -39,7 +40,7 @@ export const ProductList = React.memo(function ProductList({
 
   const queryParams = {
     page,
-    limit: 9,
+    limit: PRODUCTS_CONSTANTS.GRID_LIMIT,
     ...(categoryId && { categoryId }),
     ...(brandId && { brandId }),
     ...(minPrice && { minPrice }),
@@ -65,21 +66,21 @@ export const ProductList = React.memo(function ProductList({
           view === "grid" ? "grid-cols-2 lg:grid-cols-3" : "grid-cols-1"
         )}
       >
-        {Array.from({ length: 9 }).map((_, i) => (
+        {Array.from({ length: PRODUCTS_CONSTANTS.GRID_LIMIT }).map((_, i) => (
           <div
             key={i}
             className={cn(
               "bg-white rounded-[2rem] border border-brand-sand/40 overflow-hidden",
-              view === "list" ? "flex gap-6 p-4" : ""
+              view === PRODUCTS_VIEW_MODES.LIST ? "flex gap-6 p-4" : ""
             )}
           >
             <Skeleton
               className={cn(
                 "bg-brand-cream",
-                view === "grid" ? "aspect-square w-full" : "h-40 w-40 md:h-52 md:w-52 rounded-2xl shrink-0"
+                view === PRODUCTS_VIEW_MODES.GRID ? "aspect-square w-full" : "h-40 w-40 md:h-52 md:w-52 rounded-2xl shrink-0"
               )}
             />
-            <div className={cn("space-y-4 flex-1", view === "grid" ? "p-5" : "py-2")}>
+            <div className={cn("space-y-4 flex-1", view === PRODUCTS_VIEW_MODES.GRID ? "p-5" : "py-2")}>
               <div className="space-y-2">
                 <Skeleton className="h-4 w-3/4 rounded-full" />
                 <Skeleton className="h-4 w-1/2 rounded-full" />
@@ -146,7 +147,7 @@ export const ProductList = React.memo(function ProductList({
       <div
         className={cn(
           "grid animate-in fade-in slide-in-from-bottom-6 duration-1000 flex-1 content-start",
-          view === "grid" ? "grid-cols-2 lg:grid-cols-3 gap-6" : "grid-cols-1 gap-6"
+          view === PRODUCTS_VIEW_MODES.GRID ? "grid-cols-2 lg:grid-cols-3 gap-6" : "grid-cols-1 gap-6"
         )}
       >
         {products.map((product: Product) => (

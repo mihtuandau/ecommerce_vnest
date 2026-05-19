@@ -11,6 +11,7 @@ export function useCart() {
   const storeRemoveItem = useCartStore((state) => state.removeItem);
   const storeUpdateQuantity = useCartStore((state) => state.updateQuantity);
   const storeClearCart = useCartStore((state) => state.clearCart);
+  const storeClearSelectedItems = useCartStore((state) => state.clearSelectedItems);
   const setBuyNowItem = useCartStore((state) => state.setBuyNowItem);
   const clearBuyNowItem = useCartStore((state) => state.clearBuyNowItem);
   const storeTotalPrice = useCartStore((state) => state.totalPrice);
@@ -65,6 +66,21 @@ export function useCart() {
     }
   }, [user, storeClearCart]);
 
+  const clearSelectedItems = React.useCallback(async () => {
+    const currentItems = useCartStore.getState().items;
+    storeClearSelectedItems();
+    if (user) {
+      try {
+        const selectedItems = currentItems.filter((i) => i.selected);
+        await Promise.all(
+          selectedItems.map((item) => cartApi.removeItem(Number(item.variantId)))
+        );
+      } catch (err) {
+        console.error("Failed to sync clearSelectedItems:", err);
+      }
+    }
+  }, [user, storeClearSelectedItems]);
+
   const itemCount = React.useMemo(() => 
     items.reduce((sum, item) => sum + item.quantity, 0),
   [items]);
@@ -77,11 +93,12 @@ export function useCart() {
     removeItem,
     updateQuantity,
     clearCart,
+    clearSelectedItems,
     setBuyNowItem,
     clearBuyNowItem,
     totalPrice,
     itemCount,
-  }), [items, addItem, removeItem, updateQuantity, clearCart, setBuyNowItem, clearBuyNowItem, totalPrice, itemCount]);
+  }), [items, addItem, removeItem, updateQuantity, clearCart, clearSelectedItems, setBuyNowItem, clearBuyNowItem, totalPrice, itemCount]);
 }
 
 export function useSyncCart() {

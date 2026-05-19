@@ -171,22 +171,23 @@ export function RequestReturnModal({
           </div>
 
           <div className="flex flex-col gap-3 pt-4 border-t border-[#DDD6C8]">
-            <button
+            <Button
               type="submit"
               disabled={isSubmitting || isUploading}
               className="w-full h-12 bg-[#3D2B1A] text-white rounded-xl font-bold text-[13.5px] transition-all hover:bg-[#2A2420] disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {isSubmitting && <Spinner size="sm" variant="white" />}
               {isSubmitting ? "Đang gửi yêu cầu..." : "Gửi yêu cầu trả hàng"}
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
+              variant="outline"
               onClick={onClose}
               disabled={isSubmitting}
-              className="w-full h-12 bg-white border border-[#DDD6C8] text-[#8A7966] rounded-xl font-bold text-[13.5px] transition-all hover:bg-[#FAF8F4]"
+              className="w-full h-12 bg-white border border-[#DDD6C8] text-[#8A7966] hover:text-[#8A7966] rounded-xl font-bold text-[13.5px] transition-all hover:bg-[#FAF8F4] hover:border-[#C4B49A]"
             >
               Quay lại
-            </button>
+            </Button>
           </div>
         </form>
       </DialogContent>

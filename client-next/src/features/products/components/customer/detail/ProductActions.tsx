@@ -14,10 +14,12 @@ import {
 import { cn } from "@/utils/cn";
 import { useCart } from "@/features/cart/hooks";
 import { useWishlistStore } from "@/store/useWishlistStore";
+import { useAuthStore } from "@/store/useAuthStore";
 import { useToast } from "@/hooks/useToast";
 import { useRouter } from "next/navigation";
 import { Product, ProductVariant } from "@/types/models";
 import { getImageUrl } from "@/utils/image";
+import { SizeGuideModal } from "./SizeGuideModal";
 
 interface ProductActionsProps {
   product: Product;
@@ -43,8 +45,10 @@ export function ProductActions({
   selectedVariant,
 }: ProductActionsProps) {
   const [quantity, setQuantity] = useState(1);
+  const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
   const { addItem, setBuyNowItem } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlistStore();
+  const user = useAuthStore(state => state.user);
   const { success, error } = useToast();
   const router = useRouter();
 
@@ -63,6 +67,10 @@ export function ProductActions({
   }, [product.variants]);
 
   const handleToggleWishlist = () => {
+    if (!user) {
+      error("Vui lòng đăng nhập để sử dụng chức năng yêu thích!");
+      return;
+    }
     toggleWishlist({
       id: String(product.id),
       name: product.name,
@@ -122,7 +130,7 @@ export function ProductActions({
         {colors.length > 0 && (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold text-primary uppercase tracking-[0.2em]">Màu sắc</span>
+              <span className="text-[11px] font-bold text-brand-taupe uppercase tracking-widest">Màu sắc</span>
               <span className="text-[12px] font-bold text-brand-bronze">{selectedColor || "Chưa chọn"}</span>
             </div>
             <div className="flex flex-wrap gap-2.5">
@@ -147,8 +155,17 @@ export function ProductActions({
         {sizes.length > 0 && (
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-bold text-primary uppercase tracking-[0.2em]">Kích thước</span>
-              <span className="text-[11.5px] font-bold text-brand-bronze">{selectedSize || "Chưa chọn"}</span>
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] font-bold text-brand-taupe uppercase tracking-widest">Kích thước</span>
+                <button
+                  type="button"
+                  onClick={() => setIsSizeGuideOpen(true)}
+                  className="text-[11px] text-brand-bronze hover:underline transition-colors"
+                >
+                  (Hướng dẫn chọn size)
+                </button>
+              </div>
+              <span className="text-[12px] font-bold text-brand-bronze">{selectedSize || "Chưa chọn"}</span>
             </div>
             <div className="flex flex-wrap gap-2.5">
               {sizes.map((size) => (
@@ -214,6 +231,8 @@ export function ProductActions({
           </button>
         </div>
       </div>
+
+      <SizeGuideModal isOpen={isSizeGuideOpen} onClose={() => setIsSizeGuideOpen(false)} />
     </div>
   );
 }

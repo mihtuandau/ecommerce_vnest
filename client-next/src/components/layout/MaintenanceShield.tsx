@@ -3,6 +3,7 @@
 import React from "react";
 import { useSystemSettings } from "@/features/settings/hooks";
 import { useAuthStore } from "@/store/useAuthStore";
+import { Role } from "@/types/enums";
 import { Wrench, Phone, Mail, Clock } from "lucide-react";
 
 export function MaintenanceShield() {
@@ -10,7 +11,7 @@ export function MaintenanceShield() {
   const { user } = useAuthStore();
 
   const isMaintenance = settings?.maintenanceMode ?? false;
-  const isAdmin = user?.role === "ADMIN";
+  const isAdmin = user?.role === Role.ADMIN;
 
   if (isMaintenance && !isAdmin) {
     return (

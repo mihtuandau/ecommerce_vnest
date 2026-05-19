@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { Spinner } from "@/components/ui/Spinner";
 
 export const metadata: Metadata = {
-  title: "Thanh toán — Minh Tuấn Store",
+  title: "Thanh toán — LUXE",
   description: "Hoàn tất đơn hàng của bạn với các phương thức thanh toán an toàn.",
 };
 

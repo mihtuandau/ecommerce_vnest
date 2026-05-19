@@ -27,10 +27,10 @@ export const ShopBreadcrumbs = React.memo(function ShopBreadcrumbs({ currentCate
   const path = currentCategory ? findCategoryPath(categories, currentCategory) : [];
 
   return (
-    <div className="bg-white border-b border-slate-100">
+    <div className="bg-white border-b border-brand-sand/40">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="py-4">
-          <nav className="flex items-center gap-2 text-[11px] font-semibold text-slate-400 uppercase tracking-widest overflow-x-auto no-scrollbar scroll-smooth">
+          <nav className="flex items-center gap-2 text-[11.5px] font-bold text-brand-taupe/90 uppercase tracking-widest overflow-x-auto no-scrollbar scroll-smooth">
             <Link href="/" className="hover:text-primary transition-all flex items-center gap-1.5 group whitespace-nowrap">
               <Home className="h-3.5 w-3.5 group-hover:scale-110 transition-transform" />
               <span>Trang chủ</span>

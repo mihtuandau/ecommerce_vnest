@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useParams } from "next/navigation";
 import { useOrderDetail, useCancelOrder } from "@/features/orders/hooks";
-import { ORDER_STATUS_CONFIG } from "@/features/orders";
+import { ORDER_STATUS_CONFIG, ORDERS_CONTACT } from "@/features/orders";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useCart } from "@/features/cart/hooks";
 import { useToast } from "@/hooks/useToast";
@@ -196,21 +196,21 @@ export function OrderDetailView() {
                       <RotateCcw size={24} />
                     </div>
                     <div>
-                      <h3 className="text-lg font-bold text-[#3D2B1A] font-serif-brand">Chi tiết yêu cầu trả hàng</h3>
-                      <p className="text-[10px] text-[#8A7966] font-black tracking-[0.05em] mt-1">Cập nhật: {new Date(order.returnRequest?.updatedAt || order.updatedAt).toLocaleString("vi-VN")}</p>
+                      <h3 className="text-lg font-bold text-brand-espresso font-serif-brand">Chi tiết yêu cầu trả hàng</h3>
+                      <p className="text-[11px] text-brand-taupe font-bold uppercase tracking-widest mt-1">Cập nhật: {new Date(order.returnRequest?.updatedAt || order.updatedAt).toLocaleString("vi-VN")}</p>
                     </div>
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-10 pt-8 border-t border-[#DDD6C8]">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-10 pt-8 border-t border-brand-sand">
                     <div className="space-y-3">
-                      <p className="text-[10px] font-black text-[#8A7966] tracking-[0.05em]">Lý do từ bạn</p>
-                      <p className="text-sm text-[#3D2B1A] font-medium leading-relaxed italic">"{order.returnRequest.reason}"</p>
+                      <p className="text-[11px] font-bold text-brand-taupe uppercase tracking-widest">Lý do từ bạn</p>
+                      <p className="text-sm text-brand-espresso font-medium leading-relaxed italic">"{order.returnRequest.reason}"</p>
                     </div>
                     {order.returnRequest?.adminNote && (
                       <div className="space-y-3">
-                        <p className="text-[10px] font-black text-[#C4783A] tracking-[0.05em]">Phản hồi LUXE</p>
-                        <div className="p-5 bg-[#FAF8F4] rounded-xl border border-[#DDD6C8]">
-                          <p className="text-sm text-[#3D2B1A] font-medium leading-relaxed italic">"{order.returnRequest.adminNote}"</p>
+                        <p className="text-[11px] font-bold text-brand-bronze uppercase tracking-widest">Phản hồi LUXE</p>
+                        <div className="p-5 bg-brand-cream/50 rounded-xl border border-brand-sand">
+                          <p className="text-sm text-brand-espresso font-medium leading-relaxed italic">"{order.returnRequest.adminNote}"</p>
                         </div>
                       </div>
                     )}
@@ -245,7 +245,7 @@ export function OrderDetailView() {
                 shippingCode={order.shippingCode}
                 status={order.status}
                 onReturn={() => setIsReturnModalOpen(true)}
-                onReport={() => window.open('https://zalo.me/0987654321', '_blank')}
+                onReport={() => window.open(`${ORDERS_CONTACT.ZALO_BASE_URL}/${process.env.NEXT_PUBLIC_ZALO}`, '_blank')}
                 onReview={() => {
                   if (order.orderItems?.[0]) {
                     setSelectedItem(order.orderItems[0]);

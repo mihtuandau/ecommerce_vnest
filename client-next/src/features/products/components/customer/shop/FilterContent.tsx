@@ -1,11 +1,12 @@
 "use client";
 
 import React from "react";
-import { Star, Check, ChevronRight, ChevronDown } from "lucide-react";
+import { Star, ChevronRight, ChevronDown } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { Category, Brand } from "@/types/models";
+import { Checkbox, Input, Button } from "@/components/ui";
 
-import { SHOP_PRICE_RANGES } from "../constants";
+import { SHOP_PRICE_RANGES } from "@/features/products/constants";
 
 interface FilterContentProps {
   currentCategory: string | null;
@@ -118,13 +119,6 @@ export const FilterContent = React.memo(function FilterContent({
     );
   };
 
-  const priceRanges = [
-    { label: "Dưới 500K", min: "0", max: "500000" },
-    { label: "500K — 2 triệu", min: "500000", max: "2000000" },
-    { label: "2 — 5 triệu", min: "2000000", max: "5000000" },
-    { label: "Trên 5 triệu", min: "5000000", max: "999999999" }
-  ];
-
   return (
     <form className={cn("h-full overflow-auto scrollbar-hide", isMobile ? "px-6" : "")}>
       <FilterSection title="Danh mục">
@@ -142,46 +136,62 @@ export const FilterContent = React.memo(function FilterContent({
 
       {brands.length > 0 && (
         <FilterSection title="Thương hiệu">
-            {brands.map((brand) => {
-              const isSelected = String(brand.id) === currentBrand;
-              return (
-                <button 
-                  key={brand.id}
-                  type="button"
-                  onClick={() => updateFilters('brandId', isSelected ? null : String(brand.id))}
-                  className={cn("flex items-center gap-3 w-full text-left py-1 group", isSelected ? "text-primary" : "text-brand-taupe/80 hover:text-primary")}
-                >
-                  <div className={cn("h-3.5 w-3.5 rounded border flex items-center justify-center transition-all shrink-0", isSelected ? "bg-primary border-primary" : "border-brand-sand bg-white group-hover:border-brand-bronze")}>{isSelected && <Check className="h-2 w-2 text-white" strokeWidth={4} />}</div>
-                  <span className="text-[13px] font-medium">{brand.name}</span>
-                </button>
-              );
-            })}
+             {brands.map((brand) => {
+               const isSelected = String(brand.id) === currentBrand;
+               const checkboxId = `brand-${brand.id}`;
+               return (
+                 <div 
+                   key={brand.id}
+                   className="flex items-center gap-3 w-full py-1.5 group"
+                 >
+                   <Checkbox
+                     id={checkboxId}
+                     checked={isSelected}
+                     onCheckedChange={() => updateFilters('brandId', isSelected ? null : String(brand.id))}
+                   />
+                   <label 
+                     htmlFor={checkboxId}
+                     className={cn("text-[13px] font-medium cursor-pointer select-none transition-colors", isSelected ? "text-primary font-bold" : "text-brand-taupe/80 hover:text-primary")}
+                   >
+                     {brand.name}
+                   </label>
+                 </div>
+               );
+             })}
         </FilterSection>
       )}
 
       <FilterSection title="Khoảng giá">
         <div className="space-y-2 ml-1">
-          {priceRanges.map((range) => {
+          {SHOP_PRICE_RANGES.map((range) => {
             const isSelected = currentMinPrice === range.min && currentMaxPrice === range.max;
+            const rangeId = `price-range-${range.label.replace(/\s+/g, '-').toLowerCase()}`;
             return (
-              <button 
+              <div 
                 key={range.label}
-                type="button"
-                onClick={() => updatePriceFilter(isSelected ? null : range.min, isSelected ? null : range.max)}
-                className={cn("flex items-center gap-3 w-full text-left py-1 group", isSelected ? "text-primary" : "text-brand-taupe/80 hover:text-primary")}
+                className="flex items-center gap-3 w-full py-1.5 group"
               >
-                <div className={cn("h-3.5 w-3.5 rounded border flex items-center justify-center transition-all shrink-0", isSelected ? "bg-primary border-primary" : "border-brand-sand bg-white group-hover:border-brand-bronze")}>{isSelected && <Check className="h-2 w-2 text-white" strokeWidth={4} />}</div>
-                <span className="text-[13px] font-medium">{range.label}</span>
-              </button>
+                <Checkbox
+                  id={rangeId}
+                  checked={isSelected}
+                  onCheckedChange={() => updatePriceFilter(isSelected ? null : range.min, isSelected ? null : range.max)}
+                />
+                <label 
+                  htmlFor={rangeId}
+                  className={cn("text-[13px] font-medium cursor-pointer select-none transition-colors", isSelected ? "text-primary font-bold" : "text-brand-taupe/80 hover:text-primary")}
+                >
+                  {range.label}
+                </label>
+              </div>
             );
           })}
           <div className="pt-4 space-y-3">
             <div className="flex items-center gap-2">
-              <input type="number" placeholder="Từ" value={customMinPrice} onChange={(e) => setCustomMinPrice(e.target.value)} className="w-full h-9 text-[12px] border border-brand-sand rounded-lg px-3 bg-white text-primary placeholder-brand-taupe focus:outline-none focus:border-brand-bronze transition-all" />
+              <Input type="number" placeholder="Từ" value={customMinPrice} onChange={(e) => setCustomMinPrice(e.target.value)} className="w-full h-9 text-[12px] border border-brand-sand rounded-lg px-3 bg-white text-primary placeholder-brand-taupe focus:outline-none focus:border-brand-bronze transition-all" />
               <span className="text-brand-sand">—</span>
-              <input type="number" placeholder="Đến" value={customMaxPrice} onChange={(e) => setCustomMaxPrice(e.target.value)} className="w-full h-9 text-[12px] border border-brand-sand rounded-lg px-3 bg-white text-primary placeholder-brand-taupe focus:outline-none focus:border-brand-bronze transition-all" />
+              <Input type="number" placeholder="Đến" value={customMaxPrice} onChange={(e) => setCustomMaxPrice(e.target.value)} className="w-full h-9 text-[12px] border border-brand-sand rounded-lg px-3 bg-white text-primary placeholder-brand-taupe focus:outline-none focus:border-brand-bronze transition-all" />
             </div>
-            <button type="button" onClick={handleCustomPriceApply} className="w-full h-9 text-[11px] uppercase tracking-widest font-bold text-primary border border-primary rounded-lg hover:bg-primary hover:text-white transition-all active:scale-95">Áp dụng</button>
+            <Button type="button" onClick={handleCustomPriceApply} className="w-full h-9 text-[11px] uppercase tracking-widest font-bold text-primary border border-primary rounded-lg hover:bg-primary hover:text-white transition-all active:scale-95 bg-transparent">Áp dụng</Button>
           </div>
         </div>
       </FilterSection>
@@ -190,17 +200,34 @@ export const FilterContent = React.memo(function FilterContent({
         <div className="space-y-3 ml-1">
           {[5, 4, 3].map((s) => {
             const isSelected = currentMinRating === String(s);
+            const ratingId = `rating-${s}`;
             return (
-              <button 
+              <div 
                 key={s}
-                type="button"
-                onClick={() => updateFilters('minRating', isSelected ? null : String(s))}
-                className={cn("flex items-center gap-3 w-full text-left group", isSelected ? "text-primary" : "text-brand-taupe/80 hover:text-primary")}
+                className="flex items-center gap-3 w-full py-1.5 group"
               >
-                <div className={cn("h-3.5 w-3.5 rounded border flex items-center justify-center transition-all shrink-0", isSelected ? "bg-primary border-primary" : "border-brand-sand bg-white group-hover:border-brand-bronze")}>{isSelected && <Check className="h-2 w-2 text-white" strokeWidth={4} />}</div>
-                <div className="flex gap-0.5">{[...Array(5)].map((_, i) => (<Star key={i} className={cn("h-3 w-3", i < s ? "fill-brand-bronze text-brand-bronze" : "text-brand-sand")} />))}</div>
-                <span className="text-[12px] font-medium ml-1">Trở lên</span>
-              </button>
+                <Checkbox
+                  id={ratingId}
+                  checked={isSelected}
+                  onCheckedChange={() => updateFilters('minRating', isSelected ? null : String(s))}
+                />
+                <label 
+                  htmlFor={ratingId}
+                  className="flex items-center gap-2 cursor-pointer select-none"
+                >
+                  <div className="flex gap-0.5">
+                    {[...Array(5)].map((_, i) => (
+                      <Star 
+                        key={i} 
+                        className={cn("h-3 w-3", i < s ? "fill-brand-bronze text-brand-bronze" : "text-brand-sand")} 
+                      />
+                    ))}
+                  </div>
+                  <span className={cn("text-[12px] font-medium ml-1 transition-colors", isSelected ? "text-primary font-bold" : "text-brand-taupe/80 hover:text-primary")}>
+                    Trở lên
+                  </span>
+                </label>
+              </div>
             );
           })}
         </div>

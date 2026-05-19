@@ -13,12 +13,14 @@ import { Spinner } from "@/components/ui/Spinner";
 import Image from "next/image";
 import { Role } from "@/types/enums";
 import { cn } from "@/utils/cn";
+import { Checkbox } from "@/components/ui/Checkbox";
+import { AUTH_CONSTANTS, AUTH_MESSAGES, AUTH_STEPS } from "@/features/auth/constants";
 
 export function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [otpCode, setOtpCode] = useState("");
-  const [step, setStep] = useState<"login" | "2fa">("login");
+  const [step, setStep] = useState<"login" | "2fa">(AUTH_STEPS.LOGIN);
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string; otp?: string }>({});
 
@@ -31,8 +33,8 @@ export function LoginForm() {
     setErrors({});
     
     const newErrors: { email?: string; password?: string } = {};
-    if (!email) newErrors.email = "Vui lòng nhập email";
-    if (!password) newErrors.password = "Vui lòng nhập mật khẩu";
+    if (!email) newErrors.email = AUTH_MESSAGES.EMAIL_REQUIRED;
+    if (!password) newErrors.password = AUTH_MESSAGES.PASSWORD_REQUIRED;
     
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -44,31 +46,31 @@ export function LoginForm() {
       
       if (response.requires2FA) {
         setStep("2fa");
-        success(response.message || "Vui lòng nhập mã xác thực từ email");
+        success(response.message || AUTH_MESSAGES.LOGIN_REQUIRED_2FA);
         return;
       }
 
       handleLoginSuccess(response);
     } catch (err: any) {
-      error(err?.response?.data?.message || "Email hoặc mật khẩu không chính xác");
+      error(err?.response?.data?.message || AUTH_MESSAGES.INVALID_CREDENTIALS);
       setErrors({ email: " ", password: " " });
     }
   };
 
   const handleVerify2FA = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!otpCode || otpCode.length < 6) return error("Vui lòng nhập đủ 6 chữ số");
+    if (!otpCode || otpCode.length < 6) return error(AUTH_MESSAGES.INVALID_2FA_LENGTH);
 
     try {
       const response = await verify2FALogin({ email, code: otpCode });
       handleLoginSuccess(response);
     } catch (err: any) {
-      error(err?.response?.data?.message || "Mã xác thực không chính xác");
+      error(err?.response?.data?.message || AUTH_MESSAGES.INVALID_2FA_CODE);
     }
   };
 
   const handleLoginSuccess = (response: any) => {
-    success("Đăng nhập thành công!");
+    success(AUTH_MESSAGES.LOGIN_SUCCESS);
     if (response.user?.role === Role.ADMIN) {
       router.push(ROUTES.ADMIN);
     } else {
@@ -77,7 +79,8 @@ export function LoginForm() {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/auth/google?_t=${Date.now()}`;
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    window.location.href = `${apiUrl}${AUTH_CONSTANTS.GOOGLE_AUTH_ENDPOINT}?${AUTH_CONSTANTS.CACHE_BUST_PARAM}=${Date.now()}`;
   };
 
   return (
@@ -95,16 +98,16 @@ export function LoginForm() {
           </div>
         </Link>
         <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight drop-shadow-sm">
-          {step === "login" ? "Chào mừng!" : "Xác thực 2 lớp"}
+          {step === AUTH_STEPS.LOGIN ? "Chào mừng!" : "Xác thực 2 lớp"}
         </h1>
         <p className="text-white/80 mt-1 font-normal text-[13px] drop-shadow-sm">
-          {step === "login" 
+          {step === AUTH_STEPS.LOGIN 
             ? "Đăng nhập để tiếp tục mua sắm" 
-            : `Nhập mã 6 chữ số đã gửi tới ${email}`}
+            : AUTH_MESSAGES.CONFIRM_MESSAGE(email)}
         </p>
       </div>
 
-      {step === "login" ? (
+      {step === AUTH_STEPS.LOGIN ? (
         <form onSubmit={handleLogin} className="space-y-3.5 sm:space-y-4">
           <div className="space-y-1.5">
             <label className="text-xs font-semibold text-white/80 ml-1.5 drop-shadow-sm">
@@ -175,23 +178,16 @@ export function LoginForm() {
             </div>
           </div>
 
-          <div className="flex items-center pt-1 ml-1 group/check">
-            <div className="relative flex items-center">
-              <input
-                type="checkbox"
-                id="remember"
-                className="peer h-5 w-5 cursor-pointer appearance-none rounded-md border-2 border-white/30 bg-white/5 transition-all checked:bg-primary checked:border-primary hover:border-white/50"
-              />
-              <Check 
-                className="absolute left-1 top-1 h-3 w-3 pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity text-white" 
-                strokeWidth={4}
-              />
-            </div>
+          <div className="flex items-center pt-1 ml-1 group/check gap-3">
+            <Checkbox
+              id="remember"
+              className="h-5 w-5 rounded-md border-white/30 bg-white/5 data-[state=checked]:bg-white data-[state=checked]:border-white data-[state=checked]:text-black hover:border-white/50"
+            />
             <label
               htmlFor="remember"
-              className="ml-3 text-[13px] font-medium text-slate-200 cursor-pointer select-none hover:text-white transition-colors drop-shadow-sm mt-0.5"
+              className="text-[13px] font-medium text-slate-200 cursor-pointer select-none hover:text-white transition-colors drop-shadow-sm"
             >
-              Ghi nhớ đăng nhập
+              {AUTH_MESSAGES.REMEMBER_LOGIN}
             </label>
           </div>
 
@@ -203,10 +199,10 @@ export function LoginForm() {
             {isLoggingIn ? (
               <>
                 <Spinner size="sm" variant="slate" />
-                Đang xử lý...
+                {AUTH_MESSAGES.PROCESSING}
               </>
             ) : (
-              "Đăng nhập ngay"
+              AUTH_MESSAGES.LOGIN_BUTTON
             )}
           </Button>
 
@@ -216,7 +212,7 @@ export function LoginForm() {
             </div>
             <div className="relative flex justify-center text-sm">
               <span className="px-3 bg-transparent text-white/60 font-semibold text-xs drop-shadow-sm">
-                Hoặc
+                {AUTH_MESSAGES.OR_DIVIDER}
               </span>
             </div>
           </div>
@@ -246,7 +242,7 @@ export function LoginForm() {
                   fill="#EA4335"
                 />
               </svg>
-              Google
+              {AUTH_MESSAGES.GOOGLE_LOGIN}
             </Button>
             <Button
               type="button"
@@ -254,17 +250,17 @@ export function LoginForm() {
               className="h-12 rounded-[1rem] gap-2 font-semibold text-[14px] border-white/15 bg-white/[0.05] backdrop-blur-md text-white hover:bg-white/15 hover:border-white/30 hover:-translate-y-0.5 shadow-[inset_0_2px_4px_rgba(0,0,0,0.1),0_4px_12px_rgba(0,0,0,0.2)] transition-all duration-300"
             >
               <Facebook className="h-5 w-5 text-[#1877F2]" />
-              Facebook
+              {AUTH_MESSAGES.FACEBOOK_LOGIN}
             </Button>
           </div>
 
           <p className="text-center text-[13px] text-white/60 pt-4 font-normal drop-shadow-sm">
-            Chưa có tài khoản?{" "}
+            {AUTH_MESSAGES.ALREADY_HAVE_ACCOUNT}{" "}
             <Link
               href={ROUTES.REGISTER}
               className="text-white font-bold hover:underline transition-all drop-shadow-sm"
             >
-              Đăng ký ngay
+              {AUTH_MESSAGES.REGISTER_LINK}
             </Link>
           </p>
         </form>
@@ -272,12 +268,12 @@ export function LoginForm() {
         <form onSubmit={handleVerify2FA} className="space-y-6">
           <div className="space-y-1.5">
             <label className="text-xs font-semibold text-white/80 ml-1.5 drop-shadow-sm">
-              Mã xác thực 6 chữ số
+              {AUTH_MESSAGES.OTP_LABEL}
             </label>
             <Input
               required
               type="text"
-              placeholder="000000"
+              placeholder={AUTH_MESSAGES.OTP_PLACEHOLDER}
               className="h-14 text-center text-2xl tracking-[8px] font-bold rounded-[1.25rem] border-white/20 bg-black/40 backdrop-blur-md !text-white placeholder:text-white/30 focus-visible:ring-primary/50"
               value={otpCode}
               onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
@@ -289,15 +285,15 @@ export function LoginForm() {
             className="w-full h-12 rounded-[1.25rem] text-base font-semibold bg-white text-slate-900 hover:bg-slate-100 shadow-[0_8px_20px_-6px_rgba(255,255,255,0.3)] hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-2"
             disabled={isLoggingIn || otpCode.length < 6}
           >
-            {isLoggingIn ? <Spinner size="sm" variant="slate" /> : "Xác nhận đăng nhập"}
+            {isLoggingIn ? <Spinner size="sm" variant="slate" /> : AUTH_MESSAGES.VERIFY_2FA_BUTTON}
           </Button>
 
           <button
             type="button"
-            onClick={() => setStep("login")}
+            onClick={() => setStep(AUTH_STEPS.LOGIN)}
             className="w-full flex items-center justify-center gap-2 text-[13px] font-medium text-white/60 hover:text-white transition-colors"
           >
-            <ArrowLeft size={14} /> Quay lại đăng nhập
+            <ArrowLeft size={14} /> {AUTH_MESSAGES.BACK_TO_LOGIN}
           </button>
         </form>
       )}

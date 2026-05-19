@@ -8,7 +8,10 @@ import {
 import { useUserDetail } from "@/features/users/hooks";
 import dayjs from "dayjs";
 import { toast } from "sonner";
+import { cn } from "@/utils/cn";
 import { Spinner } from "@/components/ui/Spinner";
+import { OrderStatus } from "@/types/enums";
+import { ADMIN_ORDER_STATUS_CONFIG } from "@/features/orders/constants";
 
 import { CustomerHeaderSummary } from "./CustomerHeaderSummary";
 import { CustomerAccordionSection } from "./CustomerAccordionSection";
@@ -206,18 +209,9 @@ export function CustomerInfo({
           ) : (
             <div className="space-y-2.5 pt-2 max-h-[220px] overflow-y-auto custom-scrollbar">
               {ordersList.map((ord: any) => {
-                let statusColor = "text-sky-600 bg-sky-50 border border-sky-100";
-                if (ord.status === "DELIVERED") statusColor = "text-emerald-600 bg-emerald-50 border border-emerald-100";
-                if (ord.status === "CANCELLED") statusColor = "text-rose-600 bg-rose-50 border border-rose-100";
-                
-                const statusMap: Record<string, string> = {
-                  PENDING: "Chờ duyệt",
-                  CONFIRMED: "Đã xác nhận",
-                  SHIPPING: "Đang giao",
-                  DELIVERED: "Đã giao",
-                  CANCELLED: "Đã hủy",
-                  REFUNDED: "Đã hoàn"
-                };
+                const config = ADMIN_ORDER_STATUS_CONFIG[ord.status as OrderStatus];
+                const statusLabel = config?.label || ord.status;
+                const statusClass = config?.class || "bg-slate-50 text-slate-600 border-slate-200";
 
                 return (
                   <a 
@@ -236,8 +230,8 @@ export function CustomerInfo({
                         {dayjs(ord.createdAt).format("DD/MM/YYYY")} · {new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(ord.totalAmount)}
                       </div>
                     </div>
-                    <span className={`text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider ${statusColor}`}>
-                      {statusMap[ord.status] || ord.status}
+                    <span className={cn("text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider border", statusClass)}>
+                      {statusLabel}
                     </span>
                   </a>
                 );

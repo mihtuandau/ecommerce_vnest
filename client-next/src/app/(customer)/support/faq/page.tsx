@@ -4,7 +4,7 @@ const FAQS = [
   {
     category: "Đơn hàng & Thanh toán",
     items: [
-      { q: "Làm thế nào để tôi đặt hàng tại Minh Tuấn Shop?", a: "Bạn chỉ cần chọn sản phẩm, thêm vào giỏ hàng và thực hiện các bước thanh toán theo hướng dẫn trên website. Sau khi đặt hàng thành công, chúng tôi sẽ gửi email xác nhận cho bạn." },
+      { q: "Làm thế nào để tôi đặt hàng tại LUXE?", a: "Bạn chỉ cần chọn sản phẩm, thêm vào giỏ hàng và thực hiện các bước thanh toán theo hướng dẫn trên website. Sau khi đặt hàng thành công, chúng tôi sẽ gửi email xác nhận cho bạn." },
       { q: "Shop hỗ trợ những phương thức thanh toán nào?", a: "Chúng tôi hỗ trợ thanh toán qua chuyển khoản ngân hàng, thanh toán khi nhận hàng (COD) và các loại thẻ tín dụng/ghi nợ quốc tế." }
     ]
   },
@@ -49,7 +49,7 @@ export default function FAQPage() {
 
       <div className="mt-20 pt-10 border-t border-slate-100">
         <p className="text-slate-500 text-sm italic">
-          Nếu bạn không tìm thấy câu trả lời cho vấn đề của mình, vui lòng liên hệ hotline 1900 8888 hoặc gửi email về support@minhtuan.vn để được hỗ trợ trực tiếp.
+          Nếu bạn không tìm thấy câu trả lời cho vấn đề của mình, vui lòng liên hệ hotline 1900 8888 hoặc gửi email về support@luxe.vn để được hỗ trợ trực tiếp.
         </p>
       </div>
     </div>

@@ -4,14 +4,12 @@ import React, { useEffect, useState } from "react";
 import { Trash2, Check, ChevronLeft } from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/Button";
-import Link from "next/link";
-import { ROUTES } from "@/constants/routes";
 import { cn } from "@/utils/cn";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { discountsApi } from "@/features/discounts/api";
 import { useToast } from "@/hooks/useToast";
+import { Checkbox } from "@/components/ui/Checkbox";
 
 import { EmptyCart } from "./EmptyCart";
 import { CartItem } from "./CartItem";
@@ -19,47 +17,7 @@ import { CartSummary } from "./CartSummary";
 import { useCart } from "../hooks";
 import { useRecentlyViewed } from "@/features/products/hooks/useRecentlyViewed";
 import { ProductCard } from "@/features/products/components/customer/cards/ProductCard";
-
-interface CheckoutStepsProps {
-  currentStep: number;
-}
-
-function CheckoutSteps({ currentStep }: CheckoutStepsProps) {
-  const steps = [
-    { id: 1, label: "Giỏ hàng" },
-    { id: 2, label: "Thanh toán" },
-    { id: 3, label: "Xác nhận" },
-  ];
-
-  return (
-    <div className="flex items-center justify-center">
-      <div className="relative w-full">
-        <div className="absolute top-[18px] left-20 right-20 h-[1px] bg-brand-sand z-0" />
-        
-        <div className="flex justify-between items-start relative z-10">
-          {steps.map((step) => (
-            <div key={step.id} className="flex flex-col items-center gap-3">
-              <div className={cn(
-                "w-9 h-9 rounded-full flex items-center justify-center text-[14px] font-bold border-2 transition-all duration-300 ring-[12px] ring-brand-cream",
-                currentStep >= step.id 
-                  ? "bg-brand-espresso border-brand-espresso text-white shadow-lg shadow-brand-espresso/20" 
-                  : "bg-white border-brand-sand text-brand-taupe"
-              )}>
-                {step.id}
-              </div>
-              <span className={cn(
-                "text-[12px] font-bold uppercase tracking-wider transition-colors bg-brand-cream px-2",
-                currentStep >= step.id ? "text-brand-espresso" : "text-brand-taupe"
-              )}>
-                {step.label}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
+import { CheckoutSteps } from "@/features/checkout/components/CheckoutSteps";
 
 interface RecentlyViewedSectionProps {
   recentlyViewed: any[];
@@ -86,12 +44,11 @@ function RecentlyViewedSection({ recentlyViewed }: RecentlyViewedSectionProps) {
 export function CartContainer() {
   const router = useRouter();
   const { recentlyViewed } = useRecentlyViewed();
-  const { items, updateQuantity, removeItem, clearCart } = useCart();
+  const { items, updateQuantity, removeItem } = useCart();
   const { toggleSelectItem, toggleSelectAll, appliedDiscount, setAppliedDiscount } = useCartStore();
   const [mounted, setMounted] = useState(false);
   const { success, error, warning } = useToast();
 
-  const [discountCode, setDiscountCode] = useState("");
   const [isApplyingDiscount, setIsApplyingDiscount] = useState(false);
   const [discountAmount, setDiscountAmount] = useState(0);
 
@@ -175,17 +132,24 @@ export function CartContainer() {
               </h1>
               
               <div className="flex items-center gap-6">
-                <button onClick={() => toggleSelectAll(!isAllSelected)} className="flex items-center gap-2 text-[13px] font-bold text-brand-espresso group">
-                  <div className={cn("w-4.5 h-4.5 rounded-md border-2 flex items-center justify-center transition-all", isAllSelected ? "bg-brand-espresso border-brand-espresso text-white" : "border-brand-sand bg-white group-hover:border-brand-espresso")}>
-                    {isAllSelected && <Check size={10} strokeWidth={4} />}
-                  </div>
-                  Chọn tất cả
-                </button>
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id="select-all"
+                    checked={isAllSelected}
+                    onCheckedChange={() => toggleSelectAll(!isAllSelected)}
+                  />
+                  <label htmlFor="select-all" className="text-[13px] font-bold text-brand-espresso cursor-pointer select-none">
+                    Chọn tất cả
+                  </label>
+                </div>
                 <div className="w-[1px] h-3.5 bg-brand-sand" />
                 <button 
                   className="text-[13px] font-bold text-brand-taupe hover:text-red-500 transition-colors flex items-center gap-1.5" 
                   onClick={() => {
-                    const selectedIds = items.filter(i => i.selected).map(i => i.variantId);
+                    const selectedIds = items.reduce<string[]>((acc, i) => {
+                      if (i.selected) acc.push(i.variantId);
+                      return acc;
+                    }, []);
                     if (selectedIds.length === 0) {
                       warning("Vui lòng chọn sản phẩm cần xóa");
                       return;

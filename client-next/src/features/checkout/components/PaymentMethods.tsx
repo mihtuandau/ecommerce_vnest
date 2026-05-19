@@ -67,7 +67,14 @@ export const PaymentMethods = React.memo(function PaymentMethods({ paymentMethod
               onClick={() => setPaymentMethod(method.id)}
               className="px-4 py-[14px] flex items-center gap-3 cursor-pointer"
             >
-              <input type="radio" checked={paymentMethod === method.id} readOnly className="accent-primary shrink-0" />
+              <div className={cn(
+                "w-4 h-4 rounded-full border flex items-center justify-center shrink-0 transition-all",
+                paymentMethod === method.id ? "border-primary bg-primary" : "border-brand-sand bg-white"
+              )}>
+                {paymentMethod === method.id && (
+                  <div className="w-1.5 h-1.5 rounded-full bg-white animate-in zoom-in-50 duration-200" />
+                )}
+              </div>
               <div className={cn(
                 "w-9 h-6 rounded-[5px] flex items-center justify-center text-[10px] font-bold tracking-[0.04em] shrink-0",
                 method.id === "MOMO" ? "bg-[#A50064] text-white" : 

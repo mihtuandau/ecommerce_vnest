@@ -30,7 +30,7 @@ export function useChatWidget() {
       setMessages([
         {
           role: "bot",
-          content: "Xin chào! Tôi là Trợ lý ảo của Minh Tuấn Shop. Tôi có thể giúp gì cho bạn hôm nay?",
+          content: "Xin chào! Tôi là Trợ lý ảo của LUXE. Tôi có thể giúp gì cho bạn hôm nay?",
           timestamp: new Date().toISOString(),
         },
       ]);

@@ -7,6 +7,7 @@ import { useAllReviews } from "@/features/reviews/hooks";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { cn } from "@/utils/cn";
 import { Review } from "@/types/models";
+import { getImageUrl } from "@/utils/image";
 
 interface CustomerReviewsProps {
   userId: number;
@@ -37,12 +38,6 @@ export function CustomerReviews({ userId }: CustomerReviewsProps) {
     );
   }
 
-  const getImageUrl = (img: { url?: string } | string | null | undefined) => {
-    if (!img) return "";
-    const rawUrl = typeof img === 'string' ? img : img?.url || "";
-    return rawUrl?.startsWith('http') ? rawUrl : `/${rawUrl}`;
-  };
-
   return (
     <div className="space-y-3">
       {reviews.map((review: Review & { product?: { name: string; images?: ({ url?: string } | string)[] }; images?: ({ id?: number | string; url?: string } | string)[] }) => {
@@ -52,7 +47,7 @@ export function CustomerReviews({ userId }: CustomerReviewsProps) {
         return (
           <div key={review.id} className="group bg-white p-5 rounded-sm border border-slate-100 hover:border-slate-200 transition-all duration-200 flex flex-col md:flex-row items-start gap-4">
             {/* Product Info */}
-            <div className="h-16 w-16 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden shrink-0">
+            <div className="h-16 w-16 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden shrink-0 relative">
               {productImgUrl ? (
                 <Image 
                   src={productImgUrl} 

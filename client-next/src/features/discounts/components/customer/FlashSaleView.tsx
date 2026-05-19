@@ -4,6 +4,13 @@ import React, { useMemo } from "react";
 import { useFlashSale } from "@/features/discounts/hooks";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/utils/cn";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from "@/components/ui/Select";
 import { ShoppingBag, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { useToast } from "@/hooks/useToast";
@@ -52,7 +59,7 @@ export function FlashSaleView() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#FAF8F4] flex flex-col items-center justify-center p-12">
+      <div className="min-h-screen bg-brand-cream flex flex-col items-center justify-center p-12">
         <Skeleton className="h-[450px] w-full max-w-[1440px] rounded-3xl mb-12" />
         <div className="grid grid-cols-4 gap-8 w-full max-w-[1440px]">
           {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-96 rounded-2xl" />)}
@@ -63,7 +70,7 @@ export function FlashSaleView() {
 
 
   return (
-    <div className="min-h-screen bg-[#FAF8F4] font-sans text-[#2A2420]">
+    <div className="min-h-screen bg-brand-cream font-sans-brand text-[#2A2420]">
       <FlashSaleHero 
         activeSession={activeSession}
         status={status}
@@ -86,7 +93,7 @@ export function FlashSaleView() {
                 "px-5 py-2.5 rounded-full text-[13px] font-bold transition-all flex items-center gap-2",
                 filterCat === "Tất cả" 
                   ? "bg-gradient-to-r from-[#E8320A] to-[#FF6B35] text-white shadow-md" 
-                  : "bg-white border border-[#DDD6C8] text-[#8A7966] hover:border-[#C4B49A]"
+                  : "bg-white border border-brand-sand text-brand-taupe hover:border-brand-bronze"
               )}
             >
               {CAT_ICONS["Tất cả"] || "🔥"} Tất cả
@@ -99,7 +106,7 @@ export function FlashSaleView() {
                   "px-5 py-2.5 rounded-full text-[13px] font-medium transition-all flex items-center gap-2 bg-white border",
                   filterCat === cat 
                     ? "border-[#E8320A] text-[#E8320A] bg-[#FFF5F5] font-bold" 
-                    : "border-[#DDD6C8] text-[#8A7966] hover:border-[#C4B49A]"
+                    : "border-brand-sand text-brand-taupe hover:border-brand-bronze"
                 )}
               >
                 <span className="text-[14px]">{CAT_ICONS[cat] || "✨"}</span> {cat}
@@ -108,21 +115,19 @@ export function FlashSaleView() {
           </div>
 
           <div className="flex items-center gap-6 shrink-0">
-            <div className="text-[13px] text-[#8A7966]">
+            <div className="text-[13px] text-brand-taupe">
               Hiển thị <strong>{filteredProducts.length}</strong> / <strong>{totalStats.count}</strong> sản phẩm
             </div>
-            <div className="relative">
-              <select 
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="h-[42px] pl-[14px] pr-[38px] bg-white border border-[#DDD6C8] rounded-[10px] text-[13px] font-medium text-[#3D2B1A] outline-none appearance-none cursor-pointer hover:border-[#C4B49A] transition-all min-w-[180px]"
-              >
-                <option value="Giảm nhiều nhất">🔥 Giảm nhiều nhất</option>
-                <option value="Giá thấp nhất">💰 Giá thấp nhất</option>
-                <option value="Bán chạy nhất">⚡ Bán chạy nhất</option>
-              </select>
-              <ChevronDown className="absolute right-[12px] top-1/2 -translate-y-1/2 h-4 w-4 text-[#8A7966] pointer-events-none" />
-            </div>
+            <Select value={sortBy} onValueChange={(val) => setSortBy(val)}>
+              <SelectTrigger className="h-[42px] px-3.5 bg-white border border-brand-sand rounded-[10px] text-[13px] font-medium text-brand-espresso outline-none cursor-pointer hover:border-brand-bronze transition-all min-w-[180px]">
+                <SelectValue placeholder="Sắp xếp" />
+              </SelectTrigger>
+              <SelectContent className="rounded-[10px] border-brand-sand">
+                <SelectItem value="Giảm nhiều nhất" className="text-[13px]">Giảm nhiều nhất</SelectItem>
+                <SelectItem value="Giá thấp nhất" className="text-[13px]">Giá thấp nhất</SelectItem>
+                <SelectItem value="Bán chạy nhất" className="text-[13px]">Bán chạy nhất</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
@@ -140,7 +145,7 @@ export function FlashSaleView() {
             <div className="col-span-full py-24 text-center">
               <div className="relative mb-6 inline-block">
                 <div className="absolute inset-0 bg-[#E8320A]/5 blur-[40px] rounded-full scale-150" />
-                <div className="relative w-24 h-24 bg-white border-2 border-[#DDD6C8] rounded-[24px] flex items-center justify-center transform rotate-6 hover:rotate-0 transition-transform duration-500">
+                <div className="relative w-24 h-24 bg-white border-2 border-brand-sand rounded-[24px] flex items-center justify-center transform rotate-6 hover:rotate-0 transition-transform duration-500">
                    <ShoppingBag size={36} className="text-[#DDD6C8]" />
                 </div>
               </div>

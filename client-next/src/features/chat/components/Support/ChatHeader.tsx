@@ -1,8 +1,7 @@
 "use client";
 
 import React from "react";
-import { Phone, Check, MoreVertical, Users } from "lucide-react";
-import { cn } from "@/utils/cn";
+import { Phone, Check, MoreVertical, Users } from "lucide-react";      
 
 interface ChatHeaderProps {
   selectedRoomId: string | null;

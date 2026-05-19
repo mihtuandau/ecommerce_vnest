@@ -3,14 +3,14 @@
 import React, { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useNotifications, useNotificationSettings, useUpdateNotificationSettings, useMarkNotificationRead, useMarkAllNotificationsRead } from "../../hooks";
-import { NotificationFilterType } from "../../constants";
+import { NotificationFilterType, NOTIFICATIONS_LIMITS } from "../../constants";
 import { NotificationsToolbar } from "./NotificationsToolbar";
 import { NotificationsList } from "./NotificationsList";
 import { NotificationsPreferences } from "./NotificationsPreferences";
 
 export function NotificationsContainer() {
   const [page, setPage] = useState(1);
-  const [limit] = useState(15);
+  const [limit] = useState(NOTIFICATIONS_LIMITS.ADMIN);
   const [filterType, setFilterType] = useState<NotificationFilterType>("ALL");
   const router = useRouter();
 
@@ -29,7 +29,7 @@ export function NotificationsContainer() {
   const markAllReadMutation = useMarkAllNotificationsRead();
 
   const allNotifications = data?.data || [];
-  const meta = data?.meta || { total: 0, page: 1, limit: 15, totalPages: 1 };
+  const meta = data?.meta || { total: 0, page: 1, limit: NOTIFICATIONS_LIMITS.ADMIN, totalPages: 1 };
 
   // Local filtering based on active tab
   const filteredNotifications = useMemo(() => {
@@ -72,7 +72,6 @@ export function NotificationsContainer() {
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      {/* Unified Header */}
       <div>
         <h1 className="text-2xl font-medium tracking-tight text-slate-900 mb-1">
           Hộp thư thông báo vận hành

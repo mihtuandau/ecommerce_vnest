@@ -155,7 +155,7 @@ export function Header({ initialHasToken }: { initialHasToken?: boolean }) {
                             <div className="p-1 space-y-0.5">
                               {(user.role === Role.ADMIN || user.role === Role.BAN_HANG) && (
                                 <DropdownMenuItem asChild className="rounded-xl focus:bg-brand-cream/50 cursor-pointer transition-all duration-200">
-                                  <Link href="/admin" className="flex items-center gap-3 px-3 py-2.5">
+                                  <Link href={ROUTES.ADMIN} className="flex items-center gap-3 px-3 py-2.5">
                                     <div className="w-8 h-8 rounded-lg bg-brand-bronze/10 flex items-center justify-center text-brand-bronze shadow-sm">
                                       <ShieldCheck size={16} strokeWidth={2.5} />
                                     </div>

@@ -78,6 +78,25 @@ export class OrderManagement {
       throw new BadRequestException('Cannot update a cancelled order');
     }
 
+    // Validate status transition
+    if (dto.status && dto.status !== oldOrder.status) {
+      const validTransitions: Record<string, string[]> = {
+        'PENDING': ['PROCESSING', 'CANCELLED'],
+        'PROCESSING': ['SHIPPED', 'CANCELLED'],
+        'SHIPPED': ['DELIVERED', 'CANCELLED'],
+        'DELIVERED': [],
+        'CANCELLED': []
+      };
+
+      const allowedNextStates = validTransitions[oldOrder.status] || [];
+      if (!allowedNextStates.includes(dto.status)) {
+        throw new BadRequestException(
+          `Không thể cập nhật từ trạng thái "${oldOrder.status}" sang "${dto.status}". ` +
+          `Các trạng thái cho phép: ${allowedNextStates.join(', ') || 'Không có'}. ` +
+          `Vui lòng CANCEL đơn hàng nếu cần thay đổi.`
+        );
+      }
+    }
 
     // Handle deliveredAt timestamp
     const updateData: any = { ...dto };

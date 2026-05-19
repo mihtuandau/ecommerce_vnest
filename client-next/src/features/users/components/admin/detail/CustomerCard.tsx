@@ -9,6 +9,9 @@ import { Button } from "@/components/ui/Button";
 import { formatDate } from "@/utils/formatDate";
 import { cn } from "@/utils/cn";
 import { handleAvatarError } from "@/utils/avatar";
+import { Role } from "@/types/enums";
+import { ROLE_CONFIG } from "@/features/permissions/constants";
+import { getImageUrl } from "@/utils/image";
 
 interface CustomerCardProps {
   user: User;
@@ -30,7 +33,7 @@ export function CustomerCard({ user }: CustomerCardProps) {
           <div className="relative h-20 w-20 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-200 mx-auto text-3xl font-bold text-slate-300 overflow-hidden">
             {user.avatar ? (
               <Image
-                src={user.avatar}
+                src={getImageUrl(user.avatar)}
                 alt={user.name}
                 fill
                 className="object-cover"
@@ -44,7 +47,9 @@ export function CustomerCard({ user }: CustomerCardProps) {
           </div>
         </div>
         <h2 className="mt-4 text-lg font-bold text-slate-900">{user.name || "Chưa đặt tên"}</h2>
-        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">{user.role}</p>
+        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
+          {ROLE_CONFIG[user.role as Role]?.label ?? user.role}
+        </p>
       </div>
 
       <div className="p-5 space-y-4">

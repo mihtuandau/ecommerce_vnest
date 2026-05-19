@@ -25,10 +25,18 @@ export function serializeOrder(order: any, maskPII = false) {
     if (serialized.user?.phone) serialized.user.phone = maskPhone(serialized.user.phone);
     
     if (serialized.shippingSnapshot) {
-      const snap = { ...serialized.shippingSnapshot };
-      if (snap.phone) snap.phone = maskPhone(snap.phone);
-      if (snap.email) snap.email = maskEmail(snap.email);
-      serialized.shippingSnapshot = snap;
+      let snap = serialized.shippingSnapshot;
+      if (typeof snap === "string") {
+        try {
+          snap = JSON.parse(snap);
+        } catch (e) {}
+      }
+      if (typeof snap === "object" && snap !== null) {
+        snap = { ...snap };
+        if (snap.phone) snap.phone = maskPhone(snap.phone);
+        if (snap.email) snap.email = maskEmail(snap.email);
+        serialized.shippingSnapshot = snap;
+      }
     }
   }
 
@@ -215,6 +223,7 @@ export function prepareOrderData(
         price: item.price,
         originalPrice: item.originalPrice,
         productName: item.productName || 'Sản phẩm',
+        variantSnapshot: item.variantSnapshot || null,
       })),
     },
   };
@@ -248,14 +257,28 @@ export function prepareOrderEmailDetails(order: any) {
     customerName,
     orderDetails: {
       customerName,
-      items: order.orderItems.map((item) => ({
-        productName: item.variant?.product?.name || item.productName || 'N/A',
-        size: item.variant?.size,
-        color: item.variant?.color,
-        quantity: item.quantity,
-        price: item.price,
-        originalPrice: item.originalPrice,
-      })),
+      customerPhone: shipping?.phone || order.guestPhone || order.user?.phone || 'N/A',
+      items: order.orderItems.map((item: any) => {
+        let snapSize = '';
+        let snapColor = '';
+        if (item.variantSnapshot) {
+          try {
+            const snap = typeof item.variantSnapshot === 'string'
+              ? JSON.parse(item.variantSnapshot)
+              : item.variantSnapshot;
+            snapSize = snap.size || '';
+            snapColor = snap.color || '';
+          } catch (e) {}
+        }
+        return {
+          productName: item.productName || item.variant?.product?.name || 'N/A',
+          size: item.variant?.size || snapSize || '',
+          color: item.variant?.color || snapColor || '',
+          quantity: item.quantity,
+          price: item.price,
+          originalPrice: item.originalPrice,
+        };
+      }),
       subtotal: order.subtotal,
       discountAmount: order.discountAmount,
       shippingFee: order.shippingFee,
@@ -265,6 +288,9 @@ export function prepareOrderEmailDetails(order: any) {
                      order.paymentMethod === 'BANK_TRANSFER' ? 'Chuyển khoản ngân hàng' : order.paymentMethod,
       shippingAddress: shipping?.addressString || 'N/A',
       createdAt: order.createdAt,
+      shippingMethodName: order.shippingMethod?.name || 'Giao hàng tiêu chuẩn',
+      estimatedDays: order.shippingMethod?.estimatedDays || 3,
+      discountCode: order.discount?.code || null,
     }
   };
 }

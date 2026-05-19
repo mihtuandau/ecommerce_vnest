@@ -44,7 +44,7 @@ export function FullPageLoading() {
             <Spinner size="xl" />
         </div>
       </div>
-      <p className="mt-6 text-sm font-bold text-slate-900 tracking-tight animate-pulse">
+      <p className="mt-6 text-sm font-bold text-brand-espresso tracking-tight animate-pulse">
         Đang tải...
       </p>
     </div>

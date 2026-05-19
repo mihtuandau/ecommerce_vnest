@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Tra cứu đơn hàng — Minh Tuấn Store",
+  title: "Tra cứu đơn hàng — LUXE",
   description: "Theo dõi tình trạng đơn hàng của bạn chỉ với mã đơn và số điện thoại.",
 };
 

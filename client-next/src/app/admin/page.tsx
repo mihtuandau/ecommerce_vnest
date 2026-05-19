@@ -57,7 +57,7 @@ export default function AdminDashboardPage() {
             Tổng quan Dashboard
           </h1>
           <p className="text-slate-500 text-sm">
-            Chào mừng trở lại! Đây là tình hình kinh doanh của Minh Tuấn Shop hôm nay.
+            Chào mừng trở lại! Đây là tình hình kinh doanh của LUXE hôm nay.
           </p>
         </div>
         <div className="flex gap-2">

@@ -45,7 +45,7 @@ export default function AdminSettingsPage() {
       setStoreName(settings.storeName || "LUXE E-Commerce");
       setStoreEmail(settings.storeEmail || "contact@luxe.vn");
       setStorePhone(settings.storePhone || "1900 1234");
-      setStoreAddress(settings.storeAddress || "Minh Tuấn Shop, Hà Nội");
+      setStoreAddress(settings.storeAddress || "LUXE Shop, Hà Nội");
       setShippingFee(String(settings.shippingFee ?? 30000));
       setFreeShippingThreshold(String(settings.freeShippingThreshold ?? 500000));
       setMaintenanceMode(!!settings.maintenanceMode);

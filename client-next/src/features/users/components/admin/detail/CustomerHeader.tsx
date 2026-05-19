@@ -10,6 +10,9 @@ import { useRouter } from "next/navigation";
 import { formatDate } from "@/utils/formatDate";
 import { cn } from "@/utils/cn";
 import { handleAvatarError } from "@/utils/avatar";
+import { Role } from "@/types/enums";
+import { ROLE_CONFIG } from "@/features/permissions/constants";
+import { getImageUrl } from "@/utils/image";
 
 interface CustomerHeaderProps {
   user: User;
@@ -46,7 +49,7 @@ export function CustomerHeader({ user }: CustomerHeaderProps) {
             <div className="relative h-28 w-28 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center border-4 border-white shadow-xl text-4xl font-bold text-slate-400 overflow-hidden transition-transform duration-500 group-hover:scale-105">
               {user.avatar ? (
                 <Image
-                  src={user.avatar}
+                  src={getImageUrl(user.avatar)}
                   alt={user.name}
                   fill
                   className="object-cover"
@@ -64,7 +67,7 @@ export function CustomerHeader({ user }: CustomerHeaderProps) {
             <div className="flex flex-wrap items-center gap-3 mb-3">
               <h1 className="text-3xl font-bold text-slate-900 tracking-tight truncate">{user.name || "Chưa đặt tên"}</h1>
               <Badge variant="secondary" className="rounded-lg px-3 py-1 font-bold text-xs bg-slate-900 text-white border-none uppercase tracking-widest shadow-lg shadow-slate-200">
-                {user.role}
+                {ROLE_CONFIG[user.role as Role]?.label ?? user.role}
               </Badge>
             </div>
             

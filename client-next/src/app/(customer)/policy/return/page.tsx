@@ -5,7 +5,7 @@ export default function ReturnPolicyPage() {
     <div className="max-w-[1000px] mx-auto py-12 md:py-20 px-4 sm:px-6">
       <header className="mb-12 border-b border-slate-100 pb-8">
         <h1 className="text-2xl font-bold text-slate-900 mb-2">Chính sách đổi trả & hoàn tiền</h1>
-        <p className="text-slate-500 text-sm">Quy định chi tiết về việc trả hàng và hoàn tiền tại Minh Tuấn Shop</p>
+        <p className="text-slate-500 text-sm">Quy định chi tiết về việc trả hàng và hoàn tiền tại LUXE</p>
       </header>
 
       <div className="space-y-10 text-slate-700 leading-relaxed text-base font-normal">
@@ -53,7 +53,7 @@ export default function ReturnPolicyPage() {
         <section>
           <h2 className="font-bold text-slate-900 mb-3">05. Quy trình xử lý khiếu nại</h2>
           <p>
-            Quý khách vui lòng liên hệ hotline 1900 8888 hoặc gửi email về support@minhtuan.vn để được hướng dẫn. Mọi khiếu nại sẽ được tiếp nhận và xử lý trong vòng 24 giờ làm việc.
+            Quý khách vui lòng liên hệ hotline 1900 8888 hoặc gửi email về support@luxe.vn để được hướng dẫn. Mọi khiếu nại sẽ được tiếp nhận và xử lý trong vòng 24 giờ làm việc.
           </p>
         </section>
       </div>

@@ -12,24 +12,26 @@ import { Spinner } from "@/components/ui/Spinner";
 import { usePermission } from "@/hooks/usePermission";
 import { AccessDenied } from "@/components/ui/AccessDenied";
 
+import { REPORT_TIME_RANGES } from "@/features/reports/constants";
+
 export default function AdminReportsPage() {
   const { can } = usePermission();
-  const [timeRange, setTimeRange] = useState("30_days");
+  const [timeRange, setTimeRange] = useState<string>(REPORT_TIME_RANGES.THIRTY_DAYS);
 
   const params = useMemo<Record<string, string | undefined> | undefined>(() => {
     const now = new Date();
     switch (timeRange) {
-      case "30_days": {
+      case REPORT_TIME_RANGES.THIRTY_DAYS: {
         const start = new Date();
         start.setDate(now.getDate() - 30);
         return { startDate: start.toISOString(), endDate: now.toISOString() };
       }
-      case "3_months": {
+      case REPORT_TIME_RANGES.THREE_MONTHS: {
         const start = new Date();
         start.setMonth(now.getMonth() - 3);
         return { startDate: start.toISOString(), endDate: now.toISOString() };
       }
-      case "1_year": {
+      case REPORT_TIME_RANGES.ONE_YEAR: {
         const start = new Date();
         start.setFullYear(now.getFullYear() - 1);
         return { startDate: start.toISOString(), endDate: now.toISOString() };
@@ -53,7 +55,7 @@ export default function AdminReportsPage() {
       const dateStr = new Date().toISOString().split("T")[0];
       link.setAttribute(
         "download",
-        `Bao_cao_MinhTuanShop_${timeRange}_${dateStr}.xlsx`
+        `Bao_cao_LUXE_${timeRange}_${dateStr}.xlsx`
       );
       document.body.appendChild(link);
       link.click();

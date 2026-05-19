@@ -2,50 +2,57 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useCartStore } from "@/store/useCartStore";
-import { shippingApi } from "@/features/shipping/api";
 import { ordersApi } from "@/features/orders/api";
-import { discountsApi } from "@/features/discounts/api";
 import { useToast } from "@/hooks/useToast";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
-import { useAddresses } from "@/features/users/hooks";
-import { useSystemSettings } from "@/features/settings/hooks";
+import { CHECKOUT_CONSTANTS, CHECKOUT_MESSAGES } from "@/features/checkout/constants";
+import { validateCheckoutForm } from "@/features/checkout/utils/checkoutValidation";
+import { useCart } from "@/features/cart/hooks";
 
-export type AddressOption = {
-  id?: string | number;
-  fullName?: string;
-  phone?: string;
-  email?: string;
-  street?: string;
-  province?: string;
-  district?: string;
-  city?: string;
-  state?: string;
-  ward?: string;
-  provinceCode?: string | number | null;
-  districtCode?: string | number | null;
-  wardCode?: string | number | null;
-  isDefault?: boolean;
-};
+// Import extracted hooks
+import { useCheckoutForm } from "./useCheckoutForm";
+import { useAddressManagement, AddressOption } from "./useAddressManagement";
+import { useCheckoutDiscount } from "./useCheckoutDiscount";
+import { useShippingFee } from "./useShippingFee";
 
 export function useCheckout() {
   const { 
     items, 
     buyNowItem, 
     clearBuyNowItem, 
-    appliedDiscount: globalDiscount, 
-    setAppliedDiscount: setGlobalDiscount 
   } = useCartStore();
   
+  const { clearSelectedItems } = useCart();
+  
   const { user } = useAuthStore();
-  const { success, error, warning } = useToast();
+  const { error } = useToast();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { data: settings } = useSystemSettings();
 
+  // State
   const [mounted, setMounted] = useState(false);
   const [hasAppliedDefault, setHasAppliedDefault] = useState(false);
   const [itemsChangedNotice, setItemsChangedNotice] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [lastItemCount, setLastItemCount] = useState<number | null>(null);
+
+  // Use extracted hooks
+  const { form, setForm, updateFormField, updateFormAddress } = useCheckoutForm();
+  const { 
+    provinces, 
+    districts, 
+    wards, 
+    isLoadingDistricts, 
+    isLoadingWards,
+    selectedAddressId,
+    setSelectedAddressId,
+    handleProvinceChange: baseHandleProvinceChange,
+    handleDistrictChange: baseHandleDistrictChange,
+    handleWardChange: baseHandleWardChange,
+    applySavedAddress: baseApplySavedAddress,
+    addressData,
+  } = useAddressManagement();
 
   const isBuyNow = searchParams.get("buyNow") === "true";
   const displayItems = useMemo(
@@ -53,150 +60,52 @@ export function useCheckout() {
     [isBuyNow, buyNowItem, items]
   );
 
-  // Monitor changes to displayItems to notify user if items are removed externally
-  const [lastItemCount, setLastItemCount] = useState<number | null>(null);
-
-  useEffect(() => {
-    if (mounted && lastItemCount !== null && displayItems.length < lastItemCount) {
-      setItemsChangedNotice(true);
-      setTimeout(() => setItemsChangedNotice(false), 8000); // Hide after 8s
-    }
-    setLastItemCount(displayItems.length);
-  }, [displayItems.length, mounted]);
-
-  const { data: addressData } = useAddresses();
-
   const subtotal = useMemo(
     () => displayItems.reduce((sum, i) => sum + (i.discountedPrice || i.price) * i.quantity, 0),
     [displayItems]
   );
 
-  const [provinces, setProvinces] = useState<any[]>([]);
-  const [districts, setDistricts] = useState<any[]>([]);
-  const [wards, setWards] = useState<any[]>([]);
-  const [shippingFee, setShippingFee] = useState(0);
-  const [isCalculatingFee, setIsCalculatingFee] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { 
+    discountCode, 
+    setDiscountCode, 
+    appliedDiscount, 
+    discountAmount, 
+    isApplyingDiscount, 
+    handleApplyDiscount, 
+    handleRemoveDiscount 
+  } = useCheckoutDiscount(subtotal);
 
-  const [discountCode, setDiscountCode] = useState(globalDiscount?.code || "");
-  const [appliedDiscount, setAppliedDiscount] = useState<any | null>(globalDiscount);
-  const [discountAmount, setDiscountAmount] = useState(0);
-  const [isApplyingDiscount, setIsApplyingDiscount] = useState(false);
+  const { shippingFee, isCalculatingFee } = useShippingFee(
+    form.districtId,
+    form.wardCode,
+    displayItems,
+    subtotal
+  );
 
-  const [form, setForm] = useState({
-    fullName: "",
-    phone: "",
-    email: "",
-    provinceId: "",
-    districtId: "",
-    wardCode: "",
-    provinceName: "",
-    districtName: "",
-    wardName: "",
-    street: "",
-    paymentMethod: "COD",
-    orderNote: "",
-  });
-
-  const [selectedAddressId, setSelectedAddressId] = useState<string | number | null>(null);
-  const [isLoadingDistricts, setIsLoadingDistricts] = useState(false);
-  const [isLoadingWards, setIsLoadingWards] = useState(false);
-
+  // Mount check
   useEffect(() => {
     setMounted(true);
-    shippingApi.getProvinces().then((res) => setProvinces(res.data || []));
+  }, []);
 
-    if (user) {
-      setForm((prev) => ({
-        ...prev,
-        fullName: user.name || "",
-        phone: user.phone || "",
-        email: user.email || "",
-      }));
+  // Monitor items changes
+  useEffect(() => {
+    if (mounted && lastItemCount !== null && displayItems.length < lastItemCount) {
+      setItemsChangedNotice(true);
+      setTimeout(() => setItemsChangedNotice(false), CHECKOUT_CONSTANTS.NOTIFICATION_TIMEOUT);
     }
-  }, [user]);
+    setLastItemCount(displayItems.length);
+  }, [displayItems.length, mounted]);
 
-  const handleProvinceChange = useCallback(async (id: string) => {
-    const provinceName = provinces.find(p => String(p.ProvinceID) === String(id))?.ProvinceName || "";
-    setForm((prev) => ({ ...prev, provinceId: id, provinceName, districtId: "", districtName: "", wardCode: "", wardName: "" }));
-    setDistricts([]);
-    setWards([]);
-    if (!id) return;
-    setIsLoadingDistricts(true);
-    try {
-      const res = await shippingApi.getDistricts(Number(id));
-      setDistricts(res.data || []);
-    } finally {
-      setIsLoadingDistricts(false);
-    }
-  }, [provinces]);
-
-  const handleDistrictChange = useCallback(async (id: string) => {
-    const districtName = districts.find(d => String(d.DistrictID) === String(id))?.DistrictName || "";
-    setForm((prev) => ({ ...prev, districtId: id, districtName, wardCode: "", wardName: "" }));
-    setWards([]);
-    if (!id) return;
-    setIsLoadingWards(true);
-    try {
-      const res = await shippingApi.getWards(Number(id));
-      setWards(res.data || []);
-    } finally {
-      setIsLoadingWards(false);
-    }
-  }, [districts]);
-
-  const handleWardChange = useCallback((code: string) => {
-    const wardName = wards.find(w => w.WardCode === code)?.WardName || "";
-    setForm((prev) => ({ ...prev, wardCode: code, wardName }));
-  }, [wards]);
-
+  // Wrapped address handlers
   const applySavedAddress = useCallback(async (addr: AddressOption) => {
-    try {
-      const provinceId = addr.provinceCode ? String(addr.provinceCode) : "";
-      const districtId = addr.districtCode ? String(addr.districtCode) : "";
-      let wardCode = addr.wardCode ? String(addr.wardCode) : "";
-
-      const provinceName = addr.province || addr.state || "";
-      let districtName = addr.district || addr.city || "";
-      let wardName = addr.ward || "";
-
-      if (provinceId) {
-        const distRes = await shippingApi.getDistricts(Number(provinceId));
-        const dists = distRes.data || [];
-        setDistricts(dists);
-        if (!districtName && districtId) {
-           districtName = dists.find((d: any) => String(d.DistrictID) === districtId)?.DistrictName || "";
-        }
-        if (districtId) {
-          const wardRes = await shippingApi.getWards(Number(districtId));
-          const wrds = wardRes.data || [];
-          setWards(wrds);
-          if (!wardCode && wrds.length > 0) wardCode = wrds[0].WardCode;
-          if (!wardName && wardCode) {
-            wardName = wrds.find((w: any) => w.WardCode === wardCode)?.WardName || "";
-          }
-        }
-      }
-
-      setForm((prev) => ({
-        ...prev,
-        fullName: addr.fullName || prev.fullName,
-        phone: addr.phone || prev.phone,
-        email: addr.email || prev.email || "",
-        provinceId,
-        provinceName,
-        districtId,
-        districtName,
-        wardCode,
-        wardName,
-        street: addr.street || "",
-      }));
-      setSelectedAddressId(addr.id || null);
-    } catch {
-      error("Không thể áp dụng địa chỉ đã lưu");
+    const result = await baseApplySavedAddress(addr);
+    if (result && Object.keys(result).length > 0) {
+      updateFormAddress(result);
     }
-  }, [error]);
+    return result;
+  }, [baseApplySavedAddress, updateFormAddress]);
 
+  // Load default address
   useEffect(() => {
     if (user && addressData?.addresses && addressData.addresses.length > 0 && mounted && !hasAppliedDefault) {
       const defaultAddr = addressData.addresses.find((a: AddressOption) => a.isDefault) || addressData.addresses[0];
@@ -207,126 +116,29 @@ export function useCheckout() {
     }
   }, [addressData, mounted, hasAppliedDefault, user, applySavedAddress]);
 
-  useEffect(() => {
-    // If order subtotal qualifies for Free Shipping, enforce 0 shipping fee instantly!
-    const threshold = settings?.freeShippingThreshold ?? 500000;
-    if (settings && subtotal >= threshold) {
-      setShippingFee(0);
-      return;
-    }
+  const handleProvinceChange = useCallback(async (id: string) => {
+    const result = await baseHandleProvinceChange(id);
+    updateFormAddress(result);
+  }, [baseHandleProvinceChange, updateFormAddress]);
 
-    const timer = setTimeout(async () => {
-      if (form.districtId) {
-        setIsCalculatingFee(true);
-        try {
-          const totalWeight = displayItems.reduce((sum, i) => sum + 1000 * i.quantity, 0);
-          const res = await shippingApi.calculateFee({
-            to_district_id: Number(form.districtId),
-            to_ward_code: form.wardCode || "",
-            weight: totalWeight,
-          });
-          setShippingFee(res.data?.total || settings?.shippingFee || 30000);
-        } catch {
-          // If GHN API calculation fails, fallback to user-configured custom shippingFee from settings!
-          setShippingFee(settings?.shippingFee || 30000);
-        } finally {
-          setIsCalculatingFee(false);
-        }
-      } else {
-        setShippingFee(0);
-      }
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [form.districtId, form.wardCode, displayItems, subtotal, settings]);
+  const handleDistrictChange = useCallback(async (id: string) => {
+    const result = await baseHandleDistrictChange(id);
+    updateFormAddress(result);
+  }, [baseHandleDistrictChange, updateFormAddress]);
 
-  const handleApplyDiscount = useCallback(async (codeFromModal?: string) => {
-    const codeToValidate = (codeFromModal || discountCode).trim().toUpperCase();
-    if (!codeToValidate) return;
-    
-    setIsApplyingDiscount(true);
-    try {
-      const res: any = await discountsApi.validateDiscount(codeToValidate);
-      if (!res.isValid) {
-        warning(res.message || "Mã giảm giá không hợp lệ");
-        return;
-      }
+  const handleWardChange = useCallback((code: string) => {
+    const result = baseHandleWardChange(code);
+    updateFormAddress(result);
+  }, [baseHandleWardChange, updateFormAddress]);
 
-      const discount = res.discount;
-      let voucherSaving = 0;
-      const isPercentage = discount.discountType === "PERCENTAGE";
-      const val = discount.discountValue || 0;
-
-      if (isPercentage) {
-        voucherSaving = Math.round((subtotal * val) / 100);
-        if (discount.maxDiscountAmount && voucherSaving > discount.maxDiscountAmount) voucherSaving = discount.maxDiscountAmount;
-      } else {
-        voucherSaving = val;
-      }
-      voucherSaving = Math.min(voucherSaving, subtotal);
-
-      if (discount.minOrderAmount && subtotal < discount.minOrderAmount) {
-        warning(`Mã chỉ áp dụng cho đơn từ ${new Intl.NumberFormat('vi-VN').format(discount.minOrderAmount)}đ`);
-        return;
-      }
-
-      setDiscountCode(codeToValidate);
-      setAppliedDiscount({ ...discount, code: codeToValidate });
-      setDiscountAmount(voucherSaving);
-      success(`Đã áp dụng mã giảm giá: -${new Intl.NumberFormat('vi-VN').format(voucherSaving)}đ`);
-    } catch (err: any) {
-      error(err.response?.data?.message || "Mã giảm giá không hợp lệ");
-      setAppliedDiscount(null);
-      setDiscountAmount(0);
-    } finally {
-      setIsApplyingDiscount(false);
-    }
-  }, [discountCode, subtotal, error, success, warning]);
-
-  const handleRemoveDiscount = useCallback(() => {
-    setAppliedDiscount(null);
-    setDiscountAmount(0);
-    setDiscountCode("");
-    setGlobalDiscount(null);
-    success("Đã gỡ mã giảm giá");
-  }, [success, setGlobalDiscount]);
-
-  useEffect(() => {
-    setGlobalDiscount(appliedDiscount);
-    if (!appliedDiscount) {
-      setDiscountAmount(0);
-      return;
-    }
-
-    if (appliedDiscount.minOrderAmount && subtotal < appliedDiscount.minOrderAmount) {
-      setAppliedDiscount(null);
-      setDiscountAmount(0);
-      setDiscountCode("");
-      setGlobalDiscount(null);
-      warning(`Đã gỡ mã vì giỏ hàng chưa đủ ${new Intl.NumberFormat('vi-VN').format(appliedDiscount.minOrderAmount)}đ`);
-      return;
-    }
-
-    let voucherSaving = 0;
-    const isPercentage = appliedDiscount.discountType === "PERCENTAGE";
-    const val = appliedDiscount.discountValue || 0;
-
-    if (isPercentage) {
-      voucherSaving = Math.round((subtotal * val) / 100);
-      if (appliedDiscount.maxDiscountAmount && voucherSaving > appliedDiscount.maxDiscountAmount) voucherSaving = appliedDiscount.maxDiscountAmount;
-    } else {
-      voucherSaving = val;
-    }
-    setDiscountAmount(Math.min(voucherSaving, subtotal));
-  }, [appliedDiscount, subtotal, setGlobalDiscount, warning]);
-
+  // Form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.fullName) return error("Vui lòng nhập họ và tên người nhận");
-    const phoneRegex = /^(03|05|07|08|09)\d{8}$/;
-    if (!form.phone) return error("Vui lòng nhập số điện thoại");
-    if (!phoneRegex.test(form.phone.replace(/\s/g, ""))) return error("Số điện thoại không hợp lệ");
-    if (!form.email) return error("Vui lòng nhập email");
-    if (!form.provinceId || !form.districtId || !form.wardCode || !form.street) return error("Vui lòng nhập đầy đủ địa chỉ");
+    
+    const validation = validateCheckoutForm(form, !user);
+    if (!validation.valid) {
+      return error(validation.message || "Vui lòng kiểm tra lại thông tin");
+    }
 
     if (isSubmitting) return;
     setIsSubmitting(true);
@@ -357,59 +169,70 @@ export function useCheckout() {
       const paymentLink = res.paymentLink || res.payment?.paymentLink;
 
       if (paymentLink) {
-        if (isBuyNow) clearBuyNowItem();
-        else displayItems.forEach((i) => useCartStore.getState().removeItem(i.variantId));
+        // Don't clear items before payment redirect - user needs to see it in case they cancel
         window.location.href = paymentLink;
         return;
       }
+
+      // Clear items after successful COD order (no payment needed)
+      if (isBuyNow) clearBuyNowItem();
+      else clearSelectedItems();
 
       const successParams = new URLSearchParams();
       if (res.orderCode) successParams.set("orderCode", res.orderCode);
       if (res.id) successParams.set("orderId", String(res.id));
       successParams.set("contact", form.phone);
       router.push(`/checkout/success?${successParams.toString()}`);
-      
-      setTimeout(() => {
-        if (isBuyNow) clearBuyNowItem();
-        else displayItems.forEach((i) => useCartStore.getState().removeItem(i.variantId));
-      }, 100);
-    } catch {
-      error("Có lỗi xảy ra khi đặt hàng");
+    } catch (err: any) {
+      const errMsg = err?.response?.data?.message || err?.message || "Có lỗi xảy ra khi đặt hàng";
+      error(errMsg);
       setIsSubmitting(false); 
     }
   };
 
   return {
+    // Status
     mounted,
+    isSubmitting,
+    isCalculatingFee,
+    isApplyingDiscount,
+    itemsChangedNotice,
+    isBuyNow,
+
+    // Cart & Items
     displayItems,
     subtotal,
     shippingFee,
-    isCalculatingFee,
-    isSubmitting,
-    discountCode,
-    setDiscountCode,
-    appliedDiscount,
-    discountAmount,
-    isApplyingDiscount,
+
+    // Form
     form,
     setForm,
+    updateFormField,
+
+    // Address
     provinces,
     districts,
     wards,
+    isLoadingDistricts,
+    isLoadingWards,
+    selectedAddressId,
+    setSelectedAddressId,
     handleProvinceChange,
     handleDistrictChange,
     handleWardChange,
     applySavedAddress,
+    addressData,
+
+    // Discount
+    discountCode,
+    setDiscountCode,
+    appliedDiscount,
+    discountAmount,
     handleApplyDiscount,
     handleRemoveDiscount,
+
+    // Submit
     handleSubmit,
-    addressData,
-    selectedAddressId,
-    setSelectedAddressId,
-    isLoadingDistricts,
-    isLoadingWards,
     user,
-    isBuyNow,
-    itemsChangedNotice,
   };
 }

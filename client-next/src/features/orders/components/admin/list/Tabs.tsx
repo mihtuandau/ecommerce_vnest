@@ -4,6 +4,7 @@ import React from "react";
 import { cn } from "@/utils/cn";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs";
 import { OrderStatus } from "@/types/enums";
+import { ADMIN_ORDER_STATUS_CONFIG } from "../../../constants";
 
 interface OrderTabsProps {
   activeTab: string;
@@ -23,11 +24,11 @@ interface OrderTabsProps {
 export function OrderTabs({ activeTab, onTabChange, counts }: OrderTabsProps) {
   const tabItems = [
     { value: "ALL", label: "Tất cả", count: counts.ALL },
-    { value: OrderStatus.PENDING, label: "Chờ xử lý", count: counts.PENDING },
-    { value: OrderStatus.PROCESSING, label: "Đang xử lý", count: counts.PROCESSING },
-    { value: OrderStatus.SHIPPED, label: "Đang giao", count: counts.SHIPPED },
-    { value: OrderStatus.DELIVERED, label: "Đã giao", count: counts.DELIVERED },
-    { value: OrderStatus.CANCELLED, label: "Đã hủy", count: counts.CANCELLED },
+    { value: OrderStatus.PENDING, label: ADMIN_ORDER_STATUS_CONFIG[OrderStatus.PENDING].label, count: counts.PENDING },
+    { value: OrderStatus.PROCESSING, label: ADMIN_ORDER_STATUS_CONFIG[OrderStatus.PROCESSING].label, count: counts.PROCESSING },
+    { value: OrderStatus.SHIPPED, label: ADMIN_ORDER_STATUS_CONFIG[OrderStatus.SHIPPED].label, count: counts.SHIPPED },
+    { value: OrderStatus.DELIVERED, label: ADMIN_ORDER_STATUS_CONFIG[OrderStatus.DELIVERED].label, count: counts.DELIVERED },
+    { value: OrderStatus.CANCELLED, label: ADMIN_ORDER_STATUS_CONFIG[OrderStatus.CANCELLED].label, count: counts.CANCELLED },
     { value: OrderStatus.RETURN_REQUESTED, label: "Trả hàng", count: counts.RETURN_REQUESTED },
     { value: OrderStatus.RETURNED, label: "Đã trả", count: counts.RETURNED },
   ];

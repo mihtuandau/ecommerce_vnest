@@ -6,6 +6,7 @@ import { Truck, ChevronDown, ShoppingBag } from "lucide-react";
 import { Spinner } from "@/components/ui/Spinner";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Button } from "@/components/ui/Button";
+import { Textarea } from "@/components/ui/Textarea";
 import { cn } from "@/utils/cn";
 import { formatCurrency } from "@/utils/formatCurrency";
 
@@ -16,6 +17,7 @@ import { useCheckout } from "../hooks/useCheckout";
 import { ShippingForm } from "./ShippingForm";
 import { PaymentMethods } from "./PaymentMethods";
 import { OrderSummary } from "./OrderSummary";
+import { CheckoutSteps } from "./CheckoutSteps";
 
 export function CheckoutContainer() {
   const router = useRouter();
@@ -102,6 +104,10 @@ export function CheckoutContainer() {
             </div>
           </div>
 
+          <div className="max-w-3xl mx-auto mb-12">
+            <CheckoutSteps currentStep={2} />
+          </div>
+
           {itemsChangedNotice && (
             <div className="mb-6 bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-500">
               <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-amber-600">
@@ -132,7 +138,14 @@ export function CheckoutContainer() {
                         onClick={() => applySavedAddress(addr)}
                         className={cn("p-4 rounded-[12px] border transition-all cursor-pointer flex items-start gap-3", selectedAddressId === addr.id ? "border-primary bg-brand-ivory ring-1 ring-primary/20" : "border-brand-sand hover:border-brand-bronze/30 hover:bg-brand-ivory")}
                       >
-                        <input type="radio" checked={selectedAddressId === addr.id} readOnly className="mt-1 accent-primary" />
+                        <div className={cn(
+                          "w-4 h-4 rounded-full border flex items-center justify-center shrink-0 transition-all mt-1",
+                          selectedAddressId === addr.id ? "border-primary bg-primary" : "border-brand-sand bg-white"
+                        )}>
+                          {selectedAddressId === addr.id && (
+                            <div className="w-1.5 h-1.5 rounded-full bg-white animate-in zoom-in-50 duration-200" />
+                          )}
+                        </div>
                         <div className="flex-1">
                           <div className="text-[13.5px] font-bold text-primary mb-1 flex items-center gap-2">
                             {addr.fullName}
@@ -145,16 +158,16 @@ export function CheckoutContainer() {
                         </div>
                       </div>
                     ))}
-                    <button 
+                    <Button 
                       type="button" 
                       onClick={() => setSelectedAddressId(null)}
                       className={cn(
-                        "flex items-center justify-center gap-2 text-[13px] border-[1.5px] border-dashed rounded-[10px] py-[11px] px-4 w-full transition-all font-bold mt-2",
-                        selectedAddressId === null ? "border-primary bg-brand-ivory text-primary shadow-sm" : "border-brand-sand text-brand-bronze hover:bg-brand-ivory hover:border-brand-bronze"
+                        "flex items-center justify-center gap-2 text-[13px] border-[1.5px] border-dashed rounded-[10px] py-[11px] px-4 w-full transition-all font-bold mt-2 h-auto hover:bg-brand-cream/55 bg-transparent",
+                        selectedAddressId === null ? "border-primary bg-brand-ivory text-primary shadow-none hover:bg-brand-ivory/95" : "border-brand-sand text-brand-bronze hover:bg-brand-ivory hover:border-brand-bronze hover:text-brand-bronze"
                       )}
                     >
                       <span className="text-[18px]">+</span> Nhập địa chỉ mới
-                    </button>
+                    </Button>
                   </div>
                 </div>
               )}
@@ -185,7 +198,9 @@ export function CheckoutContainer() {
                 </div>
                 <div className="p-6">
                   <label className="border-[1.5px] border-primary bg-brand-ivory rounded-[12px] p-4 cursor-pointer flex items-center gap-[14px] transition-all ring-1 ring-primary/20 shadow-sm">
-                    <input type="radio" checked readOnly className="accent-primary shrink-0" />
+                    <div className="w-4 h-4 rounded-full border border-primary bg-primary flex items-center justify-center shrink-0 transition-all">
+                      <div className="w-1.5 h-1.5 rounded-full bg-white animate-in zoom-in-50 duration-200" />
+                    </div>
                     <span className="text-[22px]">🚀</span>
                     <div className="flex-1">
                       <div className="text-[13.5px] font-bold text-primary mb-[1px]">Giao hàng tiêu chuẩn</div>
@@ -213,7 +228,7 @@ export function CheckoutContainer() {
                   </div>
                 </div>
                 <div className="p-6">
-                  <textarea 
+                  <Textarea 
                     placeholder="Giao giờ hành chính, gọi trước khi đến..." 
                     value={form.orderNote}
                     onChange={(e) => setForm({ ...form, orderNote: e.target.value })}

@@ -6,6 +6,8 @@ import { Download, RefreshCcw } from "lucide-react";
 import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/utils/cn";
 
+import { REPORT_TIME_RANGE_OPTIONS } from "../constants";
+
 interface ReportHeaderProps {
   onRefresh: () => void;
   onExport: () => void;
@@ -48,11 +50,7 @@ export function ReportHeader({ onRefresh, onExport, isFetching, timeRange, setTi
       </div>
 
       <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200 w-fit">
-        {[
-          { label: "30 ngày", value: "30_days" },
-          { label: "3 tháng", value: "3_months" },
-          { label: "1 năm", value: "1_year" },
-        ].map((btn) => (
+        {REPORT_TIME_RANGE_OPTIONS.map((btn) => (
           <button
             key={btn.value}
             onClick={() => setTimeRange(btn.value)}

@@ -171,7 +171,7 @@ export default function HomeContainer() {
                         {review.user?.name || review.user?.fullName || "Khách hàng"}
                       </h4>
                       <p className="text-[11px] text-[#8A7966] line-clamp-1">
-                        {review.user?.address || "Đã mua hàng tại Minh Tuấn Shop"}
+                        {review.user?.address || "Đã mua hàng tại LUXE"}
                       </p>
                     </div>
                   </div>

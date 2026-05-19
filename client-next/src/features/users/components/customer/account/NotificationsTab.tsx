@@ -1,4 +1,4 @@
-"use client";
+  "use client";
 
 import React, { useState, useEffect } from "react";
 import { Bell, Info, CheckCircle2, ShoppingBag, ShieldAlert, Settings, Inbox } from "lucide-react";

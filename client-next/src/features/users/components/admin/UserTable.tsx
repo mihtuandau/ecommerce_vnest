@@ -19,13 +19,9 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Role, UserStatus } from "@/types/enums";
 import { handleAvatarError } from "@/utils/avatar";
+import { ROLE_CONFIG } from "@/features/permissions/constants";
+import { getImageUrl } from "@/utils/image";
 
-const roleConfig: Record<string, { label: string; color: string; icon: React.ElementType }> = {
-  [Role.ADMIN]: { label: "Quản trị viên", color: "bg-slate-900 text-white border-slate-900", icon: Shield },
-  [Role.CUSTOMER]: { label: "Khách hàng", color: "bg-blue-50 text-blue-600 border-blue-100", icon: UserIcon },
-  [Role.KHO]: { label: "Kho", color: "bg-amber-50 text-amber-700 border-amber-100", icon: Warehouse },
-  [Role.BAN_HANG]: { label: "Bán hàng", color: "bg-indigo-50 text-indigo-600 border-indigo-100", icon: BadgeDollarSign },
-};
 
 const statusConfig: Record<string, { label: string; color: string }> = {
   [UserStatus.ACTIVE]: { label: "Đang hoạt động", color: "bg-emerald-50 text-emerald-700 border-emerald-200" },
@@ -120,7 +116,7 @@ export const columns: ColumnDef<User>[] = [
           <div className="h-10 w-10 rounded-xl bg-slate-100 flex items-center justify-center border border-slate-200 overflow-hidden shrink-0 group-hover:border-primary/30 relative">
             {user.avatar ? (
               <Image
-                src={user.avatar}
+                src={getImageUrl(user.avatar)}
                 alt={user.name}
                 fill
                 unoptimized
@@ -162,11 +158,18 @@ export const columns: ColumnDef<User>[] = [
     accessorKey: "role",
     header: "Vai trò",
     cell: ({ row }) => {
-      const role = row.getValue("role") as string;
-      const config = roleConfig[role] || { label: role, color: "bg-slate-50 text-slate-500", icon: UserIcon };
+      const role = row.getValue("role") as Role;
+      const config = ROLE_CONFIG[role];
+      if (!config) {
+        return (
+          <Badge variant="outline" className="rounded-lg px-2 py-0.5 font-semibold text-[12px] tracking-wide bg-slate-50 text-slate-500 border-slate-200">
+            {role}
+          </Badge>
+        );
+      }
       const Icon = config.icon;
       return (
-        <Badge variant="outline" className={cn("rounded-lg px-2 py-0.5 gap-1.5 font-semibold text-[12px] tracking-wide", config.color)}>
+        <Badge variant="outline" className={cn("rounded-lg px-2 py-0.5 gap-1.5 font-semibold text-[12px] tracking-wide", config.color, config.border, config.bg)}>
           <Icon className="h-3 w-3" />
           {config.label}
         </Badge>

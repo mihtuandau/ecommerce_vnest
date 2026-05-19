@@ -11,14 +11,20 @@ import { Sheet, SheetContent } from "@/components/ui/Sheet";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/DropdownMenu";
 import { cn } from "@/utils/cn";
 import { FilterContent } from "./FilterContent";
+import { SHOP_SORT_OPTIONS } from "@/features/products/constants";
+import { Input, Button } from "@/components/ui";
 
-const SORT_OPTIONS = [
-  { label: "Phổ biến nhất", value: "sold" },
-  { label: "Mới nhất", value: "newest" },
-  { label: "Giá: Thấp → Cao", value: "price-asc" },
-  { label: "Giá: Cao → Thấp", value: "price-desc" },
-  { label: "Đánh giá cao", value: "rating" },
-];
+function findCategoryRecursive(cats: any[], id: string | null): any {
+  if (!id) return null;
+  for (const cat of cats) {
+    if (String(cat.id) === id) return cat;
+    if (cat.children && cat.children.length > 0) {
+      const found = findCategoryRecursive(cat.children, id);
+      if (found) return found;
+    }
+  }
+  return null;
+}
 
 export function ShopContainer() {
   const [view, setView] = useState<"grid" | "list">("grid");
@@ -74,7 +80,7 @@ export function ShopContainer() {
     router.push(`${pathname}${queryString ? `?${queryString}` : ""}`, { scroll: false });
   }, [router, searchParams, pathname]);
 
-  const activeSortLabel = SORT_OPTIONS.find((opt) => opt.value === currentSort)?.label || "Sắp xếp";
+  const activeSortLabel = SHOP_SORT_OPTIONS.find((opt) => opt.value === currentSort)?.label || "Sắp xếp";
 
   return (
     <div className="bg-brand-cream min-h-screen font-sans-brand">
@@ -87,7 +93,7 @@ export function ShopContainer() {
             <>
               <span className="opacity-50 text-[10px]">›</span>
               <span className="text-brand-espresso font-semibold">
-                {categories.find((c: any) => String(c.id) === currentCategory)?.name || "Danh mục"}
+                {findCategoryRecursive(categories, currentCategory)?.name || "Danh mục"}
               </span>
             </>
           )}
@@ -127,19 +133,19 @@ export function ShopContainer() {
                   const val = new FormData(e.currentTarget).get("search") as string;
                   updateFilters("search", val || null);
                 }} className="relative hidden md:block">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-brand-taupe/40" />
-                  <input name="search" type="text" defaultValue={currentSearch || ""} placeholder="Tìm kiếm..." className="h-10 pl-9 pr-4 w-48 bg-white border border-brand-sand rounded-full text-[12px] focus:outline-none focus:border-brand-bronze shadow-sm" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-brand-taupe/40 z-10" />
+                  <Input name="search" type="text" defaultValue={currentSearch || ""} placeholder="Tìm kiếm..." className="h-10 pl-9 pr-4 w-48 bg-white border border-brand-sand rounded-full text-[12px] focus:outline-none focus:border-brand-bronze shadow-sm" />
                 </form>
 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <button className="flex items-center gap-2 px-4 h-10 border border-brand-sand rounded-full text-[12px] font-bold text-primary bg-white hover:border-brand-bronze transition-all">
+                    <Button variant="outline" className="flex items-center gap-2 px-4 h-10 border border-brand-sand rounded-full text-[12px] font-bold text-primary bg-white hover:border-brand-bronze transition-all shadow-none">
                       <span>{activeSortLabel}</span>
                       <ChevronDown size={14} className="text-brand-taupe/40" />
-                    </button>
+                    </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56 rounded-2xl p-2 shadow-xl">
-                    {SORT_OPTIONS.map((opt) => (
+                    {SHOP_SORT_OPTIONS.map((opt) => (
                       <DropdownMenuItem key={opt.value} className={cn("rounded-xl h-10 text-[13px] font-medium cursor-pointer mb-1", currentSort === opt.value ? "bg-primary text-white" : "text-brand-taupe hover:bg-brand-cream")} onClick={() => updateFilters('sortBy', opt.value)}>{opt.label}</DropdownMenuItem>
                     ))}
                   </DropdownMenuContent>
@@ -159,7 +165,7 @@ export function ShopContainer() {
                 
                 {currentCategory && (
                   <button onClick={() => updateFilters('categoryId', null)} className="flex items-center gap-2 px-3 py-1.5 bg-white border border-brand-sand rounded-full text-[11px] font-medium text-primary hover:border-brand-bronze transition-all group">
-                    Danh mục: {categories.find((c: any) => String(c.id) === currentCategory)?.name || "Đang tải..."}
+                    Danh mục: {findCategoryRecursive(categories, currentCategory)?.name || "Đang tải..."}
                     <X size={12} className="text-brand-taupe/40 group-hover:text-rose-500" />
                   </button>
                 )}
@@ -239,7 +245,7 @@ export function ShopContainer() {
               />
             </div>
             <div className="p-6 border-t border-brand-ivory">
-              <button onClick={() => setIsMobileFilterOpen(false)} className="w-full h-12 bg-primary text-white rounded-full font-bold text-[12px] uppercase tracking-widest hover:bg-brand-bronze">Xem kết quả</button>
+              <Button onClick={() => setIsMobileFilterOpen(false)} className="w-full h-12 bg-primary text-white rounded-full font-bold text-[12px] uppercase tracking-widest hover:bg-brand-bronze">Xem kết quả</Button>
             </div>
           </div>
         </SheetContent>

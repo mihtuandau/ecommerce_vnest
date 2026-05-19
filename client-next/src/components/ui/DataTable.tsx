@@ -85,14 +85,14 @@ export function DataTable<TData, TValue>({
       )}
       <div className="border-none">
         <Table>
-          <TableHeader className="bg-slate-50">
+          <TableHeader className="bg-muted/50">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id} className="hover:bg-transparent">
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead
                       key={header.id}
-                      className="h-12 px-4 text-xs font-semibold text-slate-500 uppercase tracking-wide border-b border-slate-200"
+                      className="h-12 px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wide border-b border-border"
                     >
                       {header.isPlaceholder
                         ? null
@@ -112,7 +112,7 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  className={cn("h-16 hover:bg-slate-50 border-b border-slate-100 transition-colors", rowClassName?.(row))}
+                  className={cn("h-16 hover:bg-muted/40 border-b border-border/50 transition-colors", rowClassName?.(row))}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id} className="px-4 py-3 text-sm">
@@ -125,7 +125,7 @@ export function DataTable<TData, TValue>({
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center text-slate-500"
+                  className="h-24 text-center text-muted-foreground"
                 >
                   Không tìm thấy dữ liệu.
                 </TableCell>
@@ -136,8 +136,8 @@ export function DataTable<TData, TValue>({
       </div>
 
       {/* Pagination - Simple */}
-      <div className="flex items-center justify-between px-4 py-4 border-t border-slate-100">
-        <div className="text-xs text-slate-500">
+      <div className="flex items-center justify-between px-4 py-4 border-t border-border/50">
+        <div className="text-xs text-muted-foreground">
           Hiển thị {table.getFilteredRowModel().rows.length} kết quả
         </div>
         <div className="flex items-center space-x-2">
