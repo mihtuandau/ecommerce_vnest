@@ -19,9 +19,13 @@ export function Header({ totalUsers }: HeaderProps) {
           Quản lý {totalUsers} tài khoản trong hệ thống LUXE.
         </p>
       </div>
-      
+
       <div className="flex items-center gap-2">
-        <Button asChild size="sm" className="font-bold gap-2 bg-primary text-white hover:bg-slate-800 shadow-sm">
+        <Button
+          asChild
+          size="sm"
+          className="font-bold gap-2 bg-primary text-white hover:bg-slate-800 shadow-sm"
+        >
           <Link href={ROUTES.ADMIN_USERS_CREATE}>
             <UserPlus className="h-4 w-4" /> Thêm người dùng
           </Link>

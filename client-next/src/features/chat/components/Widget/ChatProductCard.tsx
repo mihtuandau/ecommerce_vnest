@@ -56,10 +56,7 @@ export const ChatProductCard = ({
     };
   }, [productId]);
 
-  if (loading)
-    return (
-      <Skeleton className="w-full h-20 rounded-xl" />
-    );
+  if (loading) return <Skeleton className="w-full h-20 rounded-xl" />;
 
   if (!product) return null;
 

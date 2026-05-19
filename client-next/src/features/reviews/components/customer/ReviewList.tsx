@@ -12,6 +12,7 @@ import {
   DialogTitle,
   DialogClose,
 } from "@/components/ui/Dialog";
+import { EmptyState } from "@/components/ui";
 
 import { Product } from "@/types/models";
 
@@ -49,8 +50,17 @@ const Stars = ({ rating, size = 14 }: { rating: number; size?: number }) => (
   </div>
 );
 
-const RatingSummary = ({ reviews, product }: { reviews: Review[]; product: Product }) => {
-  const calculatedAvg = reviews.length > 0 ? reviews.reduce((acc, r) => acc + (r.rating || 0), 0) / reviews.length : 0;
+const RatingSummary = ({
+  reviews,
+  product,
+}: {
+  reviews: Review[];
+  product: Product;
+}) => {
+  const calculatedAvg =
+    reviews.length > 0
+      ? reviews.reduce((acc, r) => acc + (r.rating || 0), 0) / reviews.length
+      : 0;
   const avg = product?.averageRating || calculatedAvg || 0;
   const total = product?.reviewCount || reviews.length || 0;
 
@@ -80,7 +90,10 @@ const RatingSummary = ({ reviews, product }: { reviews: Review[]; product: Produ
             <div key={star} className="flex items-center gap-4 group">
               <div className="flex items-center gap-1.5 w-6">
                 <span className="text-xs font-semibold text-slate-500">{star}</span>
-                <Star size={10} className="fill-yellow-400 text-yellow-400 flex-shrink-0" />
+                <Star
+                  size={10}
+                  className="fill-yellow-400 text-yellow-400 flex-shrink-0"
+                />
               </div>
               <div className="flex-1 h-2.5 bg-slate-50 rounded-full overflow-hidden border border-slate-100">
                 <div
@@ -112,12 +125,10 @@ export function ReviewList({ productId, product }: ReviewListProps) {
   const { user } = useAuthStore();
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [previewImage, setPreviewImage] = React.useState<string | null>(null);
-  
+
   const body = reviewsData as any;
-  const reviews = Array.isArray(body) 
-    ? body 
-    : (body?.reviews || body?.data || []);
-    
+  const reviews = Array.isArray(body) ? body : body?.reviews || body?.data || [];
+
   const total = body?.total || reviews.length || 0;
 
   if (isLoading) {
@@ -144,19 +155,23 @@ export function ReviewList({ productId, product }: ReviewListProps) {
   return (
     <div className="animate-in fade-in duration-700">
       <RatingSummary reviews={reviews} product={product} />
-      
+
       {/* AI Review Summary Section */}
       <ReviewAISummary productId={productId} />
 
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
         <div className="space-y-1">
-          <h3 className="text-[16px] font-bold text-[#3D2B1A]">Đánh giá từ khách hàng ({total})</h3>
-          <p className="text-[12px] font-medium text-[#8A7966]">Những chia sẻ chân thực từ những người đã trải nghiệm</p>
+          <h3 className="text-[16px] font-bold text-[#3D2B1A]">
+            Đánh giá từ khách hàng ({total})
+          </h3>
+          <p className="text-[12px] font-medium text-[#8A7966]">
+            Những chia sẻ chân thực từ những người đã trải nghiệm
+          </p>
         </div>
-        
+
         {user && (
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             size="sm"
             className="rounded-full h-11 px-8 text-[12px] font-bold border-[#3D2B1A] text-[#3D2B1A] hover:bg-[#3D2B1A] hover:text-white transition-all gap-2"
             asChild
@@ -170,19 +185,20 @@ export function ReviewList({ productId, product }: ReviewListProps) {
       </div>
 
       {reviews.length === 0 ? (
-        <div className="text-center py-20 bg-slate-50/30 rounded-3xl border border-slate-100 border-dashed">
-          <div className="h-16 w-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-sm border border-slate-100">
-             <Star size={32} className="text-slate-200" />
-          </div>
-          <p className="text-slate-500 font-semibold text-sm">Chưa có đánh giá nào</p>
-          <p className="text-slate-400 text-xs mt-2 font-normal">Hãy là người đầu tiên trải nghiệm và để lại cảm nhận của bạn</p>
-        </div>
+        <EmptyState
+          icon={Star}
+          title="Chưa có đánh giá nào"
+          description="Hãy là người đầu tiên trải nghiệm và để lại cảm nhận của bạn về sản phẩm này."
+        />
       ) : (
         <div className="grid grid-cols-1 gap-4">
           {reviews.map((review: Review) => {
             const initial = (review.user?.name || "N")[0].toUpperCase();
             return (
-              <div key={review.id} className="bg-slate-50/50 rounded-2xl p-6 border border-slate-100 transition-all hover:bg-white hover:shadow-md">
+              <div
+                key={review.id}
+                className="bg-slate-50/50 rounded-2xl p-6 border border-slate-100 transition-all hover:bg-white hover:shadow-md"
+              >
                 <div className="flex items-start gap-4">
                   <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold text-sm shrink-0 shadow-sm border border-primary/20">
                     {initial}
@@ -190,7 +206,9 @@ export function ReviewList({ productId, product }: ReviewListProps) {
                   <div className="flex-1 space-y-1.5">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-semibold text-slate-900">{review.user?.name || "Người dùng"}</span>
+                        <span className="text-sm font-semibold text-slate-900">
+                          {review.user?.name || "Người dùng"}
+                        </span>
                         <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">
                           ✓ Đã mua hàng
                         </span>
@@ -199,24 +217,26 @@ export function ReviewList({ productId, product }: ReviewListProps) {
                         {formatDate(review.createdAt)}
                       </span>
                     </div>
-                    
+
                     <Stars rating={review.rating} size={12} />
-                    
+
                     <p className="text-sm text-slate-600 leading-relaxed pt-1">
                       {review.comment}
                     </p>
-                    
+
                     {review.images && review.images.length > 0 && (
                       <div className="flex gap-2 pt-2">
                         {review.images.map((img, idx: number) => (
-                          <Image 
-                            key={(img as any).id || idx} 
-                            src={typeof img === 'string' ? img : img.url} 
-                            alt="Review" 
+                          <Image
+                            key={(img as any).id || idx}
+                            src={typeof img === "string" ? img : img.url}
+                            alt="Review"
                             width={80}
                             height={80}
-                            className="h-20 w-20 object-cover rounded-xl border border-slate-200 cursor-pointer hover:opacity-90 transition-opacity shadow-sm" 
-                            onClick={() => setPreviewImage(typeof img === 'string' ? img : img.url)}
+                            className="h-20 w-20 object-cover rounded-xl border border-slate-200 cursor-pointer hover:opacity-90 transition-opacity shadow-sm"
+                            onClick={() =>
+                              setPreviewImage(typeof img === "string" ? img : img.url)
+                            }
                           />
                         ))}
                       </div>
@@ -230,7 +250,7 @@ export function ReviewList({ productId, product }: ReviewListProps) {
       )}
 
       <Dialog open={!!previewImage} onOpenChange={() => setPreviewImage(null)}>
-        <DialogContent 
+        <DialogContent
           hideCloseButton
           className="max-w-[90vw] max-h-[90vh] p-0 border-none bg-transparent shadow-none overflow-visible flex items-center justify-center"
         >
@@ -240,11 +260,11 @@ export function ReviewList({ productId, product }: ReviewListProps) {
           </DialogClose>
           {previewImage && (
             <div className="relative w-full h-[85vh]">
-              <Image 
-                src={previewImage} 
-                alt="Review preview" 
+              <Image
+                src={previewImage}
+                alt="Review preview"
                 fill
-                className="object-contain rounded-none shadow-md" 
+                className="object-contain rounded-none shadow-md"
                 unoptimized
               />
             </div>

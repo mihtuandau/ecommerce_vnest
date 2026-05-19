@@ -22,7 +22,11 @@ export function LoginForm() {
   const [otpCode, setOtpCode] = useState("");
   const [step, setStep] = useState<"login" | "2fa">(AUTH_STEPS.LOGIN);
   const [showPassword, setShowPassword] = useState(false);
-  const [errors, setErrors] = useState<{ email?: string; password?: string; otp?: string }>({});
+  const [errors, setErrors] = useState<{
+    email?: string;
+    password?: string;
+    otp?: string;
+  }>({});
 
   const { login, verify2FALogin, isLoggingIn } = useAuth();
   const { success, error } = useToast();
@@ -31,11 +35,11 @@ export function LoginForm() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
-    
+
     const newErrors: { email?: string; password?: string } = {};
     if (!email) newErrors.email = AUTH_MESSAGES.EMAIL_REQUIRED;
     if (!password) newErrors.password = AUTH_MESSAGES.PASSWORD_REQUIRED;
-    
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
@@ -43,7 +47,7 @@ export function LoginForm() {
 
     try {
       const response = await login({ email, password });
-      
+
       if (response.requires2FA) {
         setStep("2fa");
         success(response.message || AUTH_MESSAGES.LOGIN_REQUIRED_2FA);
@@ -101,8 +105,8 @@ export function LoginForm() {
           {step === AUTH_STEPS.LOGIN ? "Chào mừng!" : "Xác thực 2 lớp"}
         </h1>
         <p className="text-white/80 mt-1 font-normal text-[13px] drop-shadow-sm">
-          {step === AUTH_STEPS.LOGIN 
-            ? "Đăng nhập để tiếp tục mua sắm" 
+          {step === AUTH_STEPS.LOGIN
+            ? "Đăng nhập để tiếp tục mua sắm"
             : AUTH_MESSAGES.CONFIRM_MESSAGE(email)}
         </p>
       </div>
@@ -121,7 +125,9 @@ export function LoginForm() {
                 placeholder="Nhập địa chỉ email..."
                 className={cn(
                   "pl-11 h-12 rounded-[1.25rem] border-white/20 bg-black/40 backdrop-blur-md !text-white font-medium placeholder:text-white/60 hover:border-white/40 hover:bg-black/50 focus-visible:outline-none focus-visible:ring-2 transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)]",
-                  errors.email ? "border-red-500/50 ring-2 ring-red-500/20 bg-red-500/10" : "focus-visible:ring-primary/50 focus-visible:border-primary"
+                  errors.email
+                    ? "border-red-500/50 ring-2 ring-red-500/20 bg-red-500/10"
+                    : "focus-visible:ring-primary/50 focus-visible:border-primary"
                 )}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -154,7 +160,9 @@ export function LoginForm() {
                 placeholder="••••••••"
                 className={cn(
                   "pl-11 pr-11 h-12 rounded-[1.25rem] border-white/20 bg-black/40 backdrop-blur-md !text-white font-medium placeholder:text-white/60 hover:border-white/40 hover:bg-black/50 focus-visible:outline-none focus-visible:ring-2 transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)]",
-                  errors.password ? "border-red-500/50 ring-2 ring-red-500/20 bg-red-500/10" : "focus-visible:ring-primary/50 focus-visible:border-primary"
+                  errors.password
+                    ? "border-red-500/50 ring-2 ring-red-500/20 bg-red-500/10"
+                    : "focus-visible:ring-primary/50 focus-visible:border-primary"
                 )}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -276,7 +284,9 @@ export function LoginForm() {
               placeholder={AUTH_MESSAGES.OTP_PLACEHOLDER}
               className="h-14 text-center text-2xl tracking-[8px] font-bold rounded-[1.25rem] border-white/20 bg-black/40 backdrop-blur-md !text-white placeholder:text-white/30 focus-visible:ring-primary/50"
               value={otpCode}
-              onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+              onChange={(e) =>
+                setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6))
+              }
             />
           </div>
 
@@ -285,7 +295,11 @@ export function LoginForm() {
             className="w-full h-12 rounded-[1.25rem] text-base font-semibold bg-white text-slate-900 hover:bg-slate-100 shadow-[0_8px_20px_-6px_rgba(255,255,255,0.3)] hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-2"
             disabled={isLoggingIn || otpCode.length < 6}
           >
-            {isLoggingIn ? <Spinner size="sm" variant="slate" /> : AUTH_MESSAGES.VERIFY_2FA_BUTTON}
+            {isLoggingIn ? (
+              <Spinner size="sm" variant="slate" />
+            ) : (
+              AUTH_MESSAGES.VERIFY_2FA_BUTTON
+            )}
           </Button>
 
           <button

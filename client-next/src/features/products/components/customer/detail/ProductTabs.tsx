@@ -40,9 +40,7 @@ export function ProductTabs({ product }: ProductTabsProps) {
               onClick={() => setActiveTab(tab.id)}
               className={cn(
                 "relative px-0 mr-12 pb-5 text-[14px] font-bold transition-all whitespace-nowrap",
-                isActive 
-                  ? "text-primary" 
-                  : "text-brand-taupe/40 hover:text-primary"
+                isActive ? "text-primary" : "text-brand-taupe/40 hover:text-primary"
               )}
             >
               {tab.label}
@@ -72,7 +70,7 @@ export function ProductTabs({ product }: ProductTabsProps) {
                   {spec.label}
                 </span>
                 {spec.label === "Danh mục" ? (
-                  <Link 
+                  <Link
                     href={`/shop?categoryId=${product.categoryId}`}
                     className="text-[14px] font-bold text-primary hover:text-brand-bronze transition-colors"
                   >
@@ -97,4 +95,3 @@ export function ProductTabs({ product }: ProductTabsProps) {
     </div>
   );
 }
-  

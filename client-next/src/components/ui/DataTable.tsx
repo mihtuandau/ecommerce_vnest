@@ -112,7 +112,10 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  className={cn("h-16 hover:bg-muted/40 border-b border-border/50 transition-colors", rowClassName?.(row))}
+                  className={cn(
+                    "h-16 hover:bg-muted/40 border-b border-border/50 transition-colors",
+                    rowClassName?.(row)
+                  )}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id} className="px-4 py-3 text-sm">
@@ -169,4 +172,3 @@ export function DataTable<TData, TValue>({
     </div>
   );
 }
-

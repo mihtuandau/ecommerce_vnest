@@ -12,15 +12,18 @@ interface RelatedProductsProps {
   currentProductId: string | number;
 }
 
-export function RelatedProducts({ categoryId, currentProductId }: RelatedProductsProps) {
+export function RelatedProducts({
+  categoryId,
+  currentProductId,
+}: RelatedProductsProps) {
   const { data: products, isLoading } = useProducts({
     categoryId: categoryId || undefined,
     limit: 4,
   });
 
   // Filter out current product
-  const related = Array.isArray(products?.data) 
-    ? products.data.filter((p: Product) => String(p.id) !== String(currentProductId)) 
+  const related = Array.isArray(products?.data)
+    ? products.data.filter((p: Product) => String(p.id) !== String(currentProductId))
     : [];
 
   if (isLoading) {
@@ -30,7 +33,9 @@ export function RelatedProducts({ categoryId, currentProductId }: RelatedProduct
           <div className="h-px flex-1 bg-brand-sand/30" />
           <div className="flex items-center gap-2">
             <Spinner size="sm" variant="slate" />
-            <h2 className="text-xs font-semibold uppercase tracking-[0.4em] text-brand-taupe/40">Đang tải gợi ý</h2>
+            <h2 className="text-xs font-semibold uppercase tracking-[0.4em] text-brand-taupe/40">
+              Đang tải gợi ý
+            </h2>
           </div>
           <div className="h-px flex-1 bg-brand-sand/30" />
         </div>
@@ -52,8 +57,12 @@ export function RelatedProducts({ categoryId, currentProductId }: RelatedProduct
           <Zap size={20} />
         </div>
         <div>
-          <h2 className="text-[28px] font-bold text-primary tracking-tight">Sản phẩm liên quan</h2>
-          <p className="text-[13px] text-brand-taupe font-medium mt-0.5">Có thể bạn cũng sẽ thích những sản phẩm này</p>
+          <h2 className="text-[28px] font-bold text-primary tracking-tight">
+            Sản phẩm liên quan
+          </h2>
+          <p className="text-[13px] text-brand-taupe font-medium mt-0.5">
+            Có thể bạn cũng sẽ thích những sản phẩm này
+          </p>
         </div>
       </div>
 

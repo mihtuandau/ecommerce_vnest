@@ -16,9 +16,12 @@ export function AccessDenied({ permission, message }: AccessDeniedProps) {
         <ShieldOff className="h-8 w-8 text-red-400" />
       </div>
       <div>
-        <h2 className="text-xl font-bold text-brand-espresso font-serif-brand">Không có quyền truy cập</h2>
+        <h2 className="text-xl font-bold text-brand-espresso font-serif-brand">
+          Không có quyền truy cập
+        </h2>
         <p className="text-sm text-brand-taupe mt-1.5 max-w-sm font-medium">
-          {message ?? "Bạn không có quyền xem trang này. Vui lòng liên hệ quản trị viên để được cấp quyền."}
+          {message ??
+            "Bạn không có quyền xem trang này. Vui lòng liên hệ quản trị viên để được cấp quyền."}
         </p>
         {permission && (
           <p className="text-[11px] text-brand-taupe mt-2.5 font-mono bg-brand-cream/70 px-3 py-1.5 rounded-xl border border-brand-sand inline-block font-bold">

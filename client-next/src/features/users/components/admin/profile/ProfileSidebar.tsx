@@ -3,7 +3,13 @@
 import React from "react";
 import { User, Camera, ShieldCheck } from "lucide-react";
 import Image from "next/image";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/Card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/Card";
 import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/utils/cn";
 import { Role } from "@/types/enums";
@@ -50,7 +56,11 @@ export function ProfileSidebar({
               className="absolute bottom-1 right-1 h-10 w-10 rounded-full bg-primary text-white flex items-center justify-center shadow-lg hover:bg-primary/90 transition-all group-hover:scale-110 duration-300 border-4 border-white"
               disabled={isUploading}
             >
-              {isUploading ? <Spinner size="sm" variant="white" /> : <Camera size={18} />}
+              {isUploading ? (
+                <Spinner size="sm" variant="white" />
+              ) : (
+                <Camera size={18} />
+              )}
             </button>
             <input
               type="file"
@@ -88,7 +98,9 @@ export function ProfileSidebar({
             Tài khoản từ
           </span>
           <span className="text-xs font-bold text-slate-600">
-            {user.createdAt ? new Date(user.createdAt).toLocaleDateString("vi-VN") : "N/A"}
+            {user.createdAt
+              ? new Date(user.createdAt).toLocaleDateString("vi-VN")
+              : "N/A"}
           </span>
         </div>
       </Card>
@@ -105,7 +117,8 @@ export function ProfileSidebar({
         </CardHeader>
         <CardContent>
           <p className="text-[11px] leading-relaxed text-white/80 font-medium">
-            Chúng tôi khuyến nghị bạn nên đổi mật khẩu định kỳ 3 tháng một lần để đảm bảo an toàn tối đa.
+            Chúng tôi khuyến nghị bạn nên đổi mật khẩu định kỳ 3 tháng một lần để đảm
+            bảo an toàn tối đa.
           </p>
         </CardContent>
       </Card>

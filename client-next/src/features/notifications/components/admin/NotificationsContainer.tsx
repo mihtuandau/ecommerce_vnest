@@ -2,7 +2,13 @@
 
 import React, { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { useNotifications, useNotificationSettings, useUpdateNotificationSettings, useMarkNotificationRead, useMarkAllNotificationsRead } from "../../hooks";
+import {
+  useNotifications,
+  useNotificationSettings,
+  useUpdateNotificationSettings,
+  useMarkNotificationRead,
+  useMarkAllNotificationsRead,
+} from "../../hooks";
 import { NotificationFilterType, NOTIFICATIONS_LIMITS } from "../../constants";
 import { NotificationsToolbar } from "./NotificationsToolbar";
 import { NotificationsList } from "./NotificationsList";
@@ -19,17 +25,25 @@ export function NotificationsContainer() {
     page,
     limit,
   });
-  
 
   // Fetch notification settings
-  const { data: settings = {}, isLoading: isLoadingSettings, refetch: refetchSettings } = useNotificationSettings();
+  const {
+    data: settings = {},
+    isLoading: isLoadingSettings,
+    refetch: refetchSettings,
+  } = useNotificationSettings();
   const updateSettingsMutation = useUpdateNotificationSettings();
 
   const markReadMutation = useMarkNotificationRead();
   const markAllReadMutation = useMarkAllNotificationsRead();
 
   const allNotifications = data?.data || [];
-  const meta = data?.meta || { total: 0, page: 1, limit: NOTIFICATIONS_LIMITS.ADMIN, totalPages: 1 };
+  const meta = data?.meta || {
+    total: 0,
+    page: 1,
+    limit: NOTIFICATIONS_LIMITS.ADMIN,
+    totalPages: 1,
+  };
 
   // Local filtering based on active tab
   const filteredNotifications = useMemo(() => {
@@ -77,7 +91,8 @@ export function NotificationsContainer() {
           Hộp thư thông báo vận hành
         </h1>
         <p className="text-slate-500 text-sm">
-          Xem các cập nhật hệ thống, cảnh báo bảo mật và biến động trạng thái đơn hàng thời gian thực.
+          Xem các cập nhật hệ thống, cảnh báo bảo mật và biến động trạng thái đơn hàng
+          thời gian thực.
         </p>
       </div>
 

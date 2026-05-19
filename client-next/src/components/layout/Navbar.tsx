@@ -25,9 +25,7 @@ export function Navbar({ items, className }: NavbarProps) {
           href={item.href}
           className={cn(
             "text-sm font-medium transition-colors hover:text-foreground",
-            pathname === item.href
-              ? "text-foreground"
-              : "text-muted-foreground"
+            pathname === item.href ? "text-foreground" : "text-muted-foreground"
           )}
         >
           {item.label}

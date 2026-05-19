@@ -41,9 +41,10 @@ function VoucherCard({ voucher }: { voucher: OfferVoucher }) {
   const isActive =
     voucher.isActive && new Date(voucher.startDate) <= new Date() && !isExpired;
 
-  const displayValue = voucher.type === "PERCENTAGE" || voucher.percentage
-    ? `${voucher.percentage || voucher.value}%` 
-    : formatCurrency(voucher.fixedAmount || voucher.value || 0);
+  const displayValue =
+    voucher.type === "PERCENTAGE" || voucher.percentage
+      ? `${voucher.percentage || voucher.value}%`
+      : formatCurrency(voucher.fixedAmount || voucher.value || 0);
 
   return (
     <div
@@ -89,7 +90,12 @@ function VoucherCard({ voucher }: { voucher: OfferVoucher }) {
             {(voucher.minOrderValue || 0) > 0 && (
               <div className="flex items-center gap-1.5">
                 <div className="h-1 w-1 rounded-full bg-primary" />
-                <span className="text-xs font-semibold text-slate-500">Đơn từ <span className="font-bold text-slate-900">{formatCurrency(voucher.minOrderValue || 0)}</span></span>
+                <span className="text-xs font-semibold text-slate-500">
+                  Đơn từ{" "}
+                  <span className="font-bold text-slate-900">
+                    {formatCurrency(voucher.minOrderValue || 0)}
+                  </span>
+                </span>
               </div>
             )}
             <div className="flex items-center gap-1.5 text-slate-500">
@@ -142,7 +148,7 @@ export function OffersView() {
   const rawData = React.useMemo(() => {
     if (!discountsData) return [];
     const body = discountsData as any;
-    const items = Array.isArray(body) ? body : (body.data || []);
+    const items = Array.isArray(body) ? body : body.data || [];
     return items as OfferVoucher[];
   }, [discountsData]);
 

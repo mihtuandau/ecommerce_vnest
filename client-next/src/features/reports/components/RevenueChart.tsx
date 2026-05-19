@@ -39,7 +39,11 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   return null;
 };
 
-export function RevenueChart({ params }: { params?: Record<string, string | undefined> }) {
+export function RevenueChart({
+  params,
+}: {
+  params?: Record<string, string | undefined>;
+}) {
   const { data: reportData, isLoading } = useRevenueReport(params || {});
 
   const chartData = reportData?.data || [];

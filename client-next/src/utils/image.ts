@@ -6,13 +6,13 @@ import { env } from "@/config/env";
  * 2. Keeping full URLs (http/https) as-is
  * 3. Converting backslashes to forward slashes
  * 4. Prefixing relative paths with the backend base URL
- * 
+ *
  * @param path The raw path string from the API
  * @returns A full URL or local asset path
  */
 export function getImageUrl(input?: any): string {
   const placeholder = "https://placehold.co/600x400/f8fafc/64748b?text=LUXE";
-  
+
   if (!input) return placeholder;
 
   let path: any = null;
@@ -31,7 +31,7 @@ export function getImageUrl(input?: any): string {
     } else {
       path = input;
     }
-  } 
+  }
   // 2. Handle case where input is an object (not null)
   else if (typeof input === "object" && input !== null) {
     // If it's an array, take the first element and recurse
@@ -59,7 +59,6 @@ export function getImageUrl(input?: any): string {
   const cleanPath = path.replace(/\\/g, "/").replace(/^\//, "");
   const apiUrl = env.NEXT_PUBLIC_API_URL || "";
   const baseUrl = apiUrl.replace(/\/api$/, "");
-  
+
   return `${baseUrl}/${cleanPath}`;
 }
-

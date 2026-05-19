@@ -17,22 +17,15 @@ import {
 } from "@/components/ui/Form";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
-import { 
-  ImageIcon,
-  Save, 
-  Upload, 
-  X,
-  Type,
-  Layers
-} from "lucide-react";
+import { ImageIcon, Save, Upload, X, Type, Layers } from "lucide-react";
 import { Spinner } from "@/components/ui/Spinner";
 import { useCategories } from "@/features/categories/hooks";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/Select";
 import { Category } from "@/types/models";
 
@@ -53,10 +46,12 @@ export function CategoryForm({ initialData, onSubmit, isLoading }: CategoryFormP
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  
+
   // Fetch categories for parent selection
   const { data: categoryData = [] } = useCategories();
-  const categories = Array.isArray(categoryData) ? categoryData : (categoryData as any)?.data || [];
+  const categories = Array.isArray(categoryData)
+    ? categoryData
+    : (categoryData as any)?.data || [];
 
   const form = useForm<CategoryFormValues>({
     resolver: zodResolver(categorySchema),
@@ -70,9 +65,9 @@ export function CategoryForm({ initialData, onSubmit, isLoading }: CategoryFormP
     if (initialData) {
       // Handle potential wrapped data { success: true, data: { ... } }
       const data = initialData.data || initialData;
-      
-      const parentIdValue = data.parentId || data.parent_id || (data.parent?.id);
-      
+
+      const parentIdValue = data.parentId || data.parent_id || data.parent?.id;
+
       form.reset({
         name: data.name || "",
         parentId: parentIdValue ? String(parentIdValue) : "none",
@@ -95,14 +90,14 @@ export function CategoryForm({ initialData, onSubmit, isLoading }: CategoryFormP
   const onFormSubmit = (values: CategoryFormValues) => {
     const formData = new FormData();
     formData.append("name", values.name);
-    
+
     if (values.parentId && values.parentId !== "" && values.parentId !== "none") {
       formData.append("parentId", values.parentId);
     } else {
       // For "none" or empty, we want to create a root category
-      formData.append("parentId", ""); 
+      formData.append("parentId", "");
     }
-    
+
     if (selectedFile) {
       formData.append("image", selectedFile);
     }
@@ -111,7 +106,9 @@ export function CategoryForm({ initialData, onSubmit, isLoading }: CategoryFormP
   };
 
   // Filter out the current category from parent list to prevent self-parenting
-  const parentOptions = categories.filter((cat: Category) => initialData ? cat.id !== initialData.id : true);
+  const parentOptions = categories.filter((cat: Category) =>
+    initialData ? cat.id !== initialData.id : true
+  );
 
   return (
     <Form {...form}>
@@ -133,7 +130,9 @@ export function CategoryForm({ initialData, onSubmit, isLoading }: CategoryFormP
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-[11px] font-bold text-slate-500 tracking-wider uppercase">Tên danh mục</FormLabel>
+                      <FormLabel className="text-[11px] font-bold text-slate-500 tracking-wider uppercase">
+                        Tên danh mục
+                      </FormLabel>
                       <FormControl>
                         <Input
                           placeholder="VD: Điện thoại, Máy tính, Thời trang..."
@@ -155,9 +154,9 @@ export function CategoryForm({ initialData, onSubmit, isLoading }: CategoryFormP
                         <Layers size={12} />
                         Danh mục cha
                       </FormLabel>
-                      <Select 
+                      <Select
                         key={categories.length}
-                        onValueChange={field.onChange} 
+                        onValueChange={field.onChange}
                         defaultValue={field.value ?? undefined}
                         value={field.value ?? undefined}
                       >
@@ -167,12 +166,15 @@ export function CategoryForm({ initialData, onSubmit, isLoading }: CategoryFormP
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent className="rounded-xl border-slate-200 shadow-xl overflow-hidden p-1 admin-theme">
-                          <SelectItem value="none" className="rounded-lg text-slate-600 font-medium py-3">
+                          <SelectItem
+                            value="none"
+                            className="rounded-lg text-slate-600 font-medium py-3"
+                          >
                             Không có (Danh mục gốc)
                           </SelectItem>
                           {parentOptions.map((cat: Category) => (
-                            <SelectItem 
-                              key={cat.id} 
+                            <SelectItem
+                              key={cat.id}
                               value={String(cat.id)}
                               className="rounded-lg font-bold text-slate-900 py-3"
                             >
@@ -208,7 +210,7 @@ export function CategoryForm({ initialData, onSubmit, isLoading }: CategoryFormP
                   accept="image/*"
                   onChange={handleFileChange}
                 />
-                
+
                 {previewUrl ? (
                   <div className="relative group rounded-2xl overflow-hidden border border-slate-200 bg-slate-50 aspect-square max-w-[240px] mx-auto shadow-inner">
                     <Image
@@ -242,7 +244,7 @@ export function CategoryForm({ initialData, onSubmit, isLoading }: CategoryFormP
                     </div>
                   </div>
                 ) : (
-                  <div 
+                  <div
                     className="border-2 border-dashed border-slate-200 rounded-2xl p-12 flex flex-col items-center justify-center gap-4 hover:border-slate-400 hover:bg-slate-50 transition-all cursor-pointer group max-w-[240px] mx-auto aspect-square w-full"
                     onClick={() => fileInputRef.current?.click()}
                   >
@@ -250,8 +252,12 @@ export function CategoryForm({ initialData, onSubmit, isLoading }: CategoryFormP
                       <Upload className="h-8 w-8 text-slate-400 group-hover:text-slate-600" />
                     </div>
                     <div className="text-center">
-                      <p className="text-[11px] font-black text-slate-900 uppercase tracking-widest">Tải ảnh lên</p>
-                      <p className="text-[10px] text-slate-400 mt-1 font-medium">PNG, JPG (1:1)</p>
+                      <p className="text-[11px] font-black text-slate-900 uppercase tracking-widest">
+                        Tải ảnh lên
+                      </p>
+                      <p className="text-[10px] text-slate-400 mt-1 font-medium">
+                        PNG, JPG (1:1)
+                      </p>
                     </div>
                   </div>
                 )}
@@ -275,7 +281,7 @@ export function CategoryForm({ initialData, onSubmit, isLoading }: CategoryFormP
                   )}
                   {initialData ? "Lưu thay đổi" : "Tạo danh mục"}
                 </Button>
-                
+
                 <Button
                   type="button"
                   variant="outline"
@@ -289,7 +295,8 @@ export function CategoryForm({ initialData, onSubmit, isLoading }: CategoryFormP
 
               <div className="p-4 rounded-xl bg-amber-50 border border-amber-100">
                 <p className="text-[11px] font-bold text-amber-800 leading-relaxed uppercase tracking-wider">
-                  Lưu ý: Tên danh mục nên ngắn gọn và dễ hiểu để hiển thị tốt nhất trên giao diện người dùng.
+                  Lưu ý: Tên danh mục nên ngắn gọn và dễ hiểu để hiển thị tốt nhất trên
+                  giao diện người dùng.
                 </p>
               </div>
             </div>

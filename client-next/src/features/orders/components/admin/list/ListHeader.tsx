@@ -15,7 +15,11 @@ interface OrderListHeaderProps {
   isFetching: boolean;
 }
 
-export function OrderListHeader({ totalOrders, onRefresh, isFetching }: OrderListHeaderProps) {
+export function OrderListHeader({
+  totalOrders,
+  onRefresh,
+  isFetching,
+}: OrderListHeaderProps) {
   return (
     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
       <div>
@@ -27,15 +31,22 @@ export function OrderListHeader({ totalOrders, onRefresh, isFetching }: OrderLis
         </div>
       </div>
       <div className="flex items-center gap-2">
-        <Button 
-          variant="ghost" 
+        <Button
+          variant="ghost"
           className={cn(adminUI.button.base, adminUI.button.ghost)}
           onClick={onRefresh}
           disabled={isFetching}
         >
-          {isFetching ? <Spinner size="sm" /> : <RefreshCw className={adminUI.icon.action} />}
+          {isFetching ? (
+            <Spinner size="sm" />
+          ) : (
+            <RefreshCw className={adminUI.icon.action} />
+          )}
         </Button>
-        <Button variant="outline" className={cn(adminUI.button.base, adminUI.button.secondary)}>
+        <Button
+          variant="outline"
+          className={cn(adminUI.button.base, adminUI.button.secondary)}
+        >
           <Download className={cn(adminUI.icon.action, "mr-2")} /> Xuất Excel
         </Button>
         <Link href={ROUTES.ADMIN_ORDERS_CREATE}>

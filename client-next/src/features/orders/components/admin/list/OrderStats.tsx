@@ -27,7 +27,7 @@ export function OrderStats({ counts }: OrderStatsProps) {
       deltaClass: "text-slate-500",
       colorClass: "before:bg-slate-800",
       activeClass: "ring-2 ring-slate-800",
-      numClass: "text-slate-800"
+      numClass: "text-slate-800",
     },
     {
       id: OrderStatus.PENDING,
@@ -37,7 +37,7 @@ export function OrderStats({ counts }: OrderStatsProps) {
       deltaClass: "text-amber-600",
       colorClass: "before:bg-amber-500",
       activeClass: "ring-2 ring-amber-500",
-      numClass: "text-amber-600"
+      numClass: "text-amber-600",
     },
     {
       id: OrderStatus.SHIPPED,
@@ -47,7 +47,7 @@ export function OrderStats({ counts }: OrderStatsProps) {
       deltaClass: "text-blue-600",
       colorClass: "before:bg-blue-500",
       activeClass: "ring-2 ring-blue-500",
-      numClass: "text-blue-600"
+      numClass: "text-blue-600",
     },
     {
       id: OrderStatus.DELIVERED,
@@ -57,7 +57,7 @@ export function OrderStats({ counts }: OrderStatsProps) {
       deltaClass: "text-emerald-600",
       colorClass: "before:bg-emerald-500",
       activeClass: "ring-2 ring-emerald-500",
-      numClass: "text-emerald-600"
+      numClass: "text-emerald-600",
     },
     {
       id: OrderStatus.CANCELLED,
@@ -67,15 +67,15 @@ export function OrderStats({ counts }: OrderStatsProps) {
       deltaClass: "text-rose-600",
       colorClass: "before:bg-rose-500",
       activeClass: "ring-2 ring-rose-500",
-      numClass: "text-rose-600"
-    }
+      numClass: "text-rose-600",
+    },
   ];
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
       {stats.map((stat) => {
         return (
-          <div 
+          <div
             key={stat.id}
             className={cn(
               "relative bg-white border border-slate-200 rounded-xl p-4 transition-all overflow-hidden shadow-sm",
@@ -83,13 +83,20 @@ export function OrderStats({ counts }: OrderStatsProps) {
               stat.colorClass
             )}
           >
-            <div className={cn("text-2xl font-bold font-serif leading-none", stat.numClass)}>
+            <div
+              className={cn(
+                "text-2xl font-bold font-serif leading-none",
+                stat.numClass
+              )}
+            >
               {stat.value}
             </div>
             <div className="text-xs font-semibold text-slate-500 mt-2 mb-1">
               {stat.label}
             </div>
-            <div className={cn("text-[10px] font-bold tracking-tight", stat.deltaClass)}>
+            <div
+              className={cn("text-[10px] font-bold tracking-tight", stat.deltaClass)}
+            >
               {stat.delta}
             </div>
           </div>

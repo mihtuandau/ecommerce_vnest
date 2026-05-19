@@ -3,11 +3,7 @@
 import React from "react";
 import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
-import { 
-  CreditCard, 
-  ChevronLeft, 
-  ChevronRight, 
-} from "lucide-react";
+import { CreditCard, ChevronLeft, ChevronRight } from "lucide-react";
 import { usePermission } from "@/hooks/usePermission";
 import { PaymentRow } from "./PaymentRow";
 
@@ -42,7 +38,9 @@ export function PaymentsTable({
     return (
       <div className="p-20 flex flex-col items-center justify-center gap-3">
         <Spinner size="lg" variant="slate" />
-        <p className="text-xs font-semibold text-slate-455">Đang tải lịch sử thanh toán...</p>
+        <p className="text-xs font-semibold text-slate-455">
+          Đang tải lịch sử thanh toán...
+        </p>
       </div>
     );
   }
@@ -54,9 +52,12 @@ export function PaymentsTable({
           <CreditCard className="h-8 w-8 text-slate-350" />
         </div>
         <div>
-          <p className="text-sm font-bold text-slate-800">Không tìm thấy giao dịch nào</p>
+          <p className="text-sm font-bold text-slate-800">
+            Không tìm thấy giao dịch nào
+          </p>
           <p className="text-xs text-slate-455 mt-1 font-medium max-w-[280px]">
-            Hãy thử thay đổi từ khóa tìm kiếm hoặc cài đặt bộ lọc để có dữ liệu chính xác hơn.
+            Hãy thử thay đổi từ khóa tìm kiếm hoặc cài đặt bộ lọc để có dữ liệu chính
+            xác hơn.
           </p>
         </div>
       </div>
@@ -69,13 +70,27 @@ export function PaymentsTable({
         <table className="w-full text-left border-collapse table-fixed">
           <thead>
             <tr className="border-b border-slate-200 bg-slate-50/70">
-              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-slate-500 w-[17%] align-middle">Mã giao dịch</th>
-              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-slate-500 w-[15%] align-middle">Đơn hàng</th>
-              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-slate-500 w-[15%] align-middle">Khách hàng</th>
-              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-slate-500 w-[14%] align-middle">Thời gian</th>
-              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-slate-500 w-[9%] align-middle">Phương thức</th>
-              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-slate-500 w-[12%] align-middle">Số tiền</th>
-              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-slate-500 w-[14%] align-middle">Trạng thái</th>
+              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-slate-500 w-[17%] align-middle">
+                Mã giao dịch
+              </th>
+              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-slate-500 w-[15%] align-middle">
+                Đơn hàng
+              </th>
+              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-slate-500 w-[15%] align-middle">
+                Khách hàng
+              </th>
+              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-slate-500 w-[14%] align-middle">
+                Thời gian
+              </th>
+              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-slate-500 w-[9%] align-middle">
+                Phương thức
+              </th>
+              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-slate-500 w-[12%] align-middle">
+                Số tiền
+              </th>
+              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-slate-500 w-[14%] align-middle">
+                Trạng thái
+              </th>
               <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-slate-500 w-[4%] text-right align-middle"></th>
             </tr>
           </thead>

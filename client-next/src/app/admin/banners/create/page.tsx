@@ -23,8 +23,8 @@ export default function CreateBannerPage() {
   return (
     <div className="space-y-4 pb-10">
       <div className="flex flex-col gap-1">
-        <Button 
-          variant="ghost" 
+        <Button
+          variant="ghost"
           size="sm"
           className="w-fit pl-0 hover:bg-transparent text-slate-400 hover:text-primary gap-1 font-bold text-xs uppercase tracking-wider"
           onClick={() => router.back()}
@@ -34,7 +34,9 @@ export default function CreateBannerPage() {
         </Button>
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900">Thêm Banner mới</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+              Thêm Banner mới
+            </h1>
             <p className="text-slate-500 text-sm">
               Tạo hình ảnh quảng bá sản phẩm và chiến dịch mới cho trang chủ.
             </p>

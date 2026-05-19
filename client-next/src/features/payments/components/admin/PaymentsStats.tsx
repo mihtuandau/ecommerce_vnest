@@ -27,7 +27,9 @@ export function PaymentsStats({ payments, formatCurrency }: PaymentsStatsProps) 
       {/* Card 1: Doanh thu thực nhận */}
       <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden flex flex-col justify-between h-32">
         <div className="flex items-center justify-between">
-          <span className="text-[11px] font-bold text-slate-450 uppercase tracking-wider">Doanh thu đối soát</span>
+          <span className="text-[11px] font-bold text-slate-450 uppercase tracking-wider">
+            Doanh thu đối soát
+          </span>
           <div className="h-9 w-9 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
             <TrendingUp className="h-5 w-5" />
           </div>
@@ -45,7 +47,9 @@ export function PaymentsStats({ payments, formatCurrency }: PaymentsStatsProps) 
       {/* Card 2: COD chờ thu tiền */}
       <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden flex flex-col justify-between h-32">
         <div className="flex items-center justify-between">
-          <span className="text-[11px] font-bold text-slate-450 uppercase tracking-wider">Phải thu COD</span>
+          <span className="text-[11px] font-bold text-slate-450 uppercase tracking-wider">
+            Phải thu COD
+          </span>
           <div className="h-9 w-9 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600">
             <Coins className="h-5 w-5" />
           </div>
@@ -63,7 +67,9 @@ export function PaymentsStats({ payments, formatCurrency }: PaymentsStatsProps) 
       {/* Card 3: Số tiền đã hoàn trả */}
       <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden flex flex-col justify-between h-32">
         <div className="flex items-center justify-between">
-          <span className="text-[11px] font-bold text-slate-450 uppercase tracking-wider">Hoàn trả tài chính</span>
+          <span className="text-[11px] font-bold text-slate-450 uppercase tracking-wider">
+            Hoàn trả tài chính
+          </span>
           <div className="h-9 w-9 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600">
             <Coins className="h-5 w-5" />
           </div>

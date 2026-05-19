@@ -48,7 +48,12 @@ export function RequestReturnModal({
   isGuest,
   contact,
 }: RequestReturnModalProps) {
-  const { register, handleSubmit, formState: { errors }, reset } = useForm();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm();
   const [images, setImages] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -60,9 +65,11 @@ export function RequestReturnModal({
 
     setIsUploading(true);
     try {
-      const uploadPromises = Array.from(files).map(file => productsApi.uploadImage(file));
+      const uploadPromises = Array.from(files).map((file) =>
+        productsApi.uploadImage(file)
+      );
       const urls = await Promise.all(uploadPromises);
-      setImages(prev => [...prev, ...urls]);
+      setImages((prev) => [...prev, ...urls]);
     } catch (err) {
       toastError("Lỗi khi tải ảnh lên");
     } finally {
@@ -71,7 +78,7 @@ export function RequestReturnModal({
   };
 
   const removeImage = (index: number) => {
-    setImages(prev => prev.filter((_, i) => i !== index));
+    setImages((prev) => prev.filter((_, i) => i !== index));
   };
 
   const onSubmit = async (data: any) => {
@@ -113,26 +120,42 @@ export function RequestReturnModal({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[550px] rounded-2xl p-0 overflow-hidden border-[#DDD6C8] shadow-2xl bg-white font-sans-brand">
         <div className="px-8 py-6 border-b border-[#DDD6C8] bg-[#FAF8F4]">
-          <DialogTitle className="text-2xl font-bold text-[#3D2B1A] font-serif-brand">Yêu cầu trả hàng</DialogTitle>
-          <p className="text-[12px] text-[#8A7966] font-bold uppercase tracking-[0.1em] mt-1">Đơn hàng #{orderCode}</p>
+          <DialogTitle className="text-2xl font-bold text-[#3D2B1A] font-serif-brand">
+            Yêu cầu trả hàng
+          </DialogTitle>
+          <p className="text-[12px] text-[#8A7966] font-bold uppercase tracking-[0.1em] mt-1">
+            Đơn hàng #{orderCode}
+          </p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="p-8 space-y-6">
           <div className="space-y-5">
             <div className="space-y-2">
-              <Label className="text-[13px] font-bold text-[#3D2B1A] uppercase tracking-[0.06em]">Lý do trả hàng <span className="text-[#C44040]">*</span></Label>
+              <Label className="text-[13px] font-bold text-[#3D2B1A] uppercase tracking-[0.06em]">
+                Lý do trả hàng <span className="text-[#C44040]">*</span>
+              </Label>
               <select
                 {...register("reason", { required: "Vui lòng chọn lý do" })}
                 className="w-full h-12 bg-white border border-[#DDD6C8] rounded-xl px-4 text-[13.5px] text-[#3D2B1A] focus:outline-none focus:border-[#C4B49A] transition-all font-medium appearance-none"
               >
                 <option value="">Chọn lý do phù hợp...</option>
-                {REASONS.map(r => <option key={r} value={r}>{r}</option>)}
+                {REASONS.map((r) => (
+                  <option key={r} value={r}>
+                    {r}
+                  </option>
+                ))}
               </select>
-              {errors.reason && <p className="text-[11px] text-[#C44040] font-bold ml-1">{errors.reason.message as string}</p>}
+              {errors.reason && (
+                <p className="text-[11px] text-[#C44040] font-bold ml-1">
+                  {errors.reason.message as string}
+                </p>
+              )}
             </div>
 
             <div className="space-y-2">
-              <Label className="text-[13px] font-bold text-[#3D2B1A] uppercase tracking-[0.06em]">Mô tả chi tiết</Label>
+              <Label className="text-[13px] font-bold text-[#3D2B1A] uppercase tracking-[0.06em]">
+                Mô tả chi tiết
+              </Label>
               <Textarea
                 {...register("details")}
                 placeholder="Vui lòng mô tả rõ tình trạng sản phẩm để LUXE hỗ trợ bạn tốt nhất..."
@@ -141,10 +164,15 @@ export function RequestReturnModal({
             </div>
 
             <div className="space-y-3">
-              <Label className="text-[13px] font-bold text-[#3D2B1A] uppercase tracking-[0.06em]">Hình ảnh bằng chứng <span className="text-[#C44040]">*</span></Label>
+              <Label className="text-[13px] font-bold text-[#3D2B1A] uppercase tracking-[0.06em]">
+                Hình ảnh bằng chứng <span className="text-[#C44040]">*</span>
+              </Label>
               <div className="grid grid-cols-4 gap-3">
                 {images.map((url, i) => (
-                  <div key={i} className="relative aspect-square rounded-xl overflow-hidden border border-[#DDD6C8] group shadow-sm">
+                  <div
+                    key={i}
+                    className="relative aspect-square rounded-xl overflow-hidden border border-[#DDD6C8] group shadow-sm"
+                  >
                     <Image src={url} alt="Evidence" fill className="object-cover" />
                     <button
                       type="button"
@@ -157,9 +185,25 @@ export function RequestReturnModal({
                 ))}
                 {images.length < 4 && (
                   <label className="aspect-square rounded-xl border-2 border-dashed border-[#DDD6C8] flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-[#C4783A] hover:bg-[#FAF8F4] transition-all group">
-                    <input type="file" multiple accept="image/*" className="hidden" onChange={handleImageUpload} disabled={isUploading} />
-                    {isUploading ? <Spinner size="sm" /> : <Camera size={20} className="text-[#8A7966] group-hover:text-[#C4783A] transition-colors" />}
-                    <span className="text-[10px] font-bold text-[#8A7966] uppercase tracking-widest group-hover:text-[#C4783A] transition-colors">Tải ảnh</span>
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleImageUpload}
+                      disabled={isUploading}
+                    />
+                    {isUploading ? (
+                      <Spinner size="sm" />
+                    ) : (
+                      <Camera
+                        size={20}
+                        className="text-[#8A7966] group-hover:text-[#C4783A] transition-colors"
+                      />
+                    )}
+                    <span className="text-[10px] font-bold text-[#8A7966] uppercase tracking-widest group-hover:text-[#C4783A] transition-colors">
+                      Tải ảnh
+                    </span>
                   </label>
                 )}
               </div>

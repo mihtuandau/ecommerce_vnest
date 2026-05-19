@@ -10,11 +10,13 @@ export const metadata: Metadata = {
 
 export default function CheckoutPage() {
   return (
-    <Suspense 
+    <Suspense
       fallback={
         <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4">
           <Spinner size="lg" />
-          <p className="text-xs font-black text-slate-400 uppercase tracking-[0.2em]">Đang chuẩn bị thanh toán...</p>
+          <p className="text-xs font-black text-slate-400 uppercase tracking-[0.2em]">
+            Đang chuẩn bị thanh toán...
+          </p>
         </div>
       }
     >

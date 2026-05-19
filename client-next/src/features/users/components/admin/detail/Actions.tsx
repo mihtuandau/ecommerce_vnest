@@ -5,11 +5,7 @@ import { User } from "@/types/models";
 import { Button } from "@/components/ui/Button";
 import { Ban, CheckCircle2, Trash2, Mail, ShieldAlert } from "lucide-react";
 import { UserStatus } from "@/types/enums";
-import { 
-  useUpdateUser, 
-  useResetPassword, 
-  useDeleteUser 
-} from "../../../hooks";
+import { useUpdateUser, useResetPassword, useDeleteUser } from "../../../hooks";
 import { cn } from "@/utils/cn";
 
 interface ActionsProps {
@@ -22,7 +18,8 @@ export function Actions({ user, onEdit }: ActionsProps) {
   const { mutate: updateUser, isPending: isUpdating } = useUpdateUser();
 
   const toggleStatus = () => {
-    const newStatus = user.status === UserStatus.ACTIVE ? UserStatus.SUSPENDED : UserStatus.ACTIVE;
+    const newStatus =
+      user.status === UserStatus.ACTIVE ? UserStatus.SUSPENDED : UserStatus.ACTIVE;
     updateUser({ id: user.id, data: { status: newStatus } });
   };
 
@@ -35,17 +32,17 @@ export function Actions({ user, onEdit }: ActionsProps) {
         </h3>
       </div>
       <div className="p-4 space-y-2">
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           className="w-full justify-start gap-2 rounded-xl font-bold text-slate-600 border-slate-200 hover:bg-slate-50"
           onClick={onEdit}
         >
           <Ban className="h-4 w-4 text-slate-400" />
           Chỉnh sửa tài khoản
         </Button>
-        
-        <Button 
-          variant="outline" 
+
+        <Button
+          variant="outline"
           className={cn(
             "w-full justify-start gap-2 rounded-xl font-bold border-slate-200 hover:bg-slate-50",
             user.status === UserStatus.ACTIVE ? "text-amber-600" : "text-emerald-600"
@@ -68,8 +65,8 @@ export function Actions({ user, onEdit }: ActionsProps) {
 
         <div className="my-2 border-t border-slate-100" />
 
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           className="w-full justify-start gap-2 rounded-xl font-bold text-rose-600 border-slate-200 hover:bg-rose-50 hover:border-rose-100"
           onClick={() => {
             if (confirm(`Bạn có chắc muốn xóa tài khoản ${user.email}?`)) {

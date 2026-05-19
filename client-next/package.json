@@ -8,7 +8,8 @@
     "build:prod": "npm run clean:logs && next build",
     "clean:logs": "node scripts/clean-console-logs.js",
     "lint": "next lint",
-    "start": "next start"
+    "start": "next start",
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\""
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
@@ -68,6 +69,7 @@
     "eslint": "^9.39.1",
     "eslint-config-next": "^15.3.0",
     "globals": "^16.5.0",
+    "prettier": "^3.8.3",
     "typescript": "^5.8.3"
   }
 }

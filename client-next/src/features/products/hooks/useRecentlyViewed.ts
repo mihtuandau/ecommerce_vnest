@@ -27,7 +27,7 @@ export function useRecentlyViewed() {
       if (prev.length > 0 && prev[0].id === product.id) {
         return prev;
       }
-      
+
       // Remove if already exists elsewhere in the list
       const filtered = prev.filter((p) => p.id !== product.id);
       // Add to front

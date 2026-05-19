@@ -16,7 +16,7 @@ function AuthHandlerContent() {
 
   useEffect(() => {
     const authSuccess = searchParams.get("auth_success");
-    
+
     if (authSuccess === "true") {
       const handleLoginSuccess = async () => {
         try {
@@ -35,7 +35,7 @@ function AuthHandlerContent() {
             particleCount: 150,
             spread: 70,
             origin: { y: 0.6 },
-            colors: ["#1565C0", "#ffffff", "#64b5f6"]
+            colors: ["#1565C0", "#ffffff", "#64b5f6"],
           });
 
           // 4. Clean up URL
@@ -43,7 +43,10 @@ function AuthHandlerContent() {
           window.history.replaceState({}, "", newUrl);
 
           // 5. Redirect if staff
-          const isStaff = data.role === Role.ADMIN || data.role === Role.KHO || data.role === Role.BAN_HANG;
+          const isStaff =
+            data.role === Role.ADMIN ||
+            data.role === Role.KHO ||
+            data.role === Role.BAN_HANG;
           if (isStaff) {
             router.push(ROUTES.ADMIN);
           }

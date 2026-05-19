@@ -17,18 +17,21 @@ export default function AdminUsersPage() {
 
   const users: User[] = React.useMemo(() => (data as any)?.data || [], [data]);
 
-  const stats = React.useMemo(() => ({
-    total: users.length,
-    admins: users.filter((u: any) => u.role === Role.ADMIN).length,
-    active: users.length, // Could be more specific if active status exists
-  }), [users]);
+  const stats = React.useMemo(
+    () => ({
+      total: users.length,
+      admins: users.filter((u: any) => u.role === Role.ADMIN).length,
+      active: users.length, // Could be more specific if active status exists
+    }),
+    [users]
+  );
 
   const filteredUsers = React.useMemo(() => {
     if (!searchTerm) return users;
     const lower = searchTerm.toLowerCase();
-    return users.filter((u: any) => 
-      u.name?.toLowerCase().includes(lower) || 
-      u.email?.toLowerCase().includes(lower)
+    return users.filter(
+      (u: any) =>
+        u.name?.toLowerCase().includes(lower) || u.email?.toLowerCase().includes(lower)
     );
   }, [users, searchTerm]);
 
@@ -36,17 +39,10 @@ export default function AdminUsersPage() {
     <div className="space-y-4 pb-10">
       <Header totalUsers={users.length} />
 
-      <Stats 
-        total={stats.total} 
-        admins={stats.admins} 
-        active={stats.active} 
-      />
+      <Stats total={stats.total} admins={stats.admins} active={stats.active} />
 
       <div className="bg-white rounded-2xl border-none shadow-sm overflow-hidden">
-        <Toolbar 
-          searchTerm={searchTerm} 
-          onSearchChange={setSearchTerm} 
-        />
+        <Toolbar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
 
         <div className="overflow-x-auto">
           {isLoading ? (

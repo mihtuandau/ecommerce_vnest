@@ -24,18 +24,18 @@ export const useWishlistStore = create<WishlistStore>()(
   persist(
     (set, get) => ({
       items: [],
-      
+
       addToWishlist: (item) => {
         const { items } = get();
         if (!items.find((i) => i.id === item.id)) {
           set({ items: [...items, item] });
         }
       },
-      
+
       removeFromWishlist: (id) => {
         set({ items: get().items.filter((i) => i.id !== id) });
       },
-      
+
       toggleWishlist: (item) => {
         const { items } = get();
         const existing = items.find((i) => i.id === item.id);
@@ -45,11 +45,11 @@ export const useWishlistStore = create<WishlistStore>()(
           set({ items: [...items, item] });
         }
       },
-      
+
       isInWishlist: (id) => {
         return get().items.some((i) => i.id === id);
       },
-      
+
       clearWishlist: () => set({ items: [] }),
     }),
     {

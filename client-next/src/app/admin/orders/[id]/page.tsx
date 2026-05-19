@@ -1,7 +1,12 @@
 "use client";
 
 import React from "react";
-import { useOrderDetail, useUpdateOrderStatus, useSyncToGHN, useUpdatePaymentStatus } from "@/features/orders/hooks";
+import {
+  useOrderDetail,
+  useUpdateOrderStatus,
+  useSyncToGHN,
+  useUpdatePaymentStatus,
+} from "@/features/orders/hooks";
 import { useParams } from "next/navigation";
 import { Header } from "@/features/orders/components/admin/detail/Header";
 import { Stepper } from "@/features/orders/components/admin/detail/Stepper";
@@ -18,7 +23,8 @@ export default function AdminOrderDetailPage() {
   const { data: order, isLoading } = useOrderDetail(id);
   const { mutate: updateStatus, isPending: isUpdating } = useUpdateOrderStatus();
   const { mutate: syncGHN, isPending: isSyncing } = useSyncToGHN();
-  const { mutate: updatePayment, isPending: isUpdatingPayment } = useUpdatePaymentStatus();
+  const { mutate: updatePayment, isPending: isUpdatingPayment } =
+    useUpdatePaymentStatus();
 
   const isPending = isUpdating || isSyncing || isUpdatingPayment;
 
@@ -31,26 +37,31 @@ export default function AdminOrderDetailPage() {
     );
   }
 
-  if (!order) return <div className="p-20 text-center font-bold text-slate-500">Không tìm thấy đơn hàng</div>;
+  if (!order)
+    return (
+      <div className="p-20 text-center font-bold text-slate-500">
+        Không tìm thấy đơn hàng
+      </div>
+    );
 
   return (
     <div className="space-y-4 pb-10 mx-auto relative">
       <div className="no-print space-y-4">
         {/* Top Header */}
-        <Header 
-          order={order} 
-          id={id} 
-          onUpdateStatus={(id, status) => updateStatus({ id, status })} 
+        <Header
+          order={order}
+          id={id}
+          onUpdateStatus={(id, status) => updateStatus({ id, status })}
         />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column: Stepper, Items, Timeline, Notes */}
           <div className="lg:col-span-2 space-y-6">
-            <Stepper 
-              status={order.status} 
-              id={id} 
-              isPending={isPending} 
-              onUpdateStatus={(id, status) => updateStatus({ id, status })} 
+            <Stepper
+              status={order.status}
+              id={id}
+              isPending={isPending}
+              onUpdateStatus={(id, status) => updateStatus({ id, status })}
             />
             <Items order={order} />
             <Timeline order={order} />
@@ -60,13 +71,13 @@ export default function AdminOrderDetailPage() {
           {/* Right Column: Customer & Actions */}
           <div className="space-y-6">
             <Customer order={order} />
-            <Actions 
-                order={order}
-                id={id}
-                isPending={isPending}
-                onUpdateStatus={updateStatus}
-                onSyncGHN={syncGHN}
-                onUpdatePayment={updatePayment}
+            <Actions
+              order={order}
+              id={id}
+              isPending={isPending}
+              onUpdateStatus={updateStatus}
+              onSyncGHN={syncGHN}
+              onUpdatePayment={updatePayment}
             />
           </div>
         </div>

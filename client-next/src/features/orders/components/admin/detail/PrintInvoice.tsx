@@ -96,12 +96,16 @@ export function PrintInvoice({ order }: PrintInvoiceProps) {
           <p className="text-xs mt-1 font-medium">
             Thanh toán:{" "}
             <span className="font-bold">
-              {order.paymentMethod === PaymentMethod.CASH ? "Tiền mặt" : order.paymentMethod}
+              {order.paymentMethod === PaymentMethod.CASH
+                ? "Tiền mặt"
+                : order.paymentMethod}
             </span>
           </p>
           <p className="text-xs mt-1 uppercase font-black">
             Trạng thái:{" "}
-            {order.payment?.status === PaymentStatus.SUCCESS ? "Đã thanh toán" : "Chờ thanh toán"}
+            {order.payment?.status === PaymentStatus.SUCCESS
+              ? "Đã thanh toán"
+              : "Chờ thanh toán"}
           </p>
         </div>
       </div>

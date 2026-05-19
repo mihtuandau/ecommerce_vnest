@@ -41,7 +41,9 @@ export function TrustBadges() {
             <h3 className="font-medium text-[#3D2B1A] text-sm leading-tight">
               {badge.title}
             </h3>
-            <p className="text-[12px] text-[#8A7966] mt-1 leading-relaxed line-clamp-2">{badge.desc}</p>
+            <p className="text-[12px] text-[#8A7966] mt-1 leading-relaxed line-clamp-2">
+              {badge.desc}
+            </p>
           </div>
         </div>
       ))}

@@ -24,7 +24,7 @@ const BADGES = [
     icon: Award,
     title: "Cam kết chất lượng",
     description: "Hoàn tiền nếu không ưng ý",
-  }
+  },
 ];
 
 export function ProductTrustBadges() {

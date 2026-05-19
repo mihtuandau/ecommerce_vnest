@@ -15,7 +15,10 @@ export type CheckoutFormData = {
   orderNote: string;
 };
 
-export const validateCheckoutForm = (form: CheckoutFormData, isGuest?: boolean): { valid: boolean; message?: string } => {
+export const validateCheckoutForm = (
+  form: CheckoutFormData,
+  isGuest?: boolean
+): { valid: boolean; message?: string } => {
   if (!form.fullName?.trim()) {
     return { valid: false, message: CHECKOUT_MESSAGES.FULL_NAME };
   }
@@ -40,10 +43,7 @@ export const validateCheckoutForm = (form: CheckoutFormData, isGuest?: boolean):
   return { valid: true };
 };
 
-export const calculateDiscountAmount = (
-  subtotal: number,
-  discount: any,
-): number => {
+export const calculateDiscountAmount = (subtotal: number, discount: any): number => {
   if (!discount) return 0;
 
   let voucherSaving = 0;
@@ -63,5 +63,5 @@ export const calculateDiscountAmount = (
 };
 
 export const formatCurrency = (amount: number): string => {
-  return new Intl.NumberFormat('vi-VN').format(amount);
+  return new Intl.NumberFormat("vi-VN").format(amount);
 };

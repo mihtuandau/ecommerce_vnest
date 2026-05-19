@@ -27,7 +27,9 @@ export function PermissionMatrix({
     <Card className="border-slate-100 shadow-sm rounded-2xl overflow-hidden font-sans">
       <CardHeader className="border-b border-slate-50 bg-white">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-base font-bold text-slate-900">Danh sách quyền hạn</CardTitle>
+          <CardTitle className="text-base font-bold text-slate-900">
+            Danh sách quyền hạn
+          </CardTitle>
           <div className="flex items-center gap-2">
             <Button
               variant="ghost"
@@ -70,19 +72,30 @@ export function PermissionMatrix({
                       onClick={() => onToggle(perm.id)}
                       className={cn(
                         "flex items-center gap-3 p-3 rounded-xl border transition-all cursor-pointer select-none",
-                        isOn ? "bg-primary/5 border-primary/20" : "bg-white border-slate-100 hover:border-slate-200"
+                        isOn
+                          ? "bg-primary/5 border-primary/20"
+                          : "bg-white border-slate-100 hover:border-slate-200"
                       )}
                     >
                       <div
                         className={cn(
                           "h-5 w-5 rounded-md border-2 flex items-center justify-center transition-all",
-                          isOn ? "bg-primary border-primary" : "border-slate-200 bg-white"
+                          isOn
+                            ? "bg-primary border-primary"
+                            : "border-slate-200 bg-white"
                         )}
                       >
-                        {isOn && <Check className="h-3 w-3 text-white" strokeWidth={4} />}
+                        {isOn && (
+                          <Check className="h-3 w-3 text-white" strokeWidth={4} />
+                        )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className={cn("text-xs font-bold truncate", isOn ? "text-slate-900" : "text-slate-500")}>
+                        <p
+                          className={cn(
+                            "text-xs font-bold truncate",
+                            isOn ? "text-slate-900" : "text-slate-500"
+                          )}
+                        >
                           {ACTION_LABELS[action] || action}
                         </p>
                         <p className="text-[10px] text-slate-400 font-medium truncate">

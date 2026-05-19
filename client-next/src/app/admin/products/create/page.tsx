@@ -13,11 +13,11 @@ export default function AdminProductCreatePage() {
 
   const handleSubmit = async (data: any) => {
     const { images, variants } = data;
-    
+
     // Clean numeric values (remove dots, commas, etc if they are strings)
     const cleanNumber = (val: any) => {
-      if (typeof val === 'string') {
-        const cleaned = val.replace(/[.,\s]/g, '');
+      if (typeof val === "string") {
+        const cleaned = val.replace(/[.,\s]/g, "");
         return cleaned ? Number(cleaned) : 0;
       }
       return Number(val || 0);
@@ -37,11 +37,11 @@ export default function AdminProductCreatePage() {
       images: images || [],
       variants: variants || [],
     };
-    
+
     createProduct(cleanDto, {
       onSuccess: () => {
         router.push("/admin/products");
-      }
+      },
     });
   };
 
@@ -51,8 +51,8 @@ export default function AdminProductCreatePage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             size="sm"
             className="h-9 w-9 p-0 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 shadow-sm transition-all"
             onClick={() => router.back()}

@@ -206,11 +206,13 @@ export function Sidebar() {
 
   // Auto-expand menu that contains the active route
   useEffect(() => {
-    navGroups.forEach(group => {
-      group.items.forEach(item => {
+    navGroups.forEach((group) => {
+      group.items.forEach((item) => {
         if (item.subItems) {
-          const isSubActive = item.subItems.some(sub => 
-            pathname === sub.href || (sub.href !== "/admin" && pathname.startsWith(sub.href + "/"))
+          const isSubActive = item.subItems.some(
+            (sub) =>
+              pathname === sub.href ||
+              (sub.href !== "/admin" && pathname.startsWith(sub.href + "/"))
           );
           if (isSubActive) setExpandedMenu(item.label);
         }
@@ -253,7 +255,13 @@ export function Sidebar() {
       {/* Navigation */}
       <nav className="flex-1 space-y-6 p-4 overflow-y-auto custom-sidebar-scrollbar pt-2">
         {visibleGroups.map((group, groupIdx) => (
-          <div key={groupIdx} className={cn("space-y-2 pb-2", groupIdx > 0 && "pt-4 border-t border-white/5")}>
+          <div
+            key={groupIdx}
+            className={cn(
+              "space-y-2 pb-2",
+              groupIdx > 0 && "pt-4 border-t border-white/5"
+            )}
+          >
             {!isCollapsed && (
               <p className="px-3 text-[12.5px] font-semibold text-slate-400 mb-2 ml-1">
                 {group.title}
@@ -263,94 +271,118 @@ export function Sidebar() {
               {group.items.map((item) => {
                 const hasSub = !!item.subItems;
                 const isExpanded = expandedMenu === item.label;
-                const isActive = hasSub 
-                  ? item.subItems!.some(sub => pathname === sub.href || (sub.href !== "/admin" && pathname.startsWith(sub.href + "/")))
-                  : (pathname === item.href || (item.href !== "/admin" && pathname.startsWith(item.href!)));
+                const isActive = hasSub
+                  ? item.subItems!.some(
+                      (sub) =>
+                        pathname === sub.href ||
+                        (sub.href !== "/admin" && pathname.startsWith(sub.href + "/"))
+                    )
+                  : pathname === item.href ||
+                    (item.href !== "/admin" && pathname.startsWith(item.href!));
 
                 const ItemWrapper = hasSub ? "button" : Link;
-                const itemProps = hasSub 
-                  ? { onClick: () => setExpandedMenu(isExpanded ? null : item.label), className: "w-full" } 
+                const itemProps = hasSub
+                  ? {
+                      onClick: () => setExpandedMenu(isExpanded ? null : item.label),
+                      className: "w-full",
+                    }
                   : { href: item.href! };
 
                 return (
                   <div key={item.label} className="flex flex-col">
-                  <ItemWrapper
-                    {...(itemProps as any)}
-                    className={cn(
-                      "group relative flex items-center gap-3 rounded-xl px-3 py-1.5 text-[13px] font-normal transition-all duration-300",
-                      isActive
-                        ? "bg-white/10 text-white"
-                        : "text-slate-400 hover:bg-white/5 hover:text-white"
-                    )}
-                  >
-                    <div
+                    <ItemWrapper
+                      {...(itemProps as any)}
                       className={cn(
-                        "flex items-center justify-center h-8 w-8 rounded-lg transition-all duration-300",
+                        "group relative flex items-center gap-3 rounded-xl px-3 py-1.5 text-[13px] font-normal transition-all duration-300",
                         isActive
                           ? "bg-white/10 text-white"
-                          : "bg-slate-800/50 text-slate-400 group-hover:bg-slate-700/50 group-hover:text-white"
+                          : "text-slate-400 hover:bg-white/5 hover:text-white"
                       )}
                     >
-                      <item.icon className="h-4 w-4 shrink-0" />
-                    </div>
-
-                    {!isCollapsed && (
-                      <span
+                      <div
                         className={cn(
-                          "flex-1 truncate transition-all duration-300",
-                          isActive ? "text-white" : "group-hover:translate-x-1"
+                          "flex items-center justify-center h-8 w-8 rounded-lg transition-all duration-300",
+                          isActive
+                            ? "bg-white/10 text-white"
+                            : "bg-slate-800/50 text-slate-400 group-hover:bg-slate-700/50 group-hover:text-white"
                         )}
                       >
-                        {item.label}
-                      </span>
-                    )}
+                        <item.icon className="h-4 w-4 shrink-0" />
+                      </div>
 
-                    {!isCollapsed && item.badge && (
-                      <span
+                      {!isCollapsed && (
+                        <span
+                          className={cn(
+                            "flex-1 truncate transition-all duration-300",
+                            isActive ? "text-white" : "group-hover:translate-x-1"
+                          )}
+                        >
+                          {item.label}
+                        </span>
+                      )}
+
+                      {!isCollapsed && item.badge && (
+                        <span
+                          className={cn(
+                            "px-1.5 py-0.5 rounded-md text-xs font-medium tracking-tight",
+                            item.badge === "New"
+                              ? "bg-emerald-500/10 text-emerald-500"
+                              : "bg-primary/10 text-primary"
+                          )}
+                        >
+                          {item.badge}
+                        </span>
+                      )}
+
+                      {!isCollapsed && hasSub && (
+                        <ChevronDown
+                          className={cn(
+                            "h-4 w-4 text-slate-500 transition-transform duration-300",
+                            isExpanded && "rotate-180"
+                          )}
+                        />
+                      )}
+
+                      {isActive && !hasSub && (
+                        <div className="absolute left-0 w-1 h-5 bg-white rounded-r-full" />
+                      )}
+
+                      {isCollapsed && (
+                        <div className="absolute left-full ml-6 rounded-lg px-3 py-2 bg-slate-900 text-white text-xs font-normal opacity-0 group-hover:opacity-100 pointer-events-none transition-all translate-x-[-10px] group-hover:translate-x-0 whitespace-nowrap z-50 shadow-2xl border border-white/5">
+                          {item.label}
+                        </div>
+                      )}
+                    </ItemWrapper>
+
+                    {/* Submenu */}
+                    {hasSub && !isCollapsed && (
+                      <div
                         className={cn(
-                          "px-1.5 py-0.5 rounded-md text-xs font-medium tracking-tight",
-                          item.badge === "New"
-                            ? "bg-emerald-500/10 text-emerald-500"
-                            : "bg-primary/10 text-primary"
+                          "overflow-hidden transition-all duration-300 ease-in-out",
+                          isExpanded ? "max-h-40 opacity-100" : "max-h-0 opacity-0"
                         )}
                       >
-                        {item.badge}
-                      </span>
-                    )}
-
-                    {!isCollapsed && hasSub && (
-                      <ChevronDown className={cn("h-4 w-4 text-slate-500 transition-transform duration-300", isExpanded && "rotate-180")} />
-                    )}
-
-                    {isActive && !hasSub && (
-                      <div className="absolute left-0 w-1 h-5 bg-white rounded-r-full" />
-                    )}
-
-                    {isCollapsed && (
-                      <div className="absolute left-full ml-6 rounded-lg px-3 py-2 bg-slate-900 text-white text-xs font-normal opacity-0 group-hover:opacity-100 pointer-events-none transition-all translate-x-[-10px] group-hover:translate-x-0 whitespace-nowrap z-50 shadow-2xl border border-white/5">
-                        {item.label}
+                        <div className="flex flex-col gap-1 pl-11 pr-3 py-1">
+                          {item.subItems!.map((sub) => {
+                            const isSubActive = pathname === sub.href;
+                            return (
+                              <Link
+                                key={sub.href}
+                                href={sub.href}
+                                className={cn(
+                                  "py-1 px-3 text-[12px] rounded-lg transition-colors flex items-center",
+                                  isSubActive
+                                    ? "text-white font-normal bg-white/8"
+                                    : "text-slate-400/80 hover:text-white hover:bg-white/5"
+                                )}
+                              >
+                                {sub.label}
+                              </Link>
+                            );
+                          })}
+                        </div>
                       </div>
                     )}
-                  </ItemWrapper>
-                  
-                  {/* Submenu */}
-                  {hasSub && !isCollapsed && (
-                    <div className={cn("overflow-hidden transition-all duration-300 ease-in-out", isExpanded ? "max-h-40 opacity-100" : "max-h-0 opacity-0")}>
-                      <div className="flex flex-col gap-1 pl-11 pr-3 py-1">
-                        {item.subItems!.map(sub => {
-                           const isSubActive = pathname === sub.href;
-                           return (
-                             <Link key={sub.href} href={sub.href} className={cn(
-                               "py-1 px-3 text-[12px] rounded-lg transition-colors flex items-center",
-                               isSubActive ? "text-white font-normal bg-white/8" : "text-slate-400/80 hover:text-white hover:bg-white/5"
-                             )}>
-                               {sub.label}
-                             </Link>
-                           )
-                        })}
-                      </div>
-                    </div>
-                  )}
                   </div>
                 );
               })}

@@ -112,6 +112,6 @@ export function useAdminProfile() {
     isUploading,
     fileInputRef,
     handleFileChange,
-    isPending: updateUser.isPending
+    isPending: updateUser.isPending,
   };
 }

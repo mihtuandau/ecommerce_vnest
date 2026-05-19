@@ -24,13 +24,8 @@ const variantMap = {
 
 export function Spinner({ size = "md", className, variant = "primary" }: SpinnerProps) {
   return (
-    <Loader2 
-      className={cn(
-        "animate-spin",
-        sizeMap[size],
-        variantMap[variant],
-        className
-      )} 
+    <Loader2
+      className={cn("animate-spin", sizeMap[size], variantMap[variant], className)}
     />
   );
 }
@@ -41,7 +36,7 @@ export function FullPageLoading() {
       <div className="relative">
         <Spinner size="xl" />
         <div className="absolute inset-0 animate-ping opacity-20">
-            <Spinner size="xl" />
+          <Spinner size="xl" />
         </div>
       </div>
       <p className="mt-6 text-sm font-bold text-brand-espresso tracking-tight animate-pulse">

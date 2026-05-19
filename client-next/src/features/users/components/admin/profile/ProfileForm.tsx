@@ -2,12 +2,23 @@
 
 import React from "react";
 import { User, Mail, Phone, Save } from "lucide-react";
-import { 
-  Form, FormControl, FormField, FormItem, FormLabel, FormMessage 
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
 } from "@/components/ui/Form";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/Card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/Card";
 import { Spinner } from "@/components/ui/Spinner";
 import { UseFormReturn } from "react-hook-form";
 
@@ -17,11 +28,7 @@ interface ProfileFormProps {
   isPending: boolean;
 }
 
-export function ProfileForm({
-  form,
-  onSubmit,
-  isPending,
-}: ProfileFormProps) {
+export function ProfileForm({ form, onSubmit, isPending }: ProfileFormProps) {
   return (
     <div className="md:col-span-2">
       <Card className="border-none shadow-2xl shadow-slate-200/40 bg-white rounded-2xl overflow-hidden">
@@ -143,7 +150,11 @@ export function ProfileForm({
                   className="h-11 px-8 rounded-xl font-bold bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20 flex items-center gap-2"
                   disabled={isPending}
                 >
-                  {isPending ? <Spinner size="sm" variant="white" /> : <Save className="h-4 w-4" />}
+                  {isPending ? (
+                    <Spinner size="sm" variant="white" />
+                  ) : (
+                    <Save className="h-4 w-4" />
+                  )}
                   Lưu thay đổi
                 </Button>
               </div>

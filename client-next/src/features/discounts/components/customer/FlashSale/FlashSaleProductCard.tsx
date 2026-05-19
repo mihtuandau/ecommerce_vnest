@@ -28,7 +28,7 @@ export function FlashSaleProductCard({
 }: FlashSaleProductCardProps) {
   const { addItem } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlistStore();
-  const user = useAuthStore(state => state.user);
+  const user = useAuthStore((state) => state.user);
   const { success, error } = useToast();
   const router = useRouter();
   const [isQuickAddOpen, setIsQuickAddOpen] = useState(false);
@@ -51,8 +51,7 @@ export function FlashSaleProductCard({
     appliedFixedAmount = targetSource.fixedAmount;
     salePrice = Math.max(0, originalPrice - appliedFixedAmount);
     discountPercent =
-      targetSource.percentage ||
-      Math.round((appliedFixedAmount / originalPrice) * 100);
+      targetSource.percentage || Math.round((appliedFixedAmount / originalPrice) * 100);
   } else if (targetSource.percentage) {
     discountPercent = targetSource.percentage;
     salePrice = Math.round(originalPrice * (1 - discountPercent / 100));
@@ -137,8 +136,8 @@ export function FlashSaleProductCard({
             {product.badge === "hot"
               ? "HOT"
               : product.badge === "last"
-              ? "SẮP HẾT"
-              : product.badge.toUpperCase()}
+                ? "SẮP HẾT"
+                : product.badge.toUpperCase()}
           </div>
         )}
 
@@ -254,15 +253,15 @@ export function FlashSaleProductCard({
                 status === "LIVE"
                   ? "bg-[#3D2B1A] hover:bg-[#E8320A] text-[#FAF8F4] shadow-sm"
                   : status === "SOON"
-                  ? "bg-white border border-[#DDD6C8] text-[#8A7966] hover:bg-[#FAF8F4]"
-                  : "bg-[#F3EFE8] text-[#8A7966] opacity-60 cursor-not-allowed"
+                    ? "bg-white border border-[#DDD6C8] text-[#8A7966] hover:bg-[#FAF8F4]"
+                    : "bg-[#F3EFE8] text-[#8A7966] opacity-60 cursor-not-allowed"
               )}
             >
               {status === "LIVE"
                 ? "Mua ngay"
                 : status === "SOON"
-                ? "Nhắc tôi"
-                : "Đã kết thúc"}
+                  ? "Nhắc tôi"
+                  : "Đã kết thúc"}
             </button>
           </div>
         </div>

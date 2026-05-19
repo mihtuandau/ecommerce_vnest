@@ -5,7 +5,10 @@ import type { Product } from "@/types/models";
 import { queryKeys } from "@/constants/queryKeys";
 import { useToast } from "@/hooks/useToast";
 
-export function useProducts(params?: Record<string, string | number | boolean | undefined>, options?: { enabled?: boolean }) {
+export function useProducts(
+  params?: Record<string, string | number | boolean | undefined>,
+  options?: { enabled?: boolean }
+) {
   return useQuery({
     queryKey: queryKeys.products.list(params as Record<string, string>),
     queryFn: () => productsApi.getProducts(params),
@@ -19,7 +22,7 @@ export function useProductDetail(slugOrId: string, allVariants = false) {
     queryFn: () => productsApi.getProduct(slugOrId, allVariants),
     enabled: !!slugOrId,
     staleTime: 0, // Luôn lấy dữ liệu mới khi vào trang chi tiết
-    gcTime: 5 * 60 * 1000,  // Lưu trong bộ nhớ đệm 5 phút
+    gcTime: 5 * 60 * 1000, // Lưu trong bộ nhớ đệm 5 phút
   });
 }
 

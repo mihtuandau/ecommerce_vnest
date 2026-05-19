@@ -11,6 +11,14 @@ import { SecurityTab } from "./account/SecurityTab";
 import { NotificationsTab } from "./account/NotificationsTab";
 import { ReviewsTab } from "./account/ReviewsTab";
 import { AccountSkeleton } from "./AccountSkeleton";
+import {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui";
 
 type Tab = "info" | "address" | "security" | "notifications" | "reviews";
 
@@ -23,7 +31,10 @@ export function AccountView() {
   // Sync activeTab with URL query param
   useEffect(() => {
     const tab = searchParams.get("tab") as Tab;
-    if (tab && ["info", "address", "security", "notifications", "reviews"].includes(tab)) {
+    if (
+      tab &&
+      ["info", "address", "security", "notifications", "reviews"].includes(tab)
+    ) {
       setActiveTab(tab);
     }
   }, [searchParams]);
@@ -37,19 +48,38 @@ export function AccountView() {
   return (
     <div className="bg-brand-cream min-h-screen pb-24 font-sans-brand">
       {/* ── BREADCRUMBS ── */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex items-center gap-2 text-[12.5px] text-brand-taupe">
-        <Link href="/" className="hover:text-brand-espresso transition-colors">Trang chủ</Link>
-        <span className="opacity-50 text-[10px]">›</span>
-        <span className="text-brand-espresso font-medium">Tài khoản</span>
-        <span className="opacity-50 text-[10px]">›</span>
-        <span className="text-brand-espresso font-semibold">
-          {activeTab === "info" ? "Hồ sơ" : activeTab === "address" ? "Địa chỉ" : activeTab === "security" ? "Bảo mật" : activeTab === "notifications" ? "Thông báo" : "Đánh giá"}
-        </span>
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href="/">Trang chủ</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Tài khoản</BreadcrumbPage>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>
+                {activeTab === "info"
+                  ? "Hồ sơ"
+                  : activeTab === "address"
+                    ? "Địa chỉ"
+                    : activeTab === "security"
+                      ? "Bảo mật"
+                      : activeTab === "notifications"
+                        ? "Thông báo"
+                        : "Đánh giá"}
+              </BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
       </div>
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
         <div className="flex flex-col lg:grid lg:grid-cols-[256px_1fr] gap-8 items-start">
-          
           <AccountSidebar />
 
           <main className="flex-1 w-full">

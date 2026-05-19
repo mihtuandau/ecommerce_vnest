@@ -37,32 +37,40 @@ export function MaintenanceShield() {
               Hệ thống đang bảo trì
             </h1>
             <p className="text-[13.5px] text-[#8A7966] leading-relaxed font-medium">
-              Chúng tôi đang tiến hành bảo dưỡng định kỳ hệ thống của cửa hàng để mang lại chất lượng phục vụ và trải nghiệm mua sắm hoàn mỹ nhất cho quý khách.
+              Chúng tôi đang tiến hành bảo dưỡng định kỳ hệ thống của cửa hàng để mang
+              lại chất lượng phục vụ và trải nghiệm mua sắm hoàn mỹ nhất cho quý khách.
             </p>
           </div>
 
           <div className="p-4 bg-[#F9F6F0] rounded-2xl border border-[#EFEBE4] flex items-center gap-3.5 text-left max-w-sm mx-auto shadow-2xs">
             <Clock className="h-5 w-5 text-[#C4783A] shrink-0" />
             <div className="space-y-0.5">
-              <p className="text-xs font-bold text-[#3D2B1A]">Thời gian dự kiến hoàn thành</p>
-              <p className="text-[11px] text-[#8A7966] leading-relaxed font-semibold">Thường mất khoảng 1 - 2 tiếng. Xin trân trọng cảm ơn sự kiên nhẫn của quý khách hàng!</p>
+              <p className="text-xs font-bold text-[#3D2B1A]">
+                Thời gian dự kiến hoàn thành
+              </p>
+              <p className="text-[11px] text-[#8A7966] leading-relaxed font-semibold">
+                Thường mất khoảng 1 - 2 tiếng. Xin trân trọng cảm ơn sự kiên nhẫn của
+                quý khách hàng!
+              </p>
             </div>
           </div>
 
           <div className="pt-5 space-y-3.5 border-t border-[#DDD6C8] max-w-sm mx-auto">
-            <p className="text-[10px] font-bold text-[#8A7966] uppercase tracking-[0.12em]">Hỗ trợ trực tuyến</p>
+            <p className="text-[10px] font-bold text-[#8A7966] uppercase tracking-[0.12em]">
+              Hỗ trợ trực tuyến
+            </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4 text-xs font-semibold text-[#3D2B1A]">
               {settings?.storePhone && (
-                <a 
-                  href={`tel:${settings.storePhone}`} 
+                <a
+                  href={`tel:${settings.storePhone}`}
                   className="flex items-center justify-center gap-2 text-[#3D2B1A] hover:text-[#C4783A] transition-colors"
                 >
                   <Phone className="h-3.5 w-3.5 text-[#C4783A]" /> {settings.storePhone}
                 </a>
               )}
               {settings?.storeEmail && (
-                <a 
-                  href={`mailto:${settings.storeEmail}`} 
+                <a
+                  href={`mailto:${settings.storeEmail}`}
                   className="flex items-center justify-center gap-2 text-[#3D2B1A] hover:text-[#C4783A] transition-colors"
                 >
                   <Mail className="h-3.5 w-3.5 text-[#C4783A]" /> {settings.storeEmail}

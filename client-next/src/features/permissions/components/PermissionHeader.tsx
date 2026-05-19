@@ -13,7 +13,12 @@ interface PermissionHeaderProps {
   onRefresh: () => void;
 }
 
-export function PermissionHeader({ isPending, hasChanges, onSave, onRefresh }: PermissionHeaderProps) {
+export function PermissionHeader({
+  isPending,
+  hasChanges,
+  onSave,
+  onRefresh,
+}: PermissionHeaderProps) {
   return (
     <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 font-sans">
       <div className="space-y-1">
@@ -21,9 +26,13 @@ export function PermissionHeader({ isPending, hasChanges, onSave, onRefresh }: P
           <div className="h-6 w-6 rounded-md bg-slate-100 flex items-center justify-center">
             <Lock className="h-3.5 w-3.5 text-slate-500" />
           </div>
-          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Hệ thống</span>
+          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+            Hệ thống
+          </span>
         </div>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900">Phân quyền người dùng</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+          Phân quyền người dùng
+        </h1>
         <p className="text-slate-500 text-sm max-w-xl">
           Quản lý các quyền truy cập cho từng nhóm vai trò trong hệ thống.
         </p>
@@ -49,7 +58,11 @@ export function PermissionHeader({ isPending, hasChanges, onSave, onRefresh }: P
           onClick={onSave}
           disabled={isPending}
         >
-          {isPending ? <Spinner size="sm" variant="white" /> : <Save className="h-3.5 w-3.5" />}
+          {isPending ? (
+            <Spinner size="sm" variant="white" />
+          ) : (
+            <Save className="h-3.5 w-3.5" />
+          )}
           {isPending ? "Đang lưu..." : "Lưu thay đổi"}
         </Button>
       </div>

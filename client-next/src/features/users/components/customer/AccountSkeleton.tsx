@@ -15,7 +15,6 @@ export function AccountSkeleton() {
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
         <div className="flex flex-col lg:grid lg:grid-cols-[256px_1fr] gap-8 items-start">
-          
           {/* ── SIDEBAR SKELETON ── */}
           <div className="w-full lg:w-64 bg-white border border-brand-sand rounded-2xl overflow-hidden shadow-sm">
             <div className="p-6 border-b border-brand-sand/50 text-center bg-brand-ivory/20 flex flex-col items-center">
@@ -44,7 +43,7 @@ export function AccountSkeleton() {
                 </div>
                 <Skeleton className="h-10 w-32 rounded-full" />
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {[1, 2, 3, 4].map((i) => (
                   <div key={i} className="space-y-3">
@@ -55,7 +54,6 @@ export function AccountSkeleton() {
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </div>

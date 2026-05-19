@@ -44,7 +44,7 @@ function SuccessContent() {
         angle: 60,
         spread: 60,
         origin: { x: 0, y: 0.65 },
-        colors: ["#C4783A", "#DDD6C8", "#8A7966", "#ffffff"]
+        colors: ["#C4783A", "#DDD6C8", "#8A7966", "#ffffff"],
       });
       // Bắn từ bên phải
       confetti({
@@ -52,7 +52,7 @@ function SuccessContent() {
         angle: 120,
         spread: 60,
         origin: { x: 1, y: 0.65 },
-        colors: ["#C4783A", "#DDD6C8", "#8A7966", "#ffffff"]
+        colors: ["#C4783A", "#DDD6C8", "#8A7966", "#ffffff"],
       });
 
       if (Date.now() < end) {
@@ -68,7 +68,7 @@ function SuccessContent() {
         <CheckoutSteps currentStep={3} />
       </div>
 
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-lg bg-white border border-brand-sand p-8 md:p-12 rounded-3xl shadow-sm text-center"
@@ -84,14 +84,20 @@ function SuccessContent() {
             Đặt hàng thành công
           </h1>
           <p className="text-brand-taupe text-sm font-medium leading-relaxed">
-            Cảm ơn bạn đã tin tưởng LUXE.<br />Đơn hàng của bạn đang được xử lý.
+            Cảm ơn bạn đã tin tưởng LUXE.
+            <br />
+            Đơn hàng của bạn đang được xử lý.
           </p>
         </div>
 
         {orderCode && (
           <div className="bg-brand-ivory rounded-2xl p-6 mb-8 flex flex-col items-center gap-1 border border-brand-sand">
-            <span className="text-[10px] font-bold text-brand-taupe/60 uppercase tracking-widest">Mã đơn hàng</span>
-            <span className="text-xl font-mono font-bold text-primary tracking-wider">{orderCode}</span>
+            <span className="text-[10px] font-bold text-brand-taupe/60 uppercase tracking-widest">
+              Mã đơn hàng
+            </span>
+            <span className="text-xl font-mono font-bold text-primary tracking-wider">
+              {orderCode}
+            </span>
             {isGuest && (
               <p className="text-[11px] text-brand-taupe/60 mt-2 font-medium italic">
                 Vui lòng lưu lại mã này để tra cứu đơn hàng
@@ -101,23 +107,27 @@ function SuccessContent() {
         )}
 
         <div className="flex flex-col gap-3">
-          <Button 
+          <Button
             asChild
             className="w-full h-12 rounded-xl bg-primary text-white font-bold text-sm shadow-md shadow-primary/10 transition-all active:scale-[0.98]"
           >
-            <Link href={(orderId && !isGuest) ? `/orders/${orderId}` : `/orders/guest/lookup/${orderCode}?contact=${contact}`}>
+            <Link
+              href={
+                orderId && !isGuest
+                  ? `/orders/${orderId}`
+                  : `/orders/guest/lookup/${orderCode}?contact=${contact}`
+              }
+            >
               Theo dõi đơn hàng
             </Link>
           </Button>
-          
-          <Button 
+
+          <Button
             variant="ghost"
             asChild
             className="w-full h-12 rounded-xl text-brand-taupe font-bold text-sm hover:bg-brand-ivory transition-all"
           >
-            <Link href="/shop">
-              Tiếp tục mua sắm
-            </Link>
+            <Link href="/shop">Tiếp tục mua sắm</Link>
           </Button>
         </div>
       </motion.div>

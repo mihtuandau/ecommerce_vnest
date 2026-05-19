@@ -3,11 +3,15 @@ import { useChatMessages, useSocket } from "@/features/chat";
 import { useQueryClient } from "@tanstack/react-query";
 import { chatApi } from "../api";
 
-export function useChatSession(selectedRoomId: string | null, refetchRooms: () => void) {
+export function useChatSession(
+  selectedRoomId: string | null,
+  refetchRooms: () => void
+) {
   const queryClient = useQueryClient();
-  const { data: initialMessages, isLoading: messagesLoading } = useChatMessages(selectedRoomId);
+  const { data: initialMessages, isLoading: messagesLoading } =
+    useChatMessages(selectedRoomId);
   const { socket, isConnected } = useSocket();
-  
+
   const [messages, setMessages] = useState<any[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -26,15 +30,16 @@ export function useChatSession(selectedRoomId: string | null, refetchRooms: () =
 
       // 2. Immediately mark as read to clear unread counts on both socket and database
       socket.emit("markAsRead", { roomId: selectedRoomId });
-      chatApi.markAsRead(selectedRoomId)
+      chatApi
+        .markAsRead(selectedRoomId)
         .then(() => {
           refetchRooms();
         })
-        .catch(err => console.error("Error marking messages as read:", err));
+        .catch((err) => console.error("Error marking messages as read:", err));
 
       const handleNewMessage = (newMessage: any) => {
         if (newMessage.roomId === selectedRoomId) {
-          setMessages(prev => [...prev, newMessage]);
+          setMessages((prev) => [...prev, newMessage]);
           // Mark as read if we are in the room
           socket.emit("markAsRead", { roomId: selectedRoomId });
         }
@@ -58,14 +63,17 @@ export function useChatSession(selectedRoomId: string | null, refetchRooms: () =
     scrollToBottom();
   }, [messages, scrollToBottom]);
 
-  const sendMessage = useCallback((text: string) => {
-    if (!text.trim() || !selectedRoomId || !socket) return;
-    
-    socket.emit("sendMessage", {
-      roomId: selectedRoomId,
-      message: text.trim(),
-    });
-  }, [selectedRoomId, socket]);
+  const sendMessage = useCallback(
+    (text: string) => {
+      if (!text.trim() || !selectedRoomId || !socket) return;
+
+      socket.emit("sendMessage", {
+        roomId: selectedRoomId,
+        message: text.trim(),
+      });
+    },
+    [selectedRoomId, socket]
+  );
 
   return {
     messages,
@@ -74,6 +82,6 @@ export function useChatSession(selectedRoomId: string | null, refetchRooms: () =
     messagesEndRef,
     sendMessage,
     isConnected,
-    socket
+    socket,
   };
 }

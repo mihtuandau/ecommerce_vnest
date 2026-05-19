@@ -26,7 +26,10 @@ import { useAuth } from "@/features/auth/hooks/useAuth";
 import Image from "next/image";
 import { Role } from "@/types/enums";
 import { ROLE_CONFIG } from "@/features/permissions/constants";
-import { useNotifications, useMarkNotificationRead } from "@/features/notifications/hooks";
+import {
+  useNotifications,
+  useMarkNotificationRead,
+} from "@/features/notifications/hooks";
 import { useRouter } from "next/navigation";
 import { ROUTES } from "@/constants/routes";
 import { cn } from "@/utils/cn";
@@ -115,7 +118,9 @@ export function AdminTopBar() {
             className="w-80 mt-2.5 rounded-2xl p-2 shadow-2xl border border-slate-100 bg-white animate-in fade-in zoom-in-95 duration-200 space-y-1"
           >
             <div className="flex items-center justify-between px-3 py-2 border-b border-slate-50">
-              <span className="font-bold text-[10px] tracking-wider text-slate-400 uppercase">Thông báo mới</span>
+              <span className="font-bold text-[10px] tracking-wider text-slate-400 uppercase">
+                Thông báo mới
+              </span>
               {unreadCount > 0 && (
                 <span className="text-[9px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-full font-bold">
                   {unreadCount} chưa đọc
@@ -138,12 +143,21 @@ export function AdminTopBar() {
                       !n.isRead && "bg-slate-50/40"
                     )}
                   >
-                    <div className={cn(
-                      "w-1.5 h-1.5 rounded-full mt-1.5 shrink-0",
-                      !n.isRead ? "bg-slate-900 animate-pulse" : "bg-transparent"
-                    )} />
+                    <div
+                      className={cn(
+                        "w-1.5 h-1.5 rounded-full mt-1.5 shrink-0",
+                        !n.isRead ? "bg-slate-900 animate-pulse" : "bg-transparent"
+                      )}
+                    />
                     <div className="flex-1 min-w-0">
-                      <p className={cn("text-[11.5px] truncate", !n.isRead ? "text-slate-800 font-bold" : "text-slate-500 font-medium")}>
+                      <p
+                        className={cn(
+                          "text-[11.5px] truncate",
+                          !n.isRead
+                            ? "text-slate-800 font-bold"
+                            : "text-slate-500 font-medium"
+                        )}
+                      >
                         {n.title}
                       </p>
                       <p className="text-[10px] text-slate-400 truncate mt-0.5 font-medium">
@@ -169,7 +183,12 @@ export function AdminTopBar() {
         </DropdownMenu>
 
         {/* Quick Settings Gear */}
-        <Button variant="ghost" size="icon" className="rounded-xl hover:bg-slate-50 size-9 flex items-center justify-center text-slate-500 hover:text-slate-700 transition-colors" asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="rounded-xl hover:bg-slate-50 size-9 flex items-center justify-center text-slate-500 hover:text-slate-700 transition-colors"
+          asChild
+        >
           <Link href={ROUTES.ADMIN_SETTINGS}>
             <Settings className="h-4.5 w-4.5" />
           </Link>

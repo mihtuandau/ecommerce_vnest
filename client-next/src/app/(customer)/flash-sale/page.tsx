@@ -3,7 +3,8 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Flash Sale - Săn Deal Cháy Máy | LUXE",
-  description: "Chương trình Flash Sale hàng tuần với những ưu đãi cực sốc lên đến 50%. Săn ngay kẻo lỡ!",
+  description:
+    "Chương trình Flash Sale hàng tuần với những ưu đãi cực sốc lên đến 50%. Săn ngay kẻo lỡ!",
 };
 
 export default function FlashSalePage() {

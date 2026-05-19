@@ -24,12 +24,15 @@ import dayjs from "@/lib/dayjs";
 
 export default function AdminDashboardPage() {
   const { can, isLoading } = usePermission();
-  
+
   const { data: stats, isLoading: isStatsLoading } = useDashboardStats();
   const { data: revenueData, isLoading: isRevenueLoading } = useDashboardRevenue();
-  const { data: recentOrders, isLoading: isRecentOrdersLoading } = useDashboardRecentOrders();
-  const { data: topProducts, isLoading: isTopProductsLoading } = useDashboardTopProducts();
-  const { data: pendingReviews, isLoading: isPendingReviewsLoading } = useDashboardPendingReviews();
+  const { data: recentOrders, isLoading: isRecentOrdersLoading } =
+    useDashboardRecentOrders();
+  const { data: topProducts, isLoading: isTopProductsLoading } =
+    useDashboardTopProducts();
+  const { data: pendingReviews, isLoading: isPendingReviewsLoading } =
+    useDashboardPendingReviews();
 
   if (isLoading) {
     return (
@@ -90,7 +93,10 @@ export default function AdminDashboardPage() {
 
         {/* Pending Reviews Section */}
         <div className="lg:col-span-1">
-          <PendingReviews reviews={pendingReviews} isLoading={isPendingReviewsLoading} />
+          <PendingReviews
+            reviews={pendingReviews}
+            isLoading={isPendingReviewsLoading}
+          />
         </div>
       </div>
 

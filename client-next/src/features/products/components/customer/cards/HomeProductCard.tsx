@@ -27,7 +27,7 @@ export const HomeProductCard = React.memo(function HomeProductCard({
 }: HomeProductCardProps) {
   const { addItem } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlistStore();
-  const user = useAuthStore(state => state.user);
+  const user = useAuthStore((state) => state.user);
   const { success, error } = useToast();
   const router = useRouter();
   const [isQuickAddOpen, setIsQuickAddOpen] = React.useState(false);
@@ -51,8 +51,7 @@ export const HomeProductCard = React.memo(function HomeProductCard({
     regularOriginalPrice = undefined;
   }
 
-  const hasRegularDiscount =
-    regularOriginalPrice && regularOriginalPrice > basePrice;
+  const hasRegularDiscount = regularOriginalPrice && regularOriginalPrice > basePrice;
 
   const price = isFlashSale
     ? Math.round(basePrice * (1 - flashSalePercent / 100))
@@ -137,16 +136,23 @@ export const HomeProductCard = React.memo(function HomeProductCard({
   // ── BESTSELLER & FEATURED VARIANT (WARM MOCKUP STYLE) ──
   if (variant === "bestseller" || variant === "featured") {
     const bgColors = ["bg-[#E8E0D0]", "bg-[#E3E6EE]", "bg-[#EDE4DA]", "bg-[#DDE5E0]"];
-    const bgClass = bgColors[parseInt(String(product.id || "0"), 16) % bgColors.length] || "bg-[#E8E0D0]";
+    const bgClass =
+      bgColors[parseInt(String(product.id || "0"), 16) % bgColors.length] ||
+      "bg-[#E8E0D0]";
 
     return (
       <>
-        <div 
+        <div
           onClick={() => router.push(`/shop/${product.slug}`)}
           className="group relative flex flex-col h-full bg-white rounded-2xl overflow-hidden border border-[#DDD6C8] hover:-translate-y-1 hover:shadow-[0_16px_48px_rgba(61,43,26,0.1)] transition-all duration-300 cursor-pointer"
         >
           {/* Image Section */}
-          <div className={cn("relative h-[280px] w-full flex items-center justify-center overflow-hidden", bgClass)}>
+          <div
+            className={cn(
+              "relative h-[280px] w-full flex items-center justify-center overflow-hidden",
+              bgClass
+            )}
+          >
             <Image
               src={imageUrl}
               alt={product.name}
@@ -154,7 +160,7 @@ export const HomeProductCard = React.memo(function HomeProductCard({
               className="object-contain p-6 transition-transform duration-500 ease-in-out group-hover:scale-105 mix-blend-multiply"
               sizes="(max-width: 768px) 50vw, 25vw"
             />
-            
+
             <div className="absolute top-3 left-3 z-30 flex flex-col gap-2">
               {isFlashSale ? (
                 <span className="bg-[#C4783A] text-white text-[10px] font-bold px-2.5 py-1 rounded-full">
@@ -167,16 +173,20 @@ export const HomeProductCard = React.memo(function HomeProductCard({
               ) : null}
             </div>
 
-            <button 
+            <button
               onClick={handleToggleWishlist}
               className={cn(
                 "absolute top-3 right-3 z-30 w-8 h-8 rounded-full flex items-center justify-center border transition-all duration-300",
-                isFavorite 
-                  ? "bg-[#C4783A] border-[#C4783A] text-white" 
+                isFavorite
+                  ? "bg-[#C4783A] border-[#C4783A] text-white"
                   : "bg-white border-[#DDD6C8] text-[#8A7966] hover:bg-[#F3EFE8] hover:text-[#C4783A]"
               )}
             >
-               <Heart size={14} fill={isFavorite ? "currentColor" : "none"} strokeWidth={isFavorite ? 0 : 2} />
+              <Heart
+                size={14}
+                fill={isFavorite ? "currentColor" : "none"}
+                strokeWidth={isFavorite ? 0 : 2}
+              />
             </button>
           </div>
 
@@ -188,23 +198,29 @@ export const HomeProductCard = React.memo(function HomeProductCard({
             <h3 className="text-[14.5px] font-medium text-[#3D2B1A] mb-2 line-clamp-2 leading-snug hover:text-[#C4783A] transition-colors">
               {product.name}
             </h3>
-            
+
             <div className="flex items-center justify-between gap-4 mb-4">
               <div className="flex items-center gap-2 shrink-0">
                 <div className="text-[#C4783A] text-[13px] tracking-[1px]">
-                   {"★".repeat(Math.round(product.averageRating || 5)) + "☆".repeat(5 - Math.round(product.averageRating || 5))}
+                  {"★".repeat(Math.round(product.averageRating || 5)) +
+                    "☆".repeat(5 - Math.round(product.averageRating || 5))}
                 </div>
-                <span className="text-[12px] text-[#8A7966] font-medium">({product.reviewCount || 0})</span>
+                <span className="text-[12px] text-[#8A7966] font-medium">
+                  ({product.reviewCount || 0})
+                </span>
               </div>
-              
+
               <div className="flex items-center gap-2 text-[10px] text-[#8A7966] font-medium shrink-0">
-                <span className="bg-[#FAF8F4] px-2 py-0.5 rounded-full">{product.soldCount || 0} đã bán</span>
+                <span className="bg-[#FAF8F4] px-2 py-0.5 rounded-full">
+                  {product.soldCount || 0} đã bán
+                </span>
                 <span className="flex items-center gap-1.5 bg-[#FBF9F6] border border-[#F3EFE8] px-2 py-0.5 rounded-full">
-                  <Zap size={10} className="fill-current text-[#C4783A]" /> {product.viewCount || 0} lượt xem
+                  <Zap size={10} className="fill-current text-[#C4783A]" />{" "}
+                  {product.viewCount || 0} lượt xem
                 </span>
               </div>
             </div>
-            
+
             <div className="mt-auto pt-2 border-t border-[#F3EFE8] flex items-baseline gap-2.5">
               <span className="text-[18px] font-bold text-[#3D2B1A] leading-none font-serif">
                 {formatCurrency(price)}
@@ -231,7 +247,7 @@ export const HomeProductCard = React.memo(function HomeProductCard({
   // ── TOP RATED VARIANT (LIST STYLE) ──
   return (
     <>
-      <div 
+      <div
         onClick={() => router.push(`/shop/${product.slug}`)}
         className="group relative p-4 flex gap-4 bg-white rounded-2xl border border-[#DDD6C8] hover:border-[#C4783A]/30 hover:shadow-[0_12px_32px_rgba(61,43,26,0.08)] transition-all duration-300 cursor-pointer"
       >
@@ -244,7 +260,7 @@ export const HomeProductCard = React.memo(function HomeProductCard({
             sizes="96px"
           />
         </div>
-        
+
         <div className="flex-1 flex flex-col justify-between py-1">
           <div className="space-y-1">
             <div className="flex items-center gap-1.5 mb-1 text-[11px] text-[#8A7966]">

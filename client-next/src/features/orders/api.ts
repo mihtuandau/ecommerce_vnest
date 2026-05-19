@@ -3,7 +3,14 @@ import type { Order } from "@/types/models";
 import { OrderStatus, PaymentStatus } from "@/types/enums";
 
 export const ordersApi = {
-  createOrder: async (orderData: Partial<Order> & { shippingInfo?: any; guestEmail?: string; guestPhone?: string }, isGuest = false): Promise<any> => {
+  createOrder: async (
+    orderData: Partial<Order> & {
+      shippingInfo?: any;
+      guestEmail?: string;
+      guestPhone?: string;
+    },
+    isGuest = false
+  ): Promise<any> => {
     const endpoint = isGuest ? "/orders/guest" : "/orders";
     const { data } = await api.post(endpoint, orderData);
     return data;
@@ -48,9 +55,13 @@ export const ordersApi = {
   },
 
   cancelGuestOrder: async (orderCode: string, contact: string): Promise<any> => {
-    const { data } = await api.put(`/orders/guest/${orderCode}/cancel`, {}, {
-      params: { contact }
-    });
+    const { data } = await api.put(
+      `/orders/guest/${orderCode}/cancel`,
+      {},
+      {
+        params: { contact },
+      }
+    );
     return data;
   },
 
@@ -66,7 +77,7 @@ export const ordersApi = {
 
   lookupGuestOrder: async (orderCode: string, contact: string): Promise<Order> => {
     const { data: body } = await api.get<any>(`/orders/guest/lookup/${orderCode}`, {
-      params: { contact }
+      params: { contact },
     });
     return body?.data || body;
   },

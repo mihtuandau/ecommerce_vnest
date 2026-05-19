@@ -59,9 +59,7 @@ const CellAction = ({ data }: CellActionProps) => {
           <DropdownMenuItem
             className="rounded-lg cursor-pointer gap-2 py-2.5 text-sm font-medium text-rose-600 focus:bg-rose-50"
             onClick={() => {
-              if (
-                confirm(`Bạn có chắc chắn muốn xóa mã giảm giá ${data.code}?`)
-              ) {
+              if (confirm(`Bạn có chắc chắn muốn xóa mã giảm giá ${data.code}?`)) {
                 deleteDiscount(data.id);
               }
             }}
@@ -129,26 +127,29 @@ export const columns: ColumnDef<Discount>[] = [
     header: "Giảm giá",
     cell: ({ row }) => {
       const discount = row.original as any;
-      
+
       // New priority logic for schema
-      const isPercentage = discount.percentage !== null && discount.percentage !== undefined;
-      const isFixed = discount.fixedAmount !== null && discount.fixedAmount !== undefined;
-      
-      const value = isPercentage 
-        ? discount.percentage 
-        : isFixed 
-          ? discount.fixedAmount 
+      const isPercentage =
+        discount.percentage !== null && discount.percentage !== undefined;
+      const isFixed =
+        discount.fixedAmount !== null && discount.fixedAmount !== undefined;
+
+      const value = isPercentage
+        ? discount.percentage
+        : isFixed
+          ? discount.fixedAmount
           : discount.value || 0;
 
-      const typeLabel = isPercentage || (!isFixed && discount.type === "PERCENTAGE") 
-        ? "Phần trăm" 
-        : "Cố định";
+      const typeLabel =
+        isPercentage || (!isFixed && discount.type === "PERCENTAGE")
+          ? "Phần trăm"
+          : "Cố định";
 
       return (
         <div className="flex flex-col">
           <span className="text-sm font-semibold text-slate-800">
-            {isPercentage || (!isFixed && discount.type === "PERCENTAGE") 
-              ? `${value}%` 
+            {isPercentage || (!isFixed && discount.type === "PERCENTAGE")
+              ? `${value}%`
               : formatCurrency(value)}
           </span>
           <span className="text-xs font-semibold text-slate-500 tracking-tight mt-0.5">

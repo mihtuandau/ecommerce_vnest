@@ -34,7 +34,7 @@ export function RegisterForm() {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
-    
+
     const newErrors: Record<string, string> = {};
     if (!form.name) newErrors.name = AUTH_MESSAGES.NAME_REQUIRED;
     if (!form.phone) newErrors.phone = AUTH_MESSAGES.PHONE_REQUIRED;
@@ -43,7 +43,7 @@ export function RegisterForm() {
     if (form.password !== form.confirmPassword) {
       newErrors.confirmPassword = AUTH_MESSAGES.PASSWORD_MISMATCH;
     }
-    
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
@@ -59,9 +59,7 @@ export function RegisterForm() {
       success(AUTH_MESSAGES.REGISTER_SUCCESS);
       router.push(ROUTES.LOGIN);
     } catch (err: any) {
-      error(
-        err?.response?.data?.message || AUTH_MESSAGES.REGISTER_ERROR
-      );
+      error(err?.response?.data?.message || AUTH_MESSAGES.REGISTER_ERROR);
       setErrors({ global: AUTH_MESSAGES.REGISTER_ERROR_GENERIC });
     }
   };
@@ -106,7 +104,9 @@ export function RegisterForm() {
                 placeholder="Nhập tên..."
                 className={cn(
                   "pl-11 h-12 rounded-[1.25rem] border-white/20 bg-black/40 backdrop-blur-md !text-white font-medium placeholder:text-white/60 hover:border-white/40 hover:bg-black/50 focus-visible:outline-none focus-visible:ring-2 transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)]",
-                  errors.name ? "border-red-500/50 ring-2 ring-red-500/20 bg-red-500/10" : "focus-visible:ring-primary/50 focus-visible:border-primary"
+                  errors.name
+                    ? "border-red-500/50 ring-2 ring-red-500/20 bg-red-500/10"
+                    : "focus-visible:ring-primary/50 focus-visible:border-primary"
                 )}
                 value={form.name}
                 onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
@@ -131,10 +131,14 @@ export function RegisterForm() {
                 placeholder="0912..."
                 className={cn(
                   "pl-11 h-12 rounded-[1.25rem] border-white/20 bg-black/40 backdrop-blur-md !text-white font-medium placeholder:text-white/60 hover:border-white/40 hover:bg-black/50 focus-visible:outline-none focus-visible:ring-2 transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)]",
-                  errors.phone ? "border-red-500/50 ring-2 ring-red-500/20 bg-red-500/10" : "focus-visible:ring-primary/50 focus-visible:border-primary"
+                  errors.phone
+                    ? "border-red-500/50 ring-2 ring-red-500/20 bg-red-500/10"
+                    : "focus-visible:ring-primary/50 focus-visible:border-primary"
                 )}
                 value={form.phone}
-                onChange={(e) => setForm((prev) => ({ ...prev, phone: e.target.value }))}
+                onChange={(e) =>
+                  setForm((prev) => ({ ...prev, phone: e.target.value }))
+                }
               />
               {errors.phone && (
                 <span className="absolute -bottom-5 left-2 text-[10px] font-bold text-red-400 drop-shadow-sm animate-in fade-in slide-in-from-top-1">
@@ -157,7 +161,9 @@ export function RegisterForm() {
               placeholder="name@example.com"
               className={cn(
                 "pl-11 h-12 rounded-[1.25rem] border-white/20 bg-black/40 backdrop-blur-md !text-white font-medium placeholder:text-white/60 hover:border-white/40 hover:bg-black/50 focus-visible:outline-none focus-visible:ring-2 transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)]",
-                errors.email ? "border-red-500/50 ring-2 ring-red-500/20 bg-red-500/10" : "focus-visible:ring-primary/50 focus-visible:border-primary"
+                errors.email
+                  ? "border-red-500/50 ring-2 ring-red-500/20 bg-red-500/10"
+                  : "focus-visible:ring-primary/50 focus-visible:border-primary"
               )}
               value={form.email}
               onChange={(e) => setForm((prev) => ({ ...prev, email: e.target.value }))}
@@ -183,10 +189,14 @@ export function RegisterForm() {
                 placeholder="••••••••"
                 className={cn(
                   "pl-11 pr-11 h-12 rounded-[1.25rem] border-white/20 bg-black/40 backdrop-blur-md !text-white font-medium placeholder:text-white/60 hover:border-white/40 hover:bg-black/50 focus-visible:outline-none focus-visible:ring-2 transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)]",
-                  errors.password ? "border-red-500/50 ring-2 ring-red-500/20 bg-red-500/10" : "focus-visible:ring-primary/50 focus-visible:border-primary"
+                  errors.password
+                    ? "border-red-500/50 ring-2 ring-red-500/20 bg-red-500/10"
+                    : "focus-visible:ring-primary/50 focus-visible:border-primary"
                 )}
                 value={form.password}
-                onChange={(e) => setForm((prev) => ({ ...prev, password: e.target.value }))}
+                onChange={(e) =>
+                  setForm((prev) => ({ ...prev, password: e.target.value }))
+                }
               />
               {errors.password && (
                 <span className="absolute -bottom-5 left-2 text-[10px] font-bold text-red-400 drop-shadow-sm animate-in fade-in slide-in-from-top-1">
@@ -218,10 +228,14 @@ export function RegisterForm() {
                 placeholder="••••••••"
                 className={cn(
                   "pl-11 pr-11 h-12 rounded-[1.25rem] border-white/20 bg-black/40 backdrop-blur-md !text-white font-medium placeholder:text-white/60 hover:border-white/40 hover:bg-black/50 focus-visible:outline-none focus-visible:ring-2 transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)]",
-                  errors.confirmPassword ? "border-red-500/50 ring-2 ring-red-500/20 bg-red-500/10" : "focus-visible:ring-primary/50 focus-visible:border-primary"
+                  errors.confirmPassword
+                    ? "border-red-500/50 ring-2 ring-red-500/20 bg-red-500/10"
+                    : "focus-visible:ring-primary/50 focus-visible:border-primary"
                 )}
                 value={form.confirmPassword}
-                onChange={(e) => setForm((prev) => ({ ...prev, confirmPassword: e.target.value }))}
+                onChange={(e) =>
+                  setForm((prev) => ({ ...prev, confirmPassword: e.target.value }))
+                }
               />
               {errors.confirmPassword && (
                 <span className="absolute -bottom-5 left-2 text-[10px] font-bold text-red-400 drop-shadow-sm animate-in fade-in slide-in-from-top-1">

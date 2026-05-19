@@ -14,7 +14,11 @@ export default function AdminReviewsPage() {
   }
 
   return (
-    <React.Suspense fallback={<div className="p-10 text-center text-xs text-slate-400">Đang tải...</div>}>
+    <React.Suspense
+      fallback={
+        <div className="p-10 text-center text-xs text-slate-400">Đang tải...</div>
+      }
+    >
       <ReviewsContainer />
     </React.Suspense>
   );

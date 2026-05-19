@@ -90,7 +90,7 @@ export function ReviewModal({
         const uploadRes = await api.post("/upload/images", formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
-        
+
         // uploadRes.data.urls chứa mảng URL trả về
         imageUrls = uploadRes.data.urls || [];
       }
@@ -107,10 +107,14 @@ export function ReviewModal({
         {
           onSuccess: () => {
             success("Cảm ơn bạn đã đánh giá sản phẩm!");
-            queryClient.invalidateQueries({ queryKey: ["reviews", "product", String(productId)] });
-            queryClient.invalidateQueries({ queryKey: ["orders", "detail", String(orderId)] });
+            queryClient.invalidateQueries({
+              queryKey: ["reviews", "product", String(productId)],
+            });
+            queryClient.invalidateQueries({
+              queryKey: ["orders", "detail", String(orderId)],
+            });
             onClose();
-            
+
             // Chuyển hướng đến trang chi tiết sản phẩm, phần đánh giá
             if (productSlug) {
               router.push(`/shop/${productSlug}#reviews`);
@@ -120,7 +124,11 @@ export function ReviewModal({
             setSelectedFiles([]);
           },
           onError: (err: any) => {
-            toastError(err.response?.data?.message || err.message || "Không thể gửi đánh giá. Vui lòng thử lại.");
+            toastError(
+              err.response?.data?.message ||
+                err.message ||
+                "Không thể gửi đánh giá. Vui lòng thử lại."
+            );
           },
         }
       );
@@ -144,12 +152,14 @@ export function ReviewModal({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[600px] p-0 border-none rounded-2xl bg-white shadow-2xl flex flex-col overflow-visible">
         <DialogTitle className="sr-only">Đánh giá sản phẩm</DialogTitle>
-        
+
         {/* Header */}
         <div className="p-6 pb-4 bg-slate-50/50 border-b border-slate-100 rounded-t-2xl flex items-center justify-between">
           <div className="space-y-0.5">
             <h2 className="text-xl font-bold text-slate-900">Đánh giá sản phẩm</h2>
-            <p className="text-xs text-slate-500 font-medium">Chia sẻ trải nghiệm thực tế của bạn về sản phẩm này</p>
+            <p className="text-xs text-slate-500 font-medium">
+              Chia sẻ trải nghiệm thực tế của bạn về sản phẩm này
+            </p>
           </div>
         </div>
 
@@ -159,16 +169,19 @@ export function ReviewModal({
             {/* Product Summary */}
             <div className="flex items-center gap-4 p-3.5 bg-slate-50/50 rounded-2xl border border-slate-100 min-w-0">
               <div className="h-16 w-16 rounded-xl bg-white p-1 border border-slate-200 shrink-0 shadow-sm relative overflow-hidden">
-                <Image 
-                  src={productImage || "/placeholder.png"} 
-                  alt={productName || "Product"} 
+                <Image
+                  src={productImage || "/placeholder.png"}
+                  alt={productName || "Product"}
                   width={64}
                   height={64}
                   className="h-full w-full object-contain"
                 />
               </div>
               <div className="flex-1 min-w-0">
-                <h4 className="text-sm font-semibold text-slate-900 truncate leading-tight" title={productName}>
+                <h4
+                  className="text-sm font-semibold text-slate-900 truncate leading-tight"
+                  title={productName}
+                >
                   {productName}
                 </h4>
                 {variantName && (
@@ -197,7 +210,7 @@ export function ReviewModal({
                     onClick={() => setRating(star)}
                     className="transition-all duration-200 hover:scale-125 active:scale-75 focus:outline-none"
                   >
-                    <span 
+                    <span
                       className={cn(
                         "text-3xl transition-all duration-300 cursor-pointer select-none",
                         (hoverRating || rating) >= star
@@ -211,7 +224,7 @@ export function ReviewModal({
                 ))}
               </div>
               <div className="h-6 flex items-center">
-                { (hoverRating || rating) > 0 && (
+                {(hoverRating || rating) > 0 && (
                   <span className="text-xs font-bold text-amber-600 bg-amber-50 px-3 py-1 rounded-full border border-amber-100/50 animate-in fade-in zoom-in duration-300">
                     {ratingTexts[hoverRating || rating]}
                   </span>
@@ -232,19 +245,19 @@ export function ReviewModal({
                 placeholder="Bạn thích điểm gì? Chất liệu, form, size có đúng không? Đóng gói ra sao?..."
                 className="w-full min-h-[100px] max-h-[200px] p-4 bg-transparent outline-none text-sm text-slate-800 placeholder:text-slate-400"
               />
-              
+
               {/* Media Upload Area */}
               <div className="px-4 pb-3 flex items-center gap-2">
-                <input 
-                  type="file" 
-                  multiple 
-                  accept="image/*" 
-                  className="hidden" 
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  className="hidden"
                   ref={fileInputRef}
                   onChange={handleFileChange}
                 />
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   onClick={() => fileInputRef.current?.click()}
                   className="h-14 w-14 rounded-xl border border-dashed border-slate-300 hover:border-primary hover:bg-primary/5 flex flex-col items-center justify-center gap-1 text-slate-400 hover:text-primary transition-colors cursor-pointer shrink-0"
                 >
@@ -254,16 +267,19 @@ export function ReviewModal({
                 <div className="flex-1 overflow-x-auto no-scrollbar flex items-center gap-2">
                   {selectedFiles.length > 0 ? (
                     selectedFiles.map((file, idx) => (
-                      <div key={idx} className="h-14 w-14 rounded-xl border border-slate-200 shrink-0 relative group overflow-hidden">
-                        <Image 
-                          src={URL.createObjectURL(file)} 
-                          alt="preview" 
+                      <div
+                        key={idx}
+                        className="h-14 w-14 rounded-xl border border-slate-200 shrink-0 relative group overflow-hidden"
+                      >
+                        <Image
+                          src={URL.createObjectURL(file)}
+                          alt="preview"
                           width={56}
                           height={56}
                           unoptimized
-                          className="h-full w-full object-cover" 
+                          className="h-full w-full object-cover"
                         />
-                        <button 
+                        <button
                           onClick={() => removeFile(idx)}
                           className="absolute top-1 right-1 bg-black/50 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
                         >
@@ -272,7 +288,9 @@ export function ReviewModal({
                       </div>
                     ))
                   ) : (
-                    <span className="text-xs text-slate-400 font-medium pl-1">Thêm ảnh thực tế để bài viết sinh động hơn!</span>
+                    <span className="text-xs text-slate-400 font-medium pl-1">
+                      Thêm ảnh thực tế để bài viết sinh động hơn!
+                    </span>
                   )}
                 </div>
               </div>
@@ -282,19 +300,19 @@ export function ReviewModal({
 
         {/* Footer */}
         <div className="p-6 pt-0 mt-auto flex items-center gap-3">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             onClick={onClose}
             className="flex-1 rounded-xl h-12 text-sm font-semibold text-slate-600 border-slate-200 hover:bg-slate-50 transition-all"
           >
             Hủy bỏ
           </Button>
-          <Button 
+          <Button
             onClick={handleSubmit}
             disabled={isPending || isUploading}
             className="flex-[1.5] rounded-xl h-12 text-sm font-bold bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 transition-all active:scale-[0.98]"
           >
-            {(isPending || isUploading) ? (
+            {isPending || isUploading ? (
               <span className="flex items-center gap-2">
                 <Spinner size="sm" variant="white" />
                 {isUploading ? "Đang tải ảnh..." : "Đang gửi..."}
@@ -306,6 +324,5 @@ export function ReviewModal({
         </div>
       </DialogContent>
     </Dialog>
-
   );
 }

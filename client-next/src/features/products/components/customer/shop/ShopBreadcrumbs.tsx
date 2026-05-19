@@ -2,17 +2,27 @@
 
 import React from "react";
 import Link from "next/link";
-import { Home, ChevronRight } from "lucide-react";
+import { Home } from "lucide-react";
 import { cn } from "@/utils/cn";
-
 import { Category } from "@/types/models";
+import {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui";
 
 interface ShopBreadcrumbsProps {
   currentCategory: string | null;
   categories: Category[];
 }
 
-export const ShopBreadcrumbs = React.memo(function ShopBreadcrumbs({ currentCategory, categories }: ShopBreadcrumbsProps) {
+export const ShopBreadcrumbs = React.memo(function ShopBreadcrumbs({
+  currentCategory,
+  categories,
+}: ShopBreadcrumbsProps) {
   const findCategoryPath = (allCats: Category[], targetId: string): Category[] => {
     for (const cat of allCats) {
       if (String(cat.id) === targetId) return [cat];
@@ -30,30 +40,49 @@ export const ShopBreadcrumbs = React.memo(function ShopBreadcrumbs({ currentCate
     <div className="bg-white border-b border-brand-sand/40">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="py-4">
-          <nav className="flex items-center gap-2 text-[11.5px] font-bold text-brand-taupe/90 uppercase tracking-widest overflow-x-auto no-scrollbar scroll-smooth">
-            <Link href="/" className="hover:text-primary transition-all flex items-center gap-1.5 group whitespace-nowrap">
-              <Home className="h-3.5 w-3.5 group-hover:scale-110 transition-transform" />
-              <span>Trang chủ</span>
-            </Link>
-            <ChevronRight className="h-3 w-3 opacity-30 shrink-0" />
-            <Link href="/shop" className={cn("whitespace-nowrap transition-colors", path.length === 0 ? 'text-primary font-bold' : 'hover:text-primary')}>
-              Cửa hàng
-            </Link>
-            {path.map((cat, index) => (
-              <React.Fragment key={cat.id}>
-                <ChevronRight className="h-3 w-3 opacity-30 shrink-0" />
-                <Link 
-                  href={`/shop?categoryId=${cat.id}`}
-                  className={cn(
-                    "whitespace-nowrap transition-colors",
-                    index === path.length - 1 ? "text-primary font-bold" : "hover:text-primary"
-                  )}
-                >
-                  {cat.name}
-                </Link>
-              </React.Fragment>
-            ))}
-          </nav>
+          <Breadcrumb>
+            <BreadcrumbList className="text-[11.5px] uppercase tracking-widest">
+              <BreadcrumbItem>
+                <BreadcrumbLink asChild>
+                  <Link href="/" className="flex items-center gap-1.5 hover:text-primary transition-all">
+                    <Home className="h-3.5 w-3.5" />
+                    <span>Trang chủ</span>
+                  </Link>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                {path.length === 0 ? (
+                  <BreadcrumbPage className="text-primary font-bold">Cửa hàng</BreadcrumbPage>
+                ) : (
+                  <BreadcrumbLink asChild>
+                    <Link href="/shop" className="hover:text-primary transition-colors">
+                      Cửa hàng
+                    </Link>
+                  </BreadcrumbLink>
+                )}
+              </BreadcrumbItem>
+              {path.map((cat, index) => {
+                const isLast = index === path.length - 1;
+                return (
+                  <React.Fragment key={cat.id}>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                      {isLast ? (
+                        <BreadcrumbPage className="text-primary font-bold">{cat.name}</BreadcrumbPage>
+                      ) : (
+                        <BreadcrumbLink asChild>
+                          <Link href={`/shop?categoryId=${cat.id}`} className="hover:text-primary transition-colors">
+                            {cat.name}
+                          </Link>
+                        </BreadcrumbLink>
+                      )}
+                    </BreadcrumbItem>
+                  </React.Fragment>
+                );
+              })}
+            </BreadcrumbList>
+          </Breadcrumb>
         </div>
       </div>
     </div>

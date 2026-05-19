@@ -1,7 +1,14 @@
 "use client";
 
 import React from "react";
-import { Bell, BellOff, ShoppingCart, ShieldAlert, Calendar, ArrowRight } from "lucide-react";
+import {
+  Bell,
+  BellOff,
+  ShoppingCart,
+  ShieldAlert,
+  Calendar,
+  ArrowRight,
+} from "lucide-react";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
@@ -66,12 +73,16 @@ export function NotificationsList({
           {isLoading ? (
             <div className="p-20 flex flex-col items-center justify-center gap-3">
               <Spinner size="lg" />
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Đang tải thông báo...</p>
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+                Đang tải thông báo...
+              </p>
             </div>
           ) : filteredNotifications.length === 0 ? (
             <div className="p-20 text-center flex flex-col items-center justify-center">
               <BellOff className="h-12 w-12 text-slate-200 mb-4" />
-              <h3 className="text-base font-bold text-slate-800">Hộp thư thông báo trống</h3>
+              <h3 className="text-base font-bold text-slate-800">
+                Hộp thư thông báo trống
+              </h3>
               <p className="text-xs text-slate-400 mt-1 max-w-sm">
                 Hiện tại không có thông báo nào mới thuộc danh mục đã chọn.
               </p>
@@ -80,7 +91,9 @@ export function NotificationsList({
             <div className="divide-y divide-slate-100">
               {filteredNotifications.map((notif: any) => {
                 const relative = dayjs(notif.createdAt).fromNow();
-                const formattedTime = dayjs(notif.createdAt).format("HH:mm - DD/MM/YYYY");
+                const formattedTime = dayjs(notif.createdAt).format(
+                  "HH:mm - DD/MM/YYYY"
+                );
 
                 return (
                   <div
@@ -88,8 +101,8 @@ export function NotificationsList({
                     onClick={() => handleNotificationClick(notif)}
                     className={cn(
                       "p-5 flex gap-4 items-start cursor-pointer hover:bg-slate-50 transition-all duration-200 border-l-[3px]",
-                      notif.isRead 
-                        ? "border-l-transparent bg-white" 
+                      notif.isRead
+                        ? "border-l-transparent bg-white"
                         : "border-l-indigo-600 bg-indigo-50/10"
                     )}
                   >
@@ -97,7 +110,14 @@ export function NotificationsList({
 
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-4">
-                        <h4 className={cn("text-xs truncate", notif.isRead ? "text-slate-700 font-semibold" : "text-slate-900 font-bold")}>
+                        <h4
+                          className={cn(
+                            "text-xs truncate",
+                            notif.isRead
+                              ? "text-slate-700 font-semibold"
+                              : "text-slate-900 font-bold"
+                          )}
+                        >
                           {notif.title}
                         </h4>
                         <span className="text-[9px] font-medium text-slate-400 shrink-0 whitespace-nowrap">
@@ -137,17 +157,19 @@ export function NotificationsList({
               variant="outline"
               size="sm"
               className="h-9 px-3 rounded-lg border-slate-200 text-slate-500 hover:text-primary transition-all disabled:opacity-50 cursor-pointer"
-              onClick={() => setPage(p => Math.max(p - 1, 1))}
+              onClick={() => setPage((p) => Math.max(p - 1, 1))}
               disabled={page === 1}
             >
               Trang trước
             </Button>
-            <span className="text-xs font-bold text-slate-500">Trang {page} / {meta.totalPages}</span>
+            <span className="text-xs font-bold text-slate-500">
+              Trang {page} / {meta.totalPages}
+            </span>
             <Button
               variant="outline"
               size="sm"
               className="h-9 px-3 rounded-lg border-slate-200 text-slate-500 hover:text-primary transition-all disabled:opacity-50 cursor-pointer"
-              onClick={() => setPage(p => Math.min(p + 1, meta.totalPages))}
+              onClick={() => setPage((p) => Math.min(p + 1, meta.totalPages))}
               disabled={page === meta.totalPages}
             >
               Trang sau

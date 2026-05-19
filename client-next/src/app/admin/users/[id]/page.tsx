@@ -34,22 +34,32 @@ export default function AdminUserDetailPage() {
     );
   }
 
-  if (!user) return <div className="p-20 text-center font-bold text-slate-500">Không tìm thấy người dùng</div>;
+  if (!user)
+    return (
+      <div className="p-20 text-center font-bold text-slate-500">
+        Không tìm thấy người dùng
+      </div>
+    );
 
   const customer = user as any;
   const orders = customer.orders || [];
-  
+
   // Stricter logic: Only count orders that are both DELIVERED and PAID/SUCCESS
   const consumptionOrders = orders.filter((order: any) => {
     const isDelivered = order.status === OrderStatus.DELIVERED;
-    const isPaid = order.payment?.status === PaymentStatus.SUCCESS || order.payment?.status === "PAID";
+    const isPaid =
+      order.payment?.status === PaymentStatus.SUCCESS ||
+      order.payment?.status === "PAID";
     return isDelivered && isPaid;
   });
-  
-  const totalSpent = consumptionOrders.reduce((sum: number, order: any) => sum + (order.total || 0), 0);
+
+  const totalSpent = consumptionOrders.reduce(
+    (sum: number, order: any) => sum + (order.total || 0),
+    0
+  );
   const totalOrders = consumptionOrders.length;
   const totalReviews = customer.reviews?.length || 0;
-  
+
   const lastOrder = orders[0];
   const lastOrderDate = lastOrder?.createdAt;
 
@@ -58,8 +68,8 @@ export default function AdminUserDetailPage() {
       {/* Page Header */}
       <div className="flex items-center justify-between border-b border-slate-100 pb-4">
         <div className="flex items-center gap-4">
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             size="icon"
             className="h-8 w-8 rounded-lg border border-slate-200 text-slate-400 hover:text-primary"
             onClick={() => router.back()}
@@ -67,8 +77,9 @@ export default function AdminUserDetailPage() {
             <ChevronLeft className="h-4 w-4" />
           </Button>
           <div className="flex flex-col">
-            <h1 className="text-xl font-bold text-slate-900 tracking-tight">Hồ sơ khách hàng</h1>
-            
+            <h1 className="text-xl font-bold text-slate-900 tracking-tight">
+              Hồ sơ khách hàng
+            </h1>
           </div>
         </div>
       </div>
@@ -82,14 +93,14 @@ export default function AdminUserDetailPage() {
 
         {/* Main Content (Right) */}
         <div className="lg:col-span-2 space-y-6">
-          <CustomerStats 
+          <CustomerStats
             totalSpent={totalSpent}
             totalOrders={totalOrders}
             totalReviews={totalReviews}
             lastOrderDate={lastOrderDate}
           />
 
-          <CustomerTabs 
+          <CustomerTabs
             user={user}
             activeTab={activeTab}
             onTabChange={setActiveTab}

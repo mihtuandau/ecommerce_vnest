@@ -1,18 +1,37 @@
 import { api } from "@/lib/axios";
 
 export const returnsApi = {
-  createReturnRequest: async (data: { orderId: number; reason: string; items?: Record<string, unknown>[]; details?: string; images?: string[] }) => {
+  createReturnRequest: async (data: {
+    orderId: number;
+    reason: string;
+    items?: Record<string, unknown>[];
+    details?: string;
+    images?: string[];
+  }) => {
     const { data: response } = await api.post("/returns", data);
     return response;
   },
 
-  createGuestReturnRequest: async (data: { orderCode: string; contact: string; reason: string; items?: Record<string, unknown>[]; details?: string; images?: string[] }) => {
+  createGuestReturnRequest: async (data: {
+    orderCode: string;
+    contact: string;
+    reason: string;
+    items?: Record<string, unknown>[];
+    details?: string;
+    images?: string[];
+  }) => {
     const { data: response } = await api.post("/returns/guest", data);
     return response;
   },
 
-  confirmGuestSent: async (id: number, data: { orderCode: string; contact: string }) => {
-    const { data: response } = await api.post(`/returns/guest/${id}/confirm-sent`, data);
+  confirmGuestSent: async (
+    id: number,
+    data: { orderCode: string; contact: string }
+  ) => {
+    const { data: response } = await api.post(
+      `/returns/guest/${id}/confirm-sent`,
+      data
+    );
     return response;
   },
 
@@ -32,7 +51,10 @@ export const returnsApi = {
     return response;
   },
 
-  updateReturnStatus: async (id: number, data: { status: string; adminNote?: string }) => {
+  updateReturnStatus: async (
+    id: number,
+    data: { status: string; adminNote?: string }
+  ) => {
     const { data: response } = await api.patch(`/returns/${id}/status`, data);
     return response;
   },

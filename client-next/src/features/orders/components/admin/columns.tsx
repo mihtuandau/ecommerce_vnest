@@ -5,11 +5,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Order, OrderItem } from "@/types/models";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { Button } from "@/components/ui/Button";
-import {
-  MoreHorizontal,
-  Eye,
-  XCircle,
-} from "lucide-react";
+import { MoreHorizontal, Eye, XCircle } from "lucide-react";
 import Image from "next/image";
 import {
   DropdownMenu,
@@ -34,7 +30,9 @@ const getImageUrl = (item: OrderItem) => {
   };
 
   // 1. Try variantSnapshot (saved at order time)
-  const snapshotImg = (item.variantSnapshot as { image?: string; imageUrl?: string })?.image || (item.variantSnapshot as { image?: string; imageUrl?: string })?.imageUrl;
+  const snapshotImg =
+    (item.variantSnapshot as { image?: string; imageUrl?: string })?.image ||
+    (item.variantSnapshot as { image?: string; imageUrl?: string })?.imageUrl;
   if (snapshotImg && typeof snapshotImg === "string" && snapshotImg.length > 5) {
     return normalize(snapshotImg);
   }
@@ -43,9 +41,7 @@ const getImageUrl = (item: OrderItem) => {
   const variantImages = item.variant?.images || [];
   if (variantImages.length > 0) {
     const url =
-      typeof variantImages[0] === "string"
-        ? variantImages[0]
-        : variantImages[0]?.url;
+      typeof variantImages[0] === "string" ? variantImages[0] : variantImages[0]?.url;
     if (url) return normalize(url);
   }
 
@@ -53,9 +49,7 @@ const getImageUrl = (item: OrderItem) => {
   const productImages = item.variant?.product?.images || [];
   if (productImages.length > 0) {
     const url =
-      typeof productImages[0] === "string"
-        ? productImages[0]
-        : productImages[0]?.url;
+      typeof productImages[0] === "string" ? productImages[0] : productImages[0]?.url;
     if (url) return normalize(url);
   }
 
@@ -103,10 +97,16 @@ export const columns: ColumnDef<Order>[] = [
       if (items.length === 0) return <span className="text-slate-400">--</span>;
 
       return (
-        <div className="flex flex-col gap-1 py-1 cursor-pointer" onClick={() => window.location.href = `${ROUTES.ADMIN_ORDERS}/${order.id}`}>
+        <div
+          className="flex flex-col gap-1 py-1 cursor-pointer"
+          onClick={() => (window.location.href = `${ROUTES.ADMIN_ORDERS}/${order.id}`)}
+        >
           <div className="flex -space-x-2">
             {visibleItems.map((item: any, idx: number) => (
-              <div key={idx} className="h-8 w-7 rounded border border-slate-200 bg-slate-50 flex items-center justify-center overflow-hidden relative shadow-sm ring-2 ring-white">
+              <div
+                key={idx}
+                className="h-8 w-7 rounded border border-slate-200 bg-slate-50 flex items-center justify-center overflow-hidden relative shadow-sm ring-2 ring-white"
+              >
                 <Image
                   src={getImageUrl(item)}
                   alt="Product"
@@ -122,7 +122,9 @@ export const columns: ColumnDef<Order>[] = [
               </div>
             )}
           </div>
-          <span className="text-[11px] text-slate-500 mt-1">{items.length} sản phẩm</span>
+          <span className="text-[11px] text-slate-500 mt-1">
+            {items.length} sản phẩm
+          </span>
         </div>
       );
     },
@@ -132,10 +134,20 @@ export const columns: ColumnDef<Order>[] = [
     header: "Khách hàng",
     cell: ({ row }) => {
       const order = row.original;
-      const name = order.shippingSnapshot?.fullName || order.user?.name || "Khách vãng lai";
-      const phone = order.shippingSnapshot?.phone || (order as any).guestPhone || order.user?.phone || "--";
-      const email = order.shippingSnapshot?.email || (order as any).guestEmail || order.user?.email || "";
-      const avatarInitial = name !== "Khách vãng lai" ? name.substring(0, 2).toUpperCase() : "KV";
+      const name =
+        order.shippingSnapshot?.fullName || order.user?.name || "Khách vãng lai";
+      const phone =
+        order.shippingSnapshot?.phone ||
+        (order as any).guestPhone ||
+        order.user?.phone ||
+        "--";
+      const email =
+        order.shippingSnapshot?.email ||
+        (order as any).guestEmail ||
+        order.user?.email ||
+        "";
+      const avatarInitial =
+        name !== "Khách vãng lai" ? name.substring(0, 2).toUpperCase() : "KV";
 
       return (
         <div className="flex items-center gap-2.5">
@@ -159,8 +171,14 @@ export const columns: ColumnDef<Order>[] = [
       const discount = (order as any).discountAmount || 0;
       return (
         <div className="flex flex-col">
-          <span className="text-[14px] font-bold font-serif text-slate-800">{formatCurrency(amount)}</span>
-          {discount > 0 && <span className="text-[11px] font-medium text-rose-500">-{formatCurrency(discount)}</span>}
+          <span className="text-[14px] font-bold font-serif text-slate-800">
+            {formatCurrency(amount)}
+          </span>
+          {discount > 0 && (
+            <span className="text-[11px] font-medium text-rose-500">
+              -{formatCurrency(discount)}
+            </span>
+          )}
         </div>
       );
     },
@@ -240,7 +258,9 @@ export const columns: ColumnDef<Order>[] = [
     id: "actions",
     cell: ({ row, table }) => {
       const order = row.original;
-      const meta = table.options.meta as { onUpdateStatus?: (id: string, status: OrderStatus) => void };
+      const meta = table.options.meta as {
+        onUpdateStatus?: (id: string, status: OrderStatus) => void;
+      };
       const onUpdateStatus = meta?.onUpdateStatus;
 
       return (

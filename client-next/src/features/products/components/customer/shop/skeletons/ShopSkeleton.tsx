@@ -30,8 +30,8 @@ export function ShopSkeleton() {
             </div>
           </div>
           <div className="flex items-center justify-between">
-             <Skeleton className="h-5 w-40 rounded-full" />
-             <Skeleton className="h-10 w-48 rounded-2xl" />
+            <Skeleton className="h-5 w-40 rounded-full" />
+            <Skeleton className="h-10 w-48 rounded-2xl" />
           </div>
         </div>
 
@@ -39,11 +39,11 @@ export function ShopSkeleton() {
           {/* Sidebar Skeleton */}
           <aside className="hidden lg:block lg:col-span-1">
             <div className="bg-white rounded-[2rem] border border-brand-sand/40 shadow-sm p-6 space-y-8">
-              {[1, 2, 3].map(i => (
+              {[1, 2, 3].map((i) => (
                 <div key={i} className="space-y-4">
                   <Skeleton className="h-5 w-32 rounded-full" />
                   <div className="space-y-3">
-                    {[1, 2, 3, 4].map(j => (
+                    {[1, 2, 3, 4].map((j) => (
                       <Skeleton key={j} className="h-10 w-full rounded-xl" />
                     ))}
                   </div>
@@ -56,8 +56,11 @@ export function ShopSkeleton() {
           <main className="lg:col-span-3 space-y-8">
             {/* Product Grid */}
             <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-              {[1, 2, 3, 4, 5, 6].map(i => (
-                <div key={i} className="bg-white rounded-[2rem] border border-brand-sand/40 overflow-hidden">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <div
+                  key={i}
+                  className="bg-white rounded-[2rem] border border-brand-sand/40 overflow-hidden"
+                >
                   <Skeleton className="aspect-[4/5] w-full bg-brand-cream" />
                   <div className="p-5 space-y-4">
                     <div className="space-y-2">
@@ -66,8 +69,8 @@ export function ShopSkeleton() {
                     </div>
                     <Skeleton className="h-8 w-full rounded-xl" />
                     <div className="pt-4 border-t border-brand-ivory flex justify-between items-center">
-                       <Skeleton className="h-6 w-20 rounded-full" />
-                       <Skeleton className="h-8 w-8 rounded-full" />
+                      <Skeleton className="h-6 w-20 rounded-full" />
+                      <Skeleton className="h-8 w-8 rounded-full" />
                     </div>
                   </div>
                 </div>

@@ -24,12 +24,36 @@ interface OrderTabsProps {
 export function OrderTabs({ activeTab, onTabChange, counts }: OrderTabsProps) {
   const tabItems = [
     { value: "ALL", label: "Tất cả", count: counts.ALL },
-    { value: OrderStatus.PENDING, label: ADMIN_ORDER_STATUS_CONFIG[OrderStatus.PENDING].label, count: counts.PENDING },
-    { value: OrderStatus.PROCESSING, label: ADMIN_ORDER_STATUS_CONFIG[OrderStatus.PROCESSING].label, count: counts.PROCESSING },
-    { value: OrderStatus.SHIPPED, label: ADMIN_ORDER_STATUS_CONFIG[OrderStatus.SHIPPED].label, count: counts.SHIPPED },
-    { value: OrderStatus.DELIVERED, label: ADMIN_ORDER_STATUS_CONFIG[OrderStatus.DELIVERED].label, count: counts.DELIVERED },
-    { value: OrderStatus.CANCELLED, label: ADMIN_ORDER_STATUS_CONFIG[OrderStatus.CANCELLED].label, count: counts.CANCELLED },
-    { value: OrderStatus.RETURN_REQUESTED, label: "Trả hàng", count: counts.RETURN_REQUESTED },
+    {
+      value: OrderStatus.PENDING,
+      label: ADMIN_ORDER_STATUS_CONFIG[OrderStatus.PENDING].label,
+      count: counts.PENDING,
+    },
+    {
+      value: OrderStatus.PROCESSING,
+      label: ADMIN_ORDER_STATUS_CONFIG[OrderStatus.PROCESSING].label,
+      count: counts.PROCESSING,
+    },
+    {
+      value: OrderStatus.SHIPPED,
+      label: ADMIN_ORDER_STATUS_CONFIG[OrderStatus.SHIPPED].label,
+      count: counts.SHIPPED,
+    },
+    {
+      value: OrderStatus.DELIVERED,
+      label: ADMIN_ORDER_STATUS_CONFIG[OrderStatus.DELIVERED].label,
+      count: counts.DELIVERED,
+    },
+    {
+      value: OrderStatus.CANCELLED,
+      label: ADMIN_ORDER_STATUS_CONFIG[OrderStatus.CANCELLED].label,
+      count: counts.CANCELLED,
+    },
+    {
+      value: OrderStatus.RETURN_REQUESTED,
+      label: "Trả hàng",
+      count: counts.RETURN_REQUESTED,
+    },
     { value: OrderStatus.RETURNED, label: "Đã trả", count: counts.RETURNED },
   ];
 
@@ -38,8 +62,8 @@ export function OrderTabs({ activeTab, onTabChange, counts }: OrderTabsProps) {
       <Tabs value={activeTab} onValueChange={onTabChange} className="w-full">
         <TabsList className="bg-transparent h-auto p-0 gap-8 justify-start border-none">
           {tabItems.map((item) => (
-            <TabsTrigger 
-              key={item.value} 
+            <TabsTrigger
+              key={item.value}
               value={item.value}
               className={cn(
                 "px-0 py-4 rounded-none border-b-2 border-transparent data-[state=active]:border-slate-900 data-[state=active]:bg-transparent data-[state=active]:shadow-none shadow-none transition-all gap-2",
@@ -49,12 +73,14 @@ export function OrderTabs({ activeTab, onTabChange, counts }: OrderTabsProps) {
             >
               <span>{item.label}</span>
               {item.count > 0 && (
-                <span className={cn(
-                  "text-[10px] px-1.5 py-0.5 rounded-full font-bold transition-colors",
-                  activeTab === item.value 
-                    ? "bg-slate-900 text-white" 
-                    : "bg-slate-100 text-slate-500"
-                )}>
+                <span
+                  className={cn(
+                    "text-[10px] px-1.5 py-0.5 rounded-full font-bold transition-colors",
+                    activeTab === item.value
+                      ? "bg-slate-900 text-white"
+                      : "bg-slate-100 text-slate-500"
+                  )}
+                >
                   {item.count}
                 </span>
               )}

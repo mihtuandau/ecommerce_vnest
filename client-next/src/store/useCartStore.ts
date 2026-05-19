@@ -53,7 +53,7 @@ export const useCartStore = create<CartStore>()(
       buyNowItem: null,
       isDirty: false,
       appliedDiscount: null,
-      
+
       addItem: (item, isGuest = true) =>
         set((state) => {
           const existing = state.items.find((i) => i.variantId === item.variantId);
@@ -61,13 +61,15 @@ export const useCartStore = create<CartStore>()(
             return {
               isDirty: isGuest,
               items: state.items.map((i) =>
-                i.variantId === item.variantId ? { ...i, quantity: i.quantity + item.quantity } : i
+                i.variantId === item.variantId
+                  ? { ...i, quantity: i.quantity + item.quantity }
+                  : i
               ),
             };
           }
-          return { 
+          return {
             isDirty: isGuest,
-            items: [...state.items, { ...item, selected: true }] 
+            items: [...state.items, { ...item, selected: true }],
           };
         }),
 
@@ -88,13 +90,13 @@ export const useCartStore = create<CartStore>()(
         })),
 
       clearCart: () => set({ items: [], isDirty: false }),
-      
+
       clearSelectedItems: () =>
         set((state) => ({
           items: state.items.filter((i) => !i.selected),
           isDirty: false,
         })),
-      
+
       setItems: (newItems, isFromServer = false) =>
         set((state) => {
           const mergedItems = newItems.map((ni) => {
@@ -104,19 +106,19 @@ export const useCartStore = create<CartStore>()(
               selected: existing ? existing.selected : (ni.selected ?? true),
             };
           });
-          
+
           const uniqueItems = Array.from(
-            new Map(mergedItems.map(item => [item.variantId, item])).values()
+            new Map(mergedItems.map((item) => [item.variantId, item])).values()
           );
-          
-          return { 
+
+          return {
             items: uniqueItems,
-            isDirty: isFromServer ? false : state.isDirty 
+            isDirty: isFromServer ? false : state.isDirty,
           };
         }),
 
       setBuyNowItem: (item) => set({ buyNowItem: item }),
-      
+
       clearBuyNowItem: () => set({ buyNowItem: null }),
 
       toggleSelectItem: (variantId) =>
@@ -130,12 +132,16 @@ export const useCartStore = create<CartStore>()(
         set((state) => ({
           items: state.items.map((item) => ({ ...item, selected })),
         })),
-      
-      totalPrice: () => get().items.reduce((sum, i) => sum + (i.discountedPrice || i.price) * i.quantity, 0),
+
+      totalPrice: () =>
+        get().items.reduce(
+          (sum, i) => sum + (i.discountedPrice || i.price) * i.quantity,
+          0
+        ),
 
       selectedTotalPrice: () =>
-        get().items
-          .filter((i) => i.selected)
+        get()
+          .items.filter((i) => i.selected)
           .reduce((sum, i) => sum + (i.discountedPrice || i.price) * i.quantity, 0),
 
       selectedCount: () => get().items.filter((i) => i.selected).length,

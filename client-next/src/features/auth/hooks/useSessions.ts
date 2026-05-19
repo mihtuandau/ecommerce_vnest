@@ -7,7 +7,9 @@ export const useSessions = () => {
   return useQuery({
     queryKey: ["auth-sessions"],
     queryFn: async () => {
-      const { data } = await axios.get(`${API_URL}/auth/sessions`, { withCredentials: true });
+      const { data } = await axios.get(`${API_URL}/auth/sessions`, {
+        withCredentials: true,
+      });
       return data;
     },
   });
@@ -17,7 +19,11 @@ export const useRevokeSession = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (sessionId: number) => {
-      const { data } = await axios.post(`${API_URL}/auth/sessions/revoke`, { sessionId }, { withCredentials: true });
+      const { data } = await axios.post(
+        `${API_URL}/auth/sessions/revoke`,
+        { sessionId },
+        { withCredentials: true }
+      );
       return data;
     },
     onSuccess: () => {

@@ -20,41 +20,41 @@ export function PaymentsContainer() {
   const { data, isLoading, isFetching, refetch } = usePayments({ limit: 1000 });
   const { mutate: updateStatus, isPending: isUpdating } = useUpdatePaymentStatus();
 
-
- const statsPayments = useMemo(() => {
-  return data?.payments || [];
-}, [data?.payments]);
+  const statsPayments = useMemo(() => {
+    return data?.payments || [];
+  }, [data?.payments]);
 
   // 2. Perform client-side filtering matching other dashboard list pages
   const filteredPayments = useMemo(() => {
-  const allPayments = data?.payments || [];
-  let result = allPayments;
+    const allPayments = data?.payments || [];
+    let result = allPayments;
 
-  if (status !== "ALL") {
-    result = result.filter((p: any) => p.status === status);
-  }
+    if (status !== "ALL") {
+      result = result.filter((p: any) => p.status === status);
+    }
 
-  if (method !== "ALL") {
-    result = result.filter((p: any) => p.method === method);
-  }
+    if (method !== "ALL") {
+      result = result.filter((p: any) => p.method === method);
+    }
 
-  if (searchQuery.trim()) {
-    const term = searchQuery.toLowerCase().trim();
-    result = result.filter((p: any) =>
-      (p.transactionId && p.transactionId.toLowerCase().includes(term)) ||
-      (p.order?.orderCode && p.order.orderCode.toLowerCase().includes(term)) ||
-      (p.order?.user?.name && p.order.user.name.toLowerCase().includes(term)) ||
-      (p.order?.guestEmail && p.order.guestEmail.toLowerCase().includes(term))
-    );
-  }
+    if (searchQuery.trim()) {
+      const term = searchQuery.toLowerCase().trim();
+      result = result.filter(
+        (p: any) =>
+          (p.transactionId && p.transactionId.toLowerCase().includes(term)) ||
+          (p.order?.orderCode && p.order.orderCode.toLowerCase().includes(term)) ||
+          (p.order?.user?.name && p.order.user.name.toLowerCase().includes(term)) ||
+          (p.order?.guestEmail && p.order.guestEmail.toLowerCase().includes(term))
+      );
+    }
 
-  return result;
-}, [data?.payments, status, method, searchQuery]);
+    return result;
+  }, [data?.payments, status, method, searchQuery]);
 
   // 3. Client-side pagination based on filtered list
   const total = filteredPayments.length;
   const totalPages = Math.max(1, Math.ceil(total / limit));
-  
+
   // Adjust page index if page is out of bounds after filtering
   const currentPage = Math.min(page, totalPages);
 
@@ -77,10 +77,12 @@ export function PaymentsContainer() {
       <div className="flex items-center justify-between pb-4 border-b border-slate-200">
         <div>
           <h1 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-            <CreditCard className="h-6 w-6 text-slate-500" /> Quản lý giao dịch & Đối soát
+            <CreditCard className="h-6 w-6 text-slate-500" /> Quản lý giao dịch & Đối
+            soát
           </h1>
           <p className="text-xs text-slate-500 mt-1 font-medium">
-            Kiểm tra trạng thái dòng tiền thanh toán và đối soát dữ liệu với ngân hàng/cổng thanh toán.
+            Kiểm tra trạng thái dòng tiền thanh toán và đối soát dữ liệu với ngân
+            hàng/cổng thanh toán.
           </p>
         </div>
         <Button
@@ -90,7 +92,8 @@ export function PaymentsContainer() {
           className="rounded-xl border-slate-200 h-9 font-semibold text-slate-650 gap-2 hover:bg-slate-50 transition-all shadow-sm"
           disabled={isLoading || isFetching}
         >
-          <RefreshCw className={cn("h-3.5 w-3.5", isFetching && "animate-spin")} /> Làm mới
+          <RefreshCw className={cn("h-3.5 w-3.5", isFetching && "animate-spin")} /> Làm
+          mới
         </Button>
       </div>
 

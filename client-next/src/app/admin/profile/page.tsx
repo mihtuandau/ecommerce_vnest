@@ -14,7 +14,7 @@ export default function ProfilePage() {
     isUploading,
     fileInputRef,
     handleFileChange,
-    isPending
+    isPending,
   } = useAdminProfile();
 
   if (!user) {
@@ -37,7 +37,7 @@ export default function ProfilePage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <ProfileSidebar 
+        <ProfileSidebar
           user={user}
           form={form}
           isUploading={isUploading}
@@ -45,11 +45,7 @@ export default function ProfilePage() {
           onFileChange={handleFileChange}
         />
 
-        <ProfileForm 
-          form={form}
-          onSubmit={onSubmit}
-          isPending={isPending}
-        />
+        <ProfileForm form={form} onSubmit={onSubmit} isPending={isPending} />
       </div>
     </div>
   );

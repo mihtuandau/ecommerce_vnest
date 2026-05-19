@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function PaymentReturnPage() {
   return (
-    <Suspense 
+    <Suspense
       fallback={
         <div className="min-h-screen flex items-center justify-center bg-slate-50/50">
           <Spinner size="lg" />

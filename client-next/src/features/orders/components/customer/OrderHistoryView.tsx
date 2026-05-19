@@ -7,15 +7,15 @@ import { useToast } from "@/hooks/useToast";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { 
-  Search, 
-  Calendar, 
-  Truck, 
-  Check, 
-  MapPin, 
-  ShoppingCart, 
+import {
+  Search,
+  Calendar,
+  Truck,
+  Check,
+  MapPin,
+  ShoppingCart,
   ShoppingBag,
-  ArrowLeft
+  ArrowLeft,
 } from "lucide-react";
 import Link from "next/link";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs";
@@ -23,6 +23,16 @@ import Image from "next/image";
 import { OrderStatus } from "@/types/enums";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { ReviewModal } from "@/features/reviews/components/customer/ReviewModal";
+import { useRouter } from "next/navigation";
+import {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+  EmptyState,
+} from "@/components/ui";
 import { getImageUrl } from "@/utils/image";
 import { cn } from "@/utils/cn";
 import { CUSTOMER_ORDER_STATUS_CONFIG } from "../../constants";
@@ -34,7 +44,9 @@ const getStatusLabel = (s: string) => {
 };
 
 const getStatusStyle = (s: string) => {
-  return CUSTOMER_ORDER_STATUS_CONFIG[s as OrderStatus]?.cls || "bg-[#F3EFE8] text-[#8A7966]";
+  return (
+    CUSTOMER_ORDER_STATUS_CONFIG[s as OrderStatus]?.cls || "bg-[#F3EFE8] text-[#8A7966]"
+  );
 };
 
 export function OrderHistoryView() {
@@ -43,19 +55,26 @@ export function OrderHistoryView() {
   const { data, isLoading } = useMyOrders();
   const { addItem } = useCart();
   const { success } = useToast();
-  
+  const router = useRouter();
+
   const orders = data || [];
 
   const handleBuyAgain = (item: any) => {
-    const getUrl = (img: any) => typeof img === 'string' ? img : img?.url;
-    const imgSrc = (item.variantSnapshot as any)?.image ||
-                  getUrl(item.variant?.images?.[0]) ||
-                  getUrl(item.variant?.product?.images?.[0]);
+    const getUrl = (img: any) => (typeof img === "string" ? img : img?.url);
+    const imgSrc =
+      (item.variantSnapshot as any)?.image ||
+      getUrl(item.variant?.images?.[0]) ||
+      getUrl(item.variant?.product?.images?.[0]);
 
     addItem({
-      productId: String(item.variant?.productId || item.productId || item.variantSnapshot?.productId),
+      productId: String(
+        item.variant?.productId || item.productId || item.variantSnapshot?.productId
+      ),
       variantId: String(item.variantId || item.variant?.id),
-      name: item.productName || item.variantSnapshot?.productName || item.variant?.product?.name,
+      name:
+        item.productName ||
+        item.variantSnapshot?.productName ||
+        item.variant?.product?.name,
       price: item.price,
       imageUrl: getImageUrl(imgSrc),
       slug: item.variant?.product?.slug || item.slug || item.variantSnapshot?.slug,
@@ -68,33 +87,47 @@ export function OrderHistoryView() {
 
   const filteredOrders = orders.filter((o) => {
     let matchesStatus = status === "ALL" || o.status === status;
-    
+
     // special case for returns: show both requested and returned
     if (status === OrderStatus.RETURN_REQUESTED) {
-      matchesStatus = o.status === OrderStatus.RETURN_REQUESTED || o.status === OrderStatus.RETURNED;
+      matchesStatus =
+        o.status === OrderStatus.RETURN_REQUESTED || o.status === OrderStatus.RETURNED;
     }
 
-    const matchesSearch = searchQuery === "" || 
+    const matchesSearch =
+      searchQuery === "" ||
       o.orderCode.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      o.orderItems.some((item: any) => item.productName.toLowerCase().includes(searchQuery.toLowerCase()));
+      o.orderItems.some((item: any) =>
+        item.productName.toLowerCase().includes(searchQuery.toLowerCase())
+      );
     return matchesStatus && matchesSearch;
   });
 
   return (
     <div className="min-h-screen bg-brand-cream pb-24 font-sans-brand">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-9">
-        
         {/* ── BREADCRUMBS ── */}
-        <div className="flex items-center gap-1.5 text-[12.5px] text-brand-taupe mb-8">
-          <Link href="/" className="hover:text-brand-espresso transition-colors">Trang chủ</Link>
-          <span className="opacity-50">›</span>
-          <span className="text-brand-espresso font-medium">Đơn hàng của tôi</span>
-        </div>
+        <Breadcrumb className="mb-8">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href="/">Trang chủ</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Đơn hàng của tôi</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
 
         {/* Header - Combined Row */}
         <div className="mb-10 space-y-1">
           <h1 className="text-3xl md:text-5xl font-bold font-serif-brand text-brand-espresso tracking-tight">
-            Đơn hàng <em className="italic text-brand-bronze font-medium font-serif-brand">của tôi</em>
+            Đơn hàng{" "}
+            <em className="italic text-brand-bronze font-medium font-serif-brand">
+              của tôi
+            </em>
           </h1>
           <p className="text-[14px] text-brand-taupe font-medium">
             Quản lý và theo dõi tất cả đơn hàng
@@ -106,7 +139,15 @@ export function OrderHistoryView() {
           <div className="flex-1 overflow-x-auto no-scrollbar">
             <Tabs value={status} onValueChange={setStatus} className="w-full">
               <TabsList className="bg-transparent h-auto p-0 gap-1 flex justify-start">
-                {["ALL", OrderStatus.PENDING, OrderStatus.PROCESSING, OrderStatus.SHIPPED, OrderStatus.DELIVERED, OrderStatus.CANCELLED, OrderStatus.RETURN_REQUESTED].map((s) => (
+                {[
+                  "ALL",
+                  OrderStatus.PENDING,
+                  OrderStatus.PROCESSING,
+                  OrderStatus.SHIPPED,
+                  OrderStatus.DELIVERED,
+                  OrderStatus.CANCELLED,
+                  OrderStatus.RETURN_REQUESTED,
+                ].map((s) => (
                   <TabsTrigger
                     key={s}
                     value={s}
@@ -116,57 +157,76 @@ export function OrderHistoryView() {
                       "text-brand-taupe hover:border-brand-bronze hover:text-brand-espresso font-medium"
                     )}
                   >
-                    {s === OrderStatus.RETURN_REQUESTED ? "Trả hàng" : getStatusLabel(s)}
+                    {s === OrderStatus.RETURN_REQUESTED
+                      ? "Trả hàng"
+                      : getStatusLabel(s)}
                   </TabsTrigger>
                 ))}
               </TabsList>
             </Tabs>
           </div>
           <div className="relative w-[200px] shrink-0">
-            <Input 
-              type="text" 
+            <Input
+              type="text"
               placeholder="Tìm đơn hàng..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full h-[36px] pl-3 pr-9 bg-brand-ivory border-[1.5px] border-brand-sand rounded-full text-[13px] outline-none focus:border-brand-bronze transition-all font-medium text-brand-espresso"
             />
-            <Search className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-taupe z-10" size={14} />
+            <Search
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-taupe z-10"
+              size={14}
+            />
           </div>
         </div>
 
         {/* Order List */}
         <div className="space-y-4">
           {isLoading ? (
-             <div className="space-y-4">
-                {[1, 2].map((i) => <Skeleton key={i} className="h-64 w-full rounded-2xl" />)}
-             </div>
-          ) : filteredOrders.length === 0 ? (
-            <div className="py-16 text-center bg-white rounded-[16px] border border-brand-sand">
-              <div className="text-[60px] opacity-35 mb-4">📭</div>
-              <h3 className="text-[22px] font-serif-brand text-brand-espresso mb-2">Không có đơn hàng nào</h3>
-              <p className="text-[14px] text-brand-taupe mb-6 font-medium">Chưa có đơn hàng phù hợp với bộ lọc này.</p>
-              <Button asChild className="rounded-full bg-brand-espresso text-brand-cream px-7 py-3 font-medium hover:bg-brand-espresso/90">
-                <Link href="/shop">Mua sắm ngay</Link>
-              </Button>
+            <div className="space-y-4">
+              {[1, 2].map((i) => (
+                <Skeleton key={i} className="h-64 w-full rounded-2xl" />
+              ))}
             </div>
+          ) : filteredOrders.length === 0 ? (
+            <EmptyState
+              icon={ShoppingBag}
+              title="Không có đơn hàng nào"
+              description="Chưa có đơn hàng phù hợp với bộ lọc này."
+              actionText="Mua sắm ngay"
+              onAction={() => router.push("/shop")}
+            />
           ) : (
             filteredOrders.map((order) => (
-              <div key={order.id} className="bg-white border border-brand-sand rounded-[16px] overflow-hidden hover:shadow-[0_6px_24px_rgba(61,43,26,0.07)] transition-shadow group">
+              <div
+                key={order.id}
+                className="bg-white border border-brand-sand rounded-[16px] overflow-hidden hover:shadow-[0_6px_24px_rgba(61,43,26,0.07)] transition-shadow group"
+              >
                 {/* Header */}
                 <div className="px-5 py-4 flex items-center gap-4 border-b border-brand-sand">
-                  <span className="text-[14.5px] font-semibold text-brand-espresso font-mono tracking-tight">{order.orderCode}</span>
+                  <span className="text-[14.5px] font-semibold text-brand-espresso font-mono tracking-tight">
+                    {order.orderCode}
+                  </span>
                   <div className="w-[1px] h-4 bg-brand-sand" />
-                  <span className="text-[13px] text-brand-taupe font-medium">📅 {new Date(order.createdAt).toLocaleDateString("vi-VN")}</span>
-                  <div className={cn(
-                    "flex items-center gap-1.5 px-3 py-1 rounded-full text-[13px] font-semibold",
-                    getStatusStyle(order.status)
-                  )}>
+                  <span className="text-[13px] text-brand-taupe font-medium">
+                    📅 {new Date(order.createdAt).toLocaleDateString("vi-VN")}
+                  </span>
+                  <div
+                    className={cn(
+                      "flex items-center gap-1.5 px-3 py-1 rounded-full text-[13px] font-semibold",
+                      getStatusStyle(order.status)
+                    )}
+                  >
                     <div className="w-1.5 h-1.5 rounded-full bg-current" />
                     {getStatusLabel(order.status)}
                   </div>
                   <div className="ml-auto flex items-center gap-2">
-                    <span className="text-[13px] text-brand-taupe font-medium">Tổng:</span>
-                    <span className="text-[18px] font-sans font-semibold text-brand-espresso tabular-nums">{formatCurrency(order.total)}</span>
+                    <span className="text-[13px] text-brand-taupe font-medium">
+                      Tổng:
+                    </span>
+                    <span className="text-[18px] font-sans font-semibold text-brand-espresso tabular-nums">
+                      {formatCurrency(order.total)}
+                    </span>
                   </div>
                 </div>
 
@@ -174,30 +234,44 @@ export function OrderHistoryView() {
                 <div className="px-5 py-4 flex items-center gap-3 border-b border-brand-sand">
                   <div className="flex gap-3 shrink-0">
                     {order.orderItems.slice(0, 3).map((item: any, idx: number) => {
-                       const getUrl = (img: any) => typeof img === 'string' ? img : img?.url;
-                       const imgSrc = (item.variantSnapshot as any)?.image || getUrl(item.variant?.images?.[0]) || getUrl(item.variant?.product?.images?.[0]);
-                       return (
-                         <div key={item.id} className="w-[56px] h-[66px] rounded-[8px] bg-brand-ivory border border-brand-sand flex items-center justify-center p-1.5 relative overflow-hidden shrink-0">
-                           {imgSrc ? (
-                             <Image src={getImageUrl(imgSrc)} alt="" width={45} height={55} className="object-contain mix-blend-multiply" />
-                           ) : (
-                             <span className="text-xl">📦</span>
-                           )}
-                           {item.quantity > 1 && (
-                             <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-brand-espresso text-white text-[9px] font-bold rounded-full flex items-center justify-center border border-white">
-                               {item.quantity}
-                             </span>
-                           )}
-                         </div>
-                       );
+                      const getUrl = (img: any) =>
+                        typeof img === "string" ? img : img?.url;
+                      const imgSrc =
+                        (item.variantSnapshot as any)?.image ||
+                        getUrl(item.variant?.images?.[0]) ||
+                        getUrl(item.variant?.product?.images?.[0]);
+                      return (
+                        <div
+                          key={item.id}
+                          className="w-[56px] h-[66px] rounded-[8px] bg-brand-ivory border border-brand-sand flex items-center justify-center p-1.5 relative overflow-hidden shrink-0"
+                        >
+                          {imgSrc ? (
+                            <Image
+                              src={getImageUrl(imgSrc)}
+                              alt=""
+                              width={45}
+                              height={55}
+                              className="object-contain mix-blend-multiply"
+                            />
+                          ) : (
+                            <span className="text-xl">📦</span>
+                          )}
+                          {item.quantity > 1 && (
+                            <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-brand-espresso text-white text-[9px] font-bold rounded-full flex items-center justify-center border border-white">
+                              {item.quantity}
+                            </span>
+                          )}
+                        </div>
+                      );
                     })}
                   </div>
                   <div className="flex-1 min-w-0">
                     <h4 className="text-[14px] font-medium text-brand-espresso mb-0.5 truncate font-medium">
-                      {order.orderItems.map((i:any) => i.productName).join(" · ")}
+                      {order.orderItems.map((i: any) => i.productName).join(" · ")}
                     </h4>
                     <p className="text-[13px] text-brand-taupe font-medium">
-                      {order.orderItems.length} sản phẩm · {order.paymentMethod || "COD"}
+                      {order.orderItems.length} sản phẩm ·{" "}
+                      {order.paymentMethod || "COD"}
                     </p>
                   </div>
                   {order.orderItems.length > 3 && (
@@ -218,7 +292,10 @@ export function OrderHistoryView() {
                       <ProgressLine currentStatus={order.status} />
                       <div className="flex items-center gap-1.5 text-[13px] text-brand-taupe mt-2.5 font-medium">
                         <Truck size={14} className="text-brand-bronze" />
-                        Dự kiến giao: <strong className="text-brand-espresso font-semibold tracking-tight">16/05 – 17/05/2025</strong>
+                        Dự kiến giao:{" "}
+                        <strong className="text-brand-espresso font-semibold tracking-tight">
+                          16/05 – 17/05/2025
+                        </strong>
                       </div>
                     </>
                   )}
@@ -226,8 +303,8 @@ export function OrderHistoryView() {
 
                 {/* Actions */}
                 <div className="px-5 py-3.5 flex items-center gap-2 bg-brand-cream/20">
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     onClick={() => success("Đang mở trang theo dõi vận chuyển...")}
                     className="h-[36px] px-4 rounded-[8px] border-brand-sand text-brand-espresso text-[13px] font-medium hover:bg-brand-ivory flex items-center gap-1.5"
                   >
@@ -235,13 +312,17 @@ export function OrderHistoryView() {
                     Theo dõi đơn
                   </Button>
                   <div className="ml-auto flex gap-2">
-                    <Button variant="outline" asChild className="h-[36px] px-4 rounded-[8px] border-brand-sand text-brand-espresso text-[13px] font-medium hover:bg-brand-ivory flex items-center gap-1.5">
+                    <Button
+                      variant="outline"
+                      asChild
+                      className="h-[36px] px-4 rounded-[8px] border-brand-sand text-brand-espresso text-[13px] font-medium hover:bg-brand-ivory flex items-center gap-1.5"
+                    >
                       <Link href={`/orders/${order.id}`}>
                         <Search size={14} />
                         Chi tiết
                       </Link>
                     </Button>
-                    <Button 
+                    <Button
                       onClick={() => handleBuyAgain(order.orderItems[0])}
                       className="h-[36px] px-4 rounded-[8px] bg-brand-espresso text-brand-cream border-brand-espresso text-[13px] font-medium hover:bg-brand-espresso/90 flex items-center gap-1.5"
                     >

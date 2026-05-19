@@ -22,7 +22,7 @@ export function PaymentReturnView() {
       try {
         const params = Object.fromEntries(searchParams.entries());
         const { data } = await api.get("/payments/vnpay-return", { params });
-        
+
         if (data.success) {
           setStatus("success");
           setOrder(data.order);
@@ -48,8 +48,12 @@ export function PaymentReturnView() {
                   <Spinner size="lg" />
                 </div>
                 <div className="space-y-2">
-                  <h2 className="text-xl font-medium text-slate-800">Đang xử lý giao dịch</h2>
-                  <p className="text-sm text-slate-400">Vui lòng chờ trong giây lát...</p>
+                  <h2 className="text-xl font-medium text-slate-800">
+                    Đang xử lý giao dịch
+                  </h2>
+                  <p className="text-sm text-slate-400">
+                    Vui lòng chờ trong giây lát...
+                  </p>
                 </div>
               </div>
             )}
@@ -59,9 +63,11 @@ export function PaymentReturnView() {
                 <div className="h-24 w-24 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500 ring-8 ring-emerald-50/50">
                   <CheckCircle2 className="h-12 w-12 stroke-[1.5]" />
                 </div>
-                
+
                 <div className="space-y-3">
-                  <h2 className="text-2xl font-medium text-slate-900 tracking-tight">Thanh toán hoàn tất</h2>
+                  <h2 className="text-2xl font-medium text-slate-900 tracking-tight">
+                    Thanh toán hoàn tất
+                  </h2>
                   <p className="text-slate-500 text-sm leading-relaxed max-w-[280px] mx-auto">
                     Cảm ơn bạn! Đơn hàng của bạn đã được xác nhận và đang chờ xử lý.
                   </p>
@@ -71,11 +77,15 @@ export function PaymentReturnView() {
                   <div className="w-full border border-slate-100 rounded-3xl p-6 bg-slate-50/30 space-y-4">
                     <div className="flex justify-between items-center text-sm">
                       <span className="text-slate-400">Mã đơn hàng</span>
-                      <span className="text-slate-700 font-medium">{order.orderCode}</span>
+                      <span className="text-slate-700 font-medium">
+                        {order.orderCode}
+                      </span>
                     </div>
                     <div className="flex justify-between items-center text-sm">
                       <span className="text-slate-400">Tổng thanh toán</span>
-                      <span className="text-emerald-600 font-medium">{formatCurrency(order.totalAmount)}</span>
+                      <span className="text-emerald-600 font-medium">
+                        {formatCurrency(order.totalAmount)}
+                      </span>
                     </div>
                     <div className="flex justify-between items-center text-sm">
                       <span className="text-slate-400">Phương thức</span>
@@ -85,12 +95,25 @@ export function PaymentReturnView() {
                 )}
 
                 <div className="flex flex-col w-full gap-3 pt-2">
-                  <Button asChild className="w-full h-14 rounded-2xl bg-primary hover:bg-[#0d47a1] text-white border-none shadow-xl shadow-primary/10 transition-all active:scale-95">
-                    <Link href={order?.userId ? `/orders/${order.id}` : `/orders/guest/lookup/${order.orderCode}?contact=${order.guestPhone || order.phone}`}>
+                  <Button
+                    asChild
+                    className="w-full h-14 rounded-2xl bg-primary hover:bg-[#0d47a1] text-white border-none shadow-xl shadow-primary/10 transition-all active:scale-95"
+                  >
+                    <Link
+                      href={
+                        order?.userId
+                          ? `/orders/${order.id}`
+                          : `/orders/guest/lookup/${order.orderCode}?contact=${order.guestPhone || order.phone}`
+                      }
+                    >
                       Kiểm tra đơn hàng
                     </Link>
                   </Button>
-                  <Button asChild variant="ghost" className="w-full h-12 rounded-2xl text-slate-500 hover:text-slate-900 hover:bg-slate-50 transition-colors">
+                  <Button
+                    asChild
+                    variant="ghost"
+                    className="w-full h-12 rounded-2xl text-slate-500 hover:text-slate-900 hover:bg-slate-50 transition-colors"
+                  >
                     <Link href={ROUTES.HOME}>Về trang chủ</Link>
                   </Button>
                 </div>
@@ -102,19 +125,29 @@ export function PaymentReturnView() {
                 <div className="h-24 w-24 rounded-full bg-rose-50 flex items-center justify-center text-rose-500 ring-8 ring-rose-50/50">
                   <XCircle className="h-12 w-12 stroke-[1.5]" />
                 </div>
-                
+
                 <div className="space-y-3">
-                  <h2 className="text-2xl font-medium text-slate-900 tracking-tight">Giao dịch bị gián đoạn</h2>
+                  <h2 className="text-2xl font-medium text-slate-900 tracking-tight">
+                    Giao dịch bị gián đoạn
+                  </h2>
                   <p className="text-slate-500 text-sm leading-relaxed max-w-[280px] mx-auto">
-                    Rất tiếc, đã có lỗi xảy ra. Bạn có thể thử lại hoặc chọn phương thức khác.
+                    Rất tiếc, đã có lỗi xảy ra. Bạn có thể thử lại hoặc chọn phương thức
+                    khác.
                   </p>
                 </div>
 
                 <div className="flex flex-col w-full gap-3 pt-6">
-                  <Button asChild className="w-full h-14 rounded-2xl bg-rose-500 hover:bg-rose-600 text-white border-none shadow-lg shadow-rose-100 transition-all active:scale-95">
+                  <Button
+                    asChild
+                    className="w-full h-14 rounded-2xl bg-rose-500 hover:bg-rose-600 text-white border-none shadow-lg shadow-rose-100 transition-all active:scale-95"
+                  >
                     <Link href={ROUTES.CHECKOUT}>Thực hiện lại thanh toán</Link>
                   </Button>
-                  <Button asChild variant="ghost" className="w-full h-12 rounded-2xl text-slate-500 hover:text-slate-900 hover:bg-slate-50 transition-colors">
+                  <Button
+                    asChild
+                    variant="ghost"
+                    className="w-full h-12 rounded-2xl text-slate-500 hover:text-slate-900 hover:bg-slate-50 transition-colors"
+                  >
                     <Link href={ROUTES.HOME}>Quay về trang chủ</Link>
                   </Button>
                 </div>

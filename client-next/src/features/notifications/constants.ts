@@ -35,16 +35,16 @@ export const NOTIFICATIONS_MESSAGES = {
   MARK_ALL_AS_READ: "Đánh dấu tất cả là đã đọc",
   DELETE: "Xóa",
   DELETE_ALL: "Xóa tất cả",
-  
+
   // Actions
   VIEW: "Xem",
   DISMISS: "Bỏ qua",
   SETTING: "Cài đặt thông báo",
-  
+
   // Status
   UNREAD: "Chưa đọc",
   READ: "Đã đọc",
-  
+
   // Empty State
   EMPTY_NOTIFICATIONS: "Bạn không có thông báo nào",
   EMPTY_READ: "Chưa có thông báo đã đọc",

@@ -214,7 +214,10 @@ export function SizeGuideModal({ isOpen, onClose }: SizeGuideModalProps) {
               Lưu ý hữu ích
             </h4>
             <p className="text-[11.5px] text-brand-taupe font-medium leading-relaxed">
-              Nếu số đo của bạn nằm giữa hai kích cỡ, hãy chọn kích cỡ <strong>lớn hơn</strong> để có cảm giác thoải mái nhất khi di chuyển, hoặc <strong>nhỏ hơn</strong> nếu bạn yêu thích phong cách mặc vừa vặn, ôm dáng (Slim fit).
+              Nếu số đo của bạn nằm giữa hai kích cỡ, hãy chọn kích cỡ{" "}
+              <strong>lớn hơn</strong> để có cảm giác thoải mái nhất khi di chuyển, hoặc{" "}
+              <strong>nhỏ hơn</strong> nếu bạn yêu thích phong cách mặc vừa vặn, ôm dáng
+              (Slim fit).
             </p>
           </div>
         </div>

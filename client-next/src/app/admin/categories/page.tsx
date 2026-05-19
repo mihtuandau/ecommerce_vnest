@@ -9,17 +9,24 @@ import { CategoryListToolbar } from "@/features/categories/components/admin/List
 import { Spinner } from "@/components/ui/Spinner";
 
 export default function AdminCategoriesPage() {
-  const { data: categoryData, isLoading, refetch, isFetching } = useCategories({ tree: true });
+  const {
+    data: categoryData,
+    isLoading,
+    refetch,
+    isFetching,
+  } = useCategories({ tree: true });
   const [activeTab, setActiveTab] = React.useState("ALL");
   const [searchTerm, setSearchTerm] = React.useState("");
 
   // Helper function to flatten the category tree for the table display
   const flattenedCategories = React.useMemo(() => {
-    const categoriesArray = Array.isArray(categoryData) ? categoryData : (categoryData as any)?.data || [];
+    const categoriesArray = Array.isArray(categoryData)
+      ? categoryData
+      : (categoryData as any)?.data || [];
     const result: any[] = [];
 
     const flatten = (cats: any[], depth = 0, parent: any = null) => {
-      cats.forEach(cat => {
+      cats.forEach((cat) => {
         const item = { ...cat, depth, parent: cat.parent || parent };
         result.push(item);
         if (cat.children && cat.children.length > 0) {
@@ -32,18 +39,19 @@ export default function AdminCategoriesPage() {
     return result;
   }, [categoryData]);
 
-  const counts = React.useMemo(() => ({
-    ALL: flattenedCategories.length,
-  }), [flattenedCategories]);
+  const counts = React.useMemo(
+    () => ({
+      ALL: flattenedCategories.length,
+    }),
+    [flattenedCategories]
+  );
 
   const filteredCategories = React.useMemo(() => {
     let result = flattenedCategories;
 
     if (searchTerm) {
       const lowerSearch = searchTerm.toLowerCase();
-      result = result.filter((c: any) => 
-        c.name?.toLowerCase().includes(lowerSearch)
-      );
+      result = result.filter((c: any) => c.name?.toLowerCase().includes(lowerSearch));
     }
 
     return result;
@@ -51,30 +59,29 @@ export default function AdminCategoriesPage() {
 
   return (
     <div className="space-y-4 pb-10">
-      <CategoryListHeader 
-        totalCategories={flattenedCategories.length} 
-        onRefresh={refetch} 
-        isFetching={isFetching} 
+      <CategoryListHeader
+        totalCategories={flattenedCategories.length}
+        onRefresh={refetch}
+        isFetching={isFetching}
       />
 
       <div className="bg-white rounded-2xl border-none shadow-sm overflow-hidden">
-        <CategoryTabs 
-          activeTab={activeTab} 
-          onTabChange={setActiveTab} 
-          counts={counts} 
+        <CategoryTabs
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          counts={counts}
         />
 
-        <CategoryListToolbar 
-          searchTerm={searchTerm} 
-          onSearchChange={setSearchTerm} 
-        />
+        <CategoryListToolbar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
 
         <div className="overflow-x-auto">
           {isLoading ? (
             <div className="flex h-96 items-center justify-center">
               <div className="flex flex-col items-center gap-3">
                 <Spinner size="lg" />
-                <p className="text-sm font-semibold text-slate-400">Đang tải dữ liệu...</p>
+                <p className="text-sm font-semibold text-slate-400">
+                  Đang tải dữ liệu...
+                </p>
               </div>
             </div>
           ) : (

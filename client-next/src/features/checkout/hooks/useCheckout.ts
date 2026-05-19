@@ -17,14 +17,10 @@ import { useCheckoutDiscount } from "./useCheckoutDiscount";
 import { useShippingFee } from "./useShippingFee";
 
 export function useCheckout() {
-  const { 
-    items, 
-    buyNowItem, 
-    clearBuyNowItem, 
-  } = useCartStore();
-  
+  const { items, buyNowItem, clearBuyNowItem } = useCartStore();
+
   const { clearSelectedItems } = useCart();
-  
+
   const { user } = useAuthStore();
   const { error } = useToast();
   const router = useRouter();
@@ -39,11 +35,11 @@ export function useCheckout() {
 
   // Use extracted hooks
   const { form, setForm, updateFormField, updateFormAddress } = useCheckoutForm();
-  const { 
-    provinces, 
-    districts, 
-    wards, 
-    isLoadingDistricts, 
+  const {
+    provinces,
+    districts,
+    wards,
+    isLoadingDistricts,
     isLoadingWards,
     selectedAddressId,
     setSelectedAddressId,
@@ -61,18 +57,22 @@ export function useCheckout() {
   );
 
   const subtotal = useMemo(
-    () => displayItems.reduce((sum, i) => sum + (i.discountedPrice || i.price) * i.quantity, 0),
+    () =>
+      displayItems.reduce(
+        (sum, i) => sum + (i.discountedPrice || i.price) * i.quantity,
+        0
+      ),
     [displayItems]
   );
 
-  const { 
-    discountCode, 
-    setDiscountCode, 
-    appliedDiscount, 
-    discountAmount, 
-    isApplyingDiscount, 
-    handleApplyDiscount, 
-    handleRemoveDiscount 
+  const {
+    discountCode,
+    setDiscountCode,
+    appliedDiscount,
+    discountAmount,
+    isApplyingDiscount,
+    handleApplyDiscount,
+    handleRemoveDiscount,
   } = useCheckoutDiscount(subtotal);
 
   const { shippingFee, isCalculatingFee } = useShippingFee(
@@ -91,24 +91,38 @@ export function useCheckout() {
   useEffect(() => {
     if (mounted && lastItemCount !== null && displayItems.length < lastItemCount) {
       setItemsChangedNotice(true);
-      setTimeout(() => setItemsChangedNotice(false), CHECKOUT_CONSTANTS.NOTIFICATION_TIMEOUT);
+      setTimeout(
+        () => setItemsChangedNotice(false),
+        CHECKOUT_CONSTANTS.NOTIFICATION_TIMEOUT
+      );
     }
     setLastItemCount(displayItems.length);
   }, [displayItems.length, mounted]);
 
   // Wrapped address handlers
-  const applySavedAddress = useCallback(async (addr: AddressOption) => {
-    const result = await baseApplySavedAddress(addr);
-    if (result && Object.keys(result).length > 0) {
-      updateFormAddress(result);
-    }
-    return result;
-  }, [baseApplySavedAddress, updateFormAddress]);
+  const applySavedAddress = useCallback(
+    async (addr: AddressOption) => {
+      const result = await baseApplySavedAddress(addr);
+      if (result && Object.keys(result).length > 0) {
+        updateFormAddress(result);
+      }
+      return result;
+    },
+    [baseApplySavedAddress, updateFormAddress]
+  );
 
   // Load default address
   useEffect(() => {
-    if (user && addressData?.addresses && addressData.addresses.length > 0 && mounted && !hasAppliedDefault) {
-      const defaultAddr = addressData.addresses.find((a: AddressOption) => a.isDefault) || addressData.addresses[0];
+    if (
+      user &&
+      addressData?.addresses &&
+      addressData.addresses.length > 0 &&
+      mounted &&
+      !hasAppliedDefault
+    ) {
+      const defaultAddr =
+        addressData.addresses.find((a: AddressOption) => a.isDefault) ||
+        addressData.addresses[0];
       if (defaultAddr) {
         applySavedAddress(defaultAddr);
         setHasAppliedDefault(true);
@@ -116,25 +130,34 @@ export function useCheckout() {
     }
   }, [addressData, mounted, hasAppliedDefault, user, applySavedAddress]);
 
-  const handleProvinceChange = useCallback(async (id: string) => {
-    const result = await baseHandleProvinceChange(id);
-    updateFormAddress(result);
-  }, [baseHandleProvinceChange, updateFormAddress]);
+  const handleProvinceChange = useCallback(
+    async (id: string) => {
+      const result = await baseHandleProvinceChange(id);
+      updateFormAddress(result);
+    },
+    [baseHandleProvinceChange, updateFormAddress]
+  );
 
-  const handleDistrictChange = useCallback(async (id: string) => {
-    const result = await baseHandleDistrictChange(id);
-    updateFormAddress(result);
-  }, [baseHandleDistrictChange, updateFormAddress]);
+  const handleDistrictChange = useCallback(
+    async (id: string) => {
+      const result = await baseHandleDistrictChange(id);
+      updateFormAddress(result);
+    },
+    [baseHandleDistrictChange, updateFormAddress]
+  );
 
-  const handleWardChange = useCallback((code: string) => {
-    const result = baseHandleWardChange(code);
-    updateFormAddress(result);
-  }, [baseHandleWardChange, updateFormAddress]);
+  const handleWardChange = useCallback(
+    (code: string) => {
+      const result = baseHandleWardChange(code);
+      updateFormAddress(result);
+    },
+    [baseHandleWardChange, updateFormAddress]
+  );
 
   // Form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const validation = validateCheckoutForm(form, !user);
     if (!validation.valid) {
       return error(validation.message || "Vui lòng kiểm tra lại thông tin");
@@ -146,7 +169,10 @@ export function useCheckout() {
     try {
       const isGuest = !user;
       const orderData = {
-        items: displayItems.map((i) => ({ variantId: Number(i.variantId), quantity: i.quantity })),
+        items: displayItems.map((i) => ({
+          variantId: Number(i.variantId),
+          quantity: i.quantity,
+        })),
         shippingInfo: {
           fullName: form.fullName,
           phone: form.phone,
@@ -184,9 +210,10 @@ export function useCheckout() {
       successParams.set("contact", form.phone);
       router.push(`/checkout/success?${successParams.toString()}`);
     } catch (err: any) {
-      const errMsg = err?.response?.data?.message || err?.message || "Có lỗi xảy ra khi đặt hàng";
+      const errMsg =
+        err?.response?.data?.message || err?.message || "Có lỗi xảy ra khi đặt hàng";
       error(errMsg);
-      setIsSubmitting(false); 
+      setIsSubmitting(false);
     }
   };
 

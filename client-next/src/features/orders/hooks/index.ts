@@ -43,9 +43,13 @@ export function useUpdateOrderStatus() {
     onSuccess: (data, variables) => {
       // Invalidate bằng cả id từ variables (string) để chắc chắn khớp key
       queryClient.invalidateQueries({ queryKey: queryKeys.orders.list() });
-      queryClient.invalidateQueries({ queryKey: queryKeys.orders.detail(String(variables.id)) });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.orders.detail(String(variables.id)),
+      });
       // Refetch ngay lập tức để UI cập nhật không cần F5
-      queryClient.refetchQueries({ queryKey: queryKeys.orders.detail(String(variables.id)) });
+      queryClient.refetchQueries({
+        queryKey: queryKeys.orders.detail(String(variables.id)),
+      });
       success("Cập nhật trạng thái đơn hàng thành công");
     },
     onError: (err: { response?: { data?: { message?: string } } }) => {
@@ -62,8 +66,12 @@ export function useCancelOrder() {
     mutationFn: (id: string) => ordersApi.cancelOrder(id),
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.orders.list() });
-      queryClient.invalidateQueries({ queryKey: queryKeys.orders.detail(String(variables)) });
-      queryClient.refetchQueries({ queryKey: queryKeys.orders.detail(String(variables)) });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.orders.detail(String(variables)),
+      });
+      queryClient.refetchQueries({
+        queryKey: queryKeys.orders.detail(String(variables)),
+      });
       success("Đã hủy đơn hàng thành công");
     },
     onError: (err: { response?: { data?: { message?: string } } }) => {
@@ -87,8 +95,12 @@ export function useSyncToGHN() {
     mutationFn: (id: string) => ordersApi.syncToGHN(id),
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.orders.list() });
-      queryClient.invalidateQueries({ queryKey: queryKeys.orders.detail(String(variables)) });
-      queryClient.refetchQueries({ queryKey: queryKeys.orders.detail(String(variables)) });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.orders.detail(String(variables)),
+      });
+      queryClient.refetchQueries({
+        queryKey: queryKeys.orders.detail(String(variables)),
+      });
       success("Đã đồng bộ đơn hàng sang GHN thành công");
     },
     onError: (err: { response?: { data?: { message?: string } } }) => {
@@ -111,8 +123,15 @@ export function useUpdatePaymentStatus() {
   const { success, error } = useToast();
 
   return useMutation({
-    mutationFn: ({ paymentId, status, orderId }: { paymentId: string; status: PaymentStatus; orderId?: string }) =>
-      ordersApi.updatePaymentStatus(paymentId, status),
+    mutationFn: ({
+      paymentId,
+      status,
+      orderId,
+    }: {
+      paymentId: string;
+      status: PaymentStatus;
+      orderId?: string;
+    }) => ordersApi.updatePaymentStatus(paymentId, status),
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.orders.list() });
       const targetId = variables.orderId || String(data.orderId || "");

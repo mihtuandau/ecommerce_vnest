@@ -44,33 +44,48 @@ function ProductCountdown({ endDate }: { endDate: string }) {
         { val: time.days, label: "Ngày" },
         { val: time.hours, label: "Giờ" },
         { val: time.minutes, label: "Phút" },
-        { val: time.seconds, label: "Giây" }
-      ].slice(time.days > 0 ? 0 : 1).map((item, i) => (
-        <React.Fragment key={i}>
-          {i > 0 && <span className="text-[14px] font-bold text-brand-bronze animate-pulse mb-3">:</span>}
-          <div className="flex flex-col items-center gap-1">
-            <div className="w-9 h-9 bg-white rounded-lg flex items-center justify-center shadow-sm border border-brand-sand/30">
-              <span className="text-[15px] font-bold text-brand-espresso tabular-nums leading-none">{pad(item.val)}</span>
+        { val: time.seconds, label: "Giây" },
+      ]
+        .slice(time.days > 0 ? 0 : 1)
+        .map((item, i) => (
+          <React.Fragment key={i}>
+            {i > 0 && (
+              <span className="text-[14px] font-bold text-brand-bronze animate-pulse mb-3">
+                :
+              </span>
+            )}
+            <div className="flex flex-col items-center gap-1">
+              <div className="w-9 h-9 bg-white rounded-lg flex items-center justify-center shadow-sm border border-brand-sand/30">
+                <span className="text-[15px] font-bold text-brand-espresso tabular-nums leading-none">
+                  {pad(item.val)}
+                </span>
+              </div>
+              <span className="text-[8px] font-extrabold text-brand-taupe uppercase tracking-wider">
+                {item.label}
+              </span>
             </div>
-            <span className="text-[8px] font-extrabold text-brand-taupe uppercase tracking-wider">{item.label}</span>
-          </div>
-        </React.Fragment>
-      ))}
+          </React.Fragment>
+        ))}
     </div>
   );
 }
 
-export function ProductInfo({ product, flashSale, finalPrice, finalOriginalPrice }: ProductInfoProps) {
-  const isFlashSale = flashSale?.products?.some((p: any) => 
-    String(p.id) === String(product.id) || 
-    String(p.productId) === String(product.id)
+export function ProductInfo({
+  product,
+  flashSale,
+  finalPrice,
+  finalOriginalPrice,
+}: ProductInfoProps) {
+  const isFlashSale = flashSale?.products?.some(
+    (p: any) =>
+      String(p.id) === String(product.id) || String(p.productId) === String(product.id)
   );
-  const flashSalePercent = isFlashSale ? (flashSale!.percentage || 0) : 0;
+  const flashSalePercent = isFlashSale ? flashSale!.percentage || 0 : 0;
 
   return (
     <div className="space-y-6">
       <div className="space-y-4">
-        <Link 
+        <Link
           href={`/shop?categoryId=${product.categoryId}`}
           className="inline-block text-[12px] font-bold text-brand-bronze hover:text-primary transition-colors"
         >
@@ -85,10 +100,20 @@ export function ProductInfo({ product, flashSale, finalPrice, finalOriginalPrice
           <div className="flex items-center gap-2">
             <div className="flex items-center text-brand-bronze gap-0.5">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} size={11} className={cn(i < Math.floor(product.averageRating || 5) ? "fill-current" : "opacity-30")} />
+                <Star
+                  key={i}
+                  size={11}
+                  className={cn(
+                    i < Math.floor(product.averageRating || 5)
+                      ? "fill-current"
+                      : "opacity-30"
+                  )}
+                />
               ))}
             </div>
-            <span className="text-primary ml-0.5">{(product.averageRating || 5).toFixed(1)}</span>
+            <span className="text-primary ml-0.5">
+              {(product.averageRating || 5).toFixed(1)}
+            </span>
           </div>
           <span className="h-3 w-px bg-brand-ivory" />
           <span>{product.reviewCount || 0} đánh giá</span>
@@ -109,7 +134,7 @@ export function ProductInfo({ product, flashSale, finalPrice, finalOriginalPrice
               </div>
             </div>
           )}
-          
+
           <div className="flex items-baseline gap-4">
             <span className="text-[36px] font-bold tabular-nums leading-none text-brand-espresso">
               {formatCurrency(finalPrice)}
@@ -121,27 +146,30 @@ export function ProductInfo({ product, flashSale, finalPrice, finalOriginalPrice
             )}
           </div>
         </div>
- 
+
         {isFlashSale && flashSale?.endDate && (
           <div className="flex items-center justify-between p-5 bg-brand-espresso rounded-[28px] border border-brand-bronze/30 shadow-[0_20px_40px_rgba(61,43,26,0.15)] relative overflow-hidden group">
             {/* Background Accent */}
             <div className="absolute top-0 right-0 w-32 h-32 bg-brand-bronze/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
-            
+
             <div className="flex flex-col gap-1.5 relative z-10">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
-                <span className="text-[11px] font-bold text-brand-sand uppercase tracking-[0.15em]">Sắp kết thúc</span>
+                <span className="text-[11px] font-bold text-brand-sand uppercase tracking-[0.15em]">
+                  Sắp kết thúc
+                </span>
               </div>
-              <span className="text-[12px] font-medium text-brand-ivory/80">Đừng bỏ lỡ ưu đãi này</span>
+              <span className="text-[12px] font-medium text-brand-ivory/80">
+                Đừng bỏ lỡ ưu đãi này
+              </span>
             </div>
-            
+
             <div className="relative z-10">
               <ProductCountdown endDate={flashSale.endDate} />
             </div>
           </div>
         )}
       </div>
-
     </div>
   );
 }

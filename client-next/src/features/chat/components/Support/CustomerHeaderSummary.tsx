@@ -28,11 +28,11 @@ export function CustomerHeaderSummary({
         </div>
         <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-emerald-500 border-2 border-white rounded-full shadow-sm"></div>
       </div>
-      
+
       <h4 className="text-sm font-semibold text-slate-800 tracking-tight">
         {customerDetails?.name || selectedRoom?.customer?.name || "Khách hàng"}
       </h4>
-      
+
       {ordersList.length >= 3 || totalSpent > 5000000 ? (
         <div className="inline-flex items-center gap-1 bg-amber-50 border border-amber-100 text-amber-700 text-[9px] font-bold px-2 py-0.5 rounded-lg mt-1.5 uppercase tracking-wider">
           <Star size={10} fill="currentColor" /> Thành viên VIP
@@ -48,13 +48,17 @@ export function CustomerHeaderSummary({
           <div className="text-sm font-semibold text-slate-800">
             {isLoading ? "..." : ordersList.length}
           </div>
-          <div className="text-[9px] text-slate-400 font-medium uppercase tracking-wider mt-0.5">Đơn hàng</div>
+          <div className="text-[9px] text-slate-400 font-medium uppercase tracking-wider mt-0.5">
+            Đơn hàng
+          </div>
         </div>
         <div className="bg-white p-2.5 rounded-xl text-center shadow-xs border border-slate-100">
           <div className="text-sm font-semibold text-slate-800">
             {isLoading ? "..." : avgRating ? `${avgRating}★` : "N/A"}
           </div>
-          <div className="text-[9px] text-slate-400 font-medium uppercase tracking-wider mt-0.5">Hài lòng</div>
+          <div className="text-[9px] text-slate-400 font-medium uppercase tracking-wider mt-0.5">
+            Hài lòng
+          </div>
         </div>
       </div>
     </div>

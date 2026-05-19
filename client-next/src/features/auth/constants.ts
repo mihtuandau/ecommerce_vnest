@@ -27,14 +27,14 @@ export const AUTH_MESSAGES = {
   REGISTER_SUCCESS: "Đăng ký thành công! Vui lòng đăng nhập.",
   REGISTER_ERROR: "Email đã tồn tại hoặc dữ liệu không hợp lệ",
   REGISTER_ERROR_GENERIC: "Lỗi đăng ký",
-  
+
   // Form Validation Messages
   EMAIL_REQUIRED: "Vui lòng nhập email",
   PASSWORD_REQUIRED: "Vui lòng nhập mật khẩu",
   NAME_REQUIRED: "Vui lòng nhập họ tên",
   PHONE_REQUIRED: "Vui lòng nhập số điện thoại",
   PASSWORD_MISMATCH: "Mật khẩu xác nhận không khớp",
-  
+
   // UI Labels - Login/Register Form
   REMEMBER_LOGIN: "Ghi nhớ đăng nhập",
   PROCESSING: "Đang xử lý...",
@@ -47,29 +47,29 @@ export const AUTH_MESSAGES = {
   FACEBOOK_LOGIN: "Facebook",
   ALREADY_HAVE_ACCOUNT: "Chưa có tài khoản?",
   ALREADY_HAVE_ACCOUNT_LOGIN: "Đã có tài khoản?",
-  
+
   // Form Labels
   EMAIL: "Email",
   PASSWORD: "Mật khẩu",
   CONFIRM_PASSWORD: "Xác nhận mật khẩu",
   FULL_NAME: "Họ và tên",
   PHONE: "Số điện thoại",
-  
+
   // 2FA Labels
   OTP_LABEL: "Mã xác thực 6 chữ số",
   OTP_PLACEHOLDER: "000000",
   VERIFY_2FA_BUTTON: "Xác nhận đăng nhập",
   BACK_TO_LOGIN: "Quay lại đăng nhập",
-  
+
   // Page Titles
   LOGIN_TITLE: "Chào mừng!",
   REGISTER_TITLE: "Tạo tài khoản",
   TWO_FA_TITLE: "Xác thực 2 lớp",
-  
+
   // Page Descriptions
   LOGIN_DESC: "Đăng nhập để tiếp tục mua sắm",
   REGISTER_DESC: "Đăng ký để bắt đầu mua sắm",
-  
+
   // Dynamic Messages
   CONFIRM_MESSAGE: (email: string) => `Nhập mã 6 chữ số đã gửi tới ${email}`,
 } as const;

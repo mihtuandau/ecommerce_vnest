@@ -3,7 +3,14 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { formatCurrency } from "@/utils/formatCurrency";
-import { ShoppingBag, ChevronDown, ChevronUp, ShieldCheck, Truck, CheckCircle2 } from "lucide-react";
+import {
+  ShoppingBag,
+  ChevronDown,
+  ChevronUp,
+  ShieldCheck,
+  Truck,
+  CheckCircle2,
+} from "lucide-react";
 import { Spinner } from "@/components/ui/Spinner";
 import { CartItem } from "@/store/useCartStore";
 import { VoucherModal } from "@/features/discounts/components/customer/VoucherModal";
@@ -58,16 +65,22 @@ export const OrderSummary = React.memo(function OrderSummary({
     <div className="bg-white rounded-[16px] border border-brand-sand overflow-hidden shadow-sm">
       {/* OS Header */}
       <div className="px-[22px] py-[18px] border-b border-brand-sand flex items-center justify-between">
-        <h2 className="text-[17px] font-bold text-primary font-serif">Đơn hàng của bạn</h2>
-        <button 
-          type="button" 
+        <h2 className="text-[17px] font-bold text-primary font-serif">
+          Đơn hàng của bạn
+        </h2>
+        <button
+          type="button"
           onClick={() => setIsExpanded(!isExpanded)}
           className="text-[12.5px] font-medium text-brand-bronze hover:underline flex items-center gap-1"
         >
           {isExpanded ? (
-            <><ChevronUp size={14} /> Ẩn</>
+            <>
+              <ChevronUp size={14} /> Ẩn
+            </>
           ) : (
-            <><ChevronDown size={14} /> Xem</>
+            <>
+              <ChevronDown size={14} /> Xem
+            </>
           )}
         </button>
       </div>
@@ -76,12 +89,15 @@ export const OrderSummary = React.memo(function OrderSummary({
       {isExpanded && (
         <div className="px-[22px] py-4 border-b border-brand-sand space-y-5 max-h-[400px] overflow-y-auto animate-in slide-in-from-top-2 duration-300 custom-scrollbar bg-white">
           {(() => {
-            const groups = items.reduce((acc: { [key: string]: typeof items }, item) => {
-              const key = item.productId || item.name;
-              if (!acc[key]) acc[key] = [];
-              acc[key].push(item);
-              return acc;
-            }, {});
+            const groups = items.reduce(
+              (acc: { [key: string]: typeof items }, item) => {
+                const key = item.productId || item.name;
+                if (!acc[key]) acc[key] = [];
+                acc[key].push(item);
+                return acc;
+              },
+              {}
+            );
 
             return Object.entries(groups).map(([key, groupItems]) => (
               <div key={key} className="space-y-2.5">
@@ -96,9 +112,17 @@ export const OrderSummary = React.memo(function OrderSummary({
                 {/* Group Variants */}
                 <div className="space-y-2 pl-3">
                   {groupItems.map((item) => (
-                    <div key={item.variantId} className="flex gap-[12px] items-center group/item">
+                    <div
+                      key={item.variantId}
+                      className="flex gap-[12px] items-center group/item"
+                    >
                       <div className="w-[48px] h-[58px] rounded-[8px] bg-brand-ivory flex items-center justify-center text-[22px] shrink-0 relative border border-brand-sand/50 overflow-hidden">
-                        <Image src={item.imageUrl} alt={item.name} fill className="object-cover transition-transform group-hover/item:scale-110 duration-500" />
+                        <Image
+                          src={item.imageUrl}
+                          alt={item.name}
+                          fill
+                          className="object-cover transition-transform group-hover/item:scale-110 duration-500"
+                        />
                         <span className="absolute -top-[4px] -right-[4px] w-4.5 h-4.5 bg-primary text-white text-[9px] font-black rounded-full flex items-center justify-center shadow-sm">
                           {item.quantity}
                         </span>
@@ -117,7 +141,9 @@ export const OrderSummary = React.memo(function OrderSummary({
                           )}
                         </div>
                         <p className="text-[13px] font-bold text-brand-bronze font-serif">
-                          {formatCurrency((item.discountedPrice || item.price) * item.quantity)}
+                          {formatCurrency(
+                            (item.discountedPrice || item.price) * item.quantity
+                          )}
                         </p>
                       </div>
                     </div>
@@ -132,16 +158,19 @@ export const OrderSummary = React.memo(function OrderSummary({
       {/* Voucher Modal Toggle */}
       <div className="px-[22px] py-4 border-b border-brand-sand flex items-center justify-between">
         <span className="text-[13px] font-bold text-primary">Mã giảm giá</span>
-        <button 
-          type="button" 
+        <button
+          type="button"
           onClick={() => setIsVoucherModalOpen(true)}
-          className={cn("text-[12px] font-bold", appliedDiscount ? "text-emerald-600" : "text-brand-bronze hover:underline")}
+          className={cn(
+            "text-[12px] font-bold",
+            appliedDiscount ? "text-emerald-600" : "text-brand-bronze hover:underline"
+          )}
         >
           {appliedDiscount ? appliedDiscount.code : "Chọn hoặc nhập mã"}
         </button>
       </div>
 
-      <VoucherModal 
+      <VoucherModal
         isOpen={isVoucherModalOpen}
         onClose={() => setIsVoucherModalOpen(false)}
         onApply={(code) => {
@@ -161,12 +190,25 @@ export const OrderSummary = React.memo(function OrderSummary({
         </div>
         <div className="flex justify-between text-[13px]">
           <span className="text-brand-taupe">Giảm giá</span>
-          <span className="text-destructive font-medium">-{formatCurrency(discountAmount)}</span>
+          <span className="text-destructive font-medium">
+            -{formatCurrency(discountAmount)}
+          </span>
         </div>
         <div className="flex justify-between text-[13px]">
           <span className="text-brand-taupe">Vận chuyển</span>
-          <span className={cn("text-[13px] font-bold", shippingFee === 0 ? "text-emerald-600" : "text-primary")}>
-            {isCalculatingFee ? <Spinner size="sm" /> : (shippingFee === 0 ? "Miễn phí" : formatCurrency(shippingFee))}
+          <span
+            className={cn(
+              "text-[13px] font-bold",
+              shippingFee === 0 ? "text-emerald-600" : "text-primary"
+            )}
+          >
+            {isCalculatingFee ? (
+              <Spinner size="sm" />
+            ) : shippingFee === 0 ? (
+              "Miễn phí"
+            ) : (
+              formatCurrency(shippingFee)
+            )}
           </span>
         </div>
       </div>
@@ -179,13 +221,15 @@ export const OrderSummary = React.memo(function OrderSummary({
             {formatCurrency(total)}
           </span>
         </div>
-        <p className="text-[11px] text-brand-taupe text-right italic tracking-wider font-bold">Đã bao gồm VAT</p>
+        <p className="text-[11px] text-brand-taupe text-right italic tracking-wider font-bold">
+          Đã bao gồm VAT
+        </p>
       </div>
 
       {/* Submit Button */}
       <div className="px-[22px] pb-[14px]">
-        <button 
-          type="submit" 
+        <button
+          type="submit"
           disabled={isSubmitting || !canSubmit}
           className="w-full h-[52px] bg-primary hover:bg-black text-brand-cream rounded-full text-[15px] font-medium flex items-center justify-center gap-2 transition-all active:scale-[0.98] shadow-lg shadow-primary/10 disabled:opacity-50 disabled:cursor-not-allowed"
         >
@@ -202,7 +246,15 @@ export const OrderSummary = React.memo(function OrderSummary({
 
       {/* Terms & Badges */}
       <p className="px-[22px] pb-[18px] text-[11px] text-brand-taupe text-center leading-[1.6]">
-        Bằng cách đặt hàng, bạn đồng ý với <a href="#" className="text-brand-bronze hover:underline font-bold">Điều khoản dịch vụ</a> và <a href="#" className="text-brand-bronze hover:underline font-bold">Chính sách bảo mật</a>.
+        Bằng cách đặt hàng, bạn đồng ý với{" "}
+        <a href="#" className="text-brand-bronze hover:underline font-bold">
+          Điều khoản dịch vụ
+        </a>{" "}
+        và{" "}
+        <a href="#" className="text-brand-bronze hover:underline font-bold">
+          Chính sách bảo mật
+        </a>
+        .
       </p>
 
       <div className="py-[14px] px-[22px] border-t border-brand-sand flex items-center justify-center gap-4 bg-brand-cream/50">

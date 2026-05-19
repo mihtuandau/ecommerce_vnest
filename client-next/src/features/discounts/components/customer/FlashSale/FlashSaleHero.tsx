@@ -36,8 +36,8 @@ export function FlashSaleHero({
             {status === "LIVE"
               ? "Đang diễn ra"
               : status === "SOON"
-              ? "Sắp diễn ra"
-              : "Đã kết thúc"}
+                ? "Sắp diễn ra"
+                : "Đã kết thúc"}
           </div>
           <h1 className="font-serif text-[68px] text-white font-semibold leading-none">
             Flash
@@ -68,9 +68,7 @@ export function FlashSaleHero({
               </span>
             </div>
             <div className="text-center">
-              <strong className="block font-serif text-[28px] text-white">
-                8.4k
-              </strong>
+              <strong className="block font-serif text-[28px] text-white">8.4k</strong>
               <span className="text-[11px] text-white/50 uppercase tracking-wider">
                 Đang xem
               </span>
@@ -84,16 +82,16 @@ export function FlashSaleHero({
             {status === "LIVE"
               ? "Kết thúc sau"
               : status === "SOON"
-              ? "Bắt đầu sau"
-              : "Thời gian đã hết"}
+                ? "Bắt đầu sau"
+                : "Thời gian đã hết"}
           </div>
           <FlashSaleCountdown
             endDate={
               status === "LIVE"
                 ? activeSession?.endDate
                 : status === "SOON"
-                ? activeSession?.startDate
-                : undefined
+                  ? activeSession?.startDate
+                  : undefined
             }
           />
           <div className="mt-1 w-[280px]">

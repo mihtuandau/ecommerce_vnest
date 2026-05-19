@@ -8,19 +8,19 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/DropdownMenu";
-import { 
-  CreditCard, 
-  CheckCircle, 
-  XCircle, 
-  AlertCircle, 
-  HelpCircle, 
+import {
+  CreditCard,
+  CheckCircle,
+  XCircle,
+  AlertCircle,
+  HelpCircle,
   Coins,
   Banknote,
   Landmark,
   Smartphone,
   Zap,
   MoreHorizontal,
-  RotateCcw
+  RotateCcw,
 } from "lucide-react";
 import dayjs from "@/lib/dayjs";
 import { PAYMENT_STATUS_CONFIG, PAYMENT_METHOD_CONFIG } from "../../constants";
@@ -37,14 +37,23 @@ const getStatusBadge = (statusStr: string) => {
     );
   }
 
-  const Icon = 
-    statusStr === PaymentStatus.SUCCESS ? CheckCircle :
-    statusStr === PaymentStatus.PENDING ? AlertCircle :
-    statusStr === PaymentStatus.FAILED || statusStr === PaymentStatus.CANCELLED ? XCircle : Coins;
+  const Icon =
+    statusStr === PaymentStatus.SUCCESS
+      ? CheckCircle
+      : statusStr === PaymentStatus.PENDING
+        ? AlertCircle
+        : statusStr === PaymentStatus.FAILED || statusStr === PaymentStatus.CANCELLED
+          ? XCircle
+          : Coins;
 
   return (
-    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${config.color} whitespace-nowrap`}>
-      <Icon className={`h-3.5 w-3.5 ${statusStr === PaymentStatus.PENDING ? "animate-pulse" : ""}`} /> {config.label}
+    <span
+      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${config.color} whitespace-nowrap`}
+    >
+      <Icon
+        className={`h-3.5 w-3.5 ${statusStr === PaymentStatus.PENDING ? "animate-pulse" : ""}`}
+      />{" "}
+      {config.label}
     </span>
   );
 };
@@ -61,13 +70,20 @@ const getMethodBadge = (methodStr: string) => {
   }
 
   const Icon =
-    methodStr === PaymentMethod.CASH ? Banknote :
-    methodStr === PaymentMethod.MOMO ? Smartphone :
-    methodStr === PaymentMethod.PAYOS ? Zap :
-    methodStr === "BANK" ? Landmark : CreditCard;
+    methodStr === PaymentMethod.CASH
+      ? Banknote
+      : methodStr === PaymentMethod.MOMO
+        ? Smartphone
+        : methodStr === PaymentMethod.PAYOS
+          ? Zap
+          : methodStr === "BANK"
+            ? Landmark
+            : CreditCard;
 
   return (
-    <span className={`inline-flex items-center gap-1 text-[11.5px] ${config.color} font-bold whitespace-nowrap`}>
+    <span
+      className={`inline-flex items-center gap-1 text-[11.5px] ${config.color} font-bold whitespace-nowrap`}
+    >
       <Icon className={`h-3.5 w-3.5 ${config.iconColor}`} /> {config.label}
     </span>
   );
@@ -88,11 +104,12 @@ export function PaymentRow({
   formatCurrency,
   canManage,
 }: PaymentRowProps) {
-  const customerName = p.order?.user?.name 
-    ? p.order.user.name 
+  const customerName = p.order?.user?.name
+    ? p.order.user.name
     : p.order?.guestEmail || "Khách vãng lai";
 
-  const hasActions = p.status === PaymentStatus.PENDING || p.status === PaymentStatus.SUCCESS;
+  const hasActions =
+    p.status === PaymentStatus.PENDING || p.status === PaymentStatus.SUCCESS;
 
   return (
     <tr className="hover:bg-slate-50/50 transition-colors">
@@ -130,9 +147,7 @@ export function PaymentRow({
       </td>
 
       {/* Column 5: Phương thức */}
-      <td className="px-6 py-4 align-middle">
-        {getMethodBadge(p.method)}
-      </td>
+      <td className="px-6 py-4 align-middle">{getMethodBadge(p.method)}</td>
 
       {/* Column 6: Số tiền */}
       <td className="px-6 py-4 align-middle">
@@ -149,9 +164,7 @@ export function PaymentRow({
       </td>
 
       {/* Column 7: Trạng thái */}
-      <td className="px-6 py-4 align-middle">
-        {getStatusBadge(p.status)}
-      </td>
+      <td className="px-6 py-4 align-middle">{getStatusBadge(p.status)}</td>
 
       {/* Column 8: Thao tác Dropdown Menu */}
       <td className="px-6 py-4 text-right align-middle">
@@ -166,18 +179,25 @@ export function PaymentRow({
                 <MoreHorizontal className="h-4.5 w-4.5" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-52 rounded-2xl p-1.5 shadow-xl border-slate-200 bg-white admin-theme">
+            <DropdownMenuContent
+              align="end"
+              className="w-52 rounded-2xl p-1.5 shadow-xl border-slate-200 bg-white admin-theme"
+            >
               {p.status === PaymentStatus.PENDING && (
                 <>
                   <DropdownMenuItem
-                    onClick={() => updateStatus({ id: p.id, status: PaymentStatus.SUCCESS })}
+                    onClick={() =>
+                      updateStatus({ id: p.id, status: PaymentStatus.SUCCESS })
+                    }
                     disabled={isUpdating || !canManage}
                     className="rounded-xl gap-2 py-2 text-xs font-bold text-emerald-600 focus:bg-emerald-50 focus:text-emerald-700 cursor-pointer transition-all"
                   >
                     <CheckCircle className="h-4 w-4" /> Xác nhận đã thu tiền
                   </DropdownMenuItem>
                   <DropdownMenuItem
-                    onClick={() => updateStatus({ id: p.id, status: PaymentStatus.FAILED })}
+                    onClick={() =>
+                      updateStatus({ id: p.id, status: PaymentStatus.FAILED })
+                    }
                     disabled={isUpdating || !canManage}
                     className="rounded-xl gap-2 py-2 text-xs font-bold text-rose-600 focus:bg-rose-50 focus:text-rose-700 cursor-pointer transition-all mt-0.5"
                   >
@@ -185,10 +205,12 @@ export function PaymentRow({
                   </DropdownMenuItem>
                 </>
               )}
-              
+
               {p.status === PaymentStatus.SUCCESS && (
                 <DropdownMenuItem
-                  onClick={() => updateStatus({ id: p.id, status: PaymentStatus.REFUNDED })}
+                  onClick={() =>
+                    updateStatus({ id: p.id, status: PaymentStatus.REFUNDED })
+                  }
                   disabled={isUpdating || !canManage}
                   className="rounded-xl gap-2 py-2 text-xs font-bold text-blue-600 focus:bg-blue-50 focus:text-blue-700 cursor-pointer transition-all"
                 >

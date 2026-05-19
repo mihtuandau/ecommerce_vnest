@@ -7,18 +7,18 @@ export const reviewsApi = {
     });
     return response.data;
   },
-  
-  createReview: async (data: { 
-    productId: number; 
-    orderId?: number; 
-    rating: number; 
-    comment: string; 
-    images?: string[] 
+
+  createReview: async (data: {
+    productId: number;
+    orderId?: number;
+    rating: number;
+    comment: string;
+    images?: string[];
   }) => {
     const response = await api.post("/reviews", data);
     return response.data;
   },
-  
+
   canUserReview: async (productId: number, orderId: number) => {
     const response = await api.get(`/reviews/can-review/${productId}`, {
       params: { orderId },
@@ -26,7 +26,12 @@ export const reviewsApi = {
     return response.data;
   },
 
-  getAllReviews: async (params: { page?: number; limit?: number; productId?: number; userId?: number }) => {
+  getAllReviews: async (params: {
+    page?: number;
+    limit?: number;
+    productId?: number;
+    userId?: number;
+  }) => {
     const response = await api.get("/reviews", { params });
     return response.data;
   },
@@ -35,7 +40,7 @@ export const reviewsApi = {
     const response = await api.get("/reviews/my-reviews", { params });
     return response.data;
   },
-  
+
   getAiReviewSummary: async (productId: number) => {
     const response = await api.get(`/reviews/product/${productId}/ai-summary`);
     return response.data;
@@ -45,10 +50,9 @@ export const reviewsApi = {
     const response = await api.get("/reviews/public/latest");
     return response.data;
   },
-  
+
   deleteReview: async (id: number) => {
     const response = await api.delete(`/reviews/${id}`);
     return response.data;
   },
 };
-

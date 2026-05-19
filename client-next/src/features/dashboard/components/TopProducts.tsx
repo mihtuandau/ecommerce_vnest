@@ -2,12 +2,7 @@
 
 import { Star, ChevronRight } from "lucide-react";
 import Image from "next/image";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/Card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import {
   Table,
   TableBody,
@@ -72,21 +67,32 @@ export function TopProducts({ products, isLoading }: TopProductsProps) {
             {isLoading ? (
               Array.from({ length: 5 }).map((_, i) => (
                 <TableRow key={i} className="border-slate-50">
-                  <TableCell className="pl-6"><Skeleton className="h-4 w-4" /></TableCell>
+                  <TableCell className="pl-6">
+                    <Skeleton className="h-4 w-4" />
+                  </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-3">
                       <Skeleton className="h-10 w-10 rounded-lg" />
                       <Skeleton className="h-4 w-48" />
                     </div>
                   </TableCell>
-                  <TableCell><Skeleton className="h-4 w-8 mx-auto" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-20 ml-auto" /></TableCell>
-                  <TableCell className="pr-6"><Skeleton className="h-4 w-12 ml-auto" /></TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-8 mx-auto" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-20 ml-auto" />
+                  </TableCell>
+                  <TableCell className="pr-6">
+                    <Skeleton className="h-4 w-12 ml-auto" />
+                  </TableCell>
                 </TableRow>
               ))
             ) : topProducts.length > 0 ? (
               topProducts.map((item: any, index: number) => (
-                <TableRow key={index} className="hover:bg-slate-50/50 transition-colors border-slate-50 group">
+                <TableRow
+                  key={index}
+                  className="hover:bg-slate-50/50 transition-colors border-slate-50 group"
+                >
                   <TableCell className="py-4 pl-6 text-xs font-medium text-slate-400">
                     {index + 1}
                   </TableCell>
@@ -125,7 +131,14 @@ export function TopProducts({ products, isLoading }: TopProductsProps) {
                   </TableCell>
                   <TableCell className="py-4 pr-6 text-right">
                     <div className="flex items-center justify-end gap-1.5">
-                      <Star className={cn("h-3 w-3", (item.rating > 0) ? "fill-amber-400 text-amber-400" : "text-slate-200")} />
+                      <Star
+                        className={cn(
+                          "h-3 w-3",
+                          item.rating > 0
+                            ? "fill-amber-400 text-amber-400"
+                            : "text-slate-200"
+                        )}
+                      />
                       <span className="text-sm font-medium text-slate-700">
                         {item.rating > 0 ? item.rating.toFixed(1) : "0.0"}
                       </span>
@@ -135,7 +148,10 @@ export function TopProducts({ products, isLoading }: TopProductsProps) {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-10 text-slate-400 italic text-sm">
+                <TableCell
+                  colSpan={5}
+                  className="text-center py-10 text-slate-400 italic text-sm"
+                >
                   Chưa có dữ liệu sản phẩm
                 </TableCell>
               </TableRow>

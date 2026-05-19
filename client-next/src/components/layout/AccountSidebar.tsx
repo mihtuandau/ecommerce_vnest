@@ -3,17 +3,17 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { 
-  User, 
-  ShoppingBag, 
-  Heart, 
-  MapPin, 
-  CreditCard, 
-  Award, 
+import {
+  User,
+  ShoppingBag,
+  Heart,
+  MapPin,
+  CreditCard,
+  Award,
   Star,
   LogOut,
   ShieldCheck,
-  Bell
+  Bell,
 } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -29,7 +29,8 @@ export function AccountSidebar({ orderCount = 0 }: { orderCount?: number }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { user, logout } = useAuthStore();
-  const currentUrl = pathname + (searchParams.toString() ? `?${searchParams.toString()}` : "");
+  const currentUrl =
+    pathname + (searchParams.toString() ? `?${searchParams.toString()}` : "");
 
   const menuGroups: { title: string; items: SidebarItem[] }[] = [
     {
@@ -37,7 +38,7 @@ export function AccountSidebar({ orderCount = 0 }: { orderCount?: number }) {
       items: [
         { label: "Hồ sơ cá nhân", href: "/account?tab=info", icon: User },
         { label: "Bảo mật", href: "/account?tab=security", icon: ShieldCheck },
-      ]
+      ],
     },
     {
       title: "Mua sắm",
@@ -45,14 +46,12 @@ export function AccountSidebar({ orderCount = 0 }: { orderCount?: number }) {
         { label: "Địa chỉ của tôi", href: "/account?tab=address", icon: MapPin },
         // { label: "Đơn hàng", href: "/orders", icon: ShoppingBag, badge: orderCount }, // Removed as requested
         { label: "Đánh giá của tôi", href: "/account?tab=reviews", icon: Star },
-      ]
+      ],
     },
     {
       title: "Khác",
-      items: [
-        { label: "Thông báo", href: "/account?tab=notifications", icon: Bell },
-      ]
-    }
+      items: [{ label: "Thông báo", href: "/account?tab=notifications", icon: Bell }],
+    },
   ];
 
   if (!user) return null;
@@ -65,14 +64,22 @@ export function AccountSidebar({ orderCount = 0 }: { orderCount?: number }) {
           <div className="relative w-20 h-20 mx-auto mb-4">
             <div className="w-full h-full rounded-full border-4 border-white shadow-md overflow-hidden bg-brand-ivory ring-1 ring-brand-sand flex items-center justify-center">
               {user.avatar ? (
-                <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+                <img
+                  src={user.avatar}
+                  alt={user.name}
+                  className="w-full h-full object-cover"
+                />
               ) : (
-                <span className="text-2xl font-bold text-brand-espresso font-serif">{user.name?.charAt(0)}</span>
+                <span className="text-2xl font-bold text-brand-espresso font-serif">
+                  {user.name?.charAt(0)}
+                </span>
               )}
             </div>
           </div>
-          
-          <h3 className="text-[15px] font-bold text-brand-espresso mb-1">{user.name}</h3>
+
+          <h3 className="text-[15px] font-bold text-brand-espresso mb-1">
+            {user.name}
+          </h3>
           <p className="text-[11px] text-brand-taupe">{user.email}</p>
         </div>
 
@@ -81,7 +88,9 @@ export function AccountSidebar({ orderCount = 0 }: { orderCount?: number }) {
           {menuGroups.map((group) => (
             <div key={group.title}>
               <div className="px-4 mb-1">
-                <span className="text-[10px] font-bold text-brand-taupe tracking-wider">{group.title}</span>
+                <span className="text-[10px] font-bold text-brand-taupe tracking-wider">
+                  {group.title}
+                </span>
               </div>
               <div className="space-y-0.5">
                 {group.items.map((item) => {
@@ -92,13 +101,23 @@ export function AccountSidebar({ orderCount = 0 }: { orderCount?: number }) {
                       href={item.href}
                       className={cn(
                         "flex items-center gap-3 px-4 py-2.5 rounded-xl text-[13px] transition-all group relative",
-                        isActive 
-                          ? "bg-brand-ivory text-brand-espresso font-bold" 
+                        isActive
+                          ? "bg-brand-ivory text-brand-espresso font-bold"
                           : "text-brand-taupe hover:bg-brand-ivory/50 hover:text-brand-espresso"
                       )}
                     >
-                      {isActive && <div className="absolute left-0 top-2 bottom-2 w-1 bg-brand-espresso rounded-r-full" />}
-                      <item.icon size={16} className={cn("shrink-0", isActive ? "text-brand-espresso" : "text-brand-taupe group-hover:text-brand-espresso")} />
+                      {isActive && (
+                        <div className="absolute left-0 top-2 bottom-2 w-1 bg-brand-espresso rounded-r-full" />
+                      )}
+                      <item.icon
+                        size={16}
+                        className={cn(
+                          "shrink-0",
+                          isActive
+                            ? "text-brand-espresso"
+                            : "text-brand-taupe group-hover:text-brand-espresso"
+                        )}
+                      />
                       <span>{item.label}</span>
                       {item.badge !== undefined && item.badge > 0 && (
                         <span className="ml-auto bg-brand-bronze text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
@@ -111,7 +130,7 @@ export function AccountSidebar({ orderCount = 0 }: { orderCount?: number }) {
               </div>
             </div>
           ))}
-          
+
           <div className="px-2 pt-2 border-t border-brand-sand/50">
             <button
               onClick={() => logout()}

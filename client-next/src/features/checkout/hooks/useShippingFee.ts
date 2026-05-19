@@ -14,7 +14,7 @@ export function useShippingFee(
   districtId: string,
   wardCode: string,
   displayItems: CartItem[],
-  subtotal: number,
+  subtotal: number
 ) {
   const [shippingFee, setShippingFee] = useState(0);
   const [isCalculatingFee, setIsCalculatingFee] = useState(false);
@@ -22,7 +22,8 @@ export function useShippingFee(
 
   useEffect(() => {
     // If order qualifies for free shipping, set fee to 0 immediately
-    const threshold = settings?.freeShippingThreshold ?? CHECKOUT_CONSTANTS.FREE_SHIPPING_THRESHOLD;
+    const threshold =
+      settings?.freeShippingThreshold ?? CHECKOUT_CONSTANTS.FREE_SHIPPING_THRESHOLD;
     if (settings && subtotal >= threshold) {
       setShippingFee(0);
       return;
@@ -49,11 +50,15 @@ export function useShippingFee(
         });
 
         setShippingFee(
-          res.data?.total || settings?.shippingFee || CHECKOUT_CONSTANTS.DEFAULT_SHIPPING_FEE
+          res.data?.total ||
+            settings?.shippingFee ||
+            CHECKOUT_CONSTANTS.DEFAULT_SHIPPING_FEE
         );
       } catch {
         // Fallback to settings if GHN API fails
-        setShippingFee(settings?.shippingFee || CHECKOUT_CONSTANTS.DEFAULT_SHIPPING_FEE);
+        setShippingFee(
+          settings?.shippingFee || CHECKOUT_CONSTANTS.DEFAULT_SHIPPING_FEE
+        );
       } finally {
         setIsCalculatingFee(false);
       }

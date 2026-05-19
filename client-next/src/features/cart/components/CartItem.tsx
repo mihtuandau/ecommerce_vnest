@@ -17,32 +17,34 @@ interface CartItemProps {
   isGrouped?: boolean;
 }
 
-export const CartItem = React.memo(function CartItem({ 
-  item, 
-  updateQuantity, 
-  removeItem, 
+export const CartItem = React.memo(function CartItem({
+  item,
+  updateQuantity,
+  removeItem,
   toggleSelectItem,
-  isGrouped = false
+  isGrouped = false,
 }: CartItemProps) {
   const currentPrice = item.discountedPrice || item.price;
   const oldPrice = item.originalPrice || (item.discountedPrice ? item.price : 0);
   const savings = oldPrice > currentPrice ? oldPrice - currentPrice : 0;
 
   return (
-    <div className={cn(
-      "p-4 transition-all group/item",
-      isGrouped 
-        ? "bg-transparent hover:bg-[#FAF8F4]/50 border-none" 
-        : "bg-white rounded-2xl border border-[#DDD6C8] shadow-sm hover:shadow-md"
-    )}>
+    <div
+      className={cn(
+        "p-4 transition-all group/item",
+        isGrouped
+          ? "bg-transparent hover:bg-[#FAF8F4]/50 border-none"
+          : "bg-white rounded-2xl border border-[#DDD6C8] shadow-sm hover:shadow-md"
+      )}
+    >
       <div className="flex gap-4 items-center">
         {/* Checkbox */}
-        <button 
+        <button
           onClick={() => toggleSelectItem(item.variantId)}
           className={cn(
             "w-4 h-4 rounded border flex-shrink-0 flex items-center justify-center transition-all",
-            item.selected 
-              ? "bg-[#3D2B1A] border-[#3D2B1A] text-white" 
+            item.selected
+              ? "bg-[#3D2B1A] border-[#3D2B1A] text-white"
               : "border-[#DDD6C8] hover:border-[#3D2B1A] bg-white"
           )}
         >
@@ -51,11 +53,11 @@ export const CartItem = React.memo(function CartItem({
 
         {/* Product Image */}
         <div className="h-24 w-24 flex-shrink-0 rounded-xl bg-[#FAF8F4] flex items-center justify-center p-2 relative overflow-hidden">
-          <Image 
-            src={getImageUrl(item.imageUrl)} 
-            alt={item.name} 
+          <Image
+            src={getImageUrl(item.imageUrl)}
+            alt={item.name}
             fill
-            className="object-contain p-1.5 mix-blend-multiply group-hover:scale-110 transition-transform duration-500" 
+            className="object-contain p-1.5 mix-blend-multiply group-hover:scale-110 transition-transform duration-500"
           />
         </div>
 
@@ -64,12 +66,18 @@ export const CartItem = React.memo(function CartItem({
           {/* Info Side */}
           <div className="flex-1 min-w-0 space-y-3">
             <div className="space-y-1">
-              {!isGrouped && <span className="text-[10px] font-bold text-brand-taupe uppercase tracking-widest">BRAND</span>}
-              <Link 
-                href={`/shop/${item.slug}`} 
+              {!isGrouped && (
+                <span className="text-[10px] font-bold text-brand-taupe uppercase tracking-widest">
+                  BRAND
+                </span>
+              )}
+              <Link
+                href={`/shop/${item.slug}`}
                 className={cn(
                   "block hover:text-brand-bronze transition-colors leading-tight font-serif tracking-tight",
-                  isGrouped ? "text-[14px] font-medium text-brand-espresso" : "text-[15px] font-semibold text-brand-espresso"
+                  isGrouped
+                    ? "text-[14px] font-medium text-brand-espresso"
+                    : "text-[15px] font-semibold text-brand-espresso"
                 )}
               >
                 {item.name}
@@ -92,15 +100,15 @@ export const CartItem = React.memo(function CartItem({
 
             <div className="flex items-center gap-4 pt-0.5">
               <button className="flex items-center gap-1 text-[11px] font-bold text-brand-taupe hover:text-brand-espresso transition-colors group/btn">
-                <Heart size={13} className="group-hover/btn:fill-brand-espresso" /> 
+                <Heart size={13} className="group-hover/btn:fill-brand-espresso" />
                 Lưu yêu thích
               </button>
               <div className="w-[1px] h-3 bg-brand-sand" />
-              <button 
+              <button
                 onClick={() => removeItem(item.variantId)}
                 className="flex items-center gap-1 text-[11px] font-bold text-brand-taupe hover:text-red-500 transition-colors"
               >
-                <X size={13} /> 
+                <X size={13} />
                 Xoá
               </button>
             </div>
@@ -126,7 +134,7 @@ export const CartItem = React.memo(function CartItem({
 
             {/* Quantity Selector */}
             <div className="flex items-center h-8 bg-brand-cream border border-brand-sand rounded-lg overflow-hidden">
-              <button 
+              <button
                 onClick={() => updateQuantity(item.variantId, item.quantity - 1)}
                 className="w-8 h-full flex items-center justify-center text-brand-espresso hover:bg-white transition-all"
               >
@@ -135,7 +143,7 @@ export const CartItem = React.memo(function CartItem({
               <div className="w-9 h-full flex items-center justify-center text-[13px] font-bold text-brand-espresso border-x border-brand-sand bg-white/50 font-sans">
                 {item.quantity}
               </div>
-              <button 
+              <button
                 onClick={() => updateQuantity(item.variantId, item.quantity + 1)}
                 className="w-8 h-full flex items-center justify-center text-brand-espresso hover:bg-white transition-all"
               >

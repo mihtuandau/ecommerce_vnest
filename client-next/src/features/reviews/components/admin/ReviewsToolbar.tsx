@@ -4,12 +4,12 @@ import React from "react";
 import { Search, Star, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/Select";
 
 interface ReviewsToolbarProps {
@@ -25,7 +25,6 @@ export function ReviewsToolbar({
   ratingFilter,
   setRatingFilter,
 }: ReviewsToolbarProps) {
-
   const handleReset = () => {
     setSearchQuery("");
     setRatingFilter(null);
