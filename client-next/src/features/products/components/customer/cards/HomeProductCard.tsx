@@ -87,12 +87,15 @@ export const HomeProductCard = React.memo(function HomeProductCard({
     }
     toggleWishlist({
       id: String(product.id),
+      variantId: firstVariant?.id || product.id,
       name: product.name,
       price: price,
       originalPrice: originalPrice || undefined,
       imageUrl: imageUrl,
       slug: product.slug,
       stock: stock,
+      categoryId: product.categoryId,
+      categoryName: product.category?.name || "Bộ sưu tập LUXE",
     });
     if (!isFavorite) success(`Đã thêm ${product.name} vào yêu thích`);
   };

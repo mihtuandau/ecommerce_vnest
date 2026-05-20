@@ -10,23 +10,26 @@ import { useProducts } from "@/features/products/hooks";
 
 // Dữ liệu mô phỏng tên khách và địa phương
 const CUSTOMERS = [
-  { name: "Đậu Minh Tuấn", location: "Hà Nội" },
-  { name: "Chị Lan", location: "TP. Hồ Chí Minh" },
-  { name: "Anh Hùng", location: "Đà Nẵng" },
-  { name: "Chị Mai", location: "Cần Thơ" },
-  { name: "Anh Minh", location: "Hải Phòng" },
-  { name: "Chị Ngọc", location: "Bình Dương" },
-  { name: "Anh Hoàng", location: "Quảng Ninh" },
-  { name: "Chị Thảo", location: "Huế" },
+  { name: "Huy", location: "Hà Nội" },
+  { name: "Lan", location: "TP. Hồ Chí Minh" },
+  { name: "Hùng", location: "Đà Nẵng" },
+  { name: "Mai", location: "Bắc Ninh" },
+  { name: "Minh", location: "Hải Phòng" },
+  { name: "Ngọc", location: "Bình Dương" },
+  { name: "Hoàng", location: "Thanh Hóa" },
+  { name: "Thảo", location: "Huế" },
 ];
 
-const TIMES = [
-  "vừa xong",
-  "1 phút trước",
-  "2 phút trước",
-  "5 phút trước",
-  "10 phút trước",
-];
+const generateRandomTime = () => {
+  const rand = Math.random();
+  if (rand < 0.15) return "vừa xong";
+  if (rand < 0.75) {
+    const mins = Math.floor(Math.random() * 59) + 1;
+    return `${mins} phút trước`;
+  }
+  const hours = Math.floor(Math.random() * 23) + 1;
+  return `${hours} giờ trước`;
+};
 
 import { getImageUrl } from "@/utils/image";
 
@@ -41,12 +44,11 @@ export function SocialProof() {
     if (products.length === 0) return;
 
     let timeoutId: ReturnType<typeof setTimeout>;
-    let intervalId: ReturnType<typeof setInterval>;
 
     const showRandomOrder = () => {
       const randomProduct = products[Math.floor(Math.random() * products.length)];
       const randomCustomer = CUSTOMERS[Math.floor(Math.random() * CUSTOMERS.length)];
-      const randomTime = TIMES[Math.floor(Math.random() * TIMES.length)];
+      const randomTime = generateRandomTime();
 
       const firstImage = randomProduct.images?.[0] as any;
       const imageUrl = typeof firstImage === "string" ? firstImage : firstImage?.url;
@@ -69,7 +71,7 @@ export function SocialProof() {
 
     const initialTimer = setTimeout(showRandomOrder, 8000);
 
-    intervalId = setInterval(
+    const intervalId = setInterval(
       () => {
         showRandomOrder();
       },

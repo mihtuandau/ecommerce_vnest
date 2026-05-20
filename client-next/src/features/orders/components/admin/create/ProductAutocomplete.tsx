@@ -90,7 +90,7 @@ export function ProductAutocomplete({ onSelect }: ProductAutocompleteProps) {
         <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-slate-200 z-[100] max-h-[400px] overflow-y-auto p-2 scrollbar-thin">
           {results.map((product) => (
             <div key={product.id} className="mb-2 last:mb-0">
-              <div className="px-3 py-1.5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50 mb-1 flex items-center justify-between">
+              <div className="px-3 py-1.5 text-xs font-semibold text-slate-400 uppercase  border-b border-slate-50 mb-1 flex items-center justify-between">
                 {product.name}
                 <span className="bg-slate-100 px-1.5 py-0.5 rounded text-slate-500">
                   {product.category?.name}
@@ -109,7 +109,7 @@ export function ProductAutocomplete({ onSelect }: ProductAutocompleteProps) {
                       <span className="text-[10px] font-black text-slate-900 uppercase leading-none mb-1">
                         {variant.size} {variant.color && `• ${variant.color}`}
                       </span>
-                      <span className="text-[10px] font-bold text-primary">
+                      <span className="text-[10px] font-semibold text-primary">
                         {formatCurrency(variant.price)}
                       </span>
                     </button>
@@ -122,7 +122,7 @@ export function ProductAutocomplete({ onSelect }: ProductAutocompleteProps) {
 
       {isOpen && search.length >= 2 && results.length === 0 && !isLoading && (
         <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-slate-200 z-50 p-8 text-center text-slate-400">
-          <p className="font-bold">Không tìm thấy sản phẩm nào</p>
+          <p className="font-semibold">Không tìm thấy sản phẩm nào</p>
           <p className="text-xs">Thử tìm với từ khóa khác</p>
         </div>
       )}

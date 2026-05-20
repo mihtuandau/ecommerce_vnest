@@ -91,8 +91,15 @@ export function QuickAddModal({
     (product.variants && product.variants.length > 0
       ? totalVariantsStock
       : (product.stock ?? 0));
-  const variantBasePrice = selectedVariant?.price ?? price;
-  const variantOriginalPriceVal = selectedVariant?.originalPrice ?? originalPrice;
+  const parsePrice = (val: string | number | undefined | null): number => {
+    let num = 0;
+    if (typeof val === "number") num = val;
+    else if (typeof val === "string") num = parseFloat(val.replace(/[^\d.]/g, ""));
+    return isNaN(num) ? 0 : num;
+  };
+
+  const variantBasePrice = parsePrice(selectedVariant?.price ?? price);
+  const variantOriginalPriceVal = parsePrice(selectedVariant?.originalPrice ?? originalPrice);
 
   let currentPrice = variantBasePrice;
   if (flashSaleFixedAmount > 0) {

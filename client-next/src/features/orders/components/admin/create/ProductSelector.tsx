@@ -230,10 +230,10 @@ export function ProductSelector({ onSelect }: ProductSelectorProps) {
                                 );
                               }}
                             >
-                              <span className="text-[10px] font-black text-slate-900 uppercase leading-none mb-1 text-center">
+                              <span className="text-xs font-black text-slate-900 uppercase leading-none mb-1 text-center">
                                 {variant.size} {variant.color && `• ${variant.color}`}
                               </span>
-                              <span className="text-[10px] font-bold text-primary">
+                              <span className="text-xs font-bold text-primary">
                                 {formatCurrency(variant.price)}
                               </span>
                               <div className="absolute bottom-0 right-0 bg-slate-100 px-1 text-[8px] font-bold text-slate-400 rounded-tl-md">

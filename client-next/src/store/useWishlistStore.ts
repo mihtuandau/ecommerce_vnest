@@ -3,12 +3,15 @@ import { persist } from "zustand/middleware";
 
 export interface WishlistItem {
   id: string;
+  variantId?: string | number;
   name: string;
   price: number;
   originalPrice?: number;
   imageUrl: string;
   slug: string;
   stock: number;
+  categoryId?: string | number;
+  categoryName?: string;
 }
 
 interface WishlistStore {
