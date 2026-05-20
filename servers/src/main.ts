@@ -13,16 +13,20 @@ import { createCspNonceMiddleware } from './common/middleware/csp-nonce.middlewa
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 
 async function bootstrap() {
-  Sentry.init({
-    dsn: process.env.SENTRY_DSN || "https://placeholder@sentry.io/12345", // User should provide real DSN in .env
-    integrations: [
-      nodeProfilingIntegration(),
-    ],
-    // TracesSampleRate 1.0 captures all transactions for performance monitoring.
-    // In production, adjust this to a lower value.
-    tracesSampleRate: 1.0,
-    profilesSampleRate: 1.0,
-  });
+  const sentryDsn = process.env.SENTRY_DSN;
+  if (sentryDsn) {
+    Sentry.init({
+      dsn: sentryDsn,
+      integrations: [
+        nodeProfilingIntegration(),
+      ],
+      // Production: giảm sample rate xuống 0.1-0.2 để tối ưu hiệu năng
+      tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.2 : 1.0,
+      profilesSampleRate: process.env.NODE_ENV === 'production' ? 0.2 : 1.0,
+    });
+  } else {
+    console.warn('⚠️ SENTRY_DSN not set. Sentry error tracking is DISABLED.');
+  }
 
   const app = await NestFactory.create(AppModule);
 

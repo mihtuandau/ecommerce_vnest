@@ -151,7 +151,7 @@ export function ShopView() {
         </Breadcrumb>
       </div>
 
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-20">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-2 pb-10">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-x-12">
           
           <aside className="hidden lg:block lg:col-span-1 sticky top-32 h-fit">
