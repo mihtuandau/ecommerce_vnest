@@ -54,6 +54,13 @@ export class ReturnController {
     return this.returnService.getMyReturns(req.user.userId);
   }
 
+  @Post('my-returns/:id/confirm-sent')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Khách hàng xác nhận đã gửi hàng trả lại' })
+  confirmSent(@Param('id') id: string, @Req() req: any) {
+    return this.returnService.confirmSent(req.user.userId, +id);
+  }
+
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Permissions('return.view')

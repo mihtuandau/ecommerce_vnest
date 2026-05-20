@@ -84,7 +84,9 @@ export class OrderManagement {
         'PENDING': ['PROCESSING', 'CANCELLED'],
         'PROCESSING': ['SHIPPED', 'CANCELLED'],
         'SHIPPED': ['DELIVERED', 'CANCELLED'],
-        'DELIVERED': [],
+        'DELIVERED': ['RETURN_REQUESTED', 'RETURNED'],
+        'RETURN_REQUESTED': ['RETURNED'],
+        'RETURNED': [],
         'CANCELLED': []
       };
 

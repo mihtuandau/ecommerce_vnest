@@ -28,10 +28,9 @@ import {
 interface ReturnsTableProps {
   returns: any[];
   isLoading: boolean;
-  onUpdateStatus: (id: number, status: string) => void;
 }
 
-export function ReturnsTable({ returns, isLoading, onUpdateStatus }: ReturnsTableProps) {
+export function ReturnsTable({ returns, isLoading }: ReturnsTableProps) {
   return (
     <div className="bg-white border border-slate-200 rounded-2xl shadow-[0_4px_20px_rgba(15,23,42,0.03)] overflow-hidden">
       <Table>
@@ -148,51 +147,9 @@ export function ReturnsTable({ returns, isLoading, onUpdateStatus }: ReturnsTabl
                 </TableCell>
                 <TableCell className="text-right pr-6">
                   <div className="flex items-center justify-end gap-2">
-                    {item.status === ReturnStatus.PENDING && (
-                      <>
-                        <button
-                          onClick={() => onUpdateStatus(item.id, ReturnStatus.APPROVED)}
-                          className="h-9 w-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all shadow-sm"
-                          title="Phê duyệt"
-                        >
-                          <CheckCircle2 size={15} />
-                        </button>
-                        <button
-                          onClick={() => onUpdateStatus(item.id, ReturnStatus.REJECTED)}
-                          className="h-9 w-9 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center hover:bg-rose-600 hover:text-white transition-all shadow-sm"
-                          title="Từ chối"
-                        >
-                          <XCircle size={15} />
-                        </button>
-                      </>
-                    )}
-                    {item.status === ReturnStatus.APPROVED && (
-                      <button
-                        onClick={() => onUpdateStatus(item.id, ReturnStatus.RETURNING)}
-                        className="h-9 px-4 rounded-xl bg-indigo-50 text-indigo-600 text-[11px] font-semibold flex items-center justify-center hover:bg-indigo-600 hover:text-white transition-all shadow-sm"
-                      >
-                        Khách đang gửi
-                      </button>
-                    )}
-                    {item.status === ReturnStatus.RETURNING && (
-                      <button
-                        onClick={() => onUpdateStatus(item.id, ReturnStatus.RECEIVED)}
-                        className="h-9 px-4 rounded-xl bg-cyan-50 text-cyan-600 text-[11px] font-semibold flex items-center justify-center hover:bg-cyan-600 hover:text-white transition-all shadow-sm"
-                      >
-                        Đã nhận hàng
-                      </button>
-                    )}
-                    {item.status === ReturnStatus.RECEIVED && (
-                      <button
-                        onClick={() => onUpdateStatus(item.id, ReturnStatus.COMPLETED)}
-                        className="h-9 px-4 rounded-xl bg-emerald-50 text-emerald-600 text-[11px] font-semibold flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-all shadow-sm"
-                      >
-                        Hoàn tất
-                      </button>
-                    )}
                     <Link href={`/admin/returns/${item.id}`}>
-                      <button className="h-9 w-9 rounded-xl text-slate-600 flex items-center justify-center cursor-pointer">
-                        <Eye size={15} />
+                      <button className="h-9 px-4 rounded-xl text-slate-600  font-semibold flex items-center gap-1.5 transition-all cursor-pointer">
+                        <Eye size={14} />
                       </button>
                     </Link>
                   </div>

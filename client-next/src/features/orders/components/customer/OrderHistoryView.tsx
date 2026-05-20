@@ -91,7 +91,9 @@ export function OrderHistoryView() {
     // special case for returns: show both requested and returned
     if (status === OrderStatus.RETURN_REQUESTED) {
       matchesStatus =
-        o.status === OrderStatus.RETURN_REQUESTED || o.status === OrderStatus.RETURNED;
+        o.status === OrderStatus.RETURN_REQUESTED || 
+        o.status === OrderStatus.RETURNED ||
+        (o.returnStatus !== null && o.returnStatus !== undefined);
     }
 
     const matchesSearch =
@@ -216,11 +218,15 @@ export function OrderHistoryView() {
                   <div
                     className={cn(
                       "flex items-center gap-1.5 px-3 py-1 rounded-full text-[13px] font-semibold",
-                      getStatusStyle(order.status)
+                      order.returnStatus 
+                        ? getStatusStyle(OrderStatus.RETURN_REQUESTED) 
+                        : getStatusStyle(order.status)
                     )}
                   >
                     <div className="w-1.5 h-1.5 rounded-full bg-current" />
-                    {getStatusLabel(order.status)}
+                    {order.returnStatus 
+                      ? `Trả hàng (${order.returnStatus === 'PENDING' ? 'Chờ duyệt' : order.returnStatus === 'APPROVED' ? 'Đã duyệt' : order.returnStatus === 'RETURNING' ? 'Đang gửi trả' : order.returnStatus === 'RECEIVED' ? 'Đã nhận hàng' : 'Hoàn tất'})`
+                      : getStatusLabel(order.status)}
                   </div>
                   <div className="ml-auto flex items-center gap-2">
                     <span className="text-[13px] text-brand-taupe font-medium">

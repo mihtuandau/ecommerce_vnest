@@ -148,6 +148,9 @@ export interface Order {
   shippingCode?: string;
   reviews?: any[];
   returnRequest?: any;
+  returnRequests?: any[];
+  returnStatus?: string;
+  refundedAmount?: number;
   createdAt: string;
   updatedAt: string;
 }

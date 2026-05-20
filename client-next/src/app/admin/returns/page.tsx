@@ -32,20 +32,10 @@ export default function AdminReturnsPage() {
     fetchReturns();
   }, [filterStatus]);
 
-  const handleUpdateStatus = async (id: number, status: string) => {
-    try {
-      await returnsApi.updateReturnStatus(id, { status });
-      success("Đã cập nhật trạng thái");
-      fetchReturns();
-    } catch (err) {
-      error("Lỗi khi cập nhật trạng thái");
-    }
-  };
-
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       <ReturnsToolbar filterStatus={filterStatus} onFilterChange={setFilterStatus} />
-      <ReturnsTable returns={returns} isLoading={isLoading} onUpdateStatus={handleUpdateStatus} />
+      <ReturnsTable returns={returns} isLoading={isLoading} />
       <ReturnPolicyCard />
     </div>
   );

@@ -29,6 +29,7 @@ interface RequestReturnModalProps {
   onSuccess: () => void;
   isGuest?: boolean;
   contact?: string;
+  orderItems?: Array<{ id: number; quantity: number }>;
 }
 
 const REASONS = [
@@ -47,6 +48,7 @@ export function RequestReturnModal({
   onSuccess,
   isGuest,
   contact,
+  orderItems = [],
 }: RequestReturnModalProps) {
   const {
     register,
@@ -86,6 +88,15 @@ export function RequestReturnModal({
       return toastError("Vui lòng tải lên ít nhất một hình ảnh bằng chứng");
     }
 
+    if (orderItems.length === 0) {
+      return toastError("Không tìm thấy sản phẩm trong đơn để trả hàng");
+    }
+
+    const items = orderItems.map((item) => ({
+      orderItemId: item.id,
+      quantity: item.quantity,
+    }));
+
     setIsSubmitting(true);
     try {
       if (isGuest) {
@@ -95,6 +106,7 @@ export function RequestReturnModal({
           reason: data.reason,
           details: data.details,
           images,
+          items,
         });
       } else {
         await returnsApi.createReturnRequest({
@@ -102,6 +114,7 @@ export function RequestReturnModal({
           reason: data.reason,
           details: data.details,
           images,
+          items,
         });
       }
       success("Yêu cầu trả hàng đã được gửi thành công");

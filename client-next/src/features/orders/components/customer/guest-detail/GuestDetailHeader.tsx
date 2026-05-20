@@ -44,6 +44,7 @@ interface GuestDetailHeaderProps {
   contact: string;
   onSuccess?: () => void;
   isReviewed?: boolean;
+  orderItems?: Array<{ id: number; quantity: number }>;
 }
 
 const formatDate = (dateString: string) => {
@@ -78,6 +79,7 @@ export function GuestDetailHeader({
   contact,
   onSuccess,
   isReviewed,
+  orderItems = [],
 }: GuestDetailHeaderProps) {
   const [isReturnModalOpen, setIsReturnModalOpen] = React.useState(false);
 
@@ -206,6 +208,7 @@ export function GuestDetailHeader({
         }}
         isGuest={true}
         contact={contact}
+        orderItems={orderItems}
       />
     </div>
   );

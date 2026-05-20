@@ -35,6 +35,13 @@ export const returnsApi = {
     return response;
   },
 
+  confirmSent: async (id: number) => {
+    const { data: response } = await api.post(
+      `/returns/my-returns/${id}/confirm-sent`
+    );
+    return response;
+  },
+
   getMyReturns: async () => {
     const { data: response } = await api.get("/returns/my-returns");
     return response;

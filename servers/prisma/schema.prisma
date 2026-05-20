@@ -386,6 +386,8 @@ model Order {
   shippingCode     String?
   shippingLog      Json?
   deliveredAt      DateTime?
+  returnStatus     ReturnStatus?
+  refundedAmount   Float           @default(0)
   discountUsage    DiscountUsage?
   address          Address?        @relation(fields: [addressId], references: [id])
   cancelledByUser  User?           @relation("CancelledBy", fields: [cancelledBy], references: [id])

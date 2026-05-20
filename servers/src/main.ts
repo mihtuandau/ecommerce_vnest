@@ -70,7 +70,7 @@ async function bootstrap() {
   // Apply global exception filter for better error context
   app.useGlobalFilters(new AllExceptionsFilter());
 
-  if (process.env.NODE_ENV !== 'production') {
+  if (process.env.NODE_ENV === 'development') {
     const config = new DocumentBuilder()
       .setTitle('E-commerce API')
       .setDescription('API for clothing e-commerce backend')
