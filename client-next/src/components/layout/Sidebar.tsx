@@ -238,7 +238,7 @@ export function Sidebar() {
         isCollapsed ? "w-[80px]" : "w-[260px]"
       )}
     >
-      {/* Header */}
+      
       <div className="flex h-16 items-center px-6 mb-2 mt-2">
         <Link href={ROUTES.ADMIN} className="flex items-center gap-3 group">
           <div className="h-8 w-8 rounded-lg bg-gradient-to-tr from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-extrabold text-sm shadow-md group-hover:scale-105 transition-transform duration-300">
@@ -252,7 +252,7 @@ export function Sidebar() {
         </Link>
       </div>
 
-      {/* Navigation */}
+      
       <nav className="flex-1 space-y-6 p-4 overflow-y-auto custom-sidebar-scrollbar pt-2">
         {visibleGroups.map((group, groupIdx) => (
           <div
@@ -354,7 +354,7 @@ export function Sidebar() {
                       )}
                     </ItemWrapper>
 
-                    {/* Submenu */}
+                    
                     {hasSub && !isCollapsed && (
                       <div
                         className={cn(
@@ -391,7 +391,7 @@ export function Sidebar() {
         ))}
       </nav>
 
-      {/* Footer / User Profile */}
+      
       <div className="p-4 bg-white/[0.01] border-t border-white/5">
         {!isCollapsed && user && (
           <div className="flex items-center gap-3 px-2 py-1.5 rounded-xl transition-all duration-300">
@@ -419,7 +419,7 @@ export function Sidebar() {
                 {ROLE_CONFIG[user.role as Role]?.label ?? user.role}
               </p>
             </div>
-            {/* Logout */}
+            
             <button
               onClick={logout}
               title="Đăng xuất"
@@ -484,7 +484,7 @@ export function Sidebar() {
         )}
       </div>
 
-      {/* Collapse Toggle */}
+      
       <button
         onClick={() => setIsCollapsed(!isCollapsed)}
         className="absolute -right-3.5 top-20 h-7 w-7 rounded-lg border border-white/10 bg-[#1e293b] text-slate-400 flex items-center justify-center shadow-xl hover:text-white hover:bg-primary hover:border-primary transition-all duration-300 z-30 group"

@@ -47,10 +47,10 @@ export function AccountView() {
 
   return (
     <div className="bg-brand-cream min-h-screen pb-24 font-sans-brand">
-      {/* ── BREADCRUMBS ── */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
+      
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-5">
         <Breadcrumb>
-          <BreadcrumbList>
+          <BreadcrumbList className="text-[13px] font-medium">
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
                 <Link href="/">Trang chủ</Link>

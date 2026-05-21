@@ -42,7 +42,7 @@ export default function CustomerReturnsView() {
         </p>
       </div>
 
-      {/* Steps Process */}
+      
       <div className="p-6 rounded-2xl bg-[#FAF8F4]/30 border border-[#DDD6C8]/50 shadow-3xs">
         <span className="text-[10px] text-[#8A7966] uppercase tracking-wider block mb-4">
           Các bước yêu cầu đổi trả
@@ -78,7 +78,7 @@ export default function CustomerReturnsView() {
         </div>
       </div>
 
-      {/* FAQs */}
+      
       <div className="space-y-3">
         <h4 className="text-[11px] text-[#8A7966] uppercase tracking-wider font-semibold">
           Câu hỏi thường gặp về đổi trả

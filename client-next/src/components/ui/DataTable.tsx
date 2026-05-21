@@ -138,7 +138,7 @@ export function DataTable<TData, TValue>({
         </Table>
       </div>
 
-      {/* Pagination - Simple */}
+      
       <div className="flex items-center justify-between px-4 py-4 border-t border-border/50">
         <div className="text-xs text-muted-foreground">
           Hiển thị {table.getFilteredRowModel().rows.length} kết quả

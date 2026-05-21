@@ -83,13 +83,19 @@ export class OrderCreation {
     }
 
     // 4. Quyết định dùng Flash Sale hay Voucher (cái nào lợi hơn cho khách)
+    // Dùng strict > để ưu tiên voucher khi savings bằng nhau (vì khách chủ động nhập code)
     const useAutoApply =
-      autoApplySaving > 0 && autoApplySaving >= manualCodeSaving;
+      autoApplySaving > 0 && autoApplySaving > manualCodeSaving;
     
     // Tìm đối tượng discount cuối cùng để connect với Order
     let finalDiscount: any = null;
+    let discountNote: string | null = null;
     if (useAutoApply && autoDiscountId) {
       finalDiscount = await this.prisma.discount.findUnique({ where: { id: autoDiscountId } });
+      if (manualDiscount && dto.discountCode) {
+        discountNote = `Flash Sale mang lại giảm giá ${autoApplySaving.toLocaleString('vi-VN')}đ, cao hơn voucher "${dto.discountCode}" (${manualCodeSaving.toLocaleString('vi-VN')}đ). Hệ thống đã tự động áp dụng mức giá tốt nhất cho bạn.`;
+        this.logger.log(`[OrderCreation] Flash Sale (${autoApplySaving}) > Voucher "${dto.discountCode}" (${manualCodeSaving}). Auto-applied Flash Sale.`);
+      }
     } else if (!useAutoApply && manualDiscount) {
       finalDiscount = manualDiscount;
     }
@@ -156,8 +162,11 @@ export class OrderCreation {
     const systemSettings = await this.systemSettingsService.getSettings();
     if (totals.totalItems >= systemSettings.freeShippingThreshold) {
       totals.shippingFee = 0;
-      totals.total = totals.totalItems;
-      totals.discountedTotal = Math.max(0, totals.totalItems - totals.discountAmount);
+      // Recalculate total & discountedTotal nhất quán với formula gốc:
+      // total = totalItems + shippingFee (= totalItems + 0)
+      // discountedTotal = total - discountAmount
+      totals.total = totals.totalItems; // shippingFee = 0 nên total = totalItems
+      totals.discountedTotal = Math.max(0, totals.total - totals.discountAmount);
     }
 
     const orderCode = await OrderHelper.generateOrderCode((code) =>
@@ -190,9 +199,9 @@ export class OrderCreation {
       payment = await this.createPaymentRecord(order.id, dto.paymentMethod, ipAddr, order.status);
       
       // Log để kiểm tra ngay tại Server
-      console.log(`[OrderCreation] Created payment for ${order.orderCode}: ${payment ? 'OK' : 'NULL'}`);
+      this.logger.debug(`[OrderCreation] Created payment for ${order.orderCode}: ${payment ? 'OK' : 'NULL'}`);
       if (payment) {
-        console.log(`[OrderCreation] Link detail: ${payment.paymentLink ? 'FOUND' : 'NOT FOUND'}`);
+        this.logger.debug(`[OrderCreation] Link detail: ${payment.paymentLink ? 'FOUND' : 'NOT FOUND'}`);
       }
 
       if (dto.paymentMethod === 'VNPAY' && (!payment || !payment.paymentLink)) {
@@ -216,6 +225,7 @@ export class OrderCreation {
       ...order,
       payment: payment,
       paymentLink: payment?.paymentLink || null,
+      discountNote,
     };
   }
 
@@ -317,6 +327,11 @@ export class OrderCreation {
           productSlug: (variant.product as any)?.slug || null,
           brandName: brandName,
           originalPrice: variant.originalPrice || variant.product?.originalPrice || variant.price,
+          // Lưu kích thước vật lý vào snapshot để syncToGHN có thể đọc khi variant đã bị xóa
+          weight: variant.weight,
+          length: variant.length,
+          width: variant.width,
+          height: variant.height,
         }
       };
     });
@@ -373,6 +388,11 @@ export class OrderCreation {
           productSlug: v?.product?.slug || null,
           brandName: brandName,
           originalPrice: v?.originalPrice || v?.product?.originalPrice || v?.price,
+          // Lưu kích thước vật lý vào snapshot để syncToGHN có thể đọc khi variant đã bị xóa
+          weight: v?.weight,
+          length: v?.length,
+          width: v?.width,
+          height: v?.height,
         }
       };
     });
@@ -433,7 +453,7 @@ export class OrderCreation {
 
   private async validateDiscount(discountCode?: string, subtotal?: number, userId?: number | null, guestEmail?: string | null, guestPhone?: string | null) {
     if (!discountCode) return null;
-    console.log(`[OrderCreation] Validating discount: ${discountCode} for userId: ${userId}`);
+    this.logger.debug(`[OrderCreation] Validating discount: ${discountCode} for userId: ${userId}`);
     const discount = await this.repository.findDiscountByCode(discountCode);
     if (!discount) throw new BadRequestException('Mã giảm giá không tồn tại');
     if (discount.isFlashSale)
@@ -444,7 +464,7 @@ export class OrderCreation {
 
     // Kiểm tra giới hạn sử dụng của người dùng/guest (mỗi người dùng 1 lần)
     const hasUsed = await this.repository.hasUsedDiscount(userId || null, discount.id, guestEmail, guestPhone);
-    console.log(`[OrderCreation] User/Guest has used discount ${discount.id}: ${hasUsed}`);
+    this.logger.debug(`[OrderCreation] User/Guest has used discount ${discount.id}: ${hasUsed}`);
     if (hasUsed) {
       throw new BadRequestException('Bạn đã sử dụng mã giảm giá này cho đơn hàng trước đó');
     }

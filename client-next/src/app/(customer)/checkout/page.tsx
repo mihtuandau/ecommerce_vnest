@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { CheckoutContainer } from "@/features/checkout/components/CheckoutContainer";
+import { CheckoutView } from "@/features/checkout/components/CheckoutView";
 import { Suspense } from "react";
 import { Spinner } from "@/components/ui/Spinner";
 
@@ -20,7 +20,7 @@ export default function CheckoutPage() {
         </div>
       }
     >
-      <CheckoutContainer />
+      <CheckoutView />
     </Suspense>
   );
 }

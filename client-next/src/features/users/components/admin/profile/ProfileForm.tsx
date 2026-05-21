@@ -31,9 +31,9 @@ interface ProfileFormProps {
 export function ProfileForm({ form, onSubmit, isPending }: ProfileFormProps) {
   return (
     <div className="md:col-span-2">
-      <Card className="border-none shadow-2xl shadow-slate-200/40 bg-white rounded-2xl overflow-hidden">
+      <Card className="border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] bg-white rounded-2xl overflow-hidden">
         <CardHeader className="border-b border-slate-50 pb-6">
-          <CardTitle className="text-xl font-bold text-slate-900">
+          <CardTitle className="text-xl font-semibold text-slate-900">
             Chỉnh sửa thông tin
           </CardTitle>
           <CardDescription className="font-medium">
@@ -49,7 +49,7 @@ export function ProfileForm({ form, onSubmit, isPending }: ProfileFormProps) {
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                      <FormLabel className="text-xs font-semibold text-slate-500">
                         Họ và tên
                       </FormLabel>
                       <FormControl>
@@ -72,7 +72,7 @@ export function ProfileForm({ form, onSubmit, isPending }: ProfileFormProps) {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                      <FormLabel className="text-xs font-semibold text-slate-500">
                         Địa chỉ Email
                       </FormLabel>
                       <FormControl>
@@ -95,7 +95,7 @@ export function ProfileForm({ form, onSubmit, isPending }: ProfileFormProps) {
                   name="phone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                      <FormLabel className="text-xs font-semibold text-slate-500">
                         Số điện thoại
                       </FormLabel>
                       <FormControl>
@@ -119,7 +119,7 @@ export function ProfileForm({ form, onSubmit, isPending }: ProfileFormProps) {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                      <FormLabel className="text-xs font-semibold text-slate-500">
                         Mật khẩu mới (Nếu cần đổi)
                       </FormLabel>
                       <FormControl>
@@ -140,14 +140,14 @@ export function ProfileForm({ form, onSubmit, isPending }: ProfileFormProps) {
                 <Button
                   type="button"
                   variant="outline"
-                  className="h-11 px-6 rounded-xl border-slate-200 font-bold text-slate-600 hover:bg-slate-50"
+                  className="h-11 px-6 rounded-xl border-slate-200 font-semibold text-slate-600 hover:bg-slate-50"
                   onClick={() => form.reset()}
                 >
                   Hủy thay đổi
                 </Button>
                 <Button
                   type="submit"
-                  className="h-11 px-8 rounded-xl font-bold bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20 flex items-center gap-2"
+                  className="h-11 px-8 rounded-xl font-semibold bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20 flex items-center gap-2"
                   disabled={isPending}
                 >
                   {isPending ? (

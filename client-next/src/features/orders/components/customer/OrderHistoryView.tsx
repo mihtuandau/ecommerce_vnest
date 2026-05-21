@@ -91,7 +91,9 @@ export function OrderHistoryView() {
     // special case for returns: show both requested and returned
     if (status === OrderStatus.RETURN_REQUESTED) {
       matchesStatus =
-        o.status === OrderStatus.RETURN_REQUESTED || o.status === OrderStatus.RETURNED;
+        o.status === OrderStatus.RETURN_REQUESTED || 
+        o.status === OrderStatus.RETURNED ||
+        (o.returnStatus !== null && o.returnStatus !== undefined);
     }
 
     const matchesSearch =
@@ -105,10 +107,10 @@ export function OrderHistoryView() {
 
   return (
     <div className="min-h-screen bg-brand-cream pb-24 font-sans-brand">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-9">
-        {/* ── BREADCRUMBS ── */}
-        <Breadcrumb className="mb-8">
-          <BreadcrumbList>
+      {/* Breadcrumb Container */}
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-5">
+        <Breadcrumb>
+          <BreadcrumbList className="text-sm font-medium">
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
                 <Link href="/">Trang chủ</Link>
@@ -120,8 +122,10 @@ export function OrderHistoryView() {
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
+      </div>
 
-        {/* Header - Combined Row */}
+      {/* Main Content Container */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-5">
         <div className="mb-10 space-y-1">
           <h1 className="text-3xl md:text-5xl font-bold font-serif-brand text-brand-espresso tracking-tight">
             Đơn hàng{" "}
@@ -134,7 +138,7 @@ export function OrderHistoryView() {
           </p>
         </div>
 
-        {/* Filter & Search Bar */}
+        
         <div className="bg-white border border-brand-sand rounded-[14px] p-[14px] px-[18px] mb-5 flex items-center justify-between gap-4">
           <div className="flex-1 overflow-x-auto no-scrollbar">
             <Tabs value={status} onValueChange={setStatus} className="w-full">
@@ -180,7 +184,7 @@ export function OrderHistoryView() {
           </div>
         </div>
 
-        {/* Order List */}
+        
         <div className="space-y-4">
           {isLoading ? (
             <div className="space-y-4">
@@ -202,7 +206,7 @@ export function OrderHistoryView() {
                 key={order.id}
                 className="bg-white border border-brand-sand rounded-[16px] overflow-hidden hover:shadow-[0_6px_24px_rgba(61,43,26,0.07)] transition-shadow group"
               >
-                {/* Header */}
+                
                 <div className="px-5 py-4 flex items-center gap-4 border-b border-brand-sand">
                   <span className="text-[14.5px] font-semibold text-brand-espresso font-mono tracking-tight">
                     {order.orderCode}
@@ -214,11 +218,15 @@ export function OrderHistoryView() {
                   <div
                     className={cn(
                       "flex items-center gap-1.5 px-3 py-1 rounded-full text-[13px] font-semibold",
-                      getStatusStyle(order.status)
+                      order.returnStatus 
+                        ? getStatusStyle(OrderStatus.RETURN_REQUESTED) 
+                        : getStatusStyle(order.status)
                     )}
                   >
                     <div className="w-1.5 h-1.5 rounded-full bg-current" />
-                    {getStatusLabel(order.status)}
+                    {order.returnStatus 
+                      ? `Trả hàng (${order.returnStatus === 'PENDING' ? 'Chờ duyệt' : order.returnStatus === 'APPROVED' ? 'Đã duyệt' : order.returnStatus === 'RETURNING' ? 'Đang gửi trả' : order.returnStatus === 'RECEIVED' ? 'Đã nhận hàng' : 'Hoàn tất'})`
+                      : getStatusLabel(order.status)}
                   </div>
                   <div className="ml-auto flex items-center gap-2">
                     <span className="text-[13px] text-brand-taupe font-medium">
@@ -230,7 +238,7 @@ export function OrderHistoryView() {
                   </div>
                 </div>
 
-                {/* Items Row */}
+                
                 <div className="px-5 py-4 flex items-center gap-3 border-b border-brand-sand">
                   <div className="flex gap-3 shrink-0">
                     {order.orderItems.slice(0, 3).map((item: any, idx: number) => {
@@ -281,7 +289,7 @@ export function OrderHistoryView() {
                   )}
                 </div>
 
-                {/* Tracking Mini */}
+                
                 <div className="px-5 py-3.5 border-b border-brand-sand">
                   {order.status === OrderStatus.CANCELLED ? (
                     <div className="text-[12.5px] text-red-600 flex items-center gap-1.5 font-medium">
@@ -301,7 +309,7 @@ export function OrderHistoryView() {
                   )}
                 </div>
 
-                {/* Actions */}
+                
                 <div className="px-5 py-3.5 flex items-center gap-2 bg-brand-cream/20">
                   <Button
                     variant="outline"

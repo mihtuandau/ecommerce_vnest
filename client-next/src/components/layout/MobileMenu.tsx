@@ -88,7 +88,7 @@ export function MobileMenu({
 
   return (
     <div className="flex flex-col h-full bg-white">
-      {/* Mobile Search */}
+      
       <div className="px-4 py-3 border-b border-brand-sand flex-shrink-0 bg-white sticky top-0 z-20">
         <form onSubmit={handleSearch} className="relative">
           <button
@@ -114,7 +114,7 @@ export function MobileMenu({
           )}
         </form>
 
-        {/* Live Search Results (Mobile) */}
+        
         {searchQuery.trim().length >= 2 && (
           <div className="absolute left-0 right-0 top-full bg-white border-b border-brand-sand shadow-xl max-h-[60vh] overflow-y-auto z-30 animate-in fade-in slide-in-from-top-1">
             <div className="p-2">
@@ -176,7 +176,7 @@ export function MobileMenu({
         )}
       </div>
 
-      {/* Navigation Links */}
+      
       <div className="flex-1 overflow-y-auto py-4 px-2 space-y-1">
         {NAV_LINKS.map((link) => {
           const isActive = pathname === link.href;
@@ -198,7 +198,7 @@ export function MobileMenu({
           );
         })}
 
-        {/* Categories Section */}
+        
         <div className="pt-2 pb-1">
           <div className="px-4 py-2 flex items-center gap-2">
             <span className="text-[10px] font-black text-brand-taupe uppercase tracking-widest">
@@ -214,7 +214,7 @@ export function MobileMenu({
           </div>
         </div>
 
-        {/* Wishlist */}
+        
         <Link
           href={ROUTES.WISHLIST}
           onClick={onClose}
@@ -230,7 +230,7 @@ export function MobileMenu({
         </Link>
       </div>
 
-      {/* Account Info Mobile */}
+      
       <div className="p-4 border-t border-brand-sand bg-brand-cream/50">
         {!mounted || authLoading ? (
           <div className="flex items-center gap-3 p-2">

@@ -34,7 +34,7 @@ export function ProductBrowser({
 }: ProductBrowserProps) {
   return (
     <div className="flex-1 flex flex-col bg-slate-50/50">
-      {/* Search & Categories */}
+      
       <div className="p-5 border-b border-slate-100 space-y-4">
         <div className="flex gap-2">
           <div className="relative flex-1">
@@ -86,7 +86,7 @@ export function ProductBrowser({
         </div>
       </div>
 
-      {/* Product Grid */}
+      
       <div className="flex-1 overflow-y-auto p-5 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent">
         {isLoading ? (
           <div className="flex h-full items-center justify-center">

@@ -30,7 +30,7 @@ export function ProductTabs({ product }: ProductTabsProps) {
 
   return (
     <div className="bg-white rounded-[2.5rem] border border-brand-sand/30 p-8 md:p-12 shadow-sm">
-      {/* Tab Navigation */}
+      
       <div className="flex border-b border-brand-sand/20 overflow-x-auto no-scrollbar mb-12">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
@@ -52,7 +52,7 @@ export function ProductTabs({ product }: ProductTabsProps) {
         })}
       </div>
 
-      {/* Tab Content */}
+      
       <div className="animate-in fade-in slide-in-from-bottom-2 duration-700">
         {activeTab === "description" && (
           <div className="max-w-4xl">

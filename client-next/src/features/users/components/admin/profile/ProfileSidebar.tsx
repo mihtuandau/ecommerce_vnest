@@ -32,7 +32,7 @@ export function ProfileSidebar({
 }: ProfileSidebarProps) {
   return (
     <div className="md:col-span-1 space-y-6">
-      <Card className="border-none shadow-xl shadow-slate-200/50 overflow-hidden bg-white">
+      <Card className="border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] overflow-hidden bg-white rounded-2xl">
         <CardContent className="pt-8 pb-6 text-center">
           <div className="relative inline-block group">
             <div className="h-32 w-32 rounded-[2.5rem] bg-primary/5 flex items-center justify-center border-2 border-primary/10 overflow-hidden shadow-2xl shadow-primary/5 mx-auto transition-all duration-500 group-hover:scale-105 group-hover:border-primary/30 group-hover:bg-primary/10 relative">
@@ -72,13 +72,13 @@ export function ProfileSidebar({
           </div>
 
           <div className="mt-6">
-            <h2 className="text-xl font-bold text-slate-900">
+            <h2 className="text-xl font-semibold text-slate-900">
               {user.name || "Người dùng"}
             </h2>
             <div className="flex items-center justify-center gap-1.5 mt-1">
               <span
                 className={cn(
-                  "px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider",
+                  "px-2.5 py-0.5 rounded-full text-[10px] font-semibold tracking-wider",
                   user.role === Role.ADMIN
                     ? "bg-primary/10 text-primary"
                     : "bg-emerald-500/10 text-emerald-500"
@@ -87,17 +87,17 @@ export function ProfileSidebar({
                 {user.role}
               </span>
               <span className="h-1 w-1 rounded-full bg-slate-300" />
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-tight">
+              <span className="text-xs font-semibold text-slate-400 tracking-tight">
                 Active
               </span>
             </div>
           </div>
         </CardContent>
         <div className="px-6 py-4 bg-slate-50/50 border-t border-slate-100 flex items-center justify-between">
-          <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+          <span className="text-[10px] font-semibold text-slate-400 tracking-widest">
             Tài khoản từ
           </span>
-          <span className="text-xs font-bold text-slate-600">
+          <span className="text-xs font-semibold text-slate-600">
             {user.createdAt
               ? new Date(user.createdAt).toLocaleDateString("vi-VN")
               : "N/A"}
@@ -105,12 +105,12 @@ export function ProfileSidebar({
         </div>
       </Card>
 
-      <Card className="border-none shadow-xl shadow-slate-200/50 bg-primary text-white overflow-hidden relative group">
+      <Card className="border border-primary shadow-[0_4px_20px_rgba(15,23,42,0.03)] bg-primary text-white overflow-hidden relative group rounded-2xl">
         <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform duration-500">
           <ShieldCheck size={80} strokeWidth={1} />
         </div>
         <CardHeader className="pb-2">
-          <CardTitle className="text-lg font-bold">Bảo mật</CardTitle>
+          <CardTitle className="text-lg font-semibold">Bảo mật</CardTitle>
           <CardDescription className="text-white/70 text-xs font-medium">
             Tài khoản của bạn đang được bảo vệ.
           </CardDescription>

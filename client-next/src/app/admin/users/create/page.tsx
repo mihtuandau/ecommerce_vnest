@@ -23,7 +23,7 @@ export default function AdminUserCreatePage() {
         <Button
           variant="ghost"
           size="sm"
-          className="w-fit pl-0 hover:bg-transparent text-slate-400 hover:text-primary gap-1 font-bold text-xs uppercase tracking-wider"
+          className="w-fit pl-0 hover:bg-transparent text-slate-400 hover:text-primary gap-1 font-semibold text-xs tracking-wider"
           onClick={() => router.back()}
         >
           <ChevronLeft className="h-3.5 w-3.5" />
@@ -41,7 +41,7 @@ export default function AdminUserCreatePage() {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-slate-200 p-8">
+      <div className="bg-white rounded-2xl border border-slate-200 p-8 shadow-[0_4px_20px_rgba(15,23,42,0.03)] overflow-hidden">
         <UserForm onSubmit={handleSubmit} isLoading={isPending} />
       </div>
     </div>

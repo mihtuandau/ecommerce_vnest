@@ -30,7 +30,7 @@ export default function EditBannerPage() {
     return (
       <div className="h-96 flex flex-col items-center justify-center gap-4">
         <Spinner size="lg" />
-        <p className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em]">
+        <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-[0.2em]">
           Đang tải dữ liệu Banner...
         </p>
       </div>
@@ -40,7 +40,7 @@ export default function EditBannerPage() {
   if (!banner) {
     return (
       <div className="p-20 text-center flex flex-col items-center gap-4">
-        <p className="text-slate-500 font-bold">Không tìm thấy Banner yêu cầu</p>
+        <p className="text-slate-500 font-semibold">Không tìm thấy Banner yêu cầu</p>
         <Button variant="outline" onClick={() => router.push(ROUTES.ADMIN_BANNERS)}>
           Quay lại danh sách
         </Button>
@@ -54,7 +54,7 @@ export default function EditBannerPage() {
         <Button
           variant="ghost"
           size="sm"
-          className="w-fit pl-0 hover:bg-transparent text-slate-400 hover:text-primary gap-1 font-bold text-xs uppercase tracking-wider"
+          className="w-fit pl-0 hover:bg-transparent text-slate-400 hover:text-primary gap-1 font-semibold text-xs tracking-wider"
           onClick={() => router.back()}
         >
           <ChevronLeft className="h-3.5 w-3.5" />

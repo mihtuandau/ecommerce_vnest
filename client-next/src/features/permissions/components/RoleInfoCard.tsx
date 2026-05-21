@@ -27,12 +27,12 @@ export function RoleInfoCard({
   const roleConf = ROLE_CONFIG[activeRole as Role] || ROLE_CONFIG[Role.CUSTOMER];
 
   return (
-    <Card className="border-none shadow-sm rounded-2xl bg-slate-50/50 font-sans">
+    <Card className="border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] rounded-2xl bg-slate-50/50 font-sans">
       <CardHeader className="pb-2">
         <div className="h-10 w-10 rounded-xl bg-slate-100 flex items-center justify-center mb-4">
           <Shield className="h-5 w-5 text-slate-500" />
         </div>
-        <CardTitle className="text-lg font-bold text-slate-900">
+        <CardTitle className="text-lg  font-semibold text-slate-900">
           Thông tin vai trò
         </CardTitle>
         <CardDescription className="text-xs font-medium">
@@ -41,7 +41,7 @@ export function RoleInfoCard({
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="p-4 bg-white rounded-xl border border-slate-100 space-y-3">
-          <div className="flex justify-between items-center text-xs font-bold uppercase tracking-widest text-slate-400">
+          <div className="flex justify-between items-center text-xs font-semibold text-slate-400">
             <span>Trạng thái</span>
             <Badge
               variant="outline"
@@ -52,7 +52,7 @@ export function RoleInfoCard({
           </div>
           <div className="flex justify-between items-center">
             <span className="text-sm font-medium text-slate-600">Quyền hạn cấp</span>
-            <span className="text-sm font-bold text-slate-900">
+            <span className="text-sm font-semibold text-slate-900">
               {activePermsCount} / {totalPermsCount}
             </span>
           </div>

@@ -84,7 +84,9 @@ export class OrderManagement {
         'PENDING': ['PROCESSING', 'CANCELLED'],
         'PROCESSING': ['SHIPPED', 'CANCELLED'],
         'SHIPPED': ['DELIVERED', 'CANCELLED'],
-        'DELIVERED': [],
+        'DELIVERED': ['RETURN_REQUESTED', 'RETURNED'],
+        'RETURN_REQUESTED': ['RETURNED'],
+        'RETURNED': [],
         'CANCELLED': []
       };
 
@@ -443,10 +445,11 @@ export class OrderManagement {
       throw new BadRequestException('Không có sản phẩm hợp lệ trong đơn hàng (các sản phẩm đã bị xóa)');
     }
 
-    const totalWeight = activeItems.reduce((sum, item) => sum + (item.weight || 200) * item.quantity, 0);
-    const maxLength = Math.max(...activeItems.map(i => (i.variantSnapshot as any)?.length || 10));
-    const maxWidth = Math.max(...activeItems.map(i => (i.variantSnapshot as any)?.width || 10));
-    const totalHeight = activeItems.reduce((sum, i) => sum + ((i.variantSnapshot as any)?.height || 5) * i.quantity, 0);
+    // Ưu tiên đọc kích thước từ variantSnapshot (đã lưu khi tạo đơn), fallback về variant hiện tại
+    const totalWeight = activeItems.reduce((sum, item) => sum + ((item.variantSnapshot as any)?.weight || item.weight || 200) * item.quantity, 0);
+    const maxLength = Math.max(...activeItems.map(i => (i.variantSnapshot as any)?.length || i.variant?.length || 10));
+    const maxWidth = Math.max(...activeItems.map(i => (i.variantSnapshot as any)?.width || i.variant?.width || 10));
+    const totalHeight = activeItems.reduce((sum, i) => sum + ((i.variantSnapshot as any)?.height || i.variant?.height || 5) * i.quantity, 0);
 
     // Luôn để Shop trả phí cho GHN (1: Shop, 2: Khách)
     // Vì phí ship đã được tính vào tổng tiền (total) và thu từ khách qua COD rồi.

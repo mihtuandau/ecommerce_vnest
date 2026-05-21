@@ -33,7 +33,7 @@ export function PaymentsToolbar({
 }: PaymentsToolbarProps) {
   return (
     <>
-      {/* Tab Filters */}
+      
       <div className="flex flex-wrap items-center justify-between px-6 py-4 border-b border-slate-200 gap-4">
         <div className="flex flex-wrap gap-2">
           {[
@@ -63,7 +63,7 @@ export function PaymentsToolbar({
         </div>
 
         <div className="flex items-center gap-3">
-          {/* Method Select representing full Prisma enum */}
+          
           <Select
             value={method}
             onValueChange={(val) => {
@@ -85,7 +85,7 @@ export function PaymentsToolbar({
         </div>
       </div>
 
-      {/* Search Bar */}
+      
       <div className="p-6 border-b border-slate-100 bg-slate-50/20">
         <div className="relative">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />

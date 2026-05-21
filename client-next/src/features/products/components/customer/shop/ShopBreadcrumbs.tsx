@@ -41,7 +41,7 @@ export const ShopBreadcrumbs = React.memo(function ShopBreadcrumbs({
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="py-4">
           <Breadcrumb>
-            <BreadcrumbList className="text-[11.5px] uppercase tracking-widest">
+            <BreadcrumbList className="text-sm font-medium">
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
                   <Link href="/" className="flex items-center gap-1.5 hover:text-primary transition-all">

@@ -13,21 +13,12 @@ import {
   Star,
   Clock,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { OrderStatus, ReturnStatus } from "@/types/enums";
 import { cn } from "@/utils/cn";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { RequestReturnModal } from "../detail/RequestReturnModal";
 import { CUSTOMER_ORDER_STATUS_CONFIG } from "../../../constants";
-import {
-  Breadcrumb,
-  BreadcrumbList,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui";
 
 interface GuestDetailHeaderProps {
   orderCode: string;
@@ -53,6 +44,7 @@ interface GuestDetailHeaderProps {
   contact: string;
   onSuccess?: () => void;
   isReviewed?: boolean;
+  orderItems?: Array<{ id: number; quantity: number }>;
 }
 
 const formatDate = (dateString: string) => {
@@ -87,6 +79,7 @@ export function GuestDetailHeader({
   contact,
   onSuccess,
   isReviewed,
+  orderItems = [],
 }: GuestDetailHeaderProps) {
   const [isReturnModalOpen, setIsReturnModalOpen] = React.useState(false);
 
@@ -97,20 +90,6 @@ export function GuestDetailHeader({
 
   return (
     <div className="space-y-5 mb-5 font-sans-brand animate-in fade-in slide-in-from-top-4 duration-500">
-      {/* ── BREADCRUMBS ── */}
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <Link href="/">Trang chủ</Link>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>#{orderCode}</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
 
       <div className="bg-white border border-[#DDD6C8] rounded-2xl p-6 flex flex-wrap items-start justify-between gap-5 shadow-sm">
         <div className="flex flex-col gap-2">
@@ -229,6 +208,7 @@ export function GuestDetailHeader({
         }}
         isGuest={true}
         contact={contact}
+        orderItems={orderItems}
       />
     </div>
   );

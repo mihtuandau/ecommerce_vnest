@@ -5,7 +5,7 @@ import Image from "next/image";
 export default function AboutPage() {
   return (
     <div className="bg-white min-h-screen">
-      {/* Premium Hero Banner */}
+      
       <section className="relative h-[60vh] md:h-[70vh] flex items-center justify-center overflow-hidden bg-slate-900">
         <div className="absolute inset-0 z-0">
           <Image
@@ -34,7 +34,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Story Section */}
+      
       <section className="max-w-[1400px] mx-auto px-4 py-32 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
           <div className="space-y-10">
@@ -85,7 +85,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Values Section */}
+      
       <section className="bg-slate-50/50 py-32 border-y border-slate-100">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-20">
           <div className="space-y-4">

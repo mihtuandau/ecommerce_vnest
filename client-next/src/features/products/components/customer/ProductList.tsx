@@ -169,7 +169,7 @@ export const ProductList = React.memo(function ProductList({
         ))}
       </div>
 
-      {/* Pagination */}
+      
       {products.length > 0 && totalPages > 1 && (
         <div className="pt-12 border-t border-brand-sand">
           <Pagination

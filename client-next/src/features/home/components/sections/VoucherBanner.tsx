@@ -8,7 +8,7 @@ export function VoucherBanner() {
   return (
     <section className="max-w-[1440px] mx-auto px-6 lg:px-12 w-full">
       <div className="bg-[#3D2B1A] rounded-3xl p-8 md:p-12 relative overflow-hidden group">
-        {/* Background accents */}
+        
         <div className="absolute top-0 right-0 h-full w-1/3 bg-white/[0.03] -skew-x-12 translate-x-20 transition-transform duration-1000 group-hover:translate-x-10" />
         <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-[#C4783A]/20 rounded-full blur-3xl" />
 

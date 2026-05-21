@@ -56,11 +56,14 @@ export function serializeOrder(order: any, maskPII = false) {
 
 export async function generateOrderCode(
   checkExistsFn: (code: string) => Promise<any>,
+  retries: number = 0,
 ): Promise<string> {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let code = '';
+  if (retries > 10) {
+    throw new BadRequestException('Không thể tạo mã đơn hàng duy nhất sau nhiều lần thử. Vui lòng thử lại.');
+  }
 
-  code = 'ORD-';
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let code = 'ORD-';
   for (let i = 0; i < 10; i++) {
     code += chars.charAt(Math.floor(Math.random() * chars.length));
   }
@@ -68,7 +71,7 @@ export async function generateOrderCode(
   const existing = await checkExistsFn(code);
 
   if (existing) {
-    return generateOrderCode(checkExistsFn);
+    return generateOrderCode(checkExistsFn, retries + 1);
   }
 
   return code;
@@ -283,8 +286,11 @@ export function prepareOrderEmailDetails(order: any) {
       discountAmount: order.discountAmount,
       shippingFee: order.shippingFee,
       total: order.total,
-      paymentMethod: order.paymentMethod === 'COD' ? 'Thanh toán khi nhận hàng (COD)' : 
+      paymentMethod: order.paymentMethod === 'CASH' ? 'Thanh toán khi nhận hàng (COD)' : 
+                     order.paymentMethod === 'COD' ? 'Thanh toán khi nhận hàng (COD)' : 
                      order.paymentMethod === 'VNPAY' ? 'Thanh toán qua VNPay' : 
+                     order.paymentMethod === 'CARD' ? 'Thanh toán bằng thẻ' :
+                     order.paymentMethod === 'MOMO' ? 'Thanh toán qua MoMo' :
                      order.paymentMethod === 'BANK_TRANSFER' ? 'Chuyển khoản ngân hàng' : order.paymentMethod,
       shippingAddress: shipping?.addressString || 'N/A',
       createdAt: order.createdAt,

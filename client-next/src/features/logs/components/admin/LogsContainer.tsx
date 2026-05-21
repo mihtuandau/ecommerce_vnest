@@ -49,7 +49,7 @@ export function LogsContainer() {
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      {/* Unified Header */}
+      
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-medium tracking-tight text-slate-900 mb-1">
@@ -77,10 +77,10 @@ export function LogsContainer() {
         </Button>
       </div>
 
-      {/* Dynamic Statistics Cards */}
+      
       <LogsStats stats={stats} />
 
-      {/* Toolbar Filters */}
+      
       <LogsToolbar
         search={search}
         setSearch={setSearch}
@@ -92,7 +92,7 @@ export function LogsContainer() {
         handleResetFilters={handleResetFilters}
       />
 
-      {/* Table Data */}
+      
       <LogsTable
         logs={logs}
         isLoading={isLoading}

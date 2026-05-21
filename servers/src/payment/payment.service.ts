@@ -48,7 +48,7 @@ export class PaymentService {
     let transactionId: string | null = null;
     let paymentLink: string | null = null;
 
-    console.log(`[PaymentService] Creating payment for order ${order.orderCode}, Method: ${data.method}`);
+    this.logger.debug(`[PaymentService] Creating payment for order ${order.orderCode}, Method: ${data.method}`);
 
     if (data.method === 'VNPAY') {
       const timestamp = Date.now();
@@ -62,7 +62,7 @@ export class PaymentService {
         ipAddr: ipAddr,
       });
 
-      console.log(`[PaymentService] VNPay Link Generated: ${paymentLink ? 'YES' : 'NO'}`);
+      this.logger.debug(`[PaymentService] VNPay Link Generated: ${paymentLink ? 'YES' : 'NO'}`);
       
       if (!paymentLink) {
         throw new BadRequestException('Không thể khởi tạo liên kết thanh toán VNPay. Vui lòng kiểm tra cấu hình hệ thống.');
@@ -136,15 +136,16 @@ export class PaymentService {
     const refundValue = amount || payment.amount;
 
     try {
-      // For VNPAY/MOMO/PAYOS - mark as REFUNDED
-      // In production, this would call the actual refund API on the payment gateway
       if (['VNPAY', 'MOMO', 'PAYOS'].includes(payment.method)) {
-        // TODO: Implement actual refund API calls for each gateway
         await this.repository.update(paymentId, {
           status: 'REFUNDED',
           refundAmount: (payment.refundAmount || 0) + refundValue,
         });
-        this.logger.log(`Refund of ${refundValue} initiated for ${payment.method} payment ${paymentId}`);
+        this.logger.warn(
+          `⚠️ [MANUAL REFUND REQUIRED] Payment #${paymentId} (${payment.method}) marked as REFUNDED in DB. ` +
+          `Amount: ${refundValue.toLocaleString('vi-VN')}đ. ` +
+          `Admin PHẢI hoàn tiền thủ công qua cổng ${payment.method} cho khách hàng.`
+        );
       } else if (payment.method === 'CASH' || payment.method === 'CARD') {
         await this.repository.update(paymentId, {
           status: 'REFUNDED',

@@ -94,12 +94,15 @@ export const ProductCard = React.memo(function ProductCard({
     }
     toggleWishlist({
       id: String(product.id),
+      variantId: product.variants?.[0]?.id || product.id,
       name: product.name,
       price: price,
       originalPrice: originalPrice || undefined,
       imageUrl: imageUrl,
       slug: product.slug,
       stock: product.stock || 0,
+      categoryId: product.categoryId,
+      categoryName: product.category?.name || "Bộ sưu tập LUXE",
     });
     if (!isFavorite) success(`Đã thêm ${product.name} vào yêu thích`);
   };
@@ -303,7 +306,7 @@ export const ProductCard = React.memo(function ProductCard({
               </span>
             </div>
           </div>
-
+            
           <div className="mt-auto pt-3 border-t border-brand-ivory flex items-end justify-between gap-2">
             <Price amount={price} originalAmount={originalPrice || undefined} showBadge size="md" className="min-w-0 flex-1" />
             <button

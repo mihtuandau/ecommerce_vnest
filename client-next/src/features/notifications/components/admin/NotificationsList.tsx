@@ -67,8 +67,8 @@ export function NotificationsList({
 
   return (
     <div className="lg:col-span-8 space-y-5">
-      {/* List display */}
-      <Card className="border-slate-100 rounded-2xl shadow-sm bg-white overflow-hidden">
+      
+      <Card className="border border-slate-200 rounded-2xl shadow-[0_4px_20px_rgba(15,23,42,0.03)] bg-white overflow-hidden">
         <CardContent className="p-0">
           {isLoading ? (
             <div className="p-20 flex flex-col items-center justify-center gap-3">
@@ -115,7 +115,7 @@ export function NotificationsList({
                             "text-xs truncate",
                             notif.isRead
                               ? "text-slate-700 font-semibold"
-                              : "text-slate-900 font-bold"
+                              : "text-slate-900 font-semibold"
                           )}
                         >
                           {notif.title}
@@ -133,7 +133,7 @@ export function NotificationsList({
                           {formattedTime}
                         </span>
                         {notif.link && (
-                          <span className="text-indigo-600 hover:underline flex items-center gap-0.5 font-bold uppercase text-[9px] tracking-wider">
+                          <span className="text-indigo-600 hover:underline flex items-center gap-0.5 font-semibold text-[10px] tracking-wider">
                             Xem chi tiết <ArrowRight size={10} />
                           </span>
                         )}
@@ -150,7 +150,7 @@ export function NotificationsList({
           )}
         </CardContent>
 
-        {/* Pagination footer */}
+        
         {meta.totalPages > 1 && (
           <div className="px-6 py-4 border-t border-slate-100 flex items-center justify-between bg-white">
             <Button

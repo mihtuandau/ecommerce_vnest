@@ -98,7 +98,7 @@ export function DetailStepper({
       </div>
 
       <div className="p-7 space-y-8">
-        {/* ── HORIZONTAL STEPPER ── */}
+        
         <div className="relative flex items-center px-4">
           {steps.map((step, idx) => {
             const isDone = idx <= currentIndex || status === OrderStatus.DELIVERED;
@@ -151,7 +151,7 @@ export function DetailStepper({
           })}
         </div>
 
-        {/* ── CARRIER INFO BOX ── */}
+        
         {shippingCode && (
           <div className="bg-[#FAF8F4] border border-[#DDD6C8] rounded-xl p-4 flex flex-wrap items-center gap-x-12 gap-y-4">
             <div className="space-y-1">
@@ -191,7 +191,7 @@ export function DetailStepper({
           </div>
         )}
 
-        {/* ── HISTORY LOG ── */}
+        
         <div className="bg-[#FAF8F4] border border-[#DDD6C8] rounded-xl p-5 space-y-4">
           <p className="text-[12px] font-bold text-[#3D2B1A] uppercase tracking-[0.06em]">
             Lịch sử cập nhật

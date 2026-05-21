@@ -41,10 +41,10 @@ export function CustomerCard({ user }: CustomerCardProps) {
   const status = statusConfig[user.status] || statusConfig.ACTIVE;
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+    <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-[0_4px_20px_rgba(15,23,42,0.03)]">
       <div className="p-6 text-center border-b border-slate-100">
         <div className="relative inline-block">
-          <div className="relative h-20 w-20 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-200 mx-auto text-3xl font-bold text-slate-300 overflow-hidden">
+          <div className="relative h-20 w-20 rounded-2xl bg-slate-50 flex items-center justify-center border border-slate-200 mx-auto text-3xl font-semibold text-slate-300 overflow-hidden">
             {user.avatar ? (
               <Image
                 src={getImageUrl(user.avatar)}
@@ -70,17 +70,17 @@ export function CustomerCard({ user }: CustomerCardProps) {
             />
           </div>
         </div>
-        <h2 className="mt-4 text-lg font-bold text-slate-900">
+        <h2 className="mt-4 text-lg font-semibold text-slate-900">
           {user.name || "Chưa đặt tên"}
         </h2>
-        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
+        <p className="text-xs font-semibold text-slate-400 mt-1">
           {ROLE_CONFIG[user.role as Role]?.label ?? user.role}
         </p>
       </div>
 
       <div className="p-5 space-y-4">
         <div className="space-y-3">
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+          <p className="text-xs font-semibold text-slate-400">
             Liên hệ
           </p>
           <div className="flex items-center gap-3 text-sm text-slate-600 font-medium">
@@ -94,7 +94,7 @@ export function CustomerCard({ user }: CustomerCardProps) {
         </div>
 
         <div className="pt-4 border-t border-slate-100 space-y-2.5">
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+          <p className="text-xs font-semibold text-slate-400">
             Tài khoản
           </p>
           <div className="flex items-center justify-between text-xs">
@@ -102,7 +102,7 @@ export function CustomerCard({ user }: CustomerCardProps) {
             <Badge
               variant="outline"
               className={cn(
-                "rounded-md px-1.5 py-0 font-bold text-[10px]",
+                "rounded-lg px-2 py-0.5 font-semibold text-xs",
                 status.color
               )}
             >

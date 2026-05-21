@@ -125,12 +125,12 @@ export function UserSelector({ onSelect }: UserSelectorProps) {
                         {user.fullName || "Chưa đặt tên"}
                       </h4>
                       <div className="flex items-center gap-4 mt-1">
-                        <div className="flex items-center gap-1.5 text-xs font-medium text-slate-500">
+                        <div className="flex items-center gap-1.5 text-sm font-medium text-slate-500">
                           <Mail className="h-3 w-3" />
                           {user.email}
                         </div>
                         {user.phone && (
-                          <div className="flex items-center gap-1.5 text-xs font-medium text-slate-500">
+                          <div className="flex items-center gap-1.5 text-sm font-medium text-slate-500">
                             <Phone className="h-3 w-3" />
                             {user.phone}
                           </div>

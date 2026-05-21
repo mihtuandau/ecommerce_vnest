@@ -143,7 +143,7 @@ export function NotificationsTab() {
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      {/* ── SUB-TABS NAVIGATION ── */}
+      
       <div className="flex gap-1 p-1 bg-brand-ivory/30 rounded-2xl border border-brand-sand/50 w-fit">
         <button
           onClick={() => setActiveSubTab("inbox")}
@@ -274,10 +274,10 @@ export function NotificationsTab() {
           <div className="max-w-2xl">
             <div className="bg-white border border-brand-sand rounded-[24px] overflow-hidden shadow-sm">
               <div className="p-6 border-b border-brand-sand/50">
-                <h3 className="text-[15px] font-bold text-brand-espresso">
+                <h3 className="text-[15px] font-semibold text-brand-espresso">
                   Cấu hình nhận tin
                 </h3>
-                <p className="text-[12px] text-brand-taupe mt-1">
+                <p className="text-[13px] text-brand-taupe mt-1">
                   Chọn loại thông báo bạn muốn nhận qua ứng dụng
                 </p>
               </div>
@@ -289,10 +289,10 @@ export function NotificationsTab() {
                     onClick={() => toggleSetting(n.key as any)}
                   >
                     <div className="pr-8">
-                      <p className="text-[14px] font-bold text-brand-espresso">
+                      <p className="text-[14px] font-semibold text-brand-espresso">
                         {n.title}
                       </p>
-                      <p className="text-[12px] text-brand-taupe mt-0.5">{n.desc}</p>
+                      <p className="text-[13px] text-brand-taupe mt-0.5">{n.desc}</p>
                     </div>
                     <div
                       className={cn(

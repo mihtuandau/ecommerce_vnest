@@ -12,6 +12,7 @@
   import { CreateReviewDto, UpdateReviewDto } from './dto/review.dto';
   import { createClient } from 'redis';
   import { ChatbotService } from '../chatbot/chatbot.service';
+  import sanitizeHtml from 'sanitize-html';
 
   @Injectable()
   export class ReviewService implements OnModuleInit {
@@ -108,7 +109,7 @@
       const validatedImages = await this.validateReviewImages(images || []);
 
       // Sanitize comment to prevent XSS
-      const sanitizedComment = comment ? require('sanitize-html')(comment, {
+      const sanitizedComment = comment ? sanitizeHtml(comment, {
         allowedTags: [], // Strip all tags for simple reviews
         allowedAttributes: {},
       }) : null;
@@ -268,7 +269,7 @@
         throw new BadRequestException('Bạn không có quyền sửa đánh giá này');
       }
 
-      const sanitizedComment = dto.comment !== undefined ? (dto.comment ? require('sanitize-html')(dto.comment, {
+      const sanitizedComment = dto.comment !== undefined ? (dto.comment ? sanitizeHtml(dto.comment, {
         allowedTags: [],
         allowedAttributes: {},
       }) : null) : undefined;

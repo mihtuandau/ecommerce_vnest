@@ -97,7 +97,7 @@ export function ReviewsContainer() {
 
   return (
     <div className="space-y-6">
-      {/* Title Header */}
+      
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-medium tracking-tight text-slate-900 mb-1">
@@ -110,7 +110,7 @@ export function ReviewsContainer() {
         </div>
       </div>
 
-      {/* Specific Review Focused Warning Bar */}
+      
       {highlightId && (
         <div className="bg-amber-50/70 border border-amber-250/30 p-4 rounded-2xl flex items-center justify-between gap-4 animate-fade-in">
           <div className="flex items-center gap-2.5 min-w-0">
@@ -130,10 +130,10 @@ export function ReviewsContainer() {
         </div>
       )}
 
-      {/* Statistics Cards */}
+      
       <ReviewsStats reviews={filteredReviews} total={filteredReviews.length} />
 
-      {/* Search and Filters Toolbar (Only show if not focusing a highlighted ID) */}
+      
       {!highlightId && (
         <ReviewsToolbar
           searchQuery={searchQuery}
@@ -143,7 +143,7 @@ export function ReviewsContainer() {
         />
       )}
 
-      {/* Data Table */}
+      
       <div className="relative">
         <ReviewsTable
           reviews={paginatedReviews}
@@ -156,7 +156,7 @@ export function ReviewsContainer() {
           setPage={setPage}
         />
 
-        {/* Subtle fetching overlay */}
+        
         {isFetching && !isLoading && (
           <div className="absolute top-3 right-3 bg-white/80 backdrop-blur-sm px-2.5 py-1 rounded-full border border-slate-100 flex items-center gap-1.5 shadow-sm">
             <Spinner size="sm" variant="slate" />

@@ -109,7 +109,7 @@ export function PaymentsTable({
         </table>
       </div>
 
-      {/* Pagination Footer */}
+      
       {totalPages > 1 && (
         <div className="px-6 py-4 border-t border-slate-100 flex items-center justify-between">
           <span className="text-xs text-slate-455 font-bold">

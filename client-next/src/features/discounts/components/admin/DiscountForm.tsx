@@ -132,24 +132,24 @@ export function DiscountForm({ initialData, onSubmit, isLoading }: DiscountFormP
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-8">
         <Tabs defaultValue="general" className="w-full">
-          {/* Professional Tab Navigation */}
+          
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 border-b border-slate-200 pb-1 mb-8">
             <TabsList className="bg-transparent h-auto p-0 flex gap-10">
               <TabsTrigger
                 value="general"
-                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-1 pb-4 text-slate-500 data-[state=active]:text-slate-900 font-bold text-[15px] transition-all"
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-1 pb-4 text-slate-500 data-[state=active]:text-slate-900 font-semibold text-[14px] transition-all"
               >
                 Cấu hình & Mức giảm
               </TabsTrigger>
               <TabsTrigger
                 value="rules"
-                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-1 pb-4 text-slate-500 data-[state=active]:text-slate-900 font-bold text-[15px] transition-all"
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-1 pb-4 text-slate-500 data-[state=active]:text-slate-900 font-semibold text-[14px] transition-all"
               >
                 Điều kiện & Thời gian
               </TabsTrigger>
               <TabsTrigger
                 value="scope"
-                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-1 pb-4 text-slate-500 data-[state=active]:text-slate-900 font-bold text-[15px] transition-all"
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-1 pb-4 text-slate-500 data-[state=active]:text-slate-900 font-semibold text-[14px] transition-all"
               >
                 Sản phẩm áp dụng
               </TabsTrigger>
@@ -160,7 +160,7 @@ export function DiscountForm({ initialData, onSubmit, isLoading }: DiscountFormP
                 type="button"
                 variant="outline"
                 size="sm"
-                className="h-10 px-5 rounded-xl font-bold text-xs hover:bg-slate-50"
+                className="h-10 px-5 rounded-xl font-semibold text-xs hover:bg-slate-50"
                 onClick={() => router.back()}
               >
                 Hủy
@@ -169,7 +169,7 @@ export function DiscountForm({ initialData, onSubmit, isLoading }: DiscountFormP
                 type="submit"
                 size="sm"
                 disabled={isLoading}
-                className="h-10 px-6 rounded-xl font-bold text-xs shadow-lg shadow-primary/10"
+                className="h-10 px-6 rounded-xl font-semibold text-xs shadow-lg shadow-primary/10"
               >
                 {isLoading ? (
                   <Spinner size="sm" className="mr-2" />
@@ -182,7 +182,7 @@ export function DiscountForm({ initialData, onSubmit, isLoading }: DiscountFormP
           </div>
 
           <div className="max-w-[1200px]">
-            {/* Tab 1: General + Value */}
+            
             <TabsContent
               value="general"
               className="mt-0 space-y-10 animate-in fade-in slide-in-from-bottom-2 duration-300"
@@ -191,7 +191,7 @@ export function DiscountForm({ initialData, onSubmit, isLoading }: DiscountFormP
               <ValueSection form={form} />
             </TabsContent>
 
-            {/* Tab 2: Rules (Usage) */}
+            
             <TabsContent
               value="rules"
               className="mt-0 animate-in fade-in slide-in-from-bottom-2 duration-300"
@@ -199,7 +199,7 @@ export function DiscountForm({ initialData, onSubmit, isLoading }: DiscountFormP
               <UsageSection form={form} />
             </TabsContent>
 
-            {/* Tab 3: Scope */}
+            
             <TabsContent
               value="scope"
               className="mt-0 animate-in fade-in slide-in-from-bottom-2 duration-300"

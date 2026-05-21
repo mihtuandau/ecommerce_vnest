@@ -1,3 +1,5 @@
-// features/auth/components — placeholder barrel
-// LoginForm, RegisterForm, OTPInput will be implemented here
-export {};
+export * from "./LoginForm";
+export * from "./RegisterForm";
+export * from "./ForgotPasswordForm";
+export * from "./ResetPasswordForm";
+export * from "./Verify2FAForm";

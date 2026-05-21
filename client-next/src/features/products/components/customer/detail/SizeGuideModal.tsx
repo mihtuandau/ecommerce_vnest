@@ -60,7 +60,7 @@ export function SizeGuideModal({ isOpen, onClose }: SizeGuideModalProps) {
               </TabsTrigger>
             </TabsList>
 
-            {/* TAB: TOPS */}
+            
             <TabsContent value="tops" className="space-y-4 outline-none">
               <div className="overflow-x-auto rounded-xl border border-brand-ivory">
                 <table className="w-full border-collapse text-left text-[12px]">
@@ -108,7 +108,7 @@ export function SizeGuideModal({ isOpen, onClose }: SizeGuideModalProps) {
               </div>
             </TabsContent>
 
-            {/* TAB: BOTTOMS */}
+            
             <TabsContent value="bottoms" className="space-y-4 outline-none">
               <div className="overflow-x-auto rounded-xl border border-brand-ivory">
                 <table className="w-full border-collapse text-left text-[12px]">
@@ -162,7 +162,7 @@ export function SizeGuideModal({ isOpen, onClose }: SizeGuideModalProps) {
               </div>
             </TabsContent>
 
-            {/* TAB: DRESSES */}
+            
             <TabsContent value="dresses" className="space-y-4 outline-none">
               <div className="overflow-x-auto rounded-xl border border-brand-ivory">
                 <table className="w-full border-collapse text-left text-[12px]">
@@ -206,7 +206,7 @@ export function SizeGuideModal({ isOpen, onClose }: SizeGuideModalProps) {
           </Tabs>
         </div>
 
-        {/* Measuring Guide Notice */}
+        
         <div className="mt-6 bg-[#FAF8F4] border border-brand-ivory rounded-xl p-4 flex gap-3">
           <HelpCircle size={18} className="text-brand-bronze shrink-0 mt-0.5" />
           <div className="space-y-1">

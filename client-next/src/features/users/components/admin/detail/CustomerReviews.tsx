@@ -29,11 +29,11 @@ export function CustomerReviews({ userId }: CustomerReviewsProps) {
 
   if (reviews.length === 0) {
     return (
-      <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
+      <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center shadow-[0_4px_20px_rgba(15,23,42,0.03)]">
         <div className="h-16 w-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
           <Star className="h-8 w-8 text-slate-200" />
         </div>
-        <p className="text-slate-400 font-bold">Khách hàng chưa có đánh giá nào.</p>
+        <p className="text-slate-400 font-semibold">Khách hàng chưa có đánh giá nào.</p>
       </div>
     );
   }
@@ -53,9 +53,9 @@ export function CustomerReviews({ userId }: CustomerReviewsProps) {
           return (
             <div
               key={review.id}
-              className="group bg-white p-5 rounded-sm border border-slate-100 hover:border-slate-200 transition-all duration-200 flex flex-col md:flex-row items-start gap-4"
+              className="group bg-white p-5 rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] flex flex-col md:flex-row items-start gap-4"
             >
-              {/* Product Info */}
+              
               <div className="h-16 w-16 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden shrink-0 relative">
                 {productImgUrl ? (
                   <Image
@@ -72,7 +72,7 @@ export function CustomerReviews({ userId }: CustomerReviewsProps) {
               <div className="flex-1 space-y-2 min-w-0">
                 <div className="flex items-center justify-between gap-4">
                   <div className="min-w-0">
-                    <h4 className="text-sm font-bold text-slate-900 truncate">
+                    <h4 className="text-sm font-semibold text-slate-900 truncate">
                       {review.product?.name}
                     </h4>
                     <div className="flex items-center gap-1.5 mt-0.5">
@@ -91,14 +91,14 @@ export function CustomerReviews({ userId }: CustomerReviewsProps) {
                         ))}
                       </div>
                       <span className="text-slate-300">|</span>
-                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                      <span className="text-xs font-semibold text-slate-400">
                         {new Date(review.createdAt).toLocaleDateString("vi-VN")}
                       </span>
                     </div>
                   </div>
                 </div>
 
-                <p className="text-sm font-medium text-slate-700 leading-relaxed bg-slate-50/50 p-3.5 rounded-sm border border-slate-100/50">
+                <p className="text-sm font-normal text-slate-600 leading-relaxed bg-slate-50 p-3.5 rounded-xl border border-slate-100/50">
                   {review.comment || "Không có nội dung đánh giá"}
                 </p>
 

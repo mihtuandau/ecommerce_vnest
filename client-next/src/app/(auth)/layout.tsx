@@ -3,7 +3,7 @@ import Image from "next/image";
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen flex items-center justify-center relative bg-black overflow-hidden p-4">
-      {/* Full-screen Background Image */}
+      
       <div className="absolute inset-0 z-0">
         <Image
           src="/logoauth.png"
@@ -13,7 +13,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           className="object-cover opacity-100"
           sizes="100vw"
         />
-        {/* Very subtle overlay, NO BLUR */}
+        
         <div className="absolute inset-0 bg-slate-900/5"></div>
       </div>
 

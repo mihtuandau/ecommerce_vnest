@@ -51,7 +51,7 @@ export default function CustomerWarrantyView() {
         </div>
       </div>
 
-      {/* FAQs */}
+      
       <div className="space-y-3">
         <h4 className="text-[11px] text-[#8A7966] uppercase tracking-wider font-semibold">
           Câu hỏi thường gặp về bảo hành

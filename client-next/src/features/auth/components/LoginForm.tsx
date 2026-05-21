@@ -114,12 +114,13 @@ export function LoginForm() {
       {step === AUTH_STEPS.LOGIN ? (
         <form onSubmit={handleLogin} className="space-y-3.5 sm:space-y-4">
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-white/80 ml-1.5 drop-shadow-sm">
+            <label htmlFor="login-email" className="text-xs font-semibold text-white/80 ml-1.5 drop-shadow-sm">
               Email
             </label>
             <div className="relative group">
               <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-white transition-colors" />
               <Input
+                id="login-email"
                 required
                 type="email"
                 placeholder="Nhập địa chỉ email..."
@@ -142,7 +143,7 @@ export function LoginForm() {
 
           <div className="space-y-1.5">
             <div className="flex items-center justify-between ml-1.5">
-              <label className="text-xs font-semibold text-white/80 drop-shadow-sm">
+              <label htmlFor="login-password" className="text-xs font-semibold text-white/80 drop-shadow-sm">
                 Mật khẩu
               </label>
               <Link
@@ -155,6 +156,7 @@ export function LoginForm() {
             <div className="relative group">
               <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-white transition-colors" />
               <Input
+                id="login-password"
                 required
                 type={showPassword ? "text" : "password"}
                 placeholder="••••••••"
@@ -275,10 +277,11 @@ export function LoginForm() {
       ) : (
         <form onSubmit={handleVerify2FA} className="space-y-6">
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-white/80 ml-1.5 drop-shadow-sm">
+            <label htmlFor="login-otp" className="text-xs font-semibold text-white/80 ml-1.5 drop-shadow-sm">
               {AUTH_MESSAGES.OTP_LABEL}
             </label>
             <Input
+              id="login-otp"
               required
               type="text"
               placeholder={AUTH_MESSAGES.OTP_PLACEHOLDER}

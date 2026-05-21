@@ -149,7 +149,18 @@ export function FlashSaleProductCard({
               error("Vui lòng đăng nhập để sử dụng chức năng yêu thích!");
               return;
             }
-            toggleWishlist(product);
+            toggleWishlist({
+              id: String(product.id),
+              variantId: product.variants?.[0]?.id || product.id,
+              name: product.name,
+              price: salePrice,
+              originalPrice: originalPrice || undefined,
+              imageUrl: imageUrl,
+              slug: product.slug,
+              stock: product.stockLimit || 10,
+              categoryId: product.categoryId,
+              categoryName: product.category?.name || "Bộ sưu tập LUXE",
+            });
             if (!isFavorite) success(`Đã thêm ${product.name} vào yêu thích`);
           }}
           className={cn(

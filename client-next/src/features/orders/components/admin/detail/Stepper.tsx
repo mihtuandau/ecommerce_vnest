@@ -129,7 +129,7 @@ export function Stepper({ status, isPending, onUpdateStatus, id }: StepperProps)
       </div>
 
       <div className="flex items-center justify-between gap-4 px-6 py-3 bg-slate-50/50 border-t border-slate-100 no-print">
-        {/* Left Side: Current Status Badge */}
+        
         <div className="flex items-center gap-2">
           <span className="text-[12.5px] font-semibold text-slate-500">
             Trạng thái hiện tại:
@@ -139,7 +139,7 @@ export function Stepper({ status, isPending, onUpdateStatus, id }: StepperProps)
           </span>
         </div>
 
-        {/* Right Side: Action Buttons */}
+        
         <div className="flex items-center gap-2">
           {nextStep ? (
             <button

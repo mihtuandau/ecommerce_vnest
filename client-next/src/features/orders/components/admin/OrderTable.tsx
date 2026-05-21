@@ -3,7 +3,7 @@
 import React from "react";
 import { Order } from "@/types/models";
 import { DataTable } from "@/components/ui/DataTable";
-import { columns } from "./columns";
+import { columns } from "./Columns";
 import { OrderStatus } from "@/types/enums";
 
 interface OrderTableProps {

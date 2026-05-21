@@ -73,21 +73,21 @@ export function ProfileTab({ user }: ProfileTabProps) {
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      {/* Section: Hồ sơ cá nhân */}
+      
       <div className="bg-white border border-brand-sand rounded-2xl overflow-hidden shadow-[0_4px_20px_rgba(61,43,26,0.03)]">
         <div className="px-6 py-5 border-b border-brand-sand/50 flex items-center justify-between">
           <div>
-            <h2 className="text-base font-bold text-brand-espresso flex items-center gap-2.5">
+            <h2 className="text-base font-semibold text-brand-espresso flex items-center gap-2.5">
               <UserIcon size={18} className="text-brand-bronze" /> Hồ sơ cá nhân
             </h2>
-            <p className="text-[12px] text-brand-taupe mt-0.5">
+            <p className="text-[13px] text-brand-taupe mt-0.5">
               Cập nhật ảnh đại diện và thông tin cơ bản của bạn
             </p>
           </div>
         </div>
 
         <div className="p-6 lg:p-8 space-y-10">
-          {/* Avatar Upload */}
+          
           <div className="flex flex-col sm:flex-row items-center gap-6 pb-8 border-b border-brand-sand/40">
             <div className="relative w-24 h-24 rounded-full border-4 border-white shadow-md overflow-hidden bg-brand-ivory shrink-0">
               {user.avatar ? (
@@ -121,50 +121,53 @@ export function ProfileTab({ user }: ProfileTabProps) {
             </div>
           </div>
 
-          {/* Form Grid */}
+          
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <label className="text-[12.5px] font-medium text-brand-espresso">
+              <label htmlFor="profile-name" className="text-sm font-medium text-brand-espresso">
                 Họ và tên <span className="text-red-500">*</span>
               </label>
               <Input
+                id="profile-name"
                 required
                 value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                onChange={(e) => setForm(prev => ({ ...prev, name: e.target.value }))}
                 className="h-11 rounded-xl border-brand-sand focus:border-brand-espresso transition-all bg-white"
               />
             </div>
             <div className="space-y-2">
-              <label className="text-[12.5px] font-medium text-brand-espresso">
+              <label htmlFor="profile-display-name" className="text-sm font-medium text-brand-espresso">
                 Tên hiển thị
               </label>
               <Input
+                id="profile-display-name"
                 value={form.name}
                 readOnly
                 className="h-11 rounded-xl border-brand-sand focus:border-brand-espresso transition-all bg-brand-ivory/20 text-brand-taupe cursor-default"
               />
             </div>
             <div className="space-y-2">
-              <label className="text-[12.5px] font-medium text-brand-espresso">
+              <label htmlFor="profile-birth-date" className="text-sm font-medium text-brand-espresso">
                 Ngày sinh
               </label>
               <Input
+                id="profile-birth-date"
                 type="date"
                 value={form.birthDate}
-                onChange={(e) => setForm({ ...form, birthDate: e.target.value })}
+                onChange={(e) => setForm(prev => ({ ...prev, birthDate: e.target.value }))}
                 className="h-11 rounded-xl border-brand-sand focus:border-brand-espresso transition-all bg-white"
               />
             </div>
             <div className="space-y-2">
-              <label className="text-[12.5px] font-medium text-brand-espresso">
+              <span className="text-sm font-medium text-brand-espresso block">
                 Giới tính
-              </label>
+              </span>
               <div className="grid grid-cols-3 gap-2">
                 {["Nữ", "Nam", "Khác"].map((g) => (
                   <button
                     key={g}
                     type="button"
-                    onClick={() => setForm({ ...form, gender: g })}
+                    onClick={() => setForm(prev => ({ ...prev, gender: g }))}
                     className={cn(
                       "h-11 rounded-xl border text-[13px] font-medium transition-all",
                       form.gender === g
@@ -200,19 +203,20 @@ export function ProfileTab({ user }: ProfileTabProps) {
         </div>
       </div>
 
-      {/* Section: Thông tin liên hệ */}
+      
       <div className="bg-white border border-brand-sand rounded-2xl overflow-hidden shadow-[0_4px_20px_rgba(61,43,26,0.03)]">
         <div className="px-6 py-5 border-b border-brand-sand/50">
-          <h2 className="text-base font-bold text-brand-espresso flex items-center gap-2.5">
+          <h2 className="text-base font-semibold text-brand-espresso flex items-center gap-2.5">
             <ShieldCheck size={18} className="text-brand-bronze" /> Thông tin liên hệ
           </h2>
         </div>
         <div className="p-6 lg:p-8 grid grid-cols-1 sm:grid-cols-2 gap-8">
           <div className="space-y-2">
-            <label className="text-[12.5px] font-medium text-brand-espresso">
+            <label htmlFor="profile-email" className="text-sm font-medium text-brand-espresso">
               Email
             </label>
             <Input
+              id="profile-email"
               value={user.email}
               disabled
               className="h-11 rounded-xl border-brand-sand bg-brand-ivory/20 text-brand-taupe"
@@ -222,13 +226,14 @@ export function ProfileTab({ user }: ProfileTabProps) {
             </p>
           </div>
           <div className="space-y-2">
-            <label className="text-[12.5px] font-medium text-brand-espresso">
+            <label htmlFor="profile-phone" className="text-sm font-medium text-brand-espresso">
               Số điện thoại
             </label>
             <div className="flex gap-2">
               <Input
+                id="profile-phone"
                 value={form.phone}
-                onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                onChange={(e) => setForm(prev => ({ ...prev, phone: e.target.value }))}
                 className="h-11 rounded-xl border-brand-sand focus:border-brand-espresso bg-white flex-1"
               />
               <Button

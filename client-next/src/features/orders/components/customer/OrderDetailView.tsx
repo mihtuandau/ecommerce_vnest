@@ -11,6 +11,15 @@ import { AlertCircle, Clock, RotateCcw } from "lucide-react";
 import { OrderStatus, PaymentStatus } from "@/types/enums";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
+import Image from "next/image";
+import {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/Breadcrumb";
 
 // Sub-components
 import { DetailHeader } from "./detail/DetailHeader";
@@ -24,7 +33,7 @@ import { ReviewModal } from "@/features/reviews/components/customer/ReviewModal"
 import { RequestReturnModal } from "./detail/RequestReturnModal";
 import { ConfirmCancelModal } from "./detail/ConfirmCancelModal";
 import { useQueryClient } from "@tanstack/react-query";
-import { useUpdateReturnStatus } from "@/features/returns/hooks";
+import { useConfirmReturnSent } from "@/features/returns/hooks";
 import { queryKeys } from "@/constants/queryKeys";
 
 export function OrderDetailView() {
@@ -37,8 +46,8 @@ export function OrderDetailView() {
   const [isReturnModalOpen, setIsReturnModalOpen] = useState(false);
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<any>(null);
-  const { mutate: updateReturnStatus, isPending: isUpdatingStatus } =
-    useUpdateReturnStatus();
+  const { mutate: confirmReturnSent, isPending: isConfirmingSent } =
+    useConfirmReturnSent();
 
   const handleReorder = () => {
     if (!order || !order.orderItems) return;
@@ -127,11 +136,44 @@ export function OrderDetailView() {
     order.payment?.status === "PAID" ||
     (order.payment?.status as any) === PaymentStatus.SUCCESS;
   const isCancelled = order.status === OrderStatus.CANCELLED;
+  const latestReturnRequest = (order.returnRequests || []).reduce(
+    (latest: any, current: any) => {
+      if (!latest) return current;
+      const latestTime = new Date(latest.updatedAt || latest.createdAt || 0).getTime();
+      const currentTime = new Date(current.updatedAt || current.createdAt || 0).getTime();
+      return currentTime > latestTime ? current : latest;
+    },
+    null
+  );
 
   return (
     <div className="min-h-screen bg-brand-cream text-brand-espresso pb-20 relative font-sans-brand">
       <div className="no-print">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {/* Breadcrumb Container */}
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-5">
+          <Breadcrumb>
+            <BreadcrumbList className="text-sm font-medium">
+              <BreadcrumbItem>
+                <BreadcrumbLink asChild>
+                  <Link href="/">Trang chủ</Link>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbLink asChild>
+                  <Link href="/orders">Đơn hàng</Link>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>#{order.orderCode}</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </div>
+
+        {/* Main Content Container */}
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-6">
           <DetailHeader
             orderCode={order.orderCode}
             orderId={order.id}
@@ -148,11 +190,8 @@ export function OrderDetailView() {
             }}
             onConfirmReturn={() => {
               try {
-                if (order?.returnRequest?.id) {
-                  updateReturnStatus({
-                    id: order.returnRequest.id,
-                    status: "RETURNING" as any,
-                  });
+                if (latestReturnRequest?.id) {
+                  confirmReturnSent(latestReturnRequest.id);
                 } else {
                   toastError("Không tìm thấy thông tin yêu cầu trả hàng");
                 }
@@ -160,8 +199,8 @@ export function OrderDetailView() {
                 toastError(err.message || "Không thể cập nhật trạng thái hoàn trả");
               }
             }}
-            returnStatus={order.returnRequest?.status}
-            isUpdatingReturn={isUpdatingStatus}
+            returnStatus={latestReturnRequest?.status}
+            isUpdatingReturn={isConfirmingSent}
             statusConfig={ORDER_STATUS_CONFIG}
             order={order}
             isReviewed={order.reviews && order.reviews.length > 0}
@@ -195,46 +234,111 @@ export function OrderDetailView() {
                 </div>
               )}
 
-              {order.returnRequest && (
+              {latestReturnRequest && (
                 <div className="bg-white border border-[#DDD6C8] rounded-2xl p-10 space-y-8 shadow-sm font-sans-brand">
-                  <div className="flex items-center gap-5">
-                    <div className="h-14 w-14 rounded-2xl bg-[#F3EFE8] flex items-center justify-center text-[#8A7966] border border-[#DDD6C8]">
-                      <RotateCcw size={24} />
+                  <div className="flex items-center justify-between gap-5 flex-wrap">
+                    <div className="flex items-center gap-5">
+                      <div className="h-14 w-14 rounded-2xl bg-[#F3EFE8] flex items-center justify-center text-[#8A7966] border border-[#DDD6C8]">
+                        <RotateCcw size={24} />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-bold text-brand-espresso font-serif-brand">
+                          Chi tiết yêu cầu trả hàng
+                        </h3>
+                        <p className="text-xs text-[#8A7966] font-semibold mt-1">
+                          Cập nhật:{" "}
+                          {new Date(
+                            latestReturnRequest?.updatedAt || order.updatedAt
+                          ).toLocaleString("vi-VN")}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="text-lg font-bold text-brand-espresso font-serif-brand">
-                        Chi tiết yêu cầu trả hàng
-                      </h3>
-                      <p className="text-[11px] text-brand-taupe font-bold uppercase tracking-widest mt-1">
-                        Cập nhật:{" "}
-                        {new Date(
-                          order.returnRequest?.updatedAt || order.updatedAt
-                        ).toLocaleString("vi-VN")}
-                      </p>
+                    
+                    <div className="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[#F3EFE8] text-[#8A7966] border border-[#DDD6C8]">
+                      {latestReturnRequest.status === "PENDING" ? "Chờ duyệt" :
+                       latestReturnRequest.status === "APPROVED" ? "Đã duyệt" :
+                       latestReturnRequest.status === "RETURNING" ? "Đang gửi trả" :
+                       latestReturnRequest.status === "RECEIVED" ? "Đã nhận hàng" :
+                       latestReturnRequest.status === "COMPLETED" ? "Hoàn tất" :
+                       latestReturnRequest.status === "REJECTED" ? "Từ chối" : latestReturnRequest.status}
                     </div>
                   </div>
 
+                  {latestReturnRequest.status === "APPROVED" && (
+                    <div className="p-6 bg-indigo-50 border border-indigo-100 rounded-2xl space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
+                      <div className="space-y-1">
+                        <h4 className="text-sm font-bold text-indigo-950">
+                          Yêu cầu trả hàng đã được duyệt!
+                        </h4>
+                        <p className="text-xs text-indigo-800 leading-relaxed font-medium">
+                          Vui lòng đóng gói các sản phẩm cần hoàn trả và gửi hàng về cho shop. Sau khi gửi hàng đi, bạn hãy nhấn nút dưới đây để xác nhận với hệ thống.
+                        </p>
+                      </div>
+                      <Button
+                        disabled={isConfirmingSent}
+                        onClick={() => {
+                          if (latestReturnRequest?.id) {
+                            confirmReturnSent(latestReturnRequest.id);
+                          }
+                        }}
+                        className="rounded-xl h-10 px-5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-sm transition-all"
+                      >
+                        {isConfirmingSent ? "Đang xử lý..." : "Xác nhận đã gửi hàng"}
+                      </Button>
+                    </div>
+                  )}
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-10 pt-8 border-t border-brand-sand">
                     <div className="space-y-3">
-                      <p className="text-[11px] font-bold text-brand-taupe uppercase tracking-widest">
+                      <p className="text-xs font-semibold text-[#8A7966]">
                         Lý do từ bạn
                       </p>
                       <p className="text-sm text-brand-espresso font-medium leading-relaxed italic">
-                        "{order.returnRequest.reason}"
+                        "{latestReturnRequest.reason}"
                       </p>
                     </div>
-                    {order.returnRequest?.adminNote && (
+                    {latestReturnRequest?.adminNote && (
                       <div className="space-y-3">
-                        <p className="text-[11px] font-bold text-brand-bronze uppercase tracking-widest">
+                        <p className="text-xs font-semibold text-[#8A7966]">
                           Phản hồi LUXE
                         </p>
                         <div className="p-5 bg-brand-cream/50 rounded-xl border border-brand-sand">
                           <p className="text-sm text-brand-espresso font-medium leading-relaxed italic">
-                            "{order.returnRequest.adminNote}"
+                            "{latestReturnRequest.adminNote}"
                           </p>
                         </div>
                       </div>
                     )}
+                    
+                    {/* Bằng chứng hình ảnh */}
+                    <div className="space-y-3 col-span-full pt-6 border-t border-brand-sand">
+                      <p className="text-xs font-semibold text-[#8A7966]">
+                        Hình ảnh bằng chứng
+                      </p>
+                      {latestReturnRequest.images && latestReturnRequest.images.length > 0 ? (
+                        <div className="flex flex-wrap gap-3">
+                          {latestReturnRequest.images.map((url: string, index: number) => (
+                            <div
+                              key={index}
+                              className="w-20 h-20 rounded-xl overflow-hidden border border-[#DDD6C8] relative cursor-zoom-in group shadow-sm bg-slate-50"
+                            >
+                              <Image
+                                src={url}
+                                alt={`Evidence ${index + 1}`}
+                                fill
+                                sizes="80px"
+                                className="object-cover group-hover:scale-105 transition-transform duration-300"
+                                onClick={() => window.open(url, "_blank")}
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-xs font-medium text-slate-400 italic">
+                          Không có hình ảnh đính kèm
+                        </p>
+                      )}
+                    </div>
                   </div>
                 </div>
               )}
@@ -296,6 +400,10 @@ export function OrderDetailView() {
         orderId={order.id}
         orderCode={order.orderCode}
         onSuccess={handleReturnSuccess}
+        orderItems={order.orderItems?.map((item: any) => ({
+          id: item.id,
+          quantity: item.quantity,
+        }))}
       />
 
       <ConfirmCancelModal
@@ -328,7 +436,7 @@ export function OrderDetailView() {
         })()}
       />
 
-      {/* DEDICATED PRINT COMPONENT */}
+      
       <PrintInvoice order={order} />
     </div>
   );

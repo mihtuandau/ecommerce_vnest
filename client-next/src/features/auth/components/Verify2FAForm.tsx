@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { useToast } from "@/hooks/useToast";
@@ -12,7 +12,7 @@ import Image from "next/image";
 import { Role } from "@/types/enums";
 import { ROUTES } from "@/constants/routes";
 
-function Verify2FAContent() {
+export function Verify2FAForm() {
   const searchParams = useSearchParams();
   const email = searchParams.get("email") || "";
   const [otpCode, setOtpCode] = useState("");
@@ -59,16 +59,20 @@ function Verify2FAContent() {
           </p>
 
           <form onSubmit={handleVerify} className="space-y-6">
-            <Input
-              required
-              type="text"
-              placeholder="000000"
-              className="h-16 text-center text-3xl tracking-[12px] font-bold rounded-2xl border-brand-sand bg-brand-ivory/10 focus:ring-brand-bronze/20 focus:border-brand-bronze"
-              value={otpCode}
-              onChange={(e) =>
-                setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6))
-              }
-            />
+            <div>
+              <label htmlFor="verify-2fa-otp" className="sr-only">Mã xác thực OTP</label>
+              <Input
+                id="verify-2fa-otp"
+                required
+                type="text"
+                placeholder="000000"
+                className="h-16 text-center text-3xl tracking-[12px] font-bold rounded-2xl border-brand-sand bg-brand-ivory/10 focus:ring-brand-bronze/20 focus:border-brand-bronze"
+                value={otpCode}
+                onChange={(e) =>
+                  setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6))
+                }
+              />
+            </div>
 
             <Button
               type="submit"
@@ -103,19 +107,5 @@ function Verify2FAContent() {
         </div>
       </div>
     </div>
-  );
-}
-
-export default function Verify2FAPage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen flex items-center justify-center">
-          <Spinner />
-        </div>
-      }
-    >
-      <Verify2FAContent />
-    </Suspense>
   );
 }

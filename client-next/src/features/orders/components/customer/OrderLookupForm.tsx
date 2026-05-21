@@ -39,12 +39,13 @@ export function OrderLookupForm() {
         <div className="bg-white border border-slate-100 rounded-2xl p-8 shadow-sm">
           <form onSubmit={handleLookup} className="space-y-6">
             <div className="space-y-2">
-              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">
+              <label htmlFor="lookup-orderCode" className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">
                 Mã đơn hàng
               </label>
               <div className="relative group">
                 <Package className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-blue-600 transition-colors" />
                 <Input
+                  id="lookup-orderCode"
                   placeholder="Ví dụ: ORD-QQ2AW4"
                   value={orderCode}
                   onChange={(e) => setOrderCode(e.target.value.toUpperCase())}
@@ -55,12 +56,13 @@ export function OrderLookupForm() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">
+              <label htmlFor="lookup-contact" className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">
                 Số điện thoại / Email
               </label>
               <div className="relative group">
                 <ShieldCheck className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-blue-600 transition-colors" />
                 <Input
+                  id="lookup-contact"
                   placeholder="Thông tin dùng khi đặt hàng"
                   value={contact}
                   onChange={(e) => setContact(e.target.value)}

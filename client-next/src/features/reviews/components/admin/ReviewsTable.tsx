@@ -75,26 +75,26 @@ export function ReviewsTable({
 
   return (
     <>
-      <div className="w-full overflow-hidden bg-white rounded-2xl border border-slate-200/80 shadow-sm">
+      <div className="w-full overflow-hidden bg-white rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)]">
         <table className="w-full text-left border-collapse table-fixed">
           <thead>
             <tr className="border-b border-slate-200 bg-slate-50/70">
-              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-slate-500 w-[25%] align-middle">
+              <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500 w-[25%] align-middle">
                 Sản phẩm
               </th>
-              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-slate-500 w-[16%] align-middle">
+              <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500 w-[16%] align-middle">
                 Khách hàng
               </th>
-              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-slate-500 w-[12%] align-middle">
+              <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500 w-[12%] align-middle">
                 Điểm số
               </th>
-              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-slate-500 w-[24%] align-middle">
+              <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500 w-[24%] align-middle">
                 Nội dung đánh giá
               </th>
-              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-slate-500 w-[11%] align-middle">
+              <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500 w-[11%] align-middle">
                 Thời gian
               </th>
-              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-slate-500 w-[12%] text-right align-middle">
+              <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500 w-[12%] text-right align-middle">
                 Thao tác
               </th>
             </tr>
@@ -119,7 +119,7 @@ export function ReviewsTable({
 
               return (
                 <tr key={r.id} className="hover:bg-slate-50/30 transition-colors">
-                  {/* Column 1: Sản phẩm */}
+                  
                   <td className="px-6 py-4 align-middle">
                     <div className="flex items-center gap-3">
                       {productImageUrl ? (
@@ -146,7 +146,7 @@ export function ReviewsTable({
                           {product?.name || "Sản phẩm không khả dụng"}
                         </Link>
 
-                        {/* Variant details (size, color) */}
+                        
                         {(size || color) && (
                           <div className="flex flex-wrap items-center gap-1 mt-0.5">
                             {size && (
@@ -175,7 +175,7 @@ export function ReviewsTable({
                     </div>
                   </td>
 
-                  {/* Column 2: Khách hàng */}
+                  
                   <td className="px-6 py-4 align-middle">
                     <span className="text-sm font-semibold text-slate-800 block truncate">
                       {customerName}
@@ -185,7 +185,7 @@ export function ReviewsTable({
                     </span>
                   </td>
 
-                  {/* Column 3: Điểm số */}
+                  
                   <td className="px-6 py-4 align-middle">
                     <div className="flex items-center gap-0.5 bg-amber-50/50 border border-amber-250/30 px-2 py-1 rounded-lg w-fit">
                       <span className="text-xs font-semibold text-amber-700 mr-1">
@@ -204,7 +204,7 @@ export function ReviewsTable({
                     </div>
                   </td>
 
-                  {/* Column 4: Nội dung đánh giá */}
+                  
                   <td className="px-6 py-4 align-middle">
                     <p className="text-sm text-slate-650 leading-relaxed break-words line-clamp-3">
                       {r.comment || (
@@ -213,7 +213,7 @@ export function ReviewsTable({
                         </em>
                       )}
                     </p>
-                    {/* Review Images */}
+                    
                     {r.images && r.images.length > 0 && (
                       <div className="flex flex-wrap gap-1.5 mt-2">
                         {r.images.map((imgObj: any) => {
@@ -242,14 +242,14 @@ export function ReviewsTable({
                     )}
                   </td>
 
-                  {/* Column 5: Thời gian */}
+                  
                   <td className="px-6 py-4 align-middle">
                     <span className="text-xs text-slate-500 block whitespace-nowrap">
                       {dayjs(r.createdAt).format("DD/MM/YYYY · HH:mm")}
                     </span>
                   </td>
 
-                  {/* Column 6: Thao tác (Xóa đánh giá) */}
+                  
                   <td className="px-6 py-4 text-right align-middle">
                     <div className="flex items-center justify-end">
                       {confirmDeleteId === r.id ? (
@@ -292,7 +292,7 @@ export function ReviewsTable({
         </table>
       </div>
 
-      {/* Pagination Footer */}
+      
       {totalPages > 1 && (
         <div className="px-6 py-4 flex items-center justify-between">
           <span className="text-xs text-slate-455">
@@ -321,7 +321,7 @@ export function ReviewsTable({
         </div>
       )}
 
-      {/* Premium Lightbox Modal */}
+      
       {activeZoomImage && (
         <div
           className="fixed inset-0 bg-black/85 z-[99999] flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in"

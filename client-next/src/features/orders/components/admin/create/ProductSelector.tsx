@@ -89,7 +89,7 @@ export function ProductSelector({ onSelect }: ProductSelectorProps) {
       </DialogTrigger>
       <DialogContent className="max-w-5xl h-[85vh] flex flex-col p-0 overflow-hidden border-none rounded-3xl shadow-2xl">
         <div className="flex h-full">
-          {/* Sidebar: Categories */}
+          
           <div className="w-64 bg-slate-50 border-r border-slate-200 flex flex-col">
             <div className="p-6">
               <h3 className="font-black text-slate-900 uppercase tracking-tighter text-sm flex items-center gap-2">
@@ -137,7 +137,7 @@ export function ProductSelector({ onSelect }: ProductSelectorProps) {
             </div>
           </div>
 
-          {/* Main Content: Search & Grid */}
+          
           <div className="flex-1 flex flex-col bg-white">
             <DialogHeader className="p-6 border-b border-slate-100">
               <DialogTitle className="sr-only">Duyệt sản phẩm</DialogTitle>
@@ -230,10 +230,10 @@ export function ProductSelector({ onSelect }: ProductSelectorProps) {
                                 );
                               }}
                             >
-                              <span className="text-[10px] font-black text-slate-900 uppercase leading-none mb-1 text-center">
+                              <span className="text-xs font-black text-slate-900 uppercase leading-none mb-1 text-center">
                                 {variant.size} {variant.color && `• ${variant.color}`}
                               </span>
-                              <span className="text-[10px] font-bold text-primary">
+                              <span className="text-xs font-bold text-primary">
                                 {formatCurrency(variant.price)}
                               </span>
                               <div className="absolute bottom-0 right-0 bg-slate-100 px-1 text-[8px] font-bold text-slate-400 rounded-tl-md">

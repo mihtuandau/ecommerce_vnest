@@ -96,7 +96,7 @@ export function NotificationsContainer() {
         </p>
       </div>
 
-      {/* Toolbar tabs & action buttons */}
+      
       <NotificationsToolbar
         filterType={filterType}
         setFilterType={setFilterType}
@@ -108,7 +108,7 @@ export function NotificationsContainer() {
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Notifications List Card */}
+        
         <NotificationsList
           filteredNotifications={filteredNotifications}
           isLoading={isLoading}
@@ -118,7 +118,7 @@ export function NotificationsContainer() {
           setPage={setPage}
         />
 
-        {/* Preferences Panel */}
+        
         <NotificationsPreferences
           settings={{
             orderStatus: settings.orderStatus ?? true,

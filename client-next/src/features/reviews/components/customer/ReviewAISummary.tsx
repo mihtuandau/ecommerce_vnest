@@ -41,10 +41,10 @@ export function ReviewAISummary({ productId }: ReviewAISummaryProps) {
 
   return (
     <div className="relative bg-white border border-slate-200 border-l-4 border-l-primary rounded-xl overflow-hidden mb-12 shadow-sm group hover:shadow-md transition-all">
-      {/* Background Magic Glow - very subtle */}
+      
       <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl" />
 
-      {/* Header */}
+      
       <div className="flex items-center gap-3 p-5 border-b border-slate-100 bg-slate-50/50">
         <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
           <Sparkles size={18} className="fill-primary/10" />
@@ -62,7 +62,7 @@ export function ReviewAISummary({ productId }: ReviewAISummaryProps) {
         ) : (
           <div className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {/* Pros Section */}
+              
               <div className="space-y-4">
                 <div className="flex items-center gap-2 text-emerald-600">
                   <CheckCircle2 size={16} />
@@ -83,7 +83,7 @@ export function ReviewAISummary({ productId }: ReviewAISummaryProps) {
                 </ul>
               </div>
 
-              {/* Cons Section */}
+              
               <div className="space-y-4">
                 <div className="flex items-center gap-2 text-amber-600">
                   <AlertCircle size={16} />
@@ -105,7 +105,7 @@ export function ReviewAISummary({ productId }: ReviewAISummaryProps) {
               </div>
             </div>
 
-            {/* Verdict Box */}
+            
             <div className="relative p-6 bg-primary/[0.02] rounded-xl border border-primary/5 border-l-2 border-l-primary">
               <div className="flex items-start gap-4">
                 <Quote size={20} className="text-primary shrink-0 opacity-30" />

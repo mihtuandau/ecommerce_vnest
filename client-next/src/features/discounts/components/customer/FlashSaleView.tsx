@@ -87,7 +87,7 @@ export function FlashSaleView() {
       />
 
       <main className="max-w-[1440px] mx-auto px-12 py-10">
-        {/* Filter Row */}
+        
         <div className="flex flex-col sm:flex-row items-center justify-between gap-6 mb-10">
           <div className="flex items-center gap-2 flex-wrap flex-1">
             <button

@@ -186,7 +186,7 @@ export const HeaderSearch = React.memo(function HeaderSearch({
         </div>
       </form>
 
-      {/* ── LIVE SEARCH DROPDOWN ── */}
+      
       {showLiveSearch && (
         <div
           className={cn(
@@ -195,7 +195,7 @@ export const HeaderSearch = React.memo(function HeaderSearch({
           )}
         >
           <div className="p-2">
-            {/* Quick Match Categories/Brands */}
+            
             {(categories?.some((c) =>
               c.name.toLowerCase().includes(searchQuery.toLowerCase())
             ) ||
@@ -249,7 +249,7 @@ export const HeaderSearch = React.memo(function HeaderSearch({
               </div>
             )}
 
-            {/* Product Results */}
+            
             <div className="p-1">
               <p className="text-xs font-medium text-primary mb-3 px-3">
                 Sản phẩm phù hợp

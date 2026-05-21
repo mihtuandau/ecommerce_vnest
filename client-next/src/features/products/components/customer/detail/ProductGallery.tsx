@@ -38,7 +38,7 @@ export const ProductGallery = React.memo(function ProductGallery({
 
   return (
     <div className="flex flex-col-reverse md:flex-row gap-6 items-start">
-      {/* Thumbnails */}
+      
       <div className="flex md:flex-col gap-3 w-full md:w-20 shrink-0 overflow-x-auto md:overflow-y-auto scrollbar-hide pb-2 md:pb-0">
         {images?.map((img, i) => (
           <button
@@ -62,7 +62,7 @@ export const ProductGallery = React.memo(function ProductGallery({
         ))}
       </div>
 
-      {/* Main Image */}
+      
       <div
         className="flex-1 relative aspect-square w-full overflow-hidden flex items-center justify-center bg-white rounded-[2rem] cursor-zoom-in group"
         onClick={() => setIsPreviewOpen(true)}
@@ -81,7 +81,7 @@ export const ProductGallery = React.memo(function ProductGallery({
         </div>
       </div>
 
-      {/* Image Preview Modal */}
+      
       <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
         <DialogContent
           hideCloseButton

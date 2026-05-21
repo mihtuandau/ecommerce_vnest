@@ -36,7 +36,7 @@ export function ReviewsTab() {
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="bg-white border border-brand-sand rounded-2xl overflow-hidden shadow-[0_4px_20px_rgba(61,43,26,0.03)]">
         <div className="px-6 py-5 border-b border-brand-sand/50">
-          <h2 className="text-base font-bold text-brand-espresso flex items-center gap-2.5">
+          <h2 className="text-base font-semibold text-brand-espresso flex items-center gap-2.5">
             <MessageCircle size={18} className="text-brand-bronze" /> Đánh giá của tôi
           </h2>
         </div>
@@ -53,7 +53,7 @@ export function ReviewsTab() {
               <div className="w-16 h-16 bg-brand-ivory rounded-full flex items-center justify-center mx-auto opacity-50">
                 <Star size={32} className="text-brand-taupe" />
               </div>
-              <h3 className="text-lg font-bold text-brand-espresso font-serif">
+              <h3 className="text-lg font-semibold text-brand-espresso font-serif">
                 Bạn chưa có đánh giá nào
               </h3>
               <p className="text-sm text-brand-taupe max-w-sm mx-auto">
@@ -62,7 +62,7 @@ export function ReviewsTab() {
               </p>
               <Button
                 onClick={() => router.push("/shop")}
-                className="rounded-full h-10 px-8 text-[12px] font-bold bg-brand-espresso text-white transition-all hover:scale-105 active:scale-95"
+                className="rounded-full h-10 px-8 text-sm font-semibold bg-brand-espresso text-white transition-all hover:scale-105 active:scale-95"
               >
                 Đi đến cửa hàng
               </Button>
@@ -100,7 +100,7 @@ export function ReviewsTab() {
                       <div>
                         <Link
                           href={`/product/${review.product?.slug}`}
-                          className="text-sm font-bold text-brand-espresso hover:text-brand-bronze transition-colors flex items-center gap-1.5"
+                          className="text-sm font-semibold text-brand-espresso hover:text-brand-bronze transition-colors flex items-center gap-1.5"
                         >
                           {review.product?.name || "Sản phẩm đã xóa"}
                           <ExternalLink

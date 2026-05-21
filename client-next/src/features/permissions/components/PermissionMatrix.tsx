@@ -24,17 +24,17 @@ export function PermissionMatrix({
   onClearAll,
 }: PermissionMatrixProps) {
   return (
-    <Card className="border-slate-100 shadow-sm rounded-2xl overflow-hidden font-sans">
+    <Card className="border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] rounded-2xl overflow-hidden font-sans">
       <CardHeader className="border-b border-slate-50 bg-white">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-base font-bold text-slate-900">
+          <CardTitle className="text-base font-semibold text-slate-900">
             Danh sách quyền hạn
           </CardTitle>
           <div className="flex items-center gap-2">
             <Button
               variant="ghost"
               size="sm"
-              className="h-8 text-[10px] font-bold uppercase text-slate-400 hover:text-primary"
+              className="h-8 text-xs font-semibold text-slate-600 hover:text-primary"
               onClick={onSelectAll}
             >
               Chọn hết
@@ -42,7 +42,7 @@ export function PermissionMatrix({
             <Button
               variant="ghost"
               size="sm"
-              className="h-8 text-[10px] font-bold uppercase text-slate-400 hover:text-destructive"
+              className="h-8 text-xs font-semibold text-slate-500 hover:text-destructive "
               onClick={onClearAll}
             >
               Hủy hết
@@ -55,7 +55,7 @@ export function PermissionMatrix({
           {Object.entries(groupedPermissions).map(([group, perms]) => (
             <div key={group} className="p-6 space-y-4">
               <div className="flex items-center gap-2">
-                <span className="text-xs font-bold uppercase tracking-widest text-slate-900">
+                <span className="text-sm font-semibold text-slate-900">
                   {PERMISSION_GROUPS[group]?.label || group}
                 </span>
                 <div className="h-px flex-1 bg-slate-50" />
@@ -92,13 +92,13 @@ export function PermissionMatrix({
                       <div className="flex-1 min-w-0">
                         <p
                           className={cn(
-                            "text-xs font-bold truncate",
+                            "text-sm font-semibold truncate",
                             isOn ? "text-slate-900" : "text-slate-500"
                           )}
                         >
                           {ACTION_LABELS[action] || action}
                         </p>
-                        <p className="text-[10px] text-slate-400 font-medium truncate">
+                        <p className="text-xs text-slate-400 font-medium truncate">
                           {perm.description || perm.name}
                         </p>
                       </div>

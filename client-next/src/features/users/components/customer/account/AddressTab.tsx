@@ -79,14 +79,14 @@ export function AddressTab() {
   }, []);
 
   const handleProvinceChange = (provinceId: string) => {
-    setNewAddress({ ...newAddress, provinceId, districtId: "", wardCode: "" });
+    setNewAddress(prev => ({ ...prev, provinceId, districtId: "", wardCode: "" }));
     shippingApi
       .getDistricts(Number(provinceId))
       .then((res) => setDistricts(res.data || []));
   };
 
   const handleDistrictChange = (districtId: string) => {
-    setNewAddress({ ...newAddress, districtId, wardCode: "" });
+    setNewAddress(prev => ({ ...prev, districtId, wardCode: "" }));
     shippingApi.getWards(Number(districtId)).then((res) => setWards(res.data || []));
   };
 
@@ -275,13 +275,13 @@ export function AddressTab() {
                   </div>
 
                   <div className="space-y-1 mb-4">
-                    <p className="text-[14.5px] font-bold text-brand-espresso">
+                    <p className="text-[15px] font-semibold text-brand-espresso">
                       {address.fullName}
                     </p>
-                    <p className="text-[12.5px] text-brand-taupe font-medium flex items-center gap-1.5">
+                    <p className="text-[13px] text-brand-taupe font-medium flex items-center gap-1.5">
                       <Phone size={13} className="opacity-70" /> {address.phone}
                     </p>
-                    <p className="text-[13px] text-brand-espresso leading-relaxed pt-1">
+                    <p className="text-sm text-brand-espresso leading-relaxed pt-1">
                       {address.street}, {address.ward}, {address.city}, {address.state}
                     </p>
                   </div>
@@ -330,7 +330,7 @@ export function AddressTab() {
         </div>
       </div>
 
-      {/* Add Address Modal */}
+      
       <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
         <DialogContent className="sm:max-w-[550px] rounded-[32px] p-0 overflow-hidden border-none shadow-2xl">
           <DialogHeader className="px-10 py-8 bg-brand-ivory/30 border-b border-brand-sand/50">
@@ -342,29 +342,31 @@ export function AddressTab() {
             <div className="p-10 space-y-6">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-[12.5px] font-medium text-brand-espresso">
+                  <label htmlFor="add-fullName" className="text-sm font-medium text-brand-espresso">
                     Tên người nhận
                   </label>
                   <Input
+                    id="add-fullName"
                     required
                     placeholder="VD: Nguyễn Văn A"
                     value={newAddress.fullName}
                     onChange={(e) =>
-                      setNewAddress({ ...newAddress, fullName: e.target.value })
+                      setNewAddress(prev => ({ ...prev, fullName: e.target.value }))
                     }
                     className="h-11 rounded-xl border-brand-sand"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[12.5px] font-medium text-brand-espresso">
+                  <label htmlFor="add-phone" className="text-sm font-medium text-brand-espresso">
                     Số điện thoại
                   </label>
                   <Input
+                    id="add-phone"
                     required
                     placeholder="VD: 0912..."
                     value={newAddress.phone}
                     onChange={(e) =>
-                      setNewAddress({ ...newAddress, phone: e.target.value })
+                      setNewAddress(prev => ({ ...prev, phone: e.target.value }))
                     }
                     className="h-11 rounded-xl border-brand-sand"
                   />
@@ -405,7 +407,7 @@ export function AddressTab() {
                 <Select
                   value={newAddress.wardCode}
                   onValueChange={(val) =>
-                    setNewAddress({ ...newAddress, wardCode: val })
+                    setNewAddress(prev => ({ ...prev, wardCode: val }))
                   }
                   disabled={!newAddress.districtId}
                 >
@@ -422,15 +424,16 @@ export function AddressTab() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <label className="text-[12.5px] font-medium text-brand-espresso">
+                <label htmlFor="add-street" className="text-sm font-medium text-brand-espresso">
                   Địa chỉ cụ thể
                 </label>
                 <Input
+                  id="add-street"
                   required
                   placeholder="Số nhà, tên đường..."
                   value={newAddress.street}
                   onChange={(e) =>
-                    setNewAddress({ ...newAddress, street: e.target.value })
+                    setNewAddress(prev => ({ ...prev, street: e.target.value }))
                   }
                   className="h-11 rounded-xl border-brand-sand"
                 />
@@ -440,7 +443,7 @@ export function AddressTab() {
                   id="isDefault"
                   checked={newAddress.isDefault}
                   onCheckedChange={(checked) =>
-                    setNewAddress({ ...newAddress, isDefault: !!checked })
+                    setNewAddress(prev => ({ ...prev, isDefault: !!checked }))
                   }
                 />
                 <label
@@ -476,7 +479,7 @@ export function AddressTab() {
         </DialogContent>
       </Dialog>
 
-      {/* Edit Address Modal */}
+      
       <Dialog
         open={isEditModalOpen}
         onOpenChange={(open) => {
@@ -506,29 +509,31 @@ export function AddressTab() {
             <div className="p-10 space-y-6">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-[12.5px] font-medium text-brand-espresso">
+                  <label htmlFor="edit-fullName" className="text-sm font-medium text-brand-espresso">
                     Tên người nhận
                   </label>
                   <Input
+                    id="edit-fullName"
                     required
                     placeholder="VD: Nguyễn Văn A"
                     value={newAddress.fullName}
                     onChange={(e) =>
-                      setNewAddress({ ...newAddress, fullName: e.target.value })
+                      setNewAddress(prev => ({ ...prev, fullName: e.target.value }))
                     }
                     className="h-11 rounded-xl border-brand-sand"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[12.5px] font-medium text-brand-espresso">
+                  <label htmlFor="edit-phone" className="text-sm font-medium text-brand-espresso">
                     Số điện thoại
                   </label>
                   <Input
+                    id="edit-phone"
                     required
                     placeholder="VD: 0912..."
                     value={newAddress.phone}
                     onChange={(e) =>
-                      setNewAddress({ ...newAddress, phone: e.target.value })
+                      setNewAddress(prev => ({ ...prev, phone: e.target.value }))
                     }
                     className="h-11 rounded-xl border-brand-sand"
                   />
@@ -569,7 +574,7 @@ export function AddressTab() {
                 <Select
                   value={newAddress.wardCode}
                   onValueChange={(val) =>
-                    setNewAddress({ ...newAddress, wardCode: val })
+                    setNewAddress(prev => ({ ...prev, wardCode: val }))
                   }
                   disabled={!newAddress.districtId}
                 >
@@ -586,15 +591,16 @@ export function AddressTab() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <label className="text-[12.5px] font-medium text-brand-espresso">
+                <label htmlFor="edit-street" className="text-sm font-medium text-brand-espresso">
                   Địa chỉ cụ thể
                 </label>
                 <Input
+                  id="edit-street"
                   required
                   placeholder="Số nhà, tên đường..."
                   value={newAddress.street}
                   onChange={(e) =>
-                    setNewAddress({ ...newAddress, street: e.target.value })
+                    setNewAddress(prev => ({ ...prev, street: e.target.value }))
                   }
                   className="h-11 rounded-xl border-brand-sand"
                 />
@@ -604,7 +610,7 @@ export function AddressTab() {
                   id="isDefaultEdit"
                   checked={newAddress.isDefault}
                   onCheckedChange={(checked) =>
-                    setNewAddress({ ...newAddress, isDefault: !!checked })
+                    setNewAddress(prev => ({ ...prev, isDefault: !!checked }))
                   }
                 />
                 <label

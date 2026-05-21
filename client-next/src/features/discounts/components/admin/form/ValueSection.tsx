@@ -24,15 +24,15 @@ export function ValueSection({ form }: ValueSectionProps) {
   const type = form.watch("type");
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+    <div className="bg-white rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] overflow-hidden">
       <div className="p-6 space-y-8">
-        {/* Discount Type Selector - Segmented Control Style */}
+        
         <FormField
           control={form.control}
           name="type"
           render={({ field }) => (
             <FormItem className="space-y-3">
-              <FormLabel className="text-[13px] font-medium text-slate-700">
+              <FormLabel className="text-sm font-semibold text-slate-700">
                 Hình thức ưu đãi
               </FormLabel>
               <FormControl>
@@ -41,7 +41,7 @@ export function ValueSection({ form }: ValueSectionProps) {
                   defaultValue={field.value}
                   className="relative p-1 bg-slate-100/80 rounded-lg grid grid-cols-2 gap-1 border border-slate-200/50 w-full max-w-md"
                 >
-                  {/* Sliding Background */}
+                  
                   <motion.div
                     className="absolute top-1 bottom-1 rounded-md bg-white shadow-sm z-0 border border-slate-200/50"
                     initial={false}
@@ -97,13 +97,13 @@ export function ValueSection({ form }: ValueSectionProps) {
         />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Main Value Input */}
+          
           <FormField
             control={form.control}
             name="value"
             render={({ field }) => (
               <FormItem className="space-y-2">
-                <FormLabel className="text-[13px] font-medium text-slate-700 flex items-center gap-2">
+                <FormLabel className="text-sm font-semibold text-slate-700 flex items-center gap-2">
                   Mức giảm giá
                   <Target size={12} className="text-slate-400" />
                 </FormLabel>
@@ -112,7 +112,7 @@ export function ValueSection({ form }: ValueSectionProps) {
                     <Input
                       type="number"
                       placeholder="0"
-                      className="h-10 rounded-md border-slate-200 bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-50/50 font-medium text-[15px] pl-3 pr-10 text-slate-900 transition-all shadow-sm"
+                      className="h-11 rounded-xl border-slate-200 bg-white focus:border-slate-400 focus:ring-4 focus:ring-slate-100/50 font-medium text-sm pl-3 pr-10 text-slate-900 transition-all duration-200 shadow-sm"
                       {...field}
                     />
                     <div className="absolute right-3 top-1/2 -translate-y-1/2 font-semibold text-slate-400 text-[13px]">
@@ -125,13 +125,13 @@ export function ValueSection({ form }: ValueSectionProps) {
             )}
           />
 
-          {/* Min Order Amount */}
+          
           <FormField
             control={form.control}
             name="minOrderAmount"
             render={({ field }) => (
               <FormItem className="space-y-2">
-                <FormLabel className="text-[13px] font-medium text-slate-700">
+                <FormLabel className="text-sm font-semibold text-slate-700">
                   Đơn hàng tối thiểu
                 </FormLabel>
                 <FormControl>
@@ -139,7 +139,7 @@ export function ValueSection({ form }: ValueSectionProps) {
                     <Input
                       type="number"
                       placeholder="0"
-                      className="h-10 rounded-md border-slate-200 bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-50/50 font-medium text-[15px] pl-3 pr-10 text-slate-900 transition-all shadow-sm"
+                      className="h-11 rounded-xl border-slate-200 bg-white focus:border-slate-400 focus:ring-4 focus:ring-slate-100/50 font-medium text-sm pl-3 pr-10 text-slate-900 transition-all duration-200 shadow-sm"
                       {...field}
                     />
                     <div className="absolute right-3 top-1/2 -translate-y-1/2 font-semibold text-slate-400 text-[13px]">
@@ -155,7 +155,7 @@ export function ValueSection({ form }: ValueSectionProps) {
             )}
           />
 
-          {/* Max Discount (Conditional) */}
+          
           <AnimatePresence mode="wait">
             {type === "PERCENTAGE" && (
               <motion.div
@@ -169,7 +169,7 @@ export function ValueSection({ form }: ValueSectionProps) {
                   name="maxDiscountAmount"
                   render={({ field }) => (
                     <FormItem className="space-y-2 pt-2">
-                      <FormLabel className="text-[13px] font-medium text-slate-700">
+                      <FormLabel className="text-sm font-semibold text-slate-700">
                         Giới hạn mức giảm tối đa
                       </FormLabel>
                       <FormControl>
@@ -177,7 +177,7 @@ export function ValueSection({ form }: ValueSectionProps) {
                           <Input
                             type="number"
                             placeholder="Không giới hạn"
-                            className="h-10 rounded-md border-slate-200 bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-50/50 font-medium text-[15px] pl-3 pr-10 text-slate-900 transition-all shadow-sm"
+                            className="h-11 rounded-xl border-slate-200 bg-white focus:border-slate-400 focus:ring-4 focus:ring-slate-100/50 font-medium text-sm pl-3 pr-10 text-slate-900 transition-all duration-200 shadow-sm"
                             {...field}
                           />
                           <div className="absolute right-3 top-1/2 -translate-y-1/2 font-semibold text-slate-400 text-[13px]">
@@ -194,7 +194,7 @@ export function ValueSection({ form }: ValueSectionProps) {
           </AnimatePresence>
         </div>
 
-        {/* Admin Tip Section */}
+        
         <div className="bg-blue-50/30 p-4 rounded-lg border border-blue-100/50 flex gap-3 items-start mt-4">
           <div className="p-1.5 bg-white rounded-md border border-blue-100 shadow-sm shrink-0">
             <Info className="h-3.5 w-3.5 text-blue-500" />

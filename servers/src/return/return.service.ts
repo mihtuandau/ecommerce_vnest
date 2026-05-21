@@ -23,6 +23,7 @@ export class ReturnService {
       include: { 
         orderItems: {
           include: { 
+            variant: true,
             returnItems: {
               include: { returnRequest: true }
             } 
@@ -62,7 +63,7 @@ export class ReturnService {
       await tx.order.update({
         where: { id: dto.orderId },
         data: {
-          status: OrderStatus.RETURN_REQUESTED,
+          returnStatus: ReturnStatus.PENDING,
           statusHistory: {
             push: {
               status: OrderStatus.RETURN_REQUESTED,
@@ -84,6 +85,7 @@ export class ReturnService {
       include: { 
         orderItems: {
           include: { 
+            variant: true,
             returnItems: {
               include: { returnRequest: true }
             } 
@@ -134,7 +136,7 @@ export class ReturnService {
       await tx.order.update({
         where: { id: order.id },
         data: {
-          status: OrderStatus.RETURN_REQUESTED,
+          returnStatus: ReturnStatus.PENDING,
           statusHistory: {
             push: {
               status: OrderStatus.RETURN_REQUESTED,
@@ -286,6 +288,12 @@ export class ReturnService {
         include: { returnItems: { include: { orderItem: { include: { variant: true } } } } }
       });
 
+      // Cập nhật returnStatus trên Order tương ứng với trạng thái mới của yêu cầu trả hàng
+      await tx.order.update({
+        where: { id: request.orderId },
+        data: { returnStatus: dto.status }
+      });
+
       // 1. Khi Shop nhận được hàng (RECEIVED): Hoàn lại tồn kho cho các món trong yêu cầu này
       if (dto.status === ReturnStatus.RECEIVED && request.status !== ReturnStatus.RECEIVED && request.status !== ReturnStatus.COMPLETED) {
         for (const rItem of updatedRequest.returnItems) {
@@ -334,12 +342,14 @@ export class ReturnService {
             where: { id: request.orderId },
             data: {
               status: OrderStatus.RETURNED,
+              returnStatus: ReturnStatus.COMPLETED,
+              refundedAmount: { increment: request.refundAmount },
               statusHistory: {
                 push: {
                   status: OrderStatus.RETURNED,
                   changedAt: new Date(),
                   changedBy: actorId,
-                  note: `Hoàn tất trả hàng toàn bộ đơn hàng.`,
+                  note: `Hoàn tất trả hàng toàn bộ đơn hàng (Hoàn tiền: ${request.refundAmount.toLocaleString('vi-VN')}đ).`,
                 },
               }
             }
@@ -350,12 +360,14 @@ export class ReturnService {
           await tx.order.update({
             where: { id: request.orderId },
             data: {
+              returnStatus: ReturnStatus.COMPLETED,
+              refundedAmount: { increment: request.refundAmount },
               statusHistory: {
                 push: {
                   status: OrderStatus.DELIVERED,
                   changedAt: new Date(),
                   changedBy: actorId,
-                  note: `Hoàn tất trả hàng một phần (Hoàn: ${request.refundAmount}).`,
+                  note: `Hoàn tất trả hàng một phần (Hoàn tiền: ${request.refundAmount.toLocaleString('vi-VN')}đ).`,
                 },
               }
             }
@@ -377,6 +389,28 @@ export class ReturnService {
         order: { select: { orderCode: true, total: true, status: true } }
       },
       orderBy: { createdAt: 'desc' }
+    });
+  }
+
+  async confirmSent(userId: number, id: number) {
+    const request = await this.prisma.returnRequest.findUnique({
+      where: { id },
+      include: { order: true }
+    });
+
+    if (!request) throw new NotFoundException('Không tìm thấy yêu cầu trả hàng');
+
+    if (request.order.userId !== userId) {
+      throw new BadRequestException('Bạn không có quyền thao tác trên yêu cầu trả hàng này');
+    }
+
+    if (request.status !== ReturnStatus.APPROVED) {
+      throw new BadRequestException('Chỉ có thể xác nhận gửi hàng sau khi yêu cầu đã được duyệt');
+    }
+
+    return this.prisma.returnRequest.update({
+      where: { id },
+      data: { status: ReturnStatus.RETURNING }
     });
   }
 

@@ -28,7 +28,7 @@ export function LogsToolbar({
   handleResetFilters,
 }: LogsToolbarProps) {
   return (
-    <Card className="border-slate-100 rounded-2xl shadow-xs bg-white overflow-hidden">
+    <Card className="border border-slate-200 rounded-2xl shadow-[0_4px_20px_rgba(15,23,42,0.03)] bg-white overflow-hidden">
       <CardContent className="p-5 flex flex-col md:flex-row gap-4 items-center justify-between">
         <div className="relative w-full md:max-w-md group flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-indigo-600 transition-colors" />
@@ -44,7 +44,7 @@ export function LogsToolbar({
         </div>
 
         <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
-          {/* Filter by Action */}
+          
           <div className="flex items-center gap-2">
             <Filter className="h-3.5 w-3.5 text-slate-400" />
             <select
@@ -62,7 +62,7 @@ export function LogsToolbar({
             </select>
           </div>
 
-          {/* Filter by Entity */}
+          
           <select
             value={entityName}
             onChange={(e) => {
@@ -86,7 +86,7 @@ export function LogsToolbar({
             <Button
               variant="ghost"
               size="sm"
-              className="h-11 px-4 text-xs font-bold text-slate-500 hover:text-rose-600 rounded-xl hover:bg-rose-50/50 cursor-pointer"
+              className="h-11 px-4 text-xs font-semibold text-slate-500 hover:text-rose-600 rounded-xl hover:bg-rose-50/50 cursor-pointer"
               onClick={handleResetFilters}
             >
               Đặt lại

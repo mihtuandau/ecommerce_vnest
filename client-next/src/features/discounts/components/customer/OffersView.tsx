@@ -53,9 +53,9 @@ function VoucherCard({ voucher }: { voucher: OfferVoucher }) {
         !isActive && "opacity-60 grayscale pointer-events-none"
       )}
     >
-      {/* Left Section */}
+      
       <div className="w-full sm:w-44 shrink-0 bg-slate-50 flex flex-col items-center justify-center py-8 px-4 border-b sm:border-b-0 sm:border-r border-dashed border-slate-200 relative">
-        {/* Simple ticket cutouts */}
+        
         <div className="absolute -right-2 -top-2 w-4 h-4 bg-white rounded-full border border-slate-200 hidden sm:block" />
         <div className="absolute -right-2 -bottom-2 w-4 h-4 bg-white rounded-full border border-slate-200 hidden sm:block" />
 
@@ -68,7 +68,7 @@ function VoucherCard({ voucher }: { voucher: OfferVoucher }) {
         </span>
       </div>
 
-      {/* Right Section */}
+      
       <div className="flex-1 p-6 md:p-8 flex flex-col justify-between">
         <div className="space-y-4">
           <div className="flex items-start justify-between gap-4">
@@ -111,7 +111,7 @@ function VoucherCard({ voucher }: { voucher: OfferVoucher }) {
         </div>
 
         <div className="mt-6 pt-5 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
-          {/* Code Block (No hover shadow/color change) */}
+          
           <div
             onClick={() => copyToClipboard(voucher.code)}
             className="w-full sm:w-auto bg-slate-50 border border-dashed border-slate-200 rounded-xl px-4 py-2.5 flex items-center justify-between sm:justify-start gap-4 cursor-pointer"
@@ -171,7 +171,7 @@ export function OffersView() {
 
   return (
     <div className="min-h-screen bg-white pb-24">
-      {/* ── Minimalist Hero (No decorative SVGs) ── */}
+      
       <section className="bg-primary relative overflow-hidden">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-16 relative z-10">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 md:gap-12">
@@ -208,7 +208,7 @@ export function OffersView() {
         </div>
       </section>
 
-      {/* ── Main Content ── */}
+      
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-16">
         {!vouchers.length ? (
           <div className="py-24 text-center bg-slate-50 rounded-3xl border border-slate-100 border-dashed">

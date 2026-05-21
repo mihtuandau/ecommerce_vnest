@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  Logger,
 } from '@nestjs/common';
 import { DiscountRepository } from './discount.repository';
 import { CreateDiscountDto } from './dto/create-discount.dto';
@@ -10,6 +11,7 @@ import { QueryDiscountDto } from './dto/query-discount.dto';
 
 @Injectable()
 export class DiscountService {
+  private readonly logger = new Logger(DiscountService.name);
   constructor(private repository: DiscountRepository) {}
 
   private mapDiscount(discount: any) {
@@ -203,7 +205,7 @@ export class DiscountService {
       return { isValid: false, message: 'Mã giảm giá đã hết hạn' };
 
     // Kiểm tra giới hạn sử dụng của người dùng (mỗi người dùng 1 lần)
-    console.log(
+    this.logger.debug(
       `[DiscountService] Validating code: ${code} for userId: ${userId}`,
     );
     if (userId) {
@@ -211,7 +213,7 @@ export class DiscountService {
         userId,
         discount.id,
       );
-      console.log(
+      this.logger.debug(
         `[DiscountService] User ${userId} has used discount ${discount.id}: ${hasUsed}`,
       );
       if (hasUsed) {

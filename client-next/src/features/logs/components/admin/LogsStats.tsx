@@ -16,10 +16,10 @@ interface LogsStatsProps {
 export function LogsStats({ stats }: LogsStatsProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
-      <Card className="border-slate-100 rounded-2xl shadow-xs bg-white overflow-hidden hover:shadow-sm transition-all duration-300">
+      <Card className="border border-slate-200 rounded-2xl shadow-[0_4px_20px_rgba(15,23,42,0.03)] bg-white overflow-hidden">
         <CardContent className="p-6 flex items-center justify-between">
           <div className="space-y-1">
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+            <p className="text-[10px] font-semibold text-slate-400 tracking-widest">
               Tổng lượt thao tác
             </p>
             <h3 className="text-2xl font-semibold text-slate-900">{stats.total}</h3>
@@ -30,10 +30,10 @@ export function LogsStats({ stats }: LogsStatsProps) {
         </CardContent>
       </Card>
 
-      <Card className="border-slate-100 rounded-2xl shadow-xs bg-white overflow-hidden hover:shadow-sm transition-all duration-300">
+      <Card className="border border-slate-200 rounded-2xl shadow-[0_4px_20px_rgba(15,23,42,0.03)] bg-white overflow-hidden">
         <CardContent className="p-6 flex items-center justify-between">
           <div className="space-y-1">
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+            <p className="text-[10px] font-semibold text-slate-400 tracking-widest">
               Tạo mới (POST)
             </p>
             <h3 className="text-2xl font-semibold text-emerald-600">{stats.creates}</h3>
@@ -44,10 +44,10 @@ export function LogsStats({ stats }: LogsStatsProps) {
         </CardContent>
       </Card>
 
-      <Card className="border-slate-100 rounded-2xl shadow-xs bg-white overflow-hidden hover:shadow-sm transition-all duration-300">
+      <Card className="border border-slate-200 rounded-2xl shadow-[0_4px_20px_rgba(15,23,42,0.03)] bg-white overflow-hidden">
         <CardContent className="p-6 flex items-center justify-between">
           <div className="space-y-1">
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+            <p className="text-[10px] font-semibold text-slate-400 tracking-widest">
               Cập nhật (PATCH)
             </p>
             <h3 className="text-2xl font-semibold text-indigo-600">{stats.updates}</h3>
@@ -58,10 +58,10 @@ export function LogsStats({ stats }: LogsStatsProps) {
         </CardContent>
       </Card>
 
-      <Card className="border-slate-100 rounded-2xl shadow-xs bg-white overflow-hidden hover:shadow-sm transition-all duration-300">
+      <Card className="border border-slate-200 rounded-2xl shadow-[0_4px_20px_rgba(15,23,42,0.03)] bg-white overflow-hidden">
         <CardContent className="p-6 flex items-center justify-between">
           <div className="space-y-1">
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+            <p className="text-[10px] font-semibold text-slate-400 tracking-widest">
               Xóa bỏ (DELETE)
             </p>
             <h3 className="text-2xl font-semibold text-rose-600">{stats.deletes}</h3>

@@ -26,9 +26,9 @@ export function NotificationsPreferences({
 }: NotificationsPreferencesProps) {
   return (
     <div className="lg:col-span-4 space-y-6">
-      <Card className="border-slate-100 rounded-2xl shadow-sm bg-white overflow-hidden">
+      <Card className="border border-slate-200 rounded-2xl shadow-[0_4px_20px_rgba(15,23,42,0.03)] bg-white overflow-hidden">
         <CardHeader className="border-b border-slate-50">
-          <CardTitle className="text-sm font-bold text-slate-800 flex items-center gap-2">
+          <CardTitle className="text-sm font-semibold text-slate-800 flex items-center gap-2">
             <Settings size={16} className="text-slate-500" />
             Cấu hình thông báo cá nhân
           </CardTitle>
@@ -51,7 +51,7 @@ export function NotificationsPreferences({
                   className="flex items-start justify-between gap-4 p-3 rounded-xl border border-slate-50 hover:bg-slate-50/50 transition-colors"
                 >
                   <div className="space-y-1">
-                    <p className="text-xs font-bold text-slate-800">{option.title}</p>
+                    <p className="text-xs font-semibold text-slate-800">{option.title}</p>
                     <p className="text-[10px] text-slate-400 font-medium">
                       {option.description}
                     </p>
@@ -80,11 +80,11 @@ export function NotificationsPreferences({
         </CardContent>
       </Card>
 
-      {/* Quick instructions widget */}
+      
       <div className="p-5 bg-indigo-50/30 rounded-2xl border border-indigo-100/50 flex gap-3.5 items-start">
         <Info className="h-5 w-5 text-indigo-600 shrink-0 mt-0.5" />
         <div className="space-y-1">
-          <h5 className="text-xs font-bold text-indigo-900">Thông báo tự động</h5>
+          <h5 className="text-xs font-semibold text-indigo-900">Thông báo tự động</h5>
           <p className="text-[10px] leading-relaxed text-indigo-850/80 font-medium">
             Vnest tự động gửi thông báo thời gian thực về thiết bị của nhân viên trực
             qua kết nối WebSocket cao cấp khi có biến động vận hành.

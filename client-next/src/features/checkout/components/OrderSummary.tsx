@@ -63,7 +63,7 @@ export const OrderSummary = React.memo(function OrderSummary({
 
   return (
     <div className="bg-white rounded-[16px] border border-brand-sand overflow-hidden shadow-sm">
-      {/* OS Header */}
+      
       <div className="px-[22px] py-[18px] border-b border-brand-sand flex items-center justify-between">
         <h2 className="text-[17px] font-bold text-primary font-serif">
           Đơn hàng của bạn
@@ -85,7 +85,7 @@ export const OrderSummary = React.memo(function OrderSummary({
         </button>
       </div>
 
-      {/* OS Items */}
+      
       {isExpanded && (
         <div className="px-[22px] py-4 border-b border-brand-sand space-y-5 max-h-[400px] overflow-y-auto animate-in slide-in-from-top-2 duration-300 custom-scrollbar bg-white">
           {(() => {
@@ -95,21 +95,20 @@ export const OrderSummary = React.memo(function OrderSummary({
                 if (!acc[key]) acc[key] = [];
                 acc[key].push(item);
                 return acc;
-              },
-              {}
+              },{}
             );
 
             return Object.entries(groups).map(([key, groupItems]) => (
               <div key={key} className="space-y-2.5">
-                {/* Group Product Name */}
+                
                 <div className="flex items-center gap-2">
                   <div className="w-1 h-3.5 bg-brand-bronze rounded-full" />
-                  <p className="text-[13px] font-bold text-primary font-serif truncate">
+                  <p className="text-[13px] font-semibold text-primary font-serif truncate">
                     {groupItems[0].name}
                   </p>
                 </div>
 
-                {/* Group Variants */}
+                
                 <div className="space-y-2 pl-3">
                   {groupItems.map((item) => (
                     <div
@@ -140,7 +139,7 @@ export const OrderSummary = React.memo(function OrderSummary({
                             </span>
                           )}
                         </div>
-                        <p className="text-[13px] font-bold text-brand-bronze font-serif">
+                        <p className="text-[13px] font-semibold text-brand-bronze font-serif">
                           {formatCurrency(
                             (item.discountedPrice || item.price) * item.quantity
                           )}
@@ -155,14 +154,14 @@ export const OrderSummary = React.memo(function OrderSummary({
         </div>
       )}
 
-      {/* Voucher Modal Toggle */}
+      
       <div className="px-[22px] py-4 border-b border-brand-sand flex items-center justify-between">
-        <span className="text-[13px] font-bold text-primary">Mã giảm giá</span>
+        <span className="text-[13px] font-semibold text-primary">Mã giảm giá</span>
         <button
           type="button"
           onClick={() => setIsVoucherModalOpen(true)}
           className={cn(
-            "text-[12px] font-bold",
+            "text-xs font-semibold",
             appliedDiscount ? "text-emerald-600" : "text-brand-bronze hover:underline"
           )}
         >
@@ -182,7 +181,7 @@ export const OrderSummary = React.memo(function OrderSummary({
         cartTotal={subtotal}
       />
 
-      {/* Pricing Rows */}
+      
       <div className="px-[22px] py-4 border-b border-brand-sand space-y-[10px]">
         <div className="flex justify-between text-[13px]">
           <span className="text-brand-taupe">Tạm tính</span>
@@ -198,7 +197,7 @@ export const OrderSummary = React.memo(function OrderSummary({
           <span className="text-brand-taupe">Vận chuyển</span>
           <span
             className={cn(
-              "text-[13px] font-bold",
+              "text-[13px] font-semibold",
               shippingFee === 0 ? "text-emerald-600" : "text-primary"
             )}
           >
@@ -213,20 +212,20 @@ export const OrderSummary = React.memo(function OrderSummary({
         </div>
       </div>
 
-      {/* Total Section */}
+      
       <div className="px-[22px] py-4">
         <div className="flex justify-between items-baseline mb-1">
-          <span className="text-[15px] font-bold text-primary">Tổng cộng</span>
+          <span className="text-[15px] font-semibold text-primary">Tổng cộng</span>
           <span className="text-[26px] font-bold text-brand-bronze font-serif">
             {formatCurrency(total)}
           </span>
         </div>
-        <p className="text-[11px] text-brand-taupe text-right italic tracking-wider font-bold">
+        <p className="text-[11px] text-brand-taupe text-right italic tracking-wider font-medium">
           Đã bao gồm VAT
         </p>
       </div>
 
-      {/* Submit Button */}
+      
       <div className="px-[22px] pb-[14px]">
         <button
           type="submit"
@@ -244,14 +243,14 @@ export const OrderSummary = React.memo(function OrderSummary({
         </button>
       </div>
 
-      {/* Terms & Badges */}
+      
       <p className="px-[22px] pb-[18px] text-[11px] text-brand-taupe text-center leading-[1.6]">
         Bằng cách đặt hàng, bạn đồng ý với{" "}
-        <a href="#" className="text-brand-bronze hover:underline font-bold">
+        <a href="#" className="text-brand-bronze hover:underline font-semibold">
           Điều khoản dịch vụ
         </a>{" "}
         và{" "}
-        <a href="#" className="text-brand-bronze hover:underline font-bold">
+        <a href="#" className="text-brand-bronze hover:underline font-semibold">
           Chính sách bảo mật
         </a>
         .

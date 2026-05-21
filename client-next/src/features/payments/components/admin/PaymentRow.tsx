@@ -113,7 +113,7 @@ export function PaymentRow({
 
   return (
     <tr className="hover:bg-slate-50/50 transition-colors">
-      {/* Column 1: Mã giao dịch */}
+      
       <td className="px-6 py-4 align-middle">
         <span className="text-[13px] font-bold text-slate-800 tracking-tight block truncate font-mono">
           {p.transactionId || "---"}
@@ -125,31 +125,31 @@ export function PaymentRow({
         )}
       </td>
 
-      {/* Column 2: Đơn hàng */}
+      
       <td className="px-6 py-4 align-middle">
         <span className="text-[13px] font-bold text-slate-900 block font-mono whitespace-nowrap overflow-hidden text-ellipsis">
           #{p.order?.orderCode || p.orderId}
         </span>
       </td>
 
-      {/* Column 3: Khách hàng */}
+      
       <td className="px-6 py-4 align-middle">
         <span className="text-[12.5px] text-slate-700 block font-semibold truncate">
           {customerName}
         </span>
       </td>
 
-      {/* Column 4: Thời gian */}
+      
       <td className="px-6 py-4 align-middle">
         <span className="text-[12px] text-slate-600 block font-medium whitespace-nowrap">
           {dayjs(p.createdAt).format("DD/MM/YYYY · HH:mm")}
         </span>
       </td>
 
-      {/* Column 5: Phương thức */}
+      
       <td className="px-6 py-4 align-middle">{getMethodBadge(p.method)}</td>
 
-      {/* Column 6: Số tiền */}
+      
       <td className="px-6 py-4 align-middle">
         <div className="flex flex-col justify-center">
           <span className="text-[13.5px] font-bold text-slate-900 block whitespace-nowrap">
@@ -163,10 +163,10 @@ export function PaymentRow({
         </div>
       </td>
 
-      {/* Column 7: Trạng thái */}
+      
       <td className="px-6 py-4 align-middle">{getStatusBadge(p.status)}</td>
 
-      {/* Column 8: Thao tác Dropdown Menu */}
+      
       <td className="px-6 py-4 text-right align-middle">
         <div className="flex items-center justify-end">
           <DropdownMenu>

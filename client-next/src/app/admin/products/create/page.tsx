@@ -47,8 +47,8 @@ export default function AdminProductCreatePage() {
 
   return (
     <div className="space-y-6 pb-10 max-w-7xl mx-auto">
-      {/* Header */}
-      {/* Header */}
+      
+      
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <Button
@@ -70,7 +70,7 @@ export default function AdminProductCreatePage() {
         </div>
       </div>
 
-      {/* Form */}
+      
       <div className="w-full">
         <ProductForm onSubmit={handleSubmit} isLoading={isPending} />
       </div>

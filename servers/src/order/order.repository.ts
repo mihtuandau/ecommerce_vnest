@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class OrderRepository {
+  private readonly logger = new Logger(OrderRepository.name);
   constructor(private prisma: PrismaService) {}
 
   private baseInclude = {
@@ -125,7 +126,7 @@ export class OrderRepository {
   async createOrderTransactional(orderData: Prisma.OrderCreateInput, items: any[], discountId?: number, discountUsageLimit?: number) {
     return this.prisma.$transaction(async (tx) => {
       const userId = (orderData.user as any)?.connect?.id;
-      console.log(`[OrderRepository] Processing order for userId: ${userId}, discountId: ${discountId}`);
+      this.logger.debug(`[OrderRepository] Processing order for userId: ${userId}, discountId: ${discountId}`);
 
       // Validate discount usage within transaction (prevents race condition)
       if (discountId) {
@@ -164,7 +165,7 @@ export class OrderRepository {
               OR: OR_conditions,
             },
           });
-          console.log(`[OrderRepository] Per-user/guest usage check for discount ${discountId}: ${userUsage ? 'ALREADY USED' : 'NOT USED'}`);
+          this.logger.debug(`[OrderRepository] Per-user/guest usage check for discount ${discountId}: ${userUsage ? 'ALREADY USED' : 'NOT USED'}`);
           if (userUsage) {
             throw new Error('Bạn đã sử dụng mã giảm giá này rồi');
           }
@@ -172,22 +173,7 @@ export class OrderRepository {
       }
 
       for (const item of items) {
-        // Atomic conditional update: chỉ trừ stock khi stock >= quantity
-        const result = await tx.productVariant.updateMany({
-          where: {
-            id: item.variantId,
-            isActive: true,
-            deletedAt: null,
-            stock: { gte: item.quantity },
-          },
-          data: { stock: { decrement: item.quantity } },
-        });
-
-        if (result.count === 0) {
-          throw new Error('Sản phẩm hết hàng hoặc không đủ số lượng');
-        }
-
-        // 2.5 Check Flash Sale stock limit if applicable
+        // 2.0 Check Flash Sale stock limit TRƯỚC KHI trừ kho (tránh DB write + rollback không cần thiết)
         if (discountId) {
           const discountProduct = await tx.discountProduct.findUnique({
             where: {
@@ -206,6 +192,21 @@ export class OrderRepository {
           }
         }
 
+        // 2.5 Atomic conditional update: chỉ trừ stock khi stock >= quantity
+        const result = await tx.productVariant.updateMany({
+          where: {
+            id: item.variantId,
+            isActive: true,
+            deletedAt: null,
+            stock: { gte: item.quantity },
+          },
+          data: { stock: { decrement: item.quantity } },
+        });
+
+        if (result.count === 0) {
+          throw new Error('Sản phẩm hết hàng hoặc không đủ số lượng');
+        }
+
         // 3. Update Flash Sale soldCount if applicable
         if (discountId) {
           // Increment soldCount specifically for this flash sale item
@@ -222,7 +223,7 @@ export class OrderRepository {
         if (orderData.status === 'DELIVERED') {
           await tx.product.update({
             where: { id: item.productId },
-            data: { soldCount: { increment: item.quantity } }
+            data: { soldCount: { increment: item.quantity } },
           });
         }
       }
@@ -322,7 +323,7 @@ export class OrderRepository {
             where: { id: item.variantId },
             data: { stock: { increment: quantityToRestore } }
           });
-          console.log(`[OrderRepository] Restored ${quantityToRestore} stock for variant ${item.variantId} (Order #${id})`);
+          this.logger.debug(`[OrderRepository] Restored ${quantityToRestore} stock for variant ${item.variantId} (Order #${id})`);
         }
       }
     });
@@ -413,7 +414,7 @@ export class OrderRepository {
         await tx.discountUsage.deleteMany({
           where: { orderId: id }
         });
-        console.log(`[OrderRepository] Restored discount usage for ${order.discountId} (Order #${id})`);
+        this.logger.debug(`[OrderRepository] Restored discount usage for ${order.discountId} (Order #${id})`);
       }
 
       // 5. Update payment status if provided

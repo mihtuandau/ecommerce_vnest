@@ -1,44 +1,85 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { useWishlistStore } from "@/store/useWishlistStore";
-import { useCart } from "@/features/cart/hooks";
-import { useToast } from "@/hooks/useToast";
-import { formatCurrency } from "@/utils/formatCurrency";
-import { Button } from "@/components/ui/Button";
-import { Heart, ShoppingCart, Trash2, ChevronLeft, ShoppingBag } from "lucide-react";
+import React from "react";
+import { useWishlist } from "../hooks/useWishlist";
+import { Home } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Card } from "@/components/ui/Card";
 import { Skeleton } from "@/components/ui/Skeleton";
-import { EmptyState, Price } from "@/components/ui";
+import {
+  EmptyState,
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui";
 
-import Image from "next/image";
+// Highly modular child components
+import { WishlistHeader } from "./WishlistHeader";
+import { PriceAlertBanner } from "./PriceAlertBanner";
+import { CollectionBar } from "./CollectionBar";
+import { WishlistToolbar } from "./WishlistToolbar";
+import { WishlistItemCard } from "./WishlistItemCard";
+import { ShareModal } from "./ShareModal";
+import { CreateCollectionModal } from "./CreateCollectionModal";
+import { QuickAddModal } from "@/features/products/components/customer/cards/QuickAddModal";
 
 export function WishlistView() {
   const router = useRouter();
-  const { items, removeFromWishlist } = useWishlistStore();
-  const { addItem } = useCart();
-  const { success } = useToast();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const {
+    items,
+    mounted,
+    viewMode,
+    setViewMode,
+    sortBy,
+    setSortBy,
+    currentColl,
+    setCurrentColl,
+    discountFilter,
+    setDiscountFilter,
+    customCollections,
+    itemCollections,
+    isShareModalOpen,
+    setIsShareModalOpen,
+    isNewCollModalOpen,
+    setIsNewCollModalOpen,
+    copied,
+    activeCollectionMenuId,
+    setActiveCollectionMenuId,
+    quickAddProduct,
+    setQuickAddProduct,
+    isQuickAddOpen,
+    setIsQuickAddOpen,
+    isAddingToCartMap,
+    discountedItems,
+    filteredItems,
+    handleAddToCart,
+    handleAddAllToCart,
+    handleSaveCollection,
+    handleAssignCollection,
+    handleRemoveFromCollection,
+    getShareLink,
+    handleCopyLink,
+    handleSocialShare,
+    removeFromWishlist,
+    success,
+  } = useWishlist();
 
   if (!mounted) {
     return (
       <div className="min-h-screen bg-brand-cream">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="max-w-6xl  mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="space-y-10">
-            <Skeleton className="h-6 w-40" />
+            <Skeleton className="h-6 w-40 animate-pulse bg-brand-sand/50" />
             <div className="border-b border-brand-sand/50 pb-8 space-y-4">
-              <Skeleton className="h-10 w-64" />
-              <Skeleton className="h-4 w-96" />
+              <Skeleton className="h-10 w-64 animate-pulse bg-brand-sand/50" />
+              <Skeleton className="h-4 w-96 animate-pulse bg-brand-sand/50" />
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
               {[1, 2, 3, 4].map((i) => (
-                <Skeleton key={i} className="aspect-square w-full rounded-2xl" />
+                <Skeleton key={i} className="aspect-square w-full rounded-2xl animate-pulse bg-brand-sand/50" />
               ))}
             </div>
           </div>
@@ -47,144 +88,144 @@ export function WishlistView() {
     );
   }
 
-  const handleAddToCart = (item: any) => {
-    addItem({
-      productId: String(item.id),
-      variantId: String(item.id),
-      name: item.name,
-      price: item.price,
-      imageUrl: item.imageUrl,
-      slug: item.slug,
-      quantity: 1,
-    });
-    success(`Đã thêm ${item.name} vào giỏ hàng`);
-  };
-
   return (
-    <div className="min-h-screen bg-brand-cream font-sans-brand">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
-        <div className="space-y-10">
-          {/* Header & Navigation */}
-          <div className="space-y-6">
-            <button
-              onClick={() => router.back()}
-              className="flex items-center gap-1 text-[13px] text-brand-taupe hover:text-brand-espresso transition-colors group"
-            >
-              <ChevronLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
-              <span className="font-medium">Quay lại</span>
-            </button>
-
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-brand-sand pb-8">
-              <div className="space-y-1">
-                <h1 className="text-2xl md:text-3xl font-bold text-brand-espresso font-serif-brand tracking-tight">
-                  Danh sách{" "}
-                  <em className="italic text-brand-bronze font-medium font-serif-brand">
-                    yêu thích
-                  </em>
-                </h1>
-                <p className="text-brand-taupe text-sm font-medium">
-                  Lưu giữ những sản phẩm bạn quan tâm nhất.
-                </p>
-              </div>
-              <div className="text-[10px] font-bold text-brand-taupe bg-white px-4 py-2 rounded-xl border border-brand-sand w-fit uppercase tracking-widest shadow-sm">
-                <span className="text-brand-espresso font-bold">{items.length}</span>{" "}
-                sản phẩm
-              </div>
-            </div>
-          </div>
-
-          {items.length === 0 ? (
-            <EmptyState
-              icon={Heart}
-              title="Danh sách trống"
-              description="Hãy bắt đầu khám phá và lưu lại những sản phẩm bạn yêu thích nhé!"
-              actionText="Mua sắm ngay"
-              onAction={() => router.push("/shop")}
-            />
-          ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
-              {items.map((item) => (
-                <div
-                  key={item.id}
-                  className="group relative flex flex-col h-full bg-white rounded-2xl border border-brand-sand p-2 transition-all duration-300 hover:shadow-xl hover:shadow-brand-espresso/5"
-                >
-                  {/* Card Actions Overlay */}
-                  <div className="absolute top-4 right-4 z-30">
-                    <Button
-                      onClick={() => removeFromWishlist(item.id)}
-                      variant="outline"
-                      size="icon"
-                      className="h-9 w-9 rounded-full bg-white/90 backdrop-blur-sm shadow-md flex items-center justify-center text-brand-taupe hover:text-red-500 transition-all duration-300 border border-brand-sand/50 shadow-none hover:bg-white"
-                    >
-                      <Trash2 size={15} />
-                    </Button>
-                  </div>
-
-                  {/* ── IMAGE SECTION ── */}
-                  <Link
-                    href={`/shop/${item.slug}`}
-                    className="relative aspect-[4/5] w-full overflow-hidden rounded-xl bg-brand-cream/50 block"
-                  >
-                    <Image
-                      src={item.imageUrl}
-                      alt={item.name}
-                      fill
-                      className="object-contain p-4 group-hover:scale-105 transition-transform duration-700"
-                    />
-                    {item.originalPrice && item.originalPrice > item.price && (
-                      <div className="absolute top-4 left-4 bg-brand-bronze text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm uppercase tracking-widest">
-                        -
-                        {Math.round(
-                          ((item.originalPrice - item.price) / item.originalPrice) * 100
-                        )}
-                        %
-                      </div>
-                    )}
-                  </Link>
-
-                  {/* ── CONTENT SECTION ── */}
-                  <div className="flex-1 flex flex-col py-5 px-3">
-                    <div className="flex flex-col gap-1.5 mb-4">
-                      <Link
-                        href={`/shop/${item.slug}`}
-                        className="text-[14px] font-bold text-brand-espresso hover:text-brand-bronze transition-colors line-clamp-2 leading-snug"
-                      >
-                        {item.name}
-                      </Link>
-                      <Price amount={item.price} originalAmount={item.originalPrice} showBadge size="md" />
-                    </div>
-
-                    <div className="mt-auto">
-                      <Button
-                        onClick={() => handleAddToCart(item)}
-                        className="w-full h-11 rounded-xl bg-brand-espresso hover:bg-brand-espresso/90 text-white text-[12px] font-bold transition-all flex items-center justify-center gap-2"
-                      >
-                        <ShoppingCart size={15} />
-                        Thêm vào giỏ
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Footer Navigation */}
-          {items.length > 0 && (
-            <div className="pt-12 border-t border-brand-sand flex justify-center">
-              <Button
-                variant="ghost"
-                className="text-brand-taupe hover:text-brand-espresso font-bold text-sm transition-colors rounded-full"
-                asChild
-              >
-                <Link href="/shop" className="flex items-center gap-2">
-                  Tiếp tục khám phá <ShoppingBag size={16} />
+    <div className="min-h-screen bg-brand-cream font-sans-brand pb-24">
+      {/* BREADCRUMB BAR */}
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+        <Breadcrumb>
+          <BreadcrumbList className="text-xs font-semibold">
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href="/" className="flex items-center gap-1.5 hover:text-brand-espresso transition-all">
+                  <Home className="h-3.5 w-3.5" />
+                  <span>Trang chủ</span>
                 </Link>
-              </Button>
-            </div>
-          )}
-        </div>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage className="text-brand-espresso font-bold">Yêu thích</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
       </div>
+
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 mt-8 md:mt-12 space-y-8 animate-in fade-in duration-500">
+        {/* HEADER ROW */}
+        <WishlistHeader
+          onShareClick={() => setIsShareModalOpen(true)}
+          onAddAllToCart={handleAddAllToCart}
+        />
+
+        {/* PRICE ALERTS BANNER */}
+        {discountedItems.length > 0 && (
+          <PriceAlertBanner
+            discountedCount={discountedItems.length}
+            discountedNames={discountedItems.slice(0, 3).map((i) => i.name).join(" · ")}
+            onViewDiscountClick={() => setDiscountFilter(true)}
+            onNotifyClick={() => success("🔔 Đã đăng ký nhận thông báo giảm giá thành công!")}
+          />
+        )}
+
+        {/* COLLECTIONS SELECTOR BAR */}
+        <CollectionBar
+          itemsCount={items.length}
+          currentColl={currentColl}
+          discountFilter={discountFilter}
+          customCollections={customCollections}
+          itemCollections={itemCollections}
+          items={items}
+          onSelectColl={(name) => {
+            setCurrentColl(name);
+            setDiscountFilter(false);
+          }}
+          onCreateCollClick={() => setIsNewCollModalOpen(true)}
+        />
+
+        {/* TOOLBAR (DISPLAY COUNT, SORTING, GRID/LIST SWAP) */}
+        <WishlistToolbar
+          filteredCount={filteredItems.length}
+          discountFilter={discountFilter}
+          currentColl={currentColl}
+          sortBy={sortBy}
+          viewMode={viewMode}
+          onResetDiscountFilter={() => setDiscountFilter(false)}
+          onResetCollFilter={() => setCurrentColl("all")}
+          onSortChange={setSortBy}
+          onViewModeChange={setViewMode}
+        />
+
+        {/* PRODUCTS GRID/LIST CONTAINER */}
+        {filteredItems.length === 0 ? (
+          <EmptyState
+            icon={Home}
+            title={discountFilter ? "Không có sản phẩm giảm giá" : "Danh sách trống"}
+            description={
+              discountFilter
+                ? "Không có sản phẩm nào trong danh sách yêu thích đang được giảm giá."
+                : "Hãy lưu lại những món đồ bạn yêu thích để dễ dàng mua sắm sau này nhé."
+            }
+            actionText="Khám phá ngay"
+            onAction={() => router.push("/shop")}
+          />
+        ) : (
+          <div
+            className={viewMode === "grid"
+              ? "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 transition-all duration-300"
+              : "flex flex-col gap-5 transition-all duration-300"
+            }
+          >
+            {filteredItems.map((item) => (
+              <WishlistItemCard
+                key={item.id}
+                item={item}
+                viewMode={viewMode}
+                customCollections={customCollections}
+                itemCollName={itemCollections[item.id]}
+                activeCollectionMenuId={activeCollectionMenuId}
+                onToggleCollectionMenu={setActiveCollectionMenuId}
+                onAssignCollection={handleAssignCollection}
+                onRemoveFromCollection={handleRemoveFromCollection}
+                onRemoveFromWishlist={(id) => {
+                  removeFromWishlist(id);
+                  success(`Đã xóa khỏi danh sách yêu thích`);
+                }}
+                onAddToCart={handleAddToCart}
+                isAddingToCart={isAddingToCartMap[item.id] || false}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* MODALS */}
+      <ShareModal
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        shareLink={getShareLink()}
+        copied={copied}
+        onCopy={handleCopyLink}
+        onSocialShare={handleSocialShare}
+      />
+
+      <CreateCollectionModal
+        isOpen={isNewCollModalOpen}
+        onClose={() => setIsNewCollModalOpen(false)}
+        onSave={handleSaveCollection}
+      />
+
+      {quickAddProduct && (
+        <QuickAddModal
+          product={quickAddProduct}
+          isOpen={isQuickAddOpen}
+          onClose={() => {
+            setIsQuickAddOpen(false);
+            setQuickAddProduct(null);
+          }}
+          price={quickAddProduct.price || quickAddProduct.basePrice || 0}
+          originalPrice={quickAddProduct.originalPrice}
+        />
+      )}
     </div>
   );
 }

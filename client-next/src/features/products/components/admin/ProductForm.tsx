@@ -296,7 +296,7 @@ export function ProductForm({ initialData, onSubmit, isLoading }: ProductFormPro
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-              {/* Left Column */}
+              
               <div className="lg:col-span-8 space-y-6">
                 <ProductBasicInfo form={form as any} />
                 <ProductCategory form={form as any} categories={categories} />
@@ -311,7 +311,7 @@ export function ProductForm({ initialData, onSubmit, isLoading }: ProductFormPro
                 <ProductSEO form={form as any} />
               </div>
 
-              {/* Right Column */}
+              
               <div className="lg:col-span-4 space-y-6">
                 <ProductPricing form={form as any} />
                 <ProductShipping form={form as any} />

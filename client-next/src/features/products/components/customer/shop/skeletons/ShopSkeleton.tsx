@@ -36,7 +36,7 @@ export function ShopSkeleton() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-x-12 gap-y-10">
-          {/* Sidebar Skeleton */}
+          
           <aside className="hidden lg:block lg:col-span-1">
             <div className="bg-white rounded-[2rem] border border-brand-sand/40 shadow-sm p-6 space-y-8">
               {[1, 2, 3].map((i) => (
@@ -52,9 +52,9 @@ export function ShopSkeleton() {
             </div>
           </aside>
 
-          {/* Main Content Skeleton */}
+          
           <main className="lg:col-span-3 space-y-8">
-            {/* Product Grid */}
+            
             <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
               {[1, 2, 3, 4, 5, 6].map((i) => (
                 <div

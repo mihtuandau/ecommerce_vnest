@@ -73,6 +73,7 @@ export function ProductActions({
     }
     toggleWishlist({
       id: String(product.id),
+      variantId: selectedVariant?.id || product.variants?.[0]?.id || product.id,
       name: product.name,
       price: finalPrice,
       imageUrl:
@@ -81,6 +82,8 @@ export function ProductActions({
           : product.images[0]?.url) || "/placeholder.png",
       slug: product.slug,
       stock: currentStock,
+      categoryId: product.categoryId,
+      categoryName: product.category?.name || "Bộ sưu tập LUXE",
     });
     if (!isFavorite) success(`Đã thêm vào danh sách yêu thích`);
   };

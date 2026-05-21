@@ -33,7 +33,7 @@ interface GeneralInfoProps {
 
 export function ProductBasicInfo({ form }: { form: UseFormReturn<ProductFormValues> }) {
   return (
-    <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.015)] overflow-hidden">
+    <div className="bg-white rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] overflow-hidden">
       <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/30">
         <h3 className="text-[15px] font-bold text-slate-800 flex items-center gap-2">
           <FileText className="h-4 w-4 text-slate-500" /> Tên & Mô tả sản phẩm
@@ -110,7 +110,7 @@ export function ProductCategory({
   categories: Category[];
 }) {
   return (
-    <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.015)] overflow-hidden">
+    <div className="bg-white rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] overflow-hidden">
       <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/30">
         <h3 className="text-[15px] font-bold text-slate-800 flex items-center gap-2">
           <Package className="h-4 w-4 text-slate-500" /> Danh mục sản phẩm
@@ -158,7 +158,7 @@ export function ProductCategory({
 
 export function ProductPricing({ form }: { form: UseFormReturn<ProductFormValues> }) {
   return (
-    <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.015)] overflow-hidden">
+    <div className="bg-white rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] overflow-hidden">
       <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/30">
         <h3 className="text-[15px] font-bold text-slate-800 flex items-center gap-2">
           <DollarSign className="h-4 w-4 text-slate-500" /> Giá cả & Khuyến mãi
@@ -214,7 +214,7 @@ export function ProductPricing({ form }: { form: UseFormReturn<ProductFormValues
 
 export function ProductStatus({ form }: { form: UseFormReturn<ProductFormValues> }) {
   return (
-    <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.015)] overflow-hidden">
+    <div className="bg-white rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] overflow-hidden">
       <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/30">
         <h3 className="text-[15px] font-bold text-slate-800 flex items-center gap-2">
           <Globe className="h-4 w-4 text-slate-500" /> Trạng thái hiển thị
@@ -253,7 +253,7 @@ export function ProductStatus({ form }: { form: UseFormReturn<ProductFormValues>
 
 export function ProductSEO({ form }: { form: UseFormReturn<ProductFormValues> }) {
   return (
-    <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.015)] overflow-hidden">
+    <div className="bg-white rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] overflow-hidden">
       <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/30">
         <h3 className="text-[15px] font-bold text-slate-800 flex items-center gap-2">
           <Globe className="h-4 w-4 text-slate-500" /> Tối ưu hóa SEO
@@ -310,7 +310,7 @@ export function ProductSEO({ form }: { form: UseFormReturn<ProductFormValues> })
 
 export function ProductShipping({ form }: { form: UseFormReturn<ProductFormValues> }) {
   return (
-    <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.015)] overflow-hidden">
+    <div className="bg-white rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] overflow-hidden">
       <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/30">
         <h3 className="text-[15px] font-bold text-slate-800 flex items-center gap-2">
           <Package className="h-4 w-4 text-slate-500" /> Vận chuyển & Kích thước

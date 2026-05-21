@@ -50,9 +50,9 @@ export function ProgressLine({ currentStatus }: ProgressLineProps) {
   return (
     <div className="w-full py-4">
       <div className="relative flex justify-between items-center px-4">
-        {/* Background Line */}
+        
         <div className="absolute top-[11px] left-10 right-10 h-[2px] bg-[#DDD6C8]" />
-        {/* Active Line */}
+        
         <div
           className="absolute top-[11px] left-10 h-[2px] bg-[#3A7D5A] transition-all duration-700"
           style={{

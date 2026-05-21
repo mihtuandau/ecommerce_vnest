@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import HomeContainer from "@/features/home/components/HomeContainer";
+import { HomeView } from "@/features/home/components/HomeView";
 
 export const metadata: Metadata = {
   title: "LUXE — Nền tảng mua sắm trực tuyến hiện đại",
@@ -13,7 +13,7 @@ import { HeroBannerSkeleton } from "@/features/home/components/skeletons/HomeSke
 export default function HomePage() {
   return (
     <Suspense fallback={<HeroBannerSkeleton />}>
-      <HomeContainer />
+      <HomeView />
     </Suspense>
   );
 }

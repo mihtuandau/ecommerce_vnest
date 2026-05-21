@@ -94,12 +94,13 @@ export function RegisterForm() {
       <form onSubmit={handleRegister} className="space-y-3.5 sm:space-y-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-200 ml-1.5 drop-shadow-sm">
+            <label htmlFor="register-name" className="text-xs font-semibold text-slate-200 ml-1.5 drop-shadow-sm">
               {AUTH_MESSAGES.FULL_NAME}
             </label>
             <div className="relative group">
               <User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-white transition-colors" />
               <Input
+                id="register-name"
                 required
                 placeholder="Nhập tên..."
                 className={cn(
@@ -120,12 +121,13 @@ export function RegisterForm() {
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-200 ml-1.5 drop-shadow-sm">
+            <label htmlFor="register-phone" className="text-xs font-semibold text-slate-200 ml-1.5 drop-shadow-sm">
               {AUTH_MESSAGES.PHONE}
             </label>
             <div className="relative group">
               <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-white transition-colors" />
               <Input
+                id="register-phone"
                 required
                 type="tel"
                 placeholder="0912..."
@@ -150,12 +152,13 @@ export function RegisterForm() {
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-slate-200 ml-1.5 drop-shadow-sm">
+          <label htmlFor="register-email" className="text-xs font-semibold text-slate-200 ml-1.5 drop-shadow-sm">
             {AUTH_MESSAGES.EMAIL}
           </label>
           <div className="relative group">
             <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-white transition-colors" />
             <Input
+              id="register-email"
               required
               type="email"
               placeholder="name@example.com"
@@ -178,12 +181,13 @@ export function RegisterForm() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-200 ml-1.5 drop-shadow-sm">
+            <label htmlFor="register-password" className="text-xs font-semibold text-slate-200 ml-1.5 drop-shadow-sm">
               {AUTH_MESSAGES.PASSWORD}
             </label>
             <div className="relative group">
               <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-white transition-colors" />
               <Input
+                id="register-password"
                 required
                 type={showPassword ? "text" : "password"}
                 placeholder="••••••••"
@@ -217,12 +221,13 @@ export function RegisterForm() {
             </div>
           </div>
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-200 ml-1.5 drop-shadow-sm">
+            <label htmlFor="register-confirm-password" className="text-xs font-semibold text-slate-200 ml-1.5 drop-shadow-sm">
               {AUTH_MESSAGES.CONFIRM_PASSWORD}
             </label>
             <div className="relative group">
               <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-white transition-colors" />
               <Input
+                id="register-confirm-password"
                 required
                 type={showConfirmPassword ? "text" : "password"}
                 placeholder="••••••••"
