@@ -124,6 +124,21 @@ export class OrderManagement {
 
     await this.handlePaymentCreation(order, oldOrder, dto);
 
+    // Auto-sync GHN khi chuyển sang SHIPPED mà chưa có mã vận đơn
+    if (dto.status === 'SHIPPED' && oldOrder.status !== 'SHIPPED' && !oldOrder.shippingCode) {
+      try {
+        this.logger.log(`[OrderManagement] Auto-syncing order ${id} to GHN on SHIPPED transition...`);
+        await this.syncToGHN(id);
+        this.logger.log(`[OrderManagement] Auto GHN sync for order ${id} succeeded.`);
+      } catch (ghnError) {
+        // Không throw error - status vẫn update thành công, chỉ log warning
+        this.logger.warn(
+          `[OrderManagement] Auto GHN sync for order ${id} failed: ${ghnError.message}. ` +
+          `Admin có thể tạo vận đơn thủ công sau.`
+        );
+      }
+    }
+
     await this.handleDeliveredStatus(dto, oldOrder);
 
     if (dto.status === 'CANCELLED' || dto.status === 'RETURNED') {
@@ -497,11 +512,18 @@ export class OrderManagement {
         actualGHNFee: actualGHNFee
       };
 
-      const updated = await this.repository.update(id, {
+      const updatePayload: any = {
         shippingCode: shippingCode,
         shippingSnapshot: newSnapshot,
-        status: 'SHIPPED', // Tự động chuyển trạng thái đơn hàng sang SHIPPED
-      } as any);
+      };
+      
+      // Chỉ set status = SHIPPED nếu đơn hàng chưa ở trạng thái SHIPPED
+      // (tránh double update khi gọi từ auto-sync trong update())
+      if (order.status !== 'SHIPPED') {
+        updatePayload.status = 'SHIPPED';
+      }
+
+      const updated = await this.repository.update(id, updatePayload);
 
       await this.cacheService.clearRelatedCaches(id, order.userId || undefined);
       return {

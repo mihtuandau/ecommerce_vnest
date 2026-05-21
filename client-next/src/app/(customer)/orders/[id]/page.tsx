@@ -1,4 +1,4 @@
-import { OrderDetailView } from "@/features/orders/components/customer/OrderDetailView";
+import {CustomerOrderDetailView } from "@/features/orders/views/customer/CustomerOrderDetailView";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function OrderDetailPage() {
-  return <OrderDetailView />;
+  return <CustomerOrderDetailView />;
 }

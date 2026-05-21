@@ -1,5 +1,5 @@
-import { OrderHistoryView } from "@/features/orders/components/customer/OrderHistoryView";
+import { CustomerOrdersView } from "@/features/orders/views/customer/CustomerOrdersView";
 
 export default function CustomerOrdersPage() {
-  return <OrderHistoryView />;
+  return <CustomerOrdersView />;
 }

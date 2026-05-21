@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { OrderStatus, ReturnStatus } from "@/types/enums";
 import { cn } from "@/utils/cn";
-import { CUSTOMER_ORDER_STATUS_CONFIG } from "../../../constants";
+import { CUSTOMER_ORDER_STATUS_CONFIG } from "../../../constants/order-status.constants";
 
 interface DetailStepperProps {
   status: OrderStatus;

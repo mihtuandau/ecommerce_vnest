@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useCartStore } from "@/store/useCartStore";
-import { ordersApi } from "@/features/orders/api";
+import { ordersApi } from "@/features/orders/api/orders.api";
 import { useToast } from "@/hooks/useToast";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthStore } from "@/store/useAuthStore";

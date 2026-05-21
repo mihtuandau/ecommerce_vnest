@@ -18,7 +18,7 @@ import { toast } from "sonner";
 import { cn } from "@/utils/cn";
 import { Spinner } from "@/components/ui/Spinner";
 import { OrderStatus } from "@/types/enums";
-import { ADMIN_ORDER_STATUS_CONFIG } from "@/features/orders/constants";
+import { ADMIN_ORDER_STATUS_CONFIG } from "@/features/orders/constants/order-status.constants";
 
 import { CustomerHeaderSummary } from "./CustomerHeaderSummary";
 import { CustomerAccordionSection } from "./CustomerAccordionSection";

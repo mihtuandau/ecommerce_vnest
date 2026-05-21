@@ -20,7 +20,7 @@ import { OrderStatus, ReturnStatus } from "@/types/enums";
 import { cn } from "@/utils/cn";
 import Link from "next/link";
 import { formatCurrency } from "@/utils/formatCurrency";
-import { CUSTOMER_ORDER_STATUS_CONFIG } from "../../../constants";
+import { CUSTOMER_ORDER_STATUS_CONFIG } from "../../../constants/order-status.constants";
 
 interface DetailHeaderProps {
   orderCode: string;

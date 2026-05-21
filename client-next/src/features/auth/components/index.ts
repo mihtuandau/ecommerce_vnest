@@ -1,5 +1,6 @@
-export * from "./LoginForm";
-export * from "./RegisterForm";
-export * from "./ForgotPasswordForm";
-export * from "./ResetPasswordForm";
-export * from "./Verify2FAForm";
+export { LoginForm } from "./forms/LoginForm";
+export { RegisterForm } from "./forms/RegisterForm";
+export { ForgotPasswordForm } from "./forms/ForgotPasswordForm";
+export { ResetPasswordForm } from "./forms/ResetPasswordForm";
+export { Verify2FAForm } from "./forms/Verify2FAForm";
+export { AuthSuccessHandler } from "./shared/AuthSuccessHandler";

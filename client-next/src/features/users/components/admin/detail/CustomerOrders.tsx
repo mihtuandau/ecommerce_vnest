@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { OrderTable } from "@/features/orders/components/admin/OrderTable";
+import { OrdersTable } from "@/features/orders/components/admin/list/OrdersTable";
 import { Order } from "@/types/models";
 
 interface CustomerOrdersProps {
@@ -22,7 +22,7 @@ export function CustomerOrders({ orders }: CustomerOrdersProps) {
       <div className="p-4 border-b border-slate-100">
         <h3 className="font-bold text-slate-900">Lịch sử đơn hàng</h3>
       </div>
-      <OrderTable data={orders} />
+      <OrdersTable data={orders} />
     </div>
   );
 }
