@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/Dialog";
 import { Spinner } from "@/components/ui/Spinner";
 import axios from "axios";
-import { useAuthStore } from "@/store/useAuthStore";
+import { useAuthStore } from "@/features/auth/store/auth.store";
 import { Switch } from "@/components/ui/Switch";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";

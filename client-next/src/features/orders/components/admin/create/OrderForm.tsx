@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Form } from "@/components/ui/Form";
 import { ordersApi } from "@/features/orders/api/orders.api";
-import { productsApi } from "@/features/products/api";
+import { productsApi } from "@/features/products/api/products.api";
 import { toast } from "sonner";
 import { useOrderCart, OrderFormValues } from "@/features/orders/hooks/useOrderCart";
 import { ProductBrowser } from "./ProductBrowser";

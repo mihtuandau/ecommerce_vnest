@@ -7,7 +7,7 @@ import { ArrowLeft, XCircle, CheckCircle2, RotateCcw, ShoppingBag } from "lucide
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { cn } from "@/utils/cn";
-import { RETURN_STATUS_CONFIG } from "../../constants";
+import { RETURN_STATUS_CONFIG } from "../../constants/index";
 import { ReturnStatus } from "@/types/enums";
 
 interface ReturnDetailHeaderProps {

@@ -15,6 +15,7 @@ import { Role } from "@/types/enums";
 import { cn } from "@/utils/cn";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { AUTH_CONSTANTS, AUTH_MESSAGES, AUTH_STEPS } from "@/features/auth/constants/auth.constants";
+import { env } from "@/config/env";
 
 export function LoginForm() {
   const [email, setEmail] = useState("");
@@ -83,8 +84,10 @@ export function LoginForm() {
   };
 
   const handleGoogleLogin = () => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-    window.location.href = `${apiUrl}${AUTH_CONSTANTS.GOOGLE_AUTH_ENDPOINT}?${AUTH_CONSTANTS.CACHE_BUST_PARAM}=${Date.now()}`;
+    const apiUrl = env.NEXT_PUBLIC_API_URL.replace(/\/$/, "");
+    window.location.assign(
+      `${apiUrl}${AUTH_CONSTANTS.GOOGLE_AUTH_ENDPOINT}?${AUTH_CONSTANTS.CACHE_BUST_PARAM}=${Date.now()}`
+    );
   };
 
   return (

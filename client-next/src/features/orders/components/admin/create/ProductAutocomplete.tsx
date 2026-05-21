@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { Input } from "@/components/ui/Input";
-import { productsApi } from "@/features/products/api";
+import { productsApi } from "@/features/products/api/products.api";
 import { Search, Plus, ShoppingCart } from "lucide-react";
 import { Spinner } from "@/components/ui/Spinner";
 import { formatCurrency } from "@/utils/formatCurrency";

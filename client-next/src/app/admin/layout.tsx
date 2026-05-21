@@ -2,7 +2,7 @@
 
 import { Sidebar } from "@/components/layout/Sidebar";
 import { AdminTopBar } from "@/components/layout/AdminTopBar";
-import { useAuthStore } from "@/store/useAuthStore";
+import { useAuthStore } from "@/features/auth/store/auth.store";
 import { FullPageLoading } from "@/components/ui/Spinner";
 import React from "react";
 

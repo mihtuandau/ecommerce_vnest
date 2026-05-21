@@ -14,14 +14,12 @@ import { Badge } from "@/components/ui/Badge";
 import { Spinner } from "@/components/ui/Spinner";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { cn } from "@/utils/cn";
-import { RETURN_STATUS_CONFIG } from "../../constants";
+import { RETURN_STATUS_CONFIG } from "../../constants/index";
 import { ReturnStatus } from "@/types/enums";
 import {
   RotateCcw,
   Calendar,
   ArrowUpRight,
-  CheckCircle2,
-  XCircle,
   Eye,
 } from "lucide-react";
 

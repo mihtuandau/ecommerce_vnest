@@ -1,5 +1,5 @@
-import { OffersView } from "@/features/discounts/components/customer/OffersView";
-import { Metadata } from "next";
+import type { Metadata } from "next";
+import { OffersView } from "@/features/discounts";
 
 export const metadata: Metadata = {
   title: "Ưu Đãi & Khuyến Mãi - Vouchers Độc Quyền | LUXE",

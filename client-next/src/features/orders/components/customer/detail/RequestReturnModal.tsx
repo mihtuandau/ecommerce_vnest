@@ -15,10 +15,10 @@ import { Button } from "@/components/ui/Button";
 import { Label } from "@/components/ui/Label";
 import { Textarea } from "@/components/ui/Textarea";
 import { useToast } from "@/hooks/useToast";
-import { returnsApi } from "@/features/returns/api";
+import { returnsApi } from "@/features/returns/api/index";
 import { Camera, X, AlertCircle } from "lucide-react";
 import { Spinner } from "@/components/ui/Spinner";
-import { productsApi } from "@/features/products/api";
+import { productsApi } from "@/features/products/api/products.api";
 import { cn } from "@/utils/cn";
 
 interface RequestReturnModalProps {

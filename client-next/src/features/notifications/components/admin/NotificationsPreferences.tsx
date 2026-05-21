@@ -5,7 +5,7 @@ import { Settings, Info } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
 import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/utils/cn";
-import { NOTIFICATIONS_PREFERENCE_OPTIONS } from "../../constants";
+import { NOTIFICATIONS_PREFERENCE_OPTIONS } from "../../constants/index";
 
 interface NotificationsPreferencesProps {
   settings: {

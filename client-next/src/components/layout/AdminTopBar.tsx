@@ -21,11 +21,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/DropdownMenu";
-import { useAuthStore } from "@/store/useAuthStore";
+import { useAuthStore } from "@/features/auth/store/auth.store";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import Image from "next/image";
 import { Role } from "@/types/enums";
-import { ROLE_CONFIG } from "@/features/permissions/constants";
+import { ROLE_CONFIG } from "@/features/permissions/constants/index";
 import {
   useNotifications,
   useMarkNotificationRead,

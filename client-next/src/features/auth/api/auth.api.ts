@@ -1,4 +1,4 @@
-import { api } from "@/lib/axios";
+import { api } from "@/lib/http";
 import type { LoginPayload, RegisterPayload, AuthResponse } from "../types/auth.types";
 
 export const authApi = {

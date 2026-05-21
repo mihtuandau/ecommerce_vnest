@@ -1,5 +1,5 @@
 import { use } from "react";
-import { ProductDetailView } from "@/features/products/components/customer/detail/ProductDetailView";
+import { ProductDetailView } from "@/features/products/views/customer/ProductDetailView";
 
 interface ProductPageProps {
   params: Promise<{ slug: string }>;

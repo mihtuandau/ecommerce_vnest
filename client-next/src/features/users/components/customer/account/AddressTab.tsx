@@ -28,7 +28,7 @@ import {
   useCreateAddress,
   useUpdateAddress,
 } from "@/features/users/hooks";
-import { shippingApi } from "@/features/shipping/api";
+import { shippingApi } from "@/features/shipping/api/index";
 import { cn } from "@/utils/cn";
 import { useToast } from "@/hooks/useToast";
 import { Address } from "@/types/models";

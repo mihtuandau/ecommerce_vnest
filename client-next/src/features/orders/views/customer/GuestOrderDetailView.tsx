@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React from "react";
 import { useParams, useSearchParams } from "next/navigation";
@@ -11,7 +11,7 @@ import { useToast } from "@/hooks/useToast";
 import { AlertCircle, RotateCcw } from "lucide-react";
 import { OrderStatus, PaymentStatus } from "@/types/enums";
 import { ordersApi } from "@/features/orders/api/orders.api";
-import { returnsApi } from "@/features/returns/api";
+import { returnsApi } from "@/features/returns/api/index";
 import { ORDER_STATUS_CONFIG } from "@/features/orders/constants/order-status.constants";
 
 // Shared sub-components
@@ -59,7 +59,7 @@ export function GuestOrderDetailView() {
           item.productName ||
           item.variantSnapshot?.productName ||
           item.variant?.product?.name ||
-          "Sản phẩm",
+          "S?n ph?m",
         price: Number(item.price),
         imageUrl:
           getUrl(item.variantSnapshot?.image) ||
@@ -72,7 +72,7 @@ export function GuestOrderDetailView() {
         stock: item.variant?.stock || 99,
       } as any);
     });
-    success("Đã thêm các sản phẩm vào giỏ hàng");
+    success("Ðã thêm các s?n ph?m vào gi? hàng");
   };
 
   const handleCancel = async () => {
@@ -81,20 +81,20 @@ export function GuestOrderDetailView() {
 
   const handleConfirmCancel = async () => {
     if (!order?.orderCode || !contact) {
-      toastError("Thiếu thông tin xác thực để huỷ đơn hàng");
+      toastError("Thi?u thông tin xác th?c d? hu? don hàng");
       return;
     }
 
     setIsCancelling(true);
     try {
       await ordersApi.cancelGuestOrder(order.orderCode, contact);
-      success("Đã gửi yêu cầu hủy đơn hàng thành công");
-      // Cập nhật lại cache hoặc reload
+      success("Ðã g?i yêu c?u h?y don hàng thành công");
+      // C?p nh?t l?i cache ho?c reload
       window.location.reload();
     } catch (err: any) {
       console.error("Cancel guest order error:", err);
       toastError(
-        err.response?.data?.message || err.message || "Có lỗi xảy ra khi hủy đơn hàng"
+        err.response?.data?.message || err.message || "Có l?i x?y ra khi h?y don hàng"
       );
     } finally {
       setIsCancelling(false);
@@ -134,17 +134,17 @@ export function GuestOrderDetailView() {
         </div>
         <div className="text-center space-y-2">
           <h2 className="text-3xl font-bold text-brand-espresso font-serif">
-            Không tìm thấy đơn hàng
+            Không tìm th?y don hàng
           </h2>
           <p className="text-brand-taupe text-sm max-w-xs mx-auto">
-            Vui lòng kiểm tra lại mã đơn hàng và số điện thoại/email.
+            Vui lòng ki?m tra l?i mã don hàng và s? di?n tho?i/email.
           </p>
         </div>
         <Button
           asChild
           className="rounded-full px-10 h-12 bg-brand-espresso text-white hover:bg-brand-espresso/90"
         >
-          <Link href="/">Quay lại trang chủ</Link>
+          <Link href="/">Quay l?i trang ch?</Link>
         </Button>
       </div>
     );
@@ -188,7 +188,7 @@ export function GuestOrderDetailView() {
                 });
                 window.location.reload();
               } catch (err: any) {
-                toastError(err.response?.data?.message || "Có lỗi xảy ra");
+                toastError(err.response?.data?.message || "Có l?i x?y ra");
               }
             }}
           />
@@ -212,11 +212,11 @@ export function GuestOrderDetailView() {
                   </div>
                   <div className="space-y-1">
                     <h4 className="text-[15px] font-bold text-[#C44040]">
-                      Đơn hàng đã bị huỷ
+                      Ðon hàng dã b? hu?
                     </h4>
                     <p className="text-[13px] text-[#C44040]/80 font-medium leading-relaxed">
-                      Đơn hàng của bạn đã được hủy thành công. Nếu bạn đã thanh toán
-                      trước, số tiền sẽ được hoàn trả trong vòng 3–5 ngày làm việc.
+                      Ðon hàng c?a b?n dã du?c h?y thành công. N?u b?n dã thanh toán
+                      tru?c, s? ti?n s? du?c hoàn tr? trong vòng 3–5 ngày làm vi?c.
                     </p>
                   </div>
                 </div>
@@ -230,10 +230,10 @@ export function GuestOrderDetailView() {
                     </div>
                     <div>
                       <h3 className="text-lg font-bold text-brand-espresso font-serif-brand">
-                        Chi tiết yêu cầu trả hàng
+                        Chi ti?t yêu c?u tr? hàng
                       </h3>
                       <p className="text-[11px] text-brand-taupe font-bold uppercase tracking-widest mt-1">
-                        Cập nhật:{" "}
+                        C?p nh?t:{" "}
                         {new Date(
                           order.returnRequest?.updatedAt || order.updatedAt
                         ).toLocaleString("vi-VN")}
@@ -244,7 +244,7 @@ export function GuestOrderDetailView() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-10 pt-8 border-t border-brand-sand">
                     <div className="space-y-3">
                       <p className="text-[11px] font-bold text-brand-taupe uppercase tracking-widest">
-                        Lý do của bạn
+                        Lý do c?a b?n
                       </p>
                       <p className="text-sm text-brand-espresso font-medium leading-relaxed italic">
                         "{order.returnRequest.reason}"
@@ -253,7 +253,7 @@ export function GuestOrderDetailView() {
                     {order.returnRequest?.adminNote && (
                       <div className="space-y-3">
                         <p className="text-[11px] font-bold text-brand-bronze uppercase tracking-widest">
-                          Phản hồi từ Shop
+                          Ph?n h?i t? Shop
                         </p>
                         <div className="p-5 bg-brand-cream/50 rounded-xl border border-brand-sand">
                           <p className="text-sm text-brand-espresso font-medium leading-relaxed italic">

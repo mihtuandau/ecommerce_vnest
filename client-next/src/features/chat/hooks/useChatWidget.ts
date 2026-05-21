@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { chatApi } from "../api";
-import { useAuthStore } from "@/store/useAuthStore";
+import { useAuthStore } from "@/features/auth/store/auth.store";
 
 const HISTORY_KEY = "ai_chat_history";
 const ID_KEY = "ai_conversation_id";

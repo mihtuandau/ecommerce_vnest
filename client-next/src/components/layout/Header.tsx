@@ -24,7 +24,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { CartDropdown } from "@/features/cart/components/CartDropdown";
 import { NotificationBell } from "@/features/notifications/components/customer/NotificationBell";
 import { ROUTES } from "@/constants/routes";
-import { useAuthStore } from "@/store/useAuthStore";
+import { useAuthStore } from "@/features/auth/store/auth.store";
 import { useWishlistStore } from "@/store/useWishlistStore";
 import { useCategories } from "@/features/categories/hooks";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";

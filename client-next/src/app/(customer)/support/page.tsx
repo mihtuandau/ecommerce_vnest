@@ -2,12 +2,12 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import CustomerChat from "@/features/chat/components/CustomerChat";
-import CustomerSupportSidebar from "@/features/chat/components/CustomerSupport/CustomerSupportSidebar";
-import CustomerDeliveryView from "@/features/chat/components/CustomerSupport/CustomerDeliveryView";
-import CustomerReturnsView from "@/features/chat/components/CustomerSupport/CustomerReturnsView";
-import CustomerWarrantyView from "@/features/chat/components/CustomerSupport/CustomerWarrantyView";
-import CustomerContactView from "@/features/chat/components/CustomerSupport/CustomerContactView";
+import { CustomerChatView } from "@/features/chat";
+import CustomerSupportSidebar from "@/features/chat/components/customer/support/CustomerSupportSidebar";
+import CustomerDeliveryView from "@/features/chat/components/customer/support/CustomerDeliveryView";
+import CustomerReturnsView from "@/features/chat/components/customer/support/CustomerReturnsView";
+import CustomerWarrantyView from "@/features/chat/components/customer/support/CustomerWarrantyView";
+import CustomerContactView from "@/features/chat/components/customer/support/CustomerContactView";
 import { useSystemSettings } from "@/features/settings/hooks";
 
 export default function SupportPage() {
@@ -62,7 +62,7 @@ export default function SupportPage() {
 
           
           <div className="lg:col-span-8 flex flex-col bg-white overflow-hidden h-full min-h-0">
-            {activeTab === "chat" && <CustomerChat />}
+            {activeTab === "chat" && <CustomerChatView />}
 
             {activeTab === "delivery" && (
               <CustomerDeliveryView

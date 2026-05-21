@@ -9,6 +9,8 @@ import {
   calculateDiscountAmount,
   formatCurrency,
 } from "@/features/checkout/utils/checkoutValidation";
+import type { DiscountValidationResponse } from "@/features/discounts/types";
+import type { CheckoutDiscount } from "@/store/useCartStore";
 
 export function useCheckoutDiscount(subtotal: number) {
   const { success, error, warning } = useToast();
@@ -16,7 +18,8 @@ export function useCheckoutDiscount(subtotal: number) {
     useCartStore();
 
   const [discountCode, setDiscountCode] = useState(globalDiscount?.code || "");
-  const [appliedDiscount, setAppliedDiscount] = useState<any | null>(globalDiscount);
+  const [appliedDiscount, setAppliedDiscount] =
+    useState<CheckoutDiscount | null>(globalDiscount);
   const [discountAmount, setDiscountAmount] = useState(0);
   const [isApplyingDiscount, setIsApplyingDiscount] = useState(false);
 
@@ -52,7 +55,9 @@ export function useCheckoutDiscount(subtotal: number) {
 
       setIsApplyingDiscount(true);
       try {
-        const res: any = await discountsApi.validateDiscount(codeToValidate);
+        const res = (await discountsApi.validateDiscount(
+          codeToValidate
+        )) as DiscountValidationResponse;
 
         if (!res.isValid) {
           warning(res.message || CHECKOUT_MESSAGES.INVALID_DISCOUNT);
@@ -60,6 +65,7 @@ export function useCheckoutDiscount(subtotal: number) {
         }
 
         const discount = res.discount;
+        if (!discount) return;
 
         if (discount.minOrderAmount && subtotal < discount.minOrderAmount) {
           warning(

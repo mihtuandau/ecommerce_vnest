@@ -23,7 +23,7 @@ import {
   RotateCcw,
 } from "lucide-react";
 import dayjs from "@/lib/dayjs";
-import { PAYMENT_STATUS_CONFIG, PAYMENT_METHOD_CONFIG } from "../../constants";
+import { PAYMENT_STATUS_CONFIG, PAYMENT_METHOD_CONFIG } from "../../constants/index";
 import { PaymentMethod, PaymentStatus } from "@/types/enums";
 
 // Pure helper function for status badge

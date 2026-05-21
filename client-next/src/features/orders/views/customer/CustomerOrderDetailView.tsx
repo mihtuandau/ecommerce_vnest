@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useState } from "react";
 import { useParams } from "next/navigation";
@@ -61,7 +61,7 @@ export function CustomerOrderDetailView() {
           item.productName ||
           item.variantSnapshot?.productName ||
           item.variant?.product?.name ||
-          "Sản phẩm",
+          "S?n ph?m",
         price: item.price,
         quantity: item.quantity,
         imageUrl: getUrl(
@@ -75,7 +75,7 @@ export function CustomerOrderDetailView() {
       });
     });
 
-    success("Đã thêm các sản phẩm vào giỏ hàng");
+    success("Ðã thêm các s?n ph?m vào gi? hàng");
   };
 
   const handleReturnSuccess = () => {
@@ -114,17 +114,17 @@ export function CustomerOrderDetailView() {
         </div>
         <div className="text-center space-y-2">
           <h2 className="text-3xl font-bold text-brand-espresso font-serif">
-            Không tìm thấy đơn hàng
+            Không tìm th?y don hàng
           </h2>
           <p className="text-brand-taupe text-sm max-w-xs mx-auto">
-            Đơn hàng có thể đã bị xóa hoặc không tồn tại trong hệ thống của chúng tôi.
+            Ðon hàng có th? dã b? xóa ho?c không t?n t?i trong h? th?ng c?a chúng tôi.
           </p>
         </div>
         <Button
           asChild
           className="rounded-full px-10 h-12 bg-brand-espresso text-white hover:bg-brand-espresso/90"
         >
-          <Link href="/orders">Quay lại danh sách</Link>
+          <Link href="/orders">Quay l?i danh sách</Link>
         </Button>
       </div>
     );
@@ -155,13 +155,13 @@ export function CustomerOrderDetailView() {
             <BreadcrumbList className="text-sm font-medium">
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href="/">Trang chủ</Link>
+                  <Link href="/">Trang ch?</Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href="/orders">Đơn hàng</Link>
+                  <Link href="/orders">Ðon hàng</Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
@@ -193,10 +193,10 @@ export function CustomerOrderDetailView() {
                 if (latestReturnRequest?.id) {
                   confirmReturnSent(latestReturnRequest.id);
                 } else {
-                  toastError("Không tìm thấy thông tin yêu cầu trả hàng");
+                  toastError("Không tìm th?y thông tin yêu c?u tr? hàng");
                 }
               } catch (err: any) {
-                toastError(err.message || "Không thể cập nhật trạng thái hoàn trả");
+                toastError(err.message || "Không th? c?p nh?t tr?ng thái hoàn tr?");
               }
             }}
             returnStatus={latestReturnRequest?.status}
@@ -224,11 +224,11 @@ export function CustomerOrderDetailView() {
                   </div>
                   <div className="space-y-1">
                     <h4 className="text-[15px] font-bold text-[#C44040]">
-                      Đơn hàng đã bị huỷ
+                      Ðon hàng dã b? hu?
                     </h4>
                     <p className="text-[13px] text-[#C44040]/80 font-medium leading-relaxed">
-                      Đơn hàng của bạn đã được hủy thành công. Nếu bạn đã thanh toán
-                      trước, số tiền sẽ được hoàn trả trong vòng 3–5 ngày làm việc.
+                      Ðon hàng c?a b?n dã du?c h?y thành công. N?u b?n dã thanh toán
+                      tru?c, s? ti?n s? du?c hoàn tr? trong vòng 3–5 ngày làm vi?c.
                     </p>
                   </div>
                 </div>
@@ -243,10 +243,10 @@ export function CustomerOrderDetailView() {
                       </div>
                       <div>
                         <h3 className="text-lg font-bold text-brand-espresso font-serif-brand">
-                          Chi tiết yêu cầu trả hàng
+                          Chi ti?t yêu c?u tr? hàng
                         </h3>
                         <p className="text-xs text-[#8A7966] font-semibold mt-1">
-                          Cập nhật:{" "}
+                          C?p nh?t:{" "}
                           {new Date(
                             latestReturnRequest?.updatedAt || order.updatedAt
                           ).toLocaleString("vi-VN")}
@@ -255,12 +255,12 @@ export function CustomerOrderDetailView() {
                     </div>
                     
                     <div className="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[#F3EFE8] text-[#8A7966] border border-[#DDD6C8]">
-                      {latestReturnRequest.status === "PENDING" ? "Chờ duyệt" :
-                       latestReturnRequest.status === "APPROVED" ? "Đã duyệt" :
-                       latestReturnRequest.status === "RETURNING" ? "Đang gửi trả" :
-                       latestReturnRequest.status === "RECEIVED" ? "Đã nhận hàng" :
-                       latestReturnRequest.status === "COMPLETED" ? "Hoàn tất" :
-                       latestReturnRequest.status === "REJECTED" ? "Từ chối" : latestReturnRequest.status}
+                      {latestReturnRequest.status === "PENDING" ? "Ch? duy?t" :
+                       latestReturnRequest.status === "APPROVED" ? "Ðã duy?t" :
+                       latestReturnRequest.status === "RETURNING" ? "Ðang g?i tr?" :
+                       latestReturnRequest.status === "RECEIVED" ? "Ðã nh?n hàng" :
+                       latestReturnRequest.status === "COMPLETED" ? "Hoàn t?t" :
+                       latestReturnRequest.status === "REJECTED" ? "T? ch?i" : latestReturnRequest.status}
                     </div>
                   </div>
 
@@ -268,10 +268,10 @@ export function CustomerOrderDetailView() {
                     <div className="p-6 bg-indigo-50 border border-indigo-100 rounded-2xl space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
                       <div className="space-y-1">
                         <h4 className="text-sm font-bold text-indigo-950">
-                          Yêu cầu trả hàng đã được duyệt!
+                          Yêu c?u tr? hàng dã du?c duy?t!
                         </h4>
                         <p className="text-xs text-indigo-800 leading-relaxed font-medium">
-                          Vui lòng đóng gói các sản phẩm cần hoàn trả và gửi hàng về cho shop. Sau khi gửi hàng đi, bạn hãy nhấn nút dưới đây để xác nhận với hệ thống.
+                          Vui lòng dóng gói các s?n ph?m c?n hoàn tr? và g?i hàng v? cho shop. Sau khi g?i hàng di, b?n hãy nh?n nút du?i dây d? xác nh?n v?i h? th?ng.
                         </p>
                       </div>
                       <Button
@@ -283,7 +283,7 @@ export function CustomerOrderDetailView() {
                         }}
                         className="rounded-xl h-10 px-5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-sm transition-all"
                       >
-                        {isConfirmingSent ? "Đang xử lý..." : "Xác nhận đã gửi hàng"}
+                        {isConfirmingSent ? "Ðang x? lý..." : "Xác nh?n dã g?i hàng"}
                       </Button>
                     </div>
                   )}
@@ -291,7 +291,7 @@ export function CustomerOrderDetailView() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-10 pt-8 border-t border-brand-sand">
                     <div className="space-y-3">
                       <p className="text-xs font-semibold text-[#8A7966]">
-                        Lý do từ bạn
+                        Lý do t? b?n
                       </p>
                       <p className="text-sm text-brand-espresso font-medium leading-relaxed italic">
                         "{latestReturnRequest.reason}"
@@ -300,7 +300,7 @@ export function CustomerOrderDetailView() {
                     {latestReturnRequest?.adminNote && (
                       <div className="space-y-3">
                         <p className="text-xs font-semibold text-[#8A7966]">
-                          Phản hồi LUXE
+                          Ph?n h?i LUXE
                         </p>
                         <div className="p-5 bg-brand-cream/50 rounded-xl border border-brand-sand">
                           <p className="text-sm text-brand-espresso font-medium leading-relaxed italic">
@@ -310,10 +310,10 @@ export function CustomerOrderDetailView() {
                       </div>
                     )}
                     
-                    {/* Bằng chứng hình ảnh */}
+                    {/* B?ng ch?ng hình ?nh */}
                     <div className="space-y-3 col-span-full pt-6 border-t border-brand-sand">
                       <p className="text-xs font-semibold text-[#8A7966]">
-                        Hình ảnh bằng chứng
+                        Hình ?nh b?ng ch?ng
                       </p>
                       {latestReturnRequest.images && latestReturnRequest.images.length > 0 ? (
                         <div className="flex flex-wrap gap-3">
@@ -335,7 +335,7 @@ export function CustomerOrderDetailView() {
                         </div>
                       ) : (
                         <p className="text-xs font-medium text-slate-400 italic">
-                          Không có hình ảnh đính kèm
+                          Không có hình ?nh dính kèm
                         </p>
                       )}
                     </div>

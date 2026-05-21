@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Role } from "@/types/enums";
-import { ROLE_CONFIG } from "../constants";
+import { ROLE_CONFIG } from "@/features/permissions/constants/index";
 
 interface RoleInfoCardProps {
   activeRole: string;

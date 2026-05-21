@@ -1,6 +1,6 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { ChatWidget } from "@/features/chat/components/ChatWidget";
+import { ChatWidget } from "@/features/chat";
 import { SocialProof } from "@/components/marketing/SocialProof";
 import { Suspense } from "react";
 import { cookies } from "next/headers";
@@ -8,6 +8,36 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { Wrench, Phone, Mail, Clock } from "lucide-react";
 import { env } from "@/config/env";
 import { Role } from "@/types/enums";
+
+type SystemSettings = {
+  maintenanceMode?: boolean;
+  storeName?: string;
+  storePhone?: string;
+  storeEmail?: string;
+};
+
+async function getSystemSettings(): Promise<SystemSettings | null> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 3000);
+  const apiUrl = env.NEXT_PUBLIC_API_URL.replace(/\/$/, "");
+
+  try {
+    const res = await fetch(`${apiUrl}/system-settings`, {
+      next: { revalidate: 15 },
+      signal: controller.signal,
+    });
+
+    if (!res.ok) return null;
+    return res.json();
+  } catch (err) {
+    if (process.env.NODE_ENV === "production") {
+      console.warn("System settings unavailable; continuing without maintenance mode.");
+    }
+    return null;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
 
 export default async function CustomerLayout({
   children,
@@ -18,22 +48,13 @@ export default async function CustomerLayout({
   const hasToken = cookieStore.has("accessToken");
   const token = cookieStore.get("accessToken")?.value;
 
-  let settings = null;
+  let settings: SystemSettings | null = null;
   let isMaintenance = false;
   let isAdmin = false;
 
   // 1. Fetch system settings on the server side (cached for fast response)
-  try {
-    const res = await fetch(`${env.NEXT_PUBLIC_API_URL}/system-settings`, {
-      next: { revalidate: 15 }, // Cache settings for 15 seconds to avoid overloading disk I/O
-    });
-    if (res.ok) {
-      settings = await res.json();
-      isMaintenance = !!settings?.maintenanceMode;
-    }
-  } catch (err) {
-    console.error("Failed to fetch system settings on server side:", err);
-  }
+  settings = await getSystemSettings();
+  isMaintenance = !!settings?.maintenanceMode;
 
   // 2. Check if the logged-in user is an admin by decoding JWT payload
   if (token) {

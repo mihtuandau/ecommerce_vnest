@@ -18,7 +18,7 @@ import { formatDate } from "@/utils/formatDate";
 import { cn } from "@/utils/cn";
 import { handleAvatarError } from "@/utils/avatar";
 import { Role } from "@/types/enums";
-import { ROLE_CONFIG } from "@/features/permissions/constants";
+import { ROLE_CONFIG } from "@/features/permissions/constants/index";
 import { getImageUrl } from "@/utils/image";
 
 interface CustomerCardProps {

@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/Dialog";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
-import { productsApi } from "@/features/products/api";
+import { productsApi } from "@/features/products/api/products.api";
 import { Search, Plus, ShoppingCart, Filter, ChevronRight } from "lucide-react";
 import { Spinner } from "@/components/ui/Spinner";
 import { formatCurrency } from "@/utils/formatCurrency";

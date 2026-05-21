@@ -1,10 +1,10 @@
-import { PaymentReturnView } from "@/features/checkout/components/PaymentReturnView";
-import { Metadata } from "next";
+import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Spinner } from "@/components/ui/Spinner";
+import { PaymentReturnView } from "@/features/checkout/views";
 
 export const metadata: Metadata = {
-  title: "Kết quả thanh toán — LUXE",
+  title: "Kết quả thanh toán - LUXE",
   description: "Kiểm tra kết quả giao dịch thanh toán của bạn.",
 };
 

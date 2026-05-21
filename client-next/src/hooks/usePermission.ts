@@ -1,4 +1,4 @@
-import { useAuthStore } from "@/store/useAuthStore";
+import { useAuthStore } from "@/features/auth/store/auth.store";
 
 /**
  * Returns permission helpers based on the current user's permissions array.

@@ -200,7 +200,7 @@ export class AuthController {
     const frontendUrl = origins.find(o => o.includes('localhost')) || origins[0];
 
     if (result.requires2FA) {
-      return res.redirect(`${frontendUrl}/auth/verify-2fa?email=${result.email}`);
+      return res.redirect(`${frontendUrl}/verify-2fa?email=${encodeURIComponent(result.email)}`);
     }
 
     if (result.accessToken && result.refreshToken) {

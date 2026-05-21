@@ -13,7 +13,8 @@ import {
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { formatCurrency } from "@/utils/formatCurrency";
-import { useRevenueReport } from "../hooks";
+import { useRevenueReport } from "@/features/reports/hooks";
+import type { ReportQueryParams } from "@/features/reports/types";
 import { Spinner } from "@/components/ui/Spinner";
 
 const CustomTooltip = ({ active, payload, label }: any) => {
@@ -42,7 +43,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 export function RevenueChart({
   params,
 }: {
-  params?: Record<string, string | undefined>;
+  params?: ReportQueryParams;
 }) {
   const { data: reportData, isLoading } = useRevenueReport(params || {});
 

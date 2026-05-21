@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { shippingApi } from "@/features/shipping/api";
+import { shippingApi } from "@/features/shipping/api/index";
 import { useSystemSettings } from "@/features/settings/hooks";
 import { CHECKOUT_CONSTANTS } from "@/features/checkout/constants";
 

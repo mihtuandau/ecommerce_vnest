@@ -1,7 +1,10 @@
+"use client";
+
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useChatMessages, useSocket } from "@/features/chat";
+import { useChatMessages } from "@/features/chat/hooks/queries";
+import { useSocket } from "@/features/chat/socket";
 import { useQueryClient } from "@tanstack/react-query";
-import { chatApi } from "../api";
+import { chatApi } from "@/features/chat/api";
 
 export function useChatSession(
   selectedRoomId: string | null,

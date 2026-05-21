@@ -1,4 +1,4 @@
-import { api } from "@/lib/axios";
+import { api } from "@/lib/http";
 import type { Order } from "@/types/models";
 import { OrderStatus, PaymentStatus } from "@/types/enums";
 

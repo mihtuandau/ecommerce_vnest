@@ -6,7 +6,7 @@ import { Download, RefreshCcw } from "lucide-react";
 import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/utils/cn";
 
-import { REPORT_TIME_RANGE_OPTIONS } from "../constants";
+import { REPORT_TIME_RANGE_OPTIONS } from "@/features/reports/constants/index";
 
 interface ReportHeaderProps {
   onRefresh: () => void;

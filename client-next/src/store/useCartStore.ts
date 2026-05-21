@@ -21,6 +21,8 @@ export type CheckoutDiscount = {
   code?: string;
   discountType?: "PERCENTAGE" | "FIXED";
   discountValue?: number;
+  percentage?: number | null;
+  fixedAmount?: number | null;
   maxDiscountAmount?: number;
   minOrderAmount?: number;
 };

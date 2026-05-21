@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/Input";
 import { useCategories } from "@/features/categories/hooks";
 import { useBrands } from "@/features/products/hooks";
-import { productsApi } from "@/features/products/api";
+import { productsApi } from "@/features/products/api/products.api";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { Category, Brand } from "@/types/models";
 import Image from "next/image";

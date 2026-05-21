@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useSystemSettings } from "@/features/settings/hooks";
-import { useAuthStore } from "@/store/useAuthStore";
+import { useAuthStore } from "@/features/auth/store/auth.store";
 import { Role } from "@/types/enums";
 import { Wrench, Phone, Mail, Clock } from "lucide-react";
 

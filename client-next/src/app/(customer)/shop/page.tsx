@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ShopView } from "@/features/products/components/customer/shop/ShopView";
+import { ShopView } from "@/features/products/views/customer/ShopView";
 import { Suspense } from "react";
 
 export const metadata: Metadata = {

@@ -3,7 +3,7 @@
 import { useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthStore } from "@/features/auth/store/auth.store";
-import { api } from "@/lib/axios";
+import { api } from "@/lib/http";
 import { Role } from "@/types/enums";
 import { toast } from "sonner";
 import confetti from "canvas-confetti";

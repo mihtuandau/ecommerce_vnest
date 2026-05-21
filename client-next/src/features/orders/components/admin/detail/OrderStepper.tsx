@@ -6,7 +6,7 @@ import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/utils/cn";
 import { adminUI } from "@/constants/admin-ui";
 import { OrderStatus, Role } from "@/types/enums";
-import { useAuthStore } from "@/store/useAuthStore";
+import { useAuthStore } from "@/features/auth/store/auth.store";
 import { ADMIN_ORDER_STATUS_CONFIG } from "../../../constants/order-status.constants";
 
 interface StepperProps {

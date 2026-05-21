@@ -16,7 +16,7 @@ import {
   Bell,
 } from "lucide-react";
 import { cn } from "@/utils/cn";
-import { useAuthStore } from "@/store/useAuthStore";
+import { useAuthStore } from "@/features/auth/store/auth.store";
 
 interface SidebarItem {
   label: string;

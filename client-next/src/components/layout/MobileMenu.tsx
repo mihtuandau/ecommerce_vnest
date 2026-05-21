@@ -16,11 +16,11 @@ import { Input } from "@/components/ui/Input";
 import { ROUTES } from "@/constants/routes";
 import { useState, useEffect, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { productsApi } from "@/features/products/api";
+import { productsApi } from "@/features/products/api/products.api";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { Spinner } from "@/components/ui/Spinner";
 import { Skeleton } from "@/components/ui/Skeleton";
-import { useAuthStore } from "@/store/useAuthStore";
+import { useAuthStore } from "@/features/auth/store/auth.store";
 import { cn } from "@/utils/cn";
 
 interface MobileMenuProps {

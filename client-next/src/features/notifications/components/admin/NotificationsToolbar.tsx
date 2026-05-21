@@ -5,7 +5,7 @@ import { CheckCheck, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/utils/cn";
 
-import { NotificationFilterType } from "../../constants";
+import { NotificationFilterType } from "../../constants/index";
 
 interface NotificationsToolbarProps {
   filterType: NotificationFilterType;

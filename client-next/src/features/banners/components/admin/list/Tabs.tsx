@@ -2,10 +2,11 @@
 
 import React from "react";
 import { cn } from "@/utils/cn";
+import type { BannerListTab } from "@/features/banners/services";
 
 interface BannerTabsProps {
-  activeTab: string;
-  onTabChange: (tab: string) => void;
+  activeTab: BannerListTab;
+  onTabChange: (tab: BannerListTab) => void;
   counts: {
     ALL: number;
     ACTIVE: number;
@@ -14,7 +15,7 @@ interface BannerTabsProps {
 }
 
 export function BannerTabs({ activeTab, onTabChange, counts }: BannerTabsProps) {
-  const tabs = [
+  const tabs: Array<{ id: BannerListTab; label: string; count: number }> = [
     { id: "ALL", label: "Tất cả", count: counts.ALL },
     { id: "ACTIVE", label: "Đang hiển thị", count: counts.ACTIVE },
     { id: "INACTIVE", label: "Đã ẩn", count: counts.INACTIVE },

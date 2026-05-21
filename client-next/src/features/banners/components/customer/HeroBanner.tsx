@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Banner } from "@/types/models";
 import { ArrowRight, Sparkles } from "lucide-react";
-import { BANNERS_MESSAGES } from "../../constants";
+import { BANNERS_MESSAGES } from "@/features/banners/constants";
 
 interface HeroBannerProps {
   banners: Banner[];

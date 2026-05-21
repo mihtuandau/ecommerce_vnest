@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import { CheckoutView } from "@/features/checkout/components/CheckoutView";
 import { Suspense } from "react";
 import { Spinner } from "@/components/ui/Spinner";
+import { CheckoutView } from "@/features/checkout/views";
 
 export const metadata: Metadata = {
-  title: "Thanh toán — LUXE",
-  description: "Hoàn tất đơn hàng của bạn với các phương thức thanh toán an toàn.",
+  title: "Thanh toán - LUXE",
+  description:
+    "Hoàn tất đơn hàng của bạn với các phương thức thanh toán an toàn.",
 };
 
 export default function CheckoutPage() {

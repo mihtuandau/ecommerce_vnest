@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { shippingApi } from "@/features/shipping/api";
+import { shippingApi } from "@/features/shipping/api/index";
 import { useAddresses } from "@/features/users/hooks";
 import { useToast } from "@/hooks/useToast";
 import { CheckoutFormData } from "@/features/checkout/utils/checkoutValidation";

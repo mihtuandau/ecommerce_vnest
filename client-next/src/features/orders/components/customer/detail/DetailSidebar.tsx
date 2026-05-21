@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/Button";
 import { useRouter } from "next/navigation";
 import { OrderStatus } from "@/types/enums";
 import { useToast } from "@/hooks/useToast";
-import { paymentsApi } from "@/features/payments/api";
+import { paymentsApi } from "@/features/payments/api/index";
 import { cn } from "@/utils/cn";
 import { formatCurrency } from "@/utils/formatCurrency";
 
