@@ -76,7 +76,11 @@ export function LoginForm() {
 
   const handleLoginSuccess = (response: any) => {
     success(AUTH_MESSAGES.LOGIN_SUCCESS);
-    if (response.user?.role === Role.ADMIN) {
+    if (
+      response.user?.role === Role.ADMIN ||
+      response.user?.role === Role.WAREHOUSE ||
+      response.user?.role === Role.SALES
+    ) {
       router.push(ROUTES.ADMIN);
     } else {
       router.push(ROUTES.HOME);

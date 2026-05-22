@@ -601,8 +601,8 @@ model AuditLog {
 enum Role {
   CUSTOMER
   ADMIN
-  KHO
-  BAN_HANG
+  WAREHOUSE
+  SALES
 }
 
 enum UserStatus {

@@ -33,7 +33,7 @@ export class UpdateUserDto {
 
   @ApiProperty({
     example: 'ADMIN',
-    description: 'Vai trò mới (ADMIN, KHO, BAN_HANG, CUSTOMER)',
+    description: 'Vai trò mới (ADMIN, WAREHOUSE, SALES, CUSTOMER)',
     required: false,
     enum: Role,
   })

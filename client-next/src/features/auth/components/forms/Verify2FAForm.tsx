@@ -30,8 +30,8 @@ export function Verify2FAForm() {
 
       const isStaff =
         response.user?.role === Role.ADMIN ||
-        response.user?.role === Role.KHO ||
-        response.user?.role === Role.BAN_HANG;
+        response.user?.role === Role.WAREHOUSE ||
+        response.user?.role === Role.SALES;
       if (isStaff) {
         router.push(ROUTES.ADMIN);
       } else {

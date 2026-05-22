@@ -1,4 +1,4 @@
-﻿import {
+import {
   IsEmail,
   IsString,
   MinLength,
@@ -38,7 +38,7 @@ export class CreateUserDto {
   @ApiProperty({
     example: 'ADMIN',
     description:
-      'Vai trò user (ADMIN, KHO, BAN_HANG, CUSTOMER)',
+      'Vai trò user (ADMIN, WAREHOUSE, SALES, CUSTOMER)',
     required: false,
     enum: Role,
   })

@@ -85,7 +85,7 @@ export class ReturnController {
     @Body() dto: UpdateReturnRequestDto,
     @Req() req: any,
   ) {
-    const isStaff = ['ADMIN', 'KHO', 'BAN_HANG'].includes(req.user?.role);
+    const isStaff = ['ADMIN', 'WAREHOUSE', 'SALES'].includes(req.user?.role);
     return this.returnService.updateStatus(+id, dto, req.user?.userId, isStaff);
   }
 }

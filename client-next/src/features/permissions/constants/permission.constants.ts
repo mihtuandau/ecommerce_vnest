@@ -101,7 +101,7 @@ export const ROLE_CONFIG: Record<
     bg: "bg-rose-50",
     icon: ShieldCheck,
   },
-  [Role.KHO]: {
+  [Role.WAREHOUSE]: {
     label: "Quản lý kho",
     desc: "Quản lý xuất nhập tồn",
     color: "text-amber-600",
@@ -109,7 +109,7 @@ export const ROLE_CONFIG: Record<
     bg: "bg-amber-50",
     icon: Warehouse,
   },
-  [Role.BAN_HANG]: {
+  [Role.SALES]: {
     label: "Bán hàng",
     desc: "Xử lý đơn & khách hàng",
     color: "text-sky-600",
@@ -127,7 +127,7 @@ export const ROLE_CONFIG: Record<
   },
 };
 
-export const MANAGED_ROLES = [Role.ADMIN, Role.KHO, Role.BAN_HANG, Role.CUSTOMER];
+export const MANAGED_ROLES = [Role.ADMIN, Role.WAREHOUSE, Role.SALES, Role.CUSTOMER];
 
 export const ACTION_LABELS: Record<string, string> = {
   manage: "Quản lý",

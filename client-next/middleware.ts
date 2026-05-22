@@ -33,7 +33,7 @@ export async function middleware(request: NextRequest) {
   if (token && isAuthPage) {
     const payload = await verifyAccessToken(token);
     if (payload) {
-      const isStaff = payload.role === "ADMIN" || payload.role === "KHO" || payload.role === "BAN_HANG";
+      const isStaff = payload.role === "ADMIN" || payload.role === "WAREHOUSE" || payload.role === "SALES";
       return NextResponse.redirect(new URL(isStaff ? "/admin" : "/", request.url));
     }
     return NextResponse.next();
@@ -51,7 +51,7 @@ export async function middleware(request: NextRequest) {
     if (!payload) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
-    const isStaff = payload.role === "ADMIN" || payload.role === "KHO" || payload.role === "BAN_HANG";
+    const isStaff = payload.role === "ADMIN" || payload.role === "WAREHOUSE" || payload.role === "SALES";
     if (isAdminPage && !isStaff) {
       return NextResponse.redirect(new URL("/", request.url));
     }

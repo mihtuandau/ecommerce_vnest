@@ -3,8 +3,8 @@
 export enum Role {
   CUSTOMER = "CUSTOMER",
   ADMIN = "ADMIN",
-  KHO = "KHO",
-  BAN_HANG = "BAN_HANG",
+  WAREHOUSE = "WAREHOUSE",
+  SALES = "SALES",
 }
 
 export enum UserStatus {

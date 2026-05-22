@@ -28,7 +28,7 @@ export class OrderCreation {
   ) {}
 
   async create(userId: number | null, dto: CreateOrderDto, requester: { role: string }, ipAddr: string = '127.0.0.1'): Promise<any> {
-    const isStaff = ['ADMIN', 'KHO', 'BAN_HANG'].includes(requester.role);
+    const isStaff = ['ADMIN', 'WAREHOUSE', 'SALES'].includes(requester.role);
     const itemsToOrder = await this.getItemsToOrder(userId, dto, isStaff);
     const variantIds = itemsToOrder.map((i) => i.variantId);
 

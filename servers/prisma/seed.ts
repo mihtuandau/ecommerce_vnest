@@ -46,7 +46,7 @@ async function main() {
 
   const rolePermissionsMap: Record<string, string[]> = {
     [Role.ADMIN]: allPermissions.map((p) => p.name), // Admin có tất cả quyền
-    [Role.KHO]: [
+    [Role.WAREHOUSE]: [
       'dashboard.view',
       'product.manage',
       'category.manage',
@@ -56,7 +56,7 @@ async function main() {
       'return.manage',
       'report.view',
     ],
-    [Role.BAN_HANG]: [
+    [Role.SALES]: [
       'dashboard.view',
       'order.manage',
       'order.view',

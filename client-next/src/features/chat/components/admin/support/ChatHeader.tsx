@@ -2,6 +2,8 @@
 
 import React from "react";
 import { Phone, Check, MoreVertical, Users } from "lucide-react";
+import { ROLE_CONFIG } from "@/features/permissions/constants";
+import { Role } from "@/types/enums";
 
 interface ChatHeaderProps {
   selectedRoomId: string | null;
@@ -39,7 +41,10 @@ export function ChatHeader({ selectedRoomId, selectedRoom }: ChatHeaderProps) {
                     ? "Kênh Nội Bộ Cửa Hàng"
                     : selectedRoom?.customer?.name}
                   <span className="text-[9px] bg-amber-100 border border-amber-200/50 text-amber-800 font-bold px-1.5 py-0.5 rounded tracking-wide uppercase">
-                    {isInternalGroup ? "Nhân viên" : selectedRoom?.customer?.role}
+                    {isInternalGroup
+                      ? "Nhân viên"
+                      : ROLE_CONFIG[selectedRoom?.customer?.role as Role]?.label ||
+                        selectedRoom?.customer?.role}
                   </span>
                 </h3>
                 <div className="text-[10px] text-slate-400 font-medium mt-0.5">

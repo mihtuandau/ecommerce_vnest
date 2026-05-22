@@ -281,7 +281,8 @@ export function Header({
 
                             <div className="p-1 space-y-0.5">
                               {(user.role === Role.ADMIN ||
-                                user.role === Role.BAN_HANG) && (
+                                user.role === Role.WAREHOUSE ||
+                                user.role === Role.SALES) && (
                                 <DropdownMenuItem
                                   asChild
                                   className="rounded-xl focus:bg-brand-cream/50 cursor-pointer transition-all duration-200"

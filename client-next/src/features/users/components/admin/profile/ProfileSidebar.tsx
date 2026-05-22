@@ -13,6 +13,7 @@ import {
 import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/utils/cn";
 import { Role } from "@/types/enums";
+import { ROLE_CONFIG } from "@/features/permissions/constants";
 import { UseFormReturn } from "react-hook-form";
 
 interface ProfileSidebarProps {
@@ -84,7 +85,7 @@ export function ProfileSidebar({
                     : "bg-emerald-500/10 text-emerald-500"
                 )}
               >
-                {user.role}
+                {ROLE_CONFIG[user.role as Role]?.label ?? user.role}
               </span>
               <span className="h-1 w-1 rounded-full bg-slate-300" />
               <span className="text-xs font-semibold text-slate-400 tracking-tight">

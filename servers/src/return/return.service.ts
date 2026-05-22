@@ -248,7 +248,7 @@ export class ReturnService {
     if (!request) throw new NotFoundException('Không tìm thấy yêu cầu trả hàng');
 
     // Bảo mật: Nếu là khách hàng, chỉ cho phép xem đơn của chính mình
-    if (actor && !['ADMIN', 'KHO', 'BAN_HANG'].includes(actor.role)) {
+    if (actor && !['ADMIN', 'WAREHOUSE', 'SALES'].includes(actor.role)) {
       if (request.userId !== actor.userId) {
         throw new NotFoundException('Không tìm thấy yêu cầu trả hàng hoặc bạn không có quyền truy cập');
       }

@@ -43,7 +43,7 @@ export function AdminChatView() {
       : usersResponse?.data || [];
     return rawList.filter(
       (u: any) =>
-        [Role.ADMIN, Role.KHO, Role.BAN_HANG].includes(u.role?.toUpperCase()) &&
+        [Role.ADMIN, Role.WAREHOUSE, Role.SALES].includes(u.role?.toUpperCase()) &&
         u.id !== user?.id
     );
   }, [usersResponse, user]);
