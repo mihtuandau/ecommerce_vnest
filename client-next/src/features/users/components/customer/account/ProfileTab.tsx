@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
 import { useUpdateProfile } from "@/features/users/hooks";
 import { useToast } from "@/hooks/useToast";
-import { productsApi } from "@/features/products/api";
+import { productsApi } from "@/features/products/api/products.api";
 import type { User } from "@/types/models";
 import { getImageUrl } from "@/utils/image";
 import { cn } from "@/utils/cn";

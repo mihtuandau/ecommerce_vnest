@@ -10,10 +10,14 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     private configService: ConfigService,
     private userService: UserService,
   ) {
+    const callbackURL =
+      configService.get<string>('GOOGLE_CALLBACK_URL')?.trim() ||
+      'http://localhost:5000/api/auth/google-login/callback';
+
     super({
       clientID: configService.get('GOOGLE_CLIENT_ID')?.trim(),
       clientSecret: configService.get('GOOGLE_CLIENT_SECRET')?.trim(),
-      callbackURL: 'http://localhost:5000/api/auth/google-login/callback',
+      callbackURL,
       scope: [
         'https://www.googleapis.com/auth/userinfo.profile',
         'https://www.googleapis.com/auth/userinfo.email',

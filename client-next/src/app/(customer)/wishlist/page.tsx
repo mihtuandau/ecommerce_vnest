@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { WishlistView } from "@/features/wishlist/components/WishlistView";
+import { WishlistView } from "@/features/wishlist/views/customer/WishlistView";
 
 export const metadata: Metadata = {
   title: "Danh sách yêu thích | LUXE",

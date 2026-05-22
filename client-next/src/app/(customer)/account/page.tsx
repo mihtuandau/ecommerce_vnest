@@ -1,4 +1,4 @@
-import { AccountView } from "@/features/users/components/customer/AccountView";
+import { AccountView } from "@/features/users/views/customer/AccountView";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/Skeleton";
 

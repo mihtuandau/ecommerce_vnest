@@ -116,7 +116,7 @@ import { useProductReviews, useCanReview } from "../../hooks";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Button } from "@/components/ui/Button";
 import { ReviewModal } from "./ReviewModal";
-import { useAuthStore } from "@/store/useAuthStore";
+import { useAuthStore } from "@/features/auth/store/auth.store";
 
 import { ReviewAISummary } from "./ReviewAISummary";
 

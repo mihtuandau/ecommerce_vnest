@@ -17,7 +17,7 @@ import { cn } from "@/utils/cn";
 import { useCreateReview } from "../../hooks";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRef } from "react";
-import { api } from "@/lib/axios";
+import { api } from "@/lib/http";
 import { useToast } from "@/hooks/useToast";
 
 interface ReviewModalProps {

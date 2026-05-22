@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Star, ShoppingCart, Trash2, FolderOpen, Check } from "lucide-react";
-import * as Icons from "lucide-react";
+import { isEmojiIcon, WISHLIST_ICON_MAP } from "@/features/wishlist/constants";
 import { cn } from "@/utils/cn";
 import { WishlistItem } from "@/store/useWishlistStore";
 import { Price } from "@/components/ui";
@@ -30,11 +30,10 @@ interface WishlistItemCardProps {
 }
 
 function LocalCollectionIcon({ name, className }: { name: string; className?: string }) {
-  const isEmoji = /[\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF]/g.test(name) || name.length <= 2;
-  if (isEmoji) {
+  if (isEmojiIcon(name)) {
     return <span className={cn("inline-flex items-center justify-center text-sm", className)}>{name}</span>;
   }
-  const IconComponent = (Icons as any)[name] || FolderOpen;
+  const IconComponent = WISHLIST_ICON_MAP[name] || FolderOpen;
   return <IconComponent className={className} />;
 }
 

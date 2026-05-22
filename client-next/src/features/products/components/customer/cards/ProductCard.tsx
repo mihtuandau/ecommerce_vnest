@@ -8,7 +8,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/features/cart/hooks";
 import { useWishlistStore } from "@/store/useWishlistStore";
-import { useAuthStore } from "@/store/useAuthStore";
+import { useAuthStore } from "@/features/auth/store/auth.store";
 import { useToast } from "@/hooks/useToast";
 import { cn } from "@/utils/cn";
 import { useFlashSale, useDiscounts } from "@/features/discounts/hooks";

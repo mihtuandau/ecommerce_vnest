@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Filter } from "lucide-react";
-import { RETURN_STATUS_CONFIG } from "../../constants";
+import { RETURN_STATUS_CONFIG } from "../../constants/index";
 
 interface ReturnsToolbarProps {
   filterStatus: string;

@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/Input";
-import { productsApi } from "@/features/products/api";
+import { useClickOutside, useDebounce } from "@/hooks";
+import { productsApi } from "@/features/products/api/products.api";
 import { Search, Plus, ShoppingCart } from "lucide-react";
 import { Spinner } from "@/components/ui/Spinner";
 import { formatCurrency } from "@/utils/formatCurrency";
@@ -18,32 +19,25 @@ export function ProductAutocomplete({ onSelect }: ProductAutocompleteProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const debouncedSearch = useDebounce(search, 300);
+  const closeDropdown = useCallback(() => setIsOpen(false), []);
 
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(event.target as Node)
-      ) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  useClickOutside(containerRef, closeDropdown);
 
   useEffect(() => {
-    if (search.length < 2) {
+    if (debouncedSearch.length < 2) {
       setResults([]);
       setIsOpen(false);
       return;
     }
 
-    const timer = setTimeout(async () => {
+    const fetchProducts = async () => {
+      setIsLoading(true);
       try {
-        setIsLoading(true);
-        const res = await productsApi.getProducts({ search, limit: 10 });
+        const res = await productsApi.getProducts({
+          search: debouncedSearch,
+          limit: 10,
+        });
         setResults(res.data || []);
         setIsOpen(true);
       } catch (e) {
@@ -51,10 +45,10 @@ export function ProductAutocomplete({ onSelect }: ProductAutocompleteProps) {
       } finally {
         setIsLoading(false);
       }
-    }, 300);
+    };
 
-    return () => clearTimeout(timer);
-  }, [search]);
+    fetchProducts();
+  }, [debouncedSearch]);
 
   const handleSelect = (product: any, variant: any) => {
     onSelect({

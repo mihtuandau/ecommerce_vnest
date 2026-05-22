@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useAuthStore } from "@/store/useAuthStore";
+import { useAuthStore } from "@/features/auth/store/auth.store";
 import { CheckoutFormData } from "@/features/checkout/utils/checkoutValidation";
 
 const initialFormState: CheckoutFormData = {
@@ -35,9 +35,15 @@ export function useCheckoutForm() {
     }
   }, [user]);
 
-  const updateFormField = useCallback((field: keyof CheckoutFormData, value: any) => {
-    setForm((prev) => ({ ...prev, [field]: value }));
-  }, []);
+  const updateFormField = useCallback(
+    <TField extends keyof CheckoutFormData>(
+      field: TField,
+      value: CheckoutFormData[TField]
+    ) => {
+      setForm((prev) => ({ ...prev, [field]: value }));
+    },
+    []
+  );
 
   const updateFormAddress = useCallback((address: Partial<CheckoutFormData>) => {
     setForm((prev) => ({ ...prev, ...address }));

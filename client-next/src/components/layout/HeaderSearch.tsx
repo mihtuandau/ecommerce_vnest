@@ -1,13 +1,14 @@
 "use client";
 
-import { Search, X, ChevronRight, Mic, MicOff, Sparkles } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { Search, X, ChevronRight, Mic, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/Input";
+import { useClickOutside, useDebounce } from "@/hooks";
 import { useCategories } from "@/features/categories/hooks";
 import { useBrands } from "@/features/products/hooks";
-import { productsApi } from "@/features/products/api";
+import { productsApi } from "@/features/products/api/products.api";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { Category, Brand } from "@/types/models";
 import Image from "next/image";
@@ -19,8 +20,6 @@ interface HeaderSearchProps {
   onSearch?: () => void;
   isMobile?: boolean;
 }
-
-import React from "react";
 
 export const HeaderSearch = React.memo(function HeaderSearch({
   onSearch,
@@ -38,6 +37,10 @@ export const HeaderSearch = React.memo(function HeaderSearch({
   const [showLiveSearch, setShowLiveSearch] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const searchContainerRef = useRef<HTMLDivElement>(null);
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
+  const closeLiveSearch = useCallback(() => setShowLiveSearch(false), []);
+
+  useClickOutside(searchContainerRef, closeLiveSearch);
 
   // Voice Recognition Logic
   const startVoiceSearch = () => {
@@ -76,45 +79,33 @@ export const HeaderSearch = React.memo(function HeaderSearch({
     recognition.start();
   };
 
-  // Live Search Logic
   useEffect(() => {
-    const timer = setTimeout(async () => {
-      if (searchQuery.trim().length >= 2) {
-        setIsLiveLoading(true);
-        setShowLiveSearch(true);
-        try {
-          const res = await productsApi.getProducts({
-            search: searchQuery.trim(),
-            limit: 5,
-          } as any);
-          setLiveResults(res.data || []);
-        } catch (error) {
-          console.error("Live search failed:", error);
-        } finally {
-          setIsLiveLoading(false);
-        }
-      } else {
-        setLiveResults([]);
-        setShowLiveSearch(false);
-      }
-    }, 300);
+    const query = debouncedSearchQuery.trim();
 
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
+    if (query.length < 2) {
+      setLiveResults([]);
+      setShowLiveSearch(false);
+      return;
+    }
 
-  // Click Outside to Close
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        searchContainerRef.current &&
-        !searchContainerRef.current.contains(event.target as Node)
-      ) {
-        setShowLiveSearch(false);
+    const fetchLiveResults = async () => {
+      setIsLiveLoading(true);
+      setShowLiveSearch(true);
+      try {
+        const res = await productsApi.getProducts({
+          search: query,
+          limit: 5,
+        } as any);
+        setLiveResults(res.data || []);
+      } catch (error) {
+        console.error("Live search failed:", error);
+      } finally {
+        setIsLiveLoading(false);
       }
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+
+    fetchLiveResults();
+  }, [debouncedSearchQuery]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();

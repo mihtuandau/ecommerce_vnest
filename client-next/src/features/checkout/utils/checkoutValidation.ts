@@ -1,4 +1,5 @@
 import { CHECKOUT_MESSAGES, CHECKOUT_VALIDATION } from "@/features/checkout/constants";
+import type { CheckoutDiscount } from "@/store/useCartStore";
 
 export type CheckoutFormData = {
   fullName: string;
@@ -43,7 +44,10 @@ export const validateCheckoutForm = (
   return { valid: true };
 };
 
-export const calculateDiscountAmount = (subtotal: number, discount: any): number => {
+export const calculateDiscountAmount = (
+  subtotal: number,
+  discount: CheckoutDiscount | null
+): number => {
   if (!discount) return 0;
 
   let voucherSaving = 0;

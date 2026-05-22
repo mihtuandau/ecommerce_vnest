@@ -14,7 +14,7 @@ import {
   AUDIT_LOG_ENTITY_MAPPING,
   AUDIT_LOG_ACTION_TEXTS,
   AUDIT_LOG_KEY_TRANSLATIONS,
-} from "../../constants";
+} from "@/features/logs/constants";
 
 dayjs.extend(relativeTime);
 dayjs.locale("vi");

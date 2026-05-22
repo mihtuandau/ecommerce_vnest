@@ -2,10 +2,10 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useCartStore } from "@/store/useCartStore";
-import { ordersApi } from "@/features/orders/api";
+import { ordersApi } from "@/features/orders/api/orders.api";
 import { useToast } from "@/hooks/useToast";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useAuthStore } from "@/store/useAuthStore";
+import { useAuthStore } from "@/features/auth/store/auth.store";
 import { CHECKOUT_CONSTANTS, CHECKOUT_MESSAGES } from "@/features/checkout/constants";
 import { validateCheckoutForm } from "@/features/checkout/utils/checkoutValidation";
 import { useCart } from "@/features/cart/hooks";

@@ -1,28 +1,15 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { ChangeEvent } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { useAuthStore } from "@/store/useAuthStore";
-import { sanitizeUser } from "@/utils/sanitizeUser";
-import { useUpdateUser } from "@/features/users/hooks";
+import { useAuthStore } from "@/features/auth/store/auth.store";
+import { productsApi } from "@/features/products/api/products.api";
 import { usersApi } from "@/features/users/api";
-import { productsApi } from "@/features/products/api";
-
-export const profileSchema = z.object({
-  name: z.string().min(2, "Tên phải có ít nhất 2 ký tự"),
-  email: z.string().email("Email không hợp lệ"),
-  phone: z.string().optional().nullable(),
-  avatar: z.string().optional().nullable(),
-  password: z
-    .string()
-    .min(6, "Mật khẩu phải có ít nhất 6 ký tự")
-    .optional()
-    .or(z.literal("")),
-});
-
-export type ProfileFormValues = z.infer<typeof profileSchema>;
+import { useUpdateUser } from "@/features/users/hooks/mutations";
+import { profileSchema, type ProfileFormValues } from "@/features/users/schemas";
+import { sanitizeUser } from "@/utils/sanitizeUser";
 
 export function useAdminProfile() {
   const user = useAuthStore((state) => state.user);
@@ -46,13 +33,14 @@ export function useAdminProfile() {
     const syncProfile = async () => {
       try {
         const latestUser = await usersApi.getProfile();
-        if (latestUser && latestUser.id) {
+        if (latestUser?.id) {
           setUser(sanitizeUser(latestUser) as any);
         }
       } catch (err) {
         console.error("Auto-sync failed", err);
       }
     };
+
     syncProfile();
   }, [setUser]);
 
@@ -71,13 +59,13 @@ export function useAdminProfile() {
   const onSubmit = (data: ProfileFormValues) => {
     if (!user?.id) return;
 
-    const updateData: any = { ...data };
+    const updateData: Partial<ProfileFormValues> = { ...data };
     if (!data.password) delete updateData.password;
 
     updateUser.mutate(
       {
         id: String(user.id),
-        data: updateData,
+        data: updateData as any,
       },
       {
         onSuccess: (response: any) => {
@@ -90,18 +78,18 @@ export function useAdminProfile() {
     );
   };
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      setIsUploading(true);
-      try {
-        const url = await productsApi.uploadImage(file);
-        form.setValue("avatar", url);
-      } catch (err) {
-        console.error("Upload failed", err);
-      } finally {
-        setIsUploading(false);
-      }
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      const url = await productsApi.uploadImage(file);
+      form.setValue("avatar", url);
+    } catch (err) {
+      console.error("Upload failed", err);
+    } finally {
+      setIsUploading(false);
     }
   };
 

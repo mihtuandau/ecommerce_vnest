@@ -5,8 +5,11 @@ import { Check } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/utils/cn";
-import { Permission } from "../api";
-import { PERMISSION_GROUPS, ACTION_LABELS } from "../constants";
+import type { Permission } from "@/features/permissions/types";
+import {
+  ACTION_LABELS,
+  PERMISSION_GROUPS,
+} from "@/features/permissions/constants/index";
 
 interface PermissionMatrixProps {
   groupedPermissions: Record<string, Permission[]>;

@@ -1,3 +1,4 @@
+export * from "./DiscountForm";
 export * from "./BasicInfoSection";
 export * from "./ValueSection";
 export * from "./UsageSection";

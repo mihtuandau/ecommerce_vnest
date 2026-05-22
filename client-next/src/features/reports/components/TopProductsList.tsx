@@ -6,10 +6,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { ShoppingBag, TrendingUp } from "lucide-react";
 import { Spinner } from "@/components/ui/Spinner";
-import { useTopProducts } from "../hooks";
+import { useTopProducts } from "@/features/reports/hooks";
+import type { ReportQueryParams } from "@/features/reports/types";
 
 type TopProductsListProps = {
-  params?: Record<string, string | undefined>;
+  params?: ReportQueryParams;
 };
 
 interface TopProduct {

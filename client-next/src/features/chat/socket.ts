@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import Cookies from "js-cookie";
-import { useAuthStore } from "@/store/useAuthStore";
+import { useAuthStore } from "@/features/auth/store/auth.store";
 import { CHAT_SOCKET_CONSTANTS, CHAT_SOCKET_TRANSPORTS } from "./constants";
 
 const SOCKET_URL =

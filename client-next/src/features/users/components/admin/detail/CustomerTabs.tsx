@@ -6,7 +6,7 @@ import { ShoppingBag, MapPin, Star, UserCog } from "lucide-react";
 import { CustomerOrders } from "./CustomerOrders";
 import { CustomerAddresses } from "./CustomerAddresses";
 import { CustomerReviews } from "./CustomerReviews";
-import { UserForm } from "../UserForm";
+import { UserForm } from "@/features/users/components/admin/create/UserForm";
 import { User, Order, Address } from "@/types/models";
 
 interface CustomerTabsProps {

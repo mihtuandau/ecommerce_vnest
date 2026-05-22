@@ -30,12 +30,12 @@ import {
 } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { useAuth } from "@/features/auth/hooks/useAuth";
-import { useAuthStore } from "@/store/useAuthStore";
+import { useAuthStore } from "@/features/auth/store/auth.store";
 import { handleAvatarError } from "@/utils/avatar";
 import Image from "next/image";
 import { usePermission } from "@/hooks/usePermission";
 import { Role } from "@/types/enums";
-import { ROLE_CONFIG } from "@/features/permissions/constants";
+import { ROLE_CONFIG } from "@/features/permissions/constants/index";
 import { ROUTES } from "@/constants/routes";
 
 export interface NavSubItem {

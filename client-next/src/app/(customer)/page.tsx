@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { HomeView } from "@/features/home/components/HomeView";
+import { HomeView } from "@/features/home/views/customer/HomeView";
 
 export const metadata: Metadata = {
   title: "LUXE — Nền tảng mua sắm trực tuyến hiện đại",
@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 };
 
 import { Suspense } from "react";
-import { HeroBannerSkeleton } from "@/features/home/components/skeletons/HomeSkeletons";
+import { HeroBannerSkeleton } from "@/features/home/components/customer/skeletons/HomeSkeletons";
 
 export default function HomePage() {
   return (

@@ -1,13 +1,9 @@
 import { z } from "zod";
 
-/**
- * Runtime environment validation using Zod.
- * Fails fast at startup if required env vars are missing.
- */
 const envSchema = z.object({
-  NEXT_PUBLIC_API_URL: z.string().url().default("http://localhost:3000/api"),
-  NEXT_PUBLIC_SOCKET_URL: z.string().url().default("http://localhost:3000"),
-  NEXT_PUBLIC_APP_URL: z.string().url().default("http://localhost:3000"),
+  NEXT_PUBLIC_API_URL: z.string().url(),
+  NEXT_PUBLIC_SOCKET_URL: z.string().url(),
+  NEXT_PUBLIC_APP_URL: z.string().url() ,
 });
 
 export const env = envSchema.parse({

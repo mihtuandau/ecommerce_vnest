@@ -1,4 +1,4 @@
-// features/wishlist — Save/remove favorite products
-// Components: WishlistButton, WishlistGrid
-export { useWishlist } from "./hooks/useWishlist";
-export type { CustomCollection } from "./hooks/useWishlist";
+export * from "./hooks";
+export * from "./types";
+export * from "./views";
+export * from "./components";

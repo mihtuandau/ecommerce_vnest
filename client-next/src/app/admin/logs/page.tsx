@@ -1,4 +1,4 @@
-import { AdminLogsContainer } from "@/features/logs";
+import { AdminLogsView } from "@/features/logs/views/admin/AdminLogsView";
 
 export const metadata = {
   title: "Nhật ký hệ thống - Admin LUXE",
@@ -6,5 +6,5 @@ export const metadata = {
 };
 
 export default function AdminLogsPage() {
-  return <AdminLogsContainer />;
+  return <AdminLogsView />;
 }

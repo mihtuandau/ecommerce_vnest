@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { discountsApi } from "../api";
 import { queryKeys } from "@/constants/queryKeys";
 import { useToast } from "@/hooks/useToast";
+import { mapDiscountMutationValues } from "@/features/discounts/services";
 
 // ── Customer: chỉ lấy voucher (không Flash Sale) ──
 export function useDiscounts(params?: Record<string, string | number | boolean>) {
@@ -35,13 +36,7 @@ export function useCreateDiscount() {
 
   return useMutation({
     mutationFn: (values: any) => {
-      const { type, value, ...rest } = values;
-      const data = {
-        ...rest,
-        percentage: type === "PERCENTAGE" ? value : null,
-        fixedAmount: type === "FIXED" ? value : null,
-      };
-      return discountsApi.createDiscount(data);
+      return discountsApi.createDiscount(mapDiscountMutationValues(values));
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.discounts.all });
@@ -59,13 +54,7 @@ export function useUpdateDiscount() {
 
   return useMutation({
     mutationFn: ({ id, data: values }: { id: string; data: any }) => {
-      const { type, value, ...rest } = values;
-      const data = {
-        ...rest,
-        percentage: type === "PERCENTAGE" ? value : null,
-        fixedAmount: type === "FIXED" ? value : null,
-      };
-      return discountsApi.updateDiscount(id, data);
+      return discountsApi.updateDiscount(id, mapDiscountMutationValues(values));
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.discounts.all });

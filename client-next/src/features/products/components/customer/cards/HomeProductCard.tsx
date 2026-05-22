@@ -13,7 +13,7 @@ import { getImageUrl } from "@/utils/image";
 import { QuickAddModal } from "./QuickAddModal";
 import { animateFlyToCart } from "@/utils/animateCart";
 import { useWishlistStore } from "@/store/useWishlistStore";
-import { useAuthStore } from "@/store/useAuthStore";
+import { useAuthStore } from "@/features/auth/store/auth.store";
 import { useToast } from "@/hooks/useToast";
 
 interface HomeProductCardProps {

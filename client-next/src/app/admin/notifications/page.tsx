@@ -1,4 +1,4 @@
-import { AdminNotificationsContainer } from "@/features/notifications";
+import { AdminNotificationsView } from "@/features/notifications/views/admin/AdminNotificationsView";
 
 export const metadata = {
   title: "Thông báo hệ thống - Admin LUXE",
@@ -6,5 +6,5 @@ export const metadata = {
 };
 
 export default function AdminNotificationsPage() {
-  return <AdminNotificationsContainer />;
+  return <AdminNotificationsView />;
 }

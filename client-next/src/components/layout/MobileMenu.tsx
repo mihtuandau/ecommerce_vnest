@@ -14,13 +14,14 @@ import {
 } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { ROUTES } from "@/constants/routes";
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { productsApi } from "@/features/products/api";
+import { useDebounce, useDisclosure } from "@/hooks";
+import { productsApi } from "@/features/products/api/products.api";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { Spinner } from "@/components/ui/Spinner";
 import { Skeleton } from "@/components/ui/Skeleton";
-import { useAuthStore } from "@/store/useAuthStore";
+import { useAuthStore } from "@/features/auth/store/auth.store";
 import { cn } from "@/utils/cn";
 
 interface MobileMenuProps {
@@ -51,32 +52,36 @@ export function MobileMenu({
   const [searchQuery, setSearchQuery] = useState("");
   const [liveResults, setLiveResults] = useState<any[]>([]);
   const [isLiveLoading, setIsLiveLoading] = useState(false);
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
   const router = useRouter();
   const pathname = usePathname();
 
   // Live search logic for mobile
   useEffect(() => {
-    const timer = setTimeout(async () => {
-      if (searchQuery.trim().length >= 2) {
-        setIsLiveLoading(true);
-        try {
-          const res = await productsApi.getProducts({
-            search: searchQuery.trim(),
-            limit: 4,
-          });
-          setLiveResults(res.data || []);
-        } catch (error) {
-          console.error("Live search failed", error);
-        } finally {
-          setIsLiveLoading(false);
-        }
-      } else {
-        setLiveResults([]);
-      }
-    }, 300);
+    const query = debouncedSearchQuery.trim();
 
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
+    if (query.length < 2) {
+      setLiveResults([]);
+      return;
+    }
+
+    const fetchLiveResults = async () => {
+      setIsLiveLoading(true);
+      try {
+        const res = await productsApi.getProducts({
+          search: query,
+          limit: 4,
+        });
+        setLiveResults(res.data || []);
+      } catch (error) {
+        console.error("Live search failed", error);
+      } finally {
+        setIsLiveLoading(false);
+      }
+    };
+
+    fetchLiveResults();
+  }, [debouncedSearchQuery]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -304,7 +309,7 @@ function MobileCategoryItem({
   category: any;
   onClose: () => void;
 }) {
-  const [isOpen, setIsOpen] = useState(false);
+  const { isOpen, toggle } = useDisclosure(false);
   const hasChildren = category.children && category.children.length > 0;
 
   return (
@@ -333,7 +338,7 @@ function MobileCategoryItem({
         </Link>
         {hasChildren && (
           <button
-            onClick={() => setIsOpen(!isOpen)}
+            onClick={toggle}
             className="p-3 mr-1 rounded-xl text-brand-taupe hover:text-primary transition-all"
           >
             <ChevronDown

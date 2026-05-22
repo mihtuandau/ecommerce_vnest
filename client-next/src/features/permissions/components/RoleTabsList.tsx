@@ -2,7 +2,7 @@
 
 import React from "react";
 import { TabsList, TabsTrigger } from "@/components/ui/Tabs";
-import { MANAGED_ROLES, ROLE_CONFIG } from "../constants";
+import { MANAGED_ROLES, ROLE_CONFIG } from "@/features/permissions/constants/index";
 
 interface RoleTabsListProps {
   dirtyRoles: Set<string>;

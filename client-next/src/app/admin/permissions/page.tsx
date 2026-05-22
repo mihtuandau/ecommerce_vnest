@@ -1,16 +1,8 @@
 "use client";
 
 import React from "react";
-import { PermissionsContainer } from "@/features/permissions/components/PermissionsContainer";
-import { usePermission } from "@/hooks/usePermission";
-import { AccessDenied } from "@/components/ui/AccessDenied";
+import { AdminPermissionsView } from "@/features/permissions/views/admin/AdminPermissionsView";
 
 export default function AdminPermissionsPage() {
-  const { can } = usePermission();
-
-  if (!can("user.manage") && !can("settings.manage")) {
-    return <AccessDenied permission="user.manage" />;
-  }
-
-  return <PermissionsContainer />;
+  return <AdminPermissionsView />;
 }

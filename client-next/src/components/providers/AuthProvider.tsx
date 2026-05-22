@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useRef, type ReactNode } from "react";
-import { useAuthStore } from "@/store/useAuthStore";
+import { useAuthStore } from "@/features/auth/store/auth.store";
 import { usersApi } from "@/features/users/api";
 import { cartApi } from "@/features/cart/api";
 import { useCartStore } from "@/store/useCartStore";

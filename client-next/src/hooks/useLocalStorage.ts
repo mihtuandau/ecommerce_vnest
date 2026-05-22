@@ -1,33 +1,40 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 
-export function useLocalStorage<T>(
-  key: string,
-  initialValue: T
-): [T, (value: T | ((val: T) => T)) => void] {
-  const [storedValue, setStoredValue] = useState<T>(() => {
-    if (typeof window === "undefined") return initialValue;
+type SetValue<T> = T | ((prevValue: T) => T);
+
+export function useLocalStorage<T>(key: string, initialValue: T) {
+  const [storedValue, setStoredValue] = useState<T>(initialValue);
+
+  useEffect(() => {
     try {
       const item = window.localStorage.getItem(key);
-      return item ? (JSON.parse(item) as T) : initialValue;
+      if (item) {
+        setStoredValue(JSON.parse(item) as T);
+      }
     } catch {
-      return initialValue;
+      setStoredValue(initialValue);
     }
-  });
+  }, [initialValue, key]);
 
   const setValue = useCallback(
-    (value: T | ((val: T) => T)) => {
-      setStoredValue((prev) => {
-        const valueToStore = value instanceof Function ? value(prev) : value;
-        if (typeof window !== "undefined") {
-          window.localStorage.setItem(key, JSON.stringify(valueToStore));
-        }
-        return valueToStore;
+    (value: SetValue<T>) => {
+      setStoredValue((prevValue) => {
+        const nextValue =
+          value instanceof Function ? value(prevValue) : value;
+
+        window.localStorage.setItem(key, JSON.stringify(nextValue));
+        return nextValue;
       });
     },
     [key]
   );
 
-  return [storedValue, setValue];
+  const removeValue = useCallback(() => {
+    window.localStorage.removeItem(key);
+    setStoredValue(initialValue);
+  }, [initialValue, key]);
+
+  return [storedValue, setValue, removeValue] as const;
 }

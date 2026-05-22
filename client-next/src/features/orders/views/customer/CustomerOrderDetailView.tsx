@@ -1,0 +1,443 @@
+"use client";
+
+import React, { useState } from "react";
+import { useParams } from "next/navigation";
+import { useOrderDetail, useCancelOrder } from "@/features/orders/hooks";
+import { ORDER_STATUS_CONFIG, ORDERS_CONTACT } from "@/features/orders";
+import { Skeleton } from "@/components/ui/Skeleton";
+import { useCart } from "@/features/cart/hooks";
+import { useToast } from "@/hooks/useToast";
+import { AlertCircle, Clock, RotateCcw } from "lucide-react";
+import { OrderStatus, PaymentStatus } from "@/types/enums";
+import { Button } from "@/components/ui/Button";
+import Link from "next/link";
+import Image from "next/image";
+import {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/Breadcrumb";
+
+// Sub-components
+import { DetailHeader } from "../../components/customer/detail/DetailHeader";
+import { DetailStepper } from "../../components/customer/detail/DetailStepper";
+import { DetailItems } from "../../components/customer/detail/DetailItems";
+import { DetailSidebar } from "../../components/customer/detail/DetailSidebar";
+import { DetailReview } from "../../components/customer/detail/DetailReview";
+import { ReorderBanner } from "../../components/customer/detail/ReorderBanner";
+import { PrintInvoice } from "../../components/admin/detail/PrintInvoice";
+import { ReviewModal } from "@/features/reviews/components/customer/ReviewModal";
+import { RequestReturnModal } from "../../components/customer/detail/RequestReturnModal";
+import { ConfirmCancelModal } from "../../components/customer/detail/ConfirmCancelModal";
+import { useQueryClient } from "@tanstack/react-query";
+import { useConfirmReturnSent } from "@/features/returns/hooks";
+import { queryKeys } from "@/constants/queryKeys";
+
+export function CustomerOrderDetailView() {
+  const { id } = useParams() as { id: string };
+  const { data: order, isLoading } = useOrderDetail(id);
+  const { mutate: cancelOrder } = useCancelOrder();
+  const { addItem } = useCart();
+  const { success, error: toastError } = useToast();
+  const queryClient = useQueryClient();
+  const [isReturnModalOpen, setIsReturnModalOpen] = useState(false);
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<any>(null);
+  const { mutate: confirmReturnSent, isPending: isConfirmingSent } =
+    useConfirmReturnSent();
+
+  const handleReorder = () => {
+    if (!order || !order.orderItems) return;
+
+    order.orderItems.forEach((item) => {
+      const getUrl = (img: any) => (typeof img === "string" ? img : img?.url);
+      addItem({
+        productId: String(item.variant?.productId || item.productId || ""),
+        variantId: String(item.variantId),
+        name:
+          item.productName ||
+          item.variantSnapshot?.productName ||
+          item.variant?.product?.name ||
+          "S?n ph?m",
+        price: item.price,
+        quantity: item.quantity,
+        imageUrl: getUrl(
+          item.variantSnapshot?.image ||
+            item.variant?.images?.[0] ||
+            item.variant?.product?.images?.[0]
+        ),
+        slug: item.variant?.product?.slug || "",
+        color: item.variant?.color,
+        size: item.variant?.size,
+      });
+    });
+
+    success("Ðã thêm các s?n ph?m vào gi? hàng");
+  };
+
+  const handleReturnSuccess = () => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.orders.detail(id) });
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-brand-cream">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-8">
+          <div className="space-y-4">
+            <Skeleton className="h-10 w-48 rounded-full" />
+            <Skeleton className="h-12 w-96 rounded-xl" />
+            <Skeleton className="h-4 w-64 rounded-full" />
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div className="lg:col-span-8 space-y-8">
+              <Skeleton className="h-32 w-full rounded-2xl" />
+              <Skeleton className="h-[400px] w-full rounded-2xl" />
+            </div>
+            <div className="lg:col-span-4 space-y-8">
+              <Skeleton className="h-64 w-full rounded-2xl" />
+              <Skeleton className="h-64 w-full rounded-2xl" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!order) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-6 bg-brand-cream px-6">
+        <div className="h-24 w-24 bg-white rounded-full flex items-center justify-center shadow-sm border border-brand-border">
+          <AlertCircle className="h-12 w-12 text-rose-500 opacity-50" />
+        </div>
+        <div className="text-center space-y-2">
+          <h2 className="text-3xl font-bold text-brand-espresso font-serif">
+            Không tìm th?y don hàng
+          </h2>
+          <p className="text-brand-taupe text-sm max-w-xs mx-auto">
+            Ðon hàng có th? dã b? xóa ho?c không t?n t?i trong h? th?ng c?a chúng tôi.
+          </p>
+        </div>
+        <Button
+          asChild
+          className="rounded-full px-10 h-12 bg-brand-espresso text-white hover:bg-brand-espresso/90"
+        >
+          <Link href="/orders">Quay l?i danh sách</Link>
+        </Button>
+      </div>
+    );
+  }
+
+  const isPaid =
+    order.paymentStatus === "PAID" ||
+    (order.paymentStatus as any) === PaymentStatus.SUCCESS ||
+    order.payment?.status === "PAID" ||
+    (order.payment?.status as any) === PaymentStatus.SUCCESS;
+  const isCancelled = order.status === OrderStatus.CANCELLED;
+  const latestReturnRequest = (order.returnRequests || []).reduce(
+    (latest: any, current: any) => {
+      if (!latest) return current;
+      const latestTime = new Date(latest.updatedAt || latest.createdAt || 0).getTime();
+      const currentTime = new Date(current.updatedAt || current.createdAt || 0).getTime();
+      return currentTime > latestTime ? current : latest;
+    },
+    null
+  );
+
+  return (
+    <div className="min-h-screen bg-brand-cream text-brand-espresso pb-20 relative font-sans-brand">
+      <div className="no-print">
+        {/* Breadcrumb Container */}
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-5">
+          <Breadcrumb>
+            <BreadcrumbList className="text-sm font-medium">
+              <BreadcrumbItem>
+                <BreadcrumbLink asChild>
+                  <Link href="/">Trang ch?</Link>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbLink asChild>
+                  <Link href="/orders">Ðon hàng</Link>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>#{order.orderCode}</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </div>
+
+        {/* Main Content Container */}
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-6">
+          <DetailHeader
+            orderCode={order.orderCode}
+            orderId={order.id}
+            createdAt={order.createdAt}
+            deliveredAt={order.deliveredAt}
+            status={order.status}
+            isPaid={isPaid}
+            isCancelled={isCancelled}
+            onReorder={handleReorder}
+            onCancel={() => setIsCancelModalOpen(true)}
+            onReturn={() => setIsReturnModalOpen(true)}
+            onReview={() => {
+              if (order.orderItems?.[0]) setSelectedItem(order.orderItems[0]);
+            }}
+            onConfirmReturn={() => {
+              try {
+                if (latestReturnRequest?.id) {
+                  confirmReturnSent(latestReturnRequest.id);
+                } else {
+                  toastError("Không tìm th?y thông tin yêu c?u tr? hàng");
+                }
+              } catch (err: any) {
+                toastError(err.message || "Không th? c?p nh?t tr?ng thái hoàn tr?");
+              }
+            }}
+            returnStatus={latestReturnRequest?.status}
+            isUpdatingReturn={isConfirmingSent}
+            statusConfig={ORDER_STATUS_CONFIG}
+            order={order}
+            isReviewed={order.reviews && order.reviews.length > 0}
+          />
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            <div className="lg:col-span-8 space-y-8">
+              <DetailStepper
+                status={order.status}
+                isCancelled={isCancelled}
+                createdAt={order.createdAt}
+                deliveredAt={order.deliveredAt}
+                shippingCode={order.shippingCode}
+                userEmail={order.user?.email}
+              />
+
+              {isCancelled && (
+                <div className="p-6 bg-[#FCEAEA] border border-[#F0C0C0] rounded-2xl flex items-start gap-4 shadow-sm animate-in fade-in slide-in-from-left-4 duration-500">
+                  <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-[#C44040] shadow-sm shrink-0">
+                    <AlertCircle size={22} />
+                  </div>
+                  <div className="space-y-1">
+                    <h4 className="text-[15px] font-bold text-[#C44040]">
+                      Ðon hàng dã b? hu?
+                    </h4>
+                    <p className="text-[13px] text-[#C44040]/80 font-medium leading-relaxed">
+                      Ðon hàng c?a b?n dã du?c h?y thành công. N?u b?n dã thanh toán
+                      tru?c, s? ti?n s? du?c hoàn tr? trong vòng 3–5 ngày làm vi?c.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {latestReturnRequest && (
+                <div className="bg-white border border-[#DDD6C8] rounded-2xl p-10 space-y-8 shadow-sm font-sans-brand">
+                  <div className="flex items-center justify-between gap-5 flex-wrap">
+                    <div className="flex items-center gap-5">
+                      <div className="h-14 w-14 rounded-2xl bg-[#F3EFE8] flex items-center justify-center text-[#8A7966] border border-[#DDD6C8]">
+                        <RotateCcw size={24} />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-bold text-brand-espresso font-serif-brand">
+                          Chi ti?t yêu c?u tr? hàng
+                        </h3>
+                        <p className="text-xs text-[#8A7966] font-semibold mt-1">
+                          C?p nh?t:{" "}
+                          {new Date(
+                            latestReturnRequest?.updatedAt || order.updatedAt
+                          ).toLocaleString("vi-VN")}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[#F3EFE8] text-[#8A7966] border border-[#DDD6C8]">
+                      {latestReturnRequest.status === "PENDING" ? "Ch? duy?t" :
+                       latestReturnRequest.status === "APPROVED" ? "Ðã duy?t" :
+                       latestReturnRequest.status === "RETURNING" ? "Ðang g?i tr?" :
+                       latestReturnRequest.status === "RECEIVED" ? "Ðã nh?n hàng" :
+                       latestReturnRequest.status === "COMPLETED" ? "Hoàn t?t" :
+                       latestReturnRequest.status === "REJECTED" ? "T? ch?i" : latestReturnRequest.status}
+                    </div>
+                  </div>
+
+                  {latestReturnRequest.status === "APPROVED" && (
+                    <div className="p-6 bg-indigo-50 border border-indigo-100 rounded-2xl space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
+                      <div className="space-y-1">
+                        <h4 className="text-sm font-bold text-indigo-950">
+                          Yêu c?u tr? hàng dã du?c duy?t!
+                        </h4>
+                        <p className="text-xs text-indigo-800 leading-relaxed font-medium">
+                          Vui lòng dóng gói các s?n ph?m c?n hoàn tr? và g?i hàng v? cho shop. Sau khi g?i hàng di, b?n hãy nh?n nút du?i dây d? xác nh?n v?i h? th?ng.
+                        </p>
+                      </div>
+                      <Button
+                        disabled={isConfirmingSent}
+                        onClick={() => {
+                          if (latestReturnRequest?.id) {
+                            confirmReturnSent(latestReturnRequest.id);
+                          }
+                        }}
+                        className="rounded-xl h-10 px-5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-sm transition-all"
+                      >
+                        {isConfirmingSent ? "Ðang x? lý..." : "Xác nh?n dã g?i hàng"}
+                      </Button>
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-10 pt-8 border-t border-brand-sand">
+                    <div className="space-y-3">
+                      <p className="text-xs font-semibold text-[#8A7966]">
+                        Lý do t? b?n
+                      </p>
+                      <p className="text-sm text-brand-espresso font-medium leading-relaxed italic">
+                        "{latestReturnRequest.reason}"
+                      </p>
+                    </div>
+                    {latestReturnRequest?.adminNote && (
+                      <div className="space-y-3">
+                        <p className="text-xs font-semibold text-[#8A7966]">
+                          Ph?n h?i LUXE
+                        </p>
+                        <div className="p-5 bg-brand-cream/50 rounded-xl border border-brand-sand">
+                          <p className="text-sm text-brand-espresso font-medium leading-relaxed italic">
+                            "{latestReturnRequest.adminNote}"
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* B?ng ch?ng hình ?nh */}
+                    <div className="space-y-3 col-span-full pt-6 border-t border-brand-sand">
+                      <p className="text-xs font-semibold text-[#8A7966]">
+                        Hình ?nh b?ng ch?ng
+                      </p>
+                      {latestReturnRequest.images && latestReturnRequest.images.length > 0 ? (
+                        <div className="flex flex-wrap gap-3">
+                          {latestReturnRequest.images.map((url: string, index: number) => (
+                            <div
+                              key={index}
+                              className="w-20 h-20 rounded-xl overflow-hidden border border-[#DDD6C8] relative cursor-zoom-in group shadow-sm bg-slate-50"
+                            >
+                              <Image
+                                src={url}
+                                alt={`Evidence ${index + 1}`}
+                                fill
+                                sizes="80px"
+                                className="object-cover group-hover:scale-105 transition-transform duration-300"
+                                onClick={() => window.open(url, "_blank")}
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-xs font-medium text-slate-400 italic">
+                          Không có hình ?nh dính kèm
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <DetailItems
+                orderItems={order.orderItems}
+                total={order.total}
+                shippingFee={order.shippingFee}
+                discountAmount={order.discountAmount}
+                status={order.status}
+                orderId={order.id}
+                reviews={order.reviews}
+              />
+            </div>
+
+            <div className="lg:col-span-4">
+              <DetailSidebar
+                orderId={order.id}
+                shippingSnapshot={order.shippingSnapshot || {}}
+                user={order.user}
+                addressRelation={order.address}
+                paymentMethod={order.paymentMethod}
+                paymentStatus={order.paymentStatus || order.payment?.status || ""}
+                isPaid={isPaid}
+                isCancelled={isCancelled}
+                isReturned={order.status === OrderStatus.RETURNED}
+                isReturning={order.status === OrderStatus.RETURN_REQUESTED}
+                shippingCode={order.shippingCode}
+                status={order.status}
+                onReturn={() => setIsReturnModalOpen(true)}
+                onReport={() =>
+                  window.open(
+                    `${ORDERS_CONTACT.ZALO_BASE_URL}/${process.env.NEXT_PUBLIC_ZALO}`,
+                    "_blank"
+                  )
+                }
+                onReview={() => {
+                  if (order.orderItems?.[0]) {
+                    setSelectedItem(order.orderItems[0]);
+                  }
+                }}
+                isReviewed={order.reviews && order.reviews.length > 0}
+                orderItems={order.orderItems}
+                total={order.total}
+              />
+            </div>
+          </div>
+
+          <ReorderBanner
+            itemCount={order.orderItems?.length || 0}
+            onReorder={handleReorder}
+          />
+        </div>
+      </div>
+
+      <RequestReturnModal
+        isOpen={isReturnModalOpen}
+        onClose={() => setIsReturnModalOpen(false)}
+        orderId={order.id}
+        orderCode={order.orderCode}
+        onSuccess={handleReturnSuccess}
+        orderItems={order.orderItems?.map((item: any) => ({
+          id: item.id,
+          quantity: item.quantity,
+        }))}
+      />
+
+      <ConfirmCancelModal
+        isOpen={isCancelModalOpen}
+        onClose={() => setIsCancelModalOpen(false)}
+        onConfirm={() => {
+          cancelOrder(String(order.id));
+          setIsCancelModalOpen(false);
+        }}
+      />
+
+      <ReviewModal
+        isOpen={!!selectedItem}
+        onClose={() => setSelectedItem(null)}
+        productId={Number(selectedItem?.variant?.productId || selectedItem?.productId)}
+        orderId={order.id || 0}
+        productName={
+          selectedItem?.productName || selectedItem?.variant?.product?.name || ""
+        }
+        productSlug={selectedItem?.variant?.product?.slug}
+        productImage={(() => {
+          const getUrl = (img: any) => (typeof img === "string" ? img : img?.url);
+          const path =
+            (selectedItem?.variantSnapshot as { image?: string })?.image ||
+            getUrl(selectedItem?.variant?.images?.[0]) ||
+            getUrl(selectedItem?.variant?.product?.images?.[0]);
+          if (!path) return "/placeholder.png";
+          if (path.startsWith("http")) return path;
+          return `/${path.replace(/\\/g, "/").replace(/^\//, "")}`;
+        })()}
+      />
+
+      
+      <PrintInvoice order={order} />
+    </div>
+  );
+}

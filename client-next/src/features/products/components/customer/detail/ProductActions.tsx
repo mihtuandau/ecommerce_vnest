@@ -14,7 +14,7 @@ import {
 import { cn } from "@/utils/cn";
 import { useCart } from "@/features/cart/hooks";
 import { useWishlistStore } from "@/store/useWishlistStore";
-import { useAuthStore } from "@/store/useAuthStore";
+import { useAuthStore } from "@/features/auth/store/auth.store";
 import { useToast } from "@/hooks/useToast";
 import { useRouter } from "next/navigation";
 import { Product, ProductVariant } from "@/types/models";
