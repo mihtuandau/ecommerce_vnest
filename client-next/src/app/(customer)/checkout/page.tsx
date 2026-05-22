@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Spinner } from "@/components/ui/Spinner";
-import { CheckoutView } from "@/features/checkout/views";
+import { CheckoutView } from "@/features/checkout/views/CheckoutView";
 
 export const metadata: Metadata = {
   title: "Thanh toán - LUXE",

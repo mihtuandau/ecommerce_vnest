@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo } from "react";
-import { useFlashSale } from "@/features/discounts/hooks";
+import { useFlashSale } from "@/features/discounts/hooks/queries/useFlashSale";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/utils/cn";
 import {
@@ -18,12 +18,9 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { getSessionStatus, CAT_ICONS } from "../../utils/flashSaleUtils";
 import { useFlashSaleFilter } from "../../hooks/useFlashSaleFilter";
 
-// Components
-import {
-  FlashSaleHero,
-  FlashSaleProductCard,
-  FlashSaleSessionBar,
-} from "@/features/discounts/components/customer";
+import { FlashSaleHero } from "@/features/discounts/components/customer/flash-sale/FlashSaleHero";
+import { FlashSaleProductCard } from "@/features/discounts/components/customer/flash-sale/FlashSaleProductCard";
+import { FlashSaleSessionBar } from "@/features/discounts/components/customer/flash-sale/FlashSaleSessionBar";
 
 export function FlashSaleView() {
   const { data: sessions, isLoading } = useFlashSale();

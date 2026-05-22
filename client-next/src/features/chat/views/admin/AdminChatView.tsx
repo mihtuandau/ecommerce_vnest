@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useMemo, useRef } from "react";
-import { useChatRooms, DEFAULT_CHAT_SHORTCUTS } from "@/features/chat";
+import { DEFAULT_CHAT_SHORTCUTS } from "@/features/chat/constants";
+import { useChatRooms } from "@/features/chat/hooks";
 import { useAuthStore } from "@/features/auth/store/auth.store";
 import { useChatSession } from "@/features/chat/hooks";
 import { SupportSidebar } from "@/features/chat/components/admin/support/SupportSidebar";

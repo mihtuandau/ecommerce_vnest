@@ -1,6 +1,6 @@
 import { Suspense } from "react";
-import { Verify2FAForm } from "@/features/auth/components";
 import { Spinner } from "@/components/ui/Spinner";
+import { Verify2FAView } from "@/features/auth/views/Verify2FAView";
 
 export default function Verify2FAPage() {
   return (
@@ -11,7 +11,7 @@ export default function Verify2FAPage() {
         </div>
       }
     >
-      <Verify2FAForm />
+      <Verify2FAView />
     </Suspense>
   );
 }

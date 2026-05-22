@@ -21,6 +21,7 @@ export { LoginView } from "./views/LoginView";
 export { RegisterView } from "./views/RegisterView";
 export { ForgotPasswordView } from "./views/ForgotPasswordView";
 export { ResetPasswordView } from "./views/ResetPasswordView";
+export { Verify2FAView } from "./views/Verify2FAView";
 
 // Components
 export * from "./components";

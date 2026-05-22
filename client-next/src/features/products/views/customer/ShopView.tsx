@@ -1,18 +1,21 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { Suspense, useCallback, useState } from "react";
 import { X } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui";
 import { Sheet, SheetContent } from "@/components/ui/Sheet";
-import { useBrands, useCategories, useProducts } from "@/features/products/hooks";
+import { useBrands } from "@/features/products/hooks/queries/useBrands";
+import { useCategories } from "@/features/products/hooks/queries/useCategories";
+import { useProducts } from "@/features/products/hooks/queries/useProducts";
 import { ShopActiveFilters } from "../../components/customer/shop/ShopActiveFilters";
 import { ShopBreadcrumbs } from "../../components/customer/shop/ShopBreadcrumbs";
 import { ShopFilters } from "../../components/customer/shop/ShopFilters";
 import { ShopProductsGrid } from "../../components/customer/shop/ShopProductsGrid";
 import { ShopToolbar } from "../../components/customer/shop/ShopToolbar";
+import { ShopSkeleton } from "../../components/customer/shop/skeletons/ShopSkeleton";
 
-export function ShopView() {
+function ShopViewContent() {
   const [view, setView] = useState<"grid" | "list">("grid");
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
 
@@ -181,5 +184,13 @@ export function ShopView() {
         </SheetContent>
       </Sheet>
     </div>
+  );
+}
+
+export function ShopView() {
+  return (
+    <Suspense fallback={<ShopSkeleton />}>
+      <ShopViewContent />
+    </Suspense>
   );
 }

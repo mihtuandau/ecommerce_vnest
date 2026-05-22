@@ -5,7 +5,8 @@ import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useDiscounts, useFlashSale } from "@/features/discounts/hooks";
-import { useIncrementView, useProductDetail } from "@/features/products/hooks";
+import { useProductDetail } from "@/features/products/hooks/queries/useProductDetail";
+import { useIncrementView } from "@/features/products/hooks/mutations/useIncrementView";
 import { useRecentlyViewed } from "@/features/products/hooks/useRecentlyViewed";
 import {
   findActiveFlashSaleSession,

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { OffersView } from "@/features/discounts";
+import { OffersView } from "@/features/discounts/views/customer/OffersView";
 
 export const metadata: Metadata = {
   title: "Ưu Đãi & Khuyến Mãi - Vouchers Độc Quyền | LUXE",

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { FlashSaleView } from "@/features/discounts";
+import { FlashSaleView } from "@/features/discounts/views/customer/FlashSaleView";
 
 export const metadata: Metadata = {
   title: "Flash Sale - Săn Deal Cháy Máy | LUXE",

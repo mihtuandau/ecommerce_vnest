@@ -1,4 +1,6 @@
-export function animateFlyToCart(e: React.MouseEvent, imageUrl: string) {
+import type { MouseEvent } from "react";
+
+export function animateFlyToCart(e: MouseEvent, imageUrl: string) {
   // Prevent default just in case
   if (e.preventDefault) e.preventDefault();
 

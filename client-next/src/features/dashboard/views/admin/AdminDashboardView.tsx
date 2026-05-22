@@ -1,18 +1,15 @@
 "use client";
 
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/Button";
 import { AccessDenied } from "@/components/ui/AccessDenied";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { ROUTES } from "@/constants/routes";
-import {
-  DashboardStats,
-  OrderStatusChart,
-  PendingReviews,
-  RecentOrders,
-  RevenueChart,
-  TopProducts,
-} from "@/features/dashboard/components/admin";
+import { DashboardStats } from "@/features/dashboard/components/admin/DashboardStats";
+import { PendingReviews } from "@/features/dashboard/components/admin/PendingReviews";
+import { RecentOrders } from "@/features/dashboard/components/admin/RecentOrders";
+import { TopProducts } from "@/features/dashboard/components/admin/TopProducts";
 import {
   useDashboardPendingReviews,
   useDashboardRecentOrders,
@@ -21,6 +18,28 @@ import {
   useDashboardTopProducts,
 } from "@/features/dashboard/hooks";
 import { usePermission } from "@/hooks/usePermission";
+
+const RevenueChart = dynamic(
+  () =>
+    import("@/features/dashboard/components/admin/RevenueChart").then(
+      (mod) => mod.RevenueChart
+    ),
+  {
+    ssr: false,
+    loading: () => <Skeleton className="h-[430px] rounded-2xl lg:col-span-2" />,
+  }
+);
+
+const OrderStatusChart = dynamic(
+  () =>
+    import("@/features/dashboard/components/admin/OrderStatusChart").then(
+      (mod) => mod.OrderStatusChart
+    ),
+  {
+    ssr: false,
+    loading: () => <Skeleton className="h-[430px] rounded-2xl" />,
+  }
+);
 
 export function AdminDashboardView() {
   const { can, isLoading } = usePermission();

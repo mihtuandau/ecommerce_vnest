@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Spinner } from "@/components/ui/Spinner";
-import { PaymentReturnView } from "@/features/checkout/views";
+import { PaymentReturnView } from "@/features/checkout/views/PaymentReturnView";
 
 export const metadata: Metadata = {
   title: "Kết quả thanh toán - LUXE",

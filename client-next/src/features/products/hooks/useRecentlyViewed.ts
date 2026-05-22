@@ -1,25 +1,18 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useCallback } from "react";
+import { useLocalStorage } from "@/hooks";
 import { Product } from "@/types/models";
 
 const RECENTLY_VIEWED_KEY = "minhtuan_recently_viewed";
 const MAX_ITEMS = 10;
+const EMPTY_RECENTLY_VIEWED: Product[] = [];
 
 export function useRecentlyViewed() {
-  const [recentlyViewed, setRecentlyViewed] = useState<Product[]>([]);
-
-  // Load from local storage on mount
-  useEffect(() => {
-    const stored = localStorage.getItem(RECENTLY_VIEWED_KEY);
-    if (stored) {
-      try {
-        setRecentlyViewed(JSON.parse(stored));
-      } catch (e) {
-        console.error("Failed to parse recently viewed products", e);
-      }
-    }
-  }, []);
+  const [recentlyViewed, setRecentlyViewed] = useLocalStorage<Product[]>(
+    RECENTLY_VIEWED_KEY,
+    EMPTY_RECENTLY_VIEWED
+  );
 
   const addProduct = useCallback((product: Product) => {
     setRecentlyViewed((prev) => {
@@ -32,11 +25,9 @@ export function useRecentlyViewed() {
       const filtered = prev.filter((p) => p.id !== product.id);
       // Add to front
       const updated = [product, ...filtered].slice(0, MAX_ITEMS);
-      // Save to local storage
-      localStorage.setItem(RECENTLY_VIEWED_KEY, JSON.stringify(updated));
       return updated;
     });
-  }, []);
+  }, [setRecentlyViewed]);
 
   return { recentlyViewed, addProduct };
 }

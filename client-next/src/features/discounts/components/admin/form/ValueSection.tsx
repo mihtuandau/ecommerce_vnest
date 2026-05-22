@@ -14,7 +14,6 @@ import { Input } from "@/components/ui/Input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/RadioGroup";
 import { Banknote, Percent, Info, Target, Settings2 } from "lucide-react";
 import { cn } from "@/utils/cn";
-import { motion, AnimatePresence } from "framer-motion";
 
 interface ValueSectionProps {
   form: UseFormReturn<any>;
@@ -42,14 +41,15 @@ export function ValueSection({ form }: ValueSectionProps) {
                   className="relative p-1 bg-slate-100/80 rounded-lg grid grid-cols-2 gap-1 border border-slate-200/50 w-full max-w-md"
                 >
                   
-                  <motion.div
-                    className="absolute top-1 bottom-1 rounded-md bg-white shadow-sm z-0 border border-slate-200/50"
-                    initial={false}
-                    animate={{
-                      left: field.value === "PERCENTAGE" ? "4px" : "calc(50% + 2px)",
+                  <div
+                    className="absolute top-1 bottom-1 rounded-md bg-white shadow-sm z-0 border border-slate-200/50 transition-all duration-200"
+                    style={{
+                      left:
+                        field.value === "PERCENTAGE"
+                          ? "4px"
+                          : "calc(50% + 2px)",
                       width: "calc(50% - 6px)",
                     }}
-                    transition={{ type: "spring", stiffness: 400, damping: 35 }}
                   />
 
                   <label
@@ -156,14 +156,8 @@ export function ValueSection({ form }: ValueSectionProps) {
           />
 
           
-          <AnimatePresence mode="wait">
-            {type === "PERCENTAGE" && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                className="md:col-span-2 overflow-hidden"
-              >
+          {type === "PERCENTAGE" && (
+            <div className="md:col-span-2 overflow-hidden animate-in fade-in slide-in-from-top-1 duration-200">
                 <FormField
                   control={form.control}
                   name="maxDiscountAmount"
@@ -189,9 +183,8 @@ export function ValueSection({ form }: ValueSectionProps) {
                     </FormItem>
                   )}
                 />
-              </motion.div>
-            )}
-          </AnimatePresence>
+            </div>
+          )}
         </div>
 
         

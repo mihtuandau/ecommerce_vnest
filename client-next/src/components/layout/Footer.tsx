@@ -7,12 +7,15 @@ import Image from "next/image";
 import { cn } from "@/utils/cn";
 
 import { useCategories } from "@/features/products/hooks";
-import { useSystemSettings } from "@/features/settings/hooks";
+import type { SystemSettings } from "@/features/settings/types";
 
-export function Footer() {
+type FooterProps = {
+  initialSettings?: SystemSettings | null;
+};
+
+export function Footer({ initialSettings }: FooterProps) {
   const { data: categoryData } = useCategories();
-  const { data: settingsData } = useSystemSettings();
-  const settings = settingsData?.data || settingsData;
+  const settings = initialSettings;
 
   const [mounted, setMounted] = useState(false);
   useEffect(() => {

@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import confetti from "canvas-confetti";
-import { motion } from "framer-motion";
 import { CheckCircle2, Package } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -33,27 +31,43 @@ export function CheckoutSuccessView() {
   useEffect(() => {
     const duration = 4 * 1000;
     const end = Date.now() + duration;
+    let active = true;
+    let frameId = 0;
 
-    const frame = () => {
-      confetti({
-        particleCount: 3,
-        angle: 60,
-        spread: 60,
-        origin: { x: 0, y: 0.65 },
-        colors: ["#C4783A", "#DDD6C8", "#8A7966", "#ffffff"],
-      });
-      confetti({
-        particleCount: 3,
-        angle: 120,
-        spread: 60,
-        origin: { x: 1, y: 0.65 },
-        colors: ["#C4783A", "#DDD6C8", "#8A7966", "#ffffff"],
-      });
+    const startConfetti = async () => {
+      const { default: confetti } = await import("canvas-confetti");
+      if (!active) return;
 
-      if (Date.now() < end) requestAnimationFrame(frame);
+      const frame = () => {
+        if (!active) return;
+
+        confetti({
+          particleCount: 3,
+          angle: 60,
+          spread: 60,
+          origin: { x: 0, y: 0.65 },
+          colors: ["#C4783A", "#DDD6C8", "#8A7966", "#ffffff"],
+        });
+        confetti({
+          particleCount: 3,
+          angle: 120,
+          spread: 60,
+          origin: { x: 1, y: 0.65 },
+          colors: ["#C4783A", "#DDD6C8", "#8A7966", "#ffffff"],
+        });
+
+        if (Date.now() < end) frameId = requestAnimationFrame(frame);
+      };
+
+      frame();
     };
 
-    frame();
+    startConfetti();
+
+    return () => {
+      active = false;
+      cancelAnimationFrame(frameId);
+    };
   }, []);
 
   const detailHref =
@@ -67,11 +81,7 @@ export function CheckoutSuccessView() {
         <CheckoutSteps currentStep={3} />
       </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-lg bg-white border border-brand-sand p-8 md:p-12 rounded-3xl shadow-sm text-center"
-      >
+      <div className="w-full max-w-lg animate-in fade-in slide-in-from-bottom-2 duration-500 bg-white border border-brand-sand p-8 md:p-12 rounded-3xl shadow-sm text-center">
         <div className="mb-6">
           <div className="h-20 w-20 bg-primary/5 rounded-full flex items-center justify-center mx-auto">
             <CheckCircle2 className="h-10 w-10 text-primary" />
@@ -121,7 +131,7 @@ export function CheckoutSuccessView() {
             <Link href="/shop">Tiếp tục mua sắm</Link>
           </Button>
         </div>
-      </motion.div>
+      </div>
 
       <div className="mt-8 flex items-center gap-2 text-brand-taupe/20 text-[10px] font-bold uppercase tracking-widest">
         <Package className="h-3 w-3" />

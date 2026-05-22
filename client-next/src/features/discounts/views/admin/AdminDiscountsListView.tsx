@@ -6,8 +6,9 @@ import { Plus, RefreshCcw } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
 import { ROUTES } from "@/constants/routes";
-import { DiscountStats, DiscountTable } from "@/features/discounts/components/admin";
-import { useAdminDiscounts } from "@/features/discounts/hooks";
+import { DiscountStats } from "@/features/discounts/components/admin/list/DiscountStats";
+import { DiscountTable } from "@/features/discounts/components/admin/list/DiscountTable";
+import { useAdminDiscounts } from "@/features/discounts/hooks/queries/useAdminDiscounts";
 import {
   getDiscountStats,
   normalizeDiscountList,

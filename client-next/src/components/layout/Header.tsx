@@ -1,15 +1,11 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import {
   Menu,
   X,
-  ChevronDown,
-  Sparkles,
   Heart,
-  Zap,
-  ChevronRight,
-  Tag,
   LayoutGrid,
   Search,
   User as UserIcon,
@@ -17,18 +13,15 @@ import {
   LogOut,
   ShoppingBag,
   MessageCircle,
-  Award,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/Skeleton";
-import { CartDropdown } from "@/features/cart/components/CartDropdown";
-import { NotificationBell } from "@/features/notifications/components/customer/NotificationBell";
 import { ROUTES } from "@/constants/routes";
 import { useAuthStore } from "@/features/auth/store/auth.store";
 import { useWishlistStore } from "@/store/useWishlistStore";
-import { useCategories } from "@/features/categories/hooks";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useState, useRef, useEffect, useCallback } from "react";
+import { useDisclosure, useMediaQuery, useMounted, usePrevious } from "@/hooks";
 import Image from "next/image";
 import { Role } from "@/types/enums";
 import { cn } from "@/utils/cn";
@@ -40,32 +33,86 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/DropdownMenu";
-import { HeaderSearch } from "./HeaderSearch";
-import { MobileMenu } from "./MobileMenu";
 import { getImageUrl } from "@/utils/image";
-import { useSystemSettings } from "@/features/settings/hooks";
+import type { SystemSettings } from "@/features/settings/types";
+import type { Category } from "@/types/models";
 
-export function Header({ initialHasToken }: { initialHasToken?: boolean }) {
+const HeaderSearch = dynamic(
+  () => import("./HeaderSearch").then((mod) => mod.HeaderSearch),
+  {
+    ssr: false,
+    loading: () => <Skeleton className="h-11 w-full max-w-[550px] rounded-full" />,
+  }
+);
+
+const MobileMenu = dynamic(
+  () => import("./MobileMenu").then((mod) => mod.MobileMenu),
+  {
+    ssr: false,
+    loading: () => <div className="h-full bg-white" />,
+  }
+);
+
+const CartDropdown = dynamic(
+  () =>
+    import("@/features/cart/components/CartDropdown").then(
+      (mod) => mod.CartDropdown
+    ),
+  {
+    ssr: false,
+    loading: () => (
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-10 w-10 rounded-full text-brand-taupe"
+      >
+        <ShoppingBag className="h-5 w-5" />
+      </Button>
+    ),
+  }
+);
+
+const NotificationBell = dynamic(
+  () =>
+    import("@/features/notifications/components/customer/NotificationBell").then(
+      (mod) => mod.NotificationBell
+    ),
+  {
+    ssr: false,
+    loading: () => <Skeleton className="h-10 w-10 rounded-full" />,
+  }
+);
+
+type HeaderProps = {
+  initialHasToken?: boolean;
+  initialSettings?: SystemSettings | null;
+  initialCategories?: Category[];
+};
+
+export function Header({
+  initialHasToken,
+  initialSettings,
+  initialCategories = [],
+}: HeaderProps) {
   const { user, logout, isLoading: authLoading } = useAuthStore();
   const wishlistCount = useWishlistStore((state) => state.items.length);
-  const { data: categories } = useCategories({ tree: "true" });
-  const { data: settingsData } = useSystemSettings();
-  const settings = settingsData?.data || settingsData;
+  const categories = initialCategories;
+  const settings = initialSettings;
 
   const formattedThreshold = settings?.freeShippingThreshold
     ? Number(settings.freeShippingThreshold).toLocaleString("vi-VN") + "đ"
     : "500.000đ";
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const router = useRouter();
+  const previousPathname = usePrevious(pathname);
+  const mounted = useMounted();
+  const isDesktop = useMediaQuery("(min-width: 1024px)");
+  const mobileMenu = useDisclosure(false);
+  const mobileSearch = useDisclosure(false);
 
   const [catOpen, setCatOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState<number | null>(null);
-  const [mobileOpen, setMobileOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
 
   const lastScrollY = useRef(0);
   const ticking = useRef(false);
@@ -92,14 +139,22 @@ export function Header({ initialHasToken }: { initialHasToken?: boolean }) {
   }, []);
 
   useEffect(() => {
-    setMounted(true);
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, [handleScroll]);
 
   useEffect(() => {
-    setMobileOpen(false);
-  }, [pathname]);
+    if (previousPathname && previousPathname !== pathname) {
+      mobileMenu.close();
+      mobileSearch.close();
+    }
+  }, [mobileMenu, mobileSearch, pathname, previousPathname]);
+
+  useEffect(() => {
+    if (isDesktop) {
+      mobileMenu.close();
+    }
+  }, [isDesktop, mobileMenu]);
 
   return (
     <>
@@ -136,7 +191,7 @@ export function Header({ initialHasToken }: { initialHasToken?: boolean }) {
               <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 w-full flex items-center gap-4">
                 <div className="flex shrink-0 items-center gap-1 sm:gap-2 lg:min-w-[160px]">
                   <button
-                    onClick={() => setMobileOpen(true)}
+                    onClick={mobileMenu.open}
                     className="lg:hidden p-2 -ml-2 rounded-full text-brand-taupe hover:bg-brand-ivory transition-colors"
                   >
                     <Menu size={20} />
@@ -166,7 +221,7 @@ export function Header({ initialHasToken }: { initialHasToken?: boolean }) {
                     variant="ghost"
                     size="icon"
                     className="lg:hidden h-9 w-9 rounded-full text-brand-taupe"
-                    onClick={() => setIsSearchOpen(true)}
+                    onClick={mobileSearch.open}
                   >
                     <Search size={20} />
                   </Button>
@@ -488,15 +543,15 @@ export function Header({ initialHasToken }: { initialHasToken?: boolean }) {
       <div
         className={cn(
           "fixed inset-0 z-[100] bg-brand-cream transition-all duration-300",
-          isSearchOpen
+          mobileSearch.isOpen
             ? "translate-y-0 opacity-100"
             : "-translate-y-full opacity-0 pointer-events-none"
         )}
       >
         <div className="flex flex-col h-full">
           <div className="flex items-center gap-4 px-4 h-20 border-b border-brand-sand bg-white">
-            <HeaderSearch onSearch={() => setIsSearchOpen(false)} isMobile />
-            <Button variant="ghost" onClick={() => setIsSearchOpen(false)}>
+            <HeaderSearch onSearch={mobileSearch.close} isMobile />
+            <Button variant="ghost" onClick={mobileSearch.close}>
               Hủy
             </Button>
           </div>
@@ -510,28 +565,28 @@ export function Header({ initialHasToken }: { initialHasToken?: boolean }) {
       <div
         className={cn(
           "fixed inset-0 z-[100] bg-black/40 backdrop-blur-sm transition-opacity lg:hidden",
-          mobileOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+          mobileMenu.isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
         )}
-        onClick={() => setMobileOpen(false)}
+        onClick={mobileMenu.close}
       />
       <aside
         className={cn(
           "fixed top-0 left-0 z-[110] h-full w-[300px] bg-white transition-transform lg:hidden",
-          mobileOpen ? "translate-x-0" : "-translate-x-full"
+          mobileMenu.isOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
         <div className="flex items-center justify-between px-6 h-20 border-b border-brand-sand">
-          <Link href="/" onClick={() => setMobileOpen(false)}>
+          <Link href="/" onClick={mobileMenu.close}>
             <Image src="/logoMT.png" alt="L" width={32} height={32} />
           </Link>
-          <button onClick={() => setMobileOpen(false)}>
+          <button onClick={mobileMenu.close}>
             <X />
           </button>
         </div>
         <MobileMenu
           categories={categories || []}
           wishlistCount={wishlistCount}
-          onClose={() => setMobileOpen(false)}
+          onClose={mobileMenu.close}
           mounted={mounted}
         />
       </aside>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { AccountSidebar } from "@/components/layout/AccountSidebar";
@@ -14,11 +15,31 @@ import {
 } from "@/components/ui";
 import { useAuthStore } from "@/features/auth/store/auth.store";
 import { AccountSkeleton } from "@/features/users/components/customer/AccountSkeleton";
-import { AddressTab } from "@/features/users/components/customer/account/AddressTab";
-import { NotificationsTab } from "@/features/users/components/customer/account/NotificationsTab";
 import { ProfileTab } from "@/features/users/components/customer/account/ProfileTab";
-import { ReviewsTab } from "@/features/users/components/customer/account/ReviewsTab";
-import { SecurityTab } from "@/features/users/components/customer/account/SecurityTab";
+
+const AddressTab = dynamic(() =>
+  import("@/features/users/components/customer/account/AddressTab").then(
+    (mod) => mod.AddressTab
+  )
+);
+
+const NotificationsTab = dynamic(() =>
+  import("@/features/users/components/customer/account/NotificationsTab").then(
+    (mod) => mod.NotificationsTab
+  )
+);
+
+const ReviewsTab = dynamic(() =>
+  import("@/features/users/components/customer/account/ReviewsTab").then(
+    (mod) => mod.ReviewsTab
+  )
+);
+
+const SecurityTab = dynamic(() =>
+  import("@/features/users/components/customer/account/SecurityTab").then(
+    (mod) => mod.SecurityTab
+  )
+);
 
 type Tab = "info" | "address" | "security" | "notifications" | "reviews";
 

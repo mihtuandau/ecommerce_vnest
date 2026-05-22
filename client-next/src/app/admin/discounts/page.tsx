@@ -1,4 +1,4 @@
-import { AdminDiscountsListView } from "@/features/discounts";
+import { AdminDiscountsListView } from "@/features/discounts/views/admin/AdminDiscountsListView";
 
 export default function AdminDiscountsPage() {
   return <AdminDiscountsListView />;

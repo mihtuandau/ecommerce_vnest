@@ -18,7 +18,9 @@ import {
   ExternalLink,
   Bot,
 } from "lucide-react";
-import { useSocket, useChatMessages, chatApi } from "@/features/chat";
+import { chatApi } from "@/features/chat/api";
+import { useChatMessages } from "@/features/chat/hooks";
+import { useSocket } from "@/features/chat/socket";
 import { useAuthStore } from "@/features/auth/store/auth.store";
 import { cn } from "@/utils/cn";
 import dayjs from "dayjs";

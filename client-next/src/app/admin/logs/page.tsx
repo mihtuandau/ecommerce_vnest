@@ -1,4 +1,4 @@
-import { AdminLogsView } from "@/features/logs";
+import { AdminLogsView } from "@/features/logs/views/admin/AdminLogsView";
 
 export const metadata = {
   title: "Nhật ký hệ thống - Admin LUXE",

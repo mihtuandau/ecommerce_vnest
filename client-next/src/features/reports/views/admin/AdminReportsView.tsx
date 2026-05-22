@@ -1,18 +1,40 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import React, { useMemo, useState } from "react";
 import { AccessDenied } from "@/components/ui/AccessDenied";
 import { Spinner } from "@/components/ui/Spinner";
-import { OrderStatusChart } from "@/features/dashboard/components/admin";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { usePermission } from "@/hooks/usePermission";
 import { reportsApi } from "@/features/reports/api/index";
 import { REPORT_TIME_RANGES } from "@/features/reports/constants/index";
 import { useReportSummary } from "@/features/reports/hooks";
 import type { ReportQueryParams } from "@/features/reports/types";
 import { ReportHeader } from "@/features/reports/components/ReportHeader";
-import { RevenueChart } from "@/features/reports/components/RevenueChart";
 import { StatCards } from "@/features/reports/components/StatCards";
 import { TopProductsList } from "@/features/reports/components/TopProductsList";
+
+const RevenueChart = dynamic(
+  () =>
+    import("@/features/reports/components/RevenueChart").then(
+      (mod) => mod.RevenueChart
+    ),
+  {
+    ssr: false,
+    loading: () => <Skeleton className="h-[516px] rounded-xl" />,
+  }
+);
+
+const OrderStatusChart = dynamic(
+  () =>
+    import("@/features/dashboard/components/admin/OrderStatusChart").then(
+      (mod) => mod.OrderStatusChart
+    ),
+  {
+    ssr: false,
+    loading: () => <Skeleton className="h-[516px] rounded-xl" />,
+  }
+);
 
 function getReportParams(timeRange: string): ReportQueryParams | undefined {
   const now = new Date();

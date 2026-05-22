@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import dynamic from "next/dynamic";
 import { useWishlist } from "@/features/wishlist/hooks";
 import { Home } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -22,9 +23,22 @@ import { PriceAlertBanner } from "@/features/wishlist/components/PriceAlertBanne
 import { CollectionBar } from "@/features/wishlist/components/CollectionBar";
 import { WishlistToolbar } from "@/features/wishlist/components/WishlistToolbar";
 import { WishlistItemCard } from "@/features/wishlist/components/WishlistItemCard";
-import { ShareModal } from "@/features/wishlist/components/ShareModal";
-import { CreateCollectionModal } from "@/features/wishlist/components/CreateCollectionModal";
-import { QuickAddModal } from "@/features/products/components/customer/cards/QuickAddModal";
+
+const ShareModal = dynamic(() =>
+  import("@/features/wishlist/components/ShareModal").then((mod) => mod.ShareModal)
+);
+
+const CreateCollectionModal = dynamic(() =>
+  import("@/features/wishlist/components/CreateCollectionModal").then(
+    (mod) => mod.CreateCollectionModal
+  )
+);
+
+const QuickAddModal = dynamic(() =>
+  import("@/features/products/components/customer/cards/QuickAddModal").then(
+    (mod) => mod.QuickAddModal
+  )
+);
 
 export function WishlistView() {
   const router = useRouter();

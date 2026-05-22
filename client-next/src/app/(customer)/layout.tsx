@@ -1,20 +1,15 @@
 import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
-import { ChatWidget } from "@/features/chat";
-import { SocialProof } from "@/components/marketing/SocialProof";
+import { CustomerFooter } from "@/components/layout/CustomerFooter";
+import { MaintenanceShield } from "@/components/layout/MaintenanceShield";
+import { CustomerChatWidget } from "@/components/layout/CustomerChatWidget";
+import { CustomerSocialProof } from "@/components/layout/CustomerSocialProof";
 import { Suspense } from "react";
 import { cookies } from "next/headers";
 import { Skeleton } from "@/components/ui/Skeleton";
-import { Wrench, Phone, Mail, Clock } from "lucide-react";
 import { env } from "@/config/env";
 import { Role } from "@/types/enums";
-
-type SystemSettings = {
-  maintenanceMode?: boolean;
-  storeName?: string;
-  storePhone?: string;
-  storeEmail?: string;
-};
+import type { SystemSettings } from "@/features/settings/types";
+import type { Category } from "@/types/models";
 
 async function getSystemSettings(): Promise<SystemSettings | null> {
   const controller = new AbortController();
@@ -39,6 +34,31 @@ async function getSystemSettings(): Promise<SystemSettings | null> {
   }
 }
 
+async function getNavigationCategories(): Promise<Category[]> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 3000);
+  const apiUrl = env.NEXT_PUBLIC_API_URL.replace(/\/$/, "");
+
+  try {
+    const res = await fetch(`${apiUrl}/categories?tree=true`, {
+      next: { revalidate: 60 },
+      signal: controller.signal,
+    });
+
+    if (!res.ok) return [];
+
+    const data = await res.json();
+    return Array.isArray(data) ? data : data?.data || [];
+  } catch (err) {
+    if (process.env.NODE_ENV === "production") {
+      console.warn("Navigation categories unavailable; continuing with fallback nav.");
+    }
+    return [];
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 export default async function CustomerLayout({
   children,
 }: {
@@ -49,11 +69,15 @@ export default async function CustomerLayout({
   const token = cookieStore.get("accessToken")?.value;
 
   let settings: SystemSettings | null = null;
+  let categories: Category[] = [];
   let isMaintenance = false;
   let isAdmin = false;
 
   // 1. Fetch system settings on the server side (cached for fast response)
-  settings = await getSystemSettings();
+  [settings, categories] = await Promise.all([
+    getSystemSettings(),
+    getNavigationCategories(),
+  ]);
   isMaintenance = !!settings?.maintenanceMode;
 
   // 2. Check if the logged-in user is an admin by decoding JWT payload
@@ -71,79 +95,7 @@ export default async function CustomerLayout({
 
   // 3. If maintenance mode is active and user is not an admin, return the Maintenance UI instantly
   if (isMaintenance && !isAdmin) {
-    return (
-      <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#FAF8F4] text-[#3D2B1A] p-6 font-sans-brand min-h-screen">
-        
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full bg-[#C4783A]/5 blur-3xl" />
-        <div className="absolute bottom-1/4 left-1/3 -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full bg-[#8A7966]/5 blur-3xl" />
-
-        <div className="max-w-md w-full text-center space-y-8 relative z-10 animate-in fade-in zoom-in-95 duration-700">
-          
-          <div className="space-y-2">
-            <h2 className="text-xl font-bold tracking-[0.15em] text-[#3D2B1A] uppercase">
-              {settings?.storeName || "LUXE E-Commerce"}
-            </h2>
-            <div className="h-[1px] w-12 bg-[#C4783A]/40 mx-auto rounded-full" />
-          </div>
-
-          
-          <div className="relative mx-auto w-24 h-24 bg-white rounded-3xl border border-[#DDD6C8] flex items-center justify-center shadow-xs">
-            <div className="absolute inset-0 bg-gradient-to-tr from-[#C4783A]/5 to-[#8A7966]/5 rounded-3xl" />
-            <Wrench className="h-9 w-9 text-[#C4783A] animate-bounce duration-1000" />
-          </div>
-
-          
-          <div className="space-y-3 px-2">
-            <h1 className="text-[22px] font-bold text-[#3D2B1A] tracking-tight">
-              Hệ thống đang bảo trì
-            </h1>
-            <p className="text-[13.5px] text-[#8A7966] leading-relaxed font-medium">
-              Chúng tôi đang tiến hành bảo dưỡng định kỳ hệ thống của cửa hàng để mang
-              lại chất lượng phục vụ và trải nghiệm mua sắm hoàn mỹ nhất cho quý khách.
-            </p>
-          </div>
-
-          
-          <div className="p-4 bg-[#F9F6F0] rounded-2xl border border-[#EFEBE4] flex items-center gap-3.5 text-left max-w-sm mx-auto shadow-2xs">
-            <Clock className="h-5 w-5 text-[#C4783A] shrink-0" />
-            <div className="space-y-0.5">
-              <p className="text-xs font-bold text-[#3D2B1A]">
-                Thời gian dự kiến hoàn thành
-              </p>
-              <p className="text-[11px] text-[#8A7966] leading-relaxed font-semibold">
-                Thường mất khoảng 1 - 2 tiếng. Xin trân trọng cảm ơn sự kiên nhẫn của
-                quý khách hàng!
-              </p>
-            </div>
-          </div>
-
-          
-          <div className="pt-5 space-y-3.5 border-t border-[#DDD6C8] max-w-sm mx-auto">
-            <p className="text-[10px] font-bold text-[#8A7966] uppercase tracking-[0.12em]">
-              Hỗ trợ trực tuyến
-            </p>
-            <div className="flex flex-col sm:flex-row justify-center gap-4 text-xs font-semibold text-[#3D2B1A]">
-              {settings?.storePhone && (
-                <a
-                  href={`tel:${settings.storePhone}`}
-                  className="flex items-center justify-center gap-2 text-[#3D2B1A] hover:text-[#C4783A] transition-colors"
-                >
-                  <Phone className="h-3.5 w-3.5 text-[#C4783A]" /> {settings.storePhone}
-                </a>
-              )}
-              {settings?.storeEmail && (
-                <a
-                  href={`mailto:${settings.storeEmail}`}
-                  className="flex items-center justify-center gap-2 text-[#3D2B1A] hover:text-[#C4783A] transition-colors"
-                >
-                  <Mail className="h-3.5 w-3.5 text-[#C4783A]" /> {settings.storeEmail}
-                </a>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    return <MaintenanceShield settings={settings} />;
   }
 
   // 4. Normal flow if not under maintenance or user is admin
@@ -181,14 +133,18 @@ export default async function CustomerLayout({
           </div>
         }
       >
-        <Header initialHasToken={hasToken} />
+        <Header
+          initialHasToken={hasToken}
+          initialSettings={settings}
+          initialCategories={categories}
+        />
       </Suspense>
       <main className="flex-1">{children}</main>
       <div className="no-print">
-        <Footer />
+        <CustomerFooter initialSettings={settings} />
       </div>
-      <SocialProof />
-      <ChatWidget />
+      <CustomerSocialProof />
+      <CustomerChatWidget />
     </div>
   );
 }

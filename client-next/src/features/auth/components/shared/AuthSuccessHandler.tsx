@@ -6,7 +6,6 @@ import { useAuthStore } from "@/features/auth/store/auth.store";
 import { api } from "@/lib/http";
 import { Role } from "@/types/enums";
 import { toast } from "sonner";
-import confetti from "canvas-confetti";
 import { ROUTES } from "@/constants/routes";
 
 function AuthHandlerContent() {
@@ -31,6 +30,7 @@ function AuthHandlerContent() {
           });
 
           // 3. Celebrate!
+          const { default: confetti } = await import("canvas-confetti");
           confetti({
             particleCount: 150,
             spread: 70,

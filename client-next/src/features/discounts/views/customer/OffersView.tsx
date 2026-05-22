@@ -4,11 +4,11 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, Gift, Sparkles, Ticket } from "lucide-react";
 import { Skeleton } from "@/components/ui/Skeleton";
-import { useDiscounts } from "@/features/discounts/hooks";
+import { useDiscounts } from "@/features/discounts/hooks/queries/useDiscounts";
 import {
   type OfferVoucher,
   VoucherCard,
-} from "@/features/discounts/components/customer";
+} from "@/features/discounts/components/customer/offers/VoucherCard";
 
 export function OffersView() {
   const { data: discountsData, isLoading } = useDiscounts({ limit: 100 });

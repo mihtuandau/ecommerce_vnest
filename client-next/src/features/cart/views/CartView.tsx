@@ -1,18 +1,17 @@
 "use client";
 
 import React from "react";
+import dynamic from "next/dynamic";
 import { ChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { CheckoutSteps } from "@/features/checkout/components/CheckoutSteps";
-import {
-  CartItemsList,
-  CartLoadingSkeleton,
-  CartPageHeader,
-  CartSummary,
-  EmptyCart,
-  RecentlyViewedSection,
-} from "@/features/cart/components";
-import { useCart, useCartDiscount } from "@/features/cart/hooks";
+import { CartItemsList } from "@/features/cart/components/CartItemsList";
+import { CartLoadingSkeleton } from "@/features/cart/components/CartLoadingSkeleton";
+import { CartPageHeader } from "@/features/cart/components/CartPageHeader";
+import { CartSummary } from "@/features/cart/components/CartSummary";
+import { EmptyCart } from "@/features/cart/components/EmptyCart";
+import { useCart } from "@/features/cart/hooks/useCart";
+import { useCartDiscount } from "@/features/cart/hooks/useCartDiscount";
 import { useRecentlyViewed } from "@/features/products/hooks/useRecentlyViewed";
 import { useToast } from "@/hooks/useToast";
 import { useCartStore } from "@/store/useCartStore";
@@ -20,7 +19,13 @@ import {
   areAllCartItemsSelected,
   calculateSelectedCartTotal,
   getSelectedCartItems,
-} from "@/features/cart/services";
+} from "@/features/cart/services/cart-calculator.service";
+
+const RecentlyViewedSection = dynamic(() =>
+  import("@/features/cart/components/RecentlyViewedSection").then(
+    (mod) => mod.RecentlyViewedSection
+  )
+);
 
 export function CartView() {
   const router = useRouter();

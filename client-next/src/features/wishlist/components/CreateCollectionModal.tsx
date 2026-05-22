@@ -1,25 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import {
-  X,
-  Shirt,
-  Sparkles,
-  ShoppingBag,
-  Gift,
-  Heart,
-  Crown,
-  Zap,
-  Star,
-  Laptop,
-  BookOpen,
-  Home,
-  Coffee,
-  Palette,
-  Trophy,
-  Smile,
-  Compass,
-} from "lucide-react";
+import { X } from "lucide-react";
+import { WISHLIST_COLLECTION_ICON_OPTIONS } from "@/features/wishlist/constants";
 import { cn } from "@/utils/cn";
 
 interface CreateCollectionModalProps {
@@ -27,21 +10,6 @@ interface CreateCollectionModalProps {
   onClose: () => void;
   onSave: (name: string, iconName: string) => void;
 }
-
-export const COLLECTION_ICONS = [
-  { name: "Shirt", label: "Thời trang", Icon: Shirt },
-  { name: "ShoppingBag", label: "Giày & Túi", Icon: ShoppingBag },
-  { name: "Sparkles", label: "Mỹ phẩm", Icon: Sparkles },
-  { name: "Gift", label: "Quà tặng", Icon: Gift },
-  { name: "Heart", label: "Đặc biệt", Icon: Heart },
-  { name: "Crown", label: "Cao cấp", Icon: Crown },
-  { name: "Zap", label: "Nổi bật", Icon: Zap },
-  { name: "Star", label: "Yêu thích nhất", Icon: Star },
-  { name: "Laptop", label: "Công nghệ", Icon: Laptop },
-  { name: "Coffee", label: "Đồ uống", Icon: Coffee },
-  { name: "Palette", label: "Nghệ thuật", Icon: Palette },
-  { name: "Compass", label: "Du lịch", Icon: Compass },
-];
 
 export function CreateCollectionModal({ isOpen, onClose, onSave }: CreateCollectionModalProps) {
   const [name, setName] = useState("");
@@ -100,7 +68,7 @@ export function CreateCollectionModal({ isOpen, onClose, onSave }: CreateCollect
               Chọn biểu tượng (icon)
             </label>
             <div className="grid grid-cols-4 gap-2.5">
-              {COLLECTION_ICONS.map((item) => {
+              {WISHLIST_COLLECTION_ICON_OPTIONS.map((item) => {
                 const IconComponent = item.Icon;
                 const isSelected = selectedIcon === item.name;
                 return (
@@ -149,3 +117,4 @@ export function CreateCollectionModal({ isOpen, onClose, onSave }: CreateCollect
     </div>
   );
 }
+

@@ -1,4 +1,4 @@
-import { AdminChatView } from "@/features/chat";
+import { AdminChatView } from "@/features/chat/views/admin/AdminChatView";
 
 export default function AdminChatPage() {
   return (
