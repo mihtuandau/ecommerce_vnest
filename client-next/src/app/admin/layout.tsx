@@ -15,7 +15,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   return (
-    <div className="admin-theme flex min-h-screen">
+    <div className="admin-theme flex min-h-screen bg-slate-50">
       
       <div className="no-print h-screen sticky top-0 z-50">
         <Sidebar />
@@ -28,7 +28,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
 
         
-        <main className="flex-1 p-8">
+        <main className="flex-1 px-6 py-6 lg:px-8 lg:py-8">
           <div className="max-w-[1440px] mx-auto animate-in fade-in duration-500">
             {children}
           </div>

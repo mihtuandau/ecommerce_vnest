@@ -96,7 +96,7 @@ export function AdminReportsView() {
   if (!can("report.view")) return <AccessDenied permission="report.view" />;
 
   return (
-    <div className="space-y-8 pb-10">
+    <div className="space-y-6 pb-10">
       <ReportHeader
         onRefresh={refetch}
         onExport={handleExport}

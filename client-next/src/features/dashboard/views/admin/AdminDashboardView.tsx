@@ -1,9 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import dynamic from "next/dynamic";
-import { Button } from "@/components/ui/Button";
+import Link from "next/link";
 import { AccessDenied } from "@/components/ui/AccessDenied";
+import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { ROUTES } from "@/constants/routes";
 import { DashboardStats } from "@/features/dashboard/components/admin/DashboardStats";
@@ -45,7 +45,8 @@ export function AdminDashboardView() {
   const { can, isLoading } = usePermission();
 
   const { data: stats, isLoading: isStatsLoading } = useDashboardStats();
-  const { data: revenueData, isLoading: isRevenueLoading } = useDashboardRevenue();
+  const { data: revenueData, isLoading: isRevenueLoading } =
+    useDashboardRevenue();
   const { data: recentOrders, isLoading: isRecentOrdersLoading } =
     useDashboardRecentOrders();
   const { data: topProducts, isLoading: isTopProductsLoading } =
@@ -55,10 +56,10 @@ export function AdminDashboardView() {
 
   if (isLoading) {
     return (
-      <div className="space-y-8">
+      <div className="space-y-6">
         <Skeleton className="h-12 w-1/3 rounded-xl" />
         <Skeleton className="h-64 w-full rounded-2xl" />
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <Skeleton className="h-80 col-span-2 rounded-2xl" />
           <Skeleton className="h-80 rounded-2xl" />
         </div>
@@ -71,7 +72,7 @@ export function AdminDashboardView() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-slate-900 mb-1">
@@ -94,12 +95,12 @@ export function AdminDashboardView() {
 
       <DashboardStats summary={stats} isLoading={isStatsLoading} />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <RevenueChart data={revenueData || []} isLoading={isRevenueLoading} />
         <OrderStatusChart data={stats?.orders as any} isLoading={isStatsLoading} />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <TopProducts products={topProducts} isLoading={isTopProductsLoading} />
         </div>

@@ -14,9 +14,9 @@ export const adminUI = {
     helper: "text-xs text-slate-500 mt-1",
   },
   button: {
-    base: "inline-flex items-center justify-center rounded-xl h-10 px-4 text-sm font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-offset-2",
+    base: "inline-flex items-center justify-center rounded-xl h-10 px-4 text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-offset-2",
     primary:
-      "bg-slate-800 text-white hover:bg-slate-700 focus:ring-slate-500 shadow-sm",
+      "bg-teal-700 text-white hover:bg-teal-800 focus:ring-teal-500 shadow-sm",
     secondary:
       "border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 focus:ring-slate-200",
     danger: "bg-red-500 text-white hover:bg-red-600 focus:ring-red-500 shadow-sm",
@@ -30,8 +30,11 @@ export const adminUI = {
     cell: "px-4 align-middle text-sm text-slate-700",
   },
   typography: {
-    heading: "text-2xl font-bold text-slate-900",
+    heading: "text-2xl font-semibold text-slate-800",
+    description: "text-sm font-normal text-slate-500",
     sectionTitle: "text-lg font-semibold text-slate-800",
+    cardTitle: "text-base font-semibold text-slate-800",
+    eyebrow: "text-xs font-medium text-slate-400",
     body: "text-sm text-slate-600",
     hint: "text-xs text-slate-500",
   },

@@ -29,14 +29,14 @@ export function AdminBannersListView() {
   );
 
   return (
-    <div className="space-y-4 pb-10">
+    <div className="space-y-6 pb-10">
       <BannerListHeader
         totalBanners={banners.length}
         onRefresh={refetch}
         isFetching={isFetching}
       />
 
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] overflow-hidden">
         <BannerTabs activeTab={activeTab} onTabChange={setActiveTab} counts={counts} />
 
         <BannerListToolbar searchTerm={searchTerm} onSearchChange={setSearchTerm} />

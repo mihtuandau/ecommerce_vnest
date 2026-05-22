@@ -102,19 +102,19 @@ export function AdminSettingsForm() {
         </p>
       </div>
 
-      <form onSubmit={handleSave} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <form onSubmit={handleSave} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] space-y-6">
             <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
               <Store className="h-5 w-5 text-slate-400" />
-              <h2 className="text-[14px] font-semibold text-slate-800 uppercase tracking-wider">
+              <h2 className="text-base font-semibold text-slate-800">
                 Thông tin cửa hàng
               </h2>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="space-y-2">
-                <label className="text-xs font-semibold text-slate-500 flex items-center gap-1.5">
+                <label className="text-sm font-medium text-slate-700 flex items-center gap-1.5">
                   Tên cửa hàng
                 </label>
                 <div className="relative">
@@ -127,7 +127,7 @@ export function AdminSettingsForm() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs font-semibold text-slate-500 flex items-center gap-1.5">
+                <label className="text-sm font-medium text-slate-700 flex items-center gap-1.5">
                   <Mail className="h-3.5 w-3.5" /> Email liên hệ
                 </label>
                 <Input
@@ -139,7 +139,7 @@ export function AdminSettingsForm() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs font-semibold text-slate-500 flex items-center gap-1.5">
+                <label className="text-sm font-medium text-slate-700 flex items-center gap-1.5">
                   <Phone className="h-3.5 w-3.5" /> Hotline cửa hàng
                 </label>
                 <Input
@@ -150,7 +150,7 @@ export function AdminSettingsForm() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs font-semibold text-slate-500 flex items-center gap-1.5">
+                <label className="text-sm font-medium text-slate-700 flex items-center gap-1.5">
                   <MapPin className="h-3.5 w-3.5" /> Địa chỉ chính thức
                 </label>
                 <Input
@@ -165,14 +165,14 @@ export function AdminSettingsForm() {
           <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] space-y-6">
             <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
               <Truck className="h-5 w-5 text-slate-400" />
-              <h2 className="text-[14px] font-semibold text-slate-800 uppercase tracking-wider">
+              <h2 className="text-base font-semibold text-slate-800">
                 Cấu hình vận chuyển
               </h2>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="space-y-2">
-                <label className="text-xs font-semibold text-slate-500">
+                <label className="text-sm font-medium text-slate-700">
                   Phí vận chuyển mặc định (đ)
                 </label>
                 <Input
@@ -184,7 +184,7 @@ export function AdminSettingsForm() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs font-semibold text-slate-500">
+                <label className="text-sm font-medium text-slate-700">
                   Ngưỡng miễn phí giao hàng (đ)
                 </label>
                 <Input
@@ -202,7 +202,7 @@ export function AdminSettingsForm() {
           <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] space-y-6">
             <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
               <ShieldAlert className="h-5 w-5 text-slate-400" />
-              <h2 className="text-[14px] font-semibold text-slate-800 uppercase tracking-wider">
+              <h2 className="text-base font-semibold text-slate-800">
                 Trạng thái hệ thống
               </h2>
             </div>
@@ -210,49 +210,49 @@ export function AdminSettingsForm() {
             <div className="space-y-5">
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <label className="text-sm font-semibold text-slate-800 flex items-center gap-1.5">
+                  <label className="text-sm font-medium text-slate-800 flex items-center gap-1.5">
                     <Globe className="h-4 w-4 text-slate-400" /> Chế độ bảo trì
                   </label>
-                  <p className="text-[10px] text-slate-400 font-medium leading-normal">
+                  <p className="text-xs text-slate-400 font-normal leading-normal">
                     Tạm thời đóng cửa hàng để bảo dưỡng hệ thống.
                   </p>
                 </div>
                 <Switch
                   checked={maintenanceMode}
                   onCheckedChange={setMaintenanceMode}
-                  className="data-[state=checked]:!bg-slate-900"
+                  className="data-[state=checked]:!bg-teal-700"
                 />
               </div>
 
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <label className="text-sm font-semibold text-slate-800 flex items-center gap-1.5">
+                  <label className="text-sm font-medium text-slate-800 flex items-center gap-1.5">
                     <RefreshCw className="h-4 w-4 text-slate-400" /> Cảnh báo hết hàng
                   </label>
-                  <p className="text-[10px] text-slate-400 font-medium leading-normal">
+                  <p className="text-xs text-slate-400 font-normal leading-normal">
                     Gửi thông báo khi sản phẩm trong kho còn dưới 5.
                   </p>
                 </div>
                 <Switch
                   checked={stockAlert}
                   onCheckedChange={setStockAlert}
-                  className="data-[state=checked]:!bg-slate-900"
+                  className="data-[state=checked]:!bg-teal-700"
                 />
               </div>
 
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <label className="text-sm font-semibold text-slate-800 flex items-center gap-1.5">
+                  <label className="text-sm font-medium text-slate-800 flex items-center gap-1.5">
                     <Volume2 className="h-4 w-4 text-slate-400" /> Âm thanh thông báo
                   </label>
-                  <p className="text-[10px] text-slate-400 font-medium leading-normal">
+                  <p className="text-xs text-slate-400 font-normal leading-normal">
                     Phát âm thanh khi có đơn hàng mới được tạo.
                   </p>
                 </div>
                 <Switch
                   checked={orderNotification}
                   onCheckedChange={setOrderNotification}
-                  className="data-[state=checked]:!bg-slate-900"
+                  className="data-[state=checked]:!bg-teal-700"
                 />
               </div>
             </div>
@@ -261,7 +261,7 @@ export function AdminSettingsForm() {
           <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] space-y-4">
             <Button
               type="submit"
-              className="w-full h-11 rounded-xl bg-slate-900 text-white hover:bg-slate-800 font-semibold gap-2 shadow-lg shadow-slate-200 transition-all active:scale-98 cursor-pointer"
+              className="w-full h-11 rounded-xl bg-teal-700 text-white hover:bg-teal-800 font-medium gap-2 shadow-sm transition-all active:scale-[0.98] cursor-pointer"
               disabled={isSaving}
             >
               {isSaving ? (

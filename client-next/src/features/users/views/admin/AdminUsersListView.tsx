@@ -37,7 +37,7 @@ export function AdminUsersListView() {
   }, [users, searchTerm]);
 
   return (
-    <div className="space-y-4 pb-10">
+    <div className="space-y-6 pb-10">
       <UsersHeader totalUsers={users.length} />
       <UsersStats total={stats.total} admins={stats.admins} active={stats.active} />
 

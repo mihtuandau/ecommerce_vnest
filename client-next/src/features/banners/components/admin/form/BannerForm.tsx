@@ -98,12 +98,12 @@ export function BannerForm({ initialData, onSubmit, isLoading }: BannerFormProps
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           
           <div className="lg:col-span-2 space-y-6">
             
-            <div className="bg-white p-7 rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] space-y-7">
+            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] space-y-6">
               <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
                 <Type className="h-5 w-5 text-slate-400" />
                 <h2 className="text-sm font-semibold text-slate-900 tracking-tight">
@@ -117,7 +117,7 @@ export function BannerForm({ initialData, onSubmit, isLoading }: BannerFormProps
                   name="title"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-[11px] font-semibold text-slate-500 tracking-wider">
+                      <FormLabel className="text-sm font-medium text-slate-700">
                         Tiêu đề Banner
                       </FormLabel>
                       <FormControl>
@@ -137,7 +137,7 @@ export function BannerForm({ initialData, onSubmit, isLoading }: BannerFormProps
                   name="link"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-[11px] font-semibold text-slate-500 tracking-wider">
+                      <FormLabel className="text-sm font-medium text-slate-700">
                         Đường dẫn liên kết (Link)
                       </FormLabel>
                       <FormControl>
@@ -150,7 +150,7 @@ export function BannerForm({ initialData, onSubmit, isLoading }: BannerFormProps
                           />
                         </div>
                       </FormControl>
-                      <FormDescription className="text-[10px] font-medium text-slate-400">
+                      <FormDescription className="text-xs font-normal text-slate-400">
                         Khách hàng sẽ được chuyển hướng khi click vào banner
                       </FormDescription>
                       <FormMessage />
@@ -161,7 +161,7 @@ export function BannerForm({ initialData, onSubmit, isLoading }: BannerFormProps
             </div>
 
             
-            <div className="bg-white p-7 rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] space-y-7">
+            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] space-y-6">
               <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
                 <ImageIcon className="h-5 w-5 text-slate-400" />
                 <h2 className="text-sm font-semibold text-slate-900 tracking-tight">
@@ -229,7 +229,7 @@ export function BannerForm({ initialData, onSubmit, isLoading }: BannerFormProps
                   </div>
                 )}
                 {!selectedFile && !initialData?.imageUrl && (
-                  <p className="text-[11px] font-semibold text-red-500 uppercase tracking-wider text-center">
+                  <p className="text-xs font-medium text-red-500 text-center">
                     Vui lòng chọn hình ảnh banner
                   </p>
                 )}
@@ -239,7 +239,7 @@ export function BannerForm({ initialData, onSubmit, isLoading }: BannerFormProps
 
           
           <div className="space-y-6">
-            <div className="bg-white p-7 rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] space-y-7">
+            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] space-y-6">
               <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
                 <Zap className="h-5 w-5 text-slate-400" />
                 <h2 className="text-sm font-semibold text-slate-900 tracking-tight">
@@ -253,7 +253,7 @@ export function BannerForm({ initialData, onSubmit, isLoading }: BannerFormProps
                   name="displayOrder"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-[11px] font-semibold text-slate-500 tracking-wider">
+                      <FormLabel className="text-sm font-medium text-slate-700">
                         Thứ tự hiển thị
                       </FormLabel>
                       <FormControl>
@@ -266,7 +266,7 @@ export function BannerForm({ initialData, onSubmit, isLoading }: BannerFormProps
                           />
                         </div>
                       </FormControl>
-                      <FormDescription className="text-[10px] font-medium text-slate-400">
+                      <FormDescription className="text-xs font-normal text-slate-400">
                         Số nhỏ hơn sẽ hiển thị trước
                       </FormDescription>
                       <FormMessage />
@@ -301,7 +301,7 @@ export function BannerForm({ initialData, onSubmit, isLoading }: BannerFormProps
               <div className="pt-4">
                 <Button
                   type="submit"
-                  className="w-full h-13 rounded-xl bg-slate-900 text-white hover:bg-slate-800 font-semibold gap-2 shadow-lg shadow-slate-200 transition-all hover:-translate-y-0.5 active:translate-y-0"
+                  className="w-full h-11 rounded-xl bg-teal-700 text-white hover:bg-teal-800 font-medium gap-2 shadow-sm transition-all active:scale-[0.98]"
                   disabled={isLoading}
                 >
                   {isLoading ? (

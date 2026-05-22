@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { ChevronLeft } from "lucide-react";
+import { AdminPageHeader } from "@/components/shared/AdminPageHeader";
 import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
 import { ROUTES } from "@/constants/routes";
@@ -27,10 +27,10 @@ export function AdminBannerDetailView() {
 
   if (isLoading) {
     return (
-      <div className="h-96 flex flex-col items-center justify-center gap-4">
+      <div className="h-96 flex flex-col items-center justify-center gap-3">
         <Spinner size="lg" />
-        <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-[0.2em]">
-          Đang tải dữ liệu Banner...
+        <p className="text-sm font-medium text-slate-400">
+          Đang tải dữ liệu banner...
         </p>
       </div>
     );
@@ -39,8 +39,8 @@ export function AdminBannerDetailView() {
   if (!banner) {
     return (
       <div className="p-20 text-center flex flex-col items-center gap-4">
-        <p className="text-slate-500 font-semibold">
-          Không tìm thấy Banner yêu cầu
+        <p className="text-sm font-medium text-slate-500">
+          Không tìm thấy banner yêu cầu
         </p>
         <Button variant="outline" onClick={() => router.push(ROUTES.ADMIN_BANNERS)}>
           Quay lại danh sách
@@ -50,34 +50,19 @@ export function AdminBannerDetailView() {
   }
 
   return (
-    <div className="space-y-4 pb-10">
-      <div className="flex flex-col gap-1">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="w-fit pl-0 hover:bg-transparent text-slate-400 hover:text-primary gap-1 font-semibold text-xs tracking-wider"
-          onClick={() => router.back()}
-        >
-          <ChevronLeft className="h-3.5 w-3.5" />
-          Quay lại danh sách
-        </Button>
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">
-            Chi tiết Banner
-          </h1>
-          <p className="text-slate-500 text-sm">
-            Cập nhật hình ảnh, đường dẫn và vị trí hiển thị của banner.
-          </p>
-        </div>
-      </div>
+    <div className="space-y-6 pb-10">
+      <AdminPageHeader
+        title="Chi tiết banner"
+        description="Cập nhật hình ảnh, đường dẫn và vị trí hiển thị của banner."
+        eyebrow="Banner"
+        onBack={() => router.back()}
+      />
 
-      <div className="pt-2">
-        <BannerForm
-          initialData={banner}
-          onSubmit={handleSubmit}
-          isLoading={isPending}
-        />
-      </div>
+      <BannerForm
+        initialData={banner}
+        onSubmit={handleSubmit}
+        isLoading={isPending}
+      />
     </div>
   );
 }

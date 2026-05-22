@@ -140,7 +140,7 @@ export function ProductForm({
         onSubmit={form.handleSubmit(onFormSubmit, (errors) =>
           console.error("Form validation failed:", errors)
         )}
-        className="space-y-8"
+        className="space-y-6"
       >
         <input
           type="file"
@@ -172,7 +172,7 @@ export function ProductForm({
             <div className="flex justify-end mb-2">
               <Button
                 type="submit"
-                className="bg-slate-900 hover:bg-slate-800 text-white rounded-lg h-9 px-6 text-[13px] font-semibold shadow-sm flex items-center gap-1.5 transition-all"
+                className="bg-teal-700 hover:bg-teal-800 text-white rounded-xl h-10 px-6 text-sm font-medium shadow-sm flex items-center gap-2 transition-all"
                 disabled={isLoading}
               >
                 {isLoading ? (
@@ -184,7 +184,7 @@ export function ProductForm({
               </Button>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               <div className="lg:col-span-8 space-y-6">
                 <ProductBasicInfo form={form as any} />
                 <ProductCategory form={form as any} categories={categories} />

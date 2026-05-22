@@ -284,10 +284,10 @@
   /* 
      Admin Color Palette — Soft, Minimalist White & Slate
   */
-  --primary: 215 27.9% 16.9% !important; /* Soft Slate-800 */
+  --primary: 173 80% 24% !important; /* Soft Teal-700 */
   --primary-foreground: 0 0% 100% !important;
 
-  --color-primary: hsl(215 27.9% 16.9%) !important; /* Soft Slate-800 */
+  --color-primary: hsl(173 80% 24%) !important; /* Soft Teal-700 */
   --color-primary-foreground: hsl(0 0% 100%) !important;
   
   --background: 210 40% 98% !important; /* Slate-50 */
