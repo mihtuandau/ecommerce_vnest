@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
+import { adminUI } from "@/constants/admin-ui";
 import { Actions } from "@/features/users/components/admin/detail/Actions";
 import { CustomerCard } from "@/features/users/components/admin/detail/CustomerCard";
 import { CustomerStats } from "@/features/users/components/admin/detail/CustomerStats";
@@ -27,14 +28,14 @@ export function AdminUserDetailView() {
     return (
       <div className="h-96 flex flex-col items-center justify-center gap-3">
         <Spinner size="lg" />
-        <p className="text-sm font-bold text-slate-400">Đang tải hồ sơ...</p>
+        <p className="text-sm font-medium text-slate-400">Đang tải hồ sơ...</p>
       </div>
     );
   }
 
   if (!user) {
     return (
-      <div className="p-20 text-center font-bold text-slate-500">
+      <div className="p-20 text-center text-sm font-medium text-slate-500">
         Không tìm thấy người dùng
       </div>
     );
@@ -65,18 +66,16 @@ export function AdminUserDetailView() {
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8 rounded-lg border border-slate-200 text-slate-400 hover:text-primary"
+            className="h-9 w-9 rounded-lg border border-slate-200 text-slate-400 hover:text-teal-700 hover:bg-teal-50"
             onClick={() => router.back()}
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          <h1 className="text-xl font-bold text-slate-900 tracking-tight">
-            Hồ sơ khách hàng
-          </h1>
+          <h1 className={adminUI.typography.heading}>Hồ sơ khách hàng</h1>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="space-y-6">
           <CustomerCard user={user} />
           <Actions user={user} onEdit={() => setActiveTab("settings")} />

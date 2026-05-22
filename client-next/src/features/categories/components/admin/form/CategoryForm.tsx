@@ -112,11 +112,11 @@ export function CategoryForm({ initialData, onSubmit, isLoading }: CategoryFormP
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white p-7 rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] space-y-7">
+            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] space-y-6">
               <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
                 <Type className="h-5 w-5 text-slate-400" />
                 <h2 className="text-sm font-semibold text-slate-900 tracking-tight">
@@ -130,14 +130,14 @@ export function CategoryForm({ initialData, onSubmit, isLoading }: CategoryFormP
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-[11px] font-semibold text-slate-500 tracking-wider uppercase">
+                      <FormLabel className="text-sm font-medium text-slate-700">
                         Tên danh mục
                       </FormLabel>
                       <FormControl>
                         <Input
                           placeholder="VD: Điện thoại, Máy tính, Thời trang..."
                           {...field}
-                          className="h-12 rounded-xl border-slate-200 text-slate-900 font-medium text-base shadow-sm focus:ring-2 focus:ring-slate-900/5 transition-all"
+                          className="h-11 rounded-xl border-slate-200 text-slate-900 font-medium text-sm shadow-sm focus:ring-2 focus:ring-teal-600/10 transition-all"
                         />
                       </FormControl>
                       <FormMessage />
@@ -150,7 +150,7 @@ export function CategoryForm({ initialData, onSubmit, isLoading }: CategoryFormP
                   name="parentId"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-[11px] font-semibold text-slate-500 tracking-wider uppercase flex items-center gap-2">
+                      <FormLabel className="text-sm font-medium text-slate-700 flex items-center gap-2">
                         <Layers size={12} />
                         Danh mục cha
                       </FormLabel>
@@ -161,7 +161,7 @@ export function CategoryForm({ initialData, onSubmit, isLoading }: CategoryFormP
                         value={field.value ?? undefined}
                       >
                         <FormControl>
-                          <SelectTrigger className="h-12 rounded-xl border-slate-200 text-slate-900 font-medium text-base shadow-sm focus:ring-2 focus:ring-slate-900/5 transition-all bg-white">
+                          <SelectTrigger className="h-11 rounded-xl border-slate-200 text-slate-900 font-medium text-sm shadow-sm focus:ring-2 focus:ring-teal-600/10 transition-all bg-white">
                             <SelectValue placeholder="Chọn danh mục cha" />
                           </SelectTrigger>
                         </FormControl>
@@ -183,7 +183,7 @@ export function CategoryForm({ initialData, onSubmit, isLoading }: CategoryFormP
                           ))}
                         </SelectContent>
                       </Select>
-                      <FormDescription className="text-[10px] text-slate-400 font-medium">
+                      <FormDescription className="text-xs text-slate-400 font-normal">
                         Chọn danh mục gốc nếu đây là danh mục cao nhất.
                       </FormDescription>
                       <FormMessage />
@@ -194,7 +194,7 @@ export function CategoryForm({ initialData, onSubmit, isLoading }: CategoryFormP
             </div>
 
             
-            <div className="bg-white p-7 rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] space-y-7">
+            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] space-y-6">
               <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
                 <ImageIcon className="h-5 w-5 text-slate-400" />
                 <h2 className="text-sm font-semibold text-slate-900 tracking-tight">
@@ -224,7 +224,7 @@ export function CategoryForm({ initialData, onSubmit, isLoading }: CategoryFormP
                         type="button"
                         variant="secondary"
                         size="sm"
-                        className="rounded-lg font-semibold h-8 text-[10px] uppercase tracking-wider"
+                        className="rounded-lg font-medium h-8 text-xs"
                         onClick={() => fileInputRef.current?.click()}
                       >
                         Đổi ảnh
@@ -233,7 +233,7 @@ export function CategoryForm({ initialData, onSubmit, isLoading }: CategoryFormP
                         type="button"
                         variant="destructive"
                         size="sm"
-                        className="rounded-lg font-semibold h-8 text-[10px] uppercase tracking-wider"
+                        className="rounded-lg font-medium h-8 text-xs"
                         onClick={() => {
                           setPreviewUrl(null);
                           setSelectedFile(null);
@@ -252,10 +252,10 @@ export function CategoryForm({ initialData, onSubmit, isLoading }: CategoryFormP
                       <Upload className="h-8 w-8 text-slate-400 group-hover:text-slate-600" />
                     </div>
                     <div className="text-center">
-                      <p className="text-[11px] font-semibold text-slate-900 uppercase tracking-widest">
+                      <p className="text-sm font-medium text-slate-900">
                         Tải ảnh lên
                       </p>
-                      <p className="text-[10px] text-slate-400 mt-1 font-medium">
+                      <p className="text-xs text-slate-400 mt-1 font-normal">
                         PNG, JPG (1:1)
                       </p>
                     </div>
@@ -267,11 +267,11 @@ export function CategoryForm({ initialData, onSubmit, isLoading }: CategoryFormP
 
           
           <div className="space-y-6">
-            <div className="bg-white p-7 rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] space-y-7 sticky top-8">
+            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] space-y-6 sticky top-8">
               <div className="space-y-4">
                 <Button
                   type="submit"
-                  className="w-full h-12 rounded-xl bg-slate-900 text-white hover:bg-slate-800 font-semibold gap-2 shadow-lg shadow-slate-200 transition-all hover:-translate-y-0.5 active:translate-y-0"
+                  className="w-full h-11 rounded-xl bg-teal-700 text-white hover:bg-teal-800 font-medium gap-2 shadow-sm transition-all active:scale-[0.98]"
                   disabled={isLoading}
                 >
                   {isLoading ? (
@@ -285,7 +285,7 @@ export function CategoryForm({ initialData, onSubmit, isLoading }: CategoryFormP
                 <Button
                   type="button"
                   variant="outline"
-                  className="w-full h-12 rounded-xl border-slate-200 text-slate-600 font-semibold hover:bg-slate-50 transition-all"
+                  className="w-full h-11 rounded-xl border-slate-200 text-slate-600 font-medium hover:bg-slate-50 transition-all"
                   onClick={() => window.history.back()}
                   disabled={isLoading}
                 >
@@ -294,7 +294,7 @@ export function CategoryForm({ initialData, onSubmit, isLoading }: CategoryFormP
               </div>
 
               <div className="p-4 rounded-xl bg-amber-50 border border-amber-100">
-                <p className="text-[11px] font-semibold text-amber-800 leading-relaxed uppercase tracking-wider">
+                <p className="text-xs font-normal text-amber-800 leading-relaxed">
                   Lưu ý: Tên danh mục nên ngắn gọn và dễ hiểu để hiển thị tốt nhất trên
                   giao diện người dùng.
                 </p>

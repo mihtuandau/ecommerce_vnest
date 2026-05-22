@@ -87,7 +87,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     this.logger.log(`User ${user.email} joining room: ${data.roomId}`);
     
-    const isStaff = ['ADMIN', 'KHO', 'BAN_HANG'].includes(user.role?.toUpperCase());
+    const isStaff = ['ADMIN', 'WAREHOUSE', 'SALES'].includes(user.role?.toUpperCase());
     const roomUserId = data.roomId.replace('room_', ''); 
 
     if (!isStaff && String(roomUserId) !== String(user.sub)) {
@@ -110,7 +110,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     this.logger.log(`Message from ${user.email} to room ${data.roomId}`);
     
-    const isStaff = ['ADMIN', 'KHO', 'BAN_HANG'].includes(user.role?.toUpperCase());
+    const isStaff = ['ADMIN', 'WAREHOUSE', 'SALES'].includes(user.role?.toUpperCase());
     const roomUserId = data.roomId.replace('room_', '');
 
     if (!isStaff && String(roomUserId) !== String(user.sub)) {
@@ -137,7 +137,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const user = client.data.user;
     if (!user) return;
 
-    const isStaff = ['ADMIN', 'KHO', 'BAN_HANG'].includes(
+    const isStaff = ['ADMIN', 'WAREHOUSE', 'SALES'].includes(
       user.role?.toUpperCase(),
     );
     const roomUserId = data.roomId.replace('room_', '');
@@ -157,7 +157,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const user = client.data.user;
     if (!user) return;
 
-    const isStaff = ['ADMIN', 'KHO', 'BAN_HANG'].includes(
+    const isStaff = ['ADMIN', 'WAREHOUSE', 'SALES'].includes(
       user.role?.toUpperCase(),
     );
     const roomUserId = data.roomId.replace('room_', '');

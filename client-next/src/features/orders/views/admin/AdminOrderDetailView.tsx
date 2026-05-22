@@ -45,8 +45,8 @@ export function AdminOrderDetailView() {
     );
 
   return (
-    <div className="space-y-4 pb-10 mx-auto relative">
-      <div className="no-print space-y-4">
+    <div className="space-y-6 pb-10 relative">
+      <div className="no-print space-y-6">
         
         <Header
           order={order}

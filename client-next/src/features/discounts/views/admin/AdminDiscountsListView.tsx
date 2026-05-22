@@ -2,10 +2,12 @@
 
 import React from "react";
 import Link from "next/link";
-import { Plus, RefreshCcw } from "lucide-react";
+import { Plus, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
 import { ROUTES } from "@/constants/routes";
+import { adminUI } from "@/constants/admin-ui";
+import { cn } from "@/utils/cn";
 import { DiscountStats } from "@/features/discounts/components/admin/list/DiscountStats";
 import { DiscountTable } from "@/features/discounts/components/admin/list/DiscountTable";
 import { useAdminDiscounts } from "@/features/discounts/hooks/queries/useAdminDiscounts";
@@ -22,31 +24,39 @@ export function AdminDiscountsListView() {
 
   return (
     <div className="space-y-6 pb-10">
-      <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-xl font-bold text-slate-900 tracking-tight">
-            Mã giảm giá
-          </h1>
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-            Quản lý mã giảm giá và Flash Sale
-          </p>
+          <h1 className={adminUI.typography.heading}>Quản lý mã giảm giá</h1>
+          <div className="mt-1 flex items-center gap-1.5 text-[12px] font-medium text-slate-400">
+            <span>Marketing</span>
+            <span className="text-[10px]">/</span>
+            <span className="text-slate-800">{discounts.length} chương trình</span>
+          </div>
         </div>
-        <div className="flex items-center gap-3">
+
+        <div className="flex items-center gap-2">
           <Button
-            variant="outline"
-            size="icon"
-            className="h-9 w-9 rounded-lg border-slate-200 text-slate-500"
+            variant="ghost"
+            size="sm"
+            className={cn(adminUI.button.base, adminUI.button.ghost)}
             onClick={() => refetch()}
             disabled={isFetching}
           >
-            {isFetching ? <Spinner size="sm" /> : <RefreshCcw className="h-4 w-4" />}
+            {isFetching ? (
+              <Spinner size="sm" />
+            ) : (
+              <RefreshCw className={adminUI.icon.action} />
+            )}
+            {isFetching ? "Đang tải..." : "Làm mới"}
           </Button>
+
           <Button
             asChild
-            className="h-9 px-4 rounded-lg bg-primary text-white hover:bg-slate-800 font-bold text-xs gap-2"
+            size="sm"
+            className={cn(adminUI.button.base, adminUI.button.primary)}
           >
-            <Link href={`${ROUTES.ADMIN_DISCOUNTS}/create`}>
-              <Plus className="h-4 w-4" /> Tạo mới
+            <Link href={ROUTES.ADMIN_DISCOUNTS_CREATE}>
+              <Plus className={adminUI.icon.action} /> Tạo mới
             </Link>
           </Button>
         </div>

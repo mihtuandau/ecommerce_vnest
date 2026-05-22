@@ -1,7 +1,15 @@
 "use client";
 
-import React from "react";
-import { User, Mail, Phone, Save } from "lucide-react";
+import { Mail, Phone, Save, User } from "lucide-react";
+import type { UseFormReturn } from "react-hook-form";
+import { Button } from "@/components/ui/Button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/Card";
 import {
   Form,
   FormControl,
@@ -11,16 +19,7 @@ import {
   FormMessage,
 } from "@/components/ui/Form";
 import { Input } from "@/components/ui/Input";
-import { Button } from "@/components/ui/Button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/Card";
 import { Spinner } from "@/components/ui/Spinner";
-import { UseFormReturn } from "react-hook-form";
 
 interface ProfileFormProps {
   form: UseFormReturn<any>;
@@ -32,15 +31,15 @@ export function ProfileForm({ form, onSubmit, isPending }: ProfileFormProps) {
   return (
     <div className="md:col-span-2">
       <Card className="border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] bg-white rounded-2xl overflow-hidden">
-        <CardHeader className="border-b border-slate-50 pb-6">
-          <CardTitle className="text-xl font-semibold text-slate-900">
+        <CardHeader className="border-b border-slate-50 pb-5">
+          <CardTitle className="text-base font-semibold text-slate-800">
             Chỉnh sửa thông tin
           </CardTitle>
-          <CardDescription className="font-medium">
+          <CardDescription className="text-sm font-normal text-slate-500">
             Cập nhật thông tin chi tiết và cài đặt mật khẩu mới.
           </CardDescription>
         </CardHeader>
-        <CardContent className="pt-8">
+        <CardContent className="pt-6">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -49,7 +48,7 @@ export function ProfileForm({ form, onSubmit, isPending }: ProfileFormProps) {
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs font-semibold text-slate-500">
+                      <FormLabel className="text-sm font-medium text-slate-700">
                         Họ và tên
                       </FormLabel>
                       <FormControl>
@@ -58,11 +57,11 @@ export function ProfileForm({ form, onSubmit, isPending }: ProfileFormProps) {
                           <Input
                             {...field}
                             placeholder="Nguyễn Văn A"
-                            className="pl-10 h-11 border-slate-200 focus:border-primary focus:ring-primary/5 rounded-xl font-medium"
+                            className="pl-10 h-11 border-slate-200 focus:border-teal-600 focus:ring-teal-600/10 rounded-xl font-medium"
                           />
                         </div>
                       </FormControl>
-                      <FormMessage className="text-[10px] font-bold" />
+                      <FormMessage className="text-xs font-medium" />
                     </FormItem>
                   )}
                 />
@@ -72,8 +71,8 @@ export function ProfileForm({ form, onSubmit, isPending }: ProfileFormProps) {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs font-semibold text-slate-500">
-                        Địa chỉ Email
+                      <FormLabel className="text-sm font-medium text-slate-700">
+                        Địa chỉ email
                       </FormLabel>
                       <FormControl>
                         <div className="relative">
@@ -85,7 +84,7 @@ export function ProfileForm({ form, onSubmit, isPending }: ProfileFormProps) {
                           />
                         </div>
                       </FormControl>
-                      <FormMessage className="text-[10px] font-bold" />
+                      <FormMessage className="text-xs font-medium" />
                     </FormItem>
                   )}
                 />
@@ -95,7 +94,7 @@ export function ProfileForm({ form, onSubmit, isPending }: ProfileFormProps) {
                   name="phone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs font-semibold text-slate-500">
+                      <FormLabel className="text-sm font-medium text-slate-700">
                         Số điện thoại
                       </FormLabel>
                       <FormControl>
@@ -105,11 +104,11 @@ export function ProfileForm({ form, onSubmit, isPending }: ProfileFormProps) {
                             {...field}
                             value={field.value || ""}
                             placeholder="09xxxxxxx"
-                            className="pl-10 h-11 border-slate-200 focus:border-primary focus:ring-primary/5 rounded-xl font-medium"
+                            className="pl-10 h-11 border-slate-200 focus:border-teal-600 focus:ring-teal-600/10 rounded-xl font-medium"
                           />
                         </div>
                       </FormControl>
-                      <FormMessage className="text-[10px] font-bold" />
+                      <FormMessage className="text-xs font-medium" />
                     </FormItem>
                   )}
                 />
@@ -119,18 +118,18 @@ export function ProfileForm({ form, onSubmit, isPending }: ProfileFormProps) {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs font-semibold text-slate-500">
-                        Mật khẩu mới (Nếu cần đổi)
+                      <FormLabel className="text-sm font-medium text-slate-700">
+                        Mật khẩu mới
                       </FormLabel>
                       <FormControl>
                         <Input
                           {...field}
                           type="password"
                           placeholder="••••••••"
-                          className="h-11 border-slate-200 focus:border-primary focus:ring-primary/5 rounded-xl font-medium"
+                          className="h-11 border-slate-200 focus:border-teal-600 focus:ring-teal-600/10 rounded-xl font-medium"
                         />
                       </FormControl>
-                      <FormMessage className="text-[10px] font-bold" />
+                      <FormMessage className="text-xs font-medium" />
                     </FormItem>
                   )}
                 />
@@ -140,14 +139,14 @@ export function ProfileForm({ form, onSubmit, isPending }: ProfileFormProps) {
                 <Button
                   type="button"
                   variant="outline"
-                  className="h-11 px-6 rounded-xl border-slate-200 font-semibold text-slate-600 hover:bg-slate-50"
+                  className="h-11 px-6 rounded-xl border-slate-200 font-medium text-slate-600 hover:bg-slate-50"
                   onClick={() => form.reset()}
                 >
                   Hủy thay đổi
                 </Button>
                 <Button
                   type="submit"
-                  className="h-11 px-8 rounded-xl font-semibold bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20 flex items-center gap-2"
+                  className="h-11 px-8 rounded-xl font-medium bg-teal-700 hover:bg-teal-800 shadow-sm flex items-center gap-2"
                   disabled={isPending}
                 >
                   {isPending ? (

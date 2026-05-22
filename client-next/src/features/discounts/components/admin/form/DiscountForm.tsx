@@ -1,14 +1,14 @@
 "use client";
 
-import React, { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form } from "@/components/ui/Form";
-import { Button } from "@/components/ui/Button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs";
 import { Save } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Form } from "@/components/ui/Form";
 import { Spinner } from "@/components/ui/Spinner";
-import { useRouter } from "next/navigation";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs";
 import { useProducts } from "@/features/products/hooks";
 import { discountSchema } from "@/features/discounts/schemas";
 import {
@@ -26,9 +26,16 @@ interface DiscountFormProps {
   isLoading?: boolean;
 }
 
-export function DiscountForm({ initialData, onSubmit, isLoading }: DiscountFormProps) {
+const tabClass =
+  "rounded-none border-b-2 border-transparent data-[state=active]:border-teal-700 data-[state=active]:bg-transparent data-[state=active]:shadow-none px-1 pb-4 text-slate-500 data-[state=active]:text-teal-800 font-medium text-sm transition-all";
+
+export function DiscountForm({
+  initialData,
+  onSubmit,
+  isLoading,
+}: DiscountFormProps) {
   const router = useRouter();
-  const [searchQuery, setSearchQuery] = React.useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const { data: productsData, isLoading: isLoadingProducts } = useProducts({
     limit: 100,
   });
@@ -64,26 +71,17 @@ export function DiscountForm({ initialData, onSubmit, isLoading }: DiscountFormP
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-6">
         <Tabs defaultValue="general" className="w-full">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 border-b border-slate-200 pb-1 mb-8">
-            <TabsList className="bg-transparent h-auto p-0 flex gap-10">
-              <TabsTrigger
-                value="general"
-                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-1 pb-4 text-slate-500 data-[state=active]:text-slate-900 font-semibold text-[14px] transition-all"
-              >
-                Cấu hình & Mức giảm
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 border-b border-slate-200 pb-1 mb-6">
+            <TabsList className="bg-transparent h-auto p-0 flex gap-6">
+              <TabsTrigger value="general" className={tabClass}>
+                Cấu hình & mức giảm
               </TabsTrigger>
-              <TabsTrigger
-                value="rules"
-                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-1 pb-4 text-slate-500 data-[state=active]:text-slate-900 font-semibold text-[14px] transition-all"
-              >
-                Điều kiện & Thời gian
+              <TabsTrigger value="rules" className={tabClass}>
+                Điều kiện & thời gian
               </TabsTrigger>
-              <TabsTrigger
-                value="scope"
-                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-1 pb-4 text-slate-500 data-[state=active]:text-slate-900 font-semibold text-[14px] transition-all"
-              >
+              <TabsTrigger value="scope" className={tabClass}>
                 Sản phẩm áp dụng
               </TabsTrigger>
             </TabsList>
@@ -93,7 +91,7 @@ export function DiscountForm({ initialData, onSubmit, isLoading }: DiscountFormP
                 type="button"
                 variant="outline"
                 size="sm"
-                className="h-10 px-5 rounded-xl font-semibold text-xs hover:bg-slate-50"
+                className="h-10 px-5 rounded-xl font-medium text-sm hover:bg-slate-50"
                 onClick={() => router.back()}
               >
                 Hủy
@@ -102,7 +100,7 @@ export function DiscountForm({ initialData, onSubmit, isLoading }: DiscountFormP
                 type="submit"
                 size="sm"
                 disabled={isLoading}
-                className="h-10 px-6 rounded-xl font-semibold text-xs shadow-lg shadow-primary/10"
+                className="h-10 px-6 rounded-xl bg-teal-700 text-white hover:bg-teal-800 font-medium text-sm shadow-sm"
               >
                 {isLoading ? (
                   <Spinner size="sm" className="mr-2" />
@@ -114,35 +112,33 @@ export function DiscountForm({ initialData, onSubmit, isLoading }: DiscountFormP
             </div>
           </div>
 
-          <div className="max-w-[1200px]">
-            <TabsContent
-              value="general"
-              className="mt-0 space-y-10 animate-in fade-in slide-in-from-bottom-2 duration-300"
-            >
-              <BasicInfoSection form={form} />
-              <ValueSection form={form} />
-            </TabsContent>
+          <TabsContent
+            value="general"
+            className="mt-0 space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300"
+          >
+            <BasicInfoSection form={form} />
+            <ValueSection form={form} />
+          </TabsContent>
 
-            <TabsContent
-              value="rules"
-              className="mt-0 animate-in fade-in slide-in-from-bottom-2 duration-300"
-            >
-              <UsageSection form={form} />
-            </TabsContent>
+          <TabsContent
+            value="rules"
+            className="mt-0 animate-in fade-in slide-in-from-bottom-2 duration-300"
+          >
+            <UsageSection form={form} />
+          </TabsContent>
 
-            <TabsContent
-              value="scope"
-              className="mt-0 animate-in fade-in slide-in-from-bottom-2 duration-300"
-            >
-              <ScopeSection
-                form={form}
-                products={productsData?.data || []}
-                isLoading={isLoadingProducts}
-                searchQuery={searchQuery}
-                setSearchQuery={setSearchQuery}
-              />
-            </TabsContent>
-          </div>
+          <TabsContent
+            value="scope"
+            className="mt-0 animate-in fade-in slide-in-from-bottom-2 duration-300"
+          >
+            <ScopeSection
+              form={form}
+              products={productsData?.data || []}
+              isLoading={isLoadingProducts}
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+            />
+          </TabsContent>
         </Tabs>
       </form>
     </Form>

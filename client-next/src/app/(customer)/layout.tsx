@@ -88,8 +88,8 @@ export default async function CustomerLayout({
       const decoded = JSON.parse(decodedJson);
       isAdmin =
         decoded?.role === Role.ADMIN ||
-        decoded?.role === Role.KHO ||
-        decoded?.role === Role.BAN_HANG;
+        decoded?.role === Role.WAREHOUSE ||
+        decoded?.role === Role.SALES;
     } catch {}
   }
 

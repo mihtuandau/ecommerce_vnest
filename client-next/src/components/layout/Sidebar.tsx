@@ -1,42 +1,40 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  LayoutDashboard,
-  Package,
-  Layers,
-  ShoppingCart,
-  Users,
-  Tag,
-  Image as ImageIcon,
-  MessageCircle,
   BarChart3,
+  Bell,
+  Bot,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
-  ChevronDown,
-  Settings,
-  Warehouse,
-  RotateCcw,
-  ShieldCheck,
   CreditCard,
-  Truck,
-  Star,
-  Bot,
-  Bell,
   History,
+  Image as ImageIcon,
   Key,
+  Layers,
+  LayoutDashboard,
+  MessageCircle,
+  Package,
+  RotateCcw,
+  Settings,
+  ShieldCheck,
+  ShoppingCart,
+  Star,
+  Tag,
+  Users,
 } from "lucide-react";
-import { cn } from "@/utils/cn";
+import { ROLE_CONFIG } from "@/features/permissions/constants/index";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { useAuthStore } from "@/features/auth/store/auth.store";
-import { handleAvatarError } from "@/utils/avatar";
-import Image from "next/image";
+import { ROUTES } from "@/constants/routes";
 import { usePermission } from "@/hooks/usePermission";
 import { Role } from "@/types/enums";
-import { ROLE_CONFIG } from "@/features/permissions/constants/index";
-import { ROUTES } from "@/constants/routes";
+import { handleAvatarError } from "@/utils/avatar";
+import { cn } from "@/utils/cn";
 
 export interface NavSubItem {
   label: string;
@@ -57,8 +55,6 @@ export interface NavGroup {
   items: NavItem[];
 }
 
-// Each item declares which permission is required.
-// permission: null → always visible (no guard needed)
 const navGroups: NavGroup[] = [
   {
     title: "TỔNG QUAN",
@@ -198,30 +194,29 @@ const navGroups: NavGroup[] = [
 export function Sidebar() {
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [expandedMenu, setExpandedMenu] = useState<string | null>(null);
   const { logout } = useAuth();
   const { user } = useAuthStore();
   const { can } = usePermission();
 
-  const [expandedMenu, setExpandedMenu] = useState<string | null>(null);
-
-  // Auto-expand menu that contains the active route
   useEffect(() => {
     navGroups.forEach((group) => {
       group.items.forEach((item) => {
-        if (item.subItems) {
-          const isSubActive = item.subItems.some(
-            (sub) =>
-              pathname === sub.href ||
-              (sub.href !== "/admin" && pathname.startsWith(sub.href + "/"))
-          );
-          if (isSubActive) setExpandedMenu(item.label);
+        if (!item.subItems) return;
+
+        const isSubActive = item.subItems.some(
+          (sub) =>
+            pathname === sub.href ||
+            (sub.href !== "/admin" && pathname.startsWith(`${sub.href}/`))
+        );
+
+        if (isSubActive) {
+          setExpandedMenu(item.label);
         }
       });
     });
   }, [pathname]);
 
-  // Filter groups: only show items the user has permission for,
-  // hide entire group if no items are visible
   const visibleGroups = navGroups
     .map((group) => ({
       ...group,
@@ -234,39 +229,38 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "relative flex flex-col bg-[#18181b] text-zinc-300 transition-all duration-300 ease-in-out shadow-2xl z-20 border-r border-white/5 h-screen sticky top-0",
+        "relative flex flex-col bg-white text-slate-600 transition-all duration-300 ease-in-out shadow-[8px_0_30px_rgba(15,23,42,0.04)] z-20 border-r border-slate-200/80 h-screen sticky top-0",
         isCollapsed ? "w-[80px]" : "w-[260px]"
       )}
     >
-      
       <div className="flex h-16 items-center px-6 mb-2 mt-2">
         <Link href={ROUTES.ADMIN} className="flex items-center gap-3 group">
-          <div className="h-8 w-8 rounded-lg bg-gradient-to-tr from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-extrabold text-sm shadow-md group-hover:scale-105 transition-transform duration-300">
+          <div className="h-8 w-8 rounded-lg bg-teal-700 flex items-center justify-center text-white font-semibold text-sm shadow-sm group-hover:scale-105 transition-transform duration-300">
             V
           </div>
           {!isCollapsed && (
-            <span className="font-medium text-[15px] tracking-tight leading-none text-white/95">
+            <span className="font-semibold text-[15px] tracking-tight leading-none text-slate-800">
               Admin Panel
             </span>
           )}
         </Link>
       </div>
 
-      
       <nav className="flex-1 space-y-6 p-4 overflow-y-auto custom-sidebar-scrollbar pt-2">
         {visibleGroups.map((group, groupIdx) => (
           <div
-            key={groupIdx}
+            key={group.title}
             className={cn(
               "space-y-2 pb-2",
-              groupIdx > 0 && "pt-4 border-t border-white/5"
+              groupIdx > 0 && "pt-4 border-t border-slate-100"
             )}
           >
             {!isCollapsed && (
-              <p className="px-3 text-[12.5px] font-semibold text-slate-400 mb-2 ml-1">
+              <p className="px-3 text-xs font-medium uppercase tracking-[0.12em] text-slate-400 mb-2 ml-1">
                 {group.title}
               </p>
             )}
+
             <div className="space-y-1">
               {group.items.map((item) => {
                 const hasSub = !!item.subItems;
@@ -275,10 +269,10 @@ export function Sidebar() {
                   ? item.subItems!.some(
                       (sub) =>
                         pathname === sub.href ||
-                        (sub.href !== "/admin" && pathname.startsWith(sub.href + "/"))
+                        (sub.href !== "/admin" && pathname.startsWith(`${sub.href}/`))
                     )
                   : pathname === item.href ||
-                    (item.href !== "/admin" && pathname.startsWith(item.href!));
+                    (item.href !== "/admin" && pathname.startsWith(`${item.href}/`));
 
                 const ItemWrapper = hasSub ? "button" : Link;
                 const itemProps = hasSub
@@ -293,18 +287,18 @@ export function Sidebar() {
                     <ItemWrapper
                       {...(itemProps as any)}
                       className={cn(
-                        "group relative flex items-center gap-3 rounded-xl px-3 py-1.5 text-[13px] font-normal transition-all duration-300",
+                        "group relative flex items-center gap-3 rounded-xl px-3 py-1.5 text-sm font-medium transition-all duration-300",
                         isActive
-                          ? "bg-white/10 text-white"
-                          : "text-slate-400 hover:bg-white/5 hover:text-white"
+                          ? "bg-teal-50 text-teal-800"
+                          : "text-slate-500 hover:bg-slate-50 hover:text-slate-800"
                       )}
                     >
                       <div
                         className={cn(
                           "flex items-center justify-center h-8 w-8 rounded-lg transition-all duration-300",
                           isActive
-                            ? "bg-white/10 text-white"
-                            : "bg-slate-800/50 text-slate-400 group-hover:bg-slate-700/50 group-hover:text-white"
+                            ? "bg-teal-100 text-teal-700"
+                            : "bg-slate-100 text-slate-400 group-hover:bg-white group-hover:text-slate-700 group-hover:shadow-sm"
                         )}
                       >
                         <item.icon className="h-4 w-4 shrink-0" />
@@ -314,7 +308,7 @@ export function Sidebar() {
                         <span
                           className={cn(
                             "flex-1 truncate transition-all duration-300",
-                            isActive ? "text-white" : "group-hover:translate-x-1"
+                            isActive ? "text-teal-900" : "group-hover:translate-x-1"
                           )}
                         >
                           {item.label}
@@ -324,10 +318,10 @@ export function Sidebar() {
                       {!isCollapsed && item.badge && (
                         <span
                           className={cn(
-                            "px-1.5 py-0.5 rounded-md text-xs font-medium tracking-tight",
+                            "px-1.5 py-0.5 rounded-md text-xs font-medium",
                             item.badge === "New"
                               ? "bg-emerald-500/10 text-emerald-500"
-                              : "bg-primary/10 text-primary"
+                              : "bg-teal-50 text-teal-700"
                           )}
                         >
                           {item.badge}
@@ -344,17 +338,16 @@ export function Sidebar() {
                       )}
 
                       {isActive && !hasSub && (
-                        <div className="absolute left-0 w-1 h-5 bg-white rounded-r-full" />
+                        <div className="absolute left-0 w-1 h-5 bg-teal-600 rounded-r-full" />
                       )}
 
                       {isCollapsed && (
-                        <div className="absolute left-full ml-6 rounded-lg px-3 py-2 bg-slate-900 text-white text-xs font-normal opacity-0 group-hover:opacity-100 pointer-events-none transition-all translate-x-[-10px] group-hover:translate-x-0 whitespace-nowrap z-50 shadow-2xl border border-white/5">
+                        <div className="absolute left-full ml-6 rounded-lg px-3 py-2 bg-slate-900 text-white text-xs font-normal opacity-0 group-hover:opacity-100 pointer-events-none transition-all translate-x-[-10px] group-hover:translate-x-0 whitespace-nowrap z-50 shadow-2xl border border-slate-800">
                           {item.label}
                         </div>
                       )}
                     </ItemWrapper>
 
-                    
                     {hasSub && !isCollapsed && (
                       <div
                         className={cn(
@@ -365,15 +358,16 @@ export function Sidebar() {
                         <div className="flex flex-col gap-1 pl-11 pr-3 py-1">
                           {item.subItems!.map((sub) => {
                             const isSubActive = pathname === sub.href;
+
                             return (
                               <Link
                                 key={sub.href}
                                 href={sub.href}
                                 className={cn(
-                                  "py-1 px-3 text-[12px] rounded-lg transition-colors flex items-center",
+                                  "py-1 px-3 text-sm rounded-lg transition-colors flex items-center",
                                   isSubActive
-                                    ? "text-white font-normal bg-white/8"
-                                    : "text-slate-400/80 hover:text-white hover:bg-white/5"
+                                    ? "text-teal-800 font-medium bg-teal-50"
+                                    : "text-slate-500 hover:text-slate-800 hover:bg-slate-50"
                                 )}
                               >
                                 {sub.label}
@@ -391,11 +385,10 @@ export function Sidebar() {
         ))}
       </nav>
 
-      
-      <div className="p-4 bg-white/[0.01] border-t border-white/5">
+      <div className="p-4 bg-slate-50/60 border-t border-slate-100">
         {!isCollapsed && user && (
           <div className="flex items-center gap-3 px-2 py-1.5 rounded-xl transition-all duration-300">
-            <div className="h-8 w-8 rounded-full bg-slate-800 flex items-center justify-center border border-white/5 overflow-hidden shrink-0">
+            <div className="h-8 w-8 rounded-full bg-white flex items-center justify-center border border-slate-200 overflow-hidden shrink-0 shadow-sm">
               {(user as any).avatar ? (
                 <Image
                   src={(user as any).avatar}
@@ -406,24 +399,24 @@ export function Sidebar() {
                   onError={(e) => handleAvatarError(e as any, user.name, user.email)}
                 />
               ) : (
-                <div className="h-full w-full flex items-center justify-center text-primary font-medium text-[10px]">
+                <div className="h-full w-full flex items-center justify-center text-teal-700 font-medium text-xs">
                   {user.name ? user.name.charAt(0).toUpperCase() : "U"}
                 </div>
               )}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-[12px] font-normal truncate leading-tight text-white/85">
+              <p className="text-sm font-medium truncate leading-tight text-slate-700">
                 {user.name || "Người dùng"}
               </p>
-              <p className="text-[10px] text-slate-500 font-normal mt-0.5">
+              <p className="text-xs text-slate-400 font-normal mt-0.5">
                 {ROLE_CONFIG[user.role as Role]?.label ?? user.role}
               </p>
             </div>
-            
+
             <button
               onClick={logout}
               title="Đăng xuất"
-              className="p-1.5 rounded-lg text-slate-500 hover:text-red-400 hover:bg-red-400/10 transition-all"
+              className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -442,9 +435,10 @@ export function Sidebar() {
             </button>
           </div>
         )}
+
         {isCollapsed && user && (
           <div className="flex flex-col items-center gap-2 py-2">
-            <div className="h-8 w-8 rounded-full bg-slate-800 flex items-center justify-center border border-white/5 overflow-hidden">
+            <div className="h-8 w-8 rounded-full bg-white flex items-center justify-center border border-slate-200 overflow-hidden shadow-sm">
               {(user as any).avatar ? (
                 <Image
                   src={(user as any).avatar}
@@ -455,7 +449,7 @@ export function Sidebar() {
                   onError={(e) => handleAvatarError(e as any, user.name, user.email)}
                 />
               ) : (
-                <span className="text-primary font-bold text-xs">
+                <span className="text-teal-700 font-semibold text-xs">
                   {user.name ? user.name.charAt(0).toUpperCase() : "U"}
                 </span>
               )}
@@ -463,7 +457,7 @@ export function Sidebar() {
             <button
               onClick={logout}
               title="Đăng xuất"
-              className="p-1.5 rounded-lg text-slate-500 hover:text-red-400 hover:bg-red-400/10 transition-all"
+              className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -484,10 +478,9 @@ export function Sidebar() {
         )}
       </div>
 
-      
       <button
         onClick={() => setIsCollapsed(!isCollapsed)}
-        className="absolute -right-3.5 top-20 h-7 w-7 rounded-lg border border-white/10 bg-[#1e293b] text-slate-400 flex items-center justify-center shadow-xl hover:text-white hover:bg-primary hover:border-primary transition-all duration-300 z-30 group"
+        className="absolute -right-3.5 top-20 h-7 w-7 rounded-lg border border-slate-200 bg-white text-slate-400 flex items-center justify-center shadow-lg hover:text-teal-700 hover:bg-teal-50 hover:border-teal-200 transition-all duration-300 z-30 group"
       >
         {isCollapsed ? (
           <ChevronRight className="h-3.5 w-3.5" />

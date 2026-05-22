@@ -1,23 +1,23 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Shield } from "lucide-react";
 import { AccessDenied } from "@/components/ui/AccessDenied";
 import { Spinner } from "@/components/ui/Spinner";
 import { Tabs, TabsContent } from "@/components/ui/Tabs";
-import { usePermission } from "@/hooks/usePermission";
-import { Role } from "@/types/enums";
+import { MANAGED_ROLES } from "@/features/permissions/constants/index";
+import { PermissionHeader } from "@/features/permissions/components/PermissionHeader";
+import { PermissionMatrix } from "@/features/permissions/components/PermissionMatrix";
+import { RoleInfoCard } from "@/features/permissions/components/RoleInfoCard";
+import { RoleTabsList } from "@/features/permissions/components/RoleTabsList";
 import {
   useAllPermissions,
   useRolesWithPermissions,
   useUpdateRolePermissions,
 } from "@/features/permissions/hooks";
-import { MANAGED_ROLES } from "@/features/permissions/constants/index";
 import type { Permission } from "@/features/permissions/types";
-import { PermissionHeader } from "@/features/permissions/components/PermissionHeader";
-import { PermissionMatrix } from "@/features/permissions/components/PermissionMatrix";
-import { RoleInfoCard } from "@/features/permissions/components/RoleInfoCard";
-import { RoleTabsList } from "@/features/permissions/components/RoleTabsList";
+import { usePermission } from "@/hooks/usePermission";
+import { Role } from "@/types/enums";
 
 export function AdminPermissionsView() {
   const { can } = usePermission();
@@ -113,7 +113,7 @@ export function AdminPermissionsView() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="space-y-6 pb-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <PermissionHeader
         isPending={isPending}
         hasChanges={dirtyRoles.has(activeRole)}
@@ -132,7 +132,7 @@ export function AdminPermissionsView() {
         <RoleTabsList dirtyRoles={dirtyRoles} />
 
         <TabsContent value={activeRole} className="mt-0">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             <div className="lg:col-span-4">
               <RoleInfoCard
                 activeRole={activeRole}
@@ -149,7 +149,9 @@ export function AdminPermissionsView() {
                 onSelectAll={() => {
                   setLocalPerms((prev) => ({
                     ...prev,
-                    [activeRole]: new Set(allPermissions.map((permission) => permission.id)),
+                    [activeRole]: new Set(
+                      allPermissions.map((permission) => permission.id)
+                    ),
                   }));
                   markRoleDirty();
                 }}

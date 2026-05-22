@@ -17,7 +17,8 @@ import dayjs from "dayjs";
 import { toast } from "sonner";
 import { cn } from "@/utils/cn";
 import { Spinner } from "@/components/ui/Spinner";
-import { OrderStatus } from "@/types/enums";
+import { OrderStatus, Role } from "@/types/enums";
+import { ROLE_CONFIG } from "@/features/permissions/constants";
 import { ADMIN_ORDER_STATUS_CONFIG } from "@/features/orders/constants/order-status.constants";
 
 import { CustomerHeaderSummary } from "./CustomerHeaderSummary";
@@ -116,7 +117,10 @@ export function CustomerInfo({
             {isInternalGroup ? "Kênh Nội Bộ Cửa Hàng" : selectedRoom?.customer?.name}
           </h4>
           <span className="px-2 py-0.5 bg-amber-100 border border-amber-200/60 text-amber-800 text-[8px] uppercase tracking-wider font-bold rounded mt-1.5 inline-block">
-            {isInternalGroup ? "Staff Only" : selectedRoom?.customer?.role}
+            {isInternalGroup
+              ? "Chỉ nhân viên"
+              : ROLE_CONFIG[selectedRoom?.customer?.role as Role]?.label ||
+                selectedRoom?.customer?.role}
           </span>
         </div>
 
@@ -128,7 +132,10 @@ export function CustomerInfo({
             <p className="text-xs leading-relaxed text-slate-550 font-medium">
               {isInternalGroup
                 ? "Đây là kênh chat nội bộ dành riêng cho tất cả nhân viên trong cửa hàng trao đổi công việc, vận đơn, kiểm kho và thông báo nội bộ."
-                : `Đang trò chuyện trực tiếp và bảo mật với ${selectedRoom?.customer?.name} (${selectedRoom?.customer?.role}).`}
+                : `Đang trò chuyện trực tiếp và bảo mật với ${selectedRoom?.customer?.name} (${
+                    ROLE_CONFIG[selectedRoom?.customer?.role as Role]?.label ||
+                    selectedRoom?.customer?.role
+                  }).`}
             </p>
             {!isInternalGroup && selectedRoom?.customer?.email && (
               <div className="text-[11px] text-slate-550 bg-slate-50 border border-slate-100 p-2.5 rounded-xl break-all mt-1 font-semibold">

@@ -1,8 +1,7 @@
 "use client";
 
-import React from "react";
-import { cn } from "@/utils/cn";
 import type { BannerListTab } from "@/features/banners/services";
+import { cn } from "@/utils/cn";
 
 interface BannerTabsProps {
   activeTab: BannerListTab;
@@ -28,25 +27,25 @@ export function BannerTabs({ activeTab, onTabChange, counts }: BannerTabsProps) 
           key={tab.id}
           onClick={() => onTabChange(tab.id)}
           className={cn(
-            "relative flex items-center gap-2 px-4 py-4 text-xs font-bold uppercase tracking-widest transition-all",
+            "relative flex items-center gap-2 px-4 py-4 text-sm font-medium transition-all",
             activeTab === tab.id
-              ? "text-slate-900"
-              : "text-slate-400 hover:text-slate-600"
+              ? "text-teal-800"
+              : "text-slate-500 hover:text-slate-700"
           )}
         >
           {tab.label}
           <span
             className={cn(
-              "flex h-5 min-w-[20px] items-center justify-center rounded-full px-1.5 text-[10px] font-black transition-all",
+              "flex h-5 min-w-[20px] items-center justify-center rounded-full px-1.5 text-xs font-medium transition-all",
               activeTab === tab.id
-                ? "bg-slate-900 text-white"
+                ? "bg-teal-50 text-teal-700"
                 : "bg-slate-100 text-slate-500"
             )}
           >
             {tab.count}
           </span>
           {activeTab === tab.id && (
-            <div className="absolute bottom-0 left-0 h-0.5 w-full bg-slate-900" />
+            <div className="absolute bottom-0 left-0 h-0.5 w-full bg-teal-700" />
           )}
         </button>
       ))}

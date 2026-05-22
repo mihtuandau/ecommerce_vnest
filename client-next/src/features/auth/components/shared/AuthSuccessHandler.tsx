@@ -45,8 +45,8 @@ function AuthHandlerContent() {
           // 5. Redirect if staff
           const isStaff =
             data.role === Role.ADMIN ||
-            data.role === Role.KHO ||
-            data.role === Role.BAN_HANG;
+            data.role === Role.WAREHOUSE ||
+            data.role === Role.SALES;
           if (isStaff) {
             router.push(ROUTES.ADMIN);
           }

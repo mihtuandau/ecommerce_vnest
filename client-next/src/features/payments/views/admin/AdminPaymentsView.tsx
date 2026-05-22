@@ -1,16 +1,17 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { CreditCard, RefreshCw } from "lucide-react";
 import { AccessDenied } from "@/components/ui/AccessDenied";
 import { Button } from "@/components/ui/Button";
-import { usePermission } from "@/hooks/usePermission";
-import { cn } from "@/utils/cn";
-import { usePayments, useUpdatePaymentStatus } from "@/features/payments/hooks";
-import type { PaymentRecord } from "@/features/payments/types";
+import { adminUI } from "@/constants/admin-ui";
 import { PaymentsStats } from "@/features/payments/components/admin/PaymentsStats";
 import { PaymentsTable } from "@/features/payments/components/admin/PaymentsTable";
 import { PaymentsToolbar } from "@/features/payments/components/admin/PaymentsToolbar";
+import { usePayments, useUpdatePaymentStatus } from "@/features/payments/hooks";
+import type { PaymentRecord } from "@/features/payments/types";
+import { usePermission } from "@/hooks/usePermission";
+import { cn } from "@/utils/cn";
 
 const PAYMENT_PAGE_SIZE = 10;
 
@@ -75,23 +76,23 @@ export function AdminPaymentsView() {
   }
 
   return (
-    <div className="space-y-4 pb-10">
+    <div className="space-y-6 pb-10">
       <div className="flex items-center justify-between pb-4 border-b border-slate-200">
         <div>
-          <h1 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-            <CreditCard className="h-6 w-6 text-slate-500" />
-            Quản lý giao dịch & Đối soát
+          <h1 className={cn(adminUI.typography.heading, "flex items-center gap-2")}>
+            <CreditCard className="h-5 w-5 text-slate-500" />
+            Quản lý giao dịch & đối soát
           </h1>
-          <p className="text-xs text-slate-500 mt-1 font-medium">
-            Kiểm tra trạng thái dòng tiền thanh toán và đối soát dữ liệu với
-            ngân hàng/cổng thanh toán.
+          <p className={cn(adminUI.typography.description, "mt-1 max-w-3xl")}>
+            Kiểm tra trạng thái dòng tiền thanh toán và đối soát dữ liệu với ngân
+            hàng/cổng thanh toán.
           </p>
         </div>
         <Button
           variant="outline"
           size="sm"
           onClick={() => refetch()}
-          className="rounded-xl border-slate-200 h-9 font-semibold text-slate-650 gap-2 hover:bg-slate-50 transition-all shadow-sm"
+          className="rounded-xl border-slate-200 h-9 font-medium text-slate-600 gap-2 hover:bg-slate-50 transition-all shadow-sm"
           disabled={isLoading || isFetching}
         >
           <RefreshCw

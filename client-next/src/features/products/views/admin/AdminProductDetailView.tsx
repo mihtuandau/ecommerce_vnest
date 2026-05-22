@@ -1,10 +1,8 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { ChevronLeft } from "lucide-react";
-import { Button } from "@/components/ui/Button";
+import { AdminPageHeader } from "@/components/shared/AdminPageHeader";
 import { Spinner } from "@/components/ui/Spinner";
-import { adminUI } from "@/constants/admin-ui";
 import { ProductForm } from "@/features/products/components/admin/create/ProductForm";
 import { useProductDetail, useUpdateProduct } from "@/features/products/hooks";
 import { mapProductFormToUpdateDto } from "@/features/products/services";
@@ -25,35 +23,19 @@ export function AdminProductDetailView() {
   };
 
   return (
-    <div className="space-y-6 pb-10 max-w-7xl mx-auto">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-9 w-9 p-0 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 shadow-sm transition-all"
-            onClick={() => router.back()}
-          >
-            <ChevronLeft className="h-4 w-4 text-slate-600" />
-          </Button>
-          <div>
-            <h1 className={adminUI.typography.heading}>Chỉnh sửa sản phẩm</h1>
-            <div className="flex items-center gap-1.5 text-[12px] font-medium text-slate-400 mt-1">
-              <span>Sản phẩm</span>
-              <span className="text-[10px]">›</span>
-              <span className="text-slate-800">
-                {product ? product.name : "Đang tải..."}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div className="space-y-6 pb-10">
+      <AdminPageHeader
+        title="Chỉnh sửa sản phẩm"
+        description={product ? product.name : "Cập nhật thông tin sản phẩm."}
+        eyebrow="Sản phẩm"
+        onBack={() => router.back()}
+      />
 
       {isLoading ? (
         <div className="flex h-96 items-center justify-center bg-white rounded-xl border border-slate-200">
           <div className="flex flex-col items-center gap-3">
             <Spinner size="lg" />
-            <p className="text-sm font-semibold text-slate-400">
+            <p className="text-sm font-medium text-slate-400">
               Đang tải dữ liệu...
             </p>
           </div>

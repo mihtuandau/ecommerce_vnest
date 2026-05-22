@@ -76,7 +76,7 @@ export class OrderService {
       throw new NotFoundException(`Đơn hàng #${id} không tồn tại`);
     }
 
-    const isStaff = ['ADMIN', 'KHO', 'BAN_HANG'].includes(user.role);
+    const isStaff = ['ADMIN', 'WAREHOUSE', 'SALES'].includes(user.role);
     if (!isStaff && order.userId !== user.userId) {
       throw new NotFoundException(`Đơn hàng #${id} không tồn tại hoặc không thuộc quyền sở hữu của bạn`);
     }

@@ -9,6 +9,8 @@ import "dayjs/locale/vi";
 import { useAuthStore } from "@/features/auth/store/auth.store";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Input, Button } from "@/components/ui";
+import { ROLE_CONFIG } from "@/features/permissions/constants";
+import { Role } from "@/types/enums";
 
 dayjs.extend(relativeTime);
 dayjs.locale("vi");
@@ -147,7 +149,7 @@ export function SupportSidebar({
                           {s.name}
                         </span>
                         <span className="text-[8px] bg-slate-100 border border-slate-200/60 text-slate-500 font-bold px-1.5 py-0.5 rounded tracking-wide uppercase">
-                          {s.role}
+                          {ROLE_CONFIG[s.role as Role]?.label ?? s.role}
                         </span>
                       </div>
                       <div className="text-[10px] text-slate-400 truncate mt-0.5">

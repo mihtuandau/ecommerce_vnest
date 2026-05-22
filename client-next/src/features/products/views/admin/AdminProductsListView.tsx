@@ -53,7 +53,7 @@ export function AdminProductsListView() {
         isFetching={isFetching}
       />
 
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.015)] overflow-hidden">
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] overflow-hidden">
         <Tabs activeTab={activeTab} onTabChange={setActiveTab} counts={counts} />
         <Toolbar
           searchTerm={searchTerm}

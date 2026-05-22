@@ -1,11 +1,12 @@
 "use client";
 
 import React from "react";
-import { Button } from "@/components/ui/Button";
-import { Plus, RefreshCcw, Image as ImageIcon } from "lucide-react";
-import { Spinner } from "@/components/ui/Spinner";
 import Link from "next/link";
+import { Plus, RefreshCw } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Spinner } from "@/components/ui/Spinner";
 import { ROUTES } from "@/constants/routes";
+import { adminUI } from "@/constants/admin-ui";
 import { cn } from "@/utils/cn";
 
 interface BannerListHeaderProps {
@@ -20,41 +21,41 @@ export function BannerListHeader({
   isFetching,
 }: BannerListHeaderProps) {
   return (
-    <div className="flex flex-col gap-1">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">
-            Quản lý Banner
-          </h1>
-          <p className="text-slate-500 text-sm">
-            Quản lý các hình ảnh quảng bá và chiến dịch hiển thị trên trang chủ.
-          </p>
+    <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div>
+        <h1 className={adminUI.typography.heading}>Quản lý banner</h1>
+        <div className="mt-1 flex items-center gap-1.5 text-[12px] font-medium text-slate-400">
+          <span>Marketing</span>
+          <span className="text-[10px]">/</span>
+          <span className="text-slate-800">{totalBanners} banner</span>
         </div>
-        <div className="flex items-center gap-3">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={onRefresh}
-            disabled={isFetching}
-            className="h-9 rounded-lg border-slate-200 font-bold text-xs uppercase tracking-wider gap-2 bg-white"
-          >
-            {isFetching ? (
-              <Spinner size="sm" />
-            ) : (
-              <RefreshCcw className="h-3.5 w-3.5" />
-            )}
-            Làm mới
-          </Button>
-          <Button
-            asChild
-            size="sm"
-            className="h-9 rounded-lg bg-slate-900 text-white hover:bg-slate-800 font-bold text-xs uppercase tracking-wider gap-2 px-4 shadow-sm"
-          >
-            <Link href={ROUTES.ADMIN_BANNERS_CREATE}>
-              <Plus className="h-4 w-4" /> Thêm Banner
-            </Link>
-          </Button>
-        </div>
+      </div>
+
+      <div className="flex items-center gap-2">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onRefresh}
+          disabled={isFetching}
+          className={cn(adminUI.button.base, adminUI.button.ghost)}
+        >
+          {isFetching ? (
+            <Spinner size="sm" />
+          ) : (
+            <RefreshCw className={adminUI.icon.action} />
+          )}
+          {isFetching ? "Đang tải..." : "Làm mới"}
+        </Button>
+
+        <Button
+          asChild
+          size="sm"
+          className={cn(adminUI.button.base, adminUI.button.primary)}
+        >
+          <Link href={ROUTES.ADMIN_BANNERS_CREATE}>
+            <Plus className={adminUI.icon.action} /> Thêm banner
+          </Link>
+        </Button>
       </div>
     </div>
   );

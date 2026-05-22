@@ -1,13 +1,13 @@
 "use client";
 
 import React from "react";
-import { RefreshCw, Download, Plus } from "lucide-react";
+import Link from "next/link";
+import { Download, Plus, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
-import { cn } from "@/utils/cn";
-import { adminUI } from "@/constants/admin-ui";
-import Link from "next/link";
 import { ROUTES } from "@/constants/routes";
+import { adminUI } from "@/constants/admin-ui";
+import { cn } from "@/utils/cn";
 
 interface OrderOrdersHeaderProps {
   totalOrders: number;
@@ -21,16 +21,17 @@ export function OrderOrdersHeader({
   isFetching,
 }: OrderOrdersHeaderProps) {
   return (
-    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
+    <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
       <div>
         <h1 className={adminUI.typography.heading}>Quản lý đơn hàng</h1>
-        <div className="flex items-center gap-1.5 text-[12px] font-medium text-slate-400 mt-1">
+        <div className="mt-1 flex items-center gap-1.5 text-[12px] font-medium text-slate-400">
           <span>Bán hàng</span>
-          <span className="text-[10px]">›</span>
-          <span className="text-slate-800">Đơn hàng</span>
+          <span className="text-[10px]">/</span>
+          <span className="text-slate-800">{totalOrders} đơn hàng</span>
         </div>
       </div>
-      <div className="flex items-center gap-2">
+
+      <div className="flex flex-wrap items-center gap-2">
         <Button
           variant="ghost"
           className={cn(adminUI.button.base, adminUI.button.ghost)}
@@ -42,18 +43,21 @@ export function OrderOrdersHeader({
           ) : (
             <RefreshCw className={adminUI.icon.action} />
           )}
+          {isFetching ? "Đang tải..." : "Làm mới"}
         </Button>
+
         <Button
           variant="outline"
           className={cn(adminUI.button.base, adminUI.button.secondary)}
         >
-          <Download className={cn(adminUI.icon.action, "mr-2")} /> Xuất Excel
+          <Download className={adminUI.icon.action} /> Xuất Excel
         </Button>
-        <Link href={ROUTES.ADMIN_ORDERS_CREATE}>
-          <Button className={cn(adminUI.button.base, adminUI.button.primary)}>
-            <Plus className={cn(adminUI.icon.action, "mr-2")} /> Tạo đơn mới
-          </Button>
-        </Link>
+
+        <Button asChild className={cn(adminUI.button.base, adminUI.button.primary)}>
+          <Link href={ROUTES.ADMIN_ORDERS_CREATE}>
+            <Plus className={adminUI.icon.action} /> Tạo đơn mới
+          </Link>
+        </Button>
       </div>
     </div>
   );

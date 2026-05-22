@@ -18,7 +18,7 @@ export class ChatController {
   @Get('rooms/:roomId/messages')
   async getMessages(@Param('roomId') roomId: string, @Req() req: any) {
     const user = req.user;
-    const isStaff = ['ADMIN', 'KHO', 'BAN_HANG'].includes(user.role?.toUpperCase());
+    const isStaff = ['ADMIN', 'WAREHOUSE', 'SALES'].includes(user.role?.toUpperCase());
     const roomUserId = roomId.replace('room_', '');
 
     if (!isStaff && String(roomUserId) !== String(user.id)) {
@@ -31,7 +31,7 @@ export class ChatController {
   @Get('rooms/:roomId/mark-as-read')
   async markAsRead(@Param('roomId') roomId: string, @Req() req: any) {
     const user = req.user;
-    const isStaff = ['ADMIN', 'KHO', 'BAN_HANG'].includes(user.role?.toUpperCase());
+    const isStaff = ['ADMIN', 'WAREHOUSE', 'SALES'].includes(user.role?.toUpperCase());
     const roomUserId = roomId.replace('room_', '');
 
     if (!isStaff && String(roomUserId) !== String(user.id)) {
