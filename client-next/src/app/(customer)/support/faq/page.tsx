@@ -41,9 +41,9 @@ const FAQS = [
 export default function FAQPage() {
   return (
     <div className="max-w-[1000px] mx-auto py-12 md:py-20 px-4 sm:px-6">
-      <header className="mb-12 border-b border-slate-100 pb-8">
-        <h1 className="text-2xl font-bold text-slate-900 mb-2">Câu hỏi thường gặp</h1>
-        <p className="text-slate-500 text-sm">
+      <header className="mb-12 border-b border-brand-sand/50 pb-8">
+        <h1 className="text-2xl font-bold text-brand-espresso mb-2">Câu hỏi thường gặp</h1>
+        <p className="text-brand-taupe text-sm">
           Giải đáp các thắc mắc phổ biến của khách hàng
         </p>
       </header>
@@ -51,14 +51,14 @@ export default function FAQPage() {
       <div className="space-y-12">
         {FAQS.map((cat, idx) => (
           <section key={idx}>
-            <h2 className="text-lg font-bold text-slate-900 mb-6 uppercase tracking-wider">
+            <h2 className="text-lg font-bold text-brand-espresso mb-6 uppercase tracking-wider">
               0{idx + 1}. {cat.category}
             </h2>
             <div className="space-y-8">
               {cat.items.map((item, i) => (
                 <div key={i}>
-                  <p className="font-bold text-slate-800 mb-2">Q: {item.q}</p>
-                  <p className="text-slate-600 pl-4 border-l-2 border-slate-100 italic font-normal">
+                  <p className="font-bold text-brand-espresso mb-2">Q: {item.q}</p>
+                  <p className="text-brand-taupe pl-4 border-l-2 border-brand-sand/50 italic font-normal">
                     A: {item.a}
                   </p>
                 </div>
@@ -68,8 +68,8 @@ export default function FAQPage() {
         ))}
       </div>
 
-      <div className="mt-20 pt-10 border-t border-slate-100">
-        <p className="text-slate-500 text-sm italic">
+      <div className="mt-20 pt-10 border-t border-brand-sand/50">
+        <p className="text-brand-taupe text-sm italic">
           Nếu bạn không tìm thấy câu trả lời cho vấn đề của mình, vui lòng liên hệ
           hotline 1900 8888 hoặc gửi email về support@luxe.vn để được hỗ trợ trực tiếp.
         </p>
@@ -77,3 +77,4 @@ export default function FAQPage() {
     </div>
   );
 }
+

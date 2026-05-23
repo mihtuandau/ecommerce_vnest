@@ -1,8 +1,7 @@
 "use client";
 
-import React from "react";
 import { Address } from "@/types/models";
-import { MapPin, Phone, User as UserIcon } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { cn } from "@/utils/cn";
 import { Button } from "@/components/ui/Button";
@@ -14,8 +13,8 @@ interface CustomerAddressesProps {
 export function CustomerAddresses({ addresses }: CustomerAddressesProps) {
   if (!addresses || addresses.length === 0) {
     return (
-      <div className="p-12 text-center border-2 border-dashed border-slate-200 rounded-2xl">
-        <p className="text-slate-400 font-semibold text-sm">
+      <div className="rounded-2xl border-2 border-dashed border-slate-200 p-12 text-center">
+        <p className="text-sm font-medium text-slate-400">
           Khách hàng chưa cập nhật địa chỉ.
         </p>
       </div>
@@ -28,40 +27,40 @@ export function CustomerAddresses({ addresses }: CustomerAddressesProps) {
         <div
           key={address.id}
           className={cn(
-            "group bg-white p-5 rounded-2xl border transition-all duration-200 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-[0_4px_20px_rgba(15,23,42,0.03)]",
+            "group flex flex-col justify-between gap-4 rounded-2xl border bg-white p-5 shadow-[0_4px_20px_rgba(15,23,42,0.03)] transition-all duration-200 md:flex-row md:items-center",
             address.isDefault
-              ? "border-slate-900 bg-slate-50/30"
+              ? "border-teal-600 bg-teal-50/20"
               : "border-slate-100 hover:border-slate-200"
           )}
         >
-          <div className="flex-1 min-w-0 flex items-start gap-4">
+          <div className="flex min-w-0 flex-1 items-start gap-4">
             <div
               className={cn(
-                "h-10 w-10 rounded-xl flex items-center justify-center shrink-0 border",
+                "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border",
                 address.isDefault
-                  ? "bg-slate-900 border-slate-900 text-white"
-                  : "bg-slate-50 border-slate-100 text-slate-400"
+                  ? "border-teal-600 bg-teal-600 text-white"
+                  : "border-slate-100 bg-slate-50 text-slate-400"
               )}
             >
               <MapPin className="h-5 w-5" />
             </div>
 
             <div className="space-y-1">
-              <div className="flex items-center gap-3">
-                <span className="text-sm font-semibold text-slate-900">
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="text-sm font-medium text-slate-900">
                   {address.fullName}
                 </span>
                 <span className="text-slate-300">|</span>
-                <span className="text-sm font-semibold text-slate-600">
+                <span className="text-sm font-medium text-slate-600">
                   {address.phone}
                 </span>
                 {address.isDefault && (
-                  <Badge className="bg-slate-900 text-white text-[10px] font-semibold h-5 px-1.5 rounded-lg border-none shadow-sm">
+                  <Badge className="h-5 rounded-lg border-none bg-teal-600 px-1.5 text-xs font-medium text-white shadow-sm">
                     Mặc định
                   </Badge>
                 )}
               </div>
-              <p className="text-sm text-slate-500 leading-relaxed truncate">
+              <p className="truncate text-sm leading-relaxed text-slate-500">
                 {address.street}, {address.ward || ""},{" "}
                 {(address as Address & { state?: string }).state || ""},{" "}
                 {(address as Address & { city?: string }).city || ""}
@@ -69,11 +68,11 @@ export function CustomerAddresses({ addresses }: CustomerAddressesProps) {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex shrink-0 items-center gap-2">
             <Button
               variant="ghost"
               size="sm"
-              className="h-8 rounded-xl text-xs font-semibold text-slate-500 hover:bg-slate-100 hover:text-slate-900"
+              className="h-8 rounded-xl text-xs font-medium text-slate-500 hover:bg-slate-100 hover:text-slate-900"
             >
               Chỉnh sửa
             </Button>

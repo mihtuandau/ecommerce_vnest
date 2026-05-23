@@ -3,18 +3,18 @@ import React from "react";
 export default function ReturnPolicyPage() {
   return (
     <div className="max-w-[1000px] mx-auto py-12 md:py-20 px-4 sm:px-6">
-      <header className="mb-12 border-b border-slate-100 pb-8">
-        <h1 className="text-2xl font-bold text-slate-900 mb-2">
+      <header className="mb-12 border-b border-brand-sand/50 pb-8">
+        <h1 className="text-2xl font-bold text-brand-espresso mb-2">
           Chính sách đổi trả & hoàn tiền
         </h1>
-        <p className="text-slate-500 text-sm">
+        <p className="text-brand-taupe text-sm">
           Quy định chi tiết về việc trả hàng và hoàn tiền tại LUXE
         </p>
       </header>
 
-      <div className="space-y-10 text-slate-700 leading-relaxed text-base font-normal">
+      <div className="space-y-10 text-brand-espresso/85 leading-relaxed text-base font-normal">
         <section>
-          <h2 className="font-bold text-slate-900 mb-3">
+          <h2 className="font-bold text-brand-espresso mb-3">
             01. Điều kiện trả hàng, hoàn tiền
           </h2>
           <p className="mb-3">
@@ -29,7 +29,7 @@ export default function ReturnPolicyPage() {
         </section>
 
         <section>
-          <h2 className="font-bold text-slate-900 mb-3">
+          <h2 className="font-bold text-brand-espresso mb-3">
             02. Thời hạn yêu cầu đổi trả
           </h2>
           <p>
@@ -41,7 +41,7 @@ export default function ReturnPolicyPage() {
         </section>
 
         <section>
-          <h2 className="font-bold text-slate-900 mb-3">
+          <h2 className="font-bold text-brand-espresso mb-3">
             03. Tình trạng sản phẩm đổi trả
           </h2>
           <p className="mb-3">Sản phẩm đổi trả phải đảm bảo các điều kiện sau:</p>
@@ -57,7 +57,7 @@ export default function ReturnPolicyPage() {
         </section>
 
         <section>
-          <h2 className="font-bold text-slate-900 mb-3">
+          <h2 className="font-bold text-brand-espresso mb-3">
             04. Thời gian và phương thức hoàn tiền
           </h2>
           <p className="mb-3">
@@ -77,7 +77,7 @@ export default function ReturnPolicyPage() {
         </section>
 
         <section>
-          <h2 className="font-bold text-slate-900 mb-3">
+          <h2 className="font-bold text-brand-espresso mb-3">
             05. Quy trình xử lý khiếu nại
           </h2>
           <p>
@@ -90,3 +90,4 @@ export default function ReturnPolicyPage() {
     </div>
   );
 }
+

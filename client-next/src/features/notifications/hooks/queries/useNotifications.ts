@@ -6,5 +6,7 @@ export const useNotifications = (params: NotificationsQueryParams = {}) => {
   return useQuery({
     queryKey: ["notifications", params],
     queryFn: () => notificationsApi.getNotifications(params),
+    refetchInterval: 15_000,
+    refetchOnWindowFocus: true,
   });
 };

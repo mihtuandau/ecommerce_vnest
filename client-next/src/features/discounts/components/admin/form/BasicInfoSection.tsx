@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { UseFormReturn } from "react-hook-form";
 import {
   FormField,
@@ -18,40 +17,38 @@ interface BasicInfoSectionProps {
 
 export function BasicInfoSection({ form }: BasicInfoSectionProps) {
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] overflow-hidden">
-      <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
+    <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_4px_20px_rgba(15,23,42,0.03)]">
+      <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50/50 px-6 py-4">
         <div className="flex items-center gap-2.5">
-          <div className="p-2 bg-white rounded-lg shadow-sm">
-            <Layout className="h-4 w-4 text-primary" />
+          <div className="rounded-lg bg-white p-2 shadow-sm">
+            <Layout className="h-4 w-4 text-teal-600" />
           </div>
-          <h3 className="font-semibold text-slate-800 text-sm tracking-tight">
+          <h3 className="text-base font-semibold text-slate-800">
             Thông tin nhận diện
           </h3>
         </div>
       </div>
 
-      <div className="p-6 space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="space-y-6 p-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <FormField
             control={form.control}
             name="code"
             render={({ field }) => (
               <FormItem className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <FormLabel className="text-sm font-semibold text-slate-700 flex items-center gap-2">
-                    <Hash className="h-3 w-3 text-slate-400" />
-                    Mã chương trình
-                  </FormLabel>
-                </div>
+                <FormLabel className="flex items-center gap-2 text-sm font-medium text-slate-700">
+                  <Hash className="h-3 w-3 text-slate-400" />
+                  Mã chương trình
+                </FormLabel>
                 <FormControl>
                   <Input
                     placeholder="Ví dụ: SUMMER2024"
-                    className="h-11 rounded-xl border-slate-200 focus:ring-primary/10 font-semibold uppercase text-slate-850 placeholder:font-medium placeholder:text-slate-300 text-sm"
+                    className="h-11 rounded-xl border-slate-200 text-sm font-medium uppercase text-slate-800 placeholder:font-normal placeholder:text-slate-300 focus:border-teal-500 focus:ring-teal-100"
                     {...field}
                     value={field.value ?? ""}
                   />
                 </FormControl>
-                <p className="text-[10px] text-slate-400 font-medium italic">
+                <p className="text-xs font-medium text-slate-500">
                   Khách hàng sẽ nhập mã này tại màn hình thanh toán.
                 </p>
                 <FormMessage />
@@ -64,33 +61,33 @@ export function BasicInfoSection({ form }: BasicInfoSectionProps) {
             name="image"
             render={({ field }) => (
               <FormItem className="space-y-2">
-                <FormLabel className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                <FormLabel className="flex items-center gap-2 text-sm font-medium text-slate-700">
                   <ImagePlus className="h-3 w-3 text-slate-400" />
-                  Ảnh Banner (URL)
+                  Ảnh banner (URL)
                 </FormLabel>
                 <FormControl>
                   <div className="space-y-4">
-                    <div className="relative group">
+                    <div className="group relative">
                       <Input
                         placeholder="Liên kết hình ảnh quảng bá..."
-                        className="h-11 rounded-xl border-slate-200 focus:ring-primary/10 text-sm font-medium text-slate-800"
+                        className="h-11 rounded-xl border-slate-200 text-sm font-medium text-slate-800 focus:border-teal-500 focus:ring-teal-100"
                         {...field}
                         value={field.value ?? ""}
                       />
-                      <ImagePlus className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-primary transition-colors" />
+                      <ImagePlus className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-300 transition-colors group-focus-within:text-teal-600" />
                     </div>
 
                     {field.value && (
-                      <div className="relative aspect-[21/9] w-full rounded-xl overflow-hidden border border-slate-100 bg-slate-50 shadow-inner group cursor-zoom-in">
+                      <div className="group relative aspect-[21/9] w-full cursor-zoom-in overflow-hidden rounded-xl border border-slate-100 bg-slate-50 shadow-inner">
                         <img
                           src={field.value}
-                          alt="Banner Preview"
-                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          alt="Banner preview"
+                          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                           onError={(e) => {
                             (e.target as HTMLImageElement).src = "/placeholder.png";
                           }}
                         />
-                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors" />
+                        <div className="absolute inset-0 bg-black/0 transition-colors group-hover:bg-black/5" />
                       </div>
                     )}
                   </div>
@@ -106,13 +103,13 @@ export function BasicInfoSection({ form }: BasicInfoSectionProps) {
           name="description"
           render={({ field }) => (
             <FormItem className="space-y-2">
-              <FormLabel className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+              <FormLabel className="flex items-center gap-2 text-sm font-medium text-slate-700">
                 <FileText className="h-3 w-3 text-slate-400" />
                 Mô tả chiến dịch
               </FormLabel>
               <FormControl>
                 <textarea
-                  className="w-full min-h-[100px] rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-normal focus:outline-none focus:ring-4 focus:ring-primary/5 transition-all leading-relaxed text-slate-800 resize-none placeholder:text-slate-300"
+                  className="min-h-[100px] w-full resize-none rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-normal leading-relaxed text-slate-800 transition-all placeholder:text-slate-300 focus:outline-none focus:ring-4 focus:ring-teal-100"
                   placeholder="Viết một vài dòng mô tả về mục tiêu hoặc thông điệp của chương trình này..."
                   {...field}
                   value={field.value ?? ""}

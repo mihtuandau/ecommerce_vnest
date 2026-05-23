@@ -1,6 +1,21 @@
 import { Injectable } from '@nestjs/common';
+import { Role, UserStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { UpdateNotificationSettingsDto } from './dto/update-settings.dto';
+
+type NotificationPayload = {
+  title: string;
+  content: string;
+  type: string;
+  link?: string;
+};
+
+type NotificationPreferences = {
+  orderStatus?: boolean;
+  promotions?: boolean;
+  newsletter?: boolean;
+  security?: boolean;
+};
 
 @Injectable()
 export class NotificationService {
@@ -62,13 +77,48 @@ export class NotificationService {
     });
   }
 
-  async createNotification(userId: number, data: { title: string; content: string; type: string; link?: string }) {
-    // In a real app, you might check user preferences here before creating
+  async createNotification(userId: number, data: NotificationPayload) {
+    const settings = await this.getSettings(userId);
+    if (!this.canReceiveNotification(settings, data.type)) {
+      return null;
+    }
+
     return this.prisma.notification.create({
       data: {
         userId,
         ...data,
       },
     });
+  }
+
+  async createForRoles(roles: Role[], data: NotificationPayload) {
+    const users = await this.prisma.user.findMany({
+      where: {
+        role: { in: roles },
+        status: UserStatus.ACTIVE,
+        deletedAt: null,
+      },
+      select: { id: true },
+    });
+
+    return Promise.all(
+      users.map((user) => this.createNotification(user.id, data)),
+    );
+  }
+
+  private canReceiveNotification(settings: unknown, type: string) {
+    const prefs = (settings || {}) as NotificationPreferences;
+
+    switch (type) {
+      case 'ORDER':
+      case 'ORDER_STATUS':
+        return prefs.orderStatus !== false;
+      case 'PROMOTION':
+        return prefs.promotions !== false;
+      case 'SECURITY':
+        return prefs.security !== false;
+      default:
+        return true;
+    }
   }
 }

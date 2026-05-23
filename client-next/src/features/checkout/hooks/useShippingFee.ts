@@ -36,6 +36,13 @@ export function useShippingFee(
         return;
       }
 
+      if (settings?.shippingProvider && settings.shippingProvider !== "GHN") {
+        setShippingFee(
+          settings.shippingFee || CHECKOUT_CONSTANTS.DEFAULT_SHIPPING_FEE
+        );
+        return;
+      }
+
       setIsCalculatingFee(true);
       try {
         const totalWeight = displayItems.reduce(

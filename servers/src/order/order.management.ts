@@ -11,6 +11,7 @@ import { GHNService } from '../ghn/ghn.service';
 import { MailService } from '../mail/mail.service';
 import { NotificationService } from '../notification/notification.service';
 import dayjs from 'dayjs';
+import { SystemSettingsService } from '../system-settings/system-settings.service';
 
 @Injectable()
 export class OrderManagement {
@@ -23,6 +24,7 @@ export class OrderManagement {
     private ghnService: GHNService,
     private mailService: MailService,
     private notificationService: NotificationService,
+    private systemSettingsService: SystemSettingsService,
   ) {}
 
   /**
@@ -33,7 +35,9 @@ export class OrderManagement {
   async handleAutoCancelAbandonedOrders() {
     this.logger.log('[Cron] Checking for abandoned orders...');
     
-    const thirtyMinsAgo = dayjs().subtract(30, 'minute').toDate();
+    const settings = await this.systemSettingsService.getSettings();
+    const cancelAfterMinutes = Math.max(1, settings.autoCancelUnpaidMinutes);
+    const thirtyMinsAgo = dayjs().subtract(cancelAfterMinutes, 'minute').toDate();
     
     // Tìm các đơn hàng PENDING được tạo từ 30 phút trước
     const abandonedOrders = await this.repository.findAbandonedOrders(thirtyMinsAgo);
@@ -113,11 +117,12 @@ export class OrderManagement {
     const order = await this.repository.update(id, updateData);
 
     // Create Notification if status changed and it's a member order
-    if (dto.status && dto.status !== oldOrder.status && order.userId) {
+    const settings = await this.systemSettingsService.getSettings();
+    if (settings.orderNotification && dto.status && dto.status !== oldOrder.status && order.userId) {
       this.notificationService.createNotification(order.userId, {
         title: 'Cập nhật đơn hàng',
         content: `Đơn hàng #${order.orderCode} đã chuyển sang trạng thái: ${dto.status}`,
-        type: 'ORDER_STATUS',
+        type: 'ORDER',
         link: `/account?tab=orders&id=${order.id}`
       }).catch(err => this.logger.error('Failed to create order notification:', err));
     }

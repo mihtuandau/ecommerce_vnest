@@ -1,16 +1,15 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
-import { useCartStore } from "@/store/useCartStore";
-import { ordersApi } from "@/features/orders/api/orders.api";
-import { useToast } from "@/hooks/useToast";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { ordersApi } from "@/features/orders/api/orders.api";
 import { useAuthStore } from "@/features/auth/store/auth.store";
-import { CHECKOUT_CONSTANTS, CHECKOUT_MESSAGES } from "@/features/checkout/constants";
-import { validateCheckoutForm } from "@/features/checkout/utils/checkoutValidation";
 import { useCart } from "@/features/cart/hooks";
-
-// Import extracted hooks
+import { useSystemSettings } from "@/features/settings/hooks";
+import { useToast } from "@/hooks/useToast";
+import { useCartStore } from "@/store/useCartStore";
+import { CHECKOUT_CONSTANTS } from "@/features/checkout/constants";
+import { validateCheckoutForm } from "@/features/checkout/utils/checkoutValidation";
 import { useCheckoutForm } from "./useCheckoutForm";
 import { useAddressManagement, AddressOption } from "./useAddressManagement";
 import { useCheckoutDiscount } from "./useCheckoutDiscount";
@@ -18,22 +17,19 @@ import { useShippingFee } from "./useShippingFee";
 
 export function useCheckout() {
   const { items, buyNowItem, clearBuyNowItem } = useCartStore();
-
   const { clearSelectedItems } = useCart();
-
   const { user } = useAuthStore();
   const { error } = useToast();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { data: settings } = useSystemSettings();
 
-  // State
   const [mounted, setMounted] = useState(false);
   const [hasAppliedDefault, setHasAppliedDefault] = useState(false);
   const [itemsChangedNotice, setItemsChangedNotice] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [lastItemCount, setLastItemCount] = useState<number | null>(null);
 
-  // Use extracted hooks
   const { form, setForm, updateFormField, updateFormAddress } = useCheckoutForm();
   const {
     provinces,
@@ -59,7 +55,8 @@ export function useCheckout() {
   const subtotal = useMemo(
     () =>
       displayItems.reduce(
-        (sum, i) => sum + (i.discountedPrice || i.price) * i.quantity,
+        (sum, item) =>
+          sum + (item.discountedPrice || item.price) * item.quantity,
         0
       ),
     [displayItems]
@@ -82,12 +79,36 @@ export function useCheckout() {
     subtotal
   );
 
-  // Mount check
+  const paymentAvailability = useMemo(
+    () => ({
+      COD: settings?.codEnabled ?? true,
+      VNPAY: settings?.vnpayEnabled ?? true,
+    }),
+    [settings?.codEnabled, settings?.vnpayEnabled]
+  );
+
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Monitor items changes
+  useEffect(() => {
+    const currentMethod = form.paymentMethod?.toUpperCase();
+
+    if (currentMethod === "COD" && !paymentAvailability.COD) {
+      setForm((prev) => ({
+        ...prev,
+        paymentMethod: paymentAvailability.VNPAY ? "VNPAY" : "",
+      }));
+    }
+
+    if (currentMethod === "VNPAY" && !paymentAvailability.VNPAY) {
+      setForm((prev) => ({
+        ...prev,
+        paymentMethod: paymentAvailability.COD ? "COD" : "",
+      }));
+    }
+  }, [form.paymentMethod, paymentAvailability.COD, paymentAvailability.VNPAY, setForm]);
+
   useEffect(() => {
     if (mounted && lastItemCount !== null && displayItems.length < lastItemCount) {
       setItemsChangedNotice(true);
@@ -97,9 +118,8 @@ export function useCheckout() {
       );
     }
     setLastItemCount(displayItems.length);
-  }, [displayItems.length, mounted]);
+  }, [displayItems.length, mounted, lastItemCount]);
 
-  // Wrapped address handlers
   const applySavedAddress = useCallback(
     async (addr: AddressOption) => {
       const result = await baseApplySavedAddress(addr);
@@ -111,7 +131,6 @@ export function useCheckout() {
     [baseApplySavedAddress, updateFormAddress]
   );
 
-  // Load default address
   useEffect(() => {
     if (
       user &&
@@ -121,7 +140,7 @@ export function useCheckout() {
       !hasAppliedDefault
     ) {
       const defaultAddr =
-        addressData.addresses.find((a: AddressOption) => a.isDefault) ||
+        addressData.addresses.find((address: AddressOption) => address.isDefault) ||
         addressData.addresses[0];
       if (defaultAddr) {
         applySavedAddress(defaultAddr);
@@ -154,7 +173,6 @@ export function useCheckout() {
     [baseHandleWardChange, updateFormAddress]
   );
 
-  // Form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -163,15 +181,27 @@ export function useCheckout() {
       return error(validation.message || "Vui lòng kiểm tra lại thông tin");
     }
 
+    if (!form.paymentMethod) {
+      return error("Hiện chưa có phương thức thanh toán khả dụng.");
+    }
+
+    const method = form.paymentMethod.toUpperCase();
+    if (method === "COD" && !paymentAvailability.COD) {
+      return error("Thanh toán COD hiện đang tạm tắt.");
+    }
+    if (method === "VNPAY" && !paymentAvailability.VNPAY) {
+      return error("Thanh toán VNPay hiện đang tạm tắt.");
+    }
+
     if (isSubmitting) return;
     setIsSubmitting(true);
 
     try {
       const isGuest = !user;
       const orderData = {
-        items: displayItems.map((i) => ({
-          variantId: Number(i.variantId),
-          quantity: i.quantity,
+        items: displayItems.map((item) => ({
+          variantId: Number(item.variantId),
+          quantity: item.quantity,
         })),
         shippingInfo: {
           fullName: form.fullName,
@@ -195,12 +225,10 @@ export function useCheckout() {
       const paymentLink = res.paymentLink || res.payment?.paymentLink;
 
       if (paymentLink) {
-        // Don't clear items before payment redirect - user needs to see it in case they cancel
         window.location.href = paymentLink;
         return;
       }
 
-      // Clear items after successful COD order (no payment needed)
       if (isBuyNow) clearBuyNowItem();
       else clearSelectedItems();
 
@@ -211,32 +239,28 @@ export function useCheckout() {
       router.push(`/checkout/success?${successParams.toString()}`);
     } catch (err: any) {
       const errMsg =
-        err?.response?.data?.message || err?.message || "Có lỗi xảy ra khi đặt hàng";
+        err?.response?.data?.message ||
+        err?.message ||
+        "Có lỗi xảy ra khi đặt hàng";
       error(errMsg);
       setIsSubmitting(false);
     }
   };
 
   return {
-    // Status
     mounted,
     isSubmitting,
     isCalculatingFee,
     isApplyingDiscount,
     itemsChangedNotice,
     isBuyNow,
-
-    // Cart & Items
+    paymentAvailability,
     displayItems,
     subtotal,
     shippingFee,
-
-    // Form
     form,
     setForm,
     updateFormField,
-
-    // Address
     provinces,
     districts,
     wards,
@@ -249,16 +273,12 @@ export function useCheckout() {
     handleWardChange,
     applySavedAddress,
     addressData,
-
-    // Discount
     discountCode,
     setDiscountCode,
     appliedDiscount,
     discountAmount,
     handleApplyDiscount,
     handleRemoveDiscount,
-
-    // Submit
     handleSubmit,
     user,
   };

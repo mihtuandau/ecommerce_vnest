@@ -9,7 +9,12 @@ import * as OrderHelper from './order.helper';
 import { PrismaService } from '../prisma/prisma.service';
 import { GHNService } from '../ghn/ghn.service';
 import { ConfigService } from '@nestjs/config';
-import { SystemSettingsService } from '../system-settings/system-settings.service';
+import { Role } from '@prisma/client';
+import { NotificationService } from '../notification/notification.service';
+import {
+  SystemSettings,
+  SystemSettingsService,
+} from '../system-settings/system-settings.service';
 
 @Injectable()
 export class OrderCreation {
@@ -25,10 +30,14 @@ export class OrderCreation {
     private ghnService: GHNService,
     private configService: ConfigService,
     private systemSettingsService: SystemSettingsService,
+    private notificationService: NotificationService,
   ) {}
 
   async create(userId: number | null, dto: CreateOrderDto, requester: { role: string }, ipAddr: string = '127.0.0.1'): Promise<any> {
     const isStaff = ['ADMIN', 'WAREHOUSE', 'SALES'].includes(requester.role);
+    const systemSettings = await this.systemSettingsService.getSettings();
+    this.validatePaymentMethodEnabled(dto.paymentMethod, systemSettings);
+
     const itemsToOrder = await this.getItemsToOrder(userId, dto, isStaff);
     const variantIds = itemsToOrder.map((i) => i.variantId);
 
@@ -115,7 +124,7 @@ export class OrderCreation {
     // 5. Tính phí vận chuyển qua GHN
     // Mặc định phí ship là 30k, trừ khi là đơn POS thì mặc định là 0
     const isPOS = dto.status === 'DELIVERED' || dto.shippingAddress === 'Mua tại quầy';
-    let ghnShippingFee = isPOS ? 0 : 30000;
+    let ghnShippingFee = isPOS ? 0 : systemSettings.shippingFee;
     
     // Chỉ chấp nhận phí ship từ DTO nếu đó là Admin tạo đơn
     if (dto.shippingFee !== undefined && isStaff) {
@@ -123,7 +132,10 @@ export class OrderCreation {
     }
 
     try {
-      const shippingFeeResult = await this.calculateGHNFee(dto, finalItems);
+      const shippingFeeResult =
+        systemSettings.shippingProvider === 'GHN'
+          ? await this.calculateGHNFee(dto, finalItems)
+          : null;
       if (shippingFeeResult) {
         ghnShippingFee = shippingFeeResult;
       } else {
@@ -132,8 +144,8 @@ export class OrderCreation {
         if (isOnlinePayment && !isPOS) {
           throw new BadRequestException('Không thể tính phí vận chuyển. Vui lòng kiểm tra lại địa chỉ giao hàng.');
         }
-        if (!isPOS && ghnShippingFee < 20000) {
-          ghnShippingFee = 30000; 
+        if (!isPOS && ghnShippingFee < 0) {
+          ghnShippingFee = systemSettings.shippingFee;
         }
       }
     } catch (error) {
@@ -143,8 +155,8 @@ export class OrderCreation {
       }
       
       // Nếu GHN lỗi, dùng giá mặc định an toàn cho COD
-      if (!isPOS && ghnShippingFee < 20000) {
-        ghnShippingFee = 30000;
+      if (!isPOS && ghnShippingFee < 0) {
+        ghnShippingFee = systemSettings.shippingFee;
       }
       
       if (!isPOS) {
@@ -159,7 +171,6 @@ export class OrderCreation {
     );
 
     // Áp dụng chính sách miễn phí vận chuyển từ cấu hình hệ thống
-    const systemSettings = await this.systemSettingsService.getSettings();
     if (totals.totalItems >= systemSettings.freeShippingThreshold) {
       totals.shippingFee = 0;
       // Recalculate total & discountedTotal nhất quán với formula gốc:
@@ -218,7 +229,9 @@ export class OrderCreation {
 
     await this.clearUserCartIfNeeded(userId, dto);
     if (userId) await this.cacheService.deleteUserOrderCaches(userId);
-    await this.sendConfirmationEmail(order);
+    await this.notifyAdminsAboutNewOrder(order, systemSettings.orderNotification);
+    await this.notifyLowStockIfNeeded(finalItems, systemSettings.stockAlert);
+    await this.sendConfirmationEmail(order, systemSettings.emailNotification);
 
     // Trả về dữ liệu cực kỳ tường minh
     return {
@@ -494,6 +507,23 @@ export class OrderCreation {
     return payment;
   }
 
+  private validatePaymentMethodEnabled(
+    paymentMethod: string | undefined,
+    settings: SystemSettings,
+  ) {
+    const method = (paymentMethod || 'CASH').toUpperCase();
+    const isCashMethod = ['CASH', 'COD'].includes(method);
+    const isVnpayMethod = ['VNPAY', 'PAYOS'].includes(method);
+
+    if (isCashMethod && !settings.codEnabled) {
+      throw new BadRequestException('Thanh toán COD hiện đang tạm tắt.');
+    }
+
+    if (isVnpayMethod && !settings.vnpayEnabled) {
+      throw new BadRequestException('Thanh toán VNPay hiện đang tạm tắt.');
+    }
+  }
+
   private async clearUserCartIfNeeded(
     userId: number | null,
     dto: CreateOrderDto,
@@ -511,7 +541,69 @@ export class OrderCreation {
     await this.repository.clearUserCart(userId);
   }
 
-  private async sendConfirmationEmail(order: any) {
+  private async notifyAdminsAboutNewOrder(order: any, isEnabled: boolean) {
+    if (!isEnabled) return;
+
+    await this.notificationService
+      .createForRoles([Role.ADMIN, Role.SALES], {
+        title: 'Đơn hàng mới',
+        content: `Đơn hàng #${order.orderCode} vừa được tạo.`,
+        type: 'ORDER',
+        link: `/admin/orders/${order.id}`,
+      })
+      .catch((err) => {
+        this.logger.error('Failed to create new order notification:', err);
+      });
+  }
+
+  private async notifyLowStockIfNeeded(
+    items: Array<{ variantId: number }>,
+    isEnabled: boolean,
+  ) {
+    if (!isEnabled) return;
+
+    const variantIds = [...new Set(items.map((item) => item.variantId))];
+    if (variantIds.length === 0) return;
+
+    const lowStockVariants = await this.prisma.productVariant.findMany({
+      where: {
+        id: { in: variantIds },
+        stock: { lte: 5 },
+      },
+      select: {
+        stock: true,
+        color: true,
+        size: true,
+        product: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    await Promise.all(
+      lowStockVariants.map((variant) =>
+        this.notificationService.createForRoles([Role.ADMIN, Role.WAREHOUSE], {
+          title: 'Cảnh báo tồn kho',
+          content: `${variant.product.name}${
+            variant.color || variant.size
+              ? ` (${[variant.color, variant.size].filter(Boolean).join(' / ')})`
+              : ''
+          } chỉ còn ${variant.stock} sản phẩm.`,
+          type: 'SYSTEM',
+          link: `/admin/products/${variant.product.id}`,
+        }),
+      ),
+    ).catch((err) => {
+      this.logger.error('Failed to create low stock notification:', err);
+    });
+  }
+
+  private async sendConfirmationEmail(order: any, isEnabled: boolean) {
+    if (!isEnabled) return;
+
     const emailData = OrderHelper.prepareOrderEmailDetails(order);
     if (emailData.customerEmail && order.orderCode) {
       this.mailService

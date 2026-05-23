@@ -1,90 +1,76 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
+import { Save } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
-import { Switch } from "@/components/ui/Switch";
-import { useToast } from "@/hooks/useToast";
-import {
-  Store,
-  Truck,
-  ShieldAlert,
-  Save,
-  Globe,
-  Volume2,
-  Mail,
-  Phone,
-  MapPin,
-  RefreshCw,
-} from "lucide-react";
 import { Spinner } from "@/components/ui/Spinner";
+import { useToast } from "@/hooks/useToast";
 import { useSystemSettings, useUpdateSystemSettings } from "@/features/settings/hooks";
+import { SettingsSidebar } from "./SettingsSidebar";
+import {
+  defaultSettingsFormState,
+  settingsSections,
+  toSettingsFormState,
+} from "@/features/settings/constants";
+import type {
+  SettingsFormState,
+  SettingsSectionId,
+} from "@/features/settings/types";
+import {
+  MaintenanceSettingsSection,
+  NotificationSettingsSection,
+  OrderSettingsSection,
+  PaymentSettingsSection,
+  SeoSettingsSection,
+  ShippingSettingsSection,
+  StoreSettingsSection,
+} from "./sections";
 
 export function AdminSettingsForm() {
   const toast = useToast();
   const { data: settings, isLoading: isQueryLoading } = useSystemSettings();
   const updateSettingsMutation = useUpdateSystemSettings();
+  const [activeSection, setActiveSection] = useState<SettingsSectionId>("store");
+  const [form, setForm] = useState<SettingsFormState>(defaultSettingsFormState);
 
-  // Form State
-  const [storeName, setStoreName] = useState("");
-  const [storeEmail, setStoreEmail] = useState("");
-  const [storePhone, setStorePhone] = useState("");
-  const [storeAddress, setStoreAddress] = useState("");
-
-  const [shippingFee, setShippingFee] = useState("");
-  const [freeShippingThreshold, setFreeShippingThreshold] = useState("");
-
-  const [maintenanceMode, setMaintenanceMode] = useState(false);
-  const [stockAlert, setStockAlert] = useState(true);
-  const [orderNotification, setOrderNotification] = useState(true);
-
-  // Sync settings data to form state
   useEffect(() => {
     if (settings) {
-      setStoreName(settings.storeName || "LUXE E-Commerce");
-      setStoreEmail(settings.storeEmail || "contact@luxe.vn");
-      setStorePhone(settings.storePhone || "1900 1234");
-      setStoreAddress(settings.storeAddress || "LUXE Shop, Hà Nội");
-      setShippingFee(String(settings.shippingFee ?? 30000));
-      setFreeShippingThreshold(String(settings.freeShippingThreshold ?? 500000));
-      setMaintenanceMode(!!settings.maintenanceMode);
-      setStockAlert(!!settings.stockAlert);
-      setOrderNotification(!!settings.orderNotification);
+      setForm(toSettingsFormState(settings));
     }
   }, [settings]);
 
-  const handleSave = async (e: React.FormEvent) => {
+  const activeSectionMeta = useMemo(
+    () => settingsSections.find((section) => section.id === activeSection),
+    [activeSection]
+  );
+
+  const setField = <K extends keyof SettingsFormState>(
+    key: K,
+    value: SettingsFormState[K]
+  ) => {
+    setForm((current) => ({ ...current, [key]: value }));
+  };
+
+  const handleSave = async (e: FormEvent) => {
     e.preventDefault();
-    updateSettingsMutation.mutate(
-      {
-        storeName,
-        storeEmail,
-        storePhone,
-        storeAddress,
-        shippingFee: Number(shippingFee),
-        freeShippingThreshold: Number(freeShippingThreshold),
-        maintenanceMode,
-        stockAlert,
-        orderNotification,
+
+    updateSettingsMutation.mutate(form, {
+      onSuccess: () => {
+        toast.success("Đã lưu cấu hình hệ thống thành công!");
       },
-      {
-        onSuccess: () => {
-          toast.success("Đã lưu cấu hình hệ thống thực tế thành công!");
-        },
-        onError: () => {
-          toast.error("Không thể lưu cấu hình hệ thống. Vui lòng thử lại!");
-        },
-      }
-    );
+      onError: () => {
+        toast.error("Không thể lưu cấu hình hệ thống. Vui lòng thử lại!");
+      },
+    });
   };
 
   const isSaving = updateSettingsMutation.isPending;
 
   if (isQueryLoading) {
     return (
-      <div className="py-24 flex flex-col items-center justify-center gap-3">
+      <div className="flex flex-col items-center justify-center gap-3 py-24">
         <Spinner size="lg" variant="slate" />
-        <p className="text-xs text-slate-400 font-medium animate-pulse">
+        <p className="animate-pulse text-xs font-medium text-slate-400">
           Đang tải cấu hình hệ thống...
         </p>
       </div>
@@ -92,197 +78,79 @@ export function AdminSettingsForm() {
   }
 
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div>
-        <h1 className="text-2xl font-medium tracking-tight text-slate-900 mb-1">
-          Cấu hình hệ thống
-        </h1>
-        <p className="text-slate-500 text-sm">
-          Quản lý các thiết lập chung, vận chuyển và chế độ hoạt động của cửa hàng.
-        </p>
+    <form
+      onSubmit={handleSave}
+      className="animate-in fade-in slide-in-from-bottom-4 space-y-6 duration-700"
+    >
+      <div className="flex flex-col gap-4 border-b border-slate-100 pb-5 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
+            Cấu hình hệ thống
+          </h1>
+          <p className="mt-1 text-sm text-slate-500">
+            Quản lý các thiết lập vận hành chung của cửa hàng.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => window.history.back()}
+            className="h-10 rounded-xl border-slate-200 px-4 text-sm font-medium text-slate-600"
+            disabled={isSaving}
+          >
+            Hủy bỏ
+          </Button>
+          <Button
+            type="submit"
+            className="h-10 gap-2 rounded-xl bg-teal-700 px-5 text-sm font-medium text-white shadow-sm hover:bg-teal-800"
+            disabled={isSaving}
+          >
+            {isSaving ? <Spinner size="sm" variant="white" /> : <Save className="h-4 w-4" />}
+            Lưu cấu hình
+          </Button>
+        </div>
       </div>
 
-      <form onSubmit={handleSave} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] space-y-6">
-            <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
-              <Store className="h-5 w-5 text-slate-400" />
-              <h2 className="text-base font-semibold text-slate-800">
-                Thông tin cửa hàng
-              </h2>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
+        <SettingsSidebar
+          activeSection={activeSection}
+          onSectionChange={setActiveSection}
+        />
+
+        <div className="min-w-0">
+          {activeSection === "store" && (
+            <StoreSettingsSection form={form} setField={setField} />
+          )}
+          {activeSection === "shipping" && (
+            <ShippingSettingsSection form={form} setField={setField} />
+          )}
+          {activeSection === "maintenance" && (
+            <MaintenanceSettingsSection form={form} setField={setField} />
+          )}
+          {activeSection === "notifications" && (
+            <NotificationSettingsSection form={form} setField={setField} />
+          )}
+          {activeSection === "payments" && (
+            <PaymentSettingsSection form={form} setField={setField} />
+          )}
+          {activeSection === "seo" && (
+            <SeoSettingsSection form={form} setField={setField} />
+          )}
+          {activeSection === "orders" && (
+            <OrderSettingsSection form={form} setField={setField} />
+          )}
+
+          {activeSectionMeta && (
+            <div className="mt-4 rounded-2xl border border-teal-100 bg-teal-50/50 px-5 py-4 text-sm text-teal-800">
+              Đang chỉnh nhóm{" "}
+              <span className="font-medium">{activeSectionMeta.label}</span>. Nhấn
+              “Lưu cấu hình” để áp dụng thay đổi.
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-slate-700 flex items-center gap-1.5">
-                  Tên cửa hàng
-                </label>
-                <div className="relative">
-                  <Input
-                    value={storeName}
-                    onChange={(e) => setStoreName(e.target.value)}
-                    className="h-11 rounded-xl border-slate-200 text-slate-850 font-medium pl-3 focus:ring-slate-900/5 transition-all text-sm bg-white"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-slate-700 flex items-center gap-1.5">
-                  <Mail className="h-3.5 w-3.5" /> Email liên hệ
-                </label>
-                <Input
-                  type="email"
-                  value={storeEmail}
-                  onChange={(e) => setStoreEmail(e.target.value)}
-                  className="h-11 rounded-xl border-slate-200 text-slate-850 font-medium pl-3 focus:ring-slate-900/5 transition-all text-sm bg-white"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-slate-700 flex items-center gap-1.5">
-                  <Phone className="h-3.5 w-3.5" /> Hotline cửa hàng
-                </label>
-                <Input
-                  value={storePhone}
-                  onChange={(e) => setStorePhone(e.target.value)}
-                  className="h-11 rounded-xl border-slate-200 text-slate-850 font-medium pl-3 focus:ring-slate-900/5 transition-all text-sm bg-white"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-slate-700 flex items-center gap-1.5">
-                  <MapPin className="h-3.5 w-3.5" /> Địa chỉ chính thức
-                </label>
-                <Input
-                  value={storeAddress}
-                  onChange={(e) => setStoreAddress(e.target.value)}
-                  className="h-11 rounded-xl border-slate-200 text-slate-850 font-medium pl-3 focus:ring-slate-900/5 transition-all text-sm bg-white"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] space-y-6">
-            <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
-              <Truck className="h-5 w-5 text-slate-400" />
-              <h2 className="text-base font-semibold text-slate-800">
-                Cấu hình vận chuyển
-              </h2>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-slate-700">
-                  Phí vận chuyển mặc định (đ)
-                </label>
-                <Input
-                  type="number"
-                  value={shippingFee}
-                  onChange={(e) => setShippingFee(e.target.value)}
-                  className="h-11 rounded-xl border-slate-200 text-slate-850 font-medium pl-3 focus:ring-slate-900/5 transition-all text-sm bg-white"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-slate-700">
-                  Ngưỡng miễn phí giao hàng (đ)
-                </label>
-                <Input
-                  type="number"
-                  value={freeShippingThreshold}
-                  onChange={(e) => setFreeShippingThreshold(e.target.value)}
-                  className="h-11 rounded-xl border-slate-200 text-slate-850 font-medium pl-3 focus:ring-slate-900/5 transition-all text-sm bg-white"
-                />
-              </div>
-            </div>
-          </div>
+          )}
         </div>
-
-        <div className="space-y-6">
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] space-y-6">
-            <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
-              <ShieldAlert className="h-5 w-5 text-slate-400" />
-              <h2 className="text-base font-semibold text-slate-800">
-                Trạng thái hệ thống
-              </h2>
-            </div>
-
-            <div className="space-y-5">
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <label className="text-sm font-medium text-slate-800 flex items-center gap-1.5">
-                    <Globe className="h-4 w-4 text-slate-400" /> Chế độ bảo trì
-                  </label>
-                  <p className="text-xs text-slate-400 font-normal leading-normal">
-                    Tạm thời đóng cửa hàng để bảo dưỡng hệ thống.
-                  </p>
-                </div>
-                <Switch
-                  checked={maintenanceMode}
-                  onCheckedChange={setMaintenanceMode}
-                  className="data-[state=checked]:!bg-teal-700"
-                />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <label className="text-sm font-medium text-slate-800 flex items-center gap-1.5">
-                    <RefreshCw className="h-4 w-4 text-slate-400" /> Cảnh báo hết hàng
-                  </label>
-                  <p className="text-xs text-slate-400 font-normal leading-normal">
-                    Gửi thông báo khi sản phẩm trong kho còn dưới 5.
-                  </p>
-                </div>
-                <Switch
-                  checked={stockAlert}
-                  onCheckedChange={setStockAlert}
-                  className="data-[state=checked]:!bg-teal-700"
-                />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <label className="text-sm font-medium text-slate-800 flex items-center gap-1.5">
-                    <Volume2 className="h-4 w-4 text-slate-400" /> Âm thanh thông báo
-                  </label>
-                  <p className="text-xs text-slate-400 font-normal leading-normal">
-                    Phát âm thanh khi có đơn hàng mới được tạo.
-                  </p>
-                </div>
-                <Switch
-                  checked={orderNotification}
-                  onCheckedChange={setOrderNotification}
-                  className="data-[state=checked]:!bg-teal-700"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] space-y-4">
-            <Button
-              type="submit"
-              className="w-full h-11 rounded-xl bg-teal-700 text-white hover:bg-teal-800 font-medium gap-2 shadow-sm transition-all active:scale-[0.98] cursor-pointer"
-              disabled={isSaving}
-            >
-              {isSaving ? (
-                <Spinner size="sm" variant="white" />
-              ) : (
-                <Save className="h-4.5 w-4.5" />
-              )}
-              Lưu cấu hình
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => window.history.back()}
-              className="w-full h-11 rounded-xl border-slate-200 text-slate-500 font-semibold hover:bg-slate-50 transition-all cursor-pointer"
-              disabled={isSaving}
-            >
-              Hủy bỏ
-            </Button>
-          </div>
-        </div>
-      </form>
-    </div>
+      </div>
+    </form>
   );
 }

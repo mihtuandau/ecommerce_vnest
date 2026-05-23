@@ -4,6 +4,7 @@ type MaintenanceShieldSettings = {
   storeName?: string;
   storePhone?: string;
   storeEmail?: string;
+  maintenanceMessage?: string;
 };
 
 interface MaintenanceShieldProps {
@@ -12,8 +13,8 @@ interface MaintenanceShieldProps {
 
 export function MaintenanceShield({ settings }: MaintenanceShieldProps) {
   return (
-    <div className="fixed inset-0 z-[9999] flex min-h-screen flex-col items-center justify-center bg-[#FAF8F4] p-6 text-[#3D2B1A] font-sans-brand">
-      <div className="absolute top-1/4 left-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#C4783A]/5 blur-3xl" />
+    <div className="fixed inset-0 z-[9999] flex min-h-screen flex-col items-center justify-center bg-[#FAF8F4] p-6 font-sans-brand text-[#3D2B1A]">
+      <div className="absolute left-1/2 top-1/4 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#C4783A]/5 blur-3xl" />
       <div className="absolute bottom-1/4 left-1/3 h-80 w-80 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#8A7966]/5 blur-3xl" />
 
       <div className="relative z-10 w-full max-w-md animate-in space-y-8 text-center duration-700 fade-in zoom-in-95">
@@ -34,9 +35,8 @@ export function MaintenanceShield({ settings }: MaintenanceShieldProps) {
             Hệ thống đang bảo trì
           </h1>
           <p className="text-[13.5px] font-medium leading-relaxed text-[#8A7966]">
-            Chúng tôi đang tiến hành bảo dưỡng định kỳ hệ thống của cửa hàng để
-            mang lại chất lượng phục vụ và trải nghiệm mua sắm hoàn mỹ nhất cho
-            quý khách.
+            {settings?.maintenanceMessage ||
+              "Chúng tôi đang bảo dưỡng hệ thống để mang lại trải nghiệm mua sắm tốt hơn cho quý khách."}
           </p>
         </div>
 

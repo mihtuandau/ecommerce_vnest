@@ -37,7 +37,7 @@ export const ShopBreadcrumbs = React.memo(function ShopBreadcrumbs({
   const path = currentCategory ? findCategoryPath(categories, currentCategory) : [];
 
   return (
-    <div className="bg-white border-b border-brand-sand/40">
+
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="py-4">
           <Breadcrumb>
@@ -85,6 +85,6 @@ export const ShopBreadcrumbs = React.memo(function ShopBreadcrumbs({
           </Breadcrumb>
         </div>
       </div>
-    </div>
+    
   );
 });

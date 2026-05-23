@@ -134,11 +134,11 @@ export function SecurityTab() {
           </h2>
         </div>
         <div className="p-6 lg:p-8 space-y-8 max-w-xl">
-          <div className="bg-blue-50/50 border border-blue-100/50 rounded-2xl p-4 flex gap-3">
-            <div className="text-blue-500 shrink-0 mt-0.5">
+          <div className="bg-brand-cream/50 border border-brand-sand/50 rounded-2xl p-4 flex gap-3">
+            <div className="text-brand-bronze shrink-0 mt-0.5">
               <Info size={18} />
             </div>
-            <p className="text-[12.5px] text-blue-800/80 leading-relaxed">
+            <p className="text-[12.5px] text-brand-taupe leading-relaxed">
               Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, số và ký tự đặc biệt để
               đảm bảo an toàn cho tài khoản.
             </p>

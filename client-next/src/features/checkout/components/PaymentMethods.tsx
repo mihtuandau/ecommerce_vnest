@@ -1,21 +1,26 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
-import { CreditCard, Wallet, Banknote, CheckCircle2 } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/Card";
+import { Banknote, CheckCircle2, CreditCard, Wallet } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { CheckoutCard } from "./CheckoutCard";
+
+interface PaymentAvailability {
+  COD?: boolean;
+  VNPAY?: boolean;
+}
 
 interface PaymentMethodsProps {
   paymentMethod: string;
   setPaymentMethod: (method: string) => void;
+  availability?: PaymentAvailability;
   stepNumber?: number | string;
 }
 
 export const PaymentMethods = React.memo(function PaymentMethods({
   paymentMethod,
   setPaymentMethod,
+  availability,
   stepNumber = "4",
 }: PaymentMethodsProps) {
   const methods = [
@@ -26,6 +31,8 @@ export const PaymentMethods = React.memo(function PaymentMethods({
       icon: Banknote,
       color: "text-amber-600",
       bgColor: "bg-amber-50",
+      enabled: availability?.COD ?? true,
+      disabledReason: "COD đang tạm tắt",
     },
     {
       id: "VNPAY",
@@ -34,7 +41,8 @@ export const PaymentMethods = React.memo(function PaymentMethods({
       icon: Wallet,
       color: "text-blue-600",
       bgColor: "bg-blue-50",
-      logo: "https://stcd02206177151.cloud.edgevnpay.vn/assets/images/logo-icon/logo-primary.svg",
+      enabled: availability?.VNPAY ?? true,
+      disabledReason: "VNPay đang tạm tắt",
     },
     {
       id: "MOMO",
@@ -43,6 +51,8 @@ export const PaymentMethods = React.memo(function PaymentMethods({
       icon: CreditCard,
       color: "text-rose-600",
       bgColor: "bg-rose-50",
+      enabled: true,
+      disabledReason: "",
     },
   ];
 
@@ -69,90 +79,107 @@ export const PaymentMethods = React.memo(function PaymentMethods({
       }
     >
       <div className="space-y-[10px]">
-        {methods.map((method) => (
-          <div
-            key={method.id}
-            className={cn(
-              "border-[1.5px] rounded-[12px] transition-all overflow-hidden",
-              paymentMethod === method.id
-                ? "border-primary"
-                : "border-brand-sand hover:border-brand-taupe/30"
-            )}
-          >
-            <div
-              onClick={() => setPaymentMethod(method.id)}
-              className="px-4 py-[14px] flex items-center gap-3 cursor-pointer"
-            >
-              <div
-                className={cn(
-                  "w-4 h-4 rounded-full border flex items-center justify-center shrink-0 transition-all",
-                  paymentMethod === method.id
-                    ? "border-primary bg-primary"
-                    : "border-brand-sand bg-white"
-                )}
-              >
-                {paymentMethod === method.id && (
-                  <div className="w-1.5 h-1.5 rounded-full bg-white animate-in zoom-in-50 duration-200" />
-                )}
-              </div>
-              <div
-                className={cn(
-                  "w-9 h-6 rounded-[5px] flex items-center justify-center text-[10px] font-bold tracking-[0.04em] shrink-0",
-                  method.id === "MOMO"
-                    ? "bg-[#A50064] text-white"
-                    : method.id === "VNPAY"
-                      ? "bg-[#005BAA] text-white"
-                      : method.id === "COD"
-                        ? "bg-brand-sand text-primary"
-                        : "bg-slate-200"
-                )}
-              >
-                {method.id === "MOMO"
-                  ? "MoMo"
-                  : method.id === "VNPAY"
-                    ? "VNPAY"
-                    : method.id}
-              </div>
-              <span className="text-[13.5px] font-medium text-primary flex-1">
-                {method.name}
-              </span>
-              <span className="text-[12px] text-brand-taupe">{method.desc}</span>
-            </div>
+        {methods.map((method) => {
+          const isSelected = paymentMethod === method.id;
+          const isDisabled = !method.enabled;
 
-            
-            {paymentMethod === method.id && (
-              <div className="px-4 pb-[18px] pt-4 border-t border-brand-sand animate-in fade-in duration-300">
-                {method.id === "MOMO" ? (
-                  <div className="bg-brand-ivory border border-brand-sand rounded-[12px] p-5 text-center">
-                    <div className="w-[120px] h-[120px] bg-white border border-brand-sand rounded-[8px] mx-auto mb-3 flex items-center justify-center text-[11px] text-brand-taupe">
-                      QR Placeholder
+          return (
+            <div
+              key={method.id}
+              className={cn(
+                "overflow-hidden rounded-[12px] border-[1.5px] transition-all",
+                isDisabled
+                  ? "border-brand-sand bg-brand-cream/40 opacity-60"
+                  : isSelected
+                    ? "border-primary"
+                    : "border-brand-sand hover:border-brand-taupe/30"
+              )}
+            >
+              <button
+                type="button"
+                disabled={isDisabled}
+                onClick={() => setPaymentMethod(method.id)}
+                className={cn(
+                  "flex w-full items-center gap-3 px-4 py-[14px] text-left",
+                  isDisabled ? "cursor-not-allowed" : "cursor-pointer"
+                )}
+              >
+                <div
+                  className={cn(
+                    "flex h-4 w-4 shrink-0 items-center justify-center rounded-full border transition-all",
+                    isSelected && !isDisabled
+                      ? "border-primary bg-primary"
+                      : "border-brand-sand bg-white"
+                  )}
+                >
+                  {isSelected && !isDisabled && (
+                    <div className="h-1.5 w-1.5 animate-in rounded-full bg-white duration-200 zoom-in-50" />
+                  )}
+                </div>
+                <div
+                  className={cn(
+                    "flex h-6 w-9 shrink-0 items-center justify-center rounded-[5px] text-[10px] font-bold tracking-[0.04em]",
+                    method.id === "MOMO"
+                      ? "bg-[#A50064] text-white"
+                      : method.id === "VNPAY"
+                        ? "bg-[#005BAA] text-white"
+                        : "bg-brand-sand text-primary"
+                  )}
+                >
+                  {method.id === "MOMO"
+                    ? "MoMo"
+                    : method.id === "VNPAY"
+                      ? "VNPAY"
+                      : method.id}
+                </div>
+                <span className="flex-1 text-[13.5px] font-medium text-primary">
+                  {method.name}
+                </span>
+                <span className="text-[12px] text-brand-taupe">
+                  {isDisabled ? method.disabledReason : method.desc}
+                </span>
+              </button>
+
+              {isSelected && !isDisabled && (
+                <div className="animate-in border-t border-brand-sand px-4 pb-[18px] pt-4 duration-300 fade-in">
+                  {method.id === "MOMO" ? (
+                    <div className="rounded-[12px] border border-brand-sand bg-brand-ivory p-5 text-center">
+                      <div className="mx-auto mb-3 flex h-[120px] w-[120px] items-center justify-center rounded-[8px] border border-brand-sand bg-white text-[11px] text-brand-taupe">
+                        QR Placeholder
+                      </div>
+                      <p className="text-[12px] text-brand-taupe">
+                        Quét mã bằng ứng dụng MoMo
+                      </p>
+                      <p className="mt-1 text-[13px] font-semibold text-[#A50064]">
+                        Sử dụng ví MoMo để thanh toán
+                      </p>
                     </div>
-                    <p className="text-[12px] text-brand-taupe">
-                      Quét mã bằng ứng dụng MoMo
-                    </p>
-                    <p className="text-[13px] font-semibold text-[#A50064] mt-1">
-                      Sử dụng ví MoMo để thanh toán
-                    </p>
-                  </div>
-                ) : method.id === "VNPAY" ? (
-                  <div className="bg-blue-50 border border-blue-200 rounded-[10px] p-4 text-[13px] text-foreground leading-relaxed">
-                    Bạn sẽ được chuyển đến cổng VNPAY để hoàn tất thanh toán. Hỗ trợ tất
-                    cả thẻ ATM nội địa và ví điện tử liên kết VNPAY.
-                  </div>
-                ) : method.id === "COD" ? (
-                  <div className="bg-brand-ivory rounded-[10px] p-4 text-[13px] text-foreground leading-relaxed">
-                    <strong>Lưu ý khi thanh toán COD:</strong>
-                    <br />
-                    Vui lòng chuẩn bị đúng số tiền cần thanh toán. Shipper không đổi
-                    tiền lẻ.
-                    <br />
-                    Phí thu hộ: <strong>Miễn phí</strong> cho đơn trên 500k.
-                  </div>
-                ) : null}
-              </div>
-            )}
+                  ) : method.id === "VNPAY" ? (
+                    <div className="rounded-[10px] border border-blue-200 bg-blue-50 p-4 text-[13px] leading-relaxed text-foreground">
+                      Bạn sẽ được chuyển đến cổng VNPAY để hoàn tất thanh toán. Hỗ trợ
+                      tất cả thẻ ATM nội địa và ví điện tử liên kết VNPAY.
+                    </div>
+                  ) : method.id === "COD" ? (
+                    <div className="rounded-[10px] bg-brand-ivory p-4 text-[13px] leading-relaxed text-foreground">
+                      <strong>Lưu ý khi thanh toán COD:</strong>
+                      <br />
+                      Vui lòng chuẩn bị đúng số tiền cần thanh toán. Shipper không đổi
+                      tiền lẻ.
+                      <br />
+                      Phí thu hộ: <strong>Miễn phí</strong> cho đơn trên 500k.
+                    </div>
+                  ) : null}
+                </div>
+              )}
+            </div>
+          );
+        })}
+
+        {methods.every((method) => !method.enabled) && (
+          <div className="rounded-[12px] border border-amber-200 bg-amber-50 p-4 text-[13px] font-medium text-amber-800">
+            Hiện chưa có phương thức thanh toán khả dụng. Vui lòng quay lại sau.
           </div>
-        ))}
+        )}
       </div>
     </CheckoutCard>
   );

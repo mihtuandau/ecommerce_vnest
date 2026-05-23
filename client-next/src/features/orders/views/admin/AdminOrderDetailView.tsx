@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React from "react";
 import {
@@ -32,7 +32,7 @@ export function AdminOrderDetailView() {
     return (
       <div className="h-96 flex flex-col items-center justify-center gap-3">
         <Spinner size="lg" />
-        <p className="text-sm font-semibold text-slate-400">Ðang t?i thông tin...</p>
+        <p className="text-sm font-semibold text-slate-400">Đang tải thông tin...</p>
       </div>
     );
   }
@@ -40,7 +40,7 @@ export function AdminOrderDetailView() {
   if (!order)
     return (
       <div className="p-20 text-center font-bold text-slate-500">
-        Không tìm th?y don hàng
+        Không tìm thấy đơn hàng
       </div>
     );
 
@@ -88,3 +88,4 @@ export function AdminOrderDetailView() {
     </div>
   );
 }
+

@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { Search, Filter } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
@@ -15,26 +14,24 @@ export function BannerListToolbar({
   onSearchChange,
 }: BannerListToolbarProps) {
   return (
-    <div className="flex items-center justify-between p-4 bg-slate-50/50 gap-4 border-b border-slate-100">
-      <div className="relative flex-1 max-w-md group">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-slate-900 transition-colors" />
+    <div className="flex items-center justify-between gap-4 border-b border-slate-100 bg-slate-50/50 p-4">
+      <div className="group relative max-w-md flex-1">
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 transition-colors group-focus-within:text-teal-600" />
         <Input
           placeholder="Tìm theo tiêu đề banner..."
           value={searchTerm}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="pl-10 h-10 rounded-xl border-slate-200 bg-white focus:bg-white transition-all text-sm font-medium"
+          className="h-10 rounded-xl border-slate-200 bg-white pl-10 text-sm font-medium transition-all focus:bg-white focus:border-teal-500 focus:ring-teal-100"
         />
       </div>
-      <div className="flex items-center gap-2">
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-10 rounded-xl border-slate-200 font-bold text-xs uppercase tracking-wider gap-2 bg-white"
-        >
-          <Filter className="h-4 w-4 text-slate-400" />
-          Bộ lọc
-        </Button>
-      </div>
+      <Button
+        variant="outline"
+        size="sm"
+        className="h-10 gap-2 rounded-xl border-slate-200 bg-white text-sm font-medium"
+      >
+        <Filter className="h-4 w-4 text-slate-400" />
+        Bộ lọc
+      </Button>
     </div>
   );
 }

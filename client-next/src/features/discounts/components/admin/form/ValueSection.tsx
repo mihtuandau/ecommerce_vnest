@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { UseFormReturn } from "react-hook-form";
 import {
   FormField,
@@ -12,37 +11,37 @@ import {
 } from "@/components/ui/Form";
 import { Input } from "@/components/ui/Input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/RadioGroup";
-import { Banknote, Percent, Info, Target, Settings2 } from "lucide-react";
+import { Banknote, Percent, Info, Target } from "lucide-react";
 import { cn } from "@/utils/cn";
 
 interface ValueSectionProps {
   form: UseFormReturn<any>;
 }
 
+const moneySymbol = "₫";
+
 export function ValueSection({ form }: ValueSectionProps) {
   const type = form.watch("type");
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)] overflow-hidden">
-      <div className="p-6 space-y-8">
-        
+    <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_4px_20px_rgba(15,23,42,0.03)]">
+      <div className="space-y-6 p-6">
         <FormField
           control={form.control}
           name="type"
           render={({ field }) => (
             <FormItem className="space-y-3">
-              <FormLabel className="text-sm font-semibold text-slate-700">
+              <FormLabel className="text-sm font-medium text-slate-700">
                 Hình thức ưu đãi
               </FormLabel>
               <FormControl>
                 <RadioGroup
                   onValueChange={field.onChange}
                   defaultValue={field.value}
-                  className="relative p-1 bg-slate-100/80 rounded-lg grid grid-cols-2 gap-1 border border-slate-200/50 w-full max-w-md"
+                  className="relative grid w-full max-w-md grid-cols-2 gap-1 rounded-lg border border-slate-200/50 bg-slate-100/80 p-1"
                 >
-                  
                   <div
-                    className="absolute top-1 bottom-1 rounded-md bg-white shadow-sm z-0 border border-slate-200/50 transition-all duration-200"
+                    className="absolute bottom-1 top-1 z-0 rounded-md border border-slate-200/50 bg-white shadow-sm transition-all duration-200"
                     style={{
                       left:
                         field.value === "PERCENTAGE"
@@ -54,9 +53,9 @@ export function ValueSection({ form }: ValueSectionProps) {
 
                   <label
                     className={cn(
-                      "relative z-10 flex items-center justify-center gap-2.5 py-2.5 rounded-md cursor-pointer transition-all",
+                      "relative z-10 flex cursor-pointer items-center justify-center gap-2.5 rounded-md py-2.5 text-sm transition-all",
                       field.value === "PERCENTAGE"
-                        ? "text-slate-900 font-semibold"
+                        ? "font-medium text-slate-900"
                         : "text-slate-500 hover:text-slate-700"
                     )}
                   >
@@ -65,18 +64,18 @@ export function ValueSection({ form }: ValueSectionProps) {
                       size={14}
                       className={
                         field.value === "PERCENTAGE"
-                          ? "text-blue-600"
+                          ? "text-teal-600"
                           : "text-slate-400"
                       }
                     />
-                    <span className="text-[13px]">Phần trăm (%)</span>
+                    <span>Phần trăm (%)</span>
                   </label>
 
                   <label
                     className={cn(
-                      "relative z-10 flex items-center justify-center gap-2.5 py-2.5 rounded-md cursor-pointer transition-all",
+                      "relative z-10 flex cursor-pointer items-center justify-center gap-2.5 rounded-md py-2.5 text-sm transition-all",
                       field.value === "FIXED"
-                        ? "text-slate-900 font-semibold"
+                        ? "font-medium text-slate-900"
                         : "text-slate-500 hover:text-slate-700"
                     )}
                   >
@@ -84,10 +83,10 @@ export function ValueSection({ form }: ValueSectionProps) {
                     <Banknote
                       size={14}
                       className={
-                        field.value === "FIXED" ? "text-blue-600" : "text-slate-400"
+                        field.value === "FIXED" ? "text-teal-600" : "text-slate-400"
                       }
                     />
-                    <span className="text-[13px]">Số tiền (₫)</span>
+                    <span>Số tiền ({moneySymbol})</span>
                   </label>
                 </RadioGroup>
               </FormControl>
@@ -96,27 +95,26 @@ export function ValueSection({ form }: ValueSectionProps) {
           )}
         />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <FormField
             control={form.control}
             name="value"
             render={({ field }) => (
               <FormItem className="space-y-2">
-                <FormLabel className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                <FormLabel className="flex items-center gap-2 text-sm font-medium text-slate-700">
                   Mức giảm giá
                   <Target size={12} className="text-slate-400" />
                 </FormLabel>
                 <FormControl>
-                  <div className="relative group">
+                  <div className="group relative">
                     <Input
                       type="number"
                       placeholder="0"
-                      className="h-11 rounded-xl border-slate-200 bg-white focus:border-slate-400 focus:ring-4 focus:ring-slate-100/50 font-medium text-sm pl-3 pr-10 text-slate-900 transition-all duration-200 shadow-sm"
+                      className="h-11 rounded-xl border-slate-200 bg-white pl-3 pr-10 text-sm font-medium text-slate-900 shadow-sm transition-all duration-200 focus:border-teal-500 focus:ring-4 focus:ring-teal-100/60"
                       {...field}
                     />
-                    <div className="absolute right-3 top-1/2 -translate-y-1/2 font-semibold text-slate-400 text-[13px]">
-                      {type === "PERCENTAGE" ? "%" : "₫"}
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-medium text-slate-400">
+                      {type === "PERCENTAGE" ? "%" : moneySymbol}
                     </div>
                   </div>
                 </FormControl>
@@ -125,29 +123,28 @@ export function ValueSection({ form }: ValueSectionProps) {
             )}
           />
 
-          
           <FormField
             control={form.control}
             name="minOrderAmount"
             render={({ field }) => (
               <FormItem className="space-y-2">
-                <FormLabel className="text-sm font-semibold text-slate-700">
+                <FormLabel className="text-sm font-medium text-slate-700">
                   Đơn hàng tối thiểu
                 </FormLabel>
                 <FormControl>
-                  <div className="relative group">
+                  <div className="group relative">
                     <Input
                       type="number"
                       placeholder="0"
-                      className="h-11 rounded-xl border-slate-200 bg-white focus:border-slate-400 focus:ring-4 focus:ring-slate-100/50 font-medium text-sm pl-3 pr-10 text-slate-900 transition-all duration-200 shadow-sm"
+                      className="h-11 rounded-xl border-slate-200 bg-white pl-3 pr-10 text-sm font-medium text-slate-900 shadow-sm transition-all duration-200 focus:border-teal-500 focus:ring-4 focus:ring-teal-100/60"
                       {...field}
                     />
-                    <div className="absolute right-3 top-1/2 -translate-y-1/2 font-semibold text-slate-400 text-[13px]">
-                      ₫
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-medium text-slate-400">
+                      {moneySymbol}
                     </div>
                   </div>
                 </FormControl>
-                <FormDescription className="text-[11px] text-slate-400 mt-1.5 flex items-center gap-1">
+                <FormDescription className="mt-1.5 flex items-center gap-1 text-xs text-slate-500">
                   <Info size={10} /> Áp dụng khi tổng đơn đạt mốc này.
                 </FormDescription>
                 <FormMessage />
@@ -155,47 +152,45 @@ export function ValueSection({ form }: ValueSectionProps) {
             )}
           />
 
-          
           {type === "PERCENTAGE" && (
-            <div className="md:col-span-2 overflow-hidden animate-in fade-in slide-in-from-top-1 duration-200">
-                <FormField
-                  control={form.control}
-                  name="maxDiscountAmount"
-                  render={({ field }) => (
-                    <FormItem className="space-y-2 pt-2">
-                      <FormLabel className="text-sm font-semibold text-slate-700">
-                        Giới hạn mức giảm tối đa
-                      </FormLabel>
-                      <FormControl>
-                        <div className="relative group">
-                          <Input
-                            type="number"
-                            placeholder="Không giới hạn"
-                            className="h-11 rounded-xl border-slate-200 bg-white focus:border-slate-400 focus:ring-4 focus:ring-slate-100/50 font-medium text-sm pl-3 pr-10 text-slate-900 transition-all duration-200 shadow-sm"
-                            {...field}
-                          />
-                          <div className="absolute right-3 top-1/2 -translate-y-1/2 font-semibold text-slate-400 text-[13px]">
-                            ₫
-                          </div>
+            <div className="animate-in fade-in slide-in-from-top-1 overflow-hidden duration-200 md:col-span-2">
+              <FormField
+                control={form.control}
+                name="maxDiscountAmount"
+                render={({ field }) => (
+                  <FormItem className="space-y-2 pt-2">
+                    <FormLabel className="text-sm font-medium text-slate-700">
+                      Giới hạn mức giảm tối đa
+                    </FormLabel>
+                    <FormControl>
+                      <div className="group relative">
+                        <Input
+                          type="number"
+                          placeholder="Không giới hạn"
+                          className="h-11 rounded-xl border-slate-200 bg-white pl-3 pr-10 text-sm font-medium text-slate-900 shadow-sm transition-all duration-200 focus:border-teal-500 focus:ring-4 focus:ring-teal-100/60"
+                          {...field}
+                        />
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-medium text-slate-400">
+                          {moneySymbol}
                         </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
           )}
         </div>
 
-        
-        <div className="bg-blue-50/30 p-4 rounded-lg border border-blue-100/50 flex gap-3 items-start mt-4">
-          <div className="p-1.5 bg-white rounded-md border border-blue-100 shadow-sm shrink-0">
-            <Info className="h-3.5 w-3.5 text-blue-500" />
+        <div className="mt-4 flex items-start gap-3 rounded-lg border border-teal-100 bg-teal-50/30 p-4">
+          <div className="shrink-0 rounded-md border border-teal-100 bg-white p-1.5 shadow-sm">
+            <Info className="h-3.5 w-3.5 text-teal-600" />
           </div>
-          <p className="text-[12px] text-slate-600 leading-relaxed font-medium">
-            <strong className="text-blue-700">Lưu ý quản trị:</strong> Đối với các
-            chương trình Flash Sale, mức giảm giá sẽ được trừ trực tiếp vào giá bán lẻ.
-            Hãy kiểm tra kỹ biên lợi nhuận trước khi kích hoạt chiến dịch.
+          <p className="text-xs font-medium leading-relaxed text-slate-600">
+            <strong className="text-teal-700">Lưu ý quản trị:</strong> Đối với các
+            chương trình Flash Sale, mức giảm giá sẽ được trừ trực tiếp vào giá bán
+            lẻ. Hãy kiểm tra kỹ biên lợi nhuận trước khi kích hoạt chiến dịch.
           </p>
         </div>
       </div>

@@ -86,10 +86,7 @@ export default async function CustomerLayout({
       const payloadBase64 = token.split(".")[1];
       const decodedJson = Buffer.from(payloadBase64, "base64").toString("utf-8");
       const decoded = JSON.parse(decodedJson);
-      isAdmin =
-        decoded?.role === Role.ADMIN ||
-        decoded?.role === Role.WAREHOUSE ||
-        decoded?.role === Role.SALES;
+      isAdmin = decoded?.role === Role.ADMIN;
     } catch {}
   }
 
