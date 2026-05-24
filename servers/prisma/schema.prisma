@@ -359,6 +359,19 @@ model ShippingMethod {
   @@index([isActive])
 }
 
+model PolicyPage {
+  id        Int      @id @default(autoincrement())
+  type      String
+  title     String
+  content   String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([type])
+  @@index([isActive])
+}
+
 model Order {
   id               Int             @id @default(autoincrement())
   userId           Int?
@@ -377,7 +390,7 @@ model Order {
   cancelledAt      DateTime?
   cancelledBy      Int?
   shippingSnapshot Json?
-  statusHistory    Json[]          @default([]) 
+  statusHistory    Json[]          @default([])
   deletedAt        DateTime?
   discountAmount   Float           @default(0)
   subtotal         Float

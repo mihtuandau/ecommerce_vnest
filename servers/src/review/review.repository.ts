@@ -108,6 +108,24 @@ export class ReviewRepository {
             email: true,
           },
         },
+        order: {
+          select: {
+            id: true,
+            orderCode: true,
+            orderItems: {
+              select: {
+                variant: {
+                  select: {
+                    productId: true,
+                    size: true,
+                    color: true,
+                  },
+                },
+                variantSnapshot: true,
+              },
+            },
+          },
+        },
       },
       orderBy: { createdAt: 'desc' },
       skip,

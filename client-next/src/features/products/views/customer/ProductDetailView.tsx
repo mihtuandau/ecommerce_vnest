@@ -134,7 +134,11 @@ export function ProductDetailView({ slug }: ProductDetailViewProps) {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
           <div className="lg:col-span-7">
             <div className="sticky top-32">
-              <ProductGallery images={allAvailableImages} name={product.name} />
+              <ProductGallery
+                images={allAvailableImages}
+                name={product.name}
+                product={product}
+              />
             </div>
           </div>
 

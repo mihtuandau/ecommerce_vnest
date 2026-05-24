@@ -13,9 +13,6 @@ export const useCreateReview = () => {
       queryClient.invalidateQueries({
         queryKey: ["reviews", "product", variables.productId],
       });
-      queryClient.invalidateQueries({
-        queryKey: ["reviews", "ai-summary", variables.productId],
-      });
       queryClient.invalidateQueries({ queryKey: queryKeys.orders.all });
       if (variables.orderId) {
         queryClient.invalidateQueries({

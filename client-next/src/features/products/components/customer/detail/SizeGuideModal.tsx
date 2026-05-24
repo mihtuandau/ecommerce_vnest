@@ -60,7 +60,6 @@ export function SizeGuideModal({ isOpen, onClose }: SizeGuideModalProps) {
               </TabsTrigger>
             </TabsList>
 
-            
             <TabsContent value="tops" className="space-y-4 outline-none">
               <div className="overflow-x-auto rounded-xl border border-brand-ivory">
                 <table className="w-full border-collapse text-left text-[12px]">
@@ -69,7 +68,6 @@ export function SizeGuideModal({ isOpen, onClose }: SizeGuideModalProps) {
                       <th className="p-3.5">Size</th>
                       <th className="p-3.5">Chiều cao (cm)</th>
                       <th className="p-3.5">Cân nặng (kg)</th>
-                      <th className="p-3.5">Vòng ngực (cm)</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-brand-ivory text-brand-taupe font-medium">
@@ -77,38 +75,32 @@ export function SizeGuideModal({ isOpen, onClose }: SizeGuideModalProps) {
                       <td className="p-3.5 font-bold text-primary">S</td>
                       <td className="p-3.5">150 - 160</td>
                       <td className="p-3.5">45 - 53</td>
-                      <td className="p-3.5">84 - 88</td>
                     </tr>
                     <tr className="hover:bg-[#FAF8F4]/30 transition-colors">
                       <td className="p-3.5 font-bold text-primary">M</td>
                       <td className="p-3.5">160 - 167</td>
                       <td className="p-3.5">54 - 60</td>
-                      <td className="p-3.5">88 - 92</td>
                     </tr>
                     <tr className="hover:bg-[#FAF8F4]/30 transition-colors">
                       <td className="p-3.5 font-bold text-primary">L</td>
                       <td className="p-3.5">167 - 172</td>
                       <td className="p-3.5">61 - 68</td>
-                      <td className="p-3.5">92 - 96</td>
                     </tr>
                     <tr className="hover:bg-[#FAF8F4]/30 transition-colors">
                       <td className="p-3.5 font-bold text-primary">XL</td>
                       <td className="p-3.5">172 - 178</td>
                       <td className="p-3.5">69 - 76</td>
-                      <td className="p-3.5">96 - 100</td>
                     </tr>
                     <tr className="hover:bg-[#FAF8F4]/30 transition-colors">
                       <td className="p-3.5 font-bold text-primary">XXL</td>
                       <td className="p-3.5">178 - 185</td>
                       <td className="p-3.5">77 - 85</td>
-                      <td className="p-3.5">100 - 104</td>
                     </tr>
                   </tbody>
                 </table>
               </div>
             </TabsContent>
 
-            
             <TabsContent value="bottoms" className="space-y-4 outline-none">
               <div className="overflow-x-auto rounded-xl border border-brand-ivory">
                 <table className="w-full border-collapse text-left text-[12px]">
@@ -162,7 +154,6 @@ export function SizeGuideModal({ isOpen, onClose }: SizeGuideModalProps) {
               </div>
             </TabsContent>
 
-            
             <TabsContent value="dresses" className="space-y-4 outline-none">
               <div className="overflow-x-auto rounded-xl border border-brand-ivory">
                 <table className="w-full border-collapse text-left text-[12px]">
@@ -170,7 +161,7 @@ export function SizeGuideModal({ isOpen, onClose }: SizeGuideModalProps) {
                     <tr className="bg-[#FAF8F4] text-primary font-bold uppercase tracking-wider border-b border-brand-ivory">
                       <th className="p-3.5">Size</th>
                       <th className="p-3.5">Chiều cao (cm)</th>
-                      <th className="p-3.5">Vòng ngực (cm)</th>
+                      <th className="p-3.5">Cân nặng (kg)</th>
                       <th className="p-3.5">Vòng eo (cm)</th>
                     </tr>
                   </thead>
@@ -178,25 +169,25 @@ export function SizeGuideModal({ isOpen, onClose }: SizeGuideModalProps) {
                     <tr className="hover:bg-[#FAF8F4]/30 transition-colors">
                       <td className="p-3.5 font-bold text-primary">S</td>
                       <td className="p-3.5">150 - 155</td>
-                      <td className="p-3.5">80 - 84</td>
+                      <td className="p-3.5">45 - 52</td>
                       <td className="p-3.5">62 - 66</td>
                     </tr>
                     <tr className="hover:bg-[#FAF8F4]/30 transition-colors">
                       <td className="p-3.5 font-bold text-primary">M</td>
                       <td className="p-3.5">155 - 160</td>
-                      <td className="p-3.5">84 - 88</td>
+                      <td className="p-3.5">53 - 58</td>
                       <td className="p-3.5">66 - 70</td>
                     </tr>
                     <tr className="hover:bg-[#FAF8F4]/30 transition-colors">
                       <td className="p-3.5 font-bold text-primary">L</td>
                       <td className="p-3.5">160 - 165</td>
-                      <td className="p-3.5">88 - 92</td>
+                      <td className="p-3.5">59 - 64</td>
                       <td className="p-3.5">70 - 74</td>
                     </tr>
                     <tr className="hover:bg-[#FAF8F4]/30 transition-colors">
                       <td className="p-3.5 font-bold text-primary">XL</td>
                       <td className="p-3.5">165 - 170</td>
-                      <td className="p-3.5">92 - 96</td>
+                      <td className="p-3.5">65 - 72</td>
                       <td className="p-3.5">74 - 78</td>
                     </tr>
                   </tbody>
@@ -206,7 +197,6 @@ export function SizeGuideModal({ isOpen, onClose }: SizeGuideModalProps) {
           </Tabs>
         </div>
 
-        
         <div className="mt-6 bg-[#FAF8F4] border border-brand-ivory rounded-xl p-4 flex gap-3">
           <HelpCircle size={18} className="text-brand-bronze shrink-0 mt-0.5" />
           <div className="space-y-1">

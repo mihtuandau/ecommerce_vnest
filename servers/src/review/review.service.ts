@@ -11,7 +11,6 @@
   import { ReviewRepository } from './review.repository';
   import { CreateReviewDto, UpdateReviewDto } from './dto/review.dto';
   import { createClient } from 'redis';
-  import { ChatbotService } from '../chatbot/chatbot.service';
   import sanitizeHtml from 'sanitize-html';
 
   @Injectable()
@@ -22,7 +21,6 @@
     constructor(
       private repository: ReviewRepository,
       @Inject(CACHE_MANAGER) private cacheManager: Cache,
-      private chatbotService: ChatbotService,
     ) {}
 
     async onModuleInit() {
@@ -359,39 +357,8 @@
         totalPages: Math.ceil(total / limit),
       };
     }
-
-    async getAiReviewSummary(productId: number) {
-      const cacheKey = `ai_summary:${productId}`;
-      
-      try {
-        const cached = await this.cacheManager.get(cacheKey);
-        if (cached) return JSON.parse(cached as string);
-      } catch (e) {
-        this.logger.warn(`Cache AI summary fail: ${e.message}`);
-      }
-
-      const reviews = await this.repository.findCommentsByProduct(productId);
-      
-      if (reviews.length < 3) {
-        return {
-          pros: [],
-          cons: [],
-          verdict: 'Chưa đủ dữ liệu (tối thiểu 3 đánh giá) để AI thực hiện phân tích tổng quan.'
-        };
-      }
-
-      const summaryStr = await this.chatbotService.generateReviewSummary(reviews as { comment: string, rating: number }[]);
-      
-      try {
-        // Cache for 24 hours
-        await this.cacheManager.set(cacheKey, summaryStr, 24 * 3600 * 1000);
-      } catch (e) {
-        this.logger.warn(`Failed to set AI summary cache: ${e.message}`);
-      }
-
-      return JSON.parse(summaryStr);
-    }
   }
+
 
 
 
