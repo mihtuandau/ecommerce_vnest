@@ -1,5 +1,4 @@
-
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { UserRepository } from './user.repository';
 import { Prisma, User, UserStatus } from '@prisma/client';
 import { Cron, CronExpression } from '@nestjs/schedule';
@@ -32,10 +31,17 @@ export class UserService {
     });
   }
 
-  async createSocial(data: { email: string; name: string; role: string; avatar?: string; provider: string; providerId: string }): Promise<User> {
+  async createSocial(data: {
+    email: string;
+    name: string;
+    role: string;
+    avatar?: string;
+    provider: string;
+    providerId: string;
+  }): Promise<User> {
     console.log('=== Creating Social User ===');
     console.log('Social Data:', JSON.stringify(data, null, 2));
-    
+
     const user = await this.repository.create({
       email: data.email,
       name: data.name,
@@ -51,18 +57,26 @@ export class UserService {
   }
 
   async activateUser(id: number): Promise<User> {
+    const existing = await this.repository.findById(id);
+    if (!existing) throw new NotFoundException('Không tìm thấy người dùng');
 
-    const updatedUser = await this.repository.update(id, {
+    return this.repository.update(id, {
       status: UserStatus.ACTIVE,
       verificationCode: null,
       verificationExpires: null,
-      deletedAt: null, 
     });
-
-    return updatedUser;
   }
 
-  async updateVerification(id: number, data: { verificationCode: string; verificationExpires: Date; name?: string; password?: string; phone?: string }): Promise<User> {
+  async updateVerification(
+    id: number,
+    data: {
+      verificationCode: string;
+      verificationExpires: Date;
+      name?: string;
+      password?: string;
+      phone?: string;
+    },
+  ): Promise<User> {
     const updateData: Prisma.UserUpdateInput = {
       verificationCode: data.verificationCode,
       verificationExpires: data.verificationExpires,
@@ -70,12 +84,16 @@ export class UserService {
     };
     if (data.name) updateData.name = data.name;
     if (data.phone) updateData.phone = data.phone;
-    if (data.password) updateData.password = await bcrypt.hash(data.password, 10);
+    if (data.password)
+      updateData.password = await bcrypt.hash(data.password, 10);
 
     return this.repository.update(id, updateData);
   }
 
-  async updateOtpOnly(id: number, data: { verificationCode: string; verificationExpires: Date }): Promise<User> {
+  async updateOtpOnly(
+    id: number,
+    data: { verificationCode: string; verificationExpires: Date },
+  ): Promise<User> {
     // Update ONLY OTP and expiry time, do NOT touch password
     return this.repository.update(id, {
       verificationCode: data.verificationCode,
@@ -95,15 +113,15 @@ export class UserService {
       ...(status ? ({ status } as any) : {}),
     };
     const users = await this.repository.findAll(where, skip, limit);
-    return users.map(user => {
-      const { 
-        password, 
-        verificationCode, 
-        verificationExpires, 
-        resetPasswordToken, 
-        resetPasswordExpires, 
+    return users.map((user) => {
+      const {
+        password,
+        verificationCode,
+        verificationExpires,
+        resetPasswordToken,
+        resetPasswordExpires,
         deletedAt,
-        ...safeUser 
+        ...safeUser
       } = user;
       return safeUser as any;
     });
@@ -114,24 +132,23 @@ export class UserService {
     if (!user || user.deletedAt) {
       return null;
     }
-    
-    
-    const { 
-      password, 
-      verificationCode, 
-      verificationExpires, 
-      resetPasswordToken, 
-      resetPasswordExpires, 
+
+    const {
+      password,
+      verificationCode,
+      verificationExpires,
+      resetPasswordToken,
+      resetPasswordExpires,
       deletedAt,
-      ...safeUser 
+      ...safeUser
     } = user;
-    
+
     return safeUser;
   }
-  
+
   async update(id: number, data: UpdateUserDto): Promise<User> {
     const updateData: Prisma.UserUpdateInput = {};
-    
+
     console.log(`=== Updating User #${id} ===`);
     console.log('Update Data:', JSON.stringify(data, null, 2));
 
@@ -148,7 +165,8 @@ export class UserService {
       updateData.avatar = data.avatar;
     }
     if ((data as any).provider) updateData.provider = (data as any).provider;
-    if ((data as any).providerId) updateData.providerId = (data as any).providerId;
+    if ((data as any).providerId)
+      updateData.providerId = (data as any).providerId;
     if (data.password) {
       updateData.password = await bcrypt.hash(data.password, 10);
     }
@@ -171,11 +189,14 @@ export class UserService {
     return count > 0;
   }
 
-  async updateResetToken(id: number, resetData: UpdateUserResetDto): Promise<User> {
-    const resetPasswordExpires = resetData.resetPasswordExpires 
-      ? new Date(resetData.resetPasswordExpires) 
+  async updateResetToken(
+    id: number,
+    resetData: UpdateUserResetDto,
+  ): Promise<User> {
+    const resetPasswordExpires = resetData.resetPasswordExpires
+      ? new Date(resetData.resetPasswordExpires)
       : null;
-    
+
     return this.repository.updateResetToken(
       id,
       resetData.resetPasswordToken || null,
@@ -192,7 +213,6 @@ export class UserService {
     });
   }
 
-  
   async getPermissionsByRole(role: string): Promise<string[]> {
     return this.repository.getPermissionsByRole(role as any);
   }
@@ -211,23 +231,10 @@ export class UserService {
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async handleCleanupExpiredUsers() {
-
-    const deleteResult = await this.repository.deleteMany({
+    await this.repository.softDeleteMany({
       status: UserStatus.PENDING,
-      verificationExpires: {
-        lt: new Date(),
-      },
+      verificationExpires: { lt: new Date() },
+      deletedAt: null,
     });
-
-    if (deleteResult.count > 0) {
-
-    } else {
-
-    }
   }
 }
-
-
-
-
-

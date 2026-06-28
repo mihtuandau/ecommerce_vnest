@@ -91,7 +91,13 @@ export class DiscountService {
     if (status === 'active') {
       where.isActive = true;
       where.startDate = { lte: now };
-      where.OR = [{ endDate: null }, { endDate: { gte: now } }];
+      const endDateCondition = [{ endDate: null }, { endDate: { gte: now } }];
+      if (where.OR) {
+        where.AND = [{ OR: where.OR }, { OR: endDateCondition }];
+        delete where.OR;
+      } else {
+        where.OR = endDateCondition;
+      }
     } else if (status === 'expired') {
       where.isActive = true;
       where.endDate = { lt: now };
@@ -177,9 +183,9 @@ export class DiscountService {
           percentage: metadata.percentage,
           fixedAmount: metadata.fixedAmount,
           // Original metadata object for reference if needed
-          _metadata: metadata 
+          _metadata: metadata,
         };
-      })
+      }),
     }));
   }
 
