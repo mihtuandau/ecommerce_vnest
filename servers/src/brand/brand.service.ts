@@ -16,23 +16,23 @@ export class BrandService {
         _count: {
           select: {
             products: {
-              where: { deletedAt: null }
-            }
-          }
-        }
-      }
+              where: { deletedAt: null },
+            },
+          },
+        },
+      },
     });
   }
 
   async findOne(id: number): Promise<Brand | null> {
-    return this.prisma.brand.findUnique({ 
-      where: { id }, 
-      include: { 
+    return this.prisma.brand.findUnique({
+      where: { id },
+      include: {
         products: {
           where: { deletedAt: null },
-          take: 10
-        } 
-      } 
+          take: 10,
+        },
+      },
     });
   }
 

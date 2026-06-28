@@ -1,4 +1,4 @@
-import type { CartItem } from "@/store/useCartStore";
+﻿import type { CartItem } from "@/features/cart/store/cart.store";
 
 export function getSelectedCartItems(items: CartItem[]) {
   return items.filter((item) => item.selected);

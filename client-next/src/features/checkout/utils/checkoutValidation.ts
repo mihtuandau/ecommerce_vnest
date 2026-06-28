@@ -1,5 +1,5 @@
-import { CHECKOUT_MESSAGES, CHECKOUT_VALIDATION } from "@/features/checkout/constants";
-import type { CheckoutDiscount } from "@/store/useCartStore";
+﻿import { CHECKOUT_MESSAGES, CHECKOUT_VALIDATION } from "@/features/checkout/constants";
+import type { CheckoutDiscount } from "@/features/cart/store/cart.store";
 
 export type CheckoutFormData = {
   fullName: string;

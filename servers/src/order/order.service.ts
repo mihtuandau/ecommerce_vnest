@@ -1,4 +1,3 @@
-
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { OrderRepository } from './order.repository';
 import { OrderCache } from './order.cache';
@@ -25,7 +24,12 @@ export class OrderService {
     private ghnService: GHNService,
   ) {}
 
-  async create(userId: number | null, dto: CreateOrderDto, requester: { role: string }, ipAddr: string = '127.0.0.1'): Promise<any> {
+  async create(
+    userId: number | null,
+    dto: CreateOrderDto & { status?: string },
+    requester: { role: string },
+    ipAddr: string = '127.0.0.1',
+  ): Promise<any> {
     return this.orderCreation.create(userId, dto, requester, ipAddr);
   }
 
@@ -38,7 +42,7 @@ export class OrderService {
     const isAdmin = !userId || Number(limit) >= 100;
 
     const cacheKey = { ...query, requesterId: userId };
-    
+
     if (!isAdmin) {
       const cached = await this.cacheService.getOrdersList(cacheKey);
       if (cached) return cached;
@@ -53,7 +57,9 @@ export class OrderService {
       this.repository.count(where),
     ]);
 
-    const serializedOrders = ordersData.map(order => OrderHelper.serializeOrder(order));
+    const serializedOrders = ordersData.map((order) =>
+      OrderHelper.serializeOrder(order),
+    );
 
     const orders = {
       orders: serializedOrders,
@@ -78,7 +84,9 @@ export class OrderService {
 
     const isStaff = ['ADMIN', 'WAREHOUSE', 'SALES'].includes(user.role);
     if (!isStaff && order.userId !== user.userId) {
-      throw new NotFoundException(`Đơn hàng #${id} không tồn tại hoặc không thuộc quyền sở hữu của bạn`);
+      throw new NotFoundException(
+        `Đơn hàng #${id} không tồn tại hoặc không thuộc quyền sở hữu của bạn`,
+      );
     }
 
     const serializedOrder = OrderHelper.serializeOrder(order);
@@ -102,12 +110,12 @@ export class OrderService {
         const userStats = await this.prisma.order.aggregate({
           where: statsWhere,
           _count: { id: true },
-          _sum: { total: true }
+          _sum: { total: true },
         });
-        
+
         serializedOrder.customerStats = {
           totalOrders: userStats._count.id,
-          totalSpent: userStats._sum.total || 0
+          totalSpent: userStats._sum.total || 0,
         };
       } else {
         serializedOrder.customerStats = { totalOrders: 0, totalSpent: 0 };
@@ -146,9 +154,17 @@ export class OrderService {
     return this.orderManagement.syncToGHN(id);
   }
 
-  async lookupGuestOrder(orderCode: string, contact: string, ip?: string, ua?: string, maskPII = true): Promise<any> {
+  async lookupGuestOrder(
+    orderCode: string,
+    contact: string,
+    ip?: string,
+    ua?: string,
+    maskPII = true,
+  ): Promise<any> {
     // Log tracking for audit
-    this.logger.log(`Guest lookup attempt: Order ${orderCode} | Contact ${contact} | IP: ${ip} | UA: ${ua}`);
+    this.logger.log(
+      `Guest lookup attempt: Order ${orderCode} | Contact ${contact} | IP: ${ip} | UA: ${ua}`,
+    );
     return this.orderManagement.lookupGuestOrder(orderCode, contact, maskPII);
   }
 
@@ -160,13 +176,17 @@ export class OrderService {
     const order = await this.repository.findByShippingCode(shippingCode);
 
     if (!order) {
-      this.logger.warn(`[GHN Webhook] Order not found for shipping code: ${shippingCode}`);
+      this.logger.warn(
+        `[GHN Webhook] Order not found for shipping code: ${shippingCode}`,
+      );
       return { success: true, message: 'Order not found' };
     }
 
     // Chỉ cập nhật nếu trạng thái thực sự thay đổi
     if (order.status !== status && order.status !== 'DELIVERED') {
-      this.logger.log(`[GHN Webhook] Updating order #${order.id} status: ${order.status} -> ${status} (${description || ''})`);
+      this.logger.log(
+        `[GHN Webhook] Updating order #${order.id} status: ${order.status} -> ${status} (${description || ''})`,
+      );
       await this.orderManagement.update(order.id, { status: status as any });
     }
 

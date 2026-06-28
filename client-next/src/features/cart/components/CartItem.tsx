@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React from "react";
 import {  Plus, Minus, Check, Heart, X } from "lucide-react";
@@ -6,7 +6,7 @@ import { formatCurrency } from "@/utils/formatCurrency";
 import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/utils/cn";
-import { CartItem as CartItemType } from "@/store/useCartStore";
+import { CartItem as CartItemType } from "@/features/cart/store/cart.store";
 import { getImageUrl } from "@/utils/image";
 
 interface CartItemProps {

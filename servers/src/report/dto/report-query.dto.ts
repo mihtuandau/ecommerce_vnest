@@ -31,16 +31,13 @@ export class ReportQueryDto {
   @IsInt()
   endYear?: number;
 
-  @ApiPropertyOptional({ description: 'Limit for top products/categories', default: 10 })
+  @ApiPropertyOptional({
+    description: 'Limit for top products/categories',
+    default: 10,
+  })
   @IsOptional()
   @Type(() => Number)
   @IsInt()
   @Min(1)
   limit?: number;
 }
-
-
-
-
-
-

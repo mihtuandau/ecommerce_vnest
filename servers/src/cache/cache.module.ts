@@ -25,9 +25,12 @@ function buildRedisUrl(configService: ConfigService) {
       useFactory: async (configService: ConfigService) => {
         const logger = new Logger('CacheModule');
         const ttl =
-          parseInt(configService.get<string>('REDIS_CACHE_EXPIRATION', '3600'), 10) *
-          1000;
-        const useRedis = configService.get<string>('USE_REDIS_CACHE', 'false') === 'true';
+          parseInt(
+            configService.get<string>('REDIS_CACHE_EXPIRATION', '3600'),
+            10,
+          ) * 1000;
+        const useRedis =
+          configService.get<string>('USE_REDIS_CACHE', 'false') === 'true';
 
         if (!useRedis) {
           logger.warn('Redis cache is disabled. Using in-memory cache.');

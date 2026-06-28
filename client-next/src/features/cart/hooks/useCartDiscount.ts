@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React from "react";
 import { discountsApi } from "@/features/discounts/api";
@@ -8,7 +8,7 @@ import {
   isCartDiscountApplicable,
 } from "@/features/cart/services";
 import { useToast } from "@/hooks/useToast";
-import { useCartStore } from "@/store/useCartStore";
+import { useCartStore } from "@/features/cart/store/cart.store";
 import { formatCurrency } from "@/utils/formatCurrency";
 
 export function useCartDiscount(selectedTotalPrice: number) {

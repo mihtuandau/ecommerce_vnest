@@ -1,6 +1,9 @@
-import { Controller, Get, Param, ParseIntPipe, Post, Body } from '@nestjs/common';
+import { Controller, Get, Param, Post, Body, UseGuards } from '@nestjs/common';
 import { GHNService } from './ghn.service';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags, ApiOperation } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../common/guards/auth.guard';
+import { RolesGuard } from '../common/guards/roles.guard';
+import { Permissions } from '../common/decorators/permissions.decorator';
 
 @ApiTags('GHN (Giao Hàng Nhanh)')
 @Controller('ghn')
@@ -16,7 +19,10 @@ export class GHNController {
   @ApiOperation({ summary: 'Lấy danh sách Quận/Huyện theo Tỉnh' })
   @Get('districts/:provinceId')
   getDistricts(@Param('provinceId') provinceId: string) {
-    console.log('[GHNController] Fetching districts for provinceId:', provinceId);
+    console.log(
+      '[GHNController] Fetching districts for provinceId:',
+      provinceId,
+    );
     return this.ghnService.getDistricts(Number(provinceId));
   }
 
@@ -35,12 +41,20 @@ export class GHNController {
 
   @ApiOperation({ summary: 'Lấy chi tiết đơn hàng từ GHN' })
   @Get('order-detail/:orderCode')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Permissions('order.manage')
+  @ApiBearerAuth('Authorization')
   getOrderDetail(@Param('orderCode') orderCode: string) {
     return this.ghnService.getOrderDetail(orderCode);
   }
 
-  @ApiOperation({ summary: 'Cập nhật trạng thái Sandbox GHN (Chỉ dành cho Test)' })
+  @ApiOperation({
+    summary: 'Cập nhật trạng thái Sandbox GHN (Chỉ dành cho Test)',
+  })
   @Post('sandbox-update')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Permissions('order.manage')
+  @ApiBearerAuth('Authorization')
   updateSandbox(@Body() body: { orderCode: string; status: string }) {
     return this.ghnService.updateOrderSandbox(body.orderCode, body.status);
   }

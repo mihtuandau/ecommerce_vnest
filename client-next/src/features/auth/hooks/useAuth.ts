@@ -1,8 +1,8 @@
-"use client";
+﻿"use client";
 
 import { useMutation } from "@tanstack/react-query";
 import { useAuthStore } from "../store/auth.store";
-import { useCartStore } from "@/store/useCartStore";
+import { useCartStore } from "@/features/cart/store/cart.store";
 import { authApi } from "../api/auth.api";
 import type { LoginPayload, RegisterPayload } from "../types/auth.types";
 import { sanitizeUser } from "@/utils/sanitizeUser";

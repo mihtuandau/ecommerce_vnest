@@ -1,6 +1,6 @@
-import { CartItem } from "@/features/cart/components/CartItem";
+﻿import { CartItem } from "@/features/cart/components/CartItem";
 import { groupCartItemsByProduct } from "@/features/cart/services";
-import type { CartItem as CartItemType } from "@/store/useCartStore";
+import type { CartItem as CartItemType } from "@/features/cart/store/cart.store";
 
 interface CartItemsListProps {
   items: CartItemType[];

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useRef, useEffect } from "react";
 import {
@@ -11,7 +11,7 @@ import {
   ShoppingBasket,
 } from "lucide-react";
 import { useCart } from "@/features/cart/hooks";
-import { useCartStore } from "@/store/useCartStore";
+import { useCartStore } from "@/features/cart/store/cart.store";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";

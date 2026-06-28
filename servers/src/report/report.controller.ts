@@ -6,7 +6,12 @@ import {
   Res,
   StreamableFile,
 } from '@nestjs/common';
-import { ApiTags, ApiBearerAuth, ApiOperation, ApiQuery } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiBearerAuth,
+  ApiOperation,
+  ApiQuery,
+} from '@nestjs/swagger';
 import type { Response } from 'express';
 import { JwtAuthGuard } from '../common/guards/auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
@@ -24,12 +29,34 @@ export class ReportController {
 
   @Get('revenue')
   @Permissions('report.view')
-  @ApiOperation({ summary: 'Get revenue report by period (daily/monthly/yearly)' })
-  @ApiQuery({ name: 'startDate', required: false, description: 'Start date (YYYY-MM-DD)' })
-  @ApiQuery({ name: 'endDate', required: false, description: 'End date (YYYY-MM-DD)' })
-  @ApiQuery({ name: 'year', required: false, description: 'Year for monthly report' })
-  @ApiQuery({ name: 'startYear', required: false, description: 'Start year for yearly report' })
-  @ApiQuery({ name: 'endYear', required: false, description: 'End year for yearly report' })
+  @ApiOperation({
+    summary: 'Get revenue report by period (daily/monthly/yearly)',
+  })
+  @ApiQuery({
+    name: 'startDate',
+    required: false,
+    description: 'Start date (YYYY-MM-DD)',
+  })
+  @ApiQuery({
+    name: 'endDate',
+    required: false,
+    description: 'End date (YYYY-MM-DD)',
+  })
+  @ApiQuery({
+    name: 'year',
+    required: false,
+    description: 'Year for monthly report',
+  })
+  @ApiQuery({
+    name: 'startYear',
+    required: false,
+    description: 'Start year for yearly report',
+  })
+  @ApiQuery({
+    name: 'endYear',
+    required: false,
+    description: 'End year for yearly report',
+  })
   getRevenueReport(@Query() query: ReportQueryDto) {
     return this.reportService.getRevenueByPeriod(query);
   }
@@ -44,7 +71,12 @@ export class ReportController {
   @Get('top-products')
   @Permissions('report.view')
   @ApiOperation({ summary: 'Get top selling products' })
-  @ApiQuery({ name: 'limit', required: false, description: 'Number of products to return', type: Number })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    description: 'Number of products to return',
+    type: Number,
+  })
   getTopProductsReport(@Query() query: ReportQueryDto) {
     return this.reportService.getTopProductsReport(query);
   }
@@ -52,7 +84,12 @@ export class ReportController {
   @Get('top-categories')
   @Permissions('report.view')
   @ApiOperation({ summary: 'Get top selling categories' })
-  @ApiQuery({ name: 'limit', required: false, description: 'Number of categories to return', type: Number })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    description: 'Number of categories to return',
+    type: Number,
+  })
   getTopCategoriesReport(@Query() query: ReportQueryDto) {
     return this.reportService.getTopCategoriesReport(query);
   }
@@ -76,11 +113,12 @@ export class ReportController {
   @ApiOperation({ summary: 'Export report to Excel' })
   async exportReport(@Query() query: ReportQueryDto, @Res() res: Response) {
     const buffer = await this.reportService.exportToExcel(query);
-    
+
     const filename = `report_${new Date().toISOString().split('T')[0]}.xlsx`;
-    
+
     res.set({
-      'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'Content-Type':
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       'Content-Disposition': `attachment; filename="${filename}"`,
       'Content-Length': buffer.length,
     });
@@ -88,9 +126,3 @@ export class ReportController {
     res.send(buffer);
   }
 }
-
-
-
-
-
-

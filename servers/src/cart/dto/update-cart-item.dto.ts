@@ -3,10 +3,10 @@ import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateCartItemDto {
-  @ApiProperty({ 
-    example: 3, 
-    description: 'Số lượng mới (tùy chọn)', 
-    required: false 
+  @ApiProperty({
+    example: 3,
+    description: 'Số lượng mới (tùy chọn)',
+    required: false,
   })
   @Type(() => Number)
   @IsOptional()
@@ -14,8 +14,3 @@ export class UpdateCartItemDto {
   @IsPositive()
   quantity?: number;
 }
-
-
-
-
-

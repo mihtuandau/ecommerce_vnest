@@ -13,7 +13,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   ) {
     const jwtSecret = configService.get('JWT_SECRET');
     if (!jwtSecret) {
-      throw new Error('JWT_SECRET environment variable is not defined. Please set it in your .env file.');
+      throw new Error(
+        'JWT_SECRET environment variable is not defined. Please set it in your .env file.',
+      );
     }
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
@@ -36,7 +38,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
 
     if (user.status === 'SUSPENDED') {
-      throw new UnauthorizedException('Tài khoản của bạn đã bị khóa. Vui lòng liên hệ hỗ trợ.');
+      throw new UnauthorizedException(
+        'Tài khoản của bạn đã bị khóa. Vui lòng liên hệ hỗ trợ.',
+      );
     }
 
     const permissions = await this.userService.getPermissionsByRole(user.role);
@@ -46,7 +50,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       userId: user.id,
       email: user.email,
       role: user.role,
-      permissions: permissions, 
+      permissions: permissions,
     };
   }
 }

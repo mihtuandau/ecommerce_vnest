@@ -9,13 +9,13 @@ import { PrismaService } from './prisma/prisma.service';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { TimeoutInterceptor } from './common/interceptors/timeout.interceptor';
 import { AuditInterceptor } from './common/interceptors/audit.interceptor';
-import { AuthModule } from './auth/auth.module';  
-import { UserModule } from './user/user.module';  
-import { ProductModule } from './product/product.module';  
-import { CartModule } from './cart/cart.module';  
-import { OrderModule } from './order/order.module'; 
-import { UploadModule } from './upload/upload.module'; 
-import { CacheModule } from './cache/cache.module';  
+import { AuthModule } from './auth/auth.module';
+import { UserModule } from './user/user.module';
+import { ProductModule } from './product/product.module';
+import { CartModule } from './cart/cart.module';
+import { OrderModule } from './order/order.module';
+import { UploadModule } from './upload/upload.module';
+import { CacheModule } from './cache/cache.module';
 import { CategoryModule } from './category/category.module';
 import { PaymentModule } from './payment/payment.module';
 import { DashboardModule } from './dashboard/dashboard.module';
@@ -41,7 +41,7 @@ import { MaintenanceGuard } from './common/guards/maintenance.guard';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),  
+    ConfigModule.forRoot({ isGlobal: true }),
     SentryModule.forRoot(),
     BullModule.forRootAsync({
       imports: [ConfigModule],
@@ -54,28 +54,32 @@ import { MaintenanceGuard } from './common/guards/maintenance.guard';
           connectTimeout: 10000,
           retryStrategy: (times) => {
             return Math.min(times * 100, 3000);
-          }
+          },
         },
       }),
       inject: [ConfigService],
     }),
     ScheduleModule.forRoot(),
-    ThrottlerModule.forRoot([{
-      name: 'short',
-      ttl: 1000,
-      limit: 30, // Tăng lên 30 để Chatbot không bị chặn khi load nhiều card
-    }, {
-      name: 'medium',
-      ttl: 60000,
-      limit: 100, // Tăng lên 100 req / min
-    }, {
-      name: 'long',
-      ttl: 3600000,
-      limit: 1000, // 1000 req / hour
-    }]),
-    AuthModule,  
-    UserModule,  
-    ProductModule,  
+    ThrottlerModule.forRoot([
+      {
+        name: 'short',
+        ttl: 1000,
+        limit: 30, // Tăng lên 30 để Chatbot không bị chặn khi load nhiều card
+      },
+      {
+        name: 'medium',
+        ttl: 60000,
+        limit: 100, // Tăng lên 100 req / min
+      },
+      {
+        name: 'long',
+        ttl: 3600000,
+        limit: 1000, // 1000 req / hour
+      },
+    ]),
+    AuthModule,
+    UserModule,
+    ProductModule,
     CartModule,
     OrderModule,
     UploadModule,

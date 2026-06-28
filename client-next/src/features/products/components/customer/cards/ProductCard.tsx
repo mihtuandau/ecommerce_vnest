@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useMemo } from "react";
 import { Product } from "@/types/models";
@@ -7,7 +7,7 @@ import { ShoppingCart, Star, Heart, Zap } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/features/cart/hooks";
-import { useWishlistStore } from "@/store/useWishlistStore";
+import { useWishlistStore } from "@/features/wishlist/store/wishlist.store";
 import { useAuthStore } from "@/features/auth/store/auth.store";
 import { useToast } from "@/hooks/useToast";
 import { cn } from "@/utils/cn";

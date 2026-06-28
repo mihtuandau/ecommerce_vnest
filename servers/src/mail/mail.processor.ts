@@ -1,4 +1,3 @@
-
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Job } from 'bullmq';
 import { MailerService } from '@nestjs-modules/mailer';
@@ -68,7 +67,10 @@ export class MailProcessor extends WorkerHost {
       }
       return { success: true };
     } catch (error) {
-      this.logger.error(`Failed to send email ${type} to ${data.email}:`, error.stack);
+      this.logger.error(
+        `Failed to send email ${type} to ${data.email}:`,
+        error.stack,
+      );
       throw error; // BullMQ will retry based on config
     }
   }

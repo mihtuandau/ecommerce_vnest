@@ -33,7 +33,11 @@ export interface SystemSettings {
 @Injectable()
 export class SystemSettingsService {
   private readonly logger = new Logger(SystemSettingsService.name);
-  private readonly filePath = path.join(process.cwd(), 'data', 'system-settings.json');
+  private readonly filePath = path.join(
+    process.cwd(),
+    'data',
+    'system-settings.json',
+  );
 
   private readonly defaultSettings: SystemSettings = {
     storeName: 'LUXE E-Commerce',
@@ -85,7 +89,10 @@ export class SystemSettingsService {
       const data = fs.readFileSync(this.filePath, 'utf-8');
       return this.normalizeSettings(JSON.parse(data));
     } catch (error) {
-      this.logger.error('Failed to read system settings, using defaults.', error);
+      this.logger.error(
+        'Failed to read system settings, using defaults.',
+        error,
+      );
       return this.defaultSettings;
     }
   }
@@ -110,14 +117,21 @@ export class SystemSettingsService {
       storeName: String(merged.storeName || this.defaultSettings.storeName),
       storeEmail: String(merged.storeEmail || this.defaultSettings.storeEmail),
       storePhone: String(merged.storePhone || this.defaultSettings.storePhone),
-      storeAddress: String(merged.storeAddress || this.defaultSettings.storeAddress),
+      storeAddress: String(
+        merged.storeAddress || this.defaultSettings.storeAddress,
+      ),
       storeLogo: String(merged.storeLogo || ''),
       storeFavicon: String(merged.storeFavicon || ''),
-      shippingFee: Number(merged.shippingFee ?? this.defaultSettings.shippingFee),
-      freeShippingThreshold: Number(
-        merged.freeShippingThreshold ?? this.defaultSettings.freeShippingThreshold,
+      shippingFee: Number(
+        merged.shippingFee ?? this.defaultSettings.shippingFee,
       ),
-      shippingProvider: String(merged.shippingProvider || this.defaultSettings.shippingProvider),
+      freeShippingThreshold: Number(
+        merged.freeShippingThreshold ??
+          this.defaultSettings.freeShippingThreshold,
+      ),
+      shippingProvider: String(
+        merged.shippingProvider || this.defaultSettings.shippingProvider,
+      ),
       maintenanceMode: Boolean(merged.maintenanceMode),
       maintenanceMessage: String(
         merged.maintenanceMessage || this.defaultSettings.maintenanceMessage,
@@ -129,18 +143,24 @@ export class SystemSettingsService {
       codEnabled: Boolean(merged.codEnabled),
       vnpayEnabled: Boolean(merged.vnpayEnabled),
       paymentEnvironment:
-        merged.paymentEnvironment === 'live' ? 'live' : this.defaultSettings.paymentEnvironment,
+        merged.paymentEnvironment === 'live'
+          ? 'live'
+          : this.defaultSettings.paymentEnvironment,
       defaultMetaTitle: String(
         merged.defaultMetaTitle || this.defaultSettings.defaultMetaTitle,
       ),
       defaultMetaDescription: String(
-        merged.defaultMetaDescription || this.defaultSettings.defaultMetaDescription,
+        merged.defaultMetaDescription ||
+          this.defaultSettings.defaultMetaDescription,
       ),
       defaultOgImage: String(merged.defaultOgImage || ''),
       autoCancelUnpaidMinutes: Number(
-        merged.autoCancelUnpaidMinutes ?? this.defaultSettings.autoCancelUnpaidMinutes,
+        merged.autoCancelUnpaidMinutes ??
+          this.defaultSettings.autoCancelUnpaidMinutes,
       ),
-      returnWindowDays: Number(merged.returnWindowDays ?? this.defaultSettings.returnWindowDays),
+      returnWindowDays: Number(
+        merged.returnWindowDays ?? this.defaultSettings.returnWindowDays,
+      ),
     };
   }
 

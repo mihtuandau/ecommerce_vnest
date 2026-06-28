@@ -1,4 +1,10 @@
-﻿import { ExceptionFilter, Catch, ArgumentsHost, HttpException, Logger } from '@nestjs/common';
+﻿import {
+  ExceptionFilter,
+  Catch,
+  ArgumentsHost,
+  HttpException,
+  Logger,
+} from '@nestjs/common';
 import { Response } from 'express';
 
 @Catch()
@@ -22,10 +28,11 @@ export class AllExceptionsFilter implements ExceptionFilter {
       if (typeof exceptionResponse === 'object') {
         const responseObj = exceptionResponse as any;
         message = responseObj.message || exception.message;
-        errorCode = responseObj.errorCode || this.getErrorCodeFromStatus(status);
+        errorCode =
+          responseObj.errorCode || this.getErrorCodeFromStatus(status);
         details = responseObj.details;
       } else {
-        message = exceptionResponse as string;
+        message = exceptionResponse;
         errorCode = this.getErrorCodeFromStatus(status);
       }
     } else if (exception instanceof Error) {
@@ -52,10 +59,12 @@ export class AllExceptionsFilter implements ExceptionFilter {
     if (status >= 500) {
       this.logger.error(
         `[${request.method}] ${request.url}`,
-        exception instanceof Error ? exception.stack : String(exception)
+        exception instanceof Error ? exception.stack : String(exception),
       );
     } else {
-      this.logger.warn(`[${request.method}] ${request.url} - ${errorCode}: ${message}`);
+      this.logger.warn(
+        `[${request.method}] ${request.url} - ${errorCode}: ${message}`,
+      );
     }
 
     const errorResponse = {
@@ -64,7 +73,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
       errorCode,
       message,
       ...(details && { details }),
-      ...(process.env.NODE_ENV === 'development' && exception instanceof Error && { stack: exception.stack }),
+      ...(process.env.NODE_ENV === 'development' &&
+        exception instanceof Error && { stack: exception.stack }),
     };
 
     response.status(status).json(errorResponse);

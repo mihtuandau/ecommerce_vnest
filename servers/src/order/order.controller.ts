@@ -24,7 +24,7 @@ import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
 import { OrderService } from './order.service';
 import { OrderInvoice } from './order.invoice';
-import { CreateOrderDto } from './dto/create-order.dto';
+import { AdminCreateOrderDto, CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { QueryOrderDto } from './dto/query-order.dto';
 import { ApplyDiscountDto } from './dto/apply-discount.dto';
@@ -59,7 +59,11 @@ export class OrderController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Permissions('order.manage')
   @ApiBearerAuth('Authorization')
-  adminCreate(@Request() req, @Body() body: CreateOrderDto, @Ip() ip: string) {
+  adminCreate(
+    @Request() req,
+    @Body() body: AdminCreateOrderDto,
+    @Ip() ip: string,
+  ) {
     // Admin có thể truyền userId trực tiếp trong body
     return this.orderService.create(
       body.userId || null,
@@ -135,6 +139,7 @@ export class OrderController {
     return this.orderService.cancelOrder(+id, req.user);
   }
 
+  @Throttle({ short: { ttl: 60000, limit: 5 } })
   @Put('guest/:orderCode/cancel')
   async cancelGuestOrder(
     @Param('orderCode') orderCode: string,
@@ -179,11 +184,16 @@ export class OrderController {
 
   @Get(':id/invoice')
   @UseGuards(JwtAuthGuard)
-  async downloadInvoice(@Param('id') id: number, @Req() req: any, @Res() res: Response) {
+  async downloadInvoice(
+    @Param('id') id: number,
+    @Req() req: any,
+    @Res() res: Response,
+  ) {
     const order = await this.orderService.findOne(id, req.user);
     return OrderInvoice.generate(order, res);
   }
 
+  @Throttle({ short: { ttl: 60000, limit: 5 } })
   @Get('guest/invoice/:code')
   async downloadGuestInvoice(
     @Param('code') code: string,
@@ -191,10 +201,18 @@ export class OrderController {
     @Res() res: Response,
   ) {
     // Lấy order thô (chưa mask) để generate invoice, nhưng phải kiểm tra quyền
-    const order = await this.orderService.lookupGuestOrder(code, contact, undefined, undefined, false);
-    
+    const order = await this.orderService.lookupGuestOrder(
+      code,
+      contact,
+      undefined,
+      undefined,
+      false,
+    );
+
     if (order.userId) {
-      throw new BadRequestException('Đơn hàng này đã được liên kết với một tài khoản thành viên. Vui lòng đăng nhập để tải hóa đơn.');
+      throw new BadRequestException(
+        'Đơn hàng này đã được liên kết với một tài khoản thành viên. Vui lòng đăng nhập để tải hóa đơn.',
+      );
     }
 
     return OrderInvoice.generate(order, res);

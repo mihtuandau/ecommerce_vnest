@@ -51,13 +51,19 @@ export class CreateAddressDto {
   @IsString()
   country?: string;
 
-  @ApiPropertyOptional({ description: 'Loại địa chỉ (HOME, OFFICE, OTHER)', default: 'HOME' })
+  @ApiPropertyOptional({
+    description: 'Loại địa chỉ (HOME, OFFICE, OTHER)',
+    default: 'HOME',
+  })
   @IsOptional()
   @IsString()
   @MaxLength(100, { message: 'Loại địa chỉ không được quá 100 ký tự' })
   addressType?: string;
 
-  @ApiPropertyOptional({ description: 'Đặt làm địa chỉ mặc định', default: false })
+  @ApiPropertyOptional({
+    description: 'Đặt làm địa chỉ mặc định',
+    default: false,
+  })
   @IsOptional()
   @IsBoolean()
   isDefault?: boolean;
@@ -77,9 +83,3 @@ export class CreateAddressDto {
   @IsString()
   provinceCode?: string;
 }
-
-
-
-
-
-

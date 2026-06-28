@@ -8,7 +8,6 @@
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
-
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {
   private readonly logger = new Logger('HTTP');
@@ -32,7 +31,6 @@ export class LoggingInterceptor implements NestInterceptor {
           if (duration > 3000) {
             this.logger.warn(`SLOW REQUEST: ${logMessage} | UA: ${userAgent}`);
           } else {
-
           }
         },
         error: (error) => {
@@ -45,9 +43,3 @@ export class LoggingInterceptor implements NestInterceptor {
     );
   }
 }
-
-
-
-
-
-

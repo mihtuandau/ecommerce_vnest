@@ -5,8 +5,3 @@ export const cloudinaryConfig = (configService: ConfigService) => ({
   api_key: configService.get('CLOUDINARY_API_KEY'),
   api_secret: configService.get('CLOUDINARY_API_SECRET'),
 });
-
-
-
-
-

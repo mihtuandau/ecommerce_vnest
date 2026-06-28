@@ -1,12 +1,20 @@
-﻿import { IsInt, IsString, IsOptional, IsNumber, IsPositive, Min, IsBoolean } from 'class-validator';
+﻿import {
+  IsInt,
+  IsString,
+  IsOptional,
+  IsNumber,
+  IsPositive,
+  Min,
+  IsBoolean,
+} from 'class-validator';
 import { Type } from 'class-transformer';
-import { ApiProperty } from '@nestjs/swagger';  
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateVariantDto {
-  @ApiProperty({ 
-    example: 1, 
-    description: 'ID sản phẩm (phải tồn tại)', 
-    required: false 
+  @ApiProperty({
+    example: 1,
+    description: 'ID sản phẩm (phải tồn tại)',
+    required: false,
   })
   @IsOptional()
   @Type(() => Number)
@@ -14,28 +22,28 @@ export class CreateVariantDto {
   @IsPositive()
   productId?: number;
 
-  @ApiProperty({ 
-    example: 'M', 
-    description: 'Size (S, M, L, XL)', 
-    required: false 
+  @ApiProperty({
+    example: 'M',
+    description: 'Size (S, M, L, XL)',
+    required: false,
   })
   @IsOptional()
   @IsString()
   size?: string;
 
-  @ApiProperty({ 
-    example: 'Red', 
-    description: 'Màu sắc', 
-    required: false 
+  @ApiProperty({
+    example: 'Red',
+    description: 'Màu sắc',
+    required: false,
   })
   @IsOptional()
   @IsString()
   color?: string;
 
-  @ApiProperty({ 
-    example: 50, 
-    description: 'Số lượng tồn kho', 
-    required: false 
+  @ApiProperty({
+    example: 50,
+    description: 'Số lượng tồn kho',
+    required: false,
   })
   @IsOptional()
   @Type(() => Number)
@@ -44,10 +52,10 @@ export class CreateVariantDto {
   @IsNumber()
   stock: number;
 
-  @ApiProperty({ 
-    example: 200000, 
-    description: 'Giá variant (có thể override basePrice)', 
-    required: false 
+  @ApiProperty({
+    example: 200000,
+    description: 'Giá variant (có thể override basePrice)',
+    required: false,
   })
   @IsOptional()
   @Type(() => Number)
@@ -55,10 +63,10 @@ export class CreateVariantDto {
   @Min(0)
   price: number;
 
-  @ApiProperty({ 
-    example: 'ATN001-M-Red', 
-    description: 'Mã SKU unique (tùy chọn)', 
-    required: false 
+  @ApiProperty({
+    example: 'ATN001-M-Red',
+    description: 'Mã SKU unique (tùy chọn)',
+    required: false,
   })
   @IsOptional()
   @IsString()
@@ -84,8 +92,3 @@ export class CreateVariantDto {
   @IsBoolean()
   isActive?: boolean;
 }
-
-
-
-
-

@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../common/guards/auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
@@ -33,7 +42,10 @@ export class BrandController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Permissions('product.manage')
   @ApiBearerAuth('Authorization')
-  update(@Param('id') id: string, @Body() body: { name?: string; logo?: string }) {
+  update(
+    @Param('id') id: string,
+    @Body() body: { name?: string; logo?: string },
+  ) {
     return this.brandService.update(+id, body);
   }
 

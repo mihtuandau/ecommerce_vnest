@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect } from "react";
 import {
@@ -14,7 +14,7 @@ import { discountsApi } from "@/features/discounts/api";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { Tag, CheckCircle2 } from "lucide-react";
 import { cn } from "@/utils/cn";
-import { CheckoutDiscount } from "@/store/useCartStore";
+import { CheckoutDiscount } from "@/features/cart/store/cart.store";
 
 interface VoucherModalProps {
   isOpen: boolean;

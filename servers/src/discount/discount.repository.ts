@@ -183,7 +183,7 @@ export class DiscountRepository {
 
   async findFlashSaleSessions() {
     const now = new Date();
-    
+
     const flashSales = await this.prisma.discount.findMany({
       where: {
         isFlashSale: true,
@@ -206,7 +206,7 @@ export class DiscountRepository {
         isActive: true,
         isFlashSale: true,
         applicableToCategories: {
-          select: { categoryId: true }
+          select: { categoryId: true },
         },
         applicableToProducts: {
           select: {
@@ -219,85 +219,98 @@ export class DiscountRepository {
           },
         },
         _count: {
-          select: { orders: true }
-        }
+          select: { orders: true },
+        },
       },
     });
 
     if (flashSales.length === 0) return [];
 
-    const sessionsWithProducts = await Promise.all(flashSales.map(async (fs) => {
-      const productWhere: any = { isActive: true };
-      
-      // If session has specific products, fetch them
-      if (fs.applicableToProducts.length > 0) {
-        productWhere.id = {
-          in: fs.applicableToProducts.map((dp) => dp.productId),
-        };
-      } else if (fs.applicableToCategories.length > 0) {
-        // Fallback to category-based products if no specific products defined
-        productWhere.categoryId = {
-          in: fs.applicableToCategories.map((dc) => dc.categoryId),
-        };
-      }
+    const sessionsWithProducts = await Promise.all(
+      flashSales.map(async (fs) => {
+        const productWhere: any = { isActive: true };
 
-      const products = await this.prisma.product.findMany({
-        where: productWhere,
-        take: 24, // Increased take for better grid variety
-        include: {
-          brand: true,
-          category: true,
-          images: {
-            orderBy: { isThumbnail: 'desc' },
-            take: 1,
-          },
-          variants: {
-            where: { isActive: true },
-            orderBy: { price: 'asc' },
-          },
-        },
-      });
+        // If session has specific products, fetch them
+        if (fs.applicableToProducts.length > 0) {
+          productWhere.id = {
+            in: fs.applicableToProducts.map((dp) => dp.productId),
+          };
+        } else if (fs.applicableToCategories.length > 0) {
+          // Fallback to category-based products if no specific products defined
+          productWhere.categoryId = {
+            in: fs.applicableToCategories.map((dc) => dc.categoryId),
+          };
+        }
 
-      // Map products with their session-specific metadata
-      let mappedProducts: any[] = [];
-      if (fs.applicableToProducts.length > 0) {
-        mappedProducts = fs.applicableToProducts.map(dp => {
-          const product = products.find(p => p.id === dp.productId);
-          if (!product) return null;
-          const totalStock = (product.variants || []).reduce((acc: number, v: any) => acc + (v.stock || 0), 0);
-          
-          // Use product-specific metadata if it exists, otherwise fallback to session-wide
-          const hasSpecificDiscount = dp.percentage !== null || dp.fixedAmount !== null;
-          
-          return {
-            ...dp,
-            stockLimit: dp.stockLimit > 0 ? dp.stockLimit : 10,
-            percentage: hasSpecificDiscount ? dp.percentage : fs.percentage,
-            fixedAmount: hasSpecificDiscount ? dp.fixedAmount : fs.fixedAmount,
-            product
-          };
-        }).filter(Boolean);
-      } else {
-        // For category-based sessions, they use session-wide percentage/fixedAmount
-        mappedProducts = products.map(p => {
-          const totalStock = (p.variants || []).reduce((acc: number, v: any) => acc + (v.stock || 0), 0);
-          return {
-            productId: p.id,
-            stockLimit: 10, // Default for category-based auto-flash
-            soldCount: 0,
-            badge: null,
-            percentage: fs.percentage,
-            fixedAmount: fs.fixedAmount,
-            product: p
-          };
+        const products = await this.prisma.product.findMany({
+          where: productWhere,
+          take: 24, // Increased take for better grid variety
+          include: {
+            brand: true,
+            category: true,
+            images: {
+              orderBy: { isThumbnail: 'desc' },
+              take: 1,
+            },
+            variants: {
+              where: { isActive: true },
+              orderBy: { price: 'asc' },
+            },
+          },
         });
-      }
 
-      return {
-        ...fs,
-        products: mappedProducts
-      };
-    }));
+        // Map products with their session-specific metadata
+        let mappedProducts: any[] = [];
+        if (fs.applicableToProducts.length > 0) {
+          mappedProducts = fs.applicableToProducts
+            .map((dp) => {
+              const product = products.find((p) => p.id === dp.productId);
+              if (!product) return null;
+              const totalStock = (product.variants || []).reduce(
+                (acc: number, v: any) => acc + (v.stock || 0),
+                0,
+              );
+
+              // Use product-specific metadata if it exists, otherwise fallback to session-wide
+              const hasSpecificDiscount =
+                dp.percentage !== null || dp.fixedAmount !== null;
+
+              return {
+                ...dp,
+                stockLimit: dp.stockLimit > 0 ? dp.stockLimit : 10,
+                percentage: hasSpecificDiscount ? dp.percentage : fs.percentage,
+                fixedAmount: hasSpecificDiscount
+                  ? dp.fixedAmount
+                  : fs.fixedAmount,
+                product,
+              };
+            })
+            .filter(Boolean);
+        } else {
+          // For category-based sessions, they use session-wide percentage/fixedAmount
+          mappedProducts = products.map((p) => {
+            const totalStock = (p.variants || []).reduce(
+              (acc: number, v: any) => acc + (v.stock || 0),
+              0,
+            );
+            return {
+              productId: p.id,
+              stockLimit: 10, // Default for category-based auto-flash
+              soldCount: 0,
+              badge: null,
+              percentage: fs.percentage,
+              fixedAmount: fs.fixedAmount,
+              product: p,
+            };
+          });
+        }
+
+        return {
+          ...fs,
+          products: mappedProducts,
+        };
+      }),
+    );
 
     return sessionsWithProducts;
   }
@@ -341,18 +354,12 @@ export class DiscountRepository {
         startDate: { lte: now },
         AND: [
           {
-            OR: [
-              { isFlashSale: true },
-              { code: "" }
-            ],
+            OR: [{ isFlashSale: true }, { code: '' }],
           },
           {
-            OR: [
-              { endDate: null },
-              { endDate: { gte: now } }
-            ],
-          }
-        ]
+            OR: [{ endDate: null }, { endDate: { gte: now } }],
+          },
+        ],
       },
       select: {
         id: true,

@@ -56,16 +56,20 @@ export class AuthController {
         .json({ message: 'Verification code is required' });
     }
 
-    const ip = req.ip || req.headers['x-forwarded-for'] || req.connection?.remoteAddress;
+    const ip =
+      req.ip || req.headers['x-forwarded-for'] || req.connection?.remoteAddress;
     const userAgent = req.headers['user-agent'];
     console.log(`[AuthGateway] Verify OTP for: ${body.email}`);
-    const result = await this.authService.verifyOtp(body.email, code, { ip, userAgent });
-    
+    const result = await this.authService.verifyOtp(body.email, code, {
+      ip,
+      userAgent,
+    });
+
     if (result.accessToken && result.refreshToken) {
       this.authService.setAuthCookie(res, result.accessToken);
       this.authService.setRefreshTokenCookie(res, result.refreshToken);
     }
-    
+
     return res.json(result);
   }
 
@@ -76,13 +80,13 @@ export class AuthController {
   }
 
   @Post('register-admin/initial')
-  @Throttle({ default: { limit: 3, ttl: 60000 } }) 
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
   async registerInitialAdmin(
     @Body() registerAdminDto: RegisterAdminDto,
     @Res() res: Response,
   ) {
-
-    const result = await this.authService.registerInitialAdmin(registerAdminDto);
+    const result =
+      await this.authService.registerInitialAdmin(registerAdminDto);
     if (result.accessToken && result.refreshToken) {
       this.authService.setAuthCookie(res, result.accessToken);
       this.authService.setRefreshTokenCookie(res, result.refreshToken);
@@ -97,7 +101,7 @@ export class AuthController {
   @Post('register-admin')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
-  @Throttle({ default: { limit: 3, ttl: 60000 } }) 
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
   async registerAdmin(
     @Body() registerAdminDto: RegisterAdminDto,
     @Res() res: Response,
@@ -115,24 +119,32 @@ export class AuthController {
   }
 
   @Post('login')
-  @Throttle({ default: { limit: 5, ttl: 300000 } }) 
-  async login(@Body() loginDto: LoginDto, @Res() res: Response, @Req() req: any) {
+  @Throttle({ default: { limit: 5, ttl: 300000 } })
+  async login(
+    @Body() loginDto: LoginDto,
+    @Res() res: Response,
+    @Req() req: any,
+  ) {
     console.log(`[AuthGateway] Login attempt for: ${loginDto.email}`);
     const user = await this.authService.validateUser(
       loginDto.email,
       loginDto.password,
     );
-    
-    const ip = req.ip || req.headers['x-forwarded-for'] || req.connection?.remoteAddress;
+
+    const ip =
+      req.ip || req.headers['x-forwarded-for'] || req.connection?.remoteAddress;
     const userAgent = req.headers['user-agent'];
-    
-    const result = await this.authService.login({ sub: user.id }, user, { ip, userAgent });
+
+    const result = await this.authService.login({ sub: user.id }, user, {
+      ip,
+      userAgent,
+    });
 
     if (result.accessToken && result.refreshToken) {
       this.authService.setAuthCookie(res, result.accessToken);
       this.authService.setRefreshTokenCookie(res, result.refreshToken);
     }
-    
+
     return res.json(result);
   }
 
@@ -144,7 +156,7 @@ export class AuthController {
   }
 
   @Post('refresh')
-  @Throttle({ default: { limit: 10, ttl: 60000 } }) 
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   async refreshToken(@Req() req: any, @Res() res: Response) {
     const token = req.cookies?.refreshToken;
     if (!token) {
@@ -155,11 +167,14 @@ export class AuthController {
     const result = await this.authService.refreshAccessToken(token);
     this.authService.setAuthCookie(res, result.accessToken);
     this.authService.setRefreshTokenCookie(res, result.refreshToken);
-    return res.json({ accessToken: result.accessToken, message: 'Token refreshed' });
+    return res.json({
+      accessToken: result.accessToken,
+      message: 'Token refreshed',
+    });
   }
 
   @Post('forgot-password')
-  @Throttle({ default: { limit: 3, ttl: 3600000 } }) 
+  @Throttle({ default: { limit: 3, ttl: 3600000 } })
   async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
     return this.authService.forgotPassword(forgotPasswordDto);
   }
@@ -172,7 +187,7 @@ export class AuthController {
   ) {}
 
   @Post('reset-password')
-  @Throttle({ default: { limit: 3, ttl: 3600000 } }) 
+  @Throttle({ default: { limit: 3, ttl: 3600000 } })
   async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
     return this.authService.resetPassword(
       resetPasswordDto.token,
@@ -192,15 +207,23 @@ export class AuthController {
 
     console.log(`[AuthGateway] Google Auth Success for: ${user.email}`);
     const result = await this.authService.login({ sub: user.userId }, null, {
-      ip: req.ip || req.headers['x-forwarded-for'] || req.connection?.remoteAddress,
-      userAgent: req.headers['user-agent']
+      ip:
+        req.ip ||
+        req.headers['x-forwarded-for'] ||
+        req.connection?.remoteAddress,
+      userAgent: req.headers['user-agent'],
     });
 
-    const origins = (process.env.FRONTEND_URL || 'http://localhost:3000').split(',').map(o => o.trim());
-    const frontendUrl = origins.find(o => o.includes('localhost')) || origins[0];
+    const origins = (process.env.FRONTEND_URL || 'http://localhost:3000')
+      .split(',')
+      .map((o) => o.trim());
+    const frontendUrl =
+      origins.find((o) => o.includes('localhost')) || origins[0];
 
     if (result.requires2FA) {
-      return res.redirect(`${frontendUrl}/verify-2fa?email=${encodeURIComponent(result.email)}`);
+      return res.redirect(
+        `${frontendUrl}/verify-2fa?email=${encodeURIComponent(result.email)}`,
+      );
     }
 
     if (result.accessToken && result.refreshToken) {
@@ -233,7 +256,9 @@ export class AuthController {
       addresses: fullUser.addresses,
     };
 
-    const permissions = await this.authService.getPermissionsByRole(safeUser.role);
+    const permissions = await this.authService.getPermissionsByRole(
+      safeUser.role,
+    );
 
     return {
       ...safeUser,
@@ -258,8 +283,13 @@ export class AuthController {
   @Post('roles-permissions')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
-  async updateRolePermissions(@Body() body: { role: string; permissionIds: number[] }) {
-    return this.authService.updateRolePermissions(body.role, body.permissionIds);
+  async updateRolePermissions(
+    @Body() body: { role: string; permissionIds: number[] },
+  ) {
+    return this.authService.updateRolePermissions(
+      body.role,
+      body.permissionIds,
+    );
   }
 
   @Get('sessions')
@@ -290,11 +320,16 @@ export class AuthController {
   async verify2FALogin(
     @Body() body: { email: string; code: string },
     @Res() res: Response,
-    @Req() req: any
+    @Req() req: any,
   ) {
-    const ip = req.ip || req.headers['x-forwarded-for'] || req.connection?.remoteAddress;
+    const ip =
+      req.ip || req.headers['x-forwarded-for'] || req.connection?.remoteAddress;
     const userAgent = req.headers['user-agent'];
-    const result = await this.authService.verify2FALogin(body.email, body.code, { ip, userAgent });
+    const result = await this.authService.verify2FALogin(
+      body.email,
+      body.code,
+      { ip, userAgent },
+    );
 
     if (result.accessToken && result.refreshToken) {
       this.authService.setAuthCookie(res, result.accessToken);

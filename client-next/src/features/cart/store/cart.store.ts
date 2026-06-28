@@ -78,7 +78,6 @@ export const useCartStore = create<CartStore>()(
       removeItem: (variantId) =>
         set((state) => ({
           items: state.items.filter((i) => i.variantId !== variantId),
-          // We don't necessarily set isDirty here as sync is handled by individual API if logged in
         })),
 
       updateQuantity: (variantId, quantity) =>

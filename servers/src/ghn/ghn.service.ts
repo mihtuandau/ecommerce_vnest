@@ -27,17 +27,24 @@ export class GHNService {
   async createOrder(orderData: any) {
     try {
       const response = await firstValueFrom(
-        this.httpService.post(`${this.apiUrl}/v2/shipping-order/create`, orderData, {
-          headers: {
-            'Content-Type': 'application/json',
-            Token: this.ghnToken,
-            ShopId: this.shopId,
+        this.httpService.post(
+          `${this.apiUrl}/v2/shipping-order/create`,
+          orderData,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Token: this.ghnToken,
+              ShopId: this.shopId,
+            },
           },
-        }),
+        ),
       );
       return response.data;
     } catch (error) {
-      this.logger.error('GHN Create Order Error:', error.response?.data || error.message);
+      this.logger.error(
+        'GHN Create Order Error:',
+        error.response?.data || error.message,
+      );
       throw error;
     }
   }
@@ -78,17 +85,22 @@ export class GHNService {
    * Tính phí vận chuyển
    */
   async calculateFee(feeData: any) {
-    const fromDistrictId = Number(this.configService.get<string>('GHN_FROM_DISTRICT_ID') || 0);
+    const fromDistrictId = Number(
+      this.configService.get<string>('GHN_FROM_DISTRICT_ID') || 0,
+    );
     const toDistrictId = Number(feeData.to_district_id || 0);
 
     let serviceId = 0;
     if (fromDistrictId && toDistrictId) {
-      const services = await this.getAvailableServices(fromDistrictId, toDistrictId);
+      const services = await this.getAvailableServices(
+        fromDistrictId,
+        toDistrictId,
+      );
       if (services && services.length > 0) {
         serviceId = services[0].service_id;
       }
     }
-    
+
     // Đảm bảo các thông số mặc định nếu thiếu
     const finalData: any = {
       from_district_id: fromDistrictId,
@@ -110,8 +122,9 @@ export class GHNService {
     }
 
     // Chuyển đổi các trường số nếu cần
-    if (finalData.to_district_id) finalData.to_district_id = Number(finalData.to_district_id);
-    
+    if (finalData.to_district_id)
+      finalData.to_district_id = Number(finalData.to_district_id);
+
     // Đảm bảo weight luôn dương và là số nguyên
     finalData.weight = Math.max(1000, Number(finalData.weight || 1000));
 
@@ -121,22 +134,29 @@ export class GHNService {
       }
 
       const response = await firstValueFrom(
-        this.httpService.post(`${this.apiUrl}/v2/shipping-order/fee`, finalData, {
-          headers: {
-            'Content-Type': 'application/json',
-            Token: this.ghnToken,
-            ShopId: this.shopId,
+        this.httpService.post(
+          `${this.apiUrl}/v2/shipping-order/fee`,
+          finalData,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Token: this.ghnToken,
+              ShopId: this.shopId,
+            },
           },
-        }),
+        ),
       );
       return response.data;
     } catch (error) {
-      this.logger.error('GHN Calculate Fee Error:', error.response?.data || error.message);
+      this.logger.error(
+        'GHN Calculate Fee Error:',
+        error.response?.data || error.message,
+      );
       // Trả về phí ship mặc định (ví dụ 30,000đ) nếu API GHN lỗi để khách vẫn có thể đặt hàng
       return {
         code: 200,
         message: 'Fallback fee used due to GHN error',
-        data: { total: 30000 }
+        data: { total: 30000 },
       };
     }
   }
@@ -153,7 +173,10 @@ export class GHNService {
       );
       return response.data;
     } catch (error) {
-      this.logger.error('GHN Get Provinces Error:', error.response?.data || error.message);
+      this.logger.error(
+        'GHN Get Provinces Error:',
+        error.response?.data || error.message,
+      );
       return { data: [] };
     }
   }
@@ -165,13 +188,19 @@ export class GHNService {
     if (!provinceId) return { data: [] };
     try {
       const response = await firstValueFrom(
-        this.httpService.get(`${this.apiUrl}/master-data/district?province_id=${provinceId}`, {
-          headers: { Token: this.ghnToken },
-        }),
+        this.httpService.get(
+          `${this.apiUrl}/master-data/district?province_id=${provinceId}`,
+          {
+            headers: { Token: this.ghnToken },
+          },
+        ),
       );
       return response.data;
     } catch (error) {
-      this.logger.error(`GHN Get Districts Error (Province ${provinceId}):`, error.response?.data || error.message);
+      this.logger.error(
+        `GHN Get Districts Error (Province ${provinceId}):`,
+        error.response?.data || error.message,
+      );
       return { data: [] };
     }
   }
@@ -183,13 +212,19 @@ export class GHNService {
     if (!districtId) return { data: [] };
     try {
       const response = await firstValueFrom(
-        this.httpService.get(`${this.apiUrl}/master-data/ward?district_id=${districtId}`, {
-          headers: { Token: this.ghnToken },
-        }),
+        this.httpService.get(
+          `${this.apiUrl}/master-data/ward?district_id=${districtId}`,
+          {
+            headers: { Token: this.ghnToken },
+          },
+        ),
       );
       return response.data;
     } catch (error) {
-      this.logger.error(`GHN Get Wards Error (District ${districtId}):`, error.response?.data || error.message);
+      this.logger.error(
+        `GHN Get Wards Error (District ${districtId}):`,
+        error.response?.data || error.message,
+      );
       return { data: [] };
     }
   }
@@ -200,14 +235,18 @@ export class GHNService {
   async getOrderDetail(orderCode: string) {
     try {
       const response = await firstValueFrom(
-        this.httpService.post(`${this.apiUrl}/v2/shipping-order/detail`, 
+        this.httpService.post(
+          `${this.apiUrl}/v2/shipping-order/detail`,
           { order_code: orderCode },
-          { headers: { Token: this.ghnToken } }
-        )
+          { headers: { Token: this.ghnToken } },
+        ),
       );
       return response.data;
     } catch (error) {
-      console.error(`Error fetching GHN order detail for ${orderCode}:`, error.message);
+      console.error(
+        `Error fetching GHN order detail for ${orderCode}:`,
+        error.message,
+      );
       return null;
     }
   }
@@ -220,17 +259,21 @@ export class GHNService {
     try {
       // Lưu ý: Endpoint này chỉ dành cho Sandbox để hỗ trợ DEV test
       const response = await firstValueFrom(
-        this.httpService.post(`${this.apiUrl}/v2/shipping-order/update`, 
-          { 
+        this.httpService.post(
+          `${this.apiUrl}/v2/shipping-order/update`,
+          {
             order_codes: [orderCode],
-            status: status 
+            status: status,
           },
-          { headers: { Token: this.ghnToken } }
-        )
+          { headers: { Token: this.ghnToken } },
+        ),
       );
       return response.data;
     } catch (error) {
-      this.logger.error(`Error updating GHN Sandbox status for ${orderCode}:`, error.response?.data || error.message);
+      this.logger.error(
+        `Error updating GHN Sandbox status for ${orderCode}:`,
+        error.response?.data || error.message,
+      );
       throw error;
     }
   }
@@ -240,36 +283,38 @@ export class GHNService {
    */
   async handleStatusWebhook(payload: any) {
     const { Status, OrderCode, Description, Warehouse } = payload;
-    
+
     if (!OrderCode || !Status) {
       return null;
     }
 
     // Ánh xạ trạng thái GHN sang trạng thái hệ thống local
     const statusMapping: Record<string, string> = {
-      'ready_to_pick': 'PROCESSING',
-      'picking': 'PROCESSING',
-      'money_collect_picking': 'PROCESSING',
-      'picked': 'PROCESSING',
-      'storing': 'PROCESSING',
-      'stored': 'PROCESSING',
-      'transporting': 'SHIPPED',
-      'sorting': 'SHIPPED',
-      'delivering': 'SHIPPED',
-      'money_collect_delivering': 'SHIPPED',
-      'delivered': 'DELIVERED',
-      'delivery_fail': 'CANCELLED',
-      'waiting_to_return': 'CANCELLED',
-      'return': 'CANCELLED',
-      'returned': 'RETURNED',
-      'cancel': 'CANCELLED'
+      ready_to_pick: 'PROCESSING',
+      picking: 'PROCESSING',
+      money_collect_picking: 'PROCESSING',
+      picked: 'PROCESSING',
+      storing: 'PROCESSING',
+      stored: 'PROCESSING',
+      transporting: 'SHIPPED',
+      sorting: 'SHIPPED',
+      delivering: 'SHIPPED',
+      money_collect_delivering: 'SHIPPED',
+      delivered: 'DELIVERED',
+      delivery_fail: 'CANCELLED',
+      waiting_to_return: 'CANCELLED',
+      return: 'CANCELLED',
+      returned: 'RETURNED',
+      cancel: 'CANCELLED',
     };
 
     const statusKey = Status.toLowerCase();
     const newStatus = statusMapping[statusKey];
 
     if (!newStatus) {
-      this.logger.warn(`[GHN Webhook] Status '${Status}' not mapped to any local status`);
+      this.logger.warn(
+        `[GHN Webhook] Status '${Status}' not mapped to any local status`,
+      );
       return null;
     }
 
@@ -278,7 +323,7 @@ export class GHNService {
       status: newStatus,
       description: Description,
       warehouse: Warehouse,
-      originalStatus: Status
+      originalStatus: Status,
     };
   }
 }

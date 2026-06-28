@@ -2,16 +2,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class ApplyDiscountDto {
-  @ApiProperty({ 
-    example: 'SAVE10', 
-    description: 'Mã giảm giá', 
-    required: true 
+  @ApiProperty({
+    example: 'SAVE10',
+    description: 'Mã giảm giá',
+    required: true,
   })
   @IsString()
   code: string;
 }
-
-
-
-
-

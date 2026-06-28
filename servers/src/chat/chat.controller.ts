@@ -1,4 +1,11 @@
-import { Controller, Get, UseGuards, Param, Req, ForbiddenException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  UseGuards,
+  Param,
+  Req,
+  ForbiddenException,
+} from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Permissions } from '../common/decorators/permissions.decorator';
@@ -18,7 +25,9 @@ export class ChatController {
   @Get('rooms/:roomId/messages')
   async getMessages(@Param('roomId') roomId: string, @Req() req: any) {
     const user = req.user;
-    const isStaff = ['ADMIN', 'WAREHOUSE', 'SALES'].includes(user.role?.toUpperCase());
+    const isStaff = ['ADMIN', 'WAREHOUSE', 'SALES'].includes(
+      user.role?.toUpperCase(),
+    );
     const roomUserId = roomId.replace('room_', '');
 
     if (!isStaff && String(roomUserId) !== String(user.id)) {
@@ -31,21 +40,15 @@ export class ChatController {
   @Get('rooms/:roomId/mark-as-read')
   async markAsRead(@Param('roomId') roomId: string, @Req() req: any) {
     const user = req.user;
-    const isStaff = ['ADMIN', 'WAREHOUSE', 'SALES'].includes(user.role?.toUpperCase());
+    const isStaff = ['ADMIN', 'WAREHOUSE', 'SALES'].includes(
+      user.role?.toUpperCase(),
+    );
     const roomUserId = roomId.replace('room_', '');
 
     if (!isStaff && String(roomUserId) !== String(user.id)) {
       throw new ForbiddenException('Bạn không có quyền truy cập hội thoại này');
     }
 
-    return this.chatService.markAsRead(roomId, user.id); 
+    return this.chatService.markAsRead(roomId, user.id);
   }
 }
-
-
-
-
-
-
-
-

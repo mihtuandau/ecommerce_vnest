@@ -14,9 +14,9 @@ export class BannerService {
 
   async findAll(activeOnly: boolean = false): Promise<Banner[]> {
     const where = activeOnly ? { isActive: true } : {};
-    return this.prisma.banner.findMany({ 
+    return this.prisma.banner.findMany({
       where,
-      orderBy: { displayOrder: 'asc' }
+      orderBy: { displayOrder: 'asc' },
     });
   }
 
@@ -29,12 +29,12 @@ export class BannerService {
   }
 
   async update(id: number, data: UpdateBannerDto): Promise<Banner> {
-    await this.findOne(id); 
+    await this.findOne(id);
     return this.prisma.banner.update({ where: { id }, data });
   }
 
   async remove(id: number): Promise<Banner> {
-    await this.findOne(id); 
+    await this.findOne(id);
     return this.prisma.banner.delete({ where: { id } });
   }
 
@@ -42,7 +42,7 @@ export class BannerService {
     await this.findOne(bannerId);
     return this.prisma.banner.update({
       where: { id: bannerId },
-      data: { displayOrder: newOrder }
+      data: { displayOrder: newOrder },
     });
   }
 }

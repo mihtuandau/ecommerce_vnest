@@ -4,9 +4,3 @@ export class DeleteUserDto {
   @IsBoolean()
   confirm: boolean;
 }
-
-
-
-
-
-

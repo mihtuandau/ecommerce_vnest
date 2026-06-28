@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -7,7 +7,7 @@ import { useAuthStore } from "@/features/auth/store/auth.store";
 import { useCart } from "@/features/cart/hooks";
 import { useSystemSettings } from "@/features/settings/hooks";
 import { useToast } from "@/hooks/useToast";
-import { useCartStore } from "@/store/useCartStore";
+import { useCartStore } from "@/features/cart/store/cart.store";
 import { CHECKOUT_CONSTANTS } from "@/features/checkout/constants";
 import { validateCheckoutForm } from "@/features/checkout/utils/checkoutValidation";
 import { useCheckoutForm } from "./useCheckoutForm";

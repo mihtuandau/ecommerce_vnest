@@ -37,8 +37,7 @@ export class CreateUserDto {
 
   @ApiProperty({
     example: 'ADMIN',
-    description:
-      'Vai trò user (ADMIN, WAREHOUSE, SALES, CUSTOMER)',
+    description: 'Vai trò user (ADMIN, WAREHOUSE, SALES, CUSTOMER)',
     required: false,
     enum: Role,
   })
@@ -46,9 +45,3 @@ export class CreateUserDto {
   @IsEnum(Role)
   role?: Role;
 }
-
-
-
-
-
-

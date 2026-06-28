@@ -13,10 +13,10 @@ export class MaintenanceService {
    */
   async syncSoldCount() {
     this.logger.log('Starting soldCount synchronization...');
-    
+
     // 1. Reset all soldCount to 0
     await this.prisma.product.updateMany({
-      data: { soldCount: 0 }
+      data: { soldCount: 0 },
     });
 
     // 2. Aggregate quantity from DELIVERED or RETURN_REQUESTED orders
@@ -24,12 +24,12 @@ export class MaintenanceService {
       by: ['variantId'],
       where: {
         order: {
-          status: { in: ['DELIVERED', 'RETURN_REQUESTED'] }
-        }
+          status: { in: ['DELIVERED', 'RETURN_REQUESTED'] },
+        },
       },
       _sum: {
-        quantity: true
-      }
+        quantity: true,
+      },
     });
 
     // We also need to subtract returned items
@@ -37,30 +37,32 @@ export class MaintenanceService {
       by: ['orderItemId'],
       where: {
         returnRequest: {
-          status: { in: ['RECEIVED', 'COMPLETED'] }
-        }
+          status: { in: ['RECEIVED', 'COMPLETED'] },
+        },
       },
       _sum: {
-        quantity: true
-      }
+        quantity: true,
+      },
     });
 
     // Map variant to product
     const variants = await this.prisma.productVariant.findMany({
-      select: { id: true, productId: true }
+      select: { id: true, productId: true },
     });
-    const variantToProduct = new Map(variants.map(v => [v.id, v.productId]));
+    const variantToProduct = new Map(variants.map((v) => [v.id, v.productId]));
 
     // Map orderItem to variant
     const orderItems = await this.prisma.orderItem.findMany({
       where: {
         order: {
-          status: { in: ['DELIVERED', 'RETURN_REQUESTED'] }
-        }
+          status: { in: ['DELIVERED', 'RETURN_REQUESTED'] },
+        },
       },
-      select: { id: true, variantId: true }
+      select: { id: true, variantId: true },
     });
-    const orderItemToVariant = new Map(orderItems.map(oi => [oi.id, oi.variantId]));
+    const orderItemToVariant = new Map(
+      orderItems.map((oi) => [oi.id, oi.variantId]),
+    );
 
     const productSales = new Map<number, number>();
 
@@ -80,7 +82,10 @@ export class MaintenanceService {
         const productId = variantToProduct.get(variantId);
         if (productId) {
           const current = productSales.get(productId) || 0;
-          productSales.set(productId, Math.max(0, current - (ret._sum.quantity || 0)));
+          productSales.set(
+            productId,
+            Math.max(0, current - (ret._sum.quantity || 0)),
+          );
         }
       }
     }
@@ -90,12 +95,14 @@ export class MaintenanceService {
     for (const [productId, soldCount] of productSales.entries()) {
       await this.prisma.product.update({
         where: { id: productId },
-        data: { soldCount }
+        data: { soldCount },
       });
       updatedCount++;
     }
 
-    this.logger.log(`Synchronization completed. Updated ${updatedCount} products.`);
+    this.logger.log(
+      `Synchronization completed. Updated ${updatedCount} products.`,
+    );
     return { updatedCount };
   }
 
@@ -107,18 +114,18 @@ export class MaintenanceService {
 
     // 1. Reset all stats (Default to 0 instead of null for better UI consistency)
     await this.prisma.product.updateMany({
-      data: { averageRating: 0, reviewCount: 0 }
+      data: { averageRating: 0, reviewCount: 0 },
     });
 
     // 2. Aggregate reviews
     const stats = await this.prisma.review.groupBy({
       by: ['productId'],
       _avg: {
-        rating: true
+        rating: true,
       },
       _count: {
-        _all: true
-      }
+        _all: true,
+      },
     });
 
     // 3. Update products
@@ -128,13 +135,15 @@ export class MaintenanceService {
         where: { id: stat.productId },
         data: {
           averageRating: stat._avg.rating,
-          reviewCount: stat._count._all
-        }
+          reviewCount: stat._count._all,
+        },
       });
       updatedCount++;
     }
 
-    this.logger.log(`Rating synchronization completed. Updated ${updatedCount} products.`);
+    this.logger.log(
+      `Rating synchronization completed. Updated ${updatedCount} products.`,
+    );
     return { updatedCount };
   }
 }

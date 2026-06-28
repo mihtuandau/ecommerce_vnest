@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React from "react";
 import { useRouter } from "next/navigation";
@@ -12,7 +12,7 @@ import Image from "next/image";
 import { getImageUrl } from "@/utils/image";
 import { QuickAddModal } from "./QuickAddModal";
 import { animateFlyToCart } from "@/utils/animateCart";
-import { useWishlistStore } from "@/store/useWishlistStore";
+import { useWishlistStore } from "@/features/wishlist/store/wishlist.store";
 import { useAuthStore } from "@/features/auth/store/auth.store";
 import { useToast } from "@/hooks/useToast";
 

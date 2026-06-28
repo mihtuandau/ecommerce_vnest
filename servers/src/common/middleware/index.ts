@@ -1,16 +1,7 @@
 ﻿import { Module } from '@nestjs/common';
 import { createCspNonceMiddleware } from './csp-nonce.middleware';
 
-
-@Module({
-
-})
+@Module({})
 export class CommonModule {}
 
 export { createCspNonceMiddleware };
-
-
-
-
-
-

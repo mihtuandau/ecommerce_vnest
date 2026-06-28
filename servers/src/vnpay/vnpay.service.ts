@@ -19,7 +19,9 @@ export class VNPayService {
     const vnpUrl = this.configService.get('VNP_URL')?.trim();
     const returnUrl = this.configService.get('VNP_RETURN_URL')?.trim();
 
-    console.log(`[VNPayService] Config: TMN=${tmnCode ? 'OK' : 'MISSING'}, Secret=${secretKey ? 'OK' : 'MISSING'}, URL=${vnpUrl ? 'OK' : 'MISSING'}`);
+    console.log(
+      `[VNPayService] Config: TMN=${tmnCode ? 'OK' : 'MISSING'}, Secret=${secretKey ? 'OK' : 'MISSING'}, URL=${vnpUrl ? 'OK' : 'MISSING'}`,
+    );
 
     // Đảm bảo múi giờ Việt Nam
     process.env.TZ = 'Asia/Ho_Chi_Minh';
@@ -44,7 +46,8 @@ export class VNPayService {
         ipAddr = '127.0.0.1';
       }
       // 4. Kiểm tra xem có phải IPv4 hợp lệ không, nếu không thì fallback về 127.0.0.1
-      const ipv4Regex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+      const ipv4Regex =
+        /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
       if (!ipv4Regex.test(ipAddr)) {
         ipAddr = '127.0.0.1';
       }

@@ -11,9 +11,3 @@ import { PrismaModule } from '../prisma/prisma.module';
   exports: [ReportService],
 })
 export class ReportModule {}
-
-
-
-
-
-

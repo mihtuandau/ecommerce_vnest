@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import Image from "next/image";
@@ -7,7 +7,7 @@ import { cn } from "@/utils/cn";
 import { getImageUrl } from "@/utils/image";
 import { useToast } from "@/hooks/useToast";
 import { useAuthStore } from "@/features/auth/store/auth.store";
-import { useWishlistStore } from "@/store/useWishlistStore";
+import { useWishlistStore } from "@/features/wishlist/store/wishlist.store";
 import {
   Dialog,
   DialogClose,

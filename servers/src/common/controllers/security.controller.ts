@@ -3,11 +3,9 @@ import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import type { Response } from 'express';
 import { JwtAuthGuard } from '../guards/auth.guard';
 
-
 @ApiTags('Security Testing (Dev Only)')
 @Controller('security')
 export class SecurityController {
-  
   @Get('/headers')
   @ApiOperation({
     summary: 'Get all security headers (Development Only)',
@@ -41,7 +39,6 @@ Expected headers:
     });
   }
 
-  
   @Get('/test-auth')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
@@ -65,20 +62,12 @@ Use this to verify your authentication and rate limiting is working.
     });
   }
 
-  
   @Get('/csp-report')
   @ApiOperation({
     summary: 'CSP Violation Report Endpoint',
     description: 'Browser will POST CSP violations here if configured',
   })
   cspReport(@Res() res: Response) {
-
     return res.status(204).send();
   }
 }
-
-
-
-
-
-

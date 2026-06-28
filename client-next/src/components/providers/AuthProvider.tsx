@@ -1,10 +1,10 @@
-"use client";
+﻿"use client";
 
 import { createContext, useContext, useEffect, useRef, type ReactNode } from "react";
 import { useAuthStore } from "@/features/auth/store/auth.store";
 import { usersApi } from "@/features/users/api";
 import { cartApi } from "@/features/cart/api";
-import { useCartStore } from "@/store/useCartStore";
+import { useCartStore } from "@/features/cart/store/cart.store";
 import { sanitizeUser } from "@/utils/sanitizeUser";
 interface AuthContextValue {
   isAuthenticated: boolean;

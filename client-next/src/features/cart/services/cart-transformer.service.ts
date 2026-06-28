@@ -1,4 +1,4 @@
-import type { CartItem } from "@/store/useCartStore";
+﻿import type { CartItem } from "@/features/cart/store/cart.store";
 
 type ServerCartItem = {
   variantId: number;

@@ -1,10 +1,10 @@
-"use client";
+﻿"use client";
 
 import React from "react";
 import { Plus, Heart, FolderOpen } from "lucide-react";
 import { isEmojiIcon, WISHLIST_ICON_MAP } from "@/features/wishlist/constants";
 import { cn } from "@/utils/cn";
-import { WishlistItem } from "@/store/useWishlistStore";
+import { WishlistItem } from "@/features/wishlist/store/wishlist.store";
 
 interface CustomCollection {
   name: string;

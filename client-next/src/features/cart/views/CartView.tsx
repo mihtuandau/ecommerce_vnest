@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React from "react";
 import dynamic from "next/dynamic";
@@ -14,7 +14,7 @@ import { useCart } from "@/features/cart/hooks/useCart";
 import { useCartDiscount } from "@/features/cart/hooks/useCartDiscount";
 import { useRecentlyViewed } from "@/features/products/hooks/useRecentlyViewed";
 import { useToast } from "@/hooks/useToast";
-import { useCartStore } from "@/store/useCartStore";
+import { useCartStore } from "@/features/cart/store/cart.store";
 import {
   areAllCartItemsSelected,
   calculateSelectedCartTotal,

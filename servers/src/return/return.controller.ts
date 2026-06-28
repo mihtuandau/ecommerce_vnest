@@ -24,7 +24,7 @@ import { CreateGuestReturnRequestDto } from './dto/create-guest-return-request.d
 @Controller('returns')
 export class ReturnController {
   constructor(private readonly returnService: ReturnService) {}
-  
+
   @Post('guest')
   @ApiOperation({ summary: 'Khách hàng vãng lai tạo yêu cầu trả hàng' })
   createGuest(@Body() dto: CreateGuestReturnRequestDto) {
@@ -35,7 +35,7 @@ export class ReturnController {
   @ApiOperation({ summary: 'Khách hàng vãng lai xác nhận đã gửi hàng' })
   confirmGuestSent(
     @Param('id') id: string,
-    @Body() dto: { orderCode: string; contact: string }
+    @Body() dto: { orderCode: string; contact: string },
   ) {
     return this.returnService.confirmGuestSent(+id, dto);
   }
@@ -49,7 +49,9 @@ export class ReturnController {
 
   @Get('my-returns')
   @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: 'Khách hàng xem danh sách yêu cầu trả hàng của mình' })
+  @ApiOperation({
+    summary: 'Khách hàng xem danh sách yêu cầu trả hàng của mình',
+  })
   getMyReturns(@Req() req: any) {
     return this.returnService.getMyReturns(req.user.userId);
   }

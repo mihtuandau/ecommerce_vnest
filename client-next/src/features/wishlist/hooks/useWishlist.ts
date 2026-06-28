@@ -1,7 +1,7 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useWishlistStore, type WishlistItem } from "@/store/useWishlistStore";
+import { useWishlistStore, type WishlistItem } from "@/features/wishlist/store/wishlist.store";
 import { useCart } from "@/features/cart/hooks/useCart";
 import { useToast } from "@/hooks/useToast";
 import { productsApi } from "@/features/products/api/products.api";

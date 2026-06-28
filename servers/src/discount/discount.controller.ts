@@ -16,7 +16,10 @@ import { CreateDiscountDto } from './dto/create-discount.dto';
 import { UpdateDiscountDto } from './dto/update-discount.dto';
 import { QueryDiscountDto } from './dto/query-discount.dto';
 import { ValidateDiscountDto } from './dto/validate-discount.dto';
-import { JwtAuthGuard, OptionalJwtAuthGuard } from '../common/guards/auth.guard';
+import {
+  JwtAuthGuard,
+  OptionalJwtAuthGuard,
+} from '../common/guards/auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
 import { Permissions } from '../common/decorators/permissions.decorator';
@@ -71,7 +74,10 @@ export class DiscountController {
   @Post('validate')
   @UseGuards(OptionalJwtAuthGuard)
   validate(@Body() validateDto: ValidateDiscountDto, @Req() req: any) {
-    return this.discountService.validateDiscount(validateDto.code, req.user?.userId);
+    return this.discountService.validateDiscount(
+      validateDto.code,
+      req.user?.userId,
+    );
   }
 
   @Get(':id')
@@ -84,7 +90,10 @@ export class DiscountController {
   @Patch(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Permissions('discount.manage')
-  update(@Param('id') id: string, @Body() updateDiscountDto: UpdateDiscountDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateDiscountDto: UpdateDiscountDto,
+  ) {
     return this.discountService.update(+id, updateDiscountDto);
   }
 
@@ -95,11 +104,3 @@ export class DiscountController {
     return this.discountService.remove(+id);
   }
 }
-
-
-
-
-
-
-
-

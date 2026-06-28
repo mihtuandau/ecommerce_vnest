@@ -46,11 +46,3 @@ export class DashboardController {
     return this.dashboardService.getPendingReviews();
   }
 }
-
-
-
-
-
-
-
-

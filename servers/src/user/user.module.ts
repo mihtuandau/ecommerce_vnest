@@ -15,8 +15,3 @@ import { UploadModule } from '../upload/upload.module';
   exports: [UserService],
 })
 export class UserModule {}
-
-
-
-
-

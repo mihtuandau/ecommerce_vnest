@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { ROUTES } from "@/constants/routes";
 import { useAuthStore } from "@/features/auth/store/auth.store";
-import { useWishlistStore } from "@/store/useWishlistStore";
+import { useWishlistStore } from "@/features/wishlist/store/wishlist.store";
 import { usePathname } from "next/navigation";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useDisclosure, useMediaQuery, useMounted, usePrevious } from "@/hooks";

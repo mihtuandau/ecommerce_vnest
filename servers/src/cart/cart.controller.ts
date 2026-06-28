@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards, Request } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../common/guards/auth.guard';
 import { CartService } from './cart.service';
@@ -21,7 +31,10 @@ export class CartController {
   @Post('sync')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  syncCart(@Request() req, @Body() body: { items: Array<{ variantId: number; quantity: number }> }) {
+  syncCart(
+    @Request() req,
+    @Body() body: { items: Array<{ variantId: number; quantity: number }> },
+  ) {
     return this.cartService.sync(req.user.userId, body.items);
   }
 
@@ -35,7 +48,11 @@ export class CartController {
   @Put('items/:variantId')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  updateItem(@Request() req, @Param('variantId') variantId: string, @Body() body: UpdateCartItemDto) {
+  updateItem(
+    @Request() req,
+    @Param('variantId') variantId: string,
+    @Body() body: UpdateCartItemDto,
+  ) {
     return this.cartService.updateItem(req.user.userId, +variantId, body);
   }
 
@@ -43,7 +60,9 @@ export class CartController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   removeItem(@Request() req, @Param('variantId') variantId: string) {
-    return this.cartService.removeItem(req.user.userId, { variantId: +variantId });
+    return this.cartService.removeItem(req.user.userId, {
+      variantId: +variantId,
+    });
   }
 
   @Delete()
@@ -54,14 +73,9 @@ export class CartController {
   }
 
   @Post('validate-checkout')
-  validateCheckoutItems(@Body() body: { items: Array<{variantId: number, quantity: number}> }) {
+  validateCheckoutItems(
+    @Body() body: { items: Array<{ variantId: number; quantity: number }> },
+  ) {
     return this.cartService.validateCheckoutItems(body.items);
   }
 }
-
-
-
-
-
-
-

@@ -1,4 +1,16 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards, UseInterceptors, UploadedFile, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  UseGuards,
+  UseInterceptors,
+  UploadedFile,
+  Query,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiBearerAuth, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../common/guards/auth.guard';
@@ -15,7 +27,7 @@ import { Permissions } from '../common/decorators/permissions.decorator';
 export class CategoryController {
   constructor(
     private categoryService: CategoryService,
-    private uploadService: UploadService
+    private uploadService: UploadService,
   ) {}
 
   @Get()
@@ -34,13 +46,10 @@ export class CategoryController {
   @ApiBearerAuth('Authorization')
   @UseInterceptors(FileInterceptor('image'))
   @ApiConsumes('multipart/form-data')
-  async create(
-    @UploadedFile() file: Express.Multer.File,
-    @Body() body: any
-  ) {
+  async create(@UploadedFile() file: Express.Multer.File, @Body() body: any) {
     const createCategoryDto: CreateCategoryDto = {
       name: body.name,
-      parentId: body.parentId ? Number(body.parentId) : undefined
+      parentId: body.parentId ? Number(body.parentId) : undefined,
     };
 
     if (file) {
@@ -60,11 +69,16 @@ export class CategoryController {
   async update(
     @Param('id') id: string,
     @UploadedFile() file: Express.Multer.File,
-    @Body() body: any
+    @Body() body: any,
   ) {
     const updateCategoryDto: UpdateCategoryDto = {
       name: body.name,
-      parentId: body.parentId !== undefined ? (body.parentId ? Number(body.parentId) : null) : undefined
+      parentId:
+        body.parentId !== undefined
+          ? body.parentId
+            ? Number(body.parentId)
+            : null
+          : undefined,
     };
 
     if (file) {
@@ -94,10 +108,3 @@ export class CategoryController {
     return this.categoryService.remove(+id);
   }
 }
-
-
-
-
-
-
-

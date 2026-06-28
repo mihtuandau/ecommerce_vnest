@@ -1,4 +1,4 @@
-import type { WishlistItem } from "@/store/useWishlistStore";
+﻿import type { WishlistItem } from "@/features/wishlist/store/wishlist.store";
 import type { WishlistItemCollections, WishlistSortBy } from "@/features/wishlist/types";
 
 export function getDiscountedWishlistItems(items: WishlistItem[]) {

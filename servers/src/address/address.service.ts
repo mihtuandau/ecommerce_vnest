@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { Prisma, AddressType } from '@prisma/client';
 import { AddressRepository } from './address.repository';
 import { CreateAddressDto } from './dto/create-address.dto';
@@ -15,7 +19,9 @@ export class AddressService {
   async getAddress(id: number, userId: number) {
     const address = await this.repository.findById(id);
     if (!address || address.userId !== userId) {
-      throw new NotFoundException('Address not found or does not belong to user');
+      throw new NotFoundException(
+        'Address not found or does not belong to user',
+      );
     }
     return address;
   }
@@ -23,7 +29,7 @@ export class AddressService {
   async createAddress(userId: number, data: CreateAddressDto) {
     const addressCount = await this.repository.countByUserId(userId);
 
-    const isDefault = addressCount === 0 ? true : (data.isDefault === true);
+    const isDefault = addressCount === 0 ? true : data.isDefault === true;
 
     if (isDefault) {
       await this.repository.removeDefaultFromAllAddresses(userId);
@@ -50,7 +56,9 @@ export class AddressService {
   async updateAddress(id: number, userId: number, data: UpdateAddressDto) {
     const address = await this.repository.findById(id);
     if (!address || address.userId !== userId) {
-      throw new NotFoundException('Address not found or does not belong to user');
+      throw new NotFoundException(
+        'Address not found or does not belong to user',
+      );
     }
 
     if (data.isDefault === true) {
@@ -58,7 +66,7 @@ export class AddressService {
     }
 
     const updateData: Prisma.AddressUpdateInput = {};
-    
+
     if (data.fullName !== undefined) updateData.fullName = data.fullName;
     if (data.phone !== undefined) updateData.phone = data.phone;
     if (data.street !== undefined) updateData.street = data.street;
@@ -67,11 +75,14 @@ export class AddressService {
     if (data.state !== undefined) updateData.state = data.state;
     if (data.zipCode !== undefined) updateData.zipCode = data.zipCode;
     if (data.country !== undefined) updateData.country = data.country;
-    if (data.addressType !== undefined) updateData.addressType = data.addressType.toUpperCase() as AddressType;
+    if (data.addressType !== undefined)
+      updateData.addressType = data.addressType.toUpperCase() as AddressType;
     if (data.isDefault !== undefined) updateData.isDefault = data.isDefault;
     if (data.wardCode !== undefined) updateData.wardCode = data.wardCode;
-    if (data.districtCode !== undefined) updateData.districtCode = data.districtCode;
-    if (data.provinceCode !== undefined) updateData.provinceCode = data.provinceCode;
+    if (data.districtCode !== undefined)
+      updateData.districtCode = data.districtCode;
+    if (data.provinceCode !== undefined)
+      updateData.provinceCode = data.provinceCode;
 
     return this.repository.update(id, updateData);
   }
@@ -79,7 +90,9 @@ export class AddressService {
   async deleteAddress(id: number, userId: number) {
     const address = await this.repository.findById(id);
     if (!address || address.userId !== userId) {
-      throw new NotFoundException('Address not found or does not belong to user');
+      throw new NotFoundException(
+        'Address not found or does not belong to user',
+      );
     }
 
     if (address.isDefault) {
@@ -110,14 +123,11 @@ export class AddressService {
     return this.repository.update(id, { isDefault: true });
   }
 
-  async verifyAddressOwnership(addressId: number, userId: number): Promise<boolean> {
+  async verifyAddressOwnership(
+    addressId: number,
+    userId: number,
+  ): Promise<boolean> {
     const address = await this.repository.findById(addressId);
     return address ? address.userId === userId : false;
   }
 }
-
-
-
-
-
-

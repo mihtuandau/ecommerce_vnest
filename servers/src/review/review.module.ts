@@ -12,9 +12,3 @@ import { ChatbotModule } from '../chatbot/chatbot.module';
   exports: [ReviewService],
 })
 export class ReviewModule {}
-
-
-
-
-
-

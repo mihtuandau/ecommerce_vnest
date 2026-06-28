@@ -1,4 +1,4 @@
-import type { WishlistItem } from "@/store/useWishlistStore";
+﻿import type { WishlistItem } from "@/features/wishlist/store/wishlist.store";
 import type { Product } from "@/types/models";
 
 export function shouldOpenQuickAdd(product: Product) {

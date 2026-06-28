@@ -7,8 +7,3 @@ export class RemoveCartItemDto {
   @IsPositive()
   variantId: number;
 }
-
-
-
-
-

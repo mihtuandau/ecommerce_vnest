@@ -3,7 +3,12 @@ import { appendFile, mkdir } from 'fs/promises';
 import * as path from 'path';
 import { PrismaService } from '../../prisma/prisma.service';
 
-type AuditAction = 'USER_CREATE' | 'USER_UPDATE' | 'USER_DEACTIVATE' | 'USER_SOFT_DELETE' | 'USER_DELETE_BLOCKED';
+type AuditAction =
+  | 'USER_CREATE'
+  | 'USER_UPDATE'
+  | 'USER_DEACTIVATE'
+  | 'USER_SOFT_DELETE'
+  | 'USER_DELETE_BLOCKED';
 
 interface AuditPayload {
   action: AuditAction;
@@ -31,7 +36,9 @@ export class AuditLogService {
 
       await appendFile(logFile, `${line}\n`, 'utf8');
     } catch (error) {
-      this.logger.error(`Failed to write audit log: ${(error as Error).message}`);
+      this.logger.error(
+        `Failed to write audit log: ${(error as Error).message}`,
+      );
     }
   }
 

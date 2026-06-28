@@ -1,15 +1,15 @@
-import { 
-  Controller, 
-  Get, 
-  Post, 
-  Put, 
-  Delete, 
-  Body, 
-  Param, 
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
   Query,
   UseGuards,
   UseInterceptors,
-  UploadedFile
+  UploadedFile,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiBearerAuth, ApiConsumes, ApiBody } from '@nestjs/swagger';
@@ -26,7 +26,7 @@ import { UpdateBannerDto } from './dto/update-banner.dto';
 export class BannerController {
   constructor(
     private bannerService: BannerService,
-    private uploadService: UploadService
+    private uploadService: UploadService,
   ) {}
 
   @Get()
@@ -53,45 +53,41 @@ export class BannerController {
         image: {
           type: 'string',
           format: 'binary',
-          description: 'Banner image file'
+          description: 'Banner image file',
         },
         title: {
           type: 'string',
-          example: 'Summer Sale 2024'
+          example: 'Summer Sale 2024',
         },
         subtitle: {
           type: 'string',
-          example: 'Giảm giá lên đến 50%'
+          example: 'Giảm giá lên đến 50%',
         },
         video: {
           type: 'string',
-          example: 'https://example.com/video.mp4'
+          example: 'https://example.com/video.mp4',
         },
         link: {
           type: 'string',
-          example: '/products/sale'
+          example: '/products/sale',
         },
         buttonText: {
           type: 'string',
-          example: 'Mua ngay'
+          example: 'Mua ngay',
         },
         isActive: {
           type: 'boolean',
-          example: true
+          example: true,
         },
         displayOrder: {
           type: 'number',
-          example: 1
-        }
+          example: 1,
+        },
       },
-      required: ['image', 'title']
-    }
+      required: ['image', 'title'],
+    },
   })
-  async create(
-    @UploadedFile() file: Express.Multer.File,
-    @Body() body: any
-  ) {
-
+  async create(@UploadedFile() file: Express.Multer.File, @Body() body: any) {
     const imageUrls = await this.uploadService.uploadImages([file]);
 
     const createBannerDto: CreateBannerDto = {
@@ -102,9 +98,13 @@ export class BannerController {
       link: body.link || '/products',
       buttonText: body.buttonText || 'Mua ngay',
       isActive: body.isActive === 'true' || body.isActive === true,
-      displayOrder: body.displayOrder ? parseInt(body.displayOrder) : (body.order ? parseInt(body.order) : 0)
+      displayOrder: body.displayOrder
+        ? parseInt(body.displayOrder)
+        : body.order
+          ? parseInt(body.order)
+          : 0,
     };
-    
+
     return this.bannerService.create(createBannerDto);
   }
 
@@ -121,11 +121,11 @@ export class BannerController {
         file: {
           type: 'string',
           format: 'binary',
-          description: 'Image file to upload'
-        }
+          description: 'Image file to upload',
+        },
       },
-      required: ['file']
-    }
+      required: ['file'],
+    },
   })
   async uploadImage(@UploadedFile() file: Express.Multer.File) {
     const urls = await this.uploadService.uploadImages([file]);
@@ -145,43 +145,43 @@ export class BannerController {
         image: {
           type: 'string',
           format: 'binary',
-          description: 'Banner image file (optional)'
+          description: 'Banner image file (optional)',
         },
         title: {
           type: 'string',
-          example: 'Summer Sale 2024'
+          example: 'Summer Sale 2024',
         },
         subtitle: {
           type: 'string',
-          example: 'Giảm giá lên đến 50%'
+          example: 'Giảm giá lên đến 50%',
         },
         video: {
           type: 'string',
-          example: 'https://example.com/video.mp4'
+          example: 'https://example.com/video.mp4',
         },
         link: {
           type: 'string',
-          example: '/products/sale'
+          example: '/products/sale',
         },
         buttonText: {
           type: 'string',
-          example: 'Mua ngay'
+          example: 'Mua ngay',
         },
         isActive: {
           type: 'boolean',
-          example: true
+          example: true,
         },
         displayOrder: {
           type: 'number',
-          example: 1
-        }
-      }
-    }
+          example: 1,
+        },
+      },
+    },
   })
   async update(
     @Param('id') id: string,
     @UploadedFile() file: Express.Multer.File,
-    @Body() body: any
+    @Body() body: any,
   ) {
     const updateBannerDto: UpdateBannerDto = {
       title: body.title,
@@ -190,7 +190,11 @@ export class BannerController {
       link: body.link,
       buttonText: body.buttonText,
       isActive: body.isActive === 'true' || body.isActive === true,
-      displayOrder: body.displayOrder ? parseInt(body.displayOrder) : (body.order ? parseInt(body.order) : undefined)
+      displayOrder: body.displayOrder
+        ? parseInt(body.displayOrder)
+        : body.order
+          ? parseInt(body.order)
+          : undefined,
     };
 
     if (file) {
@@ -217,11 +221,3 @@ export class BannerController {
     return this.bannerService.remove(+id);
   }
 }
-
-
-
-
-
-
-
-
