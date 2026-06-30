@@ -41,7 +41,7 @@ export function useFlashSaleFilter(sessions: any[]) {
   const products = activeSession?.products || [];
 
   const filteredProducts = useMemo(() => {
-    let list = [...products].filter(
+    const list = [...products].filter(
       (p: any) =>
         filterCat === FLASH_SALE_MESSAGES.ALL_CATEGORIES ||
         p.category?.name === filterCat

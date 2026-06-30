@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import { useMyOrders } from "@/features/orders/hooks";
@@ -39,7 +39,7 @@ import { CUSTOMER_ORDER_STATUS_CONFIG } from "../../constants/order-status.const
 import { ProgressLine } from "../../components/shared/ProgressLine";
 
 const getStatusLabel = (s: string) => {
-  if (s === "ALL") return "T?t c?";
+  if (s === "ALL") return "Tất cả";
   return CUSTOMER_ORDER_STATUS_CONFIG[s as OrderStatus]?.label || s;
 };
 
@@ -82,7 +82,7 @@ export function CustomerOrdersView() {
       size: item.variant?.size || item.variantSnapshot?.size,
       quantity: 1,
     });
-    success(`Ðã thêm vào gi? hàng`);
+    success("Đã thêm vào giỏ hàng");
   };
 
   const filteredOrders = orders.filter((o) => {
@@ -113,12 +113,12 @@ export function CustomerOrdersView() {
           <BreadcrumbList className="text-sm font-medium">
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
-                <Link href="/">Trang ch?</Link>
+                <Link href="/">Trang chủ</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>Ðon hàng c?a tôi</BreadcrumbPage>
+              <BreadcrumbPage>Đơn hàng của tôi</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
@@ -128,13 +128,13 @@ export function CustomerOrdersView() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-5">
         <div className="mb-10 space-y-1">
           <h1 className="text-3xl md:text-5xl font-bold font-serif-brand text-brand-espresso tracking-tight">
-            Ðon hàng{" "}
+            Đơn hàng{" "}
             <em className="italic text-brand-bronze font-medium font-serif-brand">
-              c?a tôi
+              của tôi
             </em>
           </h1>
           <p className="text-[14px] text-brand-taupe font-medium">
-            Qu?n lý và theo dõi t?t c? don hàng
+            Quản lý và theo dõi tất cả đơn hàng
           </p>
         </div>
 
@@ -162,7 +162,7 @@ export function CustomerOrdersView() {
                     )}
                   >
                     {s === OrderStatus.RETURN_REQUESTED
-                      ? "Tr? hàng"
+                      ? "Trả hàng"
                       : getStatusLabel(s)}
                   </TabsTrigger>
                 ))}
@@ -172,7 +172,7 @@ export function CustomerOrdersView() {
           <div className="relative w-[200px] shrink-0">
             <Input
               type="text"
-              placeholder="Tìm don hàng..."
+              placeholder="Tìm đơn hàng..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full h-[36px] pl-3 pr-9 bg-brand-ivory border-[1.5px] border-brand-sand rounded-full text-[13px] outline-none focus:border-brand-bronze transition-all font-medium text-brand-espresso"
@@ -195,9 +195,9 @@ export function CustomerOrdersView() {
           ) : filteredOrders.length === 0 ? (
             <EmptyState
               icon={ShoppingBag}
-              title="Không có don hàng nào"
-              description="Chua có don hàng phù h?p v?i b? l?c này."
-              actionText="Mua s?m ngay"
+              title="Không có đơn hàng nào"
+              description="Chưa có đơn hàng phù hợp với bộ lọc này."
+              actionText="Mua sắm ngay"
               onAction={() => router.push("/shop")}
             />
           ) : (
@@ -213,7 +213,7 @@ export function CustomerOrdersView() {
                   </span>
                   <div className="w-[1px] h-4 bg-brand-sand" />
                   <span className="text-[13px] text-brand-taupe font-medium">
-                    ?? {new Date(order.createdAt).toLocaleDateString("vi-VN")}
+                    {new Date(order.createdAt).toLocaleDateString("vi-VN")}
                   </span>
                   <div
                     className={cn(
@@ -225,12 +225,12 @@ export function CustomerOrdersView() {
                   >
                     <div className="w-1.5 h-1.5 rounded-full bg-current" />
                     {order.returnStatus 
-                      ? `Tr? hàng (${order.returnStatus === 'PENDING' ? 'Ch? duy?t' : order.returnStatus === 'APPROVED' ? 'Ðã duy?t' : order.returnStatus === 'RETURNING' ? 'Ðang g?i tr?' : order.returnStatus === 'RECEIVED' ? 'Ðã nh?n hàng' : 'Hoàn t?t'})`
+                      ? `Trả hàng (${order.returnStatus === 'PENDING' ? 'Chờ duyệt' : order.returnStatus === 'APPROVED' ? 'Đã duyệt' : order.returnStatus === 'RETURNING' ? 'Đang gửi trả' : order.returnStatus === 'RECEIVED' ? 'Đã nhận hàng' : 'Hoàn tất'})`
                       : getStatusLabel(order.status)}
                   </div>
                   <div className="ml-auto flex items-center gap-2">
                     <span className="text-[13px] text-brand-taupe font-medium">
-                      T?ng:
+                      Tổng:
                     </span>
                     <span className="text-[18px] font-sans font-semibold text-brand-espresso tabular-nums">
                       {formatCurrency(order.total)}
@@ -278,7 +278,7 @@ export function CustomerOrdersView() {
                       {order.orderItems.map((i: any) => i.productName).join(" · ")}
                     </h4>
                     <p className="text-[13px] text-brand-taupe font-medium">
-                      {order.orderItems.length} s?n ph?m ·{" "}
+                      {order.orderItems.length} sản phẩm ·{" "}
                       {order.paymentMethod || "COD"}
                     </p>
                   </div>
@@ -293,16 +293,16 @@ export function CustomerOrdersView() {
                 <div className="px-5 py-3.5 border-b border-brand-sand">
                   {order.status === OrderStatus.CANCELLED ? (
                     <div className="text-[12.5px] text-red-600 flex items-center gap-1.5 font-medium">
-                      Khách hàng hu? don: Ð?t nh?m s?n ph?m
+                      Khách hàng hủy đơn: Đặt nhầm sản phẩm
                     </div>
                   ) : (
                     <>
                       <ProgressLine currentStatus={order.status} />
                       <div className="flex items-center gap-1.5 text-[13px] text-brand-taupe mt-2.5 font-medium">
                         <Truck size={14} className="text-brand-bronze" />
-                        D? ki?n giao:{" "}
+                        Dự kiến giao:{" "}
                         <strong className="text-brand-espresso font-semibold tracking-tight">
-                          16/05 – 17/05/2025
+                          16/05 - 17/05/2025
                         </strong>
                       </div>
                     </>
@@ -313,11 +313,11 @@ export function CustomerOrdersView() {
                 <div className="px-5 py-3.5 flex items-center gap-2 bg-brand-cream/20">
                   <Button
                     variant="outline"
-                    onClick={() => success("Ðang m? trang theo dõi v?n chuy?n...")}
+                    onClick={() => success("Đang mở trang theo dõi vận chuyển...")}
                     className="h-[36px] px-4 rounded-[8px] border-brand-sand text-brand-espresso text-[13px] font-medium hover:bg-brand-ivory flex items-center gap-1.5"
                   >
                     <MapPin size={14} />
-                    Theo dõi don
+                    Theo dõi đơn
                   </Button>
                   <div className="ml-auto flex gap-2">
                     <Button
@@ -327,7 +327,7 @@ export function CustomerOrdersView() {
                     >
                       <Link href={`/orders/${order.id}`}>
                         <Search size={14} />
-                        Chi ti?t
+                        Chi tiết
                       </Link>
                     </Button>
                     <Button
@@ -335,7 +335,7 @@ export function CustomerOrdersView() {
                       className="h-[36px] px-4 rounded-[8px] bg-brand-espresso text-brand-cream border-brand-espresso text-[13px] font-medium hover:bg-brand-espresso/90 flex items-center gap-1.5"
                     >
                       <ShoppingCart size={14} />
-                      Mua l?i
+                      Mua lại
                     </Button>
                   </div>
                 </div>
@@ -347,3 +347,4 @@ export function CustomerOrdersView() {
     </div>
   );
 }
+

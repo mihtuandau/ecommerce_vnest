@@ -6,17 +6,9 @@ import { multerConfig } from './multer.config';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [
-    ConfigModule,  
-    MulterModule.register(multerConfig),
-  ],
+  imports: [ConfigModule, MulterModule.register(multerConfig)],
   controllers: [UploadController],
   providers: [UploadService],
-  exports: [UploadService], 
+  exports: [UploadService],
 })
 export class UploadModule {}
-
-
-
-
-

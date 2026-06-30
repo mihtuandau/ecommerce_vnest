@@ -11,9 +11,3 @@ import { PrismaModule } from '../prisma/prisma.module';
   exports: [AddressService],
 })
 export class AddressModule {}
-
-
-
-
-
-

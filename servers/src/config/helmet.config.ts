@@ -1,7 +1,6 @@
 ﻿import type { HelmetOptions } from 'helmet';
 import * as crypto from 'crypto';
 
-
 export function getHelmetConfig(nonce?: string): HelmetOptions {
   const isProduction = process.env.NODE_ENV === 'production';
 
@@ -14,7 +13,6 @@ export function getHelmetConfig(nonce?: string): HelmetOptions {
 
   const cspDirectives = isProduction
     ? {
-
         defaultSrc: ["'self'"],
         scriptSrc: ["'self'", `'nonce-${cspNonce}'`],
         styleSrc: ["'self'", `'nonce-${cspNonce}'`],
@@ -28,31 +26,27 @@ export function getHelmetConfig(nonce?: string): HelmetOptions {
         upgradeInsecureRequests: [],
       }
     : {
-
         defaultSrc: ["'self'"],
         scriptSrc: ["'self'", "'unsafe-inline'"],
         styleSrc: ["'self'", "'unsafe-inline'"],
         imgSrc: ["'self'", 'data:', 'https:'],
         fontSrc: ["'self'"],
-        connectSrc: ["'self'", '*'], 
+        connectSrc: ["'self'", '*'],
       };
 
   return {
-
     contentSecurityPolicy: {
-
       directives: cspDirectives as any,
     } as any,
 
     crossOriginEmbedderPolicy: true,
     crossOriginOpenerPolicy: true,
     crossOriginResourcePolicy: {
-
       policy: isProduction ? 'same-origin' : 'cross-origin',
     },
 
     hsts: {
-      maxAge: isProduction ? 31536000 : 86400, 
+      maxAge: isProduction ? 31536000 : 86400,
       includeSubDomains: true,
       preload: isProduction,
     },
@@ -74,9 +68,3 @@ export function getHelmetConfig(nonce?: string): HelmetOptions {
     },
   } as any;
 }
-
-
-
-
-
-

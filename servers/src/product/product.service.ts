@@ -60,7 +60,7 @@ export class ProductService implements OnModuleInit {
   private async clearProductCaches(productId?: number, slug?: string) {
     try {
       if (this.redisClient) {
-        let cursor = '0';
+        let cursor = 0;
         const pattern = '*products*';
         do {
           const reply = await this.redisClient.scan(cursor, {
@@ -74,7 +74,7 @@ export class ProductService implements OnModuleInit {
           if (keys && keys.length > 0) {
             await this.redisClient.del(keys);
           }
-        } while (cursor !== '0');
+        } while (cursor !== 0);
       } else {
         await this.cache.del('products:all');
       }
@@ -156,12 +156,10 @@ export class ProductService implements OnModuleInit {
     return this.repo.create(prismaData);
   }
 
-  async findAll(q: any) {
+  async findAll(q: any, role?: string) {
     const key = buildCacheKey('products', q);
 
-    // BỎ QUA CACHE ĐỐI VỚI ADMIN (Admin luôn cần dữ liệu realtime)
-    // Dấu hiệu nhận biết Admin: status = 'all' hoặc limit quá lớn
-    const isAdmin = q.status === 'all' || Number(q.limit) >= 100;
+    const isAdmin = role === 'ADMIN';
 
     if (!isAdmin) {
       const cached = await this.cache.get(key);
@@ -206,12 +204,12 @@ export class ProductService implements OnModuleInit {
       if (maxPrice) where.basePrice.lte = Number(maxPrice);
     }
     if (minRating) where.averageRating = { gte: Number(minRating) };
-    if (status) {
-      if (status !== 'all') {
-        where.isActive = status === 'active';
-      }
+    if (isAdmin && status === 'all') {
+      // Admin xem tất cả, không filter isActive
+    } else if (status && status !== 'all') {
+      where.isActive = status === 'active';
     } else {
-      // Default for customers: only show active products
+      // Mặc định: chỉ hiện sản phẩm active
       where.isActive = true;
     }
     if (inStock) where.variants = { some: { stock: { gt: 0 } } };

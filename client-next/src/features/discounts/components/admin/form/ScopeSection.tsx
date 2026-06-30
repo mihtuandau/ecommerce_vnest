@@ -1,12 +1,11 @@
 "use client";
 
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import Image from "next/image";
 import { UseFormReturn } from "react-hook-form";
-import { FormItem, FormLabel, FormControl } from "@/components/ui/Form";
 import { Input } from "@/components/ui/Input";
 import { Badge } from "@/components/ui/Badge";
-import { Package, Search, Check, Settings2 } from "lucide-react";
+import { Package, Search, Check } from "lucide-react";
 import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/utils/cn";
 import { formatCurrency } from "@/utils/formatCurrency";
@@ -58,18 +57,19 @@ export function ScopeSection({
         "applicableToProducts",
         current.filter((p: any) => p.productId !== productId)
       );
-    } else {
-      form.setValue("applicableToProducts", [
-        ...current,
-        {
-          productId,
-          stockLimit: 0,
-          percentage: null,
-          fixedAmount: null,
-          badge: null,
-        },
-      ]);
+      return;
     }
+
+    form.setValue("applicableToProducts", [
+      ...current,
+      {
+        productId,
+        stockLimit: 0,
+        percentage: null,
+        fixedAmount: null,
+        badge: null,
+      },
+    ]);
   };
 
   const updateProductMetadata = (productId: string, field: string, value: any) => {
@@ -82,15 +82,17 @@ export function ScopeSection({
   };
 
   return (
-    <div className="space-y-6 bg-white p-6 rounded-2xl border border-slate-200 shadow-[0_4px_20px_rgba(15,23,42,0.03)]">
-      <div className="flex items-center justify-between pb-2 border-b border-slate-50">
+    <div className="space-y-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-[0_4px_20px_rgba(15,23,42,0.03)]">
+      <div className="flex items-center justify-between border-b border-slate-100 pb-3">
         <div className="flex items-center gap-2">
-          <Package className="h-5 w-5 text-primary" />
-          <h3 className="font-semibold text-base text-slate-800">Sản phẩm áp dụng</h3>
+          <Package className="h-5 w-5 text-teal-600" />
+          <h3 className="text-base font-semibold text-slate-800">
+            Sản phẩm áp dụng
+          </h3>
         </div>
         <Badge
           variant="secondary"
-          className="rounded-lg font-semibold text-xs px-2 py-1"
+          className="rounded-lg px-2 py-1 text-xs font-medium"
         >
           Đã chọn: {selectedProducts.length}
         </Badge>
@@ -98,24 +100,24 @@ export function ScopeSection({
 
       <div className="space-y-4">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
           <Input
             placeholder="Tìm sản phẩm..."
-            className="pl-9 h-11 rounded-xl border-slate-200 focus:ring-primary/20"
+            className="h-11 rounded-xl border-slate-200 pl-9 focus:border-teal-500 focus:ring-teal-100"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
 
-        <div className="border border-slate-100 rounded-xl overflow-hidden">
+        <div className="overflow-hidden rounded-xl border border-slate-100">
           <div className="max-h-[500px] overflow-y-auto">
             {isLoading ? (
-              <div className="p-8 text-center flex flex-col items-center gap-2">
+              <div className="flex flex-col items-center gap-2 p-8 text-center">
                 <Spinner size="sm" />
-                <p className="text-xs font-semibold text-slate-500">Đang tải...</p>
+                <p className="text-xs font-medium text-slate-500">Đang tải...</p>
               </div>
             ) : filteredProducts.length === 0 ? (
-              <div className="p-8 text-center text-slate-500 text-xs font-semibold italic">
+              <div className="p-8 text-center text-xs font-medium text-slate-500">
                 Không tìm thấy sản phẩm nào
               </div>
             ) : (
@@ -133,23 +135,23 @@ export function ScopeSection({
                     >
                       <div
                         className={cn(
-                          "p-3 flex items-center gap-4 cursor-pointer hover:bg-slate-50 transition-colors group",
+                          "group flex cursor-pointer items-center gap-4 p-3 transition-colors hover:bg-slate-50",
                           isSelected && "border-b border-slate-100"
                         )}
                         onClick={() => toggleProduct(String(product.id))}
                       >
                         <div
                           className={cn(
-                            "h-5 w-5 rounded border flex items-center justify-center transition-all",
+                            "flex h-5 w-5 items-center justify-center rounded border transition-all",
                             isSelected
-                              ? "bg-primary border-primary"
-                              : "border-slate-200 group-hover:border-primary/50"
+                              ? "border-teal-600 bg-teal-600"
+                              : "border-slate-200 group-hover:border-teal-500"
                           )}
                         >
                           {isSelected && <Check className="h-3 w-3 text-white" />}
                         </div>
 
-                        <div className="h-10 w-10 relative rounded-lg bg-white overflow-hidden border border-slate-100 shrink-0">
+                        <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-slate-100 bg-white">
                           <Image
                             src={getImageUrlForProduct(product)}
                             alt={product.name}
@@ -158,26 +160,26 @@ export function ScopeSection({
                           />
                         </div>
 
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-semibold text-slate-800 truncate">
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-sm font-medium text-slate-800">
                             {product.name}
                           </p>
-                          <p className="text-xs text-slate-500 font-medium mt-0.5">
+                          <p className="mt-0.5 text-xs font-medium text-slate-500">
                             ID: #{product.id} • {formatCurrency(product.basePrice)}
                           </p>
                         </div>
                       </div>
 
                       {isSelected && (
-                        <div className="px-12 py-4 bg-white/50 grid grid-cols-2 lg:grid-cols-4 gap-4 border-b border-slate-100">
+                        <div className="grid grid-cols-2 gap-4 border-b border-slate-100 bg-white/50 px-12 py-4 lg:grid-cols-4">
                           <div className="space-y-1.5">
-                            <label className="text-[11px] font-semibold text-slate-500">
+                            <label className="text-xs font-medium text-slate-500">
                               Giới hạn (Flash)
                             </label>
                             <Input
                               type="number"
                               placeholder="Vô hạn"
-                              className="h-9 rounded-lg border-slate-200 text-xs font-semibold text-slate-800"
+                              className="h-9 rounded-lg border-slate-200 text-xs font-medium text-slate-800"
                               value={selection.stockLimit ?? ""}
                               onChange={(e) =>
                                 updateProductMetadata(
@@ -190,13 +192,13 @@ export function ScopeSection({
                             />
                           </div>
                           <div className="space-y-1.5">
-                            <label className="text-[11px] font-semibold text-slate-500">
-                              % Giảm (Ghi đè)
+                            <label className="text-xs font-medium text-slate-500">
+                              % giảm (ghi đè)
                             </label>
                             <Input
                               type="number"
                               placeholder="Mặc định"
-                              className="h-9 rounded-lg border-slate-200 text-xs font-semibold text-slate-800"
+                              className="h-9 rounded-lg border-slate-200 text-xs font-medium text-slate-800"
                               value={selection.percentage ?? ""}
                               onChange={(e) =>
                                 updateProductMetadata(
@@ -209,13 +211,13 @@ export function ScopeSection({
                             />
                           </div>
                           <div className="space-y-1.5">
-                            <label className="text-[11px] font-semibold text-slate-500">
-                              Tiền giảm (Ghi đè)
+                            <label className="text-xs font-medium text-slate-500">
+                              Tiền giảm (ghi đè)
                             </label>
                             <Input
                               type="number"
                               placeholder="Mặc định"
-                              className="h-9 rounded-lg border-slate-200 text-xs font-semibold text-slate-800"
+                              className="h-9 rounded-lg border-slate-200 text-xs font-medium text-slate-800"
                               value={selection.fixedAmount ?? ""}
                               onChange={(e) =>
                                 updateProductMetadata(
@@ -228,12 +230,12 @@ export function ScopeSection({
                             />
                           </div>
                           <div className="space-y-1.5">
-                            <label className="text-[11px] font-semibold text-slate-500">
-                              Badge (Nhãn)
+                            <label className="text-xs font-medium text-slate-500">
+                              Badge (nhãn)
                             </label>
                             <Input
                               placeholder="VD: HOT"
-                              className="h-9 rounded-lg border-slate-200 text-xs font-semibold text-slate-800"
+                              className="h-9 rounded-lg border-slate-200 text-xs font-medium text-slate-800"
                               value={selection.badge || ""}
                               onChange={(e) =>
                                 updateProductMetadata(

@@ -1,10 +1,10 @@
-"use client";
+﻿"use client";
 
 import React from "react";
 import { useAuthStore } from "@/features/auth/store/auth.store";
 import { cartApi } from "@/features/cart/api";
 import { calculateCartItemCount } from "@/features/cart/services";
-import { type CartItem, useCartStore } from "@/store/useCartStore";
+import { type CartItem, useCartStore } from "@/features/cart/store/cart.store";
 
 export function useCart() {
   const items = useCartStore((state) => state.items);

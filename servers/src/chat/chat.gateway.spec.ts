@@ -21,7 +21,11 @@ describe('ChatGateway', () => {
         {
           provide: JwtService,
           useValue: {
-            verify: jest.fn().mockReturnValue({ sub: 1, email: 'test@test.com', role: 'CUSTOMER' }),
+            verify: jest.fn().mockReturnValue({
+              sub: 1,
+              email: 'test@test.com',
+              role: 'CUSTOMER',
+            }),
           },
         },
       ],

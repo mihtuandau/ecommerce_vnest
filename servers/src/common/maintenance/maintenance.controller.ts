@@ -14,13 +14,17 @@ export class MaintenanceController {
   constructor(private maintenanceService: MaintenanceService) {}
 
   @Post('sync-sold-count')
-  @ApiOperation({ summary: 'Đồng bộ lại số lượng đã bán (soldCount) cho toàn bộ sản phẩm' })
+  @ApiOperation({
+    summary: 'Đồng bộ lại số lượng đã bán (soldCount) cho toàn bộ sản phẩm',
+  })
   syncSoldCount() {
     return this.maintenanceService.syncSoldCount();
   }
 
   @Post('sync-ratings')
-  @ApiOperation({ summary: 'Đồng bộ lại điểm đánh giá (averageRating) cho toàn bộ sản phẩm' })
+  @ApiOperation({
+    summary: 'Đồng bộ lại điểm đánh giá (averageRating) cho toàn bộ sản phẩm',
+  })
   syncRatings() {
     return this.maintenanceService.syncRatings();
   }

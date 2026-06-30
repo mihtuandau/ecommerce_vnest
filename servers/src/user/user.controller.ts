@@ -48,8 +48,11 @@ export class UserController {
     if (!user) throw new Error('User not found');
 
     const {
-      password, verificationCode, verificationExpires,
-      resetPasswordToken, resetPasswordExpires,
+      password,
+      verificationCode,
+      verificationExpires,
+      resetPasswordToken,
+      resetPasswordExpires,
       ...safeUser
     } = user;
 
@@ -76,10 +79,15 @@ export class UserController {
     const userRole = req.user.role;
     const permissions = req.user.permissions || [];
 
-    const canView = userId === id || userRole === 'ADMIN' || permissions.includes('user.view');
+    const canView =
+      userId === id ||
+      userRole === 'ADMIN' ||
+      permissions.includes('user.view');
 
     if (!canView) {
-      throw new ForbiddenException('You do not have permission to view this user');
+      throw new ForbiddenException(
+        'You do not have permission to view this user',
+      );
     }
 
     const user = await this.userService.findOne(id);
@@ -94,7 +102,9 @@ export class UserController {
   async create(@Body() createUserDto: CreateUserDto, @Req() req: any) {
     // SECURITY: Only real ADMIN can create another ADMIN
     if (createUserDto.role === 'ADMIN' && req.user.role !== 'ADMIN') {
-      throw new ForbiddenException('Chỉ quản trị viên cấp cao mới có quyền tạo tài khoản Admin');
+      throw new ForbiddenException(
+        'Chỉ quản trị viên cấp cao mới có quyền tạo tài khoản Admin',
+      );
     }
     const created = await this.userService.create(createUserDto);
     await this.auditLogService.write({
@@ -121,13 +131,17 @@ export class UserController {
     const isSelf = userId === id;
 
     if (!isStaff && !isSelf) {
-      throw new ForbiddenException('Bạn không có quyền cập nhật người dùng này');
+      throw new ForbiddenException(
+        'Bạn không có quyền cập nhật người dùng này',
+      );
     }
 
     // SECURITY: Only a real ADMIN can assign the ADMIN role to anyone.
     // Even if a staff has 'user.manage', they cannot create/promote someone to ADMIN.
     if (updateUserDto.role === 'ADMIN' && userRole !== 'ADMIN') {
-      throw new ForbiddenException('Chỉ quản trị viên cấp cao mới có quyền cấp quyền Admin');
+      throw new ForbiddenException(
+        'Chỉ quản trị viên cấp cao mới có quyền cấp quyền Admin',
+      );
     }
 
     if (!isStaff) {

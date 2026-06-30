@@ -35,11 +35,6 @@ export const reviewsApi = {
     return response.data;
   },
 
-  getAiReviewSummary: async (productId: number) => {
-    const response = await api.get(`/reviews/product/${productId}/ai-summary`);
-    return response.data;
-  },
-
   getLatestReviews: async () => {
     const response = await api.get("/reviews/public/latest");
     return response.data;

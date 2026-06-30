@@ -12,23 +12,23 @@ export class PaymentRepository {
       include: { order: true },
     });
   }
- 
+
   async findById(id: number) {
     return this.prisma.payment.findUnique({
       where: { id },
       include: {
-        order: { 
-          include: { 
+        order: {
+          include: {
             user: true,
             address: true,
-            orderItems: { 
-              include: { 
+            orderItems: {
+              include: {
                 variant: {
-                  include: { product: true }
-                } 
-              } 
-            } 
-          } 
+                  include: { product: true },
+                },
+              },
+            },
+          },
         },
       },
     });
@@ -52,7 +52,7 @@ export class PaymentRepository {
             user: true,
             orderItems: true,
             address: true,
-          }
+          },
         },
       },
       orderBy: { createdAt: 'desc' },
@@ -102,7 +102,7 @@ export class PaymentRepository {
       return paymentUpdated;
     });
   }
-  
+
   async findOrderById(orderId: number) {
     return this.prisma.order.findUnique({
       where: { id: orderId },
@@ -141,10 +141,14 @@ export class PaymentRepository {
   }
 
   async incrementVariantStock(variantId: number, quantity: number) {
-    return this.prisma.productVariant.update({ where: { id: variantId }, data: { stock: { increment: quantity } } });
+    return this.prisma.productVariant.update({
+      where: { id: variantId },
+      data: { stock: { increment: quantity } },
+    });
   }
 
   async decrementProductSoldCount(productId: number, quantity: number) {
-    return this.prisma.$executeRaw`UPDATE "Product" SET "soldCount" = GREATEST(0, "soldCount" - ${quantity}) WHERE "id" = ${productId}`;
+    return this.prisma
+      .$executeRaw`UPDATE "Product" SET "soldCount" = GREATEST(0, "soldCount" - ${quantity}) WHERE "id" = ${productId}`;
   }
 }

@@ -1,4 +1,4 @@
-import type { CheckoutDiscount } from "@/store/useCartStore";
+﻿import type { CheckoutDiscount } from "@/features/cart/store/cart.store";
 
 export function calculateCartDiscountAmount(
   discount: CheckoutDiscount | null,

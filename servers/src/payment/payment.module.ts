@@ -10,18 +10,9 @@ import { VNPayModule } from '../vnpay/vnpay.module';
 import { PaymentCache } from './payment.cache';
 
 @Module({
-  imports: [
-    CacheModule.register(),
-    PrismaModule,
-    VNPayModule,
-
-  ],
+  imports: [CacheModule.register(), PrismaModule, VNPayModule],
   controllers: [PaymentController, PaymentWebhookController],
-  providers: [
-    PaymentService,
-    PaymentRepository,
-    PaymentCache,
-  ],
+  providers: [PaymentService, PaymentRepository, PaymentCache],
   exports: [PaymentService],
 })
 export class PaymentModule {}

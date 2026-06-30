@@ -15,23 +15,27 @@ export function maskPhone(phone?: string) {
 export function serializeOrder(order: any, maskPII = false) {
   if (!order) return null;
 
-  let serialized = { ...order };
+  const serialized = { ...order };
 
   if (maskPII) {
-    if (serialized.guestEmail) serialized.guestEmail = maskEmail(serialized.guestEmail);
-    if (serialized.guestPhone) serialized.guestPhone = maskPhone(serialized.guestPhone);
+    if (serialized.guestEmail)
+      serialized.guestEmail = maskEmail(serialized.guestEmail);
+    if (serialized.guestPhone)
+      serialized.guestPhone = maskPhone(serialized.guestPhone);
     if (serialized.phone) serialized.phone = maskPhone(serialized.phone);
-    if (serialized.user?.email) serialized.user.email = maskEmail(serialized.user.email);
-    if (serialized.user?.phone) serialized.user.phone = maskPhone(serialized.user.phone);
-    
+    if (serialized.user?.email)
+      serialized.user.email = maskEmail(serialized.user.email);
+    if (serialized.user?.phone)
+      serialized.user.phone = maskPhone(serialized.user.phone);
+
     if (serialized.shippingSnapshot) {
       let snap = serialized.shippingSnapshot;
-      if (typeof snap === "string") {
+      if (typeof snap === 'string') {
         try {
           snap = JSON.parse(snap);
         } catch (e) {}
       }
-      if (typeof snap === "object" && snap !== null) {
+      if (typeof snap === 'object' && snap !== null) {
         snap = { ...snap };
         if (snap.phone) snap.phone = maskPhone(snap.phone);
         if (snap.email) snap.email = maskEmail(snap.email);
@@ -59,7 +63,9 @@ export async function generateOrderCode(
   retries: number = 0,
 ): Promise<string> {
   if (retries > 10) {
-    throw new BadRequestException('Không thể tạo mã đơn hàng duy nhất sau nhiều lần thử. Vui lòng thử lại.');
+    throw new BadRequestException(
+      'Không thể tạo mã đơn hàng duy nhất sau nhiều lần thử. Vui lòng thử lại.',
+    );
   }
 
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -92,7 +98,7 @@ export function calculateOrderTotal(
   );
 
   // Logic phí ship: Ưu tiên phí ship truyền vào (từ GHN), nếu không có thì mặc định 30k
-  let shippingFee =
+  const shippingFee =
     providedShippingFee !== undefined ? Number(providedShippingFee) : 30000;
 
   const taxAmount = 0;
@@ -252,7 +258,7 @@ export function prepareOrderData(
 
 export function prepareOrderEmailDetails(order: any) {
   const customerEmail = order.guestEmail || order.user?.email;
-  const shipping = order.shippingSnapshot as any;
+  const shipping = order.shippingSnapshot;
   const customerName = shipping?.fullName || order.user?.name || 'Khách hàng';
 
   return {
@@ -260,15 +266,17 @@ export function prepareOrderEmailDetails(order: any) {
     customerName,
     orderDetails: {
       customerName,
-      customerPhone: shipping?.phone || order.guestPhone || order.user?.phone || 'N/A',
+      customerPhone:
+        shipping?.phone || order.guestPhone || order.user?.phone || 'N/A',
       items: order.orderItems.map((item: any) => {
         let snapSize = '';
         let snapColor = '';
         if (item.variantSnapshot) {
           try {
-            const snap = typeof item.variantSnapshot === 'string'
-              ? JSON.parse(item.variantSnapshot)
-              : item.variantSnapshot;
+            const snap =
+              typeof item.variantSnapshot === 'string'
+                ? JSON.parse(item.variantSnapshot)
+                : item.variantSnapshot;
             snapSize = snap.size || '';
             snapColor = snap.color || '';
           } catch (e) {}
@@ -286,17 +294,25 @@ export function prepareOrderEmailDetails(order: any) {
       discountAmount: order.discountAmount,
       shippingFee: order.shippingFee,
       total: order.total,
-      paymentMethod: order.paymentMethod === 'CASH' ? 'Thanh toán khi nhận hàng (COD)' : 
-                     order.paymentMethod === 'COD' ? 'Thanh toán khi nhận hàng (COD)' : 
-                     order.paymentMethod === 'VNPAY' ? 'Thanh toán qua VNPay' : 
-                     order.paymentMethod === 'CARD' ? 'Thanh toán bằng thẻ' :
-                     order.paymentMethod === 'MOMO' ? 'Thanh toán qua MoMo' :
-                     order.paymentMethod === 'BANK_TRANSFER' ? 'Chuyển khoản ngân hàng' : order.paymentMethod,
+      paymentMethod:
+        order.paymentMethod === 'CASH'
+          ? 'Thanh toán khi nhận hàng (COD)'
+          : order.paymentMethod === 'COD'
+            ? 'Thanh toán khi nhận hàng (COD)'
+            : order.paymentMethod === 'VNPAY'
+              ? 'Thanh toán qua VNPay'
+              : order.paymentMethod === 'CARD'
+                ? 'Thanh toán bằng thẻ'
+                : order.paymentMethod === 'MOMO'
+                  ? 'Thanh toán qua MoMo'
+                  : order.paymentMethod === 'BANK_TRANSFER'
+                    ? 'Chuyển khoản ngân hàng'
+                    : order.paymentMethod,
       shippingAddress: shipping?.addressString || 'N/A',
       createdAt: order.createdAt,
       shippingMethodName: order.shippingMethod?.name || 'Giao hàng tiêu chuẩn',
       estimatedDays: order.shippingMethod?.estimatedDays || 3,
       discountCode: order.discount?.code || null,
-    }
+    },
   };
 }

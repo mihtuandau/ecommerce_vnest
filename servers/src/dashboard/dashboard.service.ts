@@ -48,11 +48,19 @@ export class DashboardService {
       this.repository.getTotalCustomers(),
       this.repository.getTotalRevenue(),
       this.repository.getRevenueByDate(dayjs().tz('Asia/Ho_Chi_Minh').toDate()),
-      this.repository.getRevenueByDate(dayjs().tz('Asia/Ho_Chi_Minh').subtract(1, 'day').toDate()),
+      this.repository.getRevenueByDate(
+        dayjs().tz('Asia/Ho_Chi_Minh').subtract(1, 'day').toDate(),
+      ),
       this.repository.getNewUsersCount(dayjs().tz('Asia/Ho_Chi_Minh').toDate()),
-      this.repository.getNewUsersCount(dayjs().tz('Asia/Ho_Chi_Minh').subtract(1, 'day').toDate()),
-      this.repository.getOrderCountByDate(dayjs().tz('Asia/Ho_Chi_Minh').toDate()),
-      this.repository.getOrderCountByDate(dayjs().tz('Asia/Ho_Chi_Minh').subtract(1, 'day').toDate()),
+      this.repository.getNewUsersCount(
+        dayjs().tz('Asia/Ho_Chi_Minh').subtract(1, 'day').toDate(),
+      ),
+      this.repository.getOrderCountByDate(
+        dayjs().tz('Asia/Ho_Chi_Minh').toDate(),
+      ),
+      this.repository.getOrderCountByDate(
+        dayjs().tz('Asia/Ho_Chi_Minh').subtract(1, 'day').toDate(),
+      ),
       this.repository.getLowStockCount(10),
       this.repository.getOrderCountByStatus('RETURN_REQUESTED'),
       this.repository.getOrderCountByStatus('RETURNED'),
@@ -120,22 +128,21 @@ export class DashboardService {
       }));
 
       orders.forEach((item: any) => {
-        const vnTime = dayjs(item.payment?.updatedAt || item.createdAt).tz('Asia/Ho_Chi_Minh');
+        const vnTime = dayjs(item.payment?.updatedAt || item.createdAt).tz(
+          'Asia/Ho_Chi_Minh',
+        );
         const month = vnTime.month();
         const subtotal = Number(item.subtotal) || 0;
         const discount = Number(item.discountAmount) || 0;
         const netRevenue = subtotal - discount;
-        
+
         monthlyData[month].revenue += netRevenue;
         monthlyData[month].orders += 1;
       });
 
       if (!query.startDate && !query.endDate) {
         const vnNow = dayjs().tz('Asia/Ho_Chi_Minh');
-        const dailyData = await this.getDailyData(
-          vnNow.year(),
-          vnNow.month(),
-        );
+        const dailyData = await this.getDailyData(vnNow.year(), vnNow.month());
         return {
           type: 'summary',
           monthly: monthlyData,
@@ -156,13 +163,18 @@ export class DashboardService {
 
     const diffDays = end.diff(start, 'day');
 
-    const orders = await this.repository.getRevenueByDateRange(start.toDate(), end.toDate());
+    const orders = await this.repository.getRevenueByDateRange(
+      start.toDate(),
+      end.toDate(),
+    );
 
     if (diffDays > 62) {
       const dataMap = new Map();
 
       orders.forEach((item: any) => {
-        const vnTime = dayjs(item.payment?.updatedAt || item.createdAt).tz('Asia/Ho_Chi_Minh');
+        const vnTime = dayjs(item.payment?.updatedAt || item.createdAt).tz(
+          'Asia/Ho_Chi_Minh',
+        );
         const key = `T${vnTime.month() + 1}/${vnTime.year()}`;
         if (!dataMap.has(key)) {
           dataMap.set(key, { label: key, revenue: 0, orders: 0 });
@@ -171,7 +183,7 @@ export class DashboardService {
         const total = Number(item.total) || 0;
         const refund = Number(item.payment?.refundAmount) || 0;
         const netRevenue = total - refund;
-        
+
         entry.revenue += netRevenue;
         entry.orders += 1;
       });
@@ -187,7 +199,9 @@ export class DashboardService {
     const dataMap = new Map();
 
     orders.forEach((item: any) => {
-      const vnTime = dayjs(item.payment?.updatedAt || item.createdAt).tz('Asia/Ho_Chi_Minh');
+      const vnTime = dayjs(item.payment?.updatedAt || item.createdAt).tz(
+        'Asia/Ho_Chi_Minh',
+      );
       const label = vnTime.format('DD/MM');
 
       if (!dataMap.has(label)) {
@@ -199,7 +213,7 @@ export class DashboardService {
       const subtotal = Number(item.subtotal) || 0;
       const discount = Number(item.discountAmount) || 0;
       const netRevenue = subtotal - discount;
-      
+
       entry.revenue += netRevenue;
       entry.orders += 1;
     });
@@ -220,7 +234,9 @@ export class DashboardService {
     const dataMap = new Map();
 
     orders.forEach((item: any) => {
-      const vnTime = dayjs(item.payment?.updatedAt || item.createdAt).tz('Asia/Ho_Chi_Minh');
+      const vnTime = dayjs(item.payment?.updatedAt || item.createdAt).tz(
+        'Asia/Ho_Chi_Minh',
+      );
       const label = vnTime.format('DD/MM');
 
       if (!dataMap.has(label)) {
@@ -236,7 +252,7 @@ export class DashboardService {
       const subtotal = Number(item.subtotal) || 0;
       const discount = Number(item.discountAmount) || 0;
       const netRevenue = subtotal - discount;
-      
+
       entry.revenue += netRevenue;
       entry.orders += 1;
     });
@@ -265,19 +281,19 @@ export class DashboardService {
 
     orderItems.forEach((item) => {
       const variant = item.variant;
-      if (!variant) return; 
-      
+      if (!variant) return;
+
       const product = variant.product;
-      if (!product) return; 
-      
+      if (!product) return;
+
       const productId = product.id;
       const order = item.order as any;
       if (!order) return;
-      
+
       const returnedQty = (order.returnRequests || [])
         .filter((r: any) => r.status === 'RECEIVED' || r.status === 'COMPLETED')
         .reduce((sum: number, r: any) => {
-          const rItems = (r.returnItems || []);
+          const rItems = r.returnItems || [];
           const rItem = rItems.find((ri: any) => ri.orderItemId === item.id);
           return sum + (rItem?.quantity || 0);
         }, 0);
@@ -285,8 +301,8 @@ export class DashboardService {
       const netQuantity = (item.quantity || 0) - returnedQty;
       const price = Number(item.price) || 0;
       const netRevenue = price * netQuantity;
-      
-      if (netQuantity <= 0) return; 
+
+      if (netQuantity <= 0) return;
 
       const existing = productMap.get(productId);
       if (existing) {
@@ -297,11 +313,12 @@ export class DashboardService {
         const images = (product as any).images || [];
         const thumbnail =
           images.find((img: any) => img.isThumbnail)?.url ||
-          images[0]?.url || "";
+          images[0]?.url ||
+          '';
 
         productMap.set(productId, {
           id: productId,
-          productName: product.name || "N/A",
+          productName: product.name || 'N/A',
           image: thumbnail,
           totalQuantity: netQuantity,
           totalRevenue: netRevenue,
@@ -311,19 +328,21 @@ export class DashboardService {
     });
 
     const topSelling = Array.from(productMap.values())
-      .filter(p => p.totalQuantity > 0) 
+      .filter((p) => p.totalQuantity > 0)
       .sort((a, b) => b.totalQuantity - a.totalQuantity)
       .slice(0, limit);
 
     // Fetch real ratings for top products
-    const productIds = topSelling.map(p => p.id);
+    const productIds = topSelling.map((p) => p.id);
     const ratings = await this.repository.getProductRatings(productIds);
 
-    const ratingMap = new Map(ratings.map((r: any) => [r.productId, r._avg.rating]));
+    const ratingMap = new Map(
+      ratings.map((r: any) => [r.productId, r._avg.rating]),
+    );
 
-    return topSelling.map(p => ({
+    return topSelling.map((p) => ({
       ...p,
-      rating: parseFloat((Number(ratingMap.get(p.id)) || 0).toFixed(1))
+      rating: parseFloat((Number(ratingMap.get(p.id)) || 0).toFixed(1)),
     }));
   }
 }

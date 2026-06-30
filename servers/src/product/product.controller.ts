@@ -1,6 +1,19 @@
-import { 
-  Controller, Get, Post, Put, Delete, Body, Param, Query, Request,
-  UseGuards, UseInterceptors, UploadedFiles, BadRequestException, HttpCode, HttpStatus
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  Query,
+  Request,
+  UseGuards,
+  UseInterceptors,
+  UploadedFiles,
+  BadRequestException,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { FilesInterceptor } from '@nestjs/platform-express';
@@ -28,8 +41,9 @@ export class ProductController {
   }
 
   @Get()
-  findAll(@Query() query: QueryProductDto) {
-    return this.productService.findAll(query);
+  findAll(@Query() query: QueryProductDto, @Request() req: any) {
+    const role = req.user?.role;
+    return this.productService.findAll(query, role);
   }
 
   @Get(':id')
@@ -38,10 +52,7 @@ export class ProductController {
   }
 
   @Get(':id/related')
-  getRelated(
-    @Param('id') id: string,
-    @Query('limit') limit?: string,
-  ) {
+  getRelated(@Param('id') id: string, @Query('limit') limit?: string) {
     return this.productService.getRelatedProducts(+id, limit ? +limit : 8);
   }
 
@@ -49,8 +60,8 @@ export class ProductController {
   @Throttle({ default: { limit: 1, ttl: 60000 } }) // 1 view per minute per identifier
   @HttpCode(HttpStatus.NO_CONTENT)
   incrementView(@Param('id') id: string, @Request() req: any) {
-
-    const identifier = req.user?.userId || req.ip || req.connection.remoteAddress || 'anonymous';
+    const identifier =
+      req.user?.userId || req.ip || req.connection.remoteAddress || 'anonymous';
     return this.productService.incrementViewCount(+id, identifier);
   }
 
@@ -85,7 +96,10 @@ export class ProductController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Permissions('product.manage')
   @ApiBearerAuth('Authorization')
-  createVariant(@Param('id') id: string, @Body() createVariantDto: CreateVariantDto) {
+  createVariant(
+    @Param('id') id: string,
+    @Body() createVariantDto: CreateVariantDto,
+  ) {
     createVariantDto.productId = +id;
     return this.productService.createVariant(createVariantDto);
   }
@@ -106,7 +120,6 @@ export class ProductController {
     return this.productService.deleteVariant(+variantId);
   }
 
-  
   @Post(':id/images')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Permissions('product.manage')
@@ -134,7 +147,6 @@ export class ProductController {
     });
   }
 
-  
   @Post('variant/:variantId/images')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Permissions('product.manage')
@@ -162,7 +174,6 @@ export class ProductController {
     });
   }
 
-  
   @Delete('images/:imageId')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Permissions('product.manage')
@@ -171,7 +182,6 @@ export class ProductController {
     return this.productService.deleteProductImage(+imageId);
   }
 
-  
   @Delete('variant-images/:imageId')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Permissions('product.manage')
@@ -180,10 +190,3 @@ export class ProductController {
     return this.productService.deleteVariantImage(+imageId);
   }
 }
-
-
-
-
-
-
-

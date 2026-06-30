@@ -11,9 +11,3 @@ import { UploadModule } from '../upload/upload.module';
   exports: [BannerService],
 })
 export class BannerModule {}
-
-
-
-
-
-

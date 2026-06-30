@@ -10,9 +10,3 @@ import { PrismaModule } from '../prisma/prisma.module';
   exports: [WishlistService],
 })
 export class WishlistModule {}
-
-
-
-
-
-

@@ -8,26 +8,29 @@ import { cookies } from "next/headers";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { env } from "@/config/env";
 import { Role } from "@/types/enums";
+import { jwtVerify } from "jose";
 import type { SystemSettings } from "@/features/settings/types";
 import type { Category } from "@/types/models";
+
+// Fix 6: khai báo một lần ở cấp module, tránh lặp lại trong từng hàm fetch
+const API_BASE_URL = env.NEXT_PUBLIC_API_URL.replace(/\/$/, "");
 
 async function getSystemSettings(): Promise<SystemSettings | null> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 3000);
-  const apiUrl = env.NEXT_PUBLIC_API_URL.replace(/\/$/, "");
 
   try {
-    const res = await fetch(`${apiUrl}/system-settings`, {
+    const res = await fetch(`${API_BASE_URL}/system-settings`, {
       next: { revalidate: 15 },
       signal: controller.signal,
     });
 
     if (!res.ok) return null;
-    return res.json();
-  } catch (err) {
-    if (process.env.NODE_ENV === "production") {
-      console.warn("System settings unavailable; continuing without maintenance mode.");
-    }
+    // Fix 1: thêm await để lỗi parse JSON được bắt bởi catch bên dưới
+    return await res.json();
+  } catch {
+    // Fix 3: bỏ guard NODE_ENV ngược — luôn warn để dev cũng thấy lỗi kết nối
+    console.warn("System settings unavailable; continuing without maintenance mode.");
     return null;
   } finally {
     clearTimeout(timeout);
@@ -37,10 +40,9 @@ async function getSystemSettings(): Promise<SystemSettings | null> {
 async function getNavigationCategories(): Promise<Category[]> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 3000);
-  const apiUrl = env.NEXT_PUBLIC_API_URL.replace(/\/$/, "");
 
   try {
-    const res = await fetch(`${apiUrl}/categories?tree=true`, {
+    const res = await fetch(`${API_BASE_URL}/categories?tree=true`, {
       next: { revalidate: 60 },
       signal: controller.signal,
     });
@@ -49,10 +51,9 @@ async function getNavigationCategories(): Promise<Category[]> {
 
     const data = await res.json();
     return Array.isArray(data) ? data : data?.data || [];
-  } catch (err) {
-    if (process.env.NODE_ENV === "production") {
-      console.warn("Navigation categories unavailable; continuing with fallback nav.");
-    }
+  } catch {
+    // Fix 3: bỏ guard NODE_ENV ngược — luôn warn để dev cũng thấy lỗi kết nối
+    console.warn("Navigation categories unavailable; continuing with fallback nav.");
     return [];
   } finally {
     clearTimeout(timeout);
@@ -80,17 +81,16 @@ export default async function CustomerLayout({
   ]);
   isMaintenance = !!settings?.maintenanceMode;
 
-  // 2. Check if the logged-in user is an admin by decoding JWT payload
+  // 2. Fix 2: xác minh JWT bằng chữ ký thay vì chỉ decode base64 thô,
+  //    ngăn kẻ tấn công tạo cookie giả với role ADMIN để bypass maintenance
   if (token) {
     try {
-      const payloadBase64 = token.split(".")[1];
-      const decodedJson = Buffer.from(payloadBase64, "base64").toString("utf-8");
-      const decoded = JSON.parse(decodedJson);
-      isAdmin =
-        decoded?.role === Role.ADMIN ||
-        decoded?.role === Role.WAREHOUSE ||
-        decoded?.role === Role.SALES;
-    } catch {}
+      const secret = new TextEncoder().encode(process.env.JWT_SECRET ?? "");
+      const { payload } = await jwtVerify(token, secret);
+      isAdmin = (payload as { role?: string }).role === Role.ADMIN;
+    } catch {
+      // Token không hợp lệ hoặc hết hạn — coi như không phải admin
+    }
   }
 
   // 3. If maintenance mode is active and user is not an admin, return the Maintenance UI instantly

@@ -13,8 +13,3 @@ import { CategoryModule } from '../category/category.module';
   exports: [ProductService],
 })
 export class ProductModule {}
-
-
-
-
-

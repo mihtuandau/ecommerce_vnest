@@ -33,11 +33,15 @@ describe('OrderHelper', () => {
     };
 
     it('throws when subtotal is below minOrderAmount', () => {
-      expect(() => validateDiscount(baseDiscount, 50000, 0)).toThrow(BadRequestException);
+      expect(() => validateDiscount(baseDiscount, 50000, 0)).toThrow(
+        BadRequestException,
+      );
     });
 
     it('throws when usage limit is reached', () => {
-      expect(() => validateDiscount(baseDiscount, 120000, 2)).toThrow(BadRequestException);
+      expect(() => validateDiscount(baseDiscount, 120000, 2)).toThrow(
+        BadRequestException,
+      );
     });
 
     it('passes when discount is valid', () => {
@@ -45,9 +49,3 @@ describe('OrderHelper', () => {
     });
   });
 });
-
-
-
-
-
-

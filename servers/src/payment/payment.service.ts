@@ -13,7 +13,7 @@ import { QueryPaymentDto } from './dto/query-payment.dto';
 import { PaymentCache } from './payment.cache';
 import * as PaymentHelper from './payment.helper';
 import * as OrderHelper from '../order/order.helper';
-import { Payment, Order } from '@prisma/client';
+import { Payment, Order, PaymentStatus } from '@prisma/client';
 
 type PaymentWithOrder = Payment & { order: Order };
 
@@ -28,7 +28,11 @@ export class PaymentService {
     private cacheService: PaymentCache,
   ) {}
 
-  async create(data: CreatePaymentDto, ipAddr: string = '127.0.0.1') {
+  async create(
+    data: CreatePaymentDto & { status?: PaymentStatus },
+    ipAddr: string = '127.0.0.1',
+    requester?: { userId: number; role: string },
+  ) {
     // Tự động chuyển đổi từ PAYOS sang VNPAY để tránh lỗi đồng bộ
     if (data.method === ('PAYOS' as any)) {
       data.method = 'VNPAY' as any;
@@ -39,8 +43,18 @@ export class PaymentService {
       throw new BadRequestException('Order not found');
     }
 
+    if (requester) {
+      const isAdmin = requester.role === 'ADMIN';
+      const isOwner = order.userId === requester.userId;
+      if (!isAdmin && !isOwner) {
+        throw new BadRequestException(
+          'You do not have permission to create payment for this order',
+        );
+      }
+    }
+
     const existingPayment = await this.repository.findByOrderId(data.orderId);
-    
+
     if (existingPayment && existingPayment.status === 'SUCCESS') {
       return PaymentHelper.serializePayment(existingPayment);
     }
@@ -48,13 +62,15 @@ export class PaymentService {
     let transactionId: string | null = null;
     let paymentLink: string | null = null;
 
-    this.logger.debug(`[PaymentService] Creating payment for order ${order.orderCode}, Method: ${data.method}`);
+    this.logger.debug(
+      `[PaymentService] Creating payment for order ${order.orderCode}, Method: ${data.method}`,
+    );
 
     if (data.method === 'VNPAY') {
       const timestamp = Date.now();
       const randomSuffix = Math.random().toString(36).substring(2, 11);
       transactionId = `VNP${timestamp}_${randomSuffix}`;
-      
+
       paymentLink = this.vnpayService.createPaymentUrl({
         amount: order.total,
         orderInfo: `Thanh toan don hang ${order.orderCode}`,
@@ -62,10 +78,14 @@ export class PaymentService {
         ipAddr: ipAddr,
       });
 
-      this.logger.debug(`[PaymentService] VNPay Link Generated: ${paymentLink ? 'YES' : 'NO'}`);
-      
+      this.logger.debug(
+        `[PaymentService] VNPay Link Generated: ${paymentLink ? 'YES' : 'NO'}`,
+      );
+
       if (!paymentLink) {
-        throw new BadRequestException('Không thể khởi tạo liên kết thanh toán VNPay. Vui lòng kiểm tra cấu hình hệ thống.');
+        throw new BadRequestException(
+          'Không thể khởi tạo liên kết thanh toán VNPay. Vui lòng kiểm tra cấu hình hệ thống.',
+        );
       }
     } else {
       transactionId = PaymentHelper.generateTransactionId(data.method);
@@ -92,10 +112,10 @@ export class PaymentService {
     }
 
     await this.cacheService.clearPaymentCaches();
-    
+
     // TRẢ VỀ ĐỐI TƯỢNG PHẲNG (PLAIN OBJECT) - TRÁNH SERIALIZATION LÀM MẤT DỮ LIỆU
     const serializedPayment = PaymentHelper.serializePayment(payment);
-    
+
     return {
       ...serializedPayment,
       paymentLink: paymentLink, // Đảm bảo luôn có ở cấp này
@@ -130,7 +150,9 @@ export class PaymentService {
     }
 
     if (payment.status !== 'SUCCESS' && payment.status !== 'REFUNDED') {
-      throw new BadRequestException('Can only refund successful or partially refunded payments');
+      throw new BadRequestException(
+        'Can only refund successful or partially refunded payments',
+      );
     }
 
     const refundValue = amount || payment.amount;
@@ -143,44 +165,53 @@ export class PaymentService {
         });
         this.logger.warn(
           `⚠️ [MANUAL REFUND REQUIRED] Payment #${paymentId} (${payment.method}) marked as REFUNDED in DB. ` +
-          `Amount: ${refundValue.toLocaleString('vi-VN')}đ. ` +
-          `Admin PHẢI hoàn tiền thủ công qua cổng ${payment.method} cho khách hàng.`
+            `Amount: ${refundValue.toLocaleString('vi-VN')}đ. ` +
+            `Admin PHẢI hoàn tiền thủ công qua cổng ${payment.method} cho khách hàng.`,
         );
       } else if (payment.method === 'CASH' || payment.method === 'CARD') {
         await this.repository.update(paymentId, {
           status: 'REFUNDED',
           refundAmount: (payment.refundAmount || 0) + refundValue,
         });
-        this.logger.log(`Refund of ${refundValue} marked for ${payment.method} payment ${paymentId}`);
+        this.logger.log(
+          `Refund of ${refundValue} marked for ${payment.method} payment ${paymentId}`,
+        );
       }
 
       await this.cacheService.clearPaymentCaches();
     } catch (error) {
-      this.logger.error(`Error initiating refund for payment ${paymentId}:`, error);
-      throw new BadRequestException('Failed to initiate refund. Please try again later.');
+      this.logger.error(
+        `Error initiating refund for payment ${paymentId}:`,
+        error,
+      );
+      throw new BadRequestException(
+        'Failed to initiate refund. Please try again later.',
+      );
     }
   }
 
   async handleVNPayReturn(vnp_Params: any) {
     const result = this.vnpayService.verifyReturnUrl(vnp_Params);
     if (!result.isValid) {
-      this.logger.error(`VNPay Checksum Mismatch! Request rejected. Params: ${JSON.stringify(vnp_Params)}`);
+      this.logger.error(
+        `VNPay Checksum Mismatch! Request rejected. Params: ${JSON.stringify(vnp_Params)}`,
+      );
       throw new BadRequestException('Invalid VNPay checksum signature');
     }
 
     const orderCode = vnp_Params['vnp_TxnRef'];
     const responseCode = vnp_Params['vnp_ResponseCode'];
-    
+
     const payment = await this.repository.findByOrderCode(orderCode);
     if (!payment) throw new NotFoundException('Payment not found');
 
     const status = responseCode === '00' ? 'SUCCESS' : 'FAILED';
-    
+
     let updatedPayment = payment;
     if (payment.status === 'PENDING') {
       updatedPayment = await this.updateStatus(payment.id, { status });
     }
-    
+
     return {
       success: status === 'SUCCESS',
       isValid: result.isValid,
@@ -217,6 +248,11 @@ export class PaymentService {
         return { RspCode: '02', Message: 'Order already confirmed' };
       }
 
+      // Guard: order bị admin cancel trong khi IPN đang xử lý (race condition)
+      if (payment.order?.status === 'CANCELLED') {
+        return { RspCode: '02', Message: 'Order already cancelled' };
+      }
+
       const status = responseCode === '00' ? 'SUCCESS' : 'FAILED';
       await this.updateStatus(payment.id, { status });
 
@@ -226,8 +262,6 @@ export class PaymentService {
       return { RspCode: '99', Message: 'Unknown error' };
     }
   }
-
-
 
   async findOne(id: number, requester?: { userId: number; role: string }) {
     // ❌ [SECURITY UPDATE] Bypass hoàn toàn Cache cho Payment Detail vì tính chất Real-time (Tránh lỗi Stale State gây tranh cãi tài chính)
@@ -243,8 +277,12 @@ export class PaymentService {
     const isOwner = requester?.userId === pWithOrder.order?.userId;
 
     if (requester && !isAdmin && !isOwner) {
-      this.logger.warn(`User ${requester.userId} attempted to view payment ${id} belonging to user ${pWithOrder.order?.userId}`);
-      throw new BadRequestException('You do not have permission to view this payment');
+      this.logger.warn(
+        `User ${requester.userId} attempted to view payment ${id} belonging to user ${pWithOrder.order?.userId}`,
+      );
+      throw new BadRequestException(
+        'You do not have permission to view this payment',
+      );
     }
 
     return PaymentHelper.serializePayment(payment);
@@ -259,7 +297,9 @@ export class PaymentService {
     const isOwner = requester.userId === pWithOrder.order?.userId;
 
     if (!isAdmin && !isOwner) {
-      throw new BadRequestException('You do not have permission to cancel this payment');
+      throw new BadRequestException(
+        'You do not have permission to cancel this payment',
+      );
     }
 
     if (payment.status !== 'PENDING') {

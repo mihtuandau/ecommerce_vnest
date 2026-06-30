@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useMemo } from "react";
 import Image from "next/image";
@@ -7,7 +7,7 @@ import { Heart, Zap } from "lucide-react";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { getImageUrl } from "@/utils/image";
 import { useCart } from "@/features/cart/hooks";
-import { useWishlistStore } from "@/store/useWishlistStore";
+import { useWishlistStore } from "@/features/wishlist/store/wishlist.store";
 import { useAuthStore } from "@/features/auth/store/auth.store";
 import { useToast } from "@/hooks/useToast";
 import { useRouter } from "next/navigation";

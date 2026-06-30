@@ -2,12 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Cart, CartItem, Prisma } from '@prisma/client';
 
-
 @Injectable()
 export class CartRepository {
   constructor(private prisma: PrismaService) {}
 
-  
   async findByUserId(userId: number) {
     return this.prisma.cart.findUnique({
       where: { userId },
@@ -29,7 +27,6 @@ export class CartRepository {
     });
   }
 
-  
   async upsertCart(userId: number): Promise<any> {
     return this.prisma.cart.upsert({
       where: { userId },
@@ -53,7 +50,6 @@ export class CartRepository {
     });
   }
 
-  
   async findVariantById(variantId: number) {
     return this.prisma.productVariant.findUnique({
       where: { id: variantId },
@@ -63,11 +59,14 @@ export class CartRepository {
   async findVariantsByIds(variantIds: number[]) {
     return this.prisma.productVariant.findMany({
       where: { id: { in: variantIds } },
-      select: { id: true, stock: true, price: true }
+      select: { id: true, stock: true, price: true },
     });
   }
-  
-  async findCartItem(cartId: number, variantId: number): Promise<CartItem | null> {
+
+  async findCartItem(
+    cartId: number,
+    variantId: number,
+  ): Promise<CartItem | null> {
     return this.prisma.cartItem.findUnique({
       where: {
         cartId_variantId: { cartId, variantId },
@@ -75,12 +74,10 @@ export class CartRepository {
     });
   }
 
-  
   async createCartItem(data: Prisma.CartItemCreateInput): Promise<CartItem> {
     return this.prisma.cartItem.create({ data });
   }
 
-  
   async updateCartItem(id: number, quantity: number): Promise<CartItem> {
     return this.prisma.cartItem.update({
       where: { id },
@@ -88,7 +85,6 @@ export class CartRepository {
     });
   }
 
-  
   async deleteCartItem(cartId: number, variantId: number): Promise<CartItem> {
     return this.prisma.cartItem.delete({
       where: {
@@ -97,16 +93,9 @@ export class CartRepository {
     });
   }
 
-  
   async deleteAllCartItems(cartId: number) {
     return this.prisma.cartItem.deleteMany({
       where: { cartId },
     });
   }
 }
-
-
-
-
-
-

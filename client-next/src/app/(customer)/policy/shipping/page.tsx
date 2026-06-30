@@ -3,16 +3,16 @@ import React from "react";
 export default function ShippingPolicyPage() {
   return (
     <div className="max-w-[1000px] mx-auto py-12 md:py-20 px-4 sm:px-6">
-      <header className="mb-12 border-b border-slate-100 pb-8">
-        <h1 className="text-2xl font-bold text-slate-900 mb-2">
+      <header className="mb-12 border-b border-brand-sand/50 pb-8">
+        <h1 className="text-2xl font-bold text-brand-espresso mb-2">
           Chính sách vận chuyển
         </h1>
-        <p className="text-slate-500 text-sm">Áp dụng cho tất cả đơn hàng tại LUXE</p>
+        <p className="text-brand-taupe text-sm">Áp dụng cho tất cả đơn hàng tại LUXE</p>
       </header>
 
-      <div className="space-y-10 text-slate-700 leading-relaxed text-base font-normal">
+      <div className="space-y-10 text-brand-espresso/85 leading-relaxed text-base font-normal">
         <section>
-          <h2 className="font-bold text-slate-900 mb-3">
+          <h2 className="font-bold text-brand-espresso mb-3">
             01. Phạm vi và đối tác vận chuyển
           </h2>
           <p>
@@ -24,7 +24,7 @@ export default function ShippingPolicyPage() {
         </section>
 
         <section>
-          <h2 className="font-bold text-slate-900 mb-3">
+          <h2 className="font-bold text-brand-espresso mb-3">
             02. Thời gian giao hàng dự kiến
           </h2>
           <p className="mb-3">
@@ -39,7 +39,7 @@ export default function ShippingPolicyPage() {
         </section>
 
         <section>
-          <h2 className="font-bold text-slate-900 mb-3">03. Cước phí vận chuyển</h2>
+          <h2 className="font-bold text-brand-espresso mb-3">03. Cước phí vận chuyển</h2>
           <p>
             Cước phí vận chuyển được tính dựa trên trọng lượng thực tế và kích thước quy
             đổi của kiện hàng. Chúng tôi miễn phí vận chuyển cho các đơn hàng có giá trị
@@ -49,7 +49,7 @@ export default function ShippingPolicyPage() {
         </section>
 
         <section>
-          <h2 className="font-bold text-slate-900 mb-3">
+          <h2 className="font-bold text-brand-espresso mb-3">
             04. Chính sách kiểm hàng (Đồng kiểm)
           </h2>
           <p>
@@ -61,7 +61,7 @@ export default function ShippingPolicyPage() {
         </section>
 
         <section>
-          <h2 className="font-bold text-slate-900 mb-3">
+          <h2 className="font-bold text-brand-espresso mb-3">
             05. Nghĩa vụ của bên vận chuyển
           </h2>
           <p>
@@ -75,3 +75,4 @@ export default function ShippingPolicyPage() {
     </div>
   );
 }
+

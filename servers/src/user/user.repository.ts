@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { User, Address, Prisma, UserStatus } from '@prisma/client';
 
-
 @Injectable()
 export class UserRepository {
   constructor(private prisma: PrismaService) {}
@@ -12,17 +11,17 @@ export class UserRepository {
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    return this.prisma.user.findUnique({ where: { email } });
+    return this.prisma.user.findFirst({ where: { email, deletedAt: null } });
   }
 
   async findById(id: number): Promise<User | null> {
-    return this.prisma.user.findUnique({
-      where: { id },
-      include: { 
+    return this.prisma.user.findFirst({
+      where: { id, deletedAt: null },
+      include: {
         addresses: true,
         orders: {
           orderBy: { createdAt: 'desc' },
-          include: { 
+          include: {
             payment: true,
             orderItems: {
               include: {
@@ -33,28 +32,32 @@ export class UserRepository {
                         id: true,
                         name: true,
                         images: true,
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
         },
-        reviews: true
+        reviews: true,
       },
     });
   }
 
-  async findAll(where: Prisma.UserWhereInput, skip: number, take: number): Promise<User[]> {
+  async findAll(
+    where: Prisma.UserWhereInput,
+    skip: number,
+    take: number,
+  ): Promise<User[]> {
     return this.prisma.user.findMany({
       where,
       skip,
       take,
-      include: { 
+      include: {
         addresses: true,
         orders: true,
-        reviews: true
+        reviews: true,
       },
     });
   }
@@ -89,10 +92,7 @@ export class UserRepository {
   async findAddressesByUser(userId: number): Promise<Address[]> {
     return this.prisma.address.findMany({
       where: { userId },
-      orderBy: [
-        { isDefault: 'desc' },
-        { createdAt: 'desc' },
-      ],
+      orderBy: [{ isDefault: 'desc' }, { createdAt: 'desc' }],
     });
   }
 
@@ -112,7 +112,10 @@ export class UserRepository {
     return this.prisma.address.create({ data });
   }
 
-  async updateAddress(id: number, data: Prisma.AddressUpdateInput): Promise<Address> {
+  async updateAddress(
+    id: number,
+    data: Prisma.AddressUpdateInput,
+  ): Promise<Address> {
     return this.prisma.address.update({ where: { id }, data });
   }
 
@@ -127,7 +130,10 @@ export class UserRepository {
     });
   }
 
-  async findNextAddress(userId: number, excludeId: number): Promise<Address | null> {
+  async findNextAddress(
+    userId: number,
+    excludeId: number,
+  ): Promise<Address | null> {
     return this.prisma.address.findFirst({
       where: {
         userId,
@@ -183,14 +189,11 @@ export class UserRepository {
   }
 
   async updateRolePermissions(role: any, permissionIds: number[]) {
-
     return this.prisma.$transaction(async (tx) => {
-      
       await tx.permissionRole.deleteMany({
         where: { role },
       });
 
-      
       const newPermissions = permissionIds.map((pId) => ({
         role,
         permissionId: pId,
@@ -206,10 +209,11 @@ export class UserRepository {
   async deleteMany(where: Prisma.UserWhereInput) {
     return this.prisma.user.deleteMany({ where });
   }
+
+  async softDeleteMany(where: Prisma.UserWhereInput) {
+    return this.prisma.user.updateMany({
+      where,
+      data: { deletedAt: new Date() },
+    });
+  }
 }
-
-
-
-
-
-

@@ -30,13 +30,14 @@ export class AuditInterceptor implements NestInterceptor {
               const cleanUrlPath = url.split('?')[0];
               const rawEntityName = cleanUrlPath.split('/')[2] || 'UNKNOWN';
               const entityName = rawEntityName.toUpperCase();
-              
-              const entityId = request.params.id || 
-                               body?.id || 
-                               response?.id || 
-                               response?.data?.id || 
-                               cleanUrlPath.split('/')[3] || 
-                               'N/A';
+
+              const entityId =
+                request.params.id ||
+                body?.id ||
+                response?.id ||
+                response?.data?.id ||
+                cleanUrlPath.split('/')[3] ||
+                'N/A';
 
               // Ghi bằng chứng vào bảng AuditLog (Két sắt)
               await this.prisma.auditLog.create({
@@ -51,11 +52,14 @@ export class AuditInterceptor implements NestInterceptor {
               });
 
               this.logger.log(
-                `[CAMERA AN NINH] Nhân viên ${user.email} (${user.role}) vừa thực hiện lệnh ${method} trên bảng ${entityName.toUpperCase()} (ID: ${entityId})`
+                `[CAMERA AN NINH] Nhân viên ${user.email} (${user.role}) vừa thực hiện lệnh ${method} trên bảng ${entityName.toUpperCase()} (ID: ${entityId})`,
               );
             }
           } catch (error) {
-            this.logger.error('Lỗi khi ghi hình Camera An Ninh:', error.message);
+            this.logger.error(
+              'Lỗi khi ghi hình Camera An Ninh:',
+              error.message,
+            );
           }
         }),
       );

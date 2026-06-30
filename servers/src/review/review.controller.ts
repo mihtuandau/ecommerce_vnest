@@ -98,11 +98,6 @@ export class ReviewController {
     );
   }
 
-  @Get('product/:productId/ai-summary')
-  async getAiReviewSummary(@Param('productId') productId: string) {
-    return this.reviewService.getAiReviewSummary(+productId);
-  }
-
   @Put(':id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
@@ -140,9 +135,3 @@ export class ReviewController {
     );
   }
 }
-
-
-
-
-
-

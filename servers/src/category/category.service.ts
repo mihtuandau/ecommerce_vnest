@@ -23,12 +23,12 @@ export class CategoryService {
 
   async create(data: CreateCategoryDto): Promise<Category> {
     const slug = this.slugify(data.name);
-    return this.prisma.category.create({ 
-      data: { 
-        ...data, 
+    return this.prisma.category.create({
+      data: {
+        ...data,
         slug,
-        parentId: data.parentId ? Number(data.parentId) : null
-      } 
+        parentId: data.parentId ? Number(data.parentId) : null,
+      },
     });
   }
 
@@ -37,19 +37,19 @@ export class CategoryService {
       return this.getCategoryTree();
     }
 
-    return this.prisma.category.findMany({ 
-      include: { 
+    return this.prisma.category.findMany({
+      include: {
         parent: {
-          select: { id: true, name: true }
+          select: { id: true, name: true },
         },
         _count: {
-          select: { 
+          select: {
             products: {
-              where: { deletedAt: null }
-            }
-          }
-        }
-      } 
+              where: { deletedAt: null },
+            },
+          },
+        },
+      },
     });
   }
 
@@ -57,21 +57,21 @@ export class CategoryService {
     const allCategories = await this.prisma.category.findMany({
       include: {
         _count: {
-          select: { 
+          select: {
             products: {
-              where: { deletedAt: null }
-            }
-          }
-        }
-      }
+              where: { deletedAt: null },
+            },
+          },
+        },
+      },
     });
 
     const buildTree = (parentId: number | null = null): any[] => {
       return allCategories
-        .filter(cat => cat.parentId === parentId)
-        .map(cat => ({
+        .filter((cat) => cat.parentId === parentId)
+        .map((cat) => ({
           ...cat,
-          children: buildTree(cat.id)
+          children: buildTree(cat.id),
         }));
     };
 
@@ -80,12 +80,12 @@ export class CategoryService {
 
   async getChildIds(parentId: number): Promise<number[]> {
     const allCategories = await this.prisma.category.findMany({
-      select: { id: true, parentId: true }
+      select: { id: true, parentId: true },
     });
 
     const ids: number[] = [parentId];
     const findChildren = (pid: number) => {
-      const children = allCategories.filter(cat => cat.parentId === pid);
+      const children = allCategories.filter((cat) => cat.parentId === pid);
       for (const child of children) {
         ids.push(child.id);
         findChildren(child.id);
@@ -97,15 +97,15 @@ export class CategoryService {
   }
 
   async findOne(id: number): Promise<Category | null> {
-    return this.prisma.category.findUnique({ 
-      where: { id }, 
-      include: { 
+    return this.prisma.category.findUnique({
+      where: { id },
+      include: {
         parent: true,
         children: true,
         products: {
-          where: { deletedAt: null }
-        }
-      } 
+          where: { deletedAt: null },
+        },
+      },
     });
   }
 
@@ -122,23 +122,20 @@ export class CategoryService {
 
   async remove(id: number): Promise<Category> {
     // Check if category has children before deleting or handle cascade
-    const childrenCount = await this.prisma.category.count({ where: { parentId: id } });
+    const childrenCount = await this.prisma.category.count({
+      where: { parentId: id },
+    });
     if (childrenCount > 0) {
       // Option 1: Prevent deletion
       // throw new Error('Cannot delete category with sub-categories');
-      
+
       // Option 2: Set children's parent to null (orphan)
       await this.prisma.category.updateMany({
         where: { parentId: id },
-        data: { parentId: null }
+        data: { parentId: null },
       });
     }
-    
+
     return this.prisma.category.delete({ where: { id } });
   }
 }
-
-
-
-
-

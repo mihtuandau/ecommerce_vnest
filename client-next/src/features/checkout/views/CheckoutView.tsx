@@ -53,6 +53,7 @@ export function CheckoutView() {
     isLoadingWards,
     user,
     itemsChangedNotice,
+    paymentAvailability,
   } = useCheckout();
 
   if (!mounted) {
@@ -194,6 +195,7 @@ export function CheckoutView() {
                 setPaymentMethod={(method) =>
                   setForm((prev: any) => ({ ...prev, paymentMethod: method }))
                 }
+                availability={paymentAvailability}
                 stepNumber="3"
               />
 

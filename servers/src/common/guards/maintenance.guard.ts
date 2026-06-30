@@ -1,15 +1,24 @@
-import { Injectable, CanActivate, ExecutionContext, ServiceUnavailableException } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  ServiceUnavailableException,
+} from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { SystemSettingsService } from '../../system-settings/system-settings.service';
 
 @Injectable()
 export class MaintenanceGuard implements CanActivate {
-  constructor(private readonly settingsService: SystemSettingsService) {}
+  constructor(
+    private readonly settingsService: SystemSettingsService,
+    private readonly jwtService: JwtService,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const req = context.switchToHttp().getRequest();
-    const url = req.url;
+    const path = req.path;
 
-    if (url.includes('/health') || url.includes('/system-settings')) {
+    if (path.includes('/health') || path.includes('/system-settings')) {
       return true;
     }
 
@@ -20,14 +29,19 @@ export class MaintenanceGuard implements CanActivate {
       return true;
     }
 
-    let isAdmin = false;
     const authHeader = req.headers.authorization;
-    if (authHeader && authHeader.startsWith('Bearer ')) {
+    const bearerToken =
+      authHeader && authHeader.startsWith('Bearer ')
+        ? authHeader.split(' ')[1]
+        : null;
+    const token = bearerToken || req.cookies?.accessToken;
+    let isAdmin = false;
+
+    if (token) {
       try {
-        const token = authHeader.split(' ')[1];
-        const payloadBase64 = token.split('.')[1];
-        const decodedJson = Buffer.from(payloadBase64, 'base64').toString('utf-8');
-        const decoded = JSON.parse(decodedJson);
+        const decoded = this.jwtService.verify(token, {
+          secret: process.env.JWT_SECRET,
+        });
         isAdmin = decoded?.role === 'ADMIN';
       } catch (e) {}
     }
@@ -36,24 +50,10 @@ export class MaintenanceGuard implements CanActivate {
       return true;
     }
 
-    const publicAllowedGets = [
-      '/product',
-      '/category',
-      '/banner',
-      '/review',
-      '/brand',
-    ];
-
-    const isPublicGet = req.method === 'GET' && publicAllowedGets.some(path => url.includes(path));
-
-    if (!isPublicGet) {
-      throw new ServiceUnavailableException({
-        statusCode: 503,
-        error: 'MAINTENANCE_MODE',
-        message: 'Hệ thống LUXE đang bảo trì nâng cấp máy chủ. Mọi giao dịch đã được tạm hoãn an toàn để bảo vệ quyền lợi của quý khách.',
-      });
-    }
-
-    return true;
+    throw new ServiceUnavailableException({
+      statusCode: 503,
+      error: 'MAINTENANCE_MODE',
+      message: settings.maintenanceMessage,
+    });
   }
 }

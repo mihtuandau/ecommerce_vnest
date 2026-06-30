@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React from "react";
 import Link from "next/link";
@@ -6,7 +6,7 @@ import Image from "next/image";
 import { Star, ShoppingCart, Trash2, FolderOpen, Check } from "lucide-react";
 import { isEmojiIcon, WISHLIST_ICON_MAP } from "@/features/wishlist/constants";
 import { cn } from "@/utils/cn";
-import { WishlistItem } from "@/store/useWishlistStore";
+import { WishlistItem } from "@/features/wishlist/store/wishlist.store";
 import { Price } from "@/components/ui";
 import { Button } from "@/components/ui/Button";
 

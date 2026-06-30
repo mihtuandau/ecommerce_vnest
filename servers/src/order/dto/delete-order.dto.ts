@@ -2,16 +2,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class DeleteOrderDto {
-  @ApiProperty({ 
-    example: true, 
-    description: 'Xác nhận xóa (bắt buộc true)', 
-    required: true 
+  @ApiProperty({
+    example: true,
+    description: 'Xác nhận xóa (bắt buộc true)',
+    required: true,
   })
   @IsBoolean()
   confirm: boolean;
 }
-
-
-
-
-

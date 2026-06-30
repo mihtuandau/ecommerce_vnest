@@ -1,4 +1,11 @@
-﻿import { IsInt, IsString, IsOptional, Min, Max, IsArray } from 'class-validator';
+﻿import {
+  IsInt,
+  IsString,
+  IsOptional,
+  Min,
+  Max,
+  IsArray,
+} from 'class-validator';
 
 export class CreateReviewDto {
   @IsInt()
@@ -18,9 +25,3 @@ export class CreateReviewDto {
   @IsOptional()
   images?: string[];
 }
-
-
-
-
-
-

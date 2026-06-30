@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useEffect } from "react";
-import { X, Send, Sparkles, MessageSquare } from "lucide-react";
+import { CheckCircle2, ShoppingCart, X, Send, Sparkles } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { useChatWidget } from "@/features/chat/hooks";
 import { ChatProductCard } from "./widget/ChatProductCard";
@@ -107,7 +107,7 @@ export function ChatWidget() {
                       )}
                     >
                       {msg.content
-                        .replace(/\[\s*(ids?|suggests?|code)\s*:[^\]]+\]/gi, "")
+                        .replace(/\[\s*(ids?|suggests?|code|cart|add_cart)\s*:[^\]]+\]/gi, "")
                         .trim()}
 
                       {isBot &&
@@ -123,6 +123,51 @@ export function ChatWidget() {
                             salePrice={msg.flashSalePrice?.[id]}
                           />
                         ))}
+
+                      {isBot && msg.cartAction && (
+                        <div className="mt-2 rounded-xl border border-[#DDD6C8] bg-[#FAF8F4] p-3 text-[#3D2B1A]">
+                          <div className="flex items-start gap-2">
+                            {msg.cartAction.status === "added" ? (
+                              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
+                            ) : (
+                              <ShoppingCart className="mt-0.5 h-4 w-4 shrink-0 text-[#C4783A]" />
+                            )}
+                            <div className="min-w-0 flex-1">
+                              <p className="text-[11.5px] font-bold">
+                                {msg.cartAction.message}
+                              </p>
+                              {msg.cartAction.status === "added" && (
+                                <>
+                                  <p className="mt-1 text-[10.5px] text-[#8A7966]">
+                                    {[
+                                      msg.cartAction.productName,
+                                      msg.cartAction.size && `size ${msg.cartAction.size}`,
+                                      msg.cartAction.color && `màu ${msg.cartAction.color}`,
+                                      `SL ${msg.cartAction.quantity}`,
+                                    ]
+                                      .filter(Boolean)
+                                      .join(" · ")}
+                                  </p>
+                                  <div className="mt-2 flex gap-2">
+                                    <a
+                                      href="/cart"
+                                      className="rounded-full border border-[#DDD6C8] bg-white px-3 py-1 text-[10px] font-bold text-[#3D2B1A] transition hover:border-[#C4783A]"
+                                    >
+                                      Giỏ hàng
+                                    </a>
+                                    <a
+                                      href="/checkout"
+                                      className="rounded-full bg-[#3D2B1A] px-3 py-1 text-[10px] font-bold text-white transition hover:bg-[#2A2420]"
+                                    >
+                                      Thanh toán
+                                    </a>
+                                  </div>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -154,7 +199,7 @@ export function ChatWidget() {
                 <button
                   key={i}
                   onClick={() => {
-                    if (s.toLowerCase().includes("mới")) {
+                    if (s.toLowerCase() === "bắt đầu hội thoại mới") {
                       clearHistory();
                       return;
                     }

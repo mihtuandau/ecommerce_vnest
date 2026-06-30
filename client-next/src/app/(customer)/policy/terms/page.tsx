@@ -3,16 +3,16 @@ import React from "react";
 export default function TermsOfServicePage() {
   return (
     <div className="max-w-[1000px] mx-auto py-12 md:py-20 px-4 sm:px-6">
-      <header className="mb-12 border-b border-slate-100 pb-8">
-        <h1 className="text-2xl font-bold text-slate-900 mb-2">Điều khoản dịch vụ</h1>
-        <p className="text-slate-500 text-sm">
+      <header className="mb-12 border-b border-brand-sand/50 pb-8">
+        <h1 className="text-2xl font-bold text-brand-espresso mb-2">Điều khoản dịch vụ</h1>
+        <p className="text-brand-taupe text-sm">
           Quy định và thỏa thuận sử dụng dịch vụ tại LUXE
         </p>
       </header>
 
-      <div className="space-y-10 text-slate-700 leading-relaxed text-base font-normal">
+      <div className="space-y-10 text-brand-espresso/85 leading-relaxed text-base font-normal">
         <section>
-          <h2 className="font-bold text-slate-900 mb-3">
+          <h2 className="font-bold text-brand-espresso mb-3">
             01. Chấp thuận các điều khoản
           </h2>
           <p>
@@ -23,7 +23,7 @@ export default function TermsOfServicePage() {
         </section>
 
         <section>
-          <h2 className="font-bold text-slate-900 mb-3">
+          <h2 className="font-bold text-brand-espresso mb-3">
             02. Quyền và trách nhiệm của khách hàng
           </h2>
           <p>
@@ -34,7 +34,7 @@ export default function TermsOfServicePage() {
         </section>
 
         <section>
-          <h2 className="font-bold text-slate-900 mb-3">03. Sở hữu trí tuệ</h2>
+          <h2 className="font-bold text-brand-espresso mb-3">03. Sở hữu trí tuệ</h2>
           <p>
             Toàn bộ nội dung trên website bao gồm văn bản, hình ảnh, logo, thiết kế đều
             thuộc sở hữu của LUXE hoặc các bên cấp phép liên quan. Mọi hành vi sao chép,
@@ -43,7 +43,7 @@ export default function TermsOfServicePage() {
         </section>
 
         <section>
-          <h2 className="font-bold text-slate-900 mb-3">04. Giới hạn trách nhiệm</h2>
+          <h2 className="font-bold text-brand-espresso mb-3">04. Giới hạn trách nhiệm</h2>
           <p>
             LUXE không chịu trách nhiệm đối với bất kỳ thiệt hại trực tiếp hoặc gián
             tiếp nào phát sinh từ việc sử dụng website hoặc do sản phẩm bị sử dụng sai
@@ -52,7 +52,7 @@ export default function TermsOfServicePage() {
         </section>
 
         <section>
-          <h2 className="font-bold text-slate-900 mb-3">05. Thay đổi điều khoản</h2>
+          <h2 className="font-bold text-brand-espresso mb-3">05. Thay đổi điều khoản</h2>
           <p>
             Chúng tôi có quyền cập nhật, sửa đổi các điều khoản này bất kỳ lúc nào mà
             không cần thông báo trước. Các thay đổi sẽ có hiệu lực ngay khi được đăng
@@ -63,3 +63,4 @@ export default function TermsOfServicePage() {
     </div>
   );
 }
+

@@ -40,7 +40,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       const authBody = client.handshake.auth?.token;
       const cookieHeader = client.handshake.headers?.cookie;
 
-      let token = authBody || (authHeader?.startsWith('Bearer ') ? authHeader.split(' ')[1] : null);
+      let token =
+        authBody ||
+        (authHeader?.startsWith('Bearer ') ? authHeader.split(' ')[1] : null);
 
       if (!token && cookieHeader) {
         const cookies = cookieHeader.split(';').reduce((acc, curr) => {
@@ -52,7 +54,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       }
 
       if (!token) {
-        this.logger.warn(`Socket connection ${client.id} disconnected: No token provided`);
+        this.logger.warn(
+          `Socket connection ${client.id} disconnected: No token provided`,
+        );
         client.disconnect();
         return;
       }
@@ -68,7 +72,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       }
 
       this.logger.log(`User connected to chat: ${payload.email}`);
-      client.data.user = payload; 
+      client.data.user = payload;
     } catch (err) {
       this.logger.error(`Chat connection failed: ${err.message}`);
       client.disconnect();
@@ -86,12 +90,16 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (!user) return { error: 'Unauthorized' };
 
     this.logger.log(`User ${user.email} joining room: ${data.roomId}`);
-    
-    const isStaff = ['ADMIN', 'WAREHOUSE', 'SALES'].includes(user.role?.toUpperCase());
-    const roomUserId = data.roomId.replace('room_', ''); 
+
+    const isStaff = ['ADMIN', 'WAREHOUSE', 'SALES'].includes(
+      user.role?.toUpperCase(),
+    );
+    const roomUserId = data.roomId.replace('room_', '');
 
     if (!isStaff && String(roomUserId) !== String(user.sub)) {
-      this.logger.warn(`Unauthorized room join attempt: User ${user.sub} to room ${data.roomId}`);
+      this.logger.warn(
+        `Unauthorized room join attempt: User ${user.sub} to room ${data.roomId}`,
+      );
       return { error: 'Unauthorized' };
     }
 
@@ -109,23 +117,27 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (!user) return { error: 'Unauthorized' };
 
     this.logger.log(`Message from ${user.email} to room ${data.roomId}`);
-    
-    const isStaff = ['ADMIN', 'WAREHOUSE', 'SALES'].includes(user.role?.toUpperCase());
+
+    const isStaff = ['ADMIN', 'WAREHOUSE', 'SALES'].includes(
+      user.role?.toUpperCase(),
+    );
     const roomUserId = data.roomId.replace('room_', '');
 
     if (!isStaff && String(roomUserId) !== String(user.sub)) {
-      this.logger.warn(`Unauthorized message attempt: User ${user.sub} to room ${data.roomId}`);
+      this.logger.warn(
+        `Unauthorized message attempt: User ${user.sub} to room ${data.roomId}`,
+      );
       return { error: 'Unauthorized' };
     }
 
     const savedMessage = await this.chatService.createMessage(
       data.roomId,
-      user.sub, 
+      user.sub,
       data.message,
     );
 
     this.server.to(data.roomId).emit('newMessage', savedMessage);
-    
+
     return savedMessage;
   }
 

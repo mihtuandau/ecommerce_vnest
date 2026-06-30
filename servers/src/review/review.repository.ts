@@ -22,7 +22,10 @@ export class ReviewRepository {
     });
   }
 
-  async findByUserAndProduct(userId: number, productId: number): Promise<Review | null> {
+  async findByUserAndProduct(
+    userId: number,
+    productId: number,
+  ): Promise<Review | null> {
     return this.prisma.review.findFirst({
       where: {
         userId,
@@ -31,7 +34,11 @@ export class ReviewRepository {
     });
   }
 
-  async findByUserProductAndOrder(userId: number, productId: number, orderId: number): Promise<Review | null> {
+  async findByUserProductAndOrder(
+    userId: number,
+    productId: number,
+    orderId: number,
+  ): Promise<Review | null> {
     return this.prisma.review.findUnique({
       where: {
         userId_productId_orderId: { userId, productId, orderId },
@@ -42,11 +49,14 @@ export class ReviewRepository {
   async findById(id: number): Promise<Review | null> {
     return this.prisma.review.findUnique({
       where: { id },
-      include: { images: true }
+      include: { images: true },
     });
   }
 
-  async hasUserPurchasedProduct(userId: number, productId: number): Promise<boolean> {
+  async hasUserPurchasedProduct(
+    userId: number,
+    productId: number,
+  ): Promise<boolean> {
     const orderItem = await this.prisma.orderItem.findFirst({
       where: {
         order: {
@@ -79,7 +89,11 @@ export class ReviewRepository {
     return false;
   }
 
-  async hasUserPurchasedProductInOrder(userId: number, productId: number, orderId: number): Promise<boolean> {
+  async hasUserPurchasedProductInOrder(
+    userId: number,
+    productId: number,
+    orderId: number,
+  ): Promise<boolean> {
     const orderItem = await this.prisma.orderItem.findFirst({
       where: {
         order: {
@@ -108,6 +122,24 @@ export class ReviewRepository {
             email: true,
           },
         },
+        order: {
+          select: {
+            id: true,
+            orderCode: true,
+            orderItems: {
+              select: {
+                variant: {
+                  select: {
+                    productId: true,
+                    size: true,
+                    color: true,
+                  },
+                },
+                variantSnapshot: true,
+              },
+            },
+          },
+        },
       },
       orderBy: { createdAt: 'desc' },
       skip,
@@ -119,7 +151,6 @@ export class ReviewRepository {
     return this.prisma.review.count({ where: { productId } });
   }
 
-  
   async update(id: number, data: Prisma.ReviewUpdateInput) {
     return this.prisma.review.update({
       where: { id },
@@ -137,14 +168,12 @@ export class ReviewRepository {
     });
   }
 
-  
   async delete(id: number): Promise<Review> {
     return this.prisma.review.delete({
       where: { id },
     });
   }
 
-  
   async getProductRatingStats(productId: number) {
     return this.prisma.review.aggregate({
       where: { productId },
@@ -153,8 +182,11 @@ export class ReviewRepository {
     });
   }
 
-  
-  async updateProductRating(productId: number, averageRating: number, reviewCount: number) {
+  async updateProductRating(
+    productId: number,
+    averageRating: number,
+    reviewCount: number,
+  ) {
     return this.prisma.product.update({
       where: { id: productId },
       data: {
@@ -219,25 +251,16 @@ export class ReviewRepository {
 
   async findCommentsByProduct(productId: number) {
     return this.prisma.review.findMany({
-      where: { 
-        productId, 
-        AND: [
-          { comment: { not: null } },
-          { comment: { not: '' } }
-        ]
+      where: {
+        productId,
+        AND: [{ comment: { not: null } }, { comment: { not: '' } }],
       },
-      select: { 
-        comment: true, 
-        rating: true 
+      select: {
+        comment: true,
+        rating: true,
       },
       take: 50,
       orderBy: { createdAt: 'desc' },
     });
   }
 }
-
-
-
-
-
-

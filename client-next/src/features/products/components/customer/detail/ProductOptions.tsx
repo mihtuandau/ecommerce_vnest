@@ -5,6 +5,7 @@ import { Ruler } from "lucide-react";
 import { cn } from "@/utils/cn";
 
 import { Product, ProductVariant } from "@/types/models";
+import { shouldShowSizeGuide } from "./sizeGuideVisibility";
 
 interface ProductOptionsProps {
   product: Product;
@@ -61,11 +62,15 @@ export function ProductOptions({
     );
   }, [selectedSize, product?.variants, colors]);
 
+  const showSizeGuide = useMemo(
+    () => shouldShowSizeGuide(product, sizes),
+    [product, sizes]
+  );
+
   if (sizes.length === 0 && colors.length === 0) return null;
 
   return (
     <div className="space-y-6">
-      
       {sizes.length > 0 && (
         <div className="space-y-3">
           <div className="flex items-center justify-between">
@@ -79,9 +84,11 @@ export function ProductOptions({
                 </span>
               )}
             </div>
-            <button className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-primary hover:opacity-70 transition-opacity">
-              <Ruler size={12} /> Hướng dẫn chọn size
-            </button>
+            {showSizeGuide && (
+              <button className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-primary hover:opacity-70 transition-opacity">
+                <Ruler size={12} /> Hướng dẫn chọn size
+              </button>
+            )}
           </div>
           <div className="flex flex-wrap gap-2">
             {sizes.map((size: string) => {
@@ -109,7 +116,6 @@ export function ProductOptions({
         </div>
       )}
 
-      
       {colors.length > 0 && (
         <div className="space-y-3">
           <div className="flex items-center gap-2">

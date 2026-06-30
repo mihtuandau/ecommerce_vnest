@@ -108,9 +108,3 @@ export class WishlistService {
     return this.prisma.wishlistItem.count({ where: { userId } });
   }
 }
-
-
-
-
-
-

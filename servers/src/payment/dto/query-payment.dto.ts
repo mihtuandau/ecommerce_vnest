@@ -28,8 +28,3 @@ export class QueryPaymentDto {
   @IsEnum(PaymentMethod)
   method?: PaymentMethod;
 }
-
-
-
-
-

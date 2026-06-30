@@ -1,12 +1,12 @@
-import { 
-  Controller, 
-  Get, 
-  Post, 
-  Put, 
-  Body, 
-  Param, 
-  Query, 
-  UseGuards, 
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Body,
+  Param,
+  Query,
+  UseGuards,
   Req,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
@@ -18,7 +18,6 @@ import { PaymentService } from './payment.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentStatusDto } from './dto/update-payment-status.dto';
 import { QueryPaymentDto } from './dto/query-payment.dto';
-import { Request } from 'express';
 
 @ApiTags('Payments')
 @Controller('payments')
@@ -26,11 +25,17 @@ export class PaymentController {
   constructor(private paymentService: PaymentService) {}
 
   @Post()
-  @Throttle({ default: { limit: 10, ttl: 60000 } }) 
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('Authorization')
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   @ApiOperation({ summary: 'Tạo payment mới và lấy link thanh toán VNPay' })
-  create(@Body() createPaymentDto: CreatePaymentDto, @Req() req: Request) {
+  create(@Body() createPaymentDto: CreatePaymentDto, @Req() req: any) {
     const ipAddr = req.ip || req.headers['x-forwarded-for'] || '127.0.0.1';
-    return this.paymentService.create(createPaymentDto, ipAddr as string);
+    return this.paymentService.create(
+      createPaymentDto,
+      ipAddr as string,
+      req.user,
+    );
   }
 
   @Get('vnpay-return')
@@ -40,7 +45,9 @@ export class PaymentController {
   }
 
   @Get('vnpay-ipn')
-  @ApiOperation({ summary: 'Xử lý thông báo thanh toán tức thời từ VNPay (IPN)' })
+  @ApiOperation({
+    summary: 'Xử lý thông báo thanh toán tức thời từ VNPay (IPN)',
+  })
   async handleVNPayIPN(@Query() query: any) {
     return this.paymentService.handleVNPayIPN(query);
   }
@@ -52,7 +59,7 @@ export class PaymentController {
   @ApiBearerAuth('Authorization')
   @ApiOperation({ summary: 'Đồng bộ trạng thái (Tính năng tương thích ngược)' })
   async syncPaymentStatus(@Param('id') id: string) {
-    // Với VNPay, trạng thái sẽ cập nhật qua Return URL hoặc IPN, 
+    // Với VNPay, trạng thái sẽ cập nhật qua Return URL hoặc IPN,
     // ở đây trả về dữ liệu hiện tại để tránh lỗi UI
     return this.paymentService.findOne(+id);
   }
@@ -79,7 +86,10 @@ export class PaymentController {
   @Roles('ADMIN')
   @ApiBearerAuth('Authorization')
   @ApiOperation({ summary: 'Cập nhật trạng thái payment (Admin only)' })
-  updateStatus(@Param('id') id: string, @Body() updateStatusDto: UpdatePaymentStatusDto) {
+  updateStatus(
+    @Param('id') id: string,
+    @Body() updateStatusDto: UpdatePaymentStatusDto,
+  ) {
     return this.paymentService.updateStatus(+id, updateStatusDto);
   }
 

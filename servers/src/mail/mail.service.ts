@@ -11,9 +11,11 @@ export class MailService {
     private mailerService: MailerService,
     @InjectQueue('mail') private mailQueue: Queue,
   ) {
-    this.logger.log(`MailService initialized with Redis queue: ${JSON.stringify((this.mailQueue as any).opts?.connection || 'default')}`);
+    this.logger.log(
+      `MailService initialized with Redis queue: ${JSON.stringify((this.mailQueue as any).opts?.connection || 'default')}`,
+    );
   }
-  
+
   private readonly styles = `
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 
@@ -306,20 +308,20 @@ export class MailService {
     orderCode: string,
     orderDetails: any,
   ) {
-    const { 
-      customerName, 
+    const {
+      customerName,
       customerPhone,
-      items, 
-      subtotal, 
-      discountAmount, 
-      shippingFee, 
-      total, 
-      paymentMethod, 
+      items,
+      subtotal,
+      discountAmount,
+      shippingFee,
+      total,
+      paymentMethod,
       shippingAddress,
       createdAt,
       shippingMethodName,
       estimatedDays,
-      discountCode
+      discountCode,
     } = orderDetails;
 
     // 1. Format order date
@@ -370,11 +372,15 @@ export class MailService {
             <td class="center">${item.quantity}</td>
             <td class="right">
               <div style="font-weight:600; color:#1a1a1a">${this.formatCurrency(paidPrice * item.quantity)}</div>
-              ${hasDiscount ? `
+              ${
+                hasDiscount
+                  ? `
                 <div style="font-size:11px; color:#888; text-decoration:line-through; font-weight:400; margin-top:2px">
                   ${this.formatCurrency(originalPrice * item.quantity)}
                 </div>
-              ` : ''}
+              `
+                  : ''
+              }
             </td>
           </tr>
         `;
@@ -446,14 +452,18 @@ export class MailService {
             <td colspan="2" class="total-label" style="font-weight:400; color:#888">Tạm tính</td>
             <td class="right" style="padding-top:14px; font-variant-numeric:tabular-nums">${this.formatCurrency(subtotal)}</td>
           </tr>
-          ${discountAmount > 0 ? `
+          ${
+            discountAmount > 0
+              ? `
           <tr class="total-row">
             <td colspan="2" class="total-label" style="font-weight:400; color:#888">
               Giảm giá ${discountCode ? `<span style="background:#fef2f2; border:1px solid #fca5a5; color:#ef4444; padding:2px 8px; border-radius:4px; font-size:11px; margin-left:6px; font-weight:600">${discountCode}</span>` : ''}
             </td>
             <td class="right" style="padding-top:8px; color:#ef4444; font-variant-numeric:tabular-nums">-${this.formatCurrency(discountAmount)}</td>
           </tr>
-          ` : ''}
+          `
+              : ''
+          }
           <tr class="total-row">
             <td colspan="2" class="total-label" style="font-weight:400; color:#888">Phí vận chuyển</td>
             <td class="right" style="padding-top:8px; font-variant-numeric:tabular-nums">${this.formatCurrency(shippingFee)}</td>
@@ -491,7 +501,10 @@ export class MailService {
       });
       this.logger.log(`Queued order confirmation for ${email}`);
     } catch (error) {
-      this.logger.error(`Failed to queue order confirmation for ${email}:`, error);
+      this.logger.error(
+        `Failed to queue order confirmation for ${email}:`,
+        error,
+      );
     }
   }
 
@@ -560,11 +573,18 @@ export class MailService {
       });
       this.logger.log(`Queued verification email for ${email}`);
     } catch (error) {
-      this.logger.error(`Failed to queue verification email for ${email}:`, error);
+      this.logger.error(
+        `Failed to queue verification email for ${email}:`,
+        error,
+      );
     }
   }
 
-  async sendOrderDelivered(email: string, orderCode: string, customerName: string) {
+  async sendOrderDelivered(
+    email: string,
+    orderCode: string,
+    customerName: string,
+  ) {
     const content = `
       <p class="section-label">Thông báo giao hàng</p>
       <h1 style="color: #10b981;">Giao hàng thành công</h1>
@@ -599,11 +619,19 @@ export class MailService {
       });
       this.logger.log(`Queued order delivered email for ${email}`);
     } catch (error) {
-      this.logger.error(`Failed to queue order delivered email for ${email}:`, error);
+      this.logger.error(
+        `Failed to queue order delivered email for ${email}:`,
+        error,
+      );
     }
   }
 
-  async sendOrderCancelled(email: string, orderCode: string, customerName: string, reason?: string) {
+  async sendOrderCancelled(
+    email: string,
+    orderCode: string,
+    customerName: string,
+    reason?: string,
+  ) {
     const content = `
       <p class="section-label">Thông báo đơn hàng</p>
       <h1 style="color: #ef4444;">Đơn hàng đã bị hủy</h1>
@@ -615,12 +643,16 @@ export class MailService {
         <span class="order-badge" style="background:#fee2e2; border-color:#fca5a5; color:#b91c1c;">Đã hủy</span>
       </div>
 
-      ${reason ? `
+      ${
+        reason
+          ? `
       <div class="notice warning">
         <div class="notice-title">Lý do hủy</div>
         <p>${reason}</p>
       </div>
-      ` : ''}
+      `
+          : ''
+      }
 
       <p>Nếu có bất kỳ thắc mắc nào hoặc bạn không thực hiện yêu cầu này, vui lòng liên hệ bộ phận hỗ trợ của chúng tôi ngay lập tức.</p>
 
@@ -645,14 +677,19 @@ export class MailService {
       });
       this.logger.log(`Queued order cancelled email for ${email}`);
     } catch (error) {
-      this.logger.error(`Failed to queue order cancelled email for ${email}:`, error);
+      this.logger.error(
+        `Failed to queue order cancelled email for ${email}:`,
+        error,
+      );
     }
   }
 
   private getFrontendUrl(): string {
-    const urls = (process.env.FRONTEND_URL || 'http://localhost:3000').split(',');
+    const urls = (process.env.FRONTEND_URL || 'http://localhost:3000').split(
+      ',',
+    );
     if (process.env.NODE_ENV === 'production') {
-      const prodUrl = urls.find(u => u.trim().startsWith('https'));
+      const prodUrl = urls.find((u) => u.trim().startsWith('https'));
       if (prodUrl) return prodUrl.trim();
     }
     return urls[0].trim();
@@ -664,4 +701,4 @@ export class MailService {
       currency: 'VND',
     }).format(amount);
   }
-}         
+}

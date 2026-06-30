@@ -27,7 +27,11 @@ export class NotificationController {
     @Query('limit') limit: string = '10',
     @Req() req: any,
   ) {
-    return this.notificationService.getMyNotifications(req.user.userId, +page, +limit);
+    return this.notificationService.getMyNotifications(
+      req.user.userId,
+      +page,
+      +limit,
+    );
   }
 
   @Patch(':id/read')

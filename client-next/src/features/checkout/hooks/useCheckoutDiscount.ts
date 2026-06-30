@@ -1,7 +1,7 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useCartStore } from "@/store/useCartStore";
+import { useCartStore } from "@/features/cart/store/cart.store";
 import { discountsApi } from "@/features/discounts/api";
 import { useToast } from "@/hooks/useToast";
 import { CHECKOUT_MESSAGES } from "@/features/checkout/constants";
@@ -10,7 +10,7 @@ import {
   formatCurrency,
 } from "@/features/checkout/utils/checkoutValidation";
 import type { DiscountValidationResponse } from "@/features/discounts/types";
-import type { CheckoutDiscount } from "@/store/useCartStore";
+import type { CheckoutDiscount } from "@/features/cart/store/cart.store";
 
 export function useCheckoutDiscount(subtotal: number) {
   const { success, error, warning } = useToast();

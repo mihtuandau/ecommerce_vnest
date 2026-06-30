@@ -7,7 +7,6 @@ export const reviewQueryKeys = {
     ["reviews", "product", productId, page, limit] as const,
   canReview: (productId: number, orderId: number) =>
     ["reviews", "can-review", productId, orderId] as const,
-  aiSummary: (productId: number) => ["reviews", "ai-summary", productId] as const,
 };
 
 export const useProductReviews = (productId: number, page = 1, limit = 10) => {

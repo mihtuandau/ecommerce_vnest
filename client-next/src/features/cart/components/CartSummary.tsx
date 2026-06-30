@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import { ShieldCheck, Truck, RotateCcw, Lock, Tag, X } from "lucide-react";
@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/Button";
 import Link from "next/link";
 import { ROUTES } from "@/constants/routes";
 import { cn } from "@/utils/cn";
-import { CheckoutDiscount } from "@/store/useCartStore";
+import { CheckoutDiscount } from "@/features/cart/store/cart.store";
 import { VoucherModal } from "@/features/discounts/components/customer/VoucherModal";
 
 interface CartSummaryProps {

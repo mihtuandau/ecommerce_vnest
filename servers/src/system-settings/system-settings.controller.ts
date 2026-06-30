@@ -1,7 +1,12 @@
 import { Controller, Get, Put, Body, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../common/guards/auth.guard';
-import { SystemSettingsService, SystemSettings } from './system-settings.service';
+import { RolesGuard } from '../common/guards/roles.guard';
+import { Permissions } from '../common/decorators/permissions.decorator';
+import {
+  SystemSettingsService,
+  SystemSettings,
+} from './system-settings.service';
 
 @ApiTags('System Settings')
 @Controller('system-settings')
@@ -14,9 +19,12 @@ export class SystemSettingsController {
   }
 
   @Put()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Permissions('settings.manage')
   @ApiBearerAuth()
-  async updateSettings(@Body() dto: Partial<SystemSettings>): Promise<SystemSettings> {
+  async updateSettings(
+    @Body() dto: Partial<SystemSettings>,
+  ): Promise<SystemSettings> {
     return this.settingsService.updateSettings(dto);
   }
 }

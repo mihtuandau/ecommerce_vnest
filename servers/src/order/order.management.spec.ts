@@ -37,7 +37,11 @@ describe('OrderManagement.applyDiscount', () => {
     repository.findById.mockResolvedValue(null);
 
     await expect(
-      service.applyDiscount(1, { code: 'SAVE10' }, { userId: 10, role: 'USER' }),
+      service.applyDiscount(
+        1,
+        { code: 'SAVE10' },
+        { userId: 10, role: 'USER' },
+      ),
     ).rejects.toThrow(NotFoundException);
   });
 
@@ -52,7 +56,11 @@ describe('OrderManagement.applyDiscount', () => {
     });
 
     await expect(
-      service.applyDiscount(1, { code: 'SAVE10' }, { userId: 10, role: 'USER' }),
+      service.applyDiscount(
+        1,
+        { code: 'SAVE10' },
+        { userId: 10, role: 'USER' },
+      ),
     ).rejects.toThrow(BadRequestException);
   });
 
@@ -94,6 +102,7 @@ describe('OrderManagement.applyDiscount', () => {
       isFlashSale: false,
       isActive: true,
       usageLimit: 1,
+      usageCount: 1,
       startDate: new Date('2020-01-01T00:00:00.000Z'),
       endDate: new Date('2099-01-01T00:00:00.000Z'),
       percentage: 10,
@@ -101,7 +110,11 @@ describe('OrderManagement.applyDiscount', () => {
     repository.countOrdersUsingDiscount.mockResolvedValue(1);
 
     await expect(
-      service.applyDiscount(1, { code: 'SAVE10' }, { userId: 10, role: 'USER' }),
+      service.applyDiscount(
+        1,
+        { code: 'SAVE10' },
+        { userId: 10, role: 'USER' },
+      ),
     ).rejects.toThrow(BadRequestException);
   });
 

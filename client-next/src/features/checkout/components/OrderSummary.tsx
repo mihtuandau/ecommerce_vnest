@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import Image from "next/image";
@@ -12,7 +12,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { Spinner } from "@/components/ui/Spinner";
-import { CartItem } from "@/store/useCartStore";
+import { CartItem } from "@/features/cart/store/cart.store";
 import { VoucherModal } from "@/features/discounts/components/customer/VoucherModal";
 import { cn } from "@/utils/cn";
 

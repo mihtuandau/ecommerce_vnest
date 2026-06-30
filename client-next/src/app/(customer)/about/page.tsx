@@ -4,9 +4,9 @@ import Image from "next/image";
 
 export default function AboutPage() {
   return (
-    <div className="bg-white min-h-screen">
+    <div className="bg-brand-cream min-h-screen font-sans-brand">
       
-      <section className="relative h-[60vh] md:h-[70vh] flex items-center justify-center overflow-hidden bg-slate-900">
+      <section className="relative h-[60vh] md:h-[70vh] flex items-center justify-center overflow-hidden bg-brand-espresso">
         <div className="absolute inset-0 z-0">
           <Image
             src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=2070&auto=format&fit=crop"
@@ -15,7 +15,7 @@ export default function AboutPage() {
             alt="LUXE Hero"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-slate-900/40 via-slate-900/60 to-slate-900/90" />
+          <div className="absolute inset-0 bg-gradient-to-b from-brand-espresso/40 via-brand-espresso/60 to-brand-espresso/90" />
         </div>
 
         <div className="relative z-10 max-w-[1400px] mx-auto px-4 text-center space-y-8">
@@ -27,7 +27,7 @@ export default function AboutPage() {
             Kiến tạo tương lai <br />
             mua sắm trực tuyến
           </h1>
-          <p className="text-slate-300 max-w-2xl mx-auto text-lg font-normal leading-relaxed">
+          <p className="text-brand-cream/80 max-w-2xl mx-auto text-lg font-normal leading-relaxed">
             Chúng tôi không chỉ bán sản phẩm, chúng tôi mang đến trải nghiệm tinh tế,
             hiện đại và tin cậy tuyệt đối cho mọi khách hàng.
           </p>
@@ -38,10 +38,10 @@ export default function AboutPage() {
       <section className="max-w-[1400px] mx-auto px-4 py-32 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
           <div className="space-y-10">
-            <h2 className="text-4xl font-bold text-slate-900 tracking-tight">
+            <h2 className="text-4xl font-bold text-brand-espresso tracking-tight">
               Câu chuyện của chúng tôi
             </h2>
-            <div className="space-y-6 text-slate-600 leading-relaxed text-lg font-normal">
+            <div className="space-y-6 text-brand-taupe leading-relaxed text-lg font-normal">
               <p>
                 Ra đời từ năm 2024, LUXE bắt đầu với một ý tưởng đơn giản: Làm thế nào
                 để việc mua sắm trực tuyến trở nên an toàn, nhanh chóng và tinh tế hơn?
@@ -57,7 +57,7 @@ export default function AboutPage() {
                 <p className="text-4xl font-bold text-primary tracking-tighter">
                   50,000+
                 </p>
-                <p className="text-xs font-semibold text-slate-500">
+                <p className="text-xs font-semibold text-brand-taupe">
                   Khách hàng tin dùng
                 </p>
               </div>
@@ -65,7 +65,7 @@ export default function AboutPage() {
                 <p className="text-4xl font-bold text-primary tracking-tighter">
                   1,000+
                 </p>
-                <p className="text-xs font-semibold text-slate-500">
+                <p className="text-xs font-semibold text-brand-taupe">
                   Sản phẩm tuyển chọn
                 </p>
               </div>
@@ -86,13 +86,13 @@ export default function AboutPage() {
       </section>
 
       
-      <section className="bg-slate-50/50 py-32 border-y border-slate-100">
+      <section className="bg-brand-cream/60 py-32 border-y border-brand-sand/50">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-20">
           <div className="space-y-4">
-            <h2 className="text-4xl font-bold text-slate-900 tracking-tight">
+            <h2 className="text-4xl font-bold text-brand-espresso tracking-tight">
               Giá trị cốt lõi
             </h2>
-            <p className="text-slate-500 font-medium">
+            <p className="text-brand-taupe font-medium">
               Ba trụ cột tạo nên sự khác biệt của LUXE
             </p>
           </div>
@@ -117,14 +117,14 @@ export default function AboutPage() {
             ].map((item, i) => (
               <div
                 key={i}
-                className="p-12 bg-white rounded-[2.5rem] border border-slate-100 space-y-8 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 group"
+                className="p-12 bg-white rounded-[2.5rem] border border-brand-sand/50 space-y-8 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 group"
               >
-                <div className="h-16 w-16 mx-auto rounded-2xl bg-slate-50 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-500">
+                <div className="h-16 w-16 mx-auto rounded-2xl bg-brand-cream flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-500">
                   {item.icon}
                 </div>
                 <div className="space-y-3">
-                  <h3 className="text-2xl font-bold text-slate-900">{item.title}</h3>
-                  <p className="text-slate-500 text-sm leading-relaxed font-normal">
+                  <h3 className="text-2xl font-bold text-brand-espresso">{item.title}</h3>
+                  <p className="text-brand-taupe text-sm leading-relaxed font-normal">
                     {item.desc}
                   </p>
                 </div>
@@ -136,3 +136,4 @@ export default function AboutPage() {
     </div>
   );
 }
+

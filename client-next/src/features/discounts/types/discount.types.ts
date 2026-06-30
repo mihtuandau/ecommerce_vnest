@@ -1,4 +1,4 @@
-import type { CheckoutDiscount } from "@/store/useCartStore";
+﻿import type { CheckoutDiscount } from "@/features/cart/store/cart.store";
 import type { Product } from "@/types/models";
 
 export interface DiscountValidationResponse {

@@ -1,4 +1,4 @@
-import type { CartItem } from "@/store/useCartStore";
+﻿import type { CartItem } from "@/features/cart/store/cart.store";
 
 export function groupCartItemsByProduct(items: CartItem[]) {
   return items.reduce<Record<string, CartItem[]>>((groups, item) => {

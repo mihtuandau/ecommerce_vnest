@@ -93,6 +93,7 @@ export function NotificationsTab() {
 
   const getIcon = (type: string) => {
     switch (type) {
+      case "ORDER":
       case "ORDER_STATUS":
         return <ShoppingBag size={18} className="text-blue-500" />;
       case "SECURITY":

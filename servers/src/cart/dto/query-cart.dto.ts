@@ -3,10 +3,10 @@ import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class QueryCartDto {
-  @ApiProperty({ 
-    example: 1, 
-    description: 'ID user (tùy chọn, mặc định từ token)', 
-    required: false 
+  @ApiProperty({
+    example: 1,
+    description: 'ID user (tùy chọn, mặc định từ token)',
+    required: false,
   })
   @Type(() => Number)
   @IsOptional()
@@ -14,8 +14,3 @@ export class QueryCartDto {
   @IsPositive()
   userId?: number;
 }
-
-
-
-
-

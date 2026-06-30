@@ -66,9 +66,9 @@ export class ReportService {
     }
 
     rawOrders.forEach((order) => {
-      const vnTime = dayjs.utc(
-        order.payment?.updatedAt || order.createdAt,
-      ).tz('Asia/Ho_Chi_Minh');
+      const vnTime = dayjs
+        .utc(order.payment?.updatedAt || order.createdAt)
+        .tz('Asia/Ho_Chi_Minh');
       const label = vnTime.format('DD/MM');
 
       const existing = dataMap.get(label);

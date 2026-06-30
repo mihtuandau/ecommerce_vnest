@@ -6,6 +6,13 @@ type AuthPayload = {
   role?: string;
 };
 
+// Fix 4: khai báo một lần — thêm role mới chỉ cần sửa đây
+const STAFF_ROLES = new Set(["ADMIN", "WAREHOUSE", "SALES"]);
+
+function isStaffRole(role?: string): boolean {
+  return !!role && STAFF_ROLES.has(role);
+}
+
 async function verifyAccessToken(token: string): Promise<AuthPayload | null> {
   const secret = process.env.JWT_SECRET;
   if (!secret) return null;
@@ -33,8 +40,7 @@ export async function middleware(request: NextRequest) {
   if (token && isAuthPage) {
     const payload = await verifyAccessToken(token);
     if (payload) {
-      const isStaff = payload.role === "ADMIN" || payload.role === "WAREHOUSE" || payload.role === "SALES";
-      return NextResponse.redirect(new URL(isStaff ? "/admin" : "/", request.url));
+      return NextResponse.redirect(new URL(isStaffRole(payload.role) ? "/admin" : "/", request.url));
     }
     return NextResponse.next();
   }
@@ -51,8 +57,7 @@ export async function middleware(request: NextRequest) {
     if (!payload) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
-    const isStaff = payload.role === "ADMIN" || payload.role === "WAREHOUSE" || payload.role === "SALES";
-    if (isAdminPage && !isStaff) {
+    if (isAdminPage && !isStaffRole(payload.role)) {
       return NextResponse.redirect(new URL("/", request.url));
     }
   }

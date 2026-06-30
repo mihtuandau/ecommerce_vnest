@@ -11,8 +11,3 @@ import { UploadModule } from '../upload/upload.module';
   exports: [CategoryService],
 })
 export class CategoryModule {}
-
-
-
-
-

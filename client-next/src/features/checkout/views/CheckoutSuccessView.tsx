@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { CheckCircle2, Package } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -20,7 +20,12 @@ export function CheckoutSuccessView() {
   const isGuest = !user;
   const { clearSelectedItems, clearBuyNowItem } = useCart();
 
+  // Fix 5: dùng ref flag để chắc chắn chỉ chạy một lần khi mount,
+  //   tránh chạy lại khi clearSelectedItems thay đổi reference lúc auth store hydrate
+  const hasCleared = useRef(false);
   useEffect(() => {
+    if (hasCleared.current) return;
+    hasCleared.current = true;
     if (isBuyNow) {
       clearBuyNowItem();
     } else {

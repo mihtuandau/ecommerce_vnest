@@ -23,14 +23,13 @@ export class QueryOrderDto {
   @IsEnum(OrderStatus)
   status?: OrderStatus;
 
-  @ApiProperty({ example: 3, required: false, description: 'Filter by user ID (admin only)' })
+  @ApiProperty({
+    example: 3,
+    required: false,
+    description: 'Filter by user ID (admin only)',
+  })
   @IsOptional()
   @Type(() => Number)
   @IsInt()
   userId?: number;
 }
-
-
-
-
-

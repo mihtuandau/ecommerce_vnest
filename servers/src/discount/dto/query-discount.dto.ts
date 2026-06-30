@@ -8,7 +8,9 @@ export class QueryDiscountDto {
   @IsString()
   search?: string;
 
-  @ApiPropertyOptional({ description: 'Lọc theo trạng thái: active, expired, upcoming' })
+  @ApiPropertyOptional({
+    description: 'Lọc theo trạng thái: active, expired, upcoming',
+  })
   @IsOptional()
   @IsString()
   status?: string;

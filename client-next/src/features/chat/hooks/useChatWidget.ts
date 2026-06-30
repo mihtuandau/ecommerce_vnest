@@ -81,6 +81,7 @@ export function useChatWidget() {
         productIds: response.productIds || [],
         suggestions: response.suggestions || [],
         discounts: response.discounts || [],
+        cartAction: response.cartAction || null,
         flashSalePrice: response.flashSalePrice || null,
         timestamp: response.timestamp || new Date().toISOString(),
       };

@@ -26,7 +26,7 @@ export function AdminUserDetailView() {
 
   if (isLoading) {
     return (
-      <div className="h-96 flex flex-col items-center justify-center gap-3">
+      <div className="flex h-96 flex-col items-center justify-center gap-3">
         <Spinner size="lg" />
         <p className="text-sm font-medium text-slate-400">Đang tải hồ sơ...</p>
       </div>
@@ -66,7 +66,7 @@ export function AdminUserDetailView() {
           <Button
             variant="ghost"
             size="icon"
-            className="h-9 w-9 rounded-lg border border-slate-200 text-slate-400 hover:text-teal-700 hover:bg-teal-50"
+            className="h-9 w-9 rounded-lg border border-slate-200 text-slate-400 hover:bg-teal-50 hover:text-teal-700"
             onClick={() => router.back()}
           >
             <ChevronLeft className="h-4 w-4" />
@@ -75,13 +75,13 @@ export function AdminUserDetailView() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="space-y-6">
           <CustomerCard user={user} />
           <Actions user={user} onEdit={() => setActiveTab("settings")} />
         </div>
 
-        <div className="lg:col-span-2 space-y-6">
+        <div className="space-y-6 lg:col-span-2">
           <CustomerStats
             totalSpent={totalSpent}
             totalOrders={totalOrders}

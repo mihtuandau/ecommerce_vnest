@@ -9,26 +9,26 @@ export class UploadService {
     cloudinary.config(cloudinaryConfig(this.configService));
   }
 
-  async uploadImages(files: Express.Multer.File[]): Promise<string[]> {  
+  async uploadImages(files: Express.Multer.File[]): Promise<string[]> {
     try {
       const urls = await Promise.all(
-        files.map(file =>
-          new Promise<string>((resolve, reject) => {
-            const upload = cloudinary.uploader.upload_stream(
-              { 
-                resource_type: 'auto', 
-                folder: 'ecommerce/products'
-              },
-              (error, result) => {
-                if (error) {
-                  console.error('Cloudinary Error:', error);
-                  reject(error);
-                }
-                else resolve(result!.secure_url);
-              },
-            );
-            upload.end(file.buffer);
-          }),
+        files.map(
+          (file) =>
+            new Promise<string>((resolve, reject) => {
+              const upload = cloudinary.uploader.upload_stream(
+                {
+                  resource_type: 'auto',
+                  folder: 'ecommerce/products',
+                },
+                (error, result) => {
+                  if (error) {
+                    console.error('Cloudinary Error:', error);
+                    reject(error);
+                  } else resolve(result!.secure_url);
+                },
+              );
+              upload.end(file.buffer);
+            }),
         ),
       );
       return urls;
@@ -44,7 +44,9 @@ export class UploadService {
       // Example URL: https://res.cloudinary.com/cloud_name/image/upload/v1234567/ecommerce/products/image_id.jpg
       const parts = url.split('/');
       const fileName = parts[parts.length - 1];
-      const publicIdWithExtension = parts.slice(parts.indexOf('ecommerce')).join('/');
+      const publicIdWithExtension = parts
+        .slice(parts.indexOf('ecommerce'))
+        .join('/');
       const publicId = publicIdWithExtension.split('.')[0];
 
       await cloudinary.uploader.destroy(publicId);
@@ -53,8 +55,3 @@ export class UploadService {
     }
   }
 }
-
-
-
-
-

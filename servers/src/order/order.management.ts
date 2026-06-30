@@ -1,5 +1,9 @@
-
-import { Injectable, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  Logger,
+} from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { OrderRepository } from './order.repository';
 import { OrderCache } from './order.cache';
@@ -11,6 +15,7 @@ import { GHNService } from '../ghn/ghn.service';
 import { MailService } from '../mail/mail.service';
 import { NotificationService } from '../notification/notification.service';
 import dayjs from 'dayjs';
+import { SystemSettingsService } from '../system-settings/system-settings.service';
 
 @Injectable()
 export class OrderManagement {
@@ -23,6 +28,7 @@ export class OrderManagement {
     private ghnService: GHNService,
     private mailService: MailService,
     private notificationService: NotificationService,
+    private systemSettingsService: SystemSettingsService,
   ) {}
 
   /**
@@ -32,40 +38,58 @@ export class OrderManagement {
   @Cron('0 */15 * * * *') // Chạy mỗi 15 phút
   async handleAutoCancelAbandonedOrders() {
     this.logger.log('[Cron] Checking for abandoned orders...');
-    
-    const thirtyMinsAgo = dayjs().subtract(30, 'minute').toDate();
-    
+
+    const settings = await this.systemSettingsService.getSettings();
+    const cancelAfterMinutes = Math.max(1, settings.autoCancelUnpaidMinutes);
+    const thirtyMinsAgo = dayjs()
+      .subtract(cancelAfterMinutes, 'minute')
+      .toDate();
+
     // Tìm các đơn hàng PENDING được tạo từ 30 phút trước
-    const abandonedOrders = await this.repository.findAbandonedOrders(thirtyMinsAgo);
-    
+    const abandonedOrders =
+      await this.repository.findAbandonedOrders(thirtyMinsAgo);
+
     if (abandonedOrders.length === 0) {
       return;
     }
 
-    this.logger.log(`[Cron] Found ${abandonedOrders.length} abandoned orders. Processing auto-cancel...`);
+    this.logger.log(
+      `[Cron] Found ${abandonedOrders.length} abandoned orders. Processing auto-cancel...`,
+    );
 
     for (const order of abandonedOrders) {
       try {
         // KIỂM TRA LẠI TRẠNG THÁI THỰC TẾ TRONG DB (Tránh Race Condition)
         const currentOrder = await this.repository.findById(order.id);
-        if (!currentOrder || currentOrder.status !== 'PENDING' || currentOrder.payment?.status === 'SUCCESS') {
+        if (
+          !currentOrder ||
+          currentOrder.status !== 'PENDING' ||
+          currentOrder.payment?.status === 'SUCCESS'
+        ) {
           continue;
         }
 
-        this.logger.log(`[Cron] Auto-cancelling abandoned order ${order.orderCode} (ID: ${order.id})`);
+        this.logger.log(
+          `[Cron] Auto-cancelling abandoned order ${order.orderCode} (ID: ${order.id})`,
+        );
 
         // Sử dụng Transaction để đảm bảo tính nguyên tử
         await this.repository.cancelAndRestore(order.id, order.payment?.id);
 
-        await this.cacheService.clearRelatedCaches(order.id, order.userId || undefined);
+        await this.cacheService.clearRelatedCaches(
+          order.id,
+          order.userId || undefined,
+        );
       } catch (err) {
-        this.logger.error(`[Cron] Failed to auto-cancel order ${order.id}:`, err.message);
+        this.logger.error(
+          `[Cron] Failed to auto-cancel order ${order.id}:`,
+          err.message,
+        );
       }
     }
   }
 
   async update(id: number, dto: UpdateOrderDto): Promise<any> {
-
     await this.cacheService.deleteOrder(id);
 
     const oldOrder = await this.repository.findById(id);
@@ -81,60 +105,84 @@ export class OrderManagement {
     // Validate status transition
     if (dto.status && dto.status !== oldOrder.status) {
       const validTransitions: Record<string, string[]> = {
-        'PENDING': ['PROCESSING', 'CANCELLED'],
-        'PROCESSING': ['SHIPPED', 'CANCELLED'],
-        'SHIPPED': ['DELIVERED', 'CANCELLED'],
-        'DELIVERED': ['RETURN_REQUESTED', 'RETURNED'],
-        'RETURN_REQUESTED': ['RETURNED'],
-        'RETURNED': [],
-        'CANCELLED': []
+        PENDING: ['PROCESSING', 'CANCELLED'],
+        PROCESSING: ['SHIPPED', 'CANCELLED'],
+        SHIPPED: ['DELIVERED', 'CANCELLED'],
+        DELIVERED: ['RETURN_REQUESTED', 'RETURNED'],
+        RETURN_REQUESTED: ['RETURNED'],
+        RETURNED: [],
+        CANCELLED: [],
       };
 
       const allowedNextStates = validTransitions[oldOrder.status] || [];
       if (!allowedNextStates.includes(dto.status)) {
         throw new BadRequestException(
           `Không thể cập nhật từ trạng thái "${oldOrder.status}" sang "${dto.status}". ` +
-          `Các trạng thái cho phép: ${allowedNextStates.join(', ') || 'Không có'}. ` +
-          `Vui lòng CANCEL đơn hàng nếu cần thay đổi.`
+            `Các trạng thái cho phép: ${allowedNextStates.join(', ') || 'Không có'}. ` +
+            `Vui lòng CANCEL đơn hàng nếu cần thay đổi.`,
         );
       }
     }
 
     // Handle deliveredAt timestamp
     const updateData: any = { ...dto };
-    
+
     if (dto.status === 'DELIVERED' && oldOrder.status !== 'DELIVERED') {
       updateData.deliveredAt = new Date();
-      this.logger.log(`[OrderManagement] Marking order ${id} as delivered at ${updateData.deliveredAt}`);
-    } else if (oldOrder.status === 'DELIVERED' && dto.status && dto.status !== 'DELIVERED') {
+      this.logger.log(
+        `[OrderManagement] Marking order ${id} as delivered at ${updateData.deliveredAt}`,
+      );
+    } else if (
+      oldOrder.status === 'DELIVERED' &&
+      dto.status &&
+      dto.status !== 'DELIVERED'
+    ) {
       updateData.deliveredAt = null;
     }
 
     const order = await this.repository.update(id, updateData);
 
     // Create Notification if status changed and it's a member order
-    if (dto.status && dto.status !== oldOrder.status && order.userId) {
-      this.notificationService.createNotification(order.userId, {
-        title: 'Cập nhật đơn hàng',
-        content: `Đơn hàng #${order.orderCode} đã chuyển sang trạng thái: ${dto.status}`,
-        type: 'ORDER_STATUS',
-        link: `/account?tab=orders&id=${order.id}`
-      }).catch(err => this.logger.error('Failed to create order notification:', err));
+    const settings = await this.systemSettingsService.getSettings();
+    if (
+      settings.orderNotification &&
+      dto.status &&
+      dto.status !== oldOrder.status &&
+      order.userId
+    ) {
+      this.notificationService
+        .createNotification(order.userId, {
+          title: 'Cập nhật đơn hàng',
+          content: `Đơn hàng #${order.orderCode} đã chuyển sang trạng thái: ${dto.status}`,
+          type: 'ORDER',
+          link: `/account?tab=orders&id=${order.id}`,
+        })
+        .catch((err) =>
+          this.logger.error('Failed to create order notification:', err),
+        );
     }
 
     await this.handlePaymentCreation(order, oldOrder, dto);
 
     // Auto-sync GHN khi chuyển sang SHIPPED mà chưa có mã vận đơn
-    if (dto.status === 'SHIPPED' && oldOrder.status !== 'SHIPPED' && !oldOrder.shippingCode) {
+    if (
+      dto.status === 'SHIPPED' &&
+      oldOrder.status !== 'SHIPPED' &&
+      !oldOrder.shippingCode
+    ) {
       try {
-        this.logger.log(`[OrderManagement] Auto-syncing order ${id} to GHN on SHIPPED transition...`);
+        this.logger.log(
+          `[OrderManagement] Auto-syncing order ${id} to GHN on SHIPPED transition...`,
+        );
         await this.syncToGHN(id);
-        this.logger.log(`[OrderManagement] Auto GHN sync for order ${id} succeeded.`);
+        this.logger.log(
+          `[OrderManagement] Auto GHN sync for order ${id} succeeded.`,
+        );
       } catch (ghnError) {
         // Không throw error - status vẫn update thành công, chỉ log warning
         this.logger.warn(
           `[OrderManagement] Auto GHN sync for order ${id} failed: ${ghnError.message}. ` +
-          `Admin có thể tạo vận đơn thủ công sau.`
+            `Admin có thể tạo vận đơn thủ công sau.`,
         );
       }
     }
@@ -143,40 +191,81 @@ export class OrderManagement {
 
     if (dto.status === 'CANCELLED' || dto.status === 'RETURNED') {
       const isAlreadyRestored = oldOrder.status === 'RETURNED';
-      
+
       if (!isAlreadyRestored) {
-        const actionLabel = dto.status === 'CANCELLED' ? 'cancelled' : 'returned';
-        this.logger.log(`[OrderManagement] Order ${id} is being ${actionLabel}. Restoring stock...`);
+        const actionLabel =
+          dto.status === 'CANCELLED' ? 'cancelled' : 'returned';
+        this.logger.log(
+          `[OrderManagement] Order ${id} is being ${actionLabel}. Restoring stock...`,
+        );
         await this.repository.restoreOrderStock(id);
-        
+
         if (dto.status === 'CANCELLED') {
           await this.repository.restoreDiscountUsage(id);
-          
+
+          // Cancel pending payment để VNPay IPN không thể đánh dấu thành công sau khi hủy
+          if (order.payment && order.payment.status === 'PENDING') {
+            try {
+              await this.paymentService.updateStatus(order.payment.id, {
+                status: 'CANCELLED',
+              });
+              this.logger.log(
+                `[OrderManagement] Cancelled pending payment ${order.payment.id} for cancelled order ${id}`,
+              );
+            } catch (e) {
+              this.logger.error(
+                `[OrderManagement] Failed to cancel payment for cancelled order ${id}:`,
+                e,
+              );
+            }
+          }
+
           // Gửi email thông báo hủy đơn
           const email = order.guestEmail || order.user?.email;
           if (email) {
-            this.mailService.sendOrderCancelled(
-              email, 
-              order.orderCode || '', 
-              order.address?.fullName || (order.shippingSnapshot as any)?.fullName || order.user?.name || "Khách hàng",
-              (dto as any).cancelReason || "Đơn hàng bị hủy bởi hệ thống hoặc quản trị viên"
-            ).catch(e => this.logger.error("Failed to send cancellation email:", e));
+            this.mailService
+              .sendOrderCancelled(
+                email,
+                order.orderCode || '',
+                order.address?.fullName ||
+                  (order.shippingSnapshot as any)?.fullName ||
+                  order.user?.name ||
+                  'Khách hàng',
+                (dto as any).cancelReason ||
+                  'Đơn hàng bị hủy bởi hệ thống hoặc quản trị viên',
+              )
+              .catch((e) =>
+                this.logger.error('Failed to send cancellation email:', e),
+              );
           }
         }
 
         // Tự động hoàn tiền nếu admin đánh dấu RETURNED cho đơn hàng đã thanh toán Online
-        if (dto.status === 'RETURNED' && order.payment && order.payment.status === 'SUCCESS') {
+        if (
+          dto.status === 'RETURNED' &&
+          order.payment &&
+          order.payment.status === 'SUCCESS'
+        ) {
           try {
-            this.logger.log(`[OrderManagement] Initiating full refund for manually RETURNED order ${id}`);
+            this.logger.log(
+              `[OrderManagement] Initiating full refund for manually RETURNED order ${id}`,
+            );
             await this.paymentService.initiateRefund(order.payment.id);
           } catch (error) {
-            this.logger.error('Failed to initiate refund for manual RETURNED status:', error);
+            this.logger.error(
+              'Failed to initiate refund for manual RETURNED status:',
+              error,
+            );
           }
         }
 
-        this.logger.log(`[OrderManagement] Stock restoration for order ${id} completed.`);
+        this.logger.log(
+          `[OrderManagement] Stock restoration for order ${id} completed.`,
+        );
       } else {
-        this.logger.log(`[OrderManagement] Order ${id} was already ${oldOrder.status}. Skipping stock restoration.`);
+        this.logger.log(
+          `[OrderManagement] Order ${id} was already ${oldOrder.status}. Skipping stock restoration.`,
+        );
       }
     }
 
@@ -188,24 +277,38 @@ export class OrderManagement {
   async remove(id: number): Promise<any> {
     const order = await this.repository.findById(id);
     if (!order) throw new NotFoundException('Order not found');
-    
+
     // Nếu đơn hàng chưa bị hủy mà lại bị xóa, chúng ta cũng nên hoàn lại tồn kho
     if (order.status !== 'CANCELLED' && order.status !== 'RETURNED') {
-      this.logger.log(`[OrderManagement] Order ${id} is being deleted without prior cancellation. Restoring stock before deletion...`);
+      this.logger.log(
+        `[OrderManagement] Order ${id} is being deleted without prior cancellation. Restoring stock before deletion...`,
+      );
       await this.repository.restoreOrderStock(id);
       await this.repository.restoreDiscountUsage(id);
-      
+
       // Nếu đơn hàng đã giao hoặc đang yêu cầu trả hàng (nghĩa là đã tính vào soldCount), phải trừ soldCount
       if (order.status === 'DELIVERED' || order.status === 'RETURN_REQUESTED') {
         for (const item of order.orderItems) {
           // Tính toán số lượng chưa được hoàn trả trước đó để trừ soldCount chính xác
-          const alreadyReturned = (item as any).returnItems?.reduce((sum: number, ri: any) => 
-            (ri.returnRequest?.status === 'RECEIVED' || ri.returnRequest?.status === 'COMPLETED') ? sum + ri.quantity : sum, 0) || 0;
-          
+          const alreadyReturned =
+            (item as any).returnItems?.reduce(
+              (sum: number, ri: any) =>
+                ri.returnRequest?.status === 'RECEIVED' ||
+                ri.returnRequest?.status === 'COMPLETED'
+                  ? sum + ri.quantity
+                  : sum,
+              0,
+            ) || 0;
+
           const quantityToDecrement = item.quantity - alreadyReturned;
-          
+
           if (quantityToDecrement > 0) {
-            await this.repository.decrementProductSoldCount(item.variant.productId, quantityToDecrement).catch(() => {});
+            await this.repository
+              .decrementProductSoldCount(
+                item.variant.productId,
+                quantityToDecrement,
+              )
+              .catch(() => {});
           }
         }
       }
@@ -217,60 +320,93 @@ export class OrderManagement {
     return removed;
   }
 
-  async cancelOrder(orderId: number, userId: number, isAdmin = false): Promise<any> {
+  async cancelOrder(
+    orderId: number,
+    userId: number,
+    isAdmin = false,
+  ): Promise<any> {
     const order = await this.repository.findById(orderId);
-    
+
     if (!order) throw new NotFoundException('Order not found');
-    
+
     // Nếu không phải Admin thì mới kiểm tra sở hữu đơn hàng
     if (!isAdmin && order.userId !== userId) {
       throw new BadRequestException('Not your order');
     }
 
     if (!this.canCancelOrder(order.status)) {
-      throw new BadRequestException('Cannot cancel order with status: ' + order.status);
+      throw new BadRequestException(
+        'Cannot cancel order with status: ' + order.status,
+      );
     }
 
-    this.logger.log(`[OrderManagement] Member order ${orderId} cancelled by user ${userId}. Restoring stock...`);
-    
-    const paymentIdToCancel = (order.payment && order.payment.status === 'PENDING') ? order.payment.id : undefined;
-    const cancelled = await this.repository.cancelAndRestore(orderId, paymentIdToCancel);
+    this.logger.log(
+      `[OrderManagement] Member order ${orderId} cancelled by user ${userId}. Restoring stock...`,
+    );
+
+    const paymentIdToCancel =
+      order.payment && order.payment.status === 'PENDING'
+        ? order.payment.id
+        : undefined;
+    const cancelled = await this.repository.cancelAndRestore(
+      orderId,
+      paymentIdToCancel,
+    );
 
     // Initiate refund separately as it's an external API call
     if (order.payment && order.payment.status === 'SUCCESS') {
       try {
         await this.paymentService.initiateRefund(order.payment.id);
       } catch (error) {
-        this.logger.error('Failed to initiate refund during order cancellation:', error);
+        this.logger.error(
+          'Failed to initiate refund during order cancellation:',
+          error,
+        );
       }
     }
-    this.logger.log(`[OrderManagement] Stock restoration for member order ${orderId} completed.`);
+    this.logger.log(
+      `[OrderManagement] Stock restoration for member order ${orderId} completed.`,
+    );
 
     await this.cacheService.clearRelatedCaches(orderId, userId);
 
     return {
       ...cancelled,
-      message: 'Order cancelled successfully'
+      message: 'Order cancelled successfully',
     };
   }
 
   async cancelGuestOrder(orderCode: string, contact: string): Promise<any> {
+    const order = await this.repository.findGuestOrderByCodeAndContact(
+      orderCode,
+      contact,
+    );
 
-    const order = await this.repository.findGuestOrderByCodeAndContact(orderCode, contact);
-    
     if (!order) {
-      throw new NotFoundException('Order not found or contact information does not match');
-    }
-    
-    if (!this.canCancelOrder(order.status)) {
-      throw new BadRequestException('Cannot cancel order with status: ' + order.status);
+      throw new NotFoundException(
+        'Order not found or contact information does not match',
+      );
     }
 
-    this.logger.log(`[OrderManagement] Guest order ${order.id} (${orderCode}) cancelled. Restoring stock...`);
-    
-    const paymentIdToCancel = (order.payment && order.payment.status === 'PENDING') ? order.payment.id : undefined;
-    const cancelled = await this.repository.cancelAndRestore(order.id, paymentIdToCancel);
-    
+    if (!this.canCancelOrder(order.status)) {
+      throw new BadRequestException(
+        'Cannot cancel order with status: ' + order.status,
+      );
+    }
+
+    this.logger.log(
+      `[OrderManagement] Guest order ${order.id} (${orderCode}) cancelled. Restoring stock...`,
+    );
+
+    const paymentIdToCancel =
+      order.payment && order.payment.status === 'PENDING'
+        ? order.payment.id
+        : undefined;
+    const cancelled = await this.repository.cancelAndRestore(
+      order.id,
+      paymentIdToCancel,
+    );
+
     // Initiate refund separately
     if (order.payment && order.payment.status === 'SUCCESS') {
       try {
@@ -279,18 +415,22 @@ export class OrderManagement {
         this.logger.error('Failed to refund guest order:', error);
       }
     }
-    this.logger.log(`[OrderManagement] Stock restoration for guest order ${order.id} completed.`);
+    this.logger.log(
+      `[OrderManagement] Stock restoration for guest order ${order.id} completed.`,
+    );
 
-    await this.cacheService.clearRelatedCaches(order.id, order.userId || undefined);
+    await this.cacheService.clearRelatedCaches(
+      order.id,
+      order.userId || undefined,
+    );
 
     return {
       ...cancelled,
-      message: 'Guest order cancelled successfully'
+      message: 'Guest order cancelled successfully',
     };
   }
 
   private canCancelOrder(status: string): boolean {
-
     const cancellableStatuses = ['PENDING', 'PROCESSING'];
     return cancellableStatuses.includes(status);
   }
@@ -309,14 +449,18 @@ export class OrderManagement {
     }
 
     if (!['PENDING', 'AWAITING_PAYMENT'].includes(order.status)) {
-      throw new BadRequestException('Chỉ có thể áp mã cho đơn chưa xác nhận thanh toán');
+      throw new BadRequestException(
+        'Chỉ có thể áp mã cho đơn chưa xác nhận thanh toán',
+      );
     }
-    
+
     const discount = await this.repository.findDiscountByCode(dto.code);
     if (!discount) throw new BadRequestException('Invalid discount');
 
     if (discount.isFlashSale) {
-      throw new BadRequestException('Mã Flash Sale đã được áp dụng tự động, không cần nhập thêm');
+      throw new BadRequestException(
+        'Mã Flash Sale đã được áp dụng tự động, không cần nhập thêm',
+      );
     }
 
     const subtotal = order.orderItems.reduce(
@@ -328,7 +472,10 @@ export class OrderManagement {
     OrderHelper.validateDiscount(discount, subtotal, discount.usageCount);
 
     const totals = OrderHelper.calculateOrderTotal(
-      order.orderItems.map((item) => ({ quantity: item.quantity, price: item.price })),
+      order.orderItems.map((item) => ({
+        quantity: item.quantity,
+        price: item.price,
+      })),
       order.shippingFee,
       {
         percentage: discount.percentage || undefined,
@@ -336,43 +483,61 @@ export class OrderManagement {
         maxDiscountAmount: discount.maxDiscountAmount || undefined,
       },
     );
-    
+
     try {
-      const updatedOrder = await this.repository.applyDiscountTransactional(orderId, discount, totals);
-      await this.cacheService.clearRelatedCaches(orderId, order.userId || undefined);
+      const updatedOrder = await this.repository.applyDiscountTransactional(
+        orderId,
+        discount,
+        totals,
+      );
+      await this.cacheService.clearRelatedCaches(
+        orderId,
+        order.userId || undefined,
+      );
       return { message: 'Discount applied', discount, updatedOrder };
     } catch (err) {
-      throw new BadRequestException(err.message || 'Không thể áp dụng mã giảm giá');
+      throw new BadRequestException(
+        err.message || 'Không thể áp dụng mã giảm giá',
+      );
     }
   }
 
-  async lookupGuestOrder(orderCode: string, contact: string, maskPII = true): Promise<any> {
+  async lookupGuestOrder(
+    orderCode: string,
+    contact: string,
+    maskPII = true,
+  ): Promise<any> {
     const order: any = await this.repository.findByCode(orderCode);
 
     // Allow lookup even if order belongs to a user, as long as contact info matches
-    const contactMatch = order && (
-      order.guestEmail === contact || 
-      order.guestPhone === contact || 
-      order.phone === contact ||
-      order.user?.email === contact ||
-      order.user?.phone === contact
-    );
+    const contactMatch =
+      order &&
+      (order.guestEmail === contact ||
+        order.guestPhone === contact ||
+        order.phone === contact ||
+        order.user?.email === contact ||
+        order.user?.phone === contact);
 
     if (!order || !contactMatch) {
-      throw new NotFoundException('Không tìm thấy đơn hàng hoặc thông tin liên hệ không khớp');
+      throw new NotFoundException(
+        'Không tìm thấy đơn hàng hoặc thông tin liên hệ không khớp',
+      );
     }
 
     return OrderHelper.serializeOrder(order, maskPII);
   }
 
-  private async handlePaymentCreation(order: any, oldOrder: any, dto: UpdateOrderDto) {
+  private async handlePaymentCreation(
+    order: any,
+    oldOrder: any,
+    dto: UpdateOrderDto,
+  ) {
     if (dto.status && !oldOrder.payment) {
       try {
         await this.paymentService.create({
           orderId: order.id,
-          method: order.paymentMethod as any,
+          method: order.paymentMethod,
         });
-
       } catch (error) {
         this.logger.error('Failed to create payment record:', error);
       }
@@ -384,10 +549,17 @@ export class OrderManagement {
       // 1. Update Payment status to SUCCESS if not already
       if (oldOrder.payment && oldOrder.payment.status !== 'SUCCESS') {
         try {
-          await this.paymentService.updateStatus(oldOrder.payment.id, { status: 'SUCCESS' });
-          this.logger.log(`Automatically marked payment ${oldOrder.payment.id} as SUCCESS for delivered order ${oldOrder.id}`);
+          await this.paymentService.updateStatus(oldOrder.payment.id, {
+            status: 'SUCCESS',
+          });
+          this.logger.log(
+            `Automatically marked payment ${oldOrder.payment.id} as SUCCESS for delivered order ${oldOrder.id}`,
+          );
         } catch (error) {
-          this.logger.error('Failed to update payment status for delivered order:', error);
+          this.logger.error(
+            'Failed to update payment status for delivered order:',
+            error,
+          );
         }
       }
 
@@ -395,9 +567,15 @@ export class OrderManagement {
       if (oldOrder.status !== 'DELIVERED') {
         for (const item of oldOrder.orderItems) {
           try {
-            await this.repository.incrementProductSoldCount(item.variant.productId, item.quantity);
+            await this.repository.incrementProductSoldCount(
+              item.variant.productId,
+              item.quantity,
+            );
           } catch (error) {
-            this.logger.error(`Failed to increment soldCount for product ${item.variant.productId}:`, error);
+            this.logger.error(
+              `Failed to increment soldCount for product ${item.variant.productId}:`,
+              error,
+            );
           }
         }
       }
@@ -405,29 +583,52 @@ export class OrderManagement {
       if (oldOrder.status !== 'DELIVERED') {
         const email = oldOrder.guestEmail || oldOrder.user?.email;
         if (email) {
-          this.mailService.sendOrderDelivered(
-            email, 
-            oldOrder.orderCode || '', 
-            oldOrder.address?.fullName || (oldOrder.shippingSnapshot as any)?.fullName || oldOrder.user?.name || "Khách hàng"
-          ).catch(e => this.logger.error("Failed to send delivery success email:", e));
+          this.mailService
+            .sendOrderDelivered(
+              email,
+              oldOrder.orderCode || '',
+              oldOrder.address?.fullName ||
+                oldOrder.shippingSnapshot?.fullName ||
+                oldOrder.user?.name ||
+                'Khách hàng',
+            )
+            .catch((e) =>
+              this.logger.error('Failed to send delivery success email:', e),
+            );
         }
       }
     } else {
       // If status is changed FROM DELIVERED to something else (e.g. back to PROCESSING or CANCELLED)
-      if (oldOrder.status === 'DELIVERED' || oldOrder.status === 'RETURN_REQUESTED') {
+      if (
+        oldOrder.status === 'DELIVERED' ||
+        oldOrder.status === 'RETURN_REQUESTED'
+      ) {
         for (const item of oldOrder.orderItems) {
           try {
             // Chỉ trừ số lượng sản phẩm THỰC TẾ đang được tính là đã bán (loại trừ phần đã trả hàng)
-            const alreadyReturned = item.returnItems?.reduce((sum: number, ri: any) => 
-              (ri.returnRequest?.status === 'RECEIVED' || ri.returnRequest?.status === 'COMPLETED') ? sum + ri.quantity : sum, 0) || 0;
-            
+            const alreadyReturned =
+              item.returnItems?.reduce(
+                (sum: number, ri: any) =>
+                  ri.returnRequest?.status === 'RECEIVED' ||
+                  ri.returnRequest?.status === 'COMPLETED'
+                    ? sum + ri.quantity
+                    : sum,
+                0,
+              ) || 0;
+
             const quantityToDecrement = item.quantity - alreadyReturned;
-            
+
             if (quantityToDecrement > 0) {
-              await this.repository.decrementProductSoldCount(item.variant.productId, quantityToDecrement);
+              await this.repository.decrementProductSoldCount(
+                item.variant.productId,
+                quantityToDecrement,
+              );
             }
           } catch (error) {
-            this.logger.error(`Failed to decrement soldCount for product ${item.variant.productId}:`, error);
+            this.logger.error(
+              `Failed to decrement soldCount for product ${item.variant.productId}:`,
+              error,
+            );
           }
         }
       }
@@ -440,31 +641,65 @@ export class OrderManagement {
   async syncToGHN(id: number): Promise<any> {
     const order = await this.repository.findById(id);
     if (!order) throw new NotFoundException('Không tìm thấy đơn hàng');
-    if (order.shippingCode) throw new BadRequestException('Đơn hàng này đã được tạo vận đơn trước đó');
+    if (order.shippingCode)
+      throw new BadRequestException(
+        'Đơn hàng này đã được tạo vận đơn trước đó',
+      );
 
     const address = order.address || (order.shippingSnapshot as any);
+
+    if (!address) {
+      throw new BadRequestException(
+        'Địa chỉ giao hàng không đầy đủ thông tin mã vùng GHN (Quận/Huyện hoặc Phường/Xã)',
+      );
+    }
+
     const dCode = address.districtCode;
     const wCode = address.wardCode;
-    
-    if (!address || !dCode || !wCode) {
-      throw new BadRequestException('Địa chỉ giao hàng không đầy đủ thông tin mã vùng GHN (Quận/Huyện hoặc Phường/Xã)');
+
+    if (!dCode || !wCode) {
+      throw new BadRequestException(
+        'Địa chỉ giao hàng không đầy đủ thông tin mã vùng GHN (Quận/Huyện hoặc Phường/Xã)',
+      );
     }
 
     // Filter out items from deleted products
-    const activeItems = order.orderItems.filter(item => {
+    const activeItems = order.orderItems.filter((item) => {
       const product = item.variant?.product;
       return !product?.deletedAt;
     });
 
     if (activeItems.length === 0) {
-      throw new BadRequestException('Không có sản phẩm hợp lệ trong đơn hàng (các sản phẩm đã bị xóa)');
+      throw new BadRequestException(
+        'Không có sản phẩm hợp lệ trong đơn hàng (các sản phẩm đã bị xóa)',
+      );
     }
 
     // Ưu tiên đọc kích thước từ variantSnapshot (đã lưu khi tạo đơn), fallback về variant hiện tại
-    const totalWeight = activeItems.reduce((sum, item) => sum + ((item.variantSnapshot as any)?.weight || item.weight || 200) * item.quantity, 0);
-    const maxLength = Math.max(...activeItems.map(i => (i.variantSnapshot as any)?.length || i.variant?.length || 10));
-    const maxWidth = Math.max(...activeItems.map(i => (i.variantSnapshot as any)?.width || i.variant?.width || 10));
-    const totalHeight = activeItems.reduce((sum, i) => sum + ((i.variantSnapshot as any)?.height || i.variant?.height || 5) * i.quantity, 0);
+    const totalWeight = activeItems.reduce(
+      (sum, item) =>
+        sum +
+        ((item.variantSnapshot as any)?.weight || item.weight || 200) *
+          item.quantity,
+      0,
+    );
+    const maxLength = Math.max(
+      ...activeItems.map(
+        (i) => (i.variantSnapshot as any)?.length || i.variant?.length || 10,
+      ),
+    );
+    const maxWidth = Math.max(
+      ...activeItems.map(
+        (i) => (i.variantSnapshot as any)?.width || i.variant?.width || 10,
+      ),
+    );
+    const totalHeight = activeItems.reduce(
+      (sum, i) =>
+        sum +
+        ((i.variantSnapshot as any)?.height || i.variant?.height || 5) *
+          i.quantity,
+      0,
+    );
 
     // Luôn để Shop trả phí cho GHN (1: Shop, 2: Khách)
     // Vì phí ship đã được tính vào tổng tiền (total) và thu từ khách qua COD rồi.
@@ -472,33 +707,37 @@ export class OrderManagement {
 
     const ghnData = {
       payment_type_id: paymentTypeId,
-      note: "Hàng TMĐT Minh Tuấn Shop",
-      required_note: "KHONGCHOXEMHANG",
+      note: 'Hàng TMĐT Minh Tuấn Shop',
+      required_note: 'KHONGCHOXEMHANG',
       client_order_code: order.orderCode,
-      to_name: address.fullName || "Khách hàng",
-      to_phone: address.phone || order.guestPhone || "0900000000",
-      to_address: address.street || "Địa chỉ khách hàng",
+      to_name: address.fullName || 'Khách hàng',
+      to_phone: address.phone || order.guestPhone || '0900000000',
+      to_address: address.street || 'Địa chỉ khách hàng',
       to_ward_code: address.wardCode,
       to_district_id: Number(address.districtCode),
-      cod_amount: (order.payment?.status !== 'SUCCESS' && ['CASH', 'COD'].includes((order.paymentMethod || order.payment?.method || '') as string))
-        ? Math.round(order.total) 
-        : 0,
+      cod_amount:
+        order.payment?.status !== 'SUCCESS' &&
+        ['CASH', 'COD'].includes(
+          order.paymentMethod || order.payment?.method || '',
+        )
+          ? Math.round(order.total)
+          : 0,
       content: `Đơn hàng ${order.orderCode}`,
       weight: Math.min(totalWeight, 30000),
       length: Math.min(maxLength, 150),
       width: Math.min(maxWidth, 150),
       height: Math.min(totalHeight, 150),
       service_type_id: 2, // Giao hàng chuẩn/lẻ
-      items: activeItems.map(item => ({
+      items: activeItems.map((item) => ({
         name: item.productName,
         quantity: item.quantity,
-        weight: item.weight || 200
-      }))
+        weight: item.weight || 200,
+      })),
     };
 
     // Log để debug COD amount
     this.logger.debug(
-      `[GHN Sync] Order ${order.orderCode} | paymentMethod: ${order.paymentMethod} | payment.method: ${(order as any).payment?.method} | payment.status: ${(order as any).payment?.status} | cod_amount: ${ghnData.cod_amount} | total: ${order.total}`
+      `[GHN Sync] Order ${order.orderCode} | paymentMethod: ${order.paymentMethod} | payment.method: ${(order as any).payment?.method} | payment.status: ${(order as any).payment?.status} | cod_amount: ${ghnData.cod_amount} | total: ${order.total}`,
     );
 
     try {
@@ -508,15 +747,15 @@ export class OrderManagement {
 
       // Update snapshot with GHN fee
       const newSnapshot = {
-        ...(order.shippingSnapshot as any || {}),
-        actualGHNFee: actualGHNFee
+        ...((order.shippingSnapshot as any) || {}),
+        actualGHNFee: actualGHNFee,
       };
 
       const updatePayload: any = {
         shippingCode: shippingCode,
         shippingSnapshot: newSnapshot,
       };
-      
+
       // Chỉ set status = SHIPPED nếu đơn hàng chưa ở trạng thái SHIPPED
       // (tránh double update khi gọi từ auto-sync trong update())
       if (order.status !== 'SHIPPED') {
@@ -530,18 +769,25 @@ export class OrderManagement {
         message: 'Đã tạo vận đơn GHN thành công',
         shippingCode: shippingCode,
         ghnResponse: result.data,
-        updatedOrder: updated
+        updatedOrder: updated,
       };
     } catch (error) {
       const ghnErrorMessage = error.response?.data?.message || error.message;
-      this.logger.error('Lỗi khi đồng bộ đơn sang GHN:', error.response?.data || error.message);
-      
+      this.logger.error(
+        'Lỗi khi đồng bộ đơn sang GHN:',
+        error.response?.data || error.message,
+      );
+
       // Bắt lỗi số điện thoại không hợp lệ từ GHN để hiển thị thông báo thân thiện hơn
       if (ghnErrorMessage.includes('master_data_validate_phone')) {
-        throw new BadRequestException('Số điện thoại của khách hàng không hợp lệ theo quy định của GHN. Vui lòng cập nhật số điện thoại di động (10 số) trước khi tạo vận đơn.');
+        throw new BadRequestException(
+          'Số điện thoại của khách hàng không hợp lệ theo quy định của GHN. Vui lòng cập nhật số điện thoại di động (10 số) trước khi tạo vận đơn.',
+        );
       }
 
-      throw new BadRequestException('Không thể tạo vận đơn trên hệ thống GHN: ' + ghnErrorMessage);
+      throw new BadRequestException(
+        'Không thể tạo vận đơn trên hệ thống GHN: ' + ghnErrorMessage,
+      );
     }
   }
 }

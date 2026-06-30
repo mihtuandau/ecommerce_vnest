@@ -1,10 +1,10 @@
-"use client";
+﻿"use client";
 
 import React from "react";
 import { useAuthStore } from "@/features/auth/store/auth.store";
 import { cartApi } from "@/features/cart/api";
 import { mapServerCartToCartItems } from "@/features/cart/services";
-import { useCartStore } from "@/store/useCartStore";
+import { useCartStore } from "@/features/cart/store/cart.store";
 
 export function useSyncCart() {
   const { items, setItems, isDirty } = useCartStore();

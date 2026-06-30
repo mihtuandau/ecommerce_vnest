@@ -17,9 +17,7 @@ async function bootstrap() {
   if (sentryDsn) {
     Sentry.init({
       dsn: sentryDsn,
-      integrations: [
-        nodeProfilingIntegration(),
-      ],
+      integrations: [nodeProfilingIntegration()],
       // Production: giảm sample rate xuống 0.1-0.2 để tối ưu hiệu năng
       tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.2 : 1.0,
       profilesSampleRate: process.env.NODE_ENV === 'production' ? 0.2 : 1.0,
@@ -34,26 +32,31 @@ async function bootstrap() {
 
   app.use(helmet(getHelmetConfig(csrfNonce)));
 
-  app.use(compression({
-    threshold: 1024, 
-    level: 6,        
-    filter: (req, res) => {
-
-      if (req.headers['x-no-compression']) return false;
-      return compression.filter(req, res);
-    },
-  }));
+  app.use(
+    compression({
+      threshold: 1024,
+      level: 6,
+      filter: (req, res) => {
+        if (req.headers['x-no-compression']) return false;
+        return compression.filter(req, res);
+      },
+    }),
+  );
 
   app.use(createCspNonceMiddleware());
   app.use(cookieParser());
   app.setGlobalPrefix('api');
-  const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:3000,https://dautuan.com,https://www.dautuan.com').split(',');
-  
+  const allowedOrigins = (
+    process.env.ALLOWED_ORIGINS ||
+    'http://localhost:3000,https://dautuan.com,https://www.dautuan.com,'
+  ).split(',');
+
   app.enableCors({
-    origin: allowedOrigins, 
+    origin: allowedOrigins,
     credentials: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    allowedHeaders: 'Authorization, Content-Type, Accept, Origin, X-Requested-With',
+    allowedHeaders:
+      'Authorization, Content-Type, Accept, Origin, X-Requested-With',
     exposedHeaders: 'Content-Disposition',
   });
   app.useGlobalPipes(
@@ -94,7 +97,7 @@ async function bootstrap() {
   }
 
   const logger = new Logger('Bootstrap');
-  const port = process.env.PORT || 5000; 
+  const port = process.env.PORT || 5000;
   await app.listen(port);
   logger.log(`App running on http://localhost:${port}`);
   logger.log(`Swagger docs at http://localhost:${port}/api-docs`);

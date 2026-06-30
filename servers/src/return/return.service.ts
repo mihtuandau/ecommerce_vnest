@@ -1,4 +1,8 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateReturnRequestDto } from './dto/create-return-request.dto';
 import { CreateGuestReturnRequestDto } from './dto/create-guest-return-request.dto';
@@ -20,25 +24,33 @@ export class ReturnService {
   async create(userId: number, dto: CreateReturnRequestDto) {
     const order = await this.prisma.order.findUnique({
       where: { id: dto.orderId },
-      include: { 
+      include: {
         orderItems: {
-          include: { 
+          include: {
             variant: true,
             returnItems: {
-              include: { returnRequest: true }
-            } 
-          }
+              include: { returnRequest: true },
+            },
+          },
         },
-        returnRequests: true 
-      }
+        returnRequests: true,
+      },
     });
 
     if (!order) throw new NotFoundException('Không tìm thấy đơn hàng');
-    if (order.userId !== userId) throw new BadRequestException('Không có quyền yêu cầu trả hàng');
-    if (order.status !== OrderStatus.DELIVERED) throw new BadRequestException('Chỉ có thể trả hàng cho đơn đã giao');
+    if (order.userId !== userId)
+      throw new BadRequestException('Không có quyền yêu cầu trả hàng');
+    if (order.status !== OrderStatus.DELIVERED)
+      throw new BadRequestException('Chỉ có thể trả hàng cho đơn đã giao');
 
-    const validatedItems = this.validateReturnItems(order.orderItems, dto.items);
-    const refundAmount = validatedItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const validatedItems = this.validateReturnItems(
+      order.orderItems,
+      dto.items,
+    );
+    const refundAmount = validatedItems.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0,
+    );
 
     return this.prisma.$transaction(async (tx) => {
       const request = await tx.returnRequest.create({
@@ -51,13 +63,13 @@ export class ReturnService {
           status: ReturnStatus.PENDING,
           refundAmount,
           returnItems: {
-            create: validatedItems.map(item => ({
+            create: validatedItems.map((item) => ({
               orderItemId: item.orderItemId,
               quantity: item.quantity,
-            }))
-          }
+            })),
+          },
         },
-        include: { returnItems: true }
+        include: { returnItems: true },
       });
 
       await tx.order.update({
@@ -69,10 +81,10 @@ export class ReturnService {
               status: OrderStatus.RETURN_REQUESTED,
               changedAt: new Date(),
               changedBy: userId,
-              note: `Yêu cầu trả hàng một phần: ${dto.reason}`
-            }
-          }
-        }
+              note: `Yêu cầu trả hàng một phần: ${dto.reason}`,
+            },
+          },
+        },
       });
 
       return request;
@@ -82,36 +94,49 @@ export class ReturnService {
   async createGuest(dto: CreateGuestReturnRequestDto) {
     const order = await this.prisma.order.findUnique({
       where: { id: dto.orderId },
-      include: { 
+      include: {
         orderItems: {
-          include: { 
+          include: {
             variant: true,
             returnItems: {
-              include: { returnRequest: true }
-            } 
-          }
+              include: { returnRequest: true },
+            },
+          },
         },
-        returnRequests: true 
-      }
+        returnRequests: true,
+      },
     });
-    
+
     if (!order) throw new NotFoundException('Không tìm thấy đơn hàng');
 
     // BẢO MẬT: Nếu đơn hàng đã thuộc về thành viên, bắt buộc phải đăng nhập
     if (order.userId) {
-      throw new BadRequestException('Đơn hàng này đã được liên kết với một tài khoản thành viên. Vui lòng đăng nhập để thực hiện yêu cầu trả hàng.');
+      throw new BadRequestException(
+        'Đơn hàng này đã được liên kết với một tài khoản thành viên. Vui lòng đăng nhập để thực hiện yêu cầu trả hàng.',
+      );
     }
 
-    const normalize = (s: string | null | undefined) => s?.trim().toLowerCase() || '';
-    if (normalize(order.orderCode) !== normalize(dto.orderCode) || 
-        (normalize(dto.contact) !== normalize(order.guestEmail) && normalize(dto.contact) !== normalize(order.guestPhone))) {
+    const normalize = (s: string | null | undefined) =>
+      s?.trim().toLowerCase() || '';
+    if (
+      normalize(order.orderCode) !== normalize(dto.orderCode) ||
+      (normalize(dto.contact) !== normalize(order.guestEmail) &&
+        normalize(dto.contact) !== normalize(order.guestPhone))
+    ) {
       throw new BadRequestException('Thông tin xác thực không khớp');
     }
 
-    if (order.status !== OrderStatus.DELIVERED) throw new BadRequestException('Chỉ có thể trả hàng cho đơn đã giao');
+    if (order.status !== OrderStatus.DELIVERED)
+      throw new BadRequestException('Chỉ có thể trả hàng cho đơn đã giao');
 
-    const validatedItems = this.validateReturnItems(order.orderItems, dto.items);
-    const refundAmount = validatedItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const validatedItems = this.validateReturnItems(
+      order.orderItems,
+      dto.items,
+    );
+    const refundAmount = validatedItems.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0,
+    );
 
     return this.prisma.$transaction(async (tx) => {
       const request = await tx.returnRequest.create({
@@ -124,13 +149,13 @@ export class ReturnService {
           status: ReturnStatus.PENDING,
           refundAmount,
           returnItems: {
-            create: validatedItems.map(item => ({
+            create: validatedItems.map((item) => ({
               orderItemId: item.orderItemId,
               quantity: item.quantity,
-            }))
-          }
+            })),
+          },
         },
-        include: { returnItems: true }
+        include: { returnItems: true },
       });
 
       await tx.order.update({
@@ -142,46 +167,54 @@ export class ReturnService {
               status: OrderStatus.RETURN_REQUESTED,
               changedAt: new Date(),
               changedBy: 0,
-              note: `Yêu cầu trả hàng một phần (Guest): ${dto.reason}`
-            }
-          }
-        }
+              note: `Yêu cầu trả hàng một phần (Guest): ${dto.reason}`,
+            },
+          },
+        },
       });
 
       return request;
     });
   }
 
-  private validateReturnItems(orderItems: any[], returnItems: { orderItemId: number, quantity: number }[]) {
-    const results: { 
-      orderItemId: number; 
-      quantity: number; 
-      price: number; 
-      variantId: number; 
-      productId: number; 
-      productName: string; 
+  private validateReturnItems(
+    orderItems: any[],
+    returnItems: { orderItemId: number; quantity: number }[],
+  ) {
+    const results: {
+      orderItemId: number;
+      quantity: number;
+      price: number;
+      variantId: number;
+      productId: number;
+      productName: string;
     }[] = [];
-    
+
     for (const rItem of returnItems) {
-      const oItem = orderItems.find(i => i.id === rItem.orderItemId);
-      if (!oItem) throw new BadRequestException(`Sản phẩm (ID: ${rItem.orderItemId}) không thuộc đơn hàng này`);
-      
+      const oItem = orderItems.find((i) => i.id === rItem.orderItemId);
+      if (!oItem)
+        throw new BadRequestException(
+          `Sản phẩm (ID: ${rItem.orderItemId}) không thuộc đơn hàng này`,
+        );
+
       const alreadyReturned = oItem.returnItems
         .filter((ri: any) => ri.returnRequest?.status !== 'REJECTED')
         .reduce((sum: number, ri: any) => sum + ri.quantity, 0);
 
       const available = oItem.quantity - alreadyReturned;
       if (rItem.quantity > available) {
-        throw new BadRequestException(`Sản phẩm ${oItem.productName} chỉ còn ${available} sản phẩm có thể trả hàng (Đã trả: ${alreadyReturned})`);
+        throw new BadRequestException(
+          `Sản phẩm ${oItem.productName} chỉ còn ${available} sản phẩm có thể trả hàng (Đã trả: ${alreadyReturned})`,
+        );
       }
-      
+
       results.push({
         orderItemId: oItem.id,
         quantity: rItem.quantity,
         price: oItem.price,
         variantId: oItem.variantId,
         productId: oItem.variant.productId,
-        productName: oItem.productName
+        productName: oItem.productName,
       });
     }
     return results;
@@ -202,11 +235,11 @@ export class ReturnService {
         take: Number(limit),
         include: {
           user: { select: { name: true, email: true, phone: true } },
-          order: { select: { orderCode: true, total: true, status: true } }
+          order: { select: { orderCode: true, total: true, status: true } },
         },
-        orderBy: { createdAt: 'desc' }
+        orderBy: { createdAt: 'desc' },
       }),
-      this.prisma.returnRequest.count({ where })
+      this.prisma.returnRequest.count({ where }),
     ]);
 
     return {
@@ -215,8 +248,8 @@ export class ReturnService {
         total,
         page: Number(page),
         limit: Number(limit),
-        totalPages: Math.ceil(total / limit)
-      }
+        totalPages: Math.ceil(total / limit),
+      },
     };
   }
 
@@ -227,80 +260,119 @@ export class ReturnService {
         user: { select: { name: true, email: true, phone: true } },
         returnItems: {
           include: {
-            orderItem: true
-          }
+            orderItem: true,
+          },
         },
-        order: { 
-          include: { 
+        order: {
+          include: {
             orderItems: {
-              include: { 
+              include: {
                 variant: { include: { product: true } },
                 returnItems: {
-                  include: { returnRequest: true }
-                }
-              }
-            }
-          } 
-        }
-      }
+                  include: { returnRequest: true },
+                },
+              },
+            },
+          },
+        },
+      },
     });
 
-    if (!request) throw new NotFoundException('Không tìm thấy yêu cầu trả hàng');
+    if (!request)
+      throw new NotFoundException('Không tìm thấy yêu cầu trả hàng');
 
     // Bảo mật: Nếu là khách hàng, chỉ cho phép xem đơn của chính mình
     if (actor && !['ADMIN', 'WAREHOUSE', 'SALES'].includes(actor.role)) {
       if (request.userId !== actor.userId) {
-        throw new NotFoundException('Không tìm thấy yêu cầu trả hàng hoặc bạn không có quyền truy cập');
+        throw new NotFoundException(
+          'Không tìm thấy yêu cầu trả hàng hoặc bạn không có quyền truy cập',
+        );
       }
     }
 
     return request;
   }
 
-  async updateStatus(id: number, dto: UpdateReturnRequestDto, actorId: number, isStaff: boolean = true) {
+  async updateStatus(
+    id: number,
+    dto: UpdateReturnRequestDto,
+    actorId: number,
+    isStaff: boolean = true,
+  ) {
     const request = await this.prisma.returnRequest.findUnique({
       where: { id },
-      include: { order: true }
+      include: { order: true },
     });
 
-    if (!request) throw new NotFoundException('Không tìm thấy yêu cầu trả hàng');
+    if (!request)
+      throw new NotFoundException('Không tìm thấy yêu cầu trả hàng');
 
     // Nếu không phải nhân viên, chỉ cho phép cập nhật nếu là chủ sở hữu và chuyển sang RETURNING
     if (!isStaff) {
       if (request.userId !== actorId) {
-        throw new BadRequestException('Bạn không có quyền cập nhật yêu cầu này');
+        throw new BadRequestException(
+          'Bạn không có quyền cập nhật yêu cầu này',
+        );
       }
       if (dto.status !== ReturnStatus.RETURNING) {
-        throw new BadRequestException('Khách hàng chỉ có thể cập nhật trạng thái đang gửi hàng');
+        throw new BadRequestException(
+          'Khách hàng chỉ có thể cập nhật trạng thái đang gửi hàng',
+        );
       }
       if (request.status !== ReturnStatus.APPROVED) {
-        throw new BadRequestException('Chỉ có thể cập nhật sau khi yêu cầu đã được duyệt');
+        throw new BadRequestException(
+          'Chỉ có thể cập nhật sau khi yêu cầu đã được duyệt',
+        );
       }
     }
 
     return this.prisma.$transaction(async (tx) => {
-      const updatedRequest = await tx.returnRequest.update({
-        where: { id },
-        data: {
-          status: dto.status,
-          adminNote: dto.adminNote,
-        },
-        include: { returnItems: { include: { orderItem: { include: { variant: true } } } } }
+      // Atomic guard: chỉ update nếu status hiện tại chưa là COMPLETED
+      // Ngăn double refund khi 2 request đồng thời gọi COMPLETED
+      const guard = await tx.returnRequest.updateMany({
+        where: { id, status: { not: ReturnStatus.COMPLETED } },
+        data: { status: dto.status, adminNote: dto.adminNote },
       });
+
+      if (guard.count === 0) {
+        return tx.returnRequest.findUnique({
+          where: { id },
+          include: {
+            returnItems: {
+              include: { orderItem: { include: { variant: true } } },
+            },
+          },
+        });
+      }
+
+      const updatedRequest = await tx.returnRequest.findUnique({
+        where: { id },
+        include: {
+          returnItems: {
+            include: { orderItem: { include: { variant: true } } },
+          },
+        },
+      });
+
+      if (!updatedRequest) return null;
 
       // Cập nhật returnStatus trên Order tương ứng với trạng thái mới của yêu cầu trả hàng
       await tx.order.update({
         where: { id: request.orderId },
-        data: { returnStatus: dto.status }
+        data: { returnStatus: dto.status },
       });
 
       // 1. Khi Shop nhận được hàng (RECEIVED): Hoàn lại tồn kho cho các món trong yêu cầu này
-      if (dto.status === ReturnStatus.RECEIVED && request.status !== ReturnStatus.RECEIVED && request.status !== ReturnStatus.COMPLETED) {
+      if (
+        dto.status === ReturnStatus.RECEIVED &&
+        request.status !== ReturnStatus.RECEIVED &&
+        request.status !== ReturnStatus.COMPLETED
+      ) {
         for (const rItem of updatedRequest.returnItems) {
           // Cộng lại stock
           await tx.productVariant.update({
             where: { id: rItem.orderItem.variantId },
-            data: { stock: { increment: rItem.quantity } }
+            data: { stock: { increment: rItem.quantity } },
           });
 
           // Trừ soldCount của product (GREATEST để tránh âm)
@@ -312,30 +384,39 @@ export class ReturnService {
       if (dto.status === ReturnStatus.COMPLETED) {
         // Thực hiện hoàn tiền (Dùng refundAmount của request thay vì toàn bộ payment.amount)
         const payment = await tx.payment.findUnique({
-          where: { orderId: request.orderId }
+          where: { orderId: request.orderId },
         });
 
         if (payment && payment.status === 'SUCCESS') {
-          await this.paymentService.initiateRefund(payment.id, request.refundAmount);
+          await this.paymentService.initiateRefund(
+            payment.id,
+            request.refundAmount,
+          );
         }
 
         // Kiểm tra xem đã trả hết toàn bộ đơn hàng chưa để cập nhật status Order
         // Logic đơn giản: Nếu tổng số lượng trong returnItems (tất cả COMPLETED requests) == tổng số lượng trong orderItems
         const allCompletedReturns = await tx.returnRequest.findMany({
           where: { orderId: request.orderId, status: ReturnStatus.COMPLETED },
-          include: { returnItems: true }
+          include: { returnItems: true },
         });
-        
-        const totalReturned = allCompletedReturns.reduce((sum, r) => sum + r.returnItems.reduce((s, ri) => s + ri.quantity, 0), 0);
-        
+
+        const totalReturned = allCompletedReturns.reduce(
+          (sum, r) => sum + r.returnItems.reduce((s, ri) => s + ri.quantity, 0),
+          0,
+        );
+
         const orderInfo = await tx.order.findUnique({
           where: { id: request.orderId },
-          include: { orderItems: true }
+          include: { orderItems: true },
         });
-        
+
         if (!orderInfo) return;
 
-        const totalOrdered = orderInfo.orderItems.reduce((sum, i) => sum + i.quantity, 0);
+        const totalOrdered = orderInfo.orderItems.reduce(
+          (sum, i) => sum + i.quantity,
+          0,
+        );
 
         if (totalReturned >= totalOrdered) {
           await tx.order.update({
@@ -351,8 +432,8 @@ export class ReturnService {
                   changedBy: actorId,
                   note: `Hoàn tất trả hàng toàn bộ đơn hàng (Hoàn tiền: ${request.refundAmount.toLocaleString('vi-VN')}đ).`,
                 },
-              }
-            }
+              },
+            },
           });
         } else {
           // Vẫn để status là DELIVERED hoặc một status "PARTIALLY_RETURNED" nếu có
@@ -369,14 +450,17 @@ export class ReturnService {
                   changedBy: actorId,
                   note: `Hoàn tất trả hàng một phần (Hoàn tiền: ${request.refundAmount.toLocaleString('vi-VN')}đ).`,
                 },
-              }
-            }
+              },
+            },
           });
         }
       }
 
       // Xóa cache đơn hàng để cập nhật trạng thái mới lên UI ngay lập tức
-      await this.cacheService.clearRelatedCaches(request.orderId, request.userId || undefined);
+      await this.cacheService.clearRelatedCaches(
+        request.orderId,
+        request.userId || undefined,
+      );
 
       return updatedRequest;
     });
@@ -386,61 +470,76 @@ export class ReturnService {
     return this.prisma.returnRequest.findMany({
       where: { userId },
       include: {
-        order: { select: { orderCode: true, total: true, status: true } }
+        order: { select: { orderCode: true, total: true, status: true } },
       },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
     });
   }
 
   async confirmSent(userId: number, id: number) {
     const request = await this.prisma.returnRequest.findUnique({
       where: { id },
-      include: { order: true }
+      include: { order: true },
     });
 
-    if (!request) throw new NotFoundException('Không tìm thấy yêu cầu trả hàng');
+    if (!request)
+      throw new NotFoundException('Không tìm thấy yêu cầu trả hàng');
 
     if (request.order.userId !== userId) {
-      throw new BadRequestException('Bạn không có quyền thao tác trên yêu cầu trả hàng này');
+      throw new BadRequestException(
+        'Bạn không có quyền thao tác trên yêu cầu trả hàng này',
+      );
     }
 
     if (request.status !== ReturnStatus.APPROVED) {
-      throw new BadRequestException('Chỉ có thể xác nhận gửi hàng sau khi yêu cầu đã được duyệt');
+      throw new BadRequestException(
+        'Chỉ có thể xác nhận gửi hàng sau khi yêu cầu đã được duyệt',
+      );
     }
 
     return this.prisma.returnRequest.update({
       where: { id },
-      data: { status: ReturnStatus.RETURNING }
+      data: { status: ReturnStatus.RETURNING },
     });
   }
 
-  async confirmGuestSent(id: number, dto: { orderCode: string; contact: string }) {
+  async confirmGuestSent(
+    id: number,
+    dto: { orderCode: string; contact: string },
+  ) {
     const request = await this.prisma.returnRequest.findUnique({
       where: { id },
-      include: { order: true }
+      include: { order: true },
     });
 
-    if (!request) throw new NotFoundException('Không tìm thấy yêu cầu trả hàng');
+    if (!request)
+      throw new NotFoundException('Không tìm thấy yêu cầu trả hàng');
 
     // Xác thực thông tin khách vãng lai
-    const normalize = (s: string | null | undefined) => s?.trim().toLowerCase() || '';
+    const normalize = (s: string | null | undefined) =>
+      s?.trim().toLowerCase() || '';
     const inputCode = normalize(dto.orderCode);
     const dbCode = normalize(request.order.orderCode);
     const inputContact = normalize(dto.contact);
     const dbEmail = normalize(request.order.guestEmail);
     const dbPhone = normalize(request.order.guestPhone);
 
-    if (dbCode !== inputCode || (inputContact !== dbEmail && inputContact !== dbPhone)) {
+    if (
+      dbCode !== inputCode ||
+      (inputContact !== dbEmail && inputContact !== dbPhone)
+    ) {
       throw new BadRequestException('Thông tin xác thực không chính xác');
     }
 
     if (request.status !== ReturnStatus.APPROVED) {
-      throw new BadRequestException('Chỉ có thể xác nhận gửi hàng sau khi yêu cầu đã được duyệt');
+      throw new BadRequestException(
+        'Chỉ có thể xác nhận gửi hàng sau khi yêu cầu đã được duyệt',
+      );
     }
 
     return this.prisma.returnRequest.update({
       where: { id },
-      data: { status: ReturnStatus.RETURNING }
+      data: { status: ReturnStatus.RETURNING },
     });
   }
 }

@@ -23,9 +23,3 @@ export class QueryUserDto {
   @IsEnum(['ACTIVE', 'SUSPENDED'])
   status?: 'ACTIVE' | 'SUSPENDED';
 }
-
-
-
-
-
-
