@@ -598,10 +598,13 @@ export class OrderManagement {
         }
       }
     } else {
-      // If status is changed FROM DELIVERED to something else (e.g. back to PROCESSING or CANCELLED)
+      // Chỉ trừ soldCount khi đơn đang ở DELIVERED và chuyển sang trạng thái KHÔNG phải RETURN_REQUESTED.
+      // - Không trừ khi chuyển sang RETURN_REQUESTED: return service sẽ tự trừ soldCount khi RECEIVED.
+      // - Không trừ khi oldStatus là RETURN_REQUESTED: return service đã xử lý rồi.
+      // Tránh double-decrement: DELIVERED→RETURN_REQUESTED (trừ ở đây) + RECEIVED (trừ ở return service) = 2 lần.
       if (
-        oldOrder.status === 'DELIVERED' ||
-        oldOrder.status === 'RETURN_REQUESTED'
+        oldOrder.status === 'DELIVERED' &&
+        dto.status !== 'RETURN_REQUESTED'
       ) {
         for (const item of oldOrder.orderItems) {
           try {

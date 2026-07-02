@@ -529,7 +529,10 @@ export class OrderRepository {
         });
       }
 
-      return order;
+      // Trả về object MỚI sau khi đã update (tránh trả về `order` cũ với status trước cancel).
+      // `order` được đọc trước updateMany nên status vẫn là giá trị cũ, không phải 'CANCELLED'.
+      const cancelledOrder = await tx.order.findUnique({ where: { id } });
+      return cancelledOrder;
     });
   }
 
