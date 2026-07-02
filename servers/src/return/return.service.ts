@@ -326,7 +326,14 @@ export class ReturnService {
       }
     }
 
-    return this.prisma.$transaction(async (tx) => {
+    // --- Bước 1: Thực hiện toàn bộ thao tác DB trong 1 transaction ---
+    // Lưu lại thông tin hoàn tiền cần thực hiện SAU khi tx commit.
+    // KHÔNG gọi initiateRefund bên trong tx vì nó dùng connection pool riêng
+    // để update cùng row payment đang bị lock → deadlock/timeout.
+    let paymentIdToRefund: number | null = null;
+    let refundAmountToProcess: number | null = null;
+
+    const result = await this.prisma.$transaction(async (tx) => {
       // Atomic guard: chỉ update nếu status hiện tại chưa là COMPLETED
       // Ngăn double refund khi 2 request đồng thời gọi COMPLETED
       const guard = await tx.returnRequest.updateMany({
@@ -380,22 +387,20 @@ export class ReturnService {
         }
       }
 
-      // 2. Khi Admin đánh dấu hoàn thành (COMPLETED): Thực hiện hoàn tiền
+      // 2. Khi Admin đánh dấu hoàn thành (COMPLETED): Thu thập thông tin hoàn tiền
+      //    KHÔNG gọi initiateRefund ở đây — sẽ gọi sau khi transaction commit
+      //    để tránh deadlock (tx đang giữ lock row payment).
       if (dto.status === ReturnStatus.COMPLETED) {
-        // Thực hiện hoàn tiền (Dùng refundAmount của request thay vì toàn bộ payment.amount)
         const payment = await tx.payment.findUnique({
           where: { orderId: request.orderId },
         });
 
         if (payment && payment.status === 'SUCCESS') {
-          await this.paymentService.initiateRefund(
-            payment.id,
-            request.refundAmount,
-          );
+          paymentIdToRefund = payment.id;
+          refundAmountToProcess = request.refundAmount;
         }
 
         // Kiểm tra xem đã trả hết toàn bộ đơn hàng chưa để cập nhật status Order
-        // Logic đơn giản: Nếu tổng số lượng trong returnItems (tất cả COMPLETED requests) == tổng số lượng trong orderItems
         const allCompletedReturns = await tx.returnRequest.findMany({
           where: { orderId: request.orderId, status: ReturnStatus.COMPLETED },
           include: { returnItems: true },
@@ -436,8 +441,7 @@ export class ReturnService {
             },
           });
         } else {
-          // Vẫn để status là DELIVERED hoặc một status "PARTIALLY_RETURNED" nếu có
-          // Hiện tại cứ giữ DELIVERED hoặc ghi log vào statusHistory
+          // Trả hàng một phần — giữ DELIVERED, cập nhật returnStatus
           await tx.order.update({
             where: { id: request.orderId },
             data: {
@@ -464,6 +468,27 @@ export class ReturnService {
 
       return updatedRequest;
     });
+
+    // --- Bước 2: Gọi initiateRefund SAU khi transaction đã commit ---
+    // Lý do tách ra: tx đang giữ DB lock trên row payment; nếu initiateRefund
+    // cũng dùng prisma client riêng để update row đó → deadlock.
+    if (paymentIdToRefund !== null && refundAmountToProcess !== null) {
+      try {
+        await this.paymentService.initiateRefund(
+          paymentIdToRefund,
+          refundAmountToProcess,
+        );
+      } catch (error) {
+        // Không fail toàn bộ request — trạng thái return đã commit thành công.
+        // Admin có thể thực hiện hoàn tiền thủ công nếu cần.
+        console.error(
+          `[ReturnService] initiateRefund failed for payment ${paymentIdToRefund} after COMPLETED:`,
+          error,
+        );
+      }
+    }
+
+    return result;
   }
 
   async getMyReturns(userId: number) {
