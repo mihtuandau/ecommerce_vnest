@@ -25,12 +25,12 @@ export function DetailItems({
   discountAmount,
 }: DetailItemsProps) {
   return (
-    <div className="bg-white border border-[#DDD6C8] rounded-2xl overflow-hidden shadow-sm font-sans-brand animate-in fade-in duration-700">
-      <div className="px-[22px] py-[16px] border-b border-[#DDD6C8] flex items-center justify-between">
-        <span className="text-[14px] font-bold text-[#3D2B1A] flex items-center gap-2">
-          <ShoppingBag size={16} className="text-[#C4783A]" /> Sản phẩm đã đặt
+    <div className="bg-white border border-brand-sand rounded-2xl overflow-hidden shadow-sm font-sans-brand animate-in fade-in duration-700">
+      <div className="px-[22px] py-[16px] border-b border-brand-sand flex items-center justify-between">
+        <span className="text-[14px] font-bold text-brand-espresso flex items-center gap-2">
+          <ShoppingBag size={16} className="text-brand-accent" /> Sản phẩm đã đặt
         </span>
-        <span className="text-[12.5px] text-[#8A7966]">
+        <span className="text-[12.5px] text-brand-taupe">
           {orderItems?.length} sản phẩm
         </span>
       </div>
@@ -39,21 +39,21 @@ export function DetailItems({
         <table className="w-full border-collapse">
           <thead>
             <tr>
-              <th className="text-[11.5px] font-bold text-[#8A7966] uppercase tracking-[0.06em] pb-3 text-left border-b border-[#DDD6C8]">
+              <th className="text-[11.5px] font-bold text-brand-taupe uppercase tracking-[0.06em] pb-3 text-left border-b border-brand-sand">
                 Sản phẩm
               </th>
-              <th className="text-[11.5px] font-bold text-[#8A7966] uppercase tracking-[0.06em] pb-3 text-center border-b border-[#DDD6C8] w-20">
+              <th className="text-[11.5px] font-bold text-brand-taupe uppercase tracking-[0.06em] pb-3 text-center border-b border-brand-sand w-20">
                 SL
               </th>
-              <th className="text-[11.5px] font-bold text-[#8A7966] uppercase tracking-[0.06em] pb-3 text-right border-b border-[#DDD6C8] w-32">
+              <th className="text-[11.5px] font-bold text-brand-taupe uppercase tracking-[0.06em] pb-3 text-right border-b border-brand-sand w-32">
                 Đơn giá
               </th>
-              <th className="text-[11.5px] font-bold text-[#8A7966] uppercase tracking-[0.06em] pb-3 text-right border-b border-[#DDD6C8] w-32">
+              <th className="text-[11.5px] font-bold text-brand-taupe uppercase tracking-[0.06em] pb-3 text-right border-b border-brand-sand w-32">
                 Thành tiền
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#DDD6C8]">
+          <tbody className="divide-y divide-brand-sand">
             {orderItems?.map((item: any) => {
               // Snapshot lưu lúc đặt hàng (có thể là object hoặc JSON string).
               let snap: any = item.variantSnapshot ?? null;
@@ -91,7 +91,7 @@ export function DetailItems({
                 <tr key={item.id} className="group">
                   <td className="py-4">
                     <div className="flex items-center gap-4">
-                      <div className="w-[60px] h-[72px] rounded-xl border border-[#DDD6C8] shrink-0 relative overflow-hidden bg-[#F3EFE8]">
+                      <div className="w-[60px] h-[72px] rounded-xl border border-brand-sand shrink-0 relative overflow-hidden bg-brand-ivory">
                         <Image
                           src={getImageUrl(imageSrc)}
                           alt={productName}
@@ -100,12 +100,12 @@ export function DetailItems({
                         />
                       </div>
                       <div className="space-y-1">
-                        <p className="text-[10.5px] font-bold text-[#8A7966] uppercase tracking-[0.1em]">
+                        <p className="text-[10.5px] font-bold text-brand-taupe uppercase tracking-[0.1em]">
                           {brand}
                         </p>
                         <Link
                           href={`/shop/${productSlug}`}
-                          className="text-[14px] font-medium text-[#3D2B1A] hover:text-[#C4783A] transition-colors line-clamp-1 leading-snug"
+                          className="text-[14px] font-medium text-brand-espresso hover:text-brand-accent transition-colors line-clamp-1 leading-snug"
                         >
                           {productName}
                         </Link>

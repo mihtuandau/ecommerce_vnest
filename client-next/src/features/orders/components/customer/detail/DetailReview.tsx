@@ -45,27 +45,27 @@ export function DetailReview({
   }
 
   return (
-    <div className="mt-8 bg-white border border-[#DDD6C8] rounded-[24px] overflow-hidden shadow-sm font-sans-brand">
-      <div className="px-8 py-6 border-b border-[#DDD6C8] flex items-center justify-between">
+    <div className="mt-8 bg-white border border-brand-sand rounded-[24px] overflow-hidden shadow-sm font-sans-brand">
+      <div className="px-8 py-6 border-b border-brand-sand flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Star className="text-[#C4783A]" size={20} />
-          <h3 className="text-[10px] font-black text-[#3D2B1A] uppercase tracking-[0.25em]">
+          <Star className="text-brand-accent" size={20} />
+          <h3 className="text-[10px] font-black text-brand-espresso uppercase tracking-[0.25em]">
             Đánh giá sản phẩm
           </h3>
         </div>
-        <span className="text-[10px] font-black text-[#8A7966] uppercase tracking-[0.2em] opacity-60">
+        <span className="text-[10px] font-black text-brand-taupe uppercase tracking-[0.2em] opacity-60">
           {unreviewedItems.length} sản phẩm chờ đánh giá
         </span>
       </div>
 
-      <div className="divide-y divide-[#DDD6C8]/30">
+      <div className="divide-y divide-brand-sand/30">
         {orderItems.map((item) => (
           <div
             key={item.id}
             className="p-8 grid grid-cols-1 md:grid-cols-12 gap-8 items-start"
           >
             <div className="md:col-span-1 flex items-center justify-center">
-              <div className="h-20 w-16 relative rounded-lg overflow-hidden border border-[#DDD6C8] bg-[#F3EFE8]">
+              <div className="h-20 w-16 relative rounded-lg overflow-hidden border border-brand-sand bg-brand-ivory">
                 <Image
                   src={getImageUrl(
                     item.variant?.images?.[0] || item.variant?.product?.images?.[0]
@@ -79,13 +79,13 @@ export function DetailReview({
 
             <div className="md:col-span-7 space-y-3">
               <div>
-                <p className="text-[10px] font-black text-[#8A7966] uppercase tracking-[0.2em] mb-1">
+                <p className="text-[10px] font-black text-brand-taupe uppercase tracking-[0.2em] mb-1">
                   {(item.variant?.product?.brand as any)?.name || "LUXE"}
                 </p>
-                <h4 className="text-[14px] font-bold text-[#3D2B1A] line-clamp-1">
+                <h4 className="text-[14px] font-bold text-brand-espresso line-clamp-1">
                   {item.productName}
                 </h4>
-                <p className="text-[11px] text-[#8A7966] mt-1">
+                <p className="text-[11px] text-brand-taupe mt-1">
                   Màu: {item.variant?.color} · Size: {item.variant?.size}
                 </p>
               </div>
@@ -102,8 +102,8 @@ export function DetailReview({
                       className={cn(
                         "transition-colors",
                         (ratings[item.id] || 0) >= star
-                          ? "text-[#C4783A] fill-[#C4783A]"
-                          : "text-[#DDD6C8]"
+                          ? "text-brand-accent fill-brand-accent"
+                          : "text-brand-sand"
                       )}
                     />
                   </button>
@@ -114,7 +114,7 @@ export function DetailReview({
             <div className="md:col-span-4 flex flex-col gap-3">
               <textarea
                 placeholder="Cảm nhận của bạn về sản phẩm..."
-                className="w-full p-4 bg-[#FAF8F4] border border-[#DDD6C8] rounded-xl text-xs font-medium focus:outline-none focus:border-[#C4783A] transition-colors resize-none h-24"
+                className="w-full p-4 bg-brand-cream border border-brand-sand rounded-xl text-xs font-medium focus:outline-none focus:border-brand-accent transition-colors resize-none h-24"
                 value={comments[item.id] || ""}
                 onChange={(e) => handleComment(item.id, e.target.value)}
               />
@@ -126,7 +126,7 @@ export function DetailReview({
                     comments[item.id] || ""
                   )
                 }
-                className="w-full h-10 bg-[#3D2B1A] text-white rounded-xl text-[11px] font-bold uppercase tracking-widest hover:bg-[#2A2420]"
+                className="w-full h-10 bg-brand-espresso text-white rounded-xl text-[11px] font-bold uppercase tracking-widest hover:bg-[#2A2420]"
               >
                 Gửi đánh giá
               </Button>
@@ -135,8 +135,8 @@ export function DetailReview({
         ))}
       </div>
 
-      <div className="p-8 bg-[#FAF8F4]/40 border-t border-[#DDD6C8] flex justify-end">
-        <Button className="rounded-full bg-[#3D2B1A] text-white px-10 py-6 h-auto text-sm font-bold uppercase tracking-[0.2em] shadow-xl shadow-[#3D2B1A]/20 hover:scale-105 transition-all">
+      <div className="p-8 bg-brand-cream/40 border-t border-brand-sand flex justify-end">
+        <Button className="rounded-full bg-brand-espresso text-white px-10 py-6 h-auto text-sm font-bold uppercase tracking-[0.2em] shadow-xl shadow-brand-espresso/20 hover:scale-105 transition-all">
           <Send size={16} className="mr-3" />
           Gửi tất cả đánh giá
         </Button>

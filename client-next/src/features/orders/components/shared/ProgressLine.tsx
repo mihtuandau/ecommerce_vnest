@@ -51,7 +51,7 @@ export function ProgressLine({ currentStatus }: ProgressLineProps) {
     <div className="w-full py-4">
       <div className="relative flex justify-between items-center px-4">
         
-        <div className="absolute top-[11px] left-10 right-10 h-[2px] bg-[#DDD6C8]" />
+        <div className="absolute top-[11px] left-10 right-10 h-[2px] bg-brand-sand" />
         
         <div
           className="absolute top-[11px] left-10 h-[2px] bg-[#3A7D5A] transition-all duration-700"
@@ -73,7 +73,7 @@ export function ProgressLine({ currentStatus }: ProgressLineProps) {
                   "w-[22px] h-[22px] rounded-full flex items-center justify-center border-2 transition-all duration-500 text-[9px]",
                   isCompleted
                     ? "bg-[#3A7D5A] border-[#3A7D5A] text-white"
-                    : "bg-white border-[#DDD6C8] text-transparent"
+                    : "bg-white border-brand-sand text-transparent"
                 )}
               >
                 {isCompleted && <Check size={10} strokeWidth={3} />}
@@ -81,8 +81,8 @@ export function ProgressLine({ currentStatus }: ProgressLineProps) {
               <span
                 className={cn(
                   "text-[12px] mt-2 whitespace-nowrap transition-colors duration-300 font-medium",
-                  isCompleted ? "text-[#3A7D5A]" : "text-[#8A7966]",
-                  isActive && "font-bold text-[#C4783A]"
+                  isCompleted ? "text-[#3A7D5A]" : "text-brand-taupe",
+                  isActive && "font-bold text-brand-accent"
                 )}
               >
                 {step.label}

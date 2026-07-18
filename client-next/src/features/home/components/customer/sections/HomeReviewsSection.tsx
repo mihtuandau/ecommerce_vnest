@@ -39,7 +39,7 @@ function ReviewStars({ rating = 5 }: { rating?: number }) {
   const safeRating = Math.max(0, Math.min(5, Math.round(rating)));
 
   return (
-    <div className="text-[#C4783A] text-sm tracking-[2px] mb-4">
+    <div className="text-brand-accent text-sm tracking-[2px] mb-4">
       {"★".repeat(safeRating)}
       {"☆".repeat(5 - safeRating)}
     </div>
@@ -51,23 +51,23 @@ function ReviewCard({ review }: { review: HomeReview }) {
   const initial = userName.charAt(0).toUpperCase();
 
   return (
-    <div className="bg-white border border-[#DDD6C8] rounded-2xl p-8 flex flex-col justify-between hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+    <div className="bg-white border border-brand-sand rounded-2xl p-8 flex flex-col justify-between hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
       <div>
         <ReviewStars rating={review.rating} />
-        <p className="text-[13.5px] text-[#3D2B1A] leading-relaxed italic line-clamp-4">
+        <p className="text-[13.5px] text-brand-espresso leading-relaxed italic line-clamp-4">
           &quot;{review.comment || review.content}&quot;
         </p>
       </div>
 
-      <div className="flex items-center gap-3 mt-6 pt-4 border-t border-[#F3EFE8]">
-        <div className="w-10 h-10 rounded-full bg-[#F3EFE8] flex items-center justify-center text-[#8B6F47] text-[12px] font-semibold shrink-0">
+      <div className="flex items-center gap-3 mt-6 pt-4 border-t border-brand-ivory">
+        <div className="w-10 h-10 rounded-full bg-brand-ivory flex items-center justify-center text-[#8B6F47] text-[12px] font-semibold shrink-0">
           {initial}
         </div>
         <div>
-          <h4 className="text-[13px] font-bold text-[#3D2B1A] line-clamp-1">
+          <h4 className="text-[13px] font-bold text-brand-espresso line-clamp-1">
             {userName}
           </h4>
-          <p className="text-[11px] text-[#8A7966] line-clamp-1">
+          <p className="text-[11px] text-brand-taupe line-clamp-1">
             {review.user?.address || "Đã mua hàng tại LUXE"}
           </p>
         </div>
@@ -82,23 +82,23 @@ function FallbackReviewCard({
   review: (typeof FALLBACK_REVIEWS)[number];
 }) {
   return (
-    <div className="bg-white border border-[#DDD6C8] rounded-2xl p-8 flex flex-col justify-between hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+    <div className="bg-white border border-brand-sand rounded-2xl p-8 flex flex-col justify-between hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
       <div>
         <ReviewStars />
-        <p className="text-[13.5px] text-[#3D2B1A] leading-relaxed italic line-clamp-4">
+        <p className="text-[13.5px] text-brand-espresso leading-relaxed italic line-clamp-4">
           &quot;{review.text}&quot;
         </p>
       </div>
 
-      <div className="flex items-center gap-3 mt-6 pt-4 border-t border-[#F3EFE8]">
-        <div className="w-10 h-10 rounded-full bg-[#F3EFE8] flex items-center justify-center text-[#8B6F47] text-[12px] font-semibold shrink-0">
+      <div className="flex items-center gap-3 mt-6 pt-4 border-t border-brand-ivory">
+        <div className="w-10 h-10 rounded-full bg-brand-ivory flex items-center justify-center text-[#8B6F47] text-[12px] font-semibold shrink-0">
           {review.initials}
         </div>
         <div>
-          <h4 className="text-[13px] font-bold text-[#3D2B1A] line-clamp-1">
+          <h4 className="text-[13px] font-bold text-brand-espresso line-clamp-1">
             {review.name}
           </h4>
-          <p className="text-[11px] text-[#8A7966] line-clamp-1">
+          <p className="text-[11px] text-brand-taupe line-clamp-1">
             {review.role}
           </p>
         </div>
@@ -113,12 +113,9 @@ export function HomeReviewsSection({ reviews = [] }: HomeReviewsSectionProps) {
   return (
     <section className="w-full mt-12 pb-24">
       <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
-        <h2
-          className="text-[28px] md:text-[32px] text-[#3D2B1A] mb-8"
-          style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600 }}
-        >
+        <h2 className="text-[28px] md:text-[32px] text-brand-espresso font-serif font-semibold mb-8">
           Khách hàng{" "}
-          <em className="text-[#C4783A]" style={{ fontStyle: "italic" }}>
+          <em className="text-brand-accent" style={{ fontStyle: "italic" }}>
             nói gì
           </em>
         </h2>

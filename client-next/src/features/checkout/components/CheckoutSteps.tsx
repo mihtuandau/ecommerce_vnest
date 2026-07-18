@@ -33,8 +33,8 @@ export const CheckoutSteps = React.memo(function CheckoutSteps({
                     isComplete
                       ? "bg-[#3A7D5A] border-[#3A7D5A] text-white"
                       : isCurrent
-                        ? "bg-[#3D2B1A] border-[#3D2B1A] text-white shadow-lg shadow-[#3D2B1A]/10"
-                        : "bg-white border-[#DDD6C8] text-[#8A7966]"
+                        ? "bg-brand-espresso border-brand-espresso text-white shadow-lg shadow-brand-espresso/10"
+                        : "bg-white border-brand-sand text-brand-taupe"
                   )}
                 >
                   {isComplete ? <Check className="h-4 w-4" strokeWidth={3} /> : step.id}
@@ -45,15 +45,15 @@ export const CheckoutSteps = React.memo(function CheckoutSteps({
                     isComplete
                       ? "text-[#3A7D5A]"
                       : isCurrent
-                        ? "text-[#3D2B1A]"
-                        : "text-[#8A7966]"
+                        ? "text-brand-espresso"
+                        : "text-brand-taupe"
                   )}
                 >
                   {step.name}
                 </span>
               </li>
               {stepIdx !== steps.length - 1 && (
-                <div className="flex-1 h-[2px] bg-[#DDD6C8] mb-6 mx-[-1px] relative z-0">
+                <div className="flex-1 h-[2px] bg-brand-sand mb-6 mx-[-1px] relative z-0">
                   <div
                     className={cn(
                       "h-full transition-all duration-1000",

@@ -36,7 +36,7 @@ export function CreateCollectionModal({ isOpen, onClose, onSave }: CreateCollect
     <div className="fixed inset-0 bg-brand-espresso/40 backdrop-blur-sm z-[200] flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden border border-brand-sand animate-in fade-in zoom-in-95 duration-200">
         <div className="p-5 border-b border-brand-sand/50 flex items-center justify-between">
-          <span className="font-serif-brand text-lg font-bold text-brand-espresso">
+          <span className="font-serif text-lg font-bold text-brand-espresso">
             Tạo bộ sưu tập mới
           </span>
           <button

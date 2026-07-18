@@ -67,9 +67,9 @@ export const ChatProductCard = ({
   return (
     <Link
       href={`/shop/${product.slug}`}
-      className="flex items-center gap-3 p-2 bg-white border border-slate-100 rounded-xl hover:border-primary/30 hover:shadow-sm transition-all group mt-2 relative z-10"
+      className="flex items-center gap-3 p-2 bg-white border border-brand-sand rounded-xl hover:border-primary/30 hover:shadow-sm transition-all group mt-2 relative z-10"
     >
-      <div className="h-12 w-12 rounded-lg bg-slate-50/50 flex-shrink-0 overflow-hidden border border-slate-50 flex items-center justify-center relative">
+      <div className="h-12 w-12 rounded-lg bg-brand-ivory/50 flex-shrink-0 overflow-hidden border border-brand-sand flex items-center justify-center relative">
         <Image
           src={getImageUrl(product.images?.[0]?.url || product.image)}
           alt={product.name}
@@ -78,21 +78,21 @@ export const ChatProductCard = ({
         />
       </div>
       <div className="flex-1 min-w-0">
-        <h4 className="text-[11px] font-medium text-gray-900 truncate group-hover:text-primary transition-colors">
+        <h4 className="text-[11px] font-medium text-brand-espresso truncate group-hover:text-primary transition-colors">
           {product.name}
         </h4>
         <div className="flex items-center gap-2 mt-0.5">
-          <span className="text-[11px] font-bold text-gray-900 tabular-nums">
+          <span className="text-[11px] font-bold text-brand-espresso tabular-nums">
             {formatCurrency(currentPrice)}
           </span>
           {hasDiscount && (
-            <span className="text-[9px] text-gray-400 line-through tabular-nums">
+            <span className="text-[9px] text-brand-taupe line-through tabular-nums">
               {formatCurrency(originalPrice)}
             </span>
           )}
         </div>
       </div>
-      <ChevronRight className="h-3 w-3 text-gray-300 group-hover:text-primary transition-colors" />
+      <ChevronRight className="h-3 w-3 text-brand-sand group-hover:text-primary transition-colors" />
     </Link>
   );
 };

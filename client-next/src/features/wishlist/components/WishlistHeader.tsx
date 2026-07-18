@@ -12,8 +12,8 @@ export function WishlistHeader({ onShareClick, onAddAllToCart }: WishlistHeaderP
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 border-b border-brand-sand/60 pb-8">
       <div className="space-y-2">
-        <h1 className="text-3xl md:text-5xl font-semibold text-brand-espresso font-serif-brand tracking-tight leading-tight">
-          Sản phẩm <em className="italic text-brand-bronze font-serif-brand">yêu thích</em>
+        <h1 className="text-3xl md:text-5xl font-semibold text-brand-espresso font-serif tracking-tight leading-tight">
+          Sản phẩm <em className="italic text-brand-bronze font-serif">yêu thích</em>
         </h1>
         <p className="text-brand-taupe text-[13px] font-medium leading-relaxed">
           Lưu và quản lý các sản phẩm bạn quan tâm nhất.

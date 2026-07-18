@@ -31,19 +31,16 @@ export function FeaturedCategories() {
 
   return (
     <div className="space-y-10 overflow-visible py-12">
-      <div className="flex items-end justify-between border-b border-[#DDD6C8]/40 pb-4">
-        <h2
-          className="text-[28px] md:text-[32px] text-[#3D2B1A]"
-          style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600 }}
-        >
+      <div className="flex items-end justify-between border-b border-brand-sand/40 pb-4">
+        <h2 className="text-[28px] md:text-[32px] text-brand-espresso font-serif font-semibold">
           Danh mục{" "}
-          <em className="text-[#C4783A]" style={{ fontStyle: "italic" }}>
+          <em className="text-brand-accent" style={{ fontStyle: "italic" }}>
             nổi bật
           </em>
         </h2>
         <Link
           href="/shop"
-          className="text-[12px] text-[#8A7966] uppercase tracking-[0.1em] hover:text-[#C4783A] transition-colors pb-1"
+          className="text-[12px] text-brand-taupe uppercase tracking-[0.1em] hover:text-brand-accent transition-colors pb-1"
         >
           Xem tất cả →
         </Link>
@@ -69,7 +66,7 @@ export function FeaturedCategories() {
                 className="group/card flex flex-col items-center gap-5 transition-all duration-500 hover:-translate-y-2 shrink-0"
               >
                 
-                <div className="w-32 h-32 md:w-44 md:h-44 rounded-full border border-[#DDD6C8]/50 bg-white p-1.5 transition-all duration-700 group-hover/card:border-[#C4783A] group-hover/card:shadow-[0_10px_30px_rgba(61,43,26,0.08)] flex items-center justify-center relative overflow-hidden">
+                <div className="w-32 h-32 md:w-44 md:h-44 rounded-full border border-brand-sand/50 bg-white p-1.5 transition-all duration-700 group-hover/card:border-brand-accent group-hover/card:shadow-[0_10px_30px_rgba(61,43,26,0.08)] flex items-center justify-center relative overflow-hidden">
                   <div className="w-full h-full rounded-full bg-white flex items-center justify-center overflow-hidden relative">
                     {category.image ? (
                       <Image
@@ -84,21 +81,21 @@ export function FeaturedCategories() {
                         sizes="(max-width: 768px) 128px, 176px"
                       />
                     ) : (
-                      <LayoutGrid className="h-10 w-10 text-[#C4B49A]" />
+                      <LayoutGrid className="h-10 w-10 text-brand-sand" />
                     )}
                   </div>
                 </div>
 
                 <div className="text-center space-y-1">
-                  <h3 className="text-[14px] md:text-[16px] font-semibold text-[#3D2B1A] group-hover/card:text-[#C4783A] transition-colors tracking-tight">
+                  <h3 className="text-[14px] md:text-[16px] font-semibold text-brand-espresso group-hover/card:text-brand-accent transition-colors tracking-tight">
                     {category.name}
                   </h3>
                   <div className="flex items-center justify-center gap-2">
-                    <div className="h-px w-3 bg-[#C4783A]/30" />
-                    <p className="text-[10px] text-[#8A7966] font-medium tracking-[0.15em]">
+                    <div className="h-px w-3 bg-brand-accent/30" />
+                    <p className="text-[10px] text-brand-taupe font-medium tracking-[0.15em]">
                       {pCount} sản phẩm
                     </p>
-                    <div className="h-px w-3 bg-[#C4783A]/30" />
+                    <div className="h-px w-3 bg-brand-accent/30" />
                   </div>
                 </div>
               </Link>

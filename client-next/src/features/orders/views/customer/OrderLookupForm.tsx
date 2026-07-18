@@ -29,7 +29,7 @@ export function OrderLookupForm() {
           <div className="h-16 w-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-6 border border-brand-sand shadow-sm">
             <Package className="h-8 w-8 text-brand-bronze stroke-[1.5]" />
           </div>
-          <h1 className="text-2xl font-bold text-brand-espresso tracking-tight font-serif-brand">
+          <h1 className="text-2xl font-bold text-brand-espresso tracking-tight font-serif">
             Theo dõi đơn hàng
           </h1>
           <p className="text-brand-taupe text-[13px] max-w-[280px] mx-auto leading-relaxed font-medium">

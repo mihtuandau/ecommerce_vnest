@@ -100,8 +100,8 @@ export const ProductGallery = React.memo(function ProductGallery({
             className={cn(
               "relative aspect-square w-16 shrink-0 overflow-hidden rounded-2xl border transition-all duration-300 md:w-full",
               selectedImage === i
-                ? "border-[#3D2B1A] shadow-md"
-                : "border-[#F3EFE8] hover:border-[#C4B49A]"
+                ? "border-brand-espresso shadow-md"
+                : "border-brand-ivory hover:border-brand-sand"
             )}
           >
             <Image
@@ -173,7 +173,7 @@ export const ProductGallery = React.memo(function ProductGallery({
           className="flex h-full max-w-full items-center justify-center overflow-visible border-none bg-white p-0 shadow-none"
         >
           <DialogTitle className="sr-only">Phóng to ảnh sản phẩm</DialogTitle>
-          <DialogClose className="fixed right-8 top-8 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-[#3D2B1A] text-white shadow-xl transition-all hover:bg-[#C4783A]">
+          <DialogClose className="fixed right-8 top-8 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-brand-espresso text-white shadow-xl transition-all hover:bg-brand-accent">
             <X size={24} />
           </DialogClose>
           <div className="relative h-[85vh] w-full">

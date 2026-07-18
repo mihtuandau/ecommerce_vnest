@@ -182,9 +182,9 @@ export function CustomerChatView({ onClose }: CustomerChatProps) {
 
   if (!mounted || isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center h-full min-h-[500px] bg-[#FAF8F4]/20 p-8 text-center font-sans">
-        <Spinner size="lg" className="mb-4 text-[#C4783A]" />
-        <p className="text-[12px] text-[#8A7966] font-normal tracking-wide lowercase">
+      <div className="flex flex-col items-center justify-center h-full min-h-[500px] bg-brand-cream/20 p-8 text-center font-sans">
+        <Spinner size="lg" className="mb-4 text-brand-accent" />
+        <p className="text-[12px] text-brand-taupe font-normal tracking-wide lowercase">
           đang kết nối LUXE Care...
         </p>
       </div>
@@ -193,20 +193,20 @@ export function CustomerChatView({ onClose }: CustomerChatProps) {
 
   if (!user) {
     return (
-      <div className="flex flex-col items-center justify-center h-full min-h-[500px] bg-[#FAF8F4]/40 p-8 text-center font-sans">
-        <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center mb-5 shadow-3xs border border-[#DDD6C8]/60 relative ring-4 ring-[#E8E0D0]/30">
-          <ShieldCheck size={24} className="text-[#3D2B1A]" />
+      <div className="flex flex-col items-center justify-center h-full min-h-[500px] bg-brand-cream/40 p-8 text-center font-sans">
+        <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center mb-5 shadow-3xs border border-brand-sand/60 relative ring-4 ring-[#E8E0D0]/30">
+          <ShieldCheck size={24} className="text-brand-espresso" />
         </div>
-        <h3 className="text-[14px] font-semibold text-[#3D2B1A] mb-1.5">
+        <h3 className="text-[14px] font-semibold text-brand-espresso mb-1.5">
           Vui lòng đăng nhập
         </h3>
-        <p className="text-[#8A7966] text-[12px] mb-5 max-w-xs leading-relaxed">
+        <p className="text-brand-taupe text-[12px] mb-5 max-w-xs leading-relaxed">
           Để bắt đầu trò chuyện trực tuyến với hỗ trợ viên, vui lòng đăng nhập tài khoản
           của bạn.
         </p>
         <button
           onClick={() => (window.location.href = "/auth/login")}
-          className="px-5 py-2.5 bg-[#3D2B1A] text-white rounded-xl text-[12px] font-medium hover:bg-[#2A2420] active:scale-98 transition-all shadow-md shadow-[#3D2B1A]/10"
+          className="px-5 py-2.5 bg-brand-espresso text-white rounded-xl text-[12px] font-medium hover:bg-[#2A2420] active:scale-98 transition-all shadow-md shadow-brand-espresso/10"
         >
           Đăng nhập ngay
         </button>
@@ -216,20 +216,20 @@ export function CustomerChatView({ onClose }: CustomerChatProps) {
 
   return (
     <div className="flex flex-col h-full w-full bg-white overflow-hidden font-sans border-0">
-      <div className="bg-white border-b border-[#DDD6C8]/40 px-6 py-4 flex items-center justify-between shrink-0 z-10">
+      <div className="bg-white border-b border-brand-sand/40 px-6 py-4 flex items-center justify-between shrink-0 z-10">
         <div className="flex items-center gap-3">
           <div className="relative">
-            <div className="w-9 h-9 bg-[#FAF8F4] rounded-xl flex items-center justify-center border border-[#DDD6C8]/60 shadow-3xs overflow-hidden relative">
-              <Bot size={18} className="text-[#C4783A]" />
+            <div className="w-9 h-9 bg-brand-cream rounded-xl flex items-center justify-center border border-brand-sand/60 shadow-3xs overflow-hidden relative">
+              <Bot size={18} className="text-brand-accent" />
             </div>
             <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 border-2 border-white rounded-full" />
           </div>
           <div>
-            <h3 className="text-[#3D2B1A] text-[13px] font-semibold">
+            <h3 className="text-brand-espresso text-[13px] font-semibold">
               Hỗ trợ viên LUXE
             </h3>
             <div className="flex items-center gap-1.5 mt-0.5">
-              <span className="text-[10px] text-[#8A7966] lowercase">
+              <span className="text-[10px] text-brand-taupe lowercase">
                 Đang hoạt động trực tuyến
               </span>
             </div>
@@ -238,7 +238,7 @@ export function CustomerChatView({ onClose }: CustomerChatProps) {
         {onClose && (
           <button
             onClick={onClose}
-            className="w-7 h-7 flex items-center justify-center rounded-lg bg-[#FAF8F4] hover:bg-[#FAF8F4]/80 text-[#8A7966] hover:text-[#3D2B1A] transition-colors border border-[#DDD6C8]/30"
+            className="w-7 h-7 flex items-center justify-center rounded-lg bg-brand-cream hover:bg-brand-cream/80 text-brand-taupe hover:text-brand-espresso transition-colors border border-brand-sand/30"
           >
             <X size={14} />
           </button>
@@ -251,8 +251,8 @@ export function CustomerChatView({ onClose }: CustomerChatProps) {
       >
         {messages.length === 0 && !messagesLoading && (
           <div className="flex flex-col items-center justify-center py-20 opacity-40">
-            <MessageSquare size={32} className="text-[#C4B49A] mb-3" />
-            <p className="text-[12px] text-[#8A7966] font-normal">
+            <MessageSquare size={32} className="text-brand-sand mb-3" />
+            <p className="text-[12px] text-brand-taupe font-normal">
               Bắt đầu cuộc trò chuyện với LUXE Care
             </p>
           </div>
@@ -276,7 +276,7 @@ export function CustomerChatView({ onClose }: CustomerChatProps) {
                 )}
               >
                 {!isUser && (
-                  <div className="w-7 h-7 rounded-lg bg-[#FAF8F4] border border-[#DDD6C8]/60 flex items-center justify-center text-[9px] font-medium text-[#8A7966] shadow-3xs shrink-0 overflow-hidden">
+                  <div className="w-7 h-7 rounded-lg bg-brand-cream border border-brand-sand/60 flex items-center justify-center text-[9px] font-medium text-brand-taupe shadow-3xs shrink-0 overflow-hidden">
                     VN
                   </div>
                 )}
@@ -287,7 +287,7 @@ export function CustomerChatView({ onClose }: CustomerChatProps) {
                   )}
                 >
                   {isImageMessage(m.message) ? (
-                    <div className="rounded-xl overflow-hidden shadow-3xs border border-[#DDD6C8]/40 bg-white p-1 hover:scale-101 transition-transform">
+                    <div className="rounded-xl overflow-hidden shadow-3xs border border-brand-sand/40 bg-white p-1 hover:scale-101 transition-transform">
                       
                       <img
                         src={m.message}
@@ -301,8 +301,8 @@ export function CustomerChatView({ onClose }: CustomerChatProps) {
                       className={cn(
                         "p-2.5 text-[12px] leading-relaxed shadow-3xs transition-all duration-200",
                         isUser
-                          ? "bg-[#3D2B1A] text-white rounded-2xl rounded-br-xs hover:bg-[#2A2420]"
-                          : "bg-white text-[#3D2B1A] border border-[#DDD6C8]/55 rounded-2xl rounded-bl-xs hover:border-[#C4B49A]"
+                          ? "bg-brand-espresso text-white rounded-2xl rounded-br-xs hover:bg-[#2A2420]"
+                          : "bg-white text-brand-espresso border border-brand-sand/55 rounded-2xl rounded-bl-xs hover:border-brand-sand"
                       )}
                     >
                       {isFileMessage(m.message) ? (
@@ -314,10 +314,10 @@ export function CustomerChatView({ onClose }: CustomerChatProps) {
                             "flex items-center gap-1.5 p-1.5 rounded-lg border transition-colors text-[11px]",
                             isUser
                               ? "border-stone-700 bg-stone-800 text-stone-100 hover:bg-stone-900"
-                              : "border-[#FAF8F4] bg-[#FAF8F4] text-[#3D2B1A] hover:bg-[#FAF8F4]/80"
+                              : "border-brand-cream bg-brand-cream text-brand-espresso hover:bg-brand-cream/80"
                           )}
                         >
-                          <Paperclip size={12} className="shrink-0 text-[#8A7966]" />
+                          <Paperclip size={12} className="shrink-0 text-brand-taupe" />
                           <span className="truncate max-w-[130px] font-normal">
                             Tải tệp đính kèm
                           </span>
@@ -330,10 +330,10 @@ export function CustomerChatView({ onClose }: CustomerChatProps) {
                   )}
                   {showTime && (
                     <div className="flex items-center gap-1 px-1 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <span className="text-[8px] text-[#8A7966] lowercase">
+                      <span className="text-[8px] text-brand-taupe lowercase">
                         {dayjs(m.createdAt).format("HH:mm")}
                       </span>
-                      {isUser && <span className="text-[#C4783A] text-[9px]">✓</span>}
+                      {isUser && <span className="text-brand-accent text-[9px]">✓</span>}
                     </div>
                   )}
                 </div>
@@ -343,19 +343,19 @@ export function CustomerChatView({ onClose }: CustomerChatProps) {
 
         {staffTyping && (
           <div className="flex gap-2.5 items-center">
-            <div className="w-7 h-7 rounded-lg bg-[#FAF8F4] border border-[#DDD6C8]/60 flex items-center justify-center text-[9px] font-medium text-[#8A7966] shadow-3xs shrink-0">
+            <div className="w-7 h-7 rounded-lg bg-brand-cream border border-brand-sand/60 flex items-center justify-center text-[9px] font-medium text-brand-taupe shadow-3xs shrink-0">
               VN
             </div>
-            <div className="bg-white border border-[#DDD6C8]/40 px-3.5 py-2.5 rounded-2xl rounded-bl-xs shadow-3xs flex gap-1 items-center">
-              <div className="w-1.2 h-1.2 bg-[#C4B49A] rounded-full animate-bounce [animation-delay:0s]" />
-              <div className="w-1.2 h-1.2 bg-[#C4B49A] rounded-full animate-bounce [animation-delay:0.2s]" />
-              <div className="w-1.2 h-1.2 bg-[#C4B49A] rounded-full animate-bounce [animation-delay:0.4s]" />
+            <div className="bg-white border border-brand-sand/40 px-3.5 py-2.5 rounded-2xl rounded-bl-xs shadow-3xs flex gap-1 items-center">
+              <div className="w-1.2 h-1.2 bg-brand-sand rounded-full animate-bounce [animation-delay:0s]" />
+              <div className="w-1.2 h-1.2 bg-brand-sand rounded-full animate-bounce [animation-delay:0.2s]" />
+              <div className="w-1.2 h-1.2 bg-brand-sand rounded-full animate-bounce [animation-delay:0.4s]" />
             </div>
           </div>
         )}
       </div>
 
-      <div className="p-4 bg-white border-t border-[#DDD6C8]/40 shrink-0">
+      <div className="p-4 bg-white border-t border-brand-sand/40 shrink-0">
         <input
           type="file"
           ref={fileInputRef}
@@ -372,10 +372,10 @@ export function CustomerChatView({ onClose }: CustomerChatProps) {
         />
 
         <div className="flex items-end gap-2.5">
-          <div className="flex-1 bg-[#FAF8F4]/40 border border-[#DDD6C8]/60 rounded-2xl overflow-hidden focus-within:border-[#C4B49A] focus-within:bg-white transition-all duration-300 flex flex-col">
+          <div className="flex-1 bg-brand-cream/40 border border-brand-sand/60 rounded-2xl overflow-hidden focus-within:border-brand-sand focus-within:bg-white transition-all duration-300 flex flex-col">
             {pendingAttachment && (
-              <div className="px-3 pt-3 pb-1 flex bg-white border-b border-[#DDD6C8]/10 shrink-0">
-                <div className="relative inline-block bg-[#FAF8F4] border border-[#DDD6C8]/55 rounded-xl p-1 shadow-3xs group animate-in zoom-in-95 duration-200">
+              <div className="px-3 pt-3 pb-1 flex bg-white border-b border-brand-sand/10 shrink-0">
+                <div className="relative inline-block bg-brand-cream border border-brand-sand/55 rounded-xl p-1 shadow-3xs group animate-in zoom-in-95 duration-200">
                   {isImageMessage(pendingAttachment) ? (
                     <>
                       
@@ -402,7 +402,7 @@ export function CustomerChatView({ onClose }: CustomerChatProps) {
             )}
             <textarea
               placeholder="Gửi tin nhắn hỗ trợ trực tuyến..."
-              className="w-full p-3 bg-transparent border-none outline-none resize-none text-[12px] min-h-[40px] max-h-[80px] text-[#3D2B1A] font-normal placeholder-[#8A7966]/60 focus:ring-0"
+              className="w-full p-3 bg-transparent border-none outline-none resize-none text-[12px] min-h-[40px] max-h-[80px] text-brand-espresso font-normal placeholder-brand-taupe/60 focus:ring-0"
               rows={1}
               value={inputText}
               onChange={handleInputChange}
@@ -413,25 +413,25 @@ export function CustomerChatView({ onClose }: CustomerChatProps) {
                 }
               }}
             />
-            <div className="px-3 py-1.5 border-t border-[#DDD6C8]/10 flex items-center justify-between">
+            <div className="px-3 py-1.5 border-t border-brand-sand/10 flex items-center justify-between">
               <div className="flex gap-2">
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   disabled={isUploading}
-                  className="text-[#8A7966] hover:text-[#3D2B1A] transition-colors disabled:opacity-50 cursor-pointer"
+                  className="text-brand-taupe hover:text-brand-espresso transition-colors disabled:opacity-50 cursor-pointer"
                 >
                   <Paperclip size={14} />
                 </button>
                 <button
                   onClick={() => imageInputRef.current?.click()}
                   disabled={isUploading}
-                  className="text-[#8A7966] hover:text-[#3D2B1A] transition-colors disabled:opacity-50 cursor-pointer"
+                  className="text-brand-taupe hover:text-brand-espresso transition-colors disabled:opacity-50 cursor-pointer"
                 >
                   <ImageIcon size={14} />
                 </button>
               </div>
               <div className="flex items-center gap-1">
-                <span className="text-[8px] text-[#8A7966]">{inputText.length}</span>
+                <span className="text-[8px] text-brand-taupe">{inputText.length}</span>
                 <div className="h-1 w-1 rounded-full bg-[#E8E0D0]" />
               </div>
             </div>
@@ -442,7 +442,7 @@ export function CustomerChatView({ onClose }: CustomerChatProps) {
             className={cn(
               "w-10 h-10 rounded-xl flex items-center justify-center transition-all transform active:scale-95 shrink-0 shadow-3xs cursor-pointer",
               (inputText.trim() || pendingAttachment) && !isUploading
-                ? "bg-[#3D2B1A] text-white hover:bg-[#2A2420] shadow-lg shadow-[#3D2B1A]/15"
+                ? "bg-brand-espresso text-white hover:bg-[#2A2420] shadow-lg shadow-brand-espresso/15"
                 : "bg-[#E8E0D0]/50 text-white opacity-50 cursor-not-allowed"
             )}
           >

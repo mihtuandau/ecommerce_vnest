@@ -235,17 +235,17 @@ export function CustomerOrderDetailView() {
               )}
 
               {latestReturnRequest && (
-                <div className="bg-white border border-[#DDD6C8] rounded-2xl p-10 space-y-8 shadow-sm font-sans-brand">
+                <div className="bg-white border border-brand-sand rounded-2xl p-10 space-y-8 shadow-sm font-sans-brand">
                   <div className="flex items-center justify-between gap-5 flex-wrap">
                     <div className="flex items-center gap-5">
-                      <div className="h-14 w-14 rounded-2xl bg-[#F3EFE8] flex items-center justify-center text-[#8A7966] border border-[#DDD6C8]">
+                      <div className="h-14 w-14 rounded-2xl bg-brand-ivory flex items-center justify-center text-brand-taupe border border-brand-sand">
                         <RotateCcw size={24} />
                       </div>
                       <div>
-                        <h3 className="text-lg font-bold text-brand-espresso font-serif-brand">
+                        <h3 className="text-lg font-bold text-brand-espresso font-serif">
                           Chi tiết yêu cầu trả hàng
                         </h3>
-                        <p className="text-xs text-[#8A7966] font-semibold mt-1">
+                        <p className="text-xs text-brand-taupe font-semibold mt-1">
                           Cập nhật:{" "}
                           {new Date(
                             latestReturnRequest?.updatedAt || order.updatedAt
@@ -254,7 +254,7 @@ export function CustomerOrderDetailView() {
                       </div>
                     </div>
                     
-                    <div className="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[#F3EFE8] text-[#8A7966] border border-[#DDD6C8]">
+                    <div className="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-brand-ivory text-brand-taupe border border-brand-sand">
                       {latestReturnRequest.status === "PENDING" ? "Chờ duyệt" :
                        latestReturnRequest.status === "APPROVED" ? "Đã duyệt" :
                        latestReturnRequest.status === "RETURNING" ? "Đang gửi trả" :
@@ -290,7 +290,7 @@ export function CustomerOrderDetailView() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-10 pt-8 border-t border-brand-sand">
                     <div className="space-y-3">
-                      <p className="text-xs font-semibold text-[#8A7966]">
+                      <p className="text-xs font-semibold text-brand-taupe">
                         Lý do từ bạn
                       </p>
                       <p className="text-sm text-brand-espresso font-medium leading-relaxed italic">
@@ -299,7 +299,7 @@ export function CustomerOrderDetailView() {
                     </div>
                     {latestReturnRequest?.adminNote && (
                       <div className="space-y-3">
-                        <p className="text-xs font-semibold text-[#8A7966]">
+                        <p className="text-xs font-semibold text-brand-taupe">
                           Phản hồi LUXE
                         </p>
                         <div className="p-5 bg-brand-cream/50 rounded-xl border border-brand-sand">
@@ -312,7 +312,7 @@ export function CustomerOrderDetailView() {
                     
                     {/* Bằng chứng hình ảnh */}
                     <div className="space-y-3 col-span-full pt-6 border-t border-brand-sand">
-                      <p className="text-xs font-semibold text-[#8A7966]">
+                      <p className="text-xs font-semibold text-brand-taupe">
                         Hình ảnh bằng chứng
                       </p>
                       {latestReturnRequest.images && latestReturnRequest.images.length > 0 ? (
@@ -320,7 +320,7 @@ export function CustomerOrderDetailView() {
                           {latestReturnRequest.images.map((url: string, index: number) => (
                             <div
                               key={index}
-                              className="w-20 h-20 rounded-xl overflow-hidden border border-[#DDD6C8] relative cursor-zoom-in group shadow-sm bg-slate-50"
+                              className="w-20 h-20 rounded-xl overflow-hidden border border-brand-sand relative cursor-zoom-in group shadow-sm bg-brand-ivory"
                             >
                               <Image
                                 src={url}
@@ -334,7 +334,7 @@ export function CustomerOrderDetailView() {
                           ))}
                         </div>
                       ) : (
-                        <p className="text-xs font-medium text-slate-400 italic">
+                        <p className="text-xs font-medium text-brand-taupe italic">
                           Không có hình ảnh đính kèm
                         </p>
                       )}

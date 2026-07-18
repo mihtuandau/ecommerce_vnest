@@ -23,7 +23,7 @@ export function PriceAlertBanner({
           <TrendingDown className="w-5 h-5 text-brand-bronze" />
         </div>
         <div className="space-y-1">
-          <h3 className="font-serif-brand text-[17px] md:text-lg font-semibold text-brand-cream leading-snug">
+          <h3 className="font-serif text-[17px] md:text-lg font-semibold text-brand-cream leading-snug">
             {discountedCount} sản phẩm vừa giảm giá trong danh sách của bạn!
           </h3>
           <p className="text-brand-cream/70 text-xs md:text-[13px] max-w-2xl line-clamp-1 leading-relaxed">

@@ -32,19 +32,19 @@ export default function CustomerReturnsView() {
   return (
     <div className="flex-1 p-8 space-y-6 overflow-y-auto h-full [&::-webkit-scrollbar]:w-[4px] [&::-webkit-scrollbar-thumb]:bg-[#E8E0D0]">
       <div>
-        <h3 className="text-[15px] font-semibold text-[#3D2B1A] flex items-center gap-2.5">
-          <RefreshCw size={16} className="text-[#C4783A]" />
+        <h3 className="text-[15px] font-semibold text-brand-espresso flex items-center gap-2.5">
+          <RefreshCw size={16} className="text-brand-accent" />
           Chính sách đổi trả & Hoàn tiền
         </h3>
-        <p className="text-[12px] text-[#8A7966] mt-1.5 leading-relaxed font-normal">
+        <p className="text-[12px] text-brand-taupe mt-1.5 leading-relaxed font-normal">
           Chúng tôi cam kết đảm bảo tối đa quyền lợi của khách hàng khi đặt mua sản phẩm
           tại LUXE.
         </p>
       </div>
 
       
-      <div className="p-6 rounded-2xl bg-[#FAF8F4]/30 border border-[#DDD6C8]/50 shadow-3xs">
-        <span className="text-[10px] text-[#8A7966] uppercase tracking-wider block mb-4">
+      <div className="p-6 rounded-2xl bg-brand-cream/30 border border-brand-sand/50 shadow-3xs">
+        <span className="text-[10px] text-brand-taupe uppercase tracking-wider block mb-4">
           Các bước yêu cầu đổi trả
         </span>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
@@ -66,11 +66,11 @@ export default function CustomerReturnsView() {
             },
           ].map((step, idx) => (
             <div key={idx} className="relative z-10">
-              <div className="w-8 h-8 rounded-lg bg-[#3D2B1A] text-white flex items-center justify-center text-[11px] shadow-3xs mb-3 font-medium">
+              <div className="w-8 h-8 rounded-lg bg-brand-espresso text-white flex items-center justify-center text-[11px] shadow-3xs mb-3 font-medium">
                 {step.step}
               </div>
-              <h4 className="text-[12.5px] font-medium text-[#3D2B1A]">{step.title}</h4>
-              <p className="text-[11px] text-[#8A7966] mt-1.5 leading-relaxed font-normal">
+              <h4 className="text-[12.5px] font-medium text-brand-espresso">{step.title}</h4>
+              <p className="text-[11px] text-brand-taupe mt-1.5 leading-relaxed font-normal">
                 {step.desc}
               </p>
             </div>
@@ -80,7 +80,7 @@ export default function CustomerReturnsView() {
 
       
       <div className="space-y-3">
-        <h4 className="text-[11px] text-[#8A7966] uppercase tracking-wider font-semibold">
+        <h4 className="text-[11px] text-brand-taupe uppercase tracking-wider font-semibold">
           Câu hỏi thường gặp về đổi trả
         </h4>
         {returnFaqs.map((faq) => {
@@ -88,18 +88,18 @@ export default function CustomerReturnsView() {
           return (
             <div
               key={faq.key}
-              className="border border-[#DDD6C8]/40 rounded-2xl bg-white shadow-3xs overflow-hidden transition-all duration-300"
+              className="border border-brand-sand/40 rounded-2xl bg-white shadow-3xs overflow-hidden transition-all duration-300"
             >
               <button
                 onClick={() => toggleFaq(faq.key)}
-                className="w-full flex items-center justify-between p-4.5 text-left font-medium text-[#3D2B1A] text-[12.5px] hover:bg-[#FAF8F4]/20 transition-colors"
+                className="w-full flex items-center justify-between p-4.5 text-left font-medium text-brand-espresso text-[12.5px] hover:bg-brand-cream/20 transition-colors"
               >
                 <span>{faq.q}</span>
                 <ChevronDown
                   size={14}
                   className={cn(
-                    "text-[#8A7966] transition-transform duration-300",
-                    isOpen ? "rotate-180 text-[#3D2B1A]" : ""
+                    "text-brand-taupe transition-transform duration-300",
+                    isOpen ? "rotate-180 text-brand-espresso" : ""
                   )}
                 />
               </button>
@@ -107,11 +107,11 @@ export default function CustomerReturnsView() {
                 className={cn(
                   "transition-all duration-300 overflow-hidden",
                   isOpen
-                    ? "max-h-[300px] border-t border-[#DDD6C8]/20 bg-[#FAF8F4]/10"
+                    ? "max-h-[300px] border-t border-brand-sand/20 bg-brand-cream/10"
                     : "max-h-0"
                 )}
               >
-                <p className="p-4.5 text-[11.5px] text-[#8A7966] leading-relaxed whitespace-pre-line font-normal">
+                <p className="p-4.5 text-[11.5px] text-brand-taupe leading-relaxed whitespace-pre-line font-normal">
                   {faq.a}
                 </p>
               </div>

@@ -16,7 +16,7 @@ export function AccessDenied({ permission, message }: AccessDeniedProps) {
         <ShieldOff className="h-8 w-8 text-red-400" />
       </div>
       <div>
-        <h2 className="text-xl font-bold text-brand-espresso font-serif-brand">
+        <h2 className="text-xl font-bold text-brand-espresso font-serif">
           Không có quyền truy cập
         </h2>
         <p className="text-sm text-brand-taupe mt-1.5 max-w-sm font-medium">

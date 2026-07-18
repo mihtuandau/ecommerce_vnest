@@ -2,33 +2,6 @@
  * Banners Module Constants
  */
 
-export const BANNERS_COLORS = {
-  // Primary Palette
-  PRIMARY_BG: "#FAF8F4", // Light beige background
-  SECONDARY_BG: "#E8E0D0", // Medium beige
-  ACCENT_COLOR: "#C4783A", // Bronze/Gold accent
-  DARK_TEXT: "#3D2B1A", // Dark brown text
-  LIGHT_TEXT: "#8A7966", // Light brown text
-  BORDER_COLOR: "#DDD6C8", // Light border
-
-  // Interactive
-  BUTTON_PRIMARY: "#3D2B1A",
-  BUTTON_PRIMARY_HOVER: "#C4783A",
-  BUTTON_PRIMARY_TEXT: "#FAF8F4",
-  BUTTON_SECONDARY_BORDER: "#DDD6C8",
-  BUTTON_SECONDARY_BORDER_HOVER: "#C4783A",
-
-  // Status Colors
-  BADGE_BG: "#E8E0D0", // Badge background
-  BADGE_BORDER: "#E8E0D0",
-  PULSE_DOT: "#C4783A", // Pulsing indicator
-
-  // Overlays & Effects
-  OVERLAY_DARK: "#3D2B1A",
-  OVERLAY_LIGHT: "rgba(255, 255, 255, 1)",
-  SHADOW: "#3D2B1A",
-} as const;
-
 export const BANNERS_MESSAGES = {
   // Promotional Text
   SEASONAL_LABEL: "Mùa mới",
@@ -88,7 +61,7 @@ export const BANNERS_TYPOGRAPHY = {
   BADGE_TRACKING: "tracking-[0.2em]",
 
   HEADING_SIZE: "text-4xl md:text-6xl lg:text-[4.5rem]",
-  HEADING_FONT: "font-serif-brand",
+  HEADING_FONT: "font-serif",
   HEADING_TRACKING: "tracking-tight",
 
   DESCRIPTION_SIZE: "text-[15px]",

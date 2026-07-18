@@ -17,7 +17,7 @@ export function getCustomerStatusLabel(status: string): string {
  * Get order status CSS class for customer-facing display
  */
 export function getCustomerStatusStyle(status: string): string {
-  return CUSTOMER_ORDER_STATUS_CONFIG[status as OrderStatus]?.cls || "bg-[#F3EFE8] text-[#8A7966]";
+  return CUSTOMER_ORDER_STATUS_CONFIG[status as OrderStatus]?.cls || "bg-brand-ivory text-brand-taupe";
 }
 
 /**

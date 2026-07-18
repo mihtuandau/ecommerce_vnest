@@ -57,9 +57,9 @@ export function VoucherModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-md p-0 overflow-hidden bg-slate-50 border-none rounded-3xl">
-        <DialogHeader className="p-6 bg-white border-b border-slate-100">
-          <DialogTitle className="text-xl font-bold text-slate-900 text-center">
+      <DialogContent className="sm:max-w-md p-0 overflow-hidden bg-brand-ivory border-none rounded-2xl">
+        <DialogHeader className="p-6 bg-white border-b border-brand-sand">
+          <DialogTitle className="text-xl font-bold text-brand-espresso text-center">
             Chọn Voucher
           </DialogTitle>
         </DialogHeader>
@@ -72,7 +72,7 @@ export function VoucherModal({
               placeholder="Nhập mã giảm giá..."
               value={inputCode}
               onChange={(e) => setInputCode(e.target.value.toUpperCase())}
-              className="flex-1 bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-medium h-[46px]"
+              className="flex-1 bg-white border border-brand-sand rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-medium h-[46px]"
             />
             <Button
               onClick={() => handleApply(inputCode)}
@@ -88,7 +88,7 @@ export function VoucherModal({
           </div>
 
           <div className="space-y-3">
-            <h3 className="text-sm font-bold text-slate-700">Mã có thể áp dụng</h3>
+            <h3 className="text-sm font-bold text-brand-taupe">Mã có thể áp dụng</h3>
 
             {isLoading ? (
               <div className="flex justify-center py-10">
@@ -112,12 +112,12 @@ export function VoucherModal({
                         "p-4 rounded-2xl border transition-all relative overflow-hidden",
                         isApplied
                           ? "border-primary bg-primary/5"
-                          : "bg-white border-slate-200 hover:border-slate-300",
-                        !isEligible && "opacity-60 cursor-not-allowed bg-slate-50"
+                          : "bg-white border-brand-sand hover:border-brand-sand",
+                        !isEligible && "opacity-60 cursor-not-allowed bg-brand-ivory"
                       )}
                     >
                       
-                      <div className="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-slate-50 border-r border-slate-200/50" />
+                      <div className="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-brand-ivory border-r border-brand-sand/50" />
 
                       <div className="flex gap-4 items-center pl-4">
                         <div className="h-12 w-12 rounded-full bg-emerald-50 flex items-center justify-center shrink-0">
@@ -125,10 +125,10 @@ export function VoucherModal({
                         </div>
 
                         <div className="flex-1">
-                          <div className="font-bold text-slate-900 mb-0.5">
+                          <div className="font-bold text-brand-espresso mb-0.5">
                             {v.code}
                           </div>
-                          <div className="text-xs font-medium text-slate-500">
+                          <div className="text-xs font-medium text-brand-taupe">
                             Giảm{" "}
                             {isPercentage
                               ? `${discountVal}%`
@@ -138,7 +138,7 @@ export function VoucherModal({
                               : ""}
                           </div>
                           {Number(minOrder) > 0 && (
-                            <div className="text-[10px] text-slate-400 mt-1">
+                            <div className="text-[10px] text-brand-taupe mt-1">
                               Đơn tối thiểu {formatCurrency(Number(minOrder) || 0)}
                             </div>
                           )}
@@ -170,9 +170,9 @@ export function VoucherModal({
                 })}
               </div>
             ) : (
-              <div className="text-center py-10 bg-white rounded-2xl border border-slate-100 border-dashed">
-                <Tag className="h-8 w-8 text-slate-300 mx-auto mb-2" />
-                <p className="text-sm font-medium text-slate-500">
+              <div className="text-center py-10 bg-white rounded-2xl border border-brand-sand border-dashed">
+                <Tag className="h-8 w-8 text-brand-sand mx-auto mb-2" />
+                <p className="text-sm font-medium text-brand-taupe">
                   Không có mã giảm giá nào
                 </p>
               </div>

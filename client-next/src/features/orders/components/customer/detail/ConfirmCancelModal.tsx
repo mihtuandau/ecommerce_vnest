@@ -26,17 +26,17 @@ export function ConfirmCancelModal({
 }: ConfirmCancelModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[400px] rounded-2xl p-0 border-[#DDD6C8] shadow-2xl overflow-hidden font-sans-brand">
+      <DialogContent className="sm:max-w-[400px] rounded-2xl p-0 border-brand-sand shadow-2xl overflow-hidden font-sans-brand">
         <div className="p-8 space-y-6">
           <div className="flex flex-col items-center text-center space-y-4">
             <div className="h-16 w-16 rounded-2xl bg-[#FCEAEA] flex items-center justify-center text-[#C44040] border border-[#F0C0C0]">
               <AlertTriangle size={32} />
             </div>
             <div className="space-y-2">
-              <DialogTitle className="text-2xl font-bold text-[#3D2B1A] font-serif-brand">
+              <DialogTitle className="text-2xl font-bold text-brand-espresso font-serif">
                 Xác nhận hủy đơn
               </DialogTitle>
-              <p className="text-[14px] text-[#8A7966] font-medium leading-relaxed px-4">
+              <p className="text-[14px] text-brand-taupe font-medium leading-relaxed px-4">
                 Bạn chắc chắn muốn hủy đơn hàng này? Hành động này sẽ không thể hoàn tác
                 sau khi xác nhận.
               </p>
@@ -53,7 +53,7 @@ export function ConfirmCancelModal({
             </button>
             <button
               onClick={onClose}
-              className="w-full h-12 bg-white border border-[#DDD6C8] text-[#3D2B1A] rounded-xl font-bold text-[13px] transition-all hover:bg-[#FAF8F4]"
+              className="w-full h-12 bg-white border border-brand-sand text-brand-espresso rounded-xl font-bold text-[13px] transition-all hover:bg-brand-cream"
             >
               Quay lại
             </button>

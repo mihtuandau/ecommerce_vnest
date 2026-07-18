@@ -25,12 +25,12 @@ export function ConfirmReturnModal({
 }: ConfirmReturnModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[360px] rounded-2xl p-6 border-slate-100 shadow-xl">
+      <DialogContent className="sm:max-w-[360px] rounded-2xl p-6 border-brand-sand shadow-xl">
         <DialogHeader className="space-y-3 pt-2">
-          <DialogTitle className="text-[16px] font-bold text-slate-900 text-center">
+          <DialogTitle className="text-[16px] font-bold text-brand-espresso text-center">
             Xác nhận gửi hàng
           </DialogTitle>
-          <p className="text-[13px] text-slate-500 font-medium text-center leading-relaxed">
+          <p className="text-[13px] text-brand-taupe font-medium text-center leading-relaxed">
             Bạn đã chắc chắn bàn giao gói hàng cho bưu cục? Thao tác này sẽ cập nhật
             tiến trình cho shop theo dõi.
           </p>
@@ -40,7 +40,7 @@ export function ConfirmReturnModal({
           <Button
             variant="outline"
             onClick={onClose}
-            className="flex-1 rounded-xl h-10 border-slate-200 text-slate-600 font-semibold text-[13px] hover:bg-slate-50"
+            className="flex-1 rounded-xl h-10 border-brand-sand text-brand-taupe font-semibold text-[13px] hover:bg-brand-ivory"
           >
             Hủy
           </Button>

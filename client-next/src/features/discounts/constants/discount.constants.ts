@@ -65,18 +65,3 @@ export const FLASH_SALE_SORT_OPTIONS = {
   BEST_SELLERS: "Bán chạy nhất",
 } as const;
 
-export const FLASH_SALE_COLORS = {
-  LIVE_BG: "#E8320A",
-  LIVE_TEXT: "#ffffff",
-  SOON_BG: "#FFF8E6",
-  SOON_TEXT: "#c49a005c",
-  ENDED_BG: "#F3EFE8",
-  ENDED_TEXT: "#8A7966",
-
-  // Highlight
-  LIVE_GLOW: "rgba(232, 50, 10, 0.6)",
-
-  // Status Button
-  ACTIVE_BORDER: "#E8320A",
-  INACTIVE_TEXT: "#8A7966",
-} as const;

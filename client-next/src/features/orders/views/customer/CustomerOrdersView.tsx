@@ -45,7 +45,7 @@ const getStatusLabel = (s: string) => {
 
 const getStatusStyle = (s: string) => {
   return (
-    CUSTOMER_ORDER_STATUS_CONFIG[s as OrderStatus]?.cls || "bg-[#F3EFE8] text-[#8A7966]"
+    CUSTOMER_ORDER_STATUS_CONFIG[s as OrderStatus]?.cls || "bg-brand-ivory text-brand-taupe"
   );
 };
 
@@ -127,9 +127,9 @@ export function CustomerOrdersView() {
       {/* Main Content Container */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-5">
         <div className="mb-10 space-y-1">
-          <h1 className="text-3xl md:text-5xl font-bold font-serif-brand text-brand-espresso tracking-tight">
+          <h1 className="text-3xl md:text-5xl font-bold font-serif text-brand-espresso tracking-tight">
             Đơn hàng{" "}
-            <em className="italic text-brand-bronze font-medium font-serif-brand">
+            <em className="italic text-brand-bronze font-medium font-serif">
               của tôi
             </em>
           </h1>

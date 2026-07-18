@@ -18,10 +18,10 @@ export function FeaturedProducts({ products }: FeaturedProductsProps) {
             <Sparkles className="h-5 w-5" />
           </div>
           <div>
-            <h2 className="text-2xl font-bold tracking-tight text-slate-900">
+            <h2 className="text-2xl font-bold tracking-tight text-brand-espresso">
               Sản phẩm nổi bật
             </h2>
-            <p className="text-slate-500 text-sm">Gợi ý dành riêng cho bạn hôm nay.</p>
+            <p className="text-brand-taupe text-sm">Gợi ý dành riêng cho bạn hôm nay.</p>
           </div>
         </div>
       </div>

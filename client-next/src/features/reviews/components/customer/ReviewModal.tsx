@@ -154,10 +154,10 @@ export function ReviewModal({
         <DialogTitle className="sr-only">Đánh giá sản phẩm</DialogTitle>
 
         
-        <div className="p-6 pb-4 bg-slate-50/50 border-b border-slate-100 rounded-t-2xl flex items-center justify-between">
+        <div className="p-6 pb-4 bg-brand-ivory/50 border-b border-brand-sand rounded-t-2xl flex items-center justify-between">
           <div className="space-y-0.5">
-            <h2 className="text-xl font-bold text-slate-900">Đánh giá sản phẩm</h2>
-            <p className="text-xs text-slate-500 font-medium">
+            <h2 className="text-xl font-bold text-brand-espresso">Đánh giá sản phẩm</h2>
+            <p className="text-xs text-brand-taupe font-medium">
               Chia sẻ trải nghiệm thực tế của bạn về sản phẩm này
             </p>
           </div>
@@ -167,8 +167,8 @@ export function ReviewModal({
           
           <div className="grid grid-cols-1 sm:grid-cols-[1fr,200px] gap-5 items-center">
             
-            <div className="flex items-center gap-4 p-3.5 bg-slate-50/50 rounded-2xl border border-slate-100 min-w-0">
-              <div className="h-16 w-16 rounded-xl bg-white p-1 border border-slate-200 shrink-0 shadow-sm relative overflow-hidden">
+            <div className="flex items-center gap-4 p-3.5 bg-brand-ivory/50 rounded-2xl border border-brand-sand min-w-0">
+              <div className="h-16 w-16 rounded-xl bg-white p-1 border border-brand-sand shrink-0 shadow-sm relative overflow-hidden">
                 <Image
                   src={productImage || "/placeholder.png"}
                   alt={productName || "Product"}
@@ -179,14 +179,14 @@ export function ReviewModal({
               </div>
               <div className="flex-1 min-w-0">
                 <h4
-                  className="text-sm font-semibold text-slate-900 truncate leading-tight"
+                  className="text-sm font-semibold text-brand-espresso truncate leading-tight"
                   title={productName}
                 >
                   {productName}
                 </h4>
                 {variantName && (
-                  <p className="text-xs text-slate-500 font-medium mt-0.5 truncate">
-                    Phân loại: <span className="text-slate-700">{variantName}</span>
+                  <p className="text-xs text-brand-taupe font-medium mt-0.5 truncate">
+                    Phân loại: <span className="text-brand-taupe">{variantName}</span>
                   </p>
                 )}
                 <div className="flex items-center gap-2 mt-1.5">
@@ -199,7 +199,7 @@ export function ReviewModal({
             </div>
 
             
-            <div className="flex flex-col items-center justify-center gap-2.5 sm:border-l sm:border-slate-100 pl-0 sm:pl-5">
+            <div className="flex flex-col items-center justify-center gap-2.5 sm:border-l sm:border-brand-sand pl-0 sm:pl-5">
               <div className="flex items-center gap-1">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <button
@@ -215,7 +215,7 @@ export function ReviewModal({
                         "text-3xl transition-all duration-300 cursor-pointer select-none",
                         (hoverRating || rating) >= star
                           ? "text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.3)]"
-                          : "text-slate-100"
+                          : "text-brand-sand"
                       )}
                     >
                       ★
@@ -235,15 +235,15 @@ export function ReviewModal({
 
           
           <div className="space-y-3">
-            <label className="text-xs font-bold text-slate-500 px-1 tracking-wide">
+            <label className="text-xs font-bold text-brand-taupe px-1 tracking-wide">
               Nhận xét của bạn
             </label>
-            <div className="rounded-2xl bg-slate-50 border border-slate-200 focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/5 transition-all overflow-hidden shadow-sm">
+            <div className="rounded-2xl bg-brand-ivory border border-brand-sand focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/5 transition-all overflow-hidden shadow-sm">
               <textarea
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
                 placeholder="Bạn thích điểm gì? Chất liệu, form, size có đúng không? Đóng gói ra sao?..."
-                className="w-full min-h-[100px] max-h-[200px] p-4 bg-transparent outline-none text-sm text-slate-800 placeholder:text-slate-400"
+                className="w-full min-h-[100px] max-h-[200px] p-4 bg-transparent outline-none text-sm text-brand-espresso placeholder:text-brand-taupe"
               />
 
               
@@ -259,7 +259,7 @@ export function ReviewModal({
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="h-14 w-14 rounded-xl border border-dashed border-slate-300 hover:border-primary hover:bg-primary/5 flex flex-col items-center justify-center gap-1 text-slate-400 hover:text-primary transition-colors cursor-pointer shrink-0"
+                  className="h-14 w-14 rounded-xl border border-dashed border-brand-sand hover:border-primary hover:bg-primary/5 flex flex-col items-center justify-center gap-1 text-brand-taupe hover:text-primary transition-colors cursor-pointer shrink-0"
                 >
                   <ImagePlus size={18} />
                   <span className="text-xs font-medium">Thêm ảnh</span>
@@ -269,7 +269,7 @@ export function ReviewModal({
                     selectedFiles.map((file, idx) => (
                       <div
                         key={idx}
-                        className="h-14 w-14 rounded-xl border border-slate-200 shrink-0 relative group overflow-hidden"
+                        className="h-14 w-14 rounded-xl border border-brand-sand shrink-0 relative group overflow-hidden"
                       >
                         <Image
                           src={URL.createObjectURL(file)}
@@ -288,7 +288,7 @@ export function ReviewModal({
                       </div>
                     ))
                   ) : (
-                    <span className="text-xs text-slate-400 font-medium pl-1">
+                    <span className="text-xs text-brand-taupe font-medium pl-1">
                       Thêm ảnh thực tế để bài viết sinh động hơn!
                     </span>
                   )}
@@ -303,7 +303,7 @@ export function ReviewModal({
           <Button
             variant="outline"
             onClick={onClose}
-            className="flex-1 rounded-xl h-12 text-sm font-semibold text-slate-600 border-slate-200 hover:bg-slate-50 transition-all"
+            className="flex-1 rounded-xl h-12 text-sm font-semibold text-brand-taupe border-brand-sand hover:bg-brand-ivory transition-all"
           >
             Hủy bỏ
           </Button>

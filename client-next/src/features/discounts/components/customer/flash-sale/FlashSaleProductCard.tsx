@@ -115,11 +115,11 @@ export function FlashSaleProductCard({
   return (
     <div
       className={cn(
-        "group relative flex flex-col bg-white border border-[#DDD6C8] rounded-[14px] overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_14px_40px_rgba(61,43,26,0.1)]",
+        "group relative flex flex-col bg-white border border-brand-sand rounded-[14px] overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_14px_40px_rgba(61,43,26,0.1)]",
         isSoldOut && "opacity-60 pointer-events-none"
       )}
     >
-      <div className="relative aspect-square bg-gradient-to-br from-[#F3EFE8] to-[#E8E0D0] flex items-center justify-center overflow-hidden">
+      <div className="relative aspect-square bg-gradient-to-br from-brand-ivory to-[#E8E0D0] flex items-center justify-center overflow-hidden">
         <Image
           src={imageUrl}
           alt={product.name}
@@ -164,20 +164,20 @@ export function FlashSaleProductCard({
             if (!isFavorite) success(`Đã thêm ${product.name} vào yêu thích`);
           }}
           className={cn(
-            "absolute top-[10px] right-[10px] w-[30px] h-[30px] rounded-full flex items-center justify-center bg-white border border-[#DDD6C8] transition-all z-20",
+            "absolute top-[10px] right-[10px] w-[30px] h-[30px] rounded-full flex items-center justify-center bg-white border border-brand-sand transition-all z-20",
             isFavorite
-              ? "text-[#C4783A] bg-[#F0D5BB] border-[#C4783A]"
-              : "text-[#8A7966] opacity-0 group-hover:opacity-100",
+              ? "text-brand-accent bg-[#F0D5BB] border-brand-accent"
+              : "text-brand-taupe opacity-0 group-hover:opacity-100",
             product.badge && "top-[40px]"
           )}
         >
           <Heart size={14} className={isFavorite ? "fill-current" : ""} />
         </button>
 
-        <div className="absolute inset-0 bg-[#3D2B1A]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-[56px] z-10">
+        <div className="absolute inset-0 bg-brand-espresso/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-[56px] z-10">
           <button
             onClick={handleAddToCart}
-            className="bg-white text-[#3D2B1A] px-[22px] py-[9px] rounded-full text-[12.5px] font-medium shadow-[0_4px_16px_rgba(0,0,0,0.15)] hover:bg-[#3D2B1A] hover:text-[#FAF8F4] transition-all"
+            className="bg-white text-brand-espresso px-[22px] py-[9px] rounded-full text-[12.5px] font-medium shadow-[0_4px_16px_rgba(0,0,0,0.15)] hover:bg-brand-espresso hover:text-brand-cream transition-all"
           >
             + Thêm vào giỏ
           </button>
@@ -186,11 +186,11 @@ export function FlashSaleProductCard({
         <div className="absolute bottom-0 left-0 right-0 bg-white/92 p-[12px] z-20">
           <div className="flex justify-between text-[10.5px] font-bold mb-1 uppercase tracking-wider">
             <span className="text-[#E8320A]">Đã bán {soldPercent}%</span>
-            <span className="text-[#8A7966]">
+            <span className="text-brand-taupe">
               {isSoldOut ? "Hết hàng" : `Còn ${remaining} sp`}
             </span>
           </div>
-          <div className="h-[5px] bg-[#DDD6C8] rounded-full overflow-hidden">
+          <div className="h-[5px] bg-brand-sand rounded-full overflow-hidden">
             <div
               className="h-full bg-gradient-to-r from-[#E8320A] to-[#FF6B35] transition-all duration-1000"
               style={{ width: `${soldPercent}%` }}
@@ -200,11 +200,11 @@ export function FlashSaleProductCard({
 
         {isSoldOut && (
           <div className="absolute inset-0 bg-white/75 flex flex-col items-center justify-center z-30">
-            <span className="text-[14px] font-bold text-[#8A7966] uppercase tracking-widest">
+            <span className="text-[14px] font-bold text-brand-taupe uppercase tracking-widest">
               Hết hàng
             </span>
             {nextStartTime && (
-              <span className="text-[11px] text-[#8A7966]">
+              <span className="text-[11px] text-brand-taupe">
                 Phiên {isNextToday ? "tiếp theo" : "ngày mai"} {nextStartTime}
               </span>
             )}
@@ -213,25 +213,25 @@ export function FlashSaleProductCard({
       </div>
 
       <div className="p-[14px] pb-[16px] flex-1 flex flex-col">
-        <div className="text-[10.5px] text-[#8A7966] uppercase tracking-[0.1em] mb-[3px] font-medium">
+        <div className="text-[10.5px] text-brand-taupe uppercase tracking-[0.1em] mb-[3px] font-medium">
           {product.brand?.name || "Luxe Elite"}
         </div>
         <Link
           href={`/shop/${product.slug}`}
-          className="text-[13.5px] font-medium text-[#3D2B1A] line-clamp-2 leading-relaxed mb-[7px] group-hover:text-[#E8320A] transition-colors"
+          className="text-[13.5px] font-medium text-brand-espresso line-clamp-2 leading-relaxed mb-[7px] group-hover:text-[#E8320A] transition-colors"
         >
           {product.name}
         </Link>
 
         <div className="flex items-center gap-1 mb-[10px]">
-          <div className="flex text-[#C4783A] text-[11px] tracking-widest">
+          <div className="flex text-brand-accent text-[11px] tracking-widest">
             {Array.from({ length: 5 }).map((_, i) => (
               <span key={i}>
                 {i < Math.floor(product.averageRating || 5) ? "★" : "☆"}
               </span>
             ))}
           </div>
-          <span className="text-[11px] text-[#8A7966]">
+          <span className="text-[11px] text-brand-taupe">
             ({product.reviewCount || 0})
           </span>
         </div>
@@ -241,7 +241,7 @@ export function FlashSaleProductCard({
             <span className="font-serif text-[20px] font-semibold text-[#E8320A]">
               {formatCurrency(salePrice)}
             </span>
-            <span className="text-[13px] text-[#8A7966] line-through font-medium">
+            <span className="text-[13px] text-brand-taupe line-through font-medium">
               {formatCurrency(originalPrice)}
             </span>
           </div>
@@ -262,10 +262,10 @@ export function FlashSaleProductCard({
               className={cn(
                 "px-[14px] py-[8px] rounded-[8px] text-[12px] font-medium transition-all whitespace-nowrap",
                 status === "LIVE"
-                  ? "bg-[#3D2B1A] hover:bg-[#E8320A] text-[#FAF8F4] shadow-sm"
+                  ? "bg-brand-espresso hover:bg-[#E8320A] text-brand-cream shadow-sm"
                   : status === "SOON"
-                    ? "bg-white border border-[#DDD6C8] text-[#8A7966] hover:bg-[#FAF8F4]"
-                    : "bg-[#F3EFE8] text-[#8A7966] opacity-60 cursor-not-allowed"
+                    ? "bg-white border border-brand-sand text-brand-taupe hover:bg-brand-cream"
+                    : "bg-brand-ivory text-brand-taupe opacity-60 cursor-not-allowed"
               )}
             >
               {status === "LIVE"

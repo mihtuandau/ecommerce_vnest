@@ -85,18 +85,18 @@ export function GuestDetailHeader({
 
   const sc = CUSTOMER_ORDER_STATUS_CONFIG[status] || {
     label: status,
-    cls: "bg-[#F3EFE8] text-[#8A7966]",
+    cls: "bg-brand-ivory text-brand-taupe",
   };
 
   return (
     <div className="space-y-5 mb-5 font-sans-brand animate-in fade-in slide-in-from-top-4 duration-500">
 
-      <div className="bg-white border border-[#DDD6C8] rounded-2xl p-6 flex flex-wrap items-start justify-between gap-5 shadow-sm">
+      <div className="bg-white border border-brand-sand rounded-2xl p-6 flex flex-wrap items-start justify-between gap-5 shadow-sm">
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-3">
-            <h1 className="text-[28px] md:text-[32px] font-bold text-[#3D2B1A] font-serif-brand tracking-tight">
+            <h1 className="text-[28px] md:text-[32px] font-bold text-brand-espresso font-serif tracking-tight">
               Đơn hàng{" "}
-              <em className="italic text-[#C4783A] font-medium font-serif-brand not-italic">
+              <em className="italic text-brand-accent font-medium font-serif not-italic">
                 #{orderCode}
               </em>
             </h1>
@@ -119,22 +119,22 @@ export function GuestDetailHeader({
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[12.5px] text-[#8A7966]">
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[12.5px] text-brand-taupe">
             <span className="flex items-center gap-1.5">
               <Calendar size={13} className="opacity-70" /> Đặt lúc{" "}
-              <strong className="text-[#3D2B1A] font-semibold">
+              <strong className="text-brand-espresso font-semibold">
                 {formatDate(createdAt)}
               </strong>
             </span>
             <span className="flex items-center gap-1.5">
               <Package size={13} className="opacity-70" />{" "}
-              <strong className="text-[#3D2B1A] font-semibold">
+              <strong className="text-brand-espresso font-semibold">
                 {totalItems} sản phẩm
               </strong>
             </span>
             <span className="flex items-center gap-1.5">
               <ShoppingBag size={13} className="opacity-70" /> Phương thức:{" "}
-              <strong className="text-[#3D2B1A] font-semibold">
+              <strong className="text-brand-espresso font-semibold">
                 {paymentMethod || "COD"}
               </strong>
             </span>
@@ -143,7 +143,7 @@ export function GuestDetailHeader({
 
         <div className="flex flex-wrap gap-2 items-start">
           <button
-            className="flex items-center gap-1.5 px-4.5 py-2.5 rounded-xl border-1.5 border-[#DDD6C8] bg-white text-[13px] font-medium text-[#3D2B1A] transition-all hover:bg-[#F3EFE8] hover:border-[#C4B49A]"
+            className="flex items-center gap-1.5 px-4.5 py-2.5 rounded-xl border-1.5 border-brand-sand bg-white text-[13px] font-medium text-brand-espresso transition-all hover:bg-brand-ivory hover:border-brand-sand"
             onClick={() => window.print()}
           >
             <Printer size={14} />
@@ -161,7 +161,7 @@ export function GuestDetailHeader({
           )}
 
           {status === OrderStatus.SHIPPED && (
-            <button className="flex items-center gap-1.5 px-4.5 py-2.5 rounded-xl border-1.5 border-[#DDD6C8] bg-white text-[13px] font-medium text-[#3D2B1A] transition-all hover:bg-[#F3EFE8] hover:border-[#C4B49A]">
+            <button className="flex items-center gap-1.5 px-4.5 py-2.5 rounded-xl border-1.5 border-brand-sand bg-white text-[13px] font-medium text-brand-espresso transition-all hover:bg-brand-ivory hover:border-brand-sand">
               <MapPin size={14} />
               Theo dõi GHN
             </button>
@@ -169,7 +169,7 @@ export function GuestDetailHeader({
 
           {status === OrderStatus.DELIVERED && !returnStatus && onReturn && (
             <button
-              className="flex items-center gap-1.5 px-4.5 py-2.5 rounded-xl border-1.5 border-[#DDD6C8] bg-white text-[13px] font-medium text-[#3D2B1A] transition-all hover:bg-[#F3EFE8] hover:border-[#C4B49A]"
+              className="flex items-center gap-1.5 px-4.5 py-2.5 rounded-xl border-1.5 border-brand-sand bg-white text-[13px] font-medium text-brand-espresso transition-all hover:bg-brand-ivory hover:border-brand-sand"
               onClick={() => setIsReturnModalOpen(true)}
             >
               <RotateCcw size={14} />
@@ -188,7 +188,7 @@ export function GuestDetailHeader({
           )}
 
           <button
-            className="flex items-center gap-1.5 px-4.5 py-2.5 rounded-xl bg-[#3D2B1A] text-[13px] font-medium text-white transition-all hover:bg-[#2A2420]"
+            className="flex items-center gap-1.5 px-4.5 py-2.5 rounded-xl bg-brand-espresso text-[13px] font-medium text-white transition-all hover:bg-[#2A2420]"
             onClick={onReorder}
           >
             <ShoppingBag size={14} />

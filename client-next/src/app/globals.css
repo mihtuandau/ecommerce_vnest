@@ -155,10 +155,6 @@
   h6 {
     @apply font-bold font-serif;
   }
-
-  .font-serif-brand {
-    font-family: var(--font-playfair), "Playfair Display", serif !important;
-  }
 }
 
 /* ──────────────────────────────────────────────

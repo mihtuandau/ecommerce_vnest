@@ -9,9 +9,9 @@ export function RecentlyViewedSection({ recentlyViewed }: RecentlyViewedSectionP
 
   return (
     <div className="mt-20 border-t border-brand-sand/50 pt-16">
-      <h3 className="text-xl font-bold text-[#3D2B1A] font-serif mb-10 flex items-center gap-4">
+      <h3 className="text-xl font-bold text-brand-espresso font-serif mb-10 flex items-center gap-4">
         Bạn đã{" "}
-        <span className="text-[#C4783A] italic font-medium">xem gần đây</span>
+        <span className="text-brand-accent italic font-medium">xem gần đây</span>
         <div className="h-[1px] flex-1 bg-brand-sand/30" />
       </h3>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8">

@@ -70,10 +70,7 @@ export function HomeView() {
   const topRatedProducts = topRatedData?.data || [];
 
   return (
-    <div
-      className="flex flex-col bg-brand-cream"
-      style={{ fontFamily: "'DM Sans', sans-serif" }}
-    >
+    <div className="flex flex-col bg-brand-cream">
       {isBannersLoading ? (
         <HeroBannerSkeleton />
       ) : (

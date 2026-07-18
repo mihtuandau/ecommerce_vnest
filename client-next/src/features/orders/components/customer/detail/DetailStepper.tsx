@@ -87,12 +87,12 @@ export function DetailStepper({
   const currentIndex = getStatusIndex(status);
 
   return (
-    <div className="bg-white border border-[#DDD6C8] rounded-2xl overflow-hidden shadow-sm font-sans-brand animate-in fade-in duration-500">
-      <div className="px-[22px] py-[16px] border-b border-[#DDD6C8] flex items-center justify-between">
-        <span className="text-[14px] font-bold text-[#3D2B1A] flex items-center gap-2">
-          <Truck size={16} className="text-[#C4783A]" /> Theo dõi vận chuyển
+    <div className="bg-white border border-brand-sand rounded-2xl overflow-hidden shadow-sm font-sans-brand animate-in fade-in duration-500">
+      <div className="px-[22px] py-[16px] border-b border-brand-sand flex items-center justify-between">
+        <span className="text-[14px] font-bold text-brand-espresso flex items-center gap-2">
+          <Truck size={16} className="text-brand-accent" /> Theo dõi vận chuyển
         </span>
-        <button className="text-[12.5px] text-[#C4783A] hover:underline">
+        <button className="text-[12.5px] text-brand-accent hover:underline">
           Xem trên GHN →
         </button>
       </div>
@@ -113,8 +113,8 @@ export function DetailStepper({
                       isDone
                         ? "border-[#3A7D5A] bg-[#E6F3EC] text-[#3A7D5A]"
                         : isActive
-                          ? "border-[#C4783A] bg-[#F0D5BB] ring-4 ring-[#F0D5BB]/30 text-[#C4783A]"
-                          : "border-[#DDD6C8] bg-white text-[#8A7966]"
+                          ? "border-brand-accent bg-[#F0D5BB] ring-4 ring-[#F0D5BB]/30 text-brand-accent"
+                          : "border-brand-sand bg-white text-brand-taupe"
                     )}
                   >
                     {isDone ? <CheckCircle2 size={18} /> : step.icon}
@@ -126,8 +126,8 @@ export function DetailStepper({
                         isDone
                           ? "text-[#3A7D5A] font-medium"
                           : isActive
-                            ? "text-[#C4783A] font-bold"
-                            : "text-[#8A7966]"
+                            ? "text-brand-accent font-bold"
+                            : "text-brand-taupe"
                       )}
                     >
                       {step.label}
@@ -141,8 +141,8 @@ export function DetailStepper({
                       idx < currentIndex
                         ? "bg-[#3A7D5A]"
                         : idx === currentIndex
-                          ? "bg-gradient-to-r from-[#3A7D5A] to-[#DDD6C8]"
-                          : "bg-[#DDD6C8]"
+                          ? "bg-gradient-to-r from-[#3A7D5A] to-brand-sand"
+                          : "bg-brand-sand"
                     )}
                   />
                 )}
@@ -153,20 +153,20 @@ export function DetailStepper({
 
         
         {shippingCode && (
-          <div className="bg-[#FAF8F4] border border-[#DDD6C8] rounded-xl p-4 flex flex-wrap items-center gap-x-12 gap-y-4">
+          <div className="bg-brand-cream border border-brand-sand rounded-xl p-4 flex flex-wrap items-center gap-x-12 gap-y-4">
             <div className="space-y-1">
-              <p className="text-[11px] font-bold text-[#8A7966] uppercase tracking-[0.06em]">
+              <p className="text-[11px] font-bold text-brand-taupe uppercase tracking-[0.06em]">
                 Đơn vị vận chuyển
               </p>
-              <p className="text-[13.5px] font-medium text-[#3D2B1A]">
+              <p className="text-[13.5px] font-medium text-brand-espresso">
                 {shippingCarrier}
               </p>
             </div>
             <div className="space-y-1">
-              <p className="text-[11px] font-bold text-[#8A7966] uppercase tracking-[0.06em]">
+              <p className="text-[11px] font-bold text-brand-taupe uppercase tracking-[0.06em]">
                 Mã vận đơn
               </p>
-              <p className="text-[13.5px] font-bold text-[#C4783A] font-mono">
+              <p className="text-[13.5px] font-bold text-brand-accent font-mono">
                 {shippingCode}
               </p>
             </div>
@@ -192,12 +192,12 @@ export function DetailStepper({
         )}
 
         
-        <div className="bg-[#FAF8F4] border border-[#DDD6C8] rounded-xl p-5 space-y-4">
-          <p className="text-[12px] font-bold text-[#3D2B1A] uppercase tracking-[0.06em]">
+        <div className="bg-brand-cream border border-brand-sand rounded-xl p-5 space-y-4">
+          <p className="text-[12px] font-bold text-brand-espresso uppercase tracking-[0.06em]">
             Lịch sử cập nhật
           </p>
           <div className="relative space-y-0">
-            <div className="absolute left-[10px] top-[6px] bottom-[6px] w-[2px] bg-[#DDD6C8]" />
+            <div className="absolute left-[10px] top-[6px] bottom-[6px] w-[2px] bg-brand-sand" />
 
             {[
               {
@@ -277,8 +277,8 @@ export function DetailStepper({
                           : log.done
                             ? "border-[#3A7D5A] bg-[#3A7D5A] text-white"
                             : log.active
-                              ? "border-[#C4783A] bg-[#F0D5BB] text-[#C4783A]"
-                              : "border-[#DDD6C8] text-[#8A7966]"
+                              ? "border-brand-accent bg-[#F0D5BB] text-brand-accent"
+                              : "border-brand-sand text-brand-taupe"
                     )}
                   >
                     {log.done ? (
@@ -301,7 +301,7 @@ export function DetailStepper({
                           ? "text-[#C44040]"
                           : log.isReturnStep
                             ? "text-[#2C5F8A]"
-                            : "text-[#3D2B1A]"
+                            : "text-brand-espresso"
                       )}
                     >
                       {log.title}
@@ -314,13 +314,13 @@ export function DetailStepper({
                             ? "text-[#C44040]/70"
                             : log.isReturnStep
                               ? "text-[#2C5F8A]/70"
-                              : "text-[#8A7966]"
+                              : "text-brand-taupe"
                         )}
                       >
                         {log.desc}
                       </p>
                     )}
-                    <p className="text-[11px] text-[#8A7966] flex items-center gap-1.5">
+                    <p className="text-[11px] text-brand-taupe flex items-center gap-1.5">
                       <Clock size={10} /> {log.time}
                     </p>
                   </div>

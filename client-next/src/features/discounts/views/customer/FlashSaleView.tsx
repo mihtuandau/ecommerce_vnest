@@ -155,13 +155,13 @@ export function FlashSaleView() {
               <div className="relative mb-6 inline-block">
                 <div className="absolute inset-0 bg-[#E8320A]/5 blur-[40px] rounded-full scale-150" />
                 <div className="relative w-24 h-24 bg-white border-2 border-brand-sand rounded-[24px] flex items-center justify-center transform rotate-6 hover:rotate-0 transition-transform duration-500">
-                  <ShoppingBag size={36} className="text-[#DDD6C8]" />
+                  <ShoppingBag size={36} className="text-brand-sand" />
                 </div>
               </div>
-              <h3 className="text-2xl font-bold text-[#3D2B1A] mb-3 font-serif-brand">
+              <h3 className="text-2xl font-bold text-brand-espresso mb-3 font-serif">
                 Flash Sale đang tạm nghỉ
               </h3>
-              <p className="text-[#8A7966] text-sm max-w-md mx-auto italic">
+              <p className="text-brand-taupe text-sm max-w-md mx-auto italic">
                 Các chương trình ưu đãi bùng nổ đang được chúng tôi chuẩn bị kỹ lưỡng.
                 Vui lòng quay lại sau!
               </p>
@@ -170,7 +170,7 @@ export function FlashSaleView() {
         </div>
       </main>
 
-      <footer className="bg-[#3D2B1A] py-16 px-12 text-center text-[#F0D5BB]/60 mt-12">
+      <footer className="bg-brand-espresso py-16 px-12 text-center text-[#F0D5BB]/60 mt-12">
         <p className="text-sm mb-2">
           © 2026 LUXE Flash Sale Service. Bảo chứng hàng chính hãng.
         </p>

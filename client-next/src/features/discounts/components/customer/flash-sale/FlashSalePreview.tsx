@@ -50,15 +50,15 @@ function CountdownTimer({ endDate }: { endDate: string }) {
       {blocks.map((v, i) => (
         <React.Fragment key={i}>
           {i > 0 && (
-            <span className="text-2xl font-bold text-[#C4783A] drop-shadow-md animate-pulse">
+            <span className="text-2xl font-bold text-brand-accent drop-shadow-md animate-pulse">
               :
             </span>
           )}
           <div className="bg-white px-4 md:px-5 py-3 md:py-4 rounded-[1.25rem] text-center min-w-[65px] md:min-w-[85px] shadow-[0_15px_35px_rgba(0,0,0,0.25)] border-b-4 border-brand-sand/30 transform hover:-translate-y-1 transition-transform duration-300">
-            <span className="block text-2xl md:text-[32px] font-bold text-[#3D2B1A] font-sans leading-none tracking-tight">
+            <span className="block text-2xl md:text-[32px] font-bold text-brand-espresso font-sans leading-none tracking-tight">
               {pad(v)}
             </span>
-            <span className="block text-[9px] md:text-[11px] uppercase tracking-[0.15em] mt-2 text-[#C4783A] font-extrabold">
+            <span className="block text-[9px] md:text-[11px] uppercase tracking-[0.15em] mt-2 text-brand-accent font-extrabold">
               {labels[i]}
             </span>
           </div>
@@ -129,13 +129,13 @@ function FlashProductCard({
   );
 
   return (
-    <div className="group relative flex flex-col h-full bg-white rounded-2xl overflow-hidden border border-[#DDD6C8] hover:-translate-y-1 hover:shadow-[0_16px_48px_rgba(61,43,26,0.1)] transition-all duration-300">
+    <div className="group relative flex flex-col h-full bg-white rounded-2xl overflow-hidden border border-brand-sand hover:-translate-y-1 hover:shadow-[0_16px_48px_rgba(61,43,26,0.1)] transition-all duration-300">
       <Link href={`/shop/${product.slug}`} className="absolute inset-0 z-20">
         <span className="sr-only">Xem chi tiết {product.name}</span>
       </Link>
 
       
-      <div className="relative h-[240px] w-full flex items-center justify-center overflow-hidden bg-white border-b border-[#F3EFE8]">
+      <div className="relative h-[240px] w-full flex items-center justify-center overflow-hidden bg-white border-b border-brand-ivory">
         <Image
           src={imageUrl}
           alt={product.name}
@@ -145,7 +145,7 @@ function FlashProductCard({
         />
 
         <div className="absolute top-3 left-3 z-30">
-          <span className="bg-[#C4783A] text-white text-[10px] font-medium tracking-[0.08em] px-2.5 py-1 rounded-full uppercase">
+          <span className="bg-brand-accent text-white text-[10px] font-medium tracking-[0.08em] px-2.5 py-1 rounded-full uppercase">
             -{discountPercent}%
           </span>
         </div>
@@ -153,37 +153,37 @@ function FlashProductCard({
 
       
       <div className="relative z-10 flex-1 flex flex-col p-4 md:p-5">
-        <h3 className="text-[14.5px] font-medium text-[#3D2B1A] mb-2 line-clamp-2 leading-snug">
+        <h3 className="text-[14.5px] font-medium text-brand-espresso mb-2 line-clamp-2 leading-snug">
           {product.name}
         </h3>
 
         <div className="flex items-center gap-1.5 mb-3">
-          <div className="flex items-center text-[#C4783A] text-[12px] tracking-[2px]">
+          <div className="flex items-center text-brand-accent text-[12px] tracking-[2px]">
             ★★★★★
           </div>
-          <span className="text-[11px] text-[#8A7966]">({soldCount})</span>
+          <span className="text-[11px] text-brand-taupe">({soldCount})</span>
         </div>
 
         <div className="mt-auto flex items-center justify-between pt-1">
           <div className="flex items-center gap-1.5">
-            <span className="text-[18px] font-semibold text-[#3D2B1A] font-sans">
+            <span className="text-[18px] font-semibold text-brand-espresso font-sans">
               {formatCurrency(salePrice)}
             </span>
-            <span className="text-[12px] text-[#8A7966] line-through hidden sm:block">
+            <span className="text-[12px] text-brand-taupe line-through hidden sm:block">
               {formatCurrency(originalPrice)}
             </span>
           </div>
         </div>
 
         
-        <div className="mt-4 pt-4 border-t border-[#DDD6C8] space-y-1.5">
+        <div className="mt-4 pt-4 border-t border-brand-sand space-y-1.5">
           <div className="relative h-1.5 bg-[#E8E0D0] rounded-full overflow-hidden">
             <div
-              className="h-full bg-[#C4783A] rounded-full relative"
+              className="h-full bg-brand-accent rounded-full relative"
               style={{ width: `${soldPercent}%` }}
             />
           </div>
-          <div className="flex justify-between items-center text-[10px] text-[#8A7966] uppercase tracking-widest">
+          <div className="flex justify-between items-center text-[10px] text-brand-taupe uppercase tracking-widest">
             <span>{soldPercent > 80 ? "Sắp cháy hàng" : "Đã bán"}</span>
             <span>
               {soldCount} / {totalStock}
@@ -211,26 +211,26 @@ export function FlashSalePreview({ data }: FlashSalePreviewProps) {
   if (!hasProducts) return null;
 
   return (
-    <section className="relative w-full overflow-hidden bg-[#3D2B1A] text-[#FAF8F4] py-16 md:py-20 my-8 md:my-16 rounded-[2.5rem] md:rounded-[3.5rem] mx-auto max-w-[1440px]">
+    <section className="relative w-full overflow-hidden bg-brand-espresso text-brand-cream py-16 md:py-20 my-8 md:my-16 rounded-[2.5rem] md:rounded-[3.5rem] mx-auto max-w-[1440px]">
       
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#C4783A]/20 blur-[120px] rounded-full -translate-y-1/2" />
-      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-[#C4783A]/10 blur-[120px] rounded-full translate-y-1/2" />
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-brand-accent/20 blur-[120px] rounded-full -translate-y-1/2" />
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-brand-accent/10 blur-[120px] rounded-full translate-y-1/2" />
 
       <div className="relative z-10 px-6 lg:px-12 flex flex-col lg:flex-row items-center justify-between gap-10 mb-12 md:mb-16">
         <div className="text-center lg:text-left space-y-4">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 rounded-full border border-white/10 mb-2">
-            <Zap className="h-3 w-3 text-[#C4783A] fill-[#C4783A]" />
-            <span className="text-[10px] uppercase tracking-widest font-bold text-[#C4783A]">
+            <Zap className="h-3 w-3 text-brand-accent fill-brand-accent" />
+            <span className="text-[10px] uppercase tracking-widest font-bold text-brand-accent">
               Limited Offer
             </span>
           </div>
-          <h2 className="text-[36px] md:text-[42px] font-serif-brand font-semibold leading-tight">
+          <h2 className="text-[36px] md:text-[42px] font-serif font-semibold leading-tight">
             Flash{" "}
-            <em className="text-[#C4783A]" style={{ fontStyle: "italic" }}>
+            <em className="text-brand-accent" style={{ fontStyle: "italic" }}>
               Sale
             </em>
           </h2>
-          <p className="text-[14px] md:text-[15px] text-[#FAF8F4]/60 max-w-sm leading-relaxed hidden md:block">
+          <p className="text-[14px] md:text-[15px] text-brand-cream/60 max-w-sm leading-relaxed hidden md:block">
             Sở hữu ngay những thiết kế đẳng cấp với mức ưu đãi lên đến {data.percentage}
             %. Cơ hội có một không hai!
           </p>
@@ -242,7 +242,7 @@ export function FlashSalePreview({ data }: FlashSalePreviewProps) {
 
         <Link
           href="/flash-sale"
-          className="bg-[#C4783A] text-white px-10 py-4 rounded-full text-[14px] font-bold hover:bg-[#B56830] transition-all hover:scale-105 active:scale-95 shadow-lg shadow-black/20 whitespace-nowrap"
+          className="bg-brand-accent text-white px-10 py-4 rounded-full text-[14px] font-bold hover:bg-[#B56830] transition-all hover:scale-105 active:scale-95 shadow-lg shadow-black/20 whitespace-nowrap"
         >
           Xem tất cả ưu đãi →
         </Link>

@@ -131,12 +131,12 @@ export function RequestReturnModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[550px] rounded-2xl p-0 overflow-hidden border-[#DDD6C8] shadow-2xl bg-white font-sans-brand">
-        <div className="px-8 py-6 border-b border-[#DDD6C8] bg-[#FAF8F4]">
-          <DialogTitle className="text-2xl font-bold text-[#3D2B1A] font-serif-brand">
+      <DialogContent className="sm:max-w-[550px] rounded-2xl p-0 overflow-hidden border-brand-sand shadow-2xl bg-white font-sans-brand">
+        <div className="px-8 py-6 border-b border-brand-sand bg-brand-cream">
+          <DialogTitle className="text-2xl font-bold text-brand-espresso font-serif">
             Yêu cầu trả hàng
           </DialogTitle>
-          <p className="text-[12px] text-[#8A7966] font-bold uppercase tracking-[0.1em] mt-1">
+          <p className="text-[12px] text-brand-taupe font-bold uppercase tracking-[0.1em] mt-1">
             Đơn hàng #{orderCode}
           </p>
         </div>
@@ -144,12 +144,12 @@ export function RequestReturnModal({
         <form onSubmit={handleSubmit(onSubmit)} className="p-8 space-y-6">
           <div className="space-y-5">
             <div className="space-y-2">
-              <Label className="text-[13px] font-bold text-[#3D2B1A] uppercase tracking-[0.06em]">
+              <Label className="text-[13px] font-bold text-brand-espresso uppercase tracking-[0.06em]">
                 Lý do trả hàng <span className="text-[#C44040]">*</span>
               </Label>
               <select
                 {...register("reason", { required: "Vui lòng chọn lý do" })}
-                className="w-full h-12 bg-white border border-[#DDD6C8] rounded-xl px-4 text-[13.5px] text-[#3D2B1A] focus:outline-none focus:border-[#C4B49A] transition-all font-medium appearance-none"
+                className="w-full h-12 bg-white border border-brand-sand rounded-xl px-4 text-[13.5px] text-brand-espresso focus:outline-none focus:border-brand-sand transition-all font-medium appearance-none"
               >
                 <option value="">Chọn lý do phù hợp...</option>
                 {REASONS.map((r) => (
@@ -166,25 +166,25 @@ export function RequestReturnModal({
             </div>
 
             <div className="space-y-2">
-              <Label className="text-[13px] font-bold text-[#3D2B1A] uppercase tracking-[0.06em]">
+              <Label className="text-[13px] font-bold text-brand-espresso uppercase tracking-[0.06em]">
                 Mô tả chi tiết
               </Label>
               <Textarea
                 {...register("details")}
                 placeholder="Vui lòng mô tả rõ tình trạng sản phẩm để LUXE hỗ trợ bạn tốt nhất..."
-                className="min-h-[120px] rounded-xl p-4 resize-none !bg-white !border-[#DDD6C8] !text-[#3D2B1A] placeholder:text-[#8A7966]/50 text-[13.5px] focus-visible:!ring-0 focus-visible:!border-[#C4B49A] transition-all outline-none"
+                className="min-h-[120px] rounded-xl p-4 resize-none !bg-white !border-brand-sand !text-brand-espresso placeholder:text-brand-taupe/50 text-[13.5px] focus-visible:!ring-0 focus-visible:!border-brand-sand transition-all outline-none"
               />
             </div>
 
             <div className="space-y-3">
-              <Label className="text-[13px] font-bold text-[#3D2B1A] uppercase tracking-[0.06em]">
+              <Label className="text-[13px] font-bold text-brand-espresso uppercase tracking-[0.06em]">
                 Hình ảnh bằng chứng <span className="text-[#C44040]">*</span>
               </Label>
               <div className="grid grid-cols-4 gap-3">
                 {images.map((url, i) => (
                   <div
                     key={i}
-                    className="relative aspect-square rounded-xl overflow-hidden border border-[#DDD6C8] group shadow-sm"
+                    className="relative aspect-square rounded-xl overflow-hidden border border-brand-sand group shadow-sm"
                   >
                     <Image src={url} alt="Evidence" fill className="object-cover" />
                     <button
@@ -197,7 +197,7 @@ export function RequestReturnModal({
                   </div>
                 ))}
                 {images.length < 4 && (
-                  <label className="aspect-square rounded-xl border-2 border-dashed border-[#DDD6C8] flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-[#C4783A] hover:bg-[#FAF8F4] transition-all group">
+                  <label className="aspect-square rounded-xl border-2 border-dashed border-brand-sand flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-brand-accent hover:bg-brand-cream transition-all group">
                     <input
                       type="file"
                       multiple
@@ -211,27 +211,27 @@ export function RequestReturnModal({
                     ) : (
                       <Camera
                         size={20}
-                        className="text-[#8A7966] group-hover:text-[#C4783A] transition-colors"
+                        className="text-brand-taupe group-hover:text-brand-accent transition-colors"
                       />
                     )}
-                    <span className="text-[10px] font-bold text-[#8A7966] uppercase tracking-widest group-hover:text-[#C4783A] transition-colors">
+                    <span className="text-[10px] font-bold text-brand-taupe uppercase tracking-widest group-hover:text-brand-accent transition-colors">
                       Tải ảnh
                     </span>
                   </label>
                 )}
               </div>
-              <p className="text-[11px] text-[#8A7966] font-medium flex items-center gap-1.5 italic">
-                <AlertCircle size={13} className="text-[#C4783A]" />
+              <p className="text-[11px] text-brand-taupe font-medium flex items-center gap-1.5 italic">
+                <AlertCircle size={13} className="text-brand-accent" />
                 Tải lên ít nhất 1 ảnh rõ nét về tình trạng sản phẩm (Tối đa 4 ảnh)
               </p>
             </div>
           </div>
 
-          <div className="flex flex-col gap-3 pt-4 border-t border-[#DDD6C8]">
+          <div className="flex flex-col gap-3 pt-4 border-t border-brand-sand">
             <Button
               type="submit"
               disabled={isSubmitting || isUploading}
-              className="w-full h-12 bg-[#3D2B1A] text-white rounded-xl font-bold text-[13.5px] transition-all hover:bg-[#2A2420] disabled:opacity-50 flex items-center justify-center gap-2"
+              className="w-full h-12 bg-brand-espresso text-white rounded-xl font-bold text-[13.5px] transition-all hover:bg-[#2A2420] disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {isSubmitting && <Spinner size="sm" variant="white" />}
               {isSubmitting ? "Đang gửi yêu cầu..." : "Gửi yêu cầu trả hàng"}
@@ -241,7 +241,7 @@ export function RequestReturnModal({
               variant="outline"
               onClick={onClose}
               disabled={isSubmitting}
-              className="w-full h-12 bg-white border border-[#DDD6C8] text-[#8A7966] hover:text-[#8A7966] rounded-xl font-bold text-[13.5px] transition-all hover:bg-[#FAF8F4] hover:border-[#C4B49A]"
+              className="w-full h-12 bg-white border border-brand-sand text-brand-taupe hover:text-brand-taupe rounded-xl font-bold text-[13.5px] transition-all hover:bg-brand-cream hover:border-brand-sand"
             >
               Quay lại
             </Button>

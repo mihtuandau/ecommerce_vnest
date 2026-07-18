@@ -38,11 +38,11 @@ export function ChatWidget() {
     <div className="fixed bottom-12 right-6 z-[9999] hidden md:flex flex-col items-end gap-4">
       
       {isOpen && (
-        <div className="w-full max-w-[420px] h-[640px] bg-[#FAF8F4] shadow-[0_32px_64px_rgba(61,43,26,0.15)] rounded-[2.5rem] border border-[#DDD6C8] flex flex-col overflow-hidden animate-in slide-in-from-bottom-8 duration-500 font-sans">
+        <div className="w-full max-w-[420px] h-[640px] bg-brand-cream shadow-[0_32px_64px_rgba(61,43,26,0.15)] rounded-[2.5rem] border border-brand-sand flex flex-col overflow-hidden animate-in slide-in-from-bottom-8 duration-500 font-sans">
           
-          <div className="bg-[#3D2B1A] px-6 py-5 relative overflow-hidden shrink-0">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-[#C4783A] opacity-10 rounded-full blur-3xl -mr-16 -mt-16" />
-            <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#FAF8F4] opacity-5 rounded-full blur-2xl -ml-12 -mb-12" />
+          <div className="bg-brand-espresso px-6 py-5 relative overflow-hidden shrink-0">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-brand-accent opacity-10 rounded-full blur-3xl -mr-16 -mt-16" />
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-brand-cream opacity-5 rounded-full blur-2xl -ml-12 -mb-12" />
 
             <div className="flex items-center justify-between relative z-10">
               <div className="flex items-center gap-3.5">
@@ -50,10 +50,10 @@ export function ChatWidget() {
                   <div className="w-11 h-11 bg-white/10 backdrop-blur-md rounded-[14px] flex items-center justify-center border border-white/20">
                     <Sparkles size={20} className="text-[#F0D5BB] animate-pulse" />
                   </div>
-                  <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-green-500 border-2 border-[#3D2B1A] rounded-full" />
+                  <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-green-500 border-2 border-brand-espresso rounded-full" />
                 </div>
                 <div>
-                  <h3 className="text-[#FAF8F4] text-[15px] font-bold tracking-tight">
+                  <h3 className="text-brand-cream text-[15px] font-bold tracking-tight">
                     Trợ lý Mua sắm AI
                   </h3>
                   <div className="flex items-center gap-1.5 mt-0.5">
@@ -75,7 +75,7 @@ export function ChatWidget() {
           
           <div
             ref={scrollRef}
-            className="flex-1 overflow-y-auto p-6 space-y-6 bg-[#FAF8F4]/50 [&::-webkit-scrollbar]:w-[5px] [&::-webkit-scrollbar-thumb]:bg-[#DDD6C8] [&::-webkit-scrollbar-thumb]:rounded-full"
+            className="flex-1 overflow-y-auto p-6 space-y-6 bg-brand-cream/50 [&::-webkit-scrollbar]:w-[5px] [&::-webkit-scrollbar-thumb]:bg-brand-sand [&::-webkit-scrollbar-thumb]:rounded-full"
           >
             {messages.map((msg, index) => {
               const isBot = msg.role === "bot";
@@ -88,7 +88,7 @@ export function ChatWidget() {
                   )}
                 >
                   {isBot && (
-                    <div className="h-8 w-8 rounded-full bg-white border border-[#DDD6C8] flex items-center justify-center flex-shrink-0 mt-1 shadow-sm font-bold text-[#8B6F47] text-[11px]">
+                    <div className="h-8 w-8 rounded-full bg-white border border-brand-sand flex items-center justify-center flex-shrink-0 mt-1 shadow-sm font-bold text-[#8B6F47] text-[11px]">
                       AI
                     </div>
                   )}
@@ -102,8 +102,8 @@ export function ChatWidget() {
                       className={cn(
                         "p-3.5 rounded-[20px] text-[13.5px] leading-relaxed w-full break-words shadow-sm transition-all duration-300",
                         isBot
-                          ? "bg-white text-[#3D2B1A] rounded-tl-none border border-[#DDD6C8] hover:border-[#C4B49A]"
-                          : "bg-[#3D2B1A] text-[#FAF8F4] rounded-tr-none hover:bg-[#2A2420]"
+                          ? "bg-white text-brand-espresso rounded-tl-none border border-brand-sand hover:border-brand-sand"
+                          : "bg-brand-espresso text-brand-cream rounded-tr-none hover:bg-[#2A2420]"
                       )}
                     >
                       {msg.content
@@ -125,12 +125,12 @@ export function ChatWidget() {
                         ))}
 
                       {isBot && msg.cartAction && (
-                        <div className="mt-2 rounded-xl border border-[#DDD6C8] bg-[#FAF8F4] p-3 text-[#3D2B1A]">
+                        <div className="mt-2 rounded-xl border border-brand-sand bg-brand-cream p-3 text-brand-espresso">
                           <div className="flex items-start gap-2">
                             {msg.cartAction.status === "added" ? (
                               <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
                             ) : (
-                              <ShoppingCart className="mt-0.5 h-4 w-4 shrink-0 text-[#C4783A]" />
+                              <ShoppingCart className="mt-0.5 h-4 w-4 shrink-0 text-brand-accent" />
                             )}
                             <div className="min-w-0 flex-1">
                               <p className="text-[11.5px] font-bold">
@@ -138,7 +138,7 @@ export function ChatWidget() {
                               </p>
                               {msg.cartAction.status === "added" && (
                                 <>
-                                  <p className="mt-1 text-[10.5px] text-[#8A7966]">
+                                  <p className="mt-1 text-[10.5px] text-brand-taupe">
                                     {[
                                       msg.cartAction.productName,
                                       msg.cartAction.size && `size ${msg.cartAction.size}`,
@@ -151,13 +151,13 @@ export function ChatWidget() {
                                   <div className="mt-2 flex gap-2">
                                     <a
                                       href="/cart"
-                                      className="rounded-full border border-[#DDD6C8] bg-white px-3 py-1 text-[10px] font-bold text-[#3D2B1A] transition hover:border-[#C4783A]"
+                                      className="rounded-full border border-brand-sand bg-white px-3 py-1 text-[10px] font-bold text-brand-espresso transition hover:border-brand-accent"
                                     >
                                       Giỏ hàng
                                     </a>
                                     <a
                                       href="/checkout"
-                                      className="rounded-full bg-[#3D2B1A] px-3 py-1 text-[10px] font-bold text-white transition hover:bg-[#2A2420]"
+                                      className="rounded-full bg-brand-espresso px-3 py-1 text-[10px] font-bold text-white transition hover:bg-[#2A2420]"
                                     >
                                       Thanh toán
                                     </a>
@@ -176,13 +176,13 @@ export function ChatWidget() {
 
             {isLoading && (
               <div className="flex items-start gap-3">
-                <div className="h-8 w-8 rounded-full bg-white border border-[#DDD6C8] flex items-center justify-center shadow-sm font-bold text-[#8B6F47] text-[11px] animate-pulse">
+                <div className="h-8 w-8 rounded-full bg-white border border-brand-sand flex items-center justify-center shadow-sm font-bold text-[#8B6F47] text-[11px] animate-pulse">
                   AI
                 </div>
-                <div className="bg-white border border-[#DDD6C8] px-4 py-3 rounded-[18px] rounded-tl-none shadow-sm flex gap-1.5 items-center">
-                  <div className="w-1.5 h-1.5 bg-[#C4B49A] rounded-full animate-bounce [animation-delay:0s]" />
-                  <div className="w-1.5 h-1.5 bg-[#C4B49A] rounded-full animate-bounce [animation-delay:0.2s]" />
-                  <div className="w-1.5 h-1.5 bg-[#C4B49A] rounded-full animate-bounce [animation-delay:0.4s]" />
+                <div className="bg-white border border-brand-sand px-4 py-3 rounded-[18px] rounded-tl-none shadow-sm flex gap-1.5 items-center">
+                  <div className="w-1.5 h-1.5 bg-brand-sand rounded-full animate-bounce [animation-delay:0s]" />
+                  <div className="w-1.5 h-1.5 bg-brand-sand rounded-full animate-bounce [animation-delay:0.2s]" />
+                  <div className="w-1.5 h-1.5 bg-brand-sand rounded-full animate-bounce [animation-delay:0.4s]" />
                 </div>
               </div>
             )}
@@ -191,7 +191,7 @@ export function ChatWidget() {
 
           
           {!isLoading && (
-            <div className="px-6 py-4 flex flex-wrap gap-2 bg-white border-t border-[#DDD6C8]/50 shrink-0">
+            <div className="px-6 py-4 flex flex-wrap gap-2 bg-white border-t border-brand-sand/50 shrink-0">
               {(
                 messages[messages.length - 1]?.suggestions ||
                 (messages.length < 3 ? SUGGESTIONS : [])
@@ -205,7 +205,7 @@ export function ChatWidget() {
                     }
                     handleSendMessage(s);
                   }}
-                  className="px-4 py-1.5 bg-[#F3EFE8] hover:bg-[#3D2B1A] hover:text-white border border-[#DDD6C8] rounded-full text-[11px] font-bold text-[#8A7966] transition-all duration-300 shadow-sm uppercase tracking-tighter"
+                  className="px-4 py-1.5 bg-brand-ivory hover:bg-brand-espresso hover:text-white border border-brand-sand rounded-full text-[11px] font-bold text-brand-taupe transition-all duration-300 shadow-sm uppercase tracking-tighter"
                 >
                   {s}
                 </button>
@@ -219,17 +219,17 @@ export function ChatWidget() {
               e.preventDefault();
               handleSendMessage(message);
             }}
-            className="p-6 bg-white border-t border-[#DDD6C8] shrink-0"
+            className="p-6 bg-white border-t border-brand-sand shrink-0"
           >
             <div className="flex items-center gap-3">
-              <div className="flex-1 bg-[#F3EFE8]/80 border-2 border-[#DDD6C8] rounded-2xl overflow-hidden focus-within:border-[#C4B49A] focus-within:bg-white transition-all duration-300">
+              <div className="flex-1 bg-brand-ivory/80 border-2 border-brand-sand rounded-2xl overflow-hidden focus-within:border-brand-sand focus-within:bg-white transition-all duration-300">
                 <input
                   type="text"
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="Hỏi trợ lý AI..."
                   disabled={isLoading}
-                  className="w-full py-3 px-4 bg-transparent border-none outline-none text-[14px] text-[#3D2B1A] font-medium placeholder:text-[#8A7966]/60"
+                  className="w-full py-3 px-4 bg-transparent border-none outline-none text-[14px] text-brand-espresso font-medium placeholder:text-brand-taupe/60"
                 />
               </div>
               <button
@@ -238,8 +238,8 @@ export function ChatWidget() {
                 className={cn(
                   "w-12 h-12 rounded-2xl flex items-center justify-center transition-all transform active:scale-90 shrink-0 shadow-lg",
                   message.trim() && !isLoading
-                    ? "bg-[#3D2B1A] text-white hover:bg-[#2A2420] shadow-[#3D2B1A]/20"
-                    : "bg-[#E8E0D0] text-[#FAF8F4] opacity-50 cursor-not-allowed"
+                    ? "bg-brand-espresso text-white hover:bg-[#2A2420] shadow-brand-espresso/20"
+                    : "bg-[#E8E0D0] text-brand-cream opacity-50 cursor-not-allowed"
                 )}
               >
                 <Send
@@ -261,8 +261,8 @@ export function ChatWidget() {
         className={cn(
           "h-14 w-14 rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.15)] flex items-center justify-center text-white transition-all duration-500 hover:scale-110 active:scale-95 relative group",
           isOpen
-            ? "bg-[#3D2B1A] rotate-90 shadow-[#3D2B1A]/40"
-            : "bg-[#3D2B1A] shadow-[#3D2B1A]/20"
+            ? "bg-brand-espresso rotate-90 shadow-brand-espresso/40"
+            : "bg-brand-espresso shadow-brand-espresso/20"
         )}
       >
         {isOpen ? (

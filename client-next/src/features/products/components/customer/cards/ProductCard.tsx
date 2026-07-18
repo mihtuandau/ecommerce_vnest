@@ -202,7 +202,7 @@ export const ProductCard = React.memo(function ProductCard({
                   </span>
                 </div>
               </div>
-              <p className="text-[13px] text-[#8A7966] line-clamp-2 leading-relaxed max-w-xl">
+              <p className="text-[13px] text-brand-taupe line-clamp-2 leading-relaxed max-w-xl">
                 {product.description ||
                   "Sản phẩm thiết kế sang trọng, chất liệu cao cấp mang lại sự thoải mái và phong cách cho người mặc."}
               </p>

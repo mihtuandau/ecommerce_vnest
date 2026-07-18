@@ -27,11 +27,11 @@ export default function CustomerWarrantyView() {
   return (
     <div className="flex-1 p-8 space-y-6 overflow-y-auto h-full [&::-webkit-scrollbar]:w-[4px] [&::-webkit-scrollbar-thumb]:bg-[#E8E0D0]">
       <div>
-        <h3 className="text-[15px] font-semibold text-[#3D2B1A] flex items-center gap-2.5">
-          <ShieldCheck size={16} className="text-[#C4783A]" />
+        <h3 className="text-[15px] font-semibold text-brand-espresso flex items-center gap-2.5">
+          <ShieldCheck size={16} className="text-brand-accent" />
           Chính sách bảo hành chính hãng
         </h3>
-        <p className="text-[12px] text-[#8A7966] mt-1.5 leading-relaxed font-normal">
+        <p className="text-[12px] text-brand-taupe mt-1.5 leading-relaxed font-normal">
           Tất cả sản phẩm công nghệ, thời trang cao cấp phân phối bởi LUXE đều đi kèm
           chế độ bảo hành chuẩn vàng.
         </p>
@@ -40,10 +40,10 @@ export default function CustomerWarrantyView() {
       <div className="p-5 rounded-2xl bg-[#E2F0D9]/30 border border-[#C5DFB2] shadow-3xs flex items-start gap-4">
         <CheckCircle2 className="text-[#5B903E] shrink-0 mt-0.5" size={18} />
         <div>
-          <h4 className="text-[12.5px] font-medium text-[#3D2B1A]">
+          <h4 className="text-[12.5px] font-medium text-brand-espresso">
             Chính sách bảo hành vàng 12 tháng
           </h4>
-          <p className="text-[11.5px] text-[#8A7966] leading-relaxed mt-1.5 font-normal">
+          <p className="text-[11.5px] text-brand-taupe leading-relaxed mt-1.5 font-normal">
             Đổi sản phẩm mới trực tiếp trong vòng 15 ngày đầu tiên nếu xảy ra lỗi phần
             cứng/chất liệu của nhà sản xuất. Hỗ trợ thay thế, sửa chữa linh kiện chính
             hãng miễn phí toàn diện.
@@ -53,7 +53,7 @@ export default function CustomerWarrantyView() {
 
       
       <div className="space-y-3">
-        <h4 className="text-[11px] text-[#8A7966] uppercase tracking-wider font-semibold">
+        <h4 className="text-[11px] text-brand-taupe uppercase tracking-wider font-semibold">
           Câu hỏi thường gặp về bảo hành
         </h4>
         {warrantyFaqs.map((faq) => {
@@ -61,18 +61,18 @@ export default function CustomerWarrantyView() {
           return (
             <div
               key={faq.key}
-              className="border border-[#DDD6C8]/40 rounded-2xl bg-white shadow-3xs overflow-hidden transition-all duration-300"
+              className="border border-brand-sand/40 rounded-2xl bg-white shadow-3xs overflow-hidden transition-all duration-300"
             >
               <button
                 onClick={() => toggleFaq(faq.key)}
-                className="w-full flex items-center justify-between p-4.5 text-left font-medium text-[#3D2B1A] text-[12.5px] hover:bg-[#FAF8F4]/20 transition-colors"
+                className="w-full flex items-center justify-between p-4.5 text-left font-medium text-brand-espresso text-[12.5px] hover:bg-brand-cream/20 transition-colors"
               >
                 <span>{faq.q}</span>
                 <ChevronDown
                   size={14}
                   className={cn(
-                    "text-[#8A7966] transition-transform duration-300",
-                    isOpen ? "rotate-180 text-[#3D2B1A]" : ""
+                    "text-brand-taupe transition-transform duration-300",
+                    isOpen ? "rotate-180 text-brand-espresso" : ""
                   )}
                 />
               </button>
@@ -80,11 +80,11 @@ export default function CustomerWarrantyView() {
                 className={cn(
                   "transition-all duration-300 overflow-hidden",
                   isOpen
-                    ? "max-h-[300px] border-t border-[#DDD6C8]/20 bg-[#FAF8F4]/10"
+                    ? "max-h-[300px] border-t border-brand-sand/20 bg-brand-cream/10"
                     : "max-h-0"
                 )}
               >
-                <p className="p-4.5 text-[11.5px] text-[#8A7966] leading-relaxed whitespace-pre-line font-normal">
+                <p className="p-4.5 text-[11.5px] text-brand-taupe leading-relaxed whitespace-pre-line font-normal">
                   {faq.a}
                 </p>
               </div>

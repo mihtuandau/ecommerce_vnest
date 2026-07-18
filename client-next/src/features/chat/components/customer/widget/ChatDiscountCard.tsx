@@ -73,7 +73,7 @@ export const ChatDiscountCard = ({ discount }: { discount: any }) => {
         </Button>
       </div>
       {discount.description && (
-        <p className="text-[10px] text-slate-500 italic leading-tight border-t border-slate-100 pt-2 mt-1">
+        <p className="text-[10px] text-brand-taupe italic leading-tight border-t border-brand-sand pt-2 mt-1">
           {discount.description}
         </p>
       )}

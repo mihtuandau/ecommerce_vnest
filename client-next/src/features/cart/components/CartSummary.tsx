@@ -105,7 +105,7 @@ export const CartSummary = React.memo(function CartSummary({
             <span className="text-brand-taupe font-medium text-[14px]">
               Phí vận chuyển
             </span>
-            <span className="font-bold text-[#27AE60] text-[13px] italic">
+            <span className="font-bold text-[#3A7D5A] text-[13px] italic">
               Miễn phí
             </span>
           </div>

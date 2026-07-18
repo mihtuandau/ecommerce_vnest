@@ -43,7 +43,7 @@ export function Verify2FAForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#FAF8F4] px-4 font-sans">
+    <div className="min-h-screen flex items-center justify-center bg-brand-cream px-4 font-sans">
       <div className="max-w-md w-full">
         <div className="bg-white rounded-[32px] p-8 sm:p-12 shadow-2xl shadow-brand-espresso/5 border border-brand-sand/50 text-center">
           <div className="w-20 h-20 bg-brand-ivory rounded-full flex items-center justify-center mx-auto mb-8 border border-brand-sand/30">

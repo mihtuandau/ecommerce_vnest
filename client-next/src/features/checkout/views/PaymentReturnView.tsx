@@ -64,7 +64,7 @@ export function PaymentReturnView() {
                 </div>
 
                 <div className="space-y-3">
-                  <h2 className="text-2xl font-bold text-brand-espresso tracking-tight font-serif-brand">
+                  <h2 className="text-2xl font-bold text-brand-espresso tracking-tight font-serif">
                     Thanh toán hoàn tất
                   </h2>
                   <p className="text-brand-taupe text-sm leading-relaxed max-w-[300px] mx-auto">
@@ -130,7 +130,7 @@ export function PaymentReturnView() {
                 </div>
 
                 <div className="space-y-3">
-                  <h2 className="text-2xl font-bold text-brand-espresso tracking-tight font-serif-brand">
+                  <h2 className="text-2xl font-bold text-brand-espresso tracking-tight font-serif">
                     Giao dịch bị gián đoạn
                   </h2>
                   <p className="text-brand-taupe text-sm leading-relaxed max-w-[300px] mx-auto">

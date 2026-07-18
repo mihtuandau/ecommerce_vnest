@@ -80,7 +80,7 @@ export function CheckoutView() {
     return (
       <div className="fixed inset-0 z-[100] bg-white/95 backdrop-blur-sm flex flex-col items-center justify-center">
         <Spinner size="lg" />
-        <h2 className="text-xl font-bold text-slate-900 mt-5">Đang xử lý đơn hàng</h2>
+        <h2 className="text-xl font-bold text-brand-espresso mt-5">Đang xử lý đơn hàng</h2>
       </div>
     );
   }
@@ -91,8 +91,8 @@ export function CheckoutView() {
     <div className="bg-brand-cream min-h-screen pb-20 text-foreground font-sans-brand">
       {isEmpty ? (
         <div className="min-h-[70vh] flex flex-col items-center justify-center text-center px-4">
-          <Truck className="h-16 w-16 text-slate-200 mb-6" />
-          <h1 className="text-2xl font-bold text-slate-900 mb-4">
+          <Truck className="h-16 w-16 text-brand-sand mb-6" />
+          <h1 className="text-2xl font-bold text-brand-espresso mb-4">
             Chưa có sản phẩm nào
           </h1>
           <Button

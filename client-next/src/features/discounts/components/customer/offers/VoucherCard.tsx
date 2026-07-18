@@ -47,19 +47,19 @@ export function VoucherCard({ voucher }: VoucherCardProps) {
   return (
     <div
       className={cn(
-        "flex flex-col sm:flex-row items-stretch bg-white border border-slate-200 rounded-2xl overflow-hidden relative h-full transition-all duration-300 hover:shadow-md cursor-pointer",
+        "flex flex-col sm:flex-row items-stretch bg-white border border-brand-sand rounded-2xl overflow-hidden relative h-full transition-all duration-300 hover:shadow-md cursor-pointer",
         !isActive && "opacity-60 grayscale pointer-events-none"
       )}
     >
-      <div className="w-full sm:w-44 shrink-0 bg-slate-50 flex flex-col items-center justify-center py-8 px-4 border-b sm:border-b-0 sm:border-r border-dashed border-slate-200 relative">
-        <div className="absolute -right-2 -top-2 w-4 h-4 bg-white rounded-full border border-slate-200 hidden sm:block" />
-        <div className="absolute -right-2 -bottom-2 w-4 h-4 bg-white rounded-full border border-slate-200 hidden sm:block" />
+      <div className="w-full sm:w-44 shrink-0 bg-brand-ivory flex flex-col items-center justify-center py-8 px-4 border-b sm:border-b-0 sm:border-r border-dashed border-brand-sand relative">
+        <div className="absolute -right-2 -top-2 w-4 h-4 bg-white rounded-full border border-brand-sand hidden sm:block" />
+        <div className="absolute -right-2 -bottom-2 w-4 h-4 bg-white rounded-full border border-brand-sand hidden sm:block" />
 
-        <div className="bg-white p-3 rounded-2xl border border-slate-100 mb-3">
+        <div className="bg-white p-3 rounded-2xl border border-brand-sand mb-3">
           <Gift size={24} className="text-primary" />
         </div>
-        <p className="text-xs text-slate-500 font-semibold mb-1">Giảm ngay</p>
-        <span className="text-3xl font-bold text-slate-900 tracking-tighter">
+        <p className="text-xs text-brand-taupe font-semibold mb-1">Giảm ngay</p>
+        <span className="text-3xl font-bold text-brand-espresso tracking-tighter">
           {displayValue}
         </span>
       </div>
@@ -68,15 +68,15 @@ export function VoucherCard({ voucher }: VoucherCardProps) {
         <div className="space-y-4">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <h3 className="text-base font-bold text-slate-900 leading-tight">
+              <h3 className="text-base font-bold text-brand-espresso leading-tight">
                 {voucher.name || `Ưu đãi LUXE - Giảm ${displayValue}`}
               </h3>
-              <p className="text-sm text-slate-500 font-normal mt-1.5 line-clamp-2">
+              <p className="text-sm text-brand-taupe font-normal mt-1.5 line-clamp-2">
                 {voucher.description ||
                   "Áp dụng cho khách hàng của LUXE. Tiết kiệm ngay khi thanh toán đơn hàng hợp lệ."}
               </p>
             </div>
-            <div className="bg-slate-50 text-slate-600 text-xs px-2 py-0.5 rounded border border-slate-100 whitespace-nowrap font-semibold">
+            <div className="bg-brand-ivory text-brand-taupe text-xs px-2 py-0.5 rounded border border-brand-sand whitespace-nowrap font-semibold">
               {voucher.percentage ? "Phần trăm" : "Trực tiếp"}
             </div>
           </div>
@@ -85,15 +85,15 @@ export function VoucherCard({ voucher }: VoucherCardProps) {
             {(voucher.minOrderValue || 0) > 0 && (
               <div className="flex items-center gap-1.5">
                 <div className="h-1 w-1 rounded-full bg-primary" />
-                <span className="text-xs font-semibold text-slate-500">
+                <span className="text-xs font-semibold text-brand-taupe">
                   Đơn từ{" "}
-                  <span className="font-bold text-slate-900">
+                  <span className="font-bold text-brand-espresso">
                     {formatCurrency(voucher.minOrderValue || 0)}
                   </span>
                 </span>
               </div>
             )}
-            <div className="flex items-center gap-1.5 text-slate-500">
+            <div className="flex items-center gap-1.5 text-brand-taupe">
               <Clock size={12} />
               <span className="text-xs font-medium">
                 Hết hạn:{" "}
@@ -105,21 +105,21 @@ export function VoucherCard({ voucher }: VoucherCardProps) {
           </div>
         </div>
 
-        <div className="mt-6 pt-5 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="mt-6 pt-5 border-t border-brand-sand flex flex-col sm:flex-row items-center justify-between gap-4">
           <button
             type="button"
             onClick={() => copyToClipboard(voucher.code)}
-            className="w-full sm:w-auto bg-slate-50 border border-dashed border-slate-200 rounded-xl px-4 py-2.5 flex items-center justify-between sm:justify-start gap-4 cursor-pointer"
+            className="w-full sm:w-auto bg-brand-ivory border border-dashed border-brand-sand rounded-xl px-4 py-2.5 flex items-center justify-between sm:justify-start gap-4 cursor-pointer"
           >
             <div className="space-y-0.5 text-left">
-              <p className="text-xs text-slate-400 font-normal leading-none">
+              <p className="text-xs text-brand-taupe font-normal leading-none">
                 Mã ưu đãi
               </p>
-              <code className="text-sm font-bold text-slate-700 tracking-widest uppercase">
+              <code className="text-sm font-bold text-brand-taupe tracking-widest uppercase">
                 {voucher.code}
               </code>
             </div>
-            <Copy size={14} className="text-slate-300" />
+            <Copy size={14} className="text-brand-sand" />
           </button>
 
           <Button

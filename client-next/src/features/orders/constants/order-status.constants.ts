@@ -39,16 +39,16 @@ export const ORDER_STATUS_CONFIG = {
   },
   [OrderStatus.RETURN_REQUESTED]: {
     label: "Yêu cầu trả hàng",
-    color: "text-[#C4783A]",
+    color: "text-brand-accent",
     bg: "bg-[#FFF2E6]",
-    dot: "bg-[#C4783A]",
+    dot: "bg-brand-accent",
     icon: RotateCcw,
   },
   [OrderStatus.RETURNED]: {
     label: "Đã trả hàng",
-    color: "text-[#3D2B1A]",
-    bg: "bg-[#F3EFE8]",
-    dot: "bg-[#3D2B1A]",
+    color: "text-brand-espresso",
+    bg: "bg-brand-ivory",
+    dot: "bg-brand-espresso",
     icon: RotateCcw,
   },
 } as const;
@@ -102,7 +102,7 @@ export const CUSTOMER_ORDER_STATUS_CONFIG = {
   },
   [OrderStatus.SHIPPED]: {
     label: "Đang giao hàng",
-    cls: "bg-[#F0D5BB] text-[#C4783A]",
+    cls: "bg-[#F0D5BB] text-brand-accent",
   },
   [OrderStatus.DELIVERED]: {
     label: "Đã giao hàng",

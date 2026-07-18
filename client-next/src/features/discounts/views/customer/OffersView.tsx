@@ -79,14 +79,14 @@ export function OffersView() {
 
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-16">
         {!vouchers.length ? (
-          <div className="py-24 text-center bg-slate-50 rounded-3xl border border-slate-100 border-dashed">
-            <div className="h-16 w-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100">
-              <Gift className="h-8 w-8 text-slate-200" />
+          <div className="py-24 text-center bg-brand-ivory rounded-3xl border border-brand-sand border-dashed">
+            <div className="h-16 w-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 border border-brand-sand">
+              <Gift className="h-8 w-8 text-brand-sand" />
             </div>
-            <h3 className="text-slate-900 font-bold text-xl">
+            <h3 className="text-brand-espresso font-bold text-xl">
               Sắp có ưu đãi mới
             </h3>
-            <p className="text-slate-400 text-sm">
+            <p className="text-brand-taupe text-sm">
               Quay lại sau để không bỏ lỡ deal hời bạn nhé.
             </p>
           </div>

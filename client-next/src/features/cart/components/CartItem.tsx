@@ -33,8 +33,8 @@ export const CartItem = React.memo(function CartItem({
       className={cn(
         "p-4 transition-all group/item",
         isGrouped
-          ? "bg-transparent hover:bg-[#FAF8F4]/50 border-none"
-          : "bg-white rounded-2xl border border-[#DDD6C8] shadow-sm hover:shadow-md"
+          ? "bg-transparent hover:bg-brand-cream/50 border-none"
+          : "bg-white rounded-2xl border border-brand-sand shadow-sm hover:shadow-md"
       )}
     >
       <div className="flex gap-4 items-center">
@@ -44,15 +44,15 @@ export const CartItem = React.memo(function CartItem({
           className={cn(
             "w-4 h-4 rounded border flex-shrink-0 flex items-center justify-center transition-all",
             item.selected
-              ? "bg-[#3D2B1A] border-[#3D2B1A] text-white"
-              : "border-[#DDD6C8] hover:border-[#3D2B1A] bg-white"
+              ? "bg-brand-espresso border-brand-espresso text-white"
+              : "border-brand-sand hover:border-brand-espresso bg-white"
           )}
         >
           {item.selected && <Check size={10} strokeWidth={4} />}
         </button>
 
         
-        <div className="h-24 w-24 flex-shrink-0 rounded-xl bg-[#FAF8F4] flex items-center justify-center p-2 relative overflow-hidden">
+        <div className="h-24 w-24 flex-shrink-0 rounded-xl bg-brand-cream flex items-center justify-center p-2 relative overflow-hidden">
           <Image
             src={getImageUrl(item.imageUrl)}
             alt={item.name}

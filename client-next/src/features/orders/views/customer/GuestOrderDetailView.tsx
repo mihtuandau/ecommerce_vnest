@@ -223,13 +223,13 @@ export function GuestOrderDetailView() {
               )}
 
               {order.returnRequest && (
-                <div className="bg-white border border-[#DDD6C8] rounded-2xl p-10 space-y-8 shadow-sm font-sans-brand">
+                <div className="bg-white border border-brand-sand rounded-2xl p-10 space-y-8 shadow-sm font-sans-brand">
                   <div className="flex items-center gap-5">
-                    <div className="h-14 w-14 rounded-2xl bg-[#F3EFE8] flex items-center justify-center text-[#8A7966] border border-[#DDD6C8]">
+                    <div className="h-14 w-14 rounded-2xl bg-brand-ivory flex items-center justify-center text-brand-taupe border border-brand-sand">
                       <RotateCcw size={24} />
                     </div>
                     <div>
-                      <h3 className="text-lg font-bold text-brand-espresso font-serif-brand">
+                      <h3 className="text-lg font-bold text-brand-espresso font-serif">
                         Chi tiết yêu cầu trả hàng
                       </h3>
                       <p className="text-[11px] text-brand-taupe font-bold uppercase tracking-widest mt-1">

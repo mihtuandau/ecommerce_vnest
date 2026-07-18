@@ -121,10 +121,7 @@ export const ShopProductsGrid = React.memo(function ShopProductsGrid({
           <RefreshCcw className="h-10 w-10" />
         </div>
         <div className="space-y-3 max-w-sm">
-          <h3
-            className="text-2xl font-bold text-primary"
-            style={{ fontFamily: "'Playfair Display', serif" }}
-          >
+          <h3 className="text-2xl font-bold text-primary font-serif">
             Hệ thống đang bảo trì
           </h3>
           <p className="text-sm text-brand-taupe font-medium leading-relaxed">

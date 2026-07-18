@@ -18,9 +18,9 @@ export function CartPageHeader({
 }: CartPageHeaderProps) {
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-5 border-b border-brand-sand">
-      <h1 className="text-2xl md:text-3xl font-bold text-brand-espresso font-serif-brand leading-none tracking-tight">
+      <h1 className="text-2xl md:text-3xl font-bold text-brand-espresso font-serif leading-none tracking-tight">
         Giỏ hàng{" "}
-        <em className="italic text-brand-bronze font-medium font-serif-brand">
+        <em className="italic text-brand-bronze font-medium font-serif">
           của bạn
         </em>
         <span className="text-[14px] font-medium text-brand-taupe ml-2">

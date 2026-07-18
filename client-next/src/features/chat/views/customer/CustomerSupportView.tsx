@@ -40,19 +40,19 @@ export function CustomerSupportView() {
       : "30.000đ";
 
   return (
-    <div className="bg-[#FAF8F4] lg:min-h-[calc(100vh-146px)] min-h-[calc(100vh-64px)] pt-4 lg:pt-6 pb-6 flex flex-col font-sans">
+    <div className="bg-brand-cream lg:min-h-[calc(100vh-146px)] min-h-[calc(100vh-64px)] pt-4 lg:pt-6 pb-6 flex flex-col font-sans">
       <div className="max-w-[1400px] w-full mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col justify-center">
         
-        <div className="flex items-center gap-2 text-[11px] font-normal text-[#8A7966] tracking-wide mb-4 shrink-0">
-          <Link href="/" className="hover:text-[#3D2B1A] transition-colors">
+        <div className="flex items-center gap-2 text-[11px] font-normal text-brand-taupe tracking-wide mb-4 shrink-0">
+          <Link href="/" className="hover:text-brand-espresso transition-colors">
             Trang chủ
           </Link>
           <span className="opacity-30">/</span>
-          <span className="text-[#3D2B1A] font-medium">Trung tâm hỗ trợ</span>
+          <span className="text-brand-espresso font-medium">Trung tâm hỗ trợ</span>
         </div>
 
         
-        <div className="grid grid-cols-1 lg:grid-cols-12 bg-white rounded-3xl border border-[#DDD6C8]/50 shadow-[0_20px_50px_rgba(61,43,26,0.015)] overflow-hidden h-[560px]">
+        <div className="grid grid-cols-1 lg:grid-cols-12 bg-white rounded-3xl border border-brand-sand/50 shadow-[0_20px_50px_rgba(61,43,26,0.015)] overflow-hidden h-[560px]">
           
           <CustomerSupportSidebar
             activeTab={activeTab}
@@ -87,7 +87,7 @@ export function CustomerSupportView() {
 
         
         <div className="mt-8 mb-4 text-center opacity-40">
-          <p className="text-[9px] text-[#8A7966] lowercase tracking-widest font-normal">
+          <p className="text-[9px] text-brand-taupe lowercase tracking-widest font-normal">
             LUXE care experience ecosystem
           </p>
         </div>

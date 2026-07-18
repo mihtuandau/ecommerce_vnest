@@ -75,11 +75,11 @@ export function ProductOptions({
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+              <span className="text-xs font-bold uppercase tracking-wider text-brand-taupe">
                 Kích thước
               </span>
               {selectedSize && (
-                <span className="text-xs font-bold text-slate-900">
+                <span className="text-xs font-bold text-brand-espresso">
                   · {selectedSize}
                 </span>
               )}
@@ -104,8 +104,8 @@ export function ProductOptions({
                     isActive
                       ? "bg-primary text-white border-primary shadow-md shadow-primary/10"
                       : isAvailable
-                        ? "bg-white text-slate-600 border-slate-200 hover:border-primary hover:text-primary"
-                        : "bg-slate-50 text-slate-300 border-slate-100 cursor-not-allowed line-through opacity-50"
+                        ? "bg-white text-brand-taupe border-brand-sand hover:border-primary hover:text-primary"
+                        : "bg-brand-ivory text-brand-sand border-brand-sand cursor-not-allowed line-through opacity-50"
                   )}
                 >
                   {size}
@@ -119,11 +119,11 @@ export function ProductOptions({
       {colors.length > 0 && (
         <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+            <span className="text-xs font-bold uppercase tracking-wider text-brand-taupe">
               Màu sắc
             </span>
             {selectedColor && (
-              <span className="text-xs font-bold text-slate-900">
+              <span className="text-xs font-bold text-brand-espresso">
                 · {selectedColor}
               </span>
             )}
@@ -143,8 +143,8 @@ export function ProductOptions({
                     isActive
                       ? "bg-primary text-white border-primary shadow-md shadow-primary/10"
                       : isAvailable
-                        ? "bg-white text-slate-600 border-slate-200 hover:border-primary hover:text-primary"
-                        : "bg-slate-50 text-slate-300 border-slate-100 cursor-not-allowed opacity-40"
+                        ? "bg-white text-brand-taupe border-brand-sand hover:border-primary hover:text-primary"
+                        : "bg-brand-ivory text-brand-sand border-brand-sand cursor-not-allowed opacity-40"
                   )}
                 >
                   <span className="text-xs font-bold">{color}</span>

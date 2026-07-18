@@ -151,7 +151,7 @@ export function QuickAddModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl bg-white focus:outline-none">
+      <DialogContent className="max-w-2xl p-0 overflow-hidden rounded-2xl border-none shadow-2xl bg-white focus:outline-none">
         <div className="sr-only">
           <DialogHeader>
             <DialogTitle>{product.name}</DialogTitle>
@@ -191,10 +191,7 @@ export function QuickAddModal({
                 {product.name}
               </h2>
               <div className="flex items-center gap-3">
-                <span
-                  className="text-[24px] font-bold text-primary"
-                  style={{ fontFamily: "'Playfair Display', serif" }}
-                >
+                <span className="text-[24px] font-bold text-primary font-serif">
                   {formatCurrency(currentPrice)}
                 </span>
                 {currentOriginalPrice && currentOriginalPrice > currentPrice && (

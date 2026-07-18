@@ -15,24 +15,24 @@ export function HeroBanner({ banners }: HeroBannerProps) {
   const banner = banners?.[0];
 
   return (
-    <section className="relative w-full flex flex-col lg:flex-row overflow-hidden bg-[#FAF8F4]">
+    <section className="relative w-full flex flex-col lg:flex-row overflow-hidden bg-brand-cream">
       
       <div className="w-full lg:w-1/2 flex items-center justify-center py-16 px-6 lg:py-24 lg:px-16 xl:px-24">
         <div className="w-full max-w-lg space-y-8 animate-in fade-in slide-in-from-left-8 duration-1000">
           
           <div className="inline-flex items-center gap-2 bg-[#E8E0D0]/50 border border-[#E8E0D0] px-4 py-1.5 rounded-full">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#C4783A] animate-pulse" />
-            <span className="text-[11px] font-bold text-[#8A7966] tracking-[0.2em] uppercase">
+            <span className="w-1.5 h-1.5 rounded-full bg-brand-accent animate-pulse" />
+            <span className="text-[11px] font-bold text-brand-taupe tracking-[0.2em] uppercase">
               {banner?.title?.split(" ")[0] || "Bộ sưu tập"} 2025
             </span>
           </div>
 
           
-          <h1 className="text-4xl md:text-6xl lg:text-[4.5rem] leading-[1.05] text-[#3D2B1A] tracking-tight font-serif-brand font-bold">
+          <h1 className="text-4xl md:text-6xl lg:text-[4.5rem] leading-[1.05] text-brand-espresso tracking-tight font-serif font-bold">
             {banner?.title ? (
               <>
                 {banner.title.split(" ").slice(0, 2).join(" ")} <br />
-                <em className="text-[#C4783A] not-italic">
+                <em className="text-brand-accent not-italic">
                   {banner.title.split(" ").slice(2, 4).join(" ")}
                 </em>
                 <br />
@@ -41,7 +41,7 @@ export function HeroBanner({ banners }: HeroBannerProps) {
             ) : (
               <>
                 Phong cách <br />
-                <em className="text-[#C4783A] not-italic">tỏa sáng</em>
+                <em className="text-brand-accent not-italic">tỏa sáng</em>
                 <br />
                 từng ngày
               </>
@@ -49,7 +49,7 @@ export function HeroBanner({ banners }: HeroBannerProps) {
           </h1>
 
           
-          <p className="text-[15px] text-[#8A7966] leading-relaxed max-w-sm">
+          <p className="text-[15px] text-brand-taupe leading-relaxed max-w-sm">
             {banner?.description ||
               "Khám phá hàng ngàn sản phẩm thời trang chính hãng, từ các thương hiệu trong nước đến quốc tế. Phong cách của bạn, sự lựa chọn của bạn."}
           </p>
@@ -58,36 +58,36 @@ export function HeroBanner({ banners }: HeroBannerProps) {
           <div className="flex flex-col sm:flex-row items-center gap-4 pt-4">
             <Link
               href={banner?.link || "/shop"}
-              className="w-full sm:w-auto inline-flex items-center justify-center bg-[#3D2B1A] hover:bg-[#C4783A] text-[#FAF8F4] px-12 py-4 rounded-full text-[14px] font-bold transition-all duration-300 shadow-xl shadow-[#3D2B1A]/10 active:scale-95"
+              className="w-full sm:w-auto inline-flex items-center justify-center bg-brand-espresso hover:bg-brand-accent text-brand-cream px-12 py-4 rounded-full text-[14px] font-bold transition-all duration-300 shadow-xl shadow-brand-espresso/10 active:scale-95"
             >
               {BANNERS_MESSAGES.CTA_PRIMARY}
             </Link>
             <Link
               href="/collections"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full text-[14px] font-bold text-[#3D2B1A] border border-[#DDD6C8] hover:border-[#C4783A] hover:bg-white transition-all duration-300"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full text-[14px] font-bold text-brand-espresso border border-brand-sand hover:border-brand-accent hover:bg-white transition-all duration-300"
             >
               {BANNERS_MESSAGES.CTA_SECONDARY}{" "}
-              <ArrowRight className="w-4 h-4 text-[#8A7966]" />
+              <ArrowRight className="w-4 h-4 text-brand-taupe" />
             </Link>
           </div>
 
           
-          <div className="flex gap-10 pt-10 border-t border-[#DDD6C8]/60 mt-10">
+          <div className="flex gap-10 pt-10 border-t border-brand-sand/60 mt-10">
             <div>
-              <p className="text-2xl text-[#3D2B1A] font-sans font-semibold">12K+</p>
-              <p className="text-[10px] text-[#8A7966] font-bold tracking-widest uppercase mt-1">
+              <p className="text-2xl text-brand-espresso font-sans font-semibold">12K+</p>
+              <p className="text-[10px] text-brand-taupe font-bold tracking-widest uppercase mt-1">
                 Sản phẩm
               </p>
             </div>
             <div>
-              <p className="text-2xl text-[#3D2B1A] font-sans font-semibold">200+</p>
-              <p className="text-[10px] text-[#8A7966] font-bold tracking-widest uppercase mt-1">
+              <p className="text-2xl text-brand-espresso font-sans font-semibold">200+</p>
+              <p className="text-[10px] text-brand-taupe font-bold tracking-widest uppercase mt-1">
                 Thương hiệu
               </p>
             </div>
             <div>
-              <p className="text-2xl text-[#3D2B1A] font-sans font-semibold">98%</p>
-              <p className="text-[10px] text-[#8A7966] font-bold tracking-widest uppercase mt-1">
+              <p className="text-2xl text-brand-espresso font-sans font-semibold">98%</p>
+              <p className="text-[10px] text-brand-taupe font-bold tracking-widest uppercase mt-1">
                 Hài lòng
               </p>
             </div>
@@ -98,10 +98,10 @@ export function HeroBanner({ banners }: HeroBannerProps) {
       
       <div className="w-full lg:w-1/2 relative min-h-[600px] lg:min-h-0 bg-[#E8E0D0] overflow-hidden flex items-center justify-center">
         
-        <div className="absolute w-[400px] h-[400px] lg:w-[550px] lg:h-[550px] rounded-full border border-[#C4B49A]/30 flex items-center justify-center animate-spin-slow">
-          <div className="w-[300px] h-[300px] lg:w-[420px] lg:h-[420px] rounded-full bg-[#C4B49A]/10 flex items-center justify-center">
-            <div className="w-[200px] h-[200px] lg:w-[280px] lg:h-[280px] rounded-full bg-[#C4B49A]/20 flex items-center justify-center">
-              <span className="text-[#3D2B1A] text-center italic text-xl opacity-60 font-serif">
+        <div className="absolute w-[400px] h-[400px] lg:w-[550px] lg:h-[550px] rounded-full border border-brand-sand/30 flex items-center justify-center animate-spin-slow">
+          <div className="w-[300px] h-[300px] lg:w-[420px] lg:h-[420px] rounded-full bg-brand-sand/10 flex items-center justify-center">
+            <div className="w-[200px] h-[200px] lg:w-[280px] lg:h-[280px] rounded-full bg-brand-sand/20 flex items-center justify-center">
+              <span className="text-brand-espresso text-center italic text-xl opacity-60 font-serif">
                 Thời trang <br />
                 không chỉ là <br />
                 quần áo
@@ -112,7 +112,7 @@ export function HeroBanner({ banners }: HeroBannerProps) {
 
         
         <div className="absolute bottom-8 right-8 lg:bottom-16 lg:right-16 z-20 w-64 md:w-72 bg-white/95 backdrop-blur-md p-5 rounded-3xl shadow-[0_32px_80px_rgba(61,43,26,0.15)] border border-white transform -rotate-3 hover:rotate-0 transition-all duration-500 hover:shadow-3xl">
-          <div className="bg-[#FAF8F4] h-48 rounded-2xl mb-4 relative overflow-hidden flex items-center justify-center border border-[#DDD6C8]/40">
+          <div className="bg-brand-cream h-48 rounded-2xl mb-4 relative overflow-hidden flex items-center justify-center border border-brand-sand/40">
             {banner && (banner.image || banner.imageUrl) ? (
               <Image
                 src={(banner.image || banner.imageUrl) as string}
@@ -121,27 +121,27 @@ export function HeroBanner({ banners }: HeroBannerProps) {
                 className="object-cover"
               />
             ) : (
-              <Sparkles className="w-10 h-10 text-[#C4783A]/20" />
+              <Sparkles className="w-10 h-10 text-brand-accent/20" />
             )}
           </div>
-          <p className="text-[10px] text-[#C4783A] font-bold uppercase tracking-[0.2em] mb-1">
+          <p className="text-[10px] text-brand-accent font-bold uppercase tracking-[0.2em] mb-1">
             Mùa hè 2025
           </p>
-          <p className="text-[14px] font-bold text-[#3D2B1A] mb-3 leading-tight line-clamp-1">
+          <p className="text-[14px] font-bold text-brand-espresso mb-3 leading-tight line-clamp-1">
             {banner?.title || "Premium Collection"}
           </p>
-          <div className="flex items-center justify-between border-t border-[#F3EFE8] pt-3">
+          <div className="flex items-center justify-between border-t border-brand-ivory pt-3">
             <div className="flex flex-col">
-              <span className="text-[10px] text-[#8A7966] uppercase tracking-wider font-bold">
+              <span className="text-[10px] text-brand-taupe uppercase tracking-wider font-bold">
                 Giá ưu đãi
               </span>
-              <span className="text-[16px] font-bold text-[#3D2B1A] font-sans">
+              <span className="text-[16px] font-bold text-brand-espresso font-sans">
                 890.000đ
               </span>
             </div>
             <div className="flex flex-col items-end">
-              <div className="flex text-[#C4783A] text-[10px] mb-0.5">★★★★★</div>
-              <span className="text-[#8A7966] text-[9px] font-bold">428 REVIEWS</span>
+              <div className="flex text-brand-accent text-[10px] mb-0.5">★★★★★</div>
+              <span className="text-brand-taupe text-[9px] font-bold">428 REVIEWS</span>
             </div>
           </div>
         </div>

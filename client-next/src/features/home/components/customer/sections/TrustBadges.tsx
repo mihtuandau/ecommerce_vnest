@@ -32,16 +32,16 @@ export function TrustBadges() {
       {BADGES.map((badge, index) => (
         <div
           key={index}
-          className="flex items-start gap-4 p-5 bg-white rounded-2xl border border-[#DDD6C8] hover:border-[#C4B49A] transition-all duration-300"
+          className="flex items-start gap-4 p-5 bg-white rounded-2xl border border-brand-sand hover:border-brand-sand transition-all duration-300"
         >
-          <div className="shrink-0 h-11 w-11 rounded-xl bg-[#F3EFE8] flex items-center justify-center text-[#8B6F47]">
+          <div className="shrink-0 h-11 w-11 rounded-xl bg-brand-ivory flex items-center justify-center text-[#8B6F47]">
             <badge.icon className="h-5 w-5" strokeWidth={1.8} />
           </div>
           <div className="min-w-0">
-            <h3 className="font-medium text-[#3D2B1A] text-sm leading-tight">
+            <h3 className="font-medium text-brand-espresso text-sm leading-tight">
               {badge.title}
             </h3>
-            <p className="text-[12px] text-[#8A7966] mt-1 leading-relaxed line-clamp-2">
+            <p className="text-[12px] text-brand-taupe mt-1 leading-relaxed line-clamp-2">
               {badge.desc}
             </p>
           </div>

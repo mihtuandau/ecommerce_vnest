@@ -29,17 +29,17 @@ const BADGES = [
 
 export function ProductTrustBadges() {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-10 pt-10 border-t border-[#F3EFE8]">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-10 pt-10 border-t border-brand-ivory">
       {BADGES.map((badge, i) => (
         <div key={i} className="flex items-center gap-5 group">
-          <div className="h-12 w-12 rounded-full flex items-center justify-center shrink-0 bg-[#FBF9F6] border border-[#F3EFE8] text-[#C4783A] transition-all duration-300 group-hover:bg-[#3D2B1A] group-hover:text-white group-hover:border-[#3D2B1A]">
+          <div className="h-12 w-12 rounded-full flex items-center justify-center shrink-0 bg-[#FBF9F6] border border-brand-ivory text-brand-accent transition-all duration-300 group-hover:bg-brand-espresso group-hover:text-white group-hover:border-brand-espresso">
             <badge.icon size={20} strokeWidth={1.5} />
           </div>
           <div className="flex flex-col">
-            <span className="text-[14px] font-bold text-[#3D2B1A] leading-tight">
+            <span className="text-[14px] font-bold text-brand-espresso leading-tight">
               {badge.title}
             </span>
-            <span className="text-[12px] font-medium text-[#8A7966] mt-1">
+            <span className="text-[12px] font-medium text-brand-taupe mt-1">
               {badge.description}
             </span>
           </div>

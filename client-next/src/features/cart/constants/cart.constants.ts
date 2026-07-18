@@ -33,22 +33,6 @@ export const CART_MESSAGES = {
   ITEMS_IN_CART: (count: number) => `${count} sản phẩm trong giỏ`,
 } as const;
 
-export const CART_COLORS = {
-  // Button colors
-  TRIGGER_ICON_DEFAULT: "#8A7966",
-  TRIGGER_ICON_ACTIVE: "#C4783A",
-  TRIGGER_BG_HOVER: "#C4783A/5",
-
-  // Badge
-  BADGE_BG: "#3D2B1A",
-  BADGE_TEXT: "#FAF8F4",
-
-  // Dropdown
-  DROPDOWN_BG: "#FAF8F4",
-  DROPDOWN_BORDER: "#DDD6C8",
-  DROPDOWN_SHADOW: "rgba(61, 43, 26, 0.1)",
-} as const;
-
 export const CART_PAGINATION = {
   DEFAULT_LIMIT: 50,
 } as const;

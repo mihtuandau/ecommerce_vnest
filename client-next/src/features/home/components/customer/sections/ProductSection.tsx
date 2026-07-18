@@ -26,7 +26,7 @@ export function ProductSection({
   products,
   icon: Icon,
   iconColor = "text-foreground",
-  iconBg = "bg-slate-100",
+  iconBg = "bg-brand-ivory",
   variant = "bestseller",
   viewAllLink,
 }: ProductSectionProps) {
@@ -36,13 +36,13 @@ export function ProductSection({
     <div className="space-y-8 md:space-y-12">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h2 className="text-[30px] text-[#3D2B1A] font-serif-brand font-semibold">
+          <h2 className="text-[30px] text-brand-espresso font-serif font-semibold">
             {title.split(" ")[0]}{" "}
-            <em className="text-[#C4783A]" style={{ fontStyle: "italic" }}>
+            <em className="text-brand-accent" style={{ fontStyle: "italic" }}>
               {title.split(" ").slice(1).join(" ") || title}
             </em>
           </h2>
-          <p className="text-[#8A7966] text-sm mt-2 max-w-md leading-relaxed">
+          <p className="text-brand-taupe text-sm mt-2 max-w-md leading-relaxed">
             {subtitle}
           </p>
         </div>
@@ -50,7 +50,7 @@ export function ProductSection({
         {viewAllLink && (
           <Link
             href={viewAllLink}
-            className="hidden md:flex items-center gap-1 text-[13px] text-[#8B6F47] border-b border-[#C4B49A] pb-0.5 hover:text-[#C4783A] hover:border-[#C4783A] transition-colors"
+            className="hidden md:flex items-center gap-1 text-[13px] text-[#8B6F47] border-b border-brand-sand pb-0.5 hover:text-brand-accent hover:border-brand-accent transition-colors"
           >
             Xem tất cả <ChevronRight className="h-3.5 w-3.5" />
           </Link>
@@ -75,7 +75,7 @@ export function ProductSection({
           <Button
             asChild
             variant="outline"
-            className="w-full rounded-full h-12 font-medium text-sm border-[#DDD6C8] text-[#3D2B1A] bg-white hover:bg-[#F3EFE8] hover:border-[#C4B49A] transition-all"
+            className="w-full rounded-full h-12 font-medium text-sm border-brand-sand text-brand-espresso bg-white hover:bg-brand-ivory hover:border-brand-sand transition-all"
           >
             <Link href={viewAllLink}>Xem tất cả bộ sưu tập</Link>
           </Button>

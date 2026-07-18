@@ -112,7 +112,7 @@ export function MobileMenu({
             <button
               type="button"
               onClick={() => setSearchQuery("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 z-10"
+              className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-brand-taupe z-10"
             >
               <X className="h-3 w-3" />
             </button>
@@ -153,7 +153,7 @@ export function MobileMenu({
                         />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-medium text-slate-900 truncate">
+                        <p className="text-xs font-medium text-brand-espresso truncate">
                           {product.name}
                         </p>
                         <p className="text-xs font-semibold text-primary mt-0.5">
@@ -329,7 +329,7 @@ function MobileCategoryItem({
                 className="object-cover"
               />
             ) : (
-              <div className="h-full w-full flex items-center justify-center text-slate-300">
+              <div className="h-full w-full flex items-center justify-center text-brand-sand">
                 <LayoutGrid size={14} />
               </div>
             )}
@@ -369,7 +369,7 @@ function MobileCategoryItem({
                     className="object-cover"
                   />
                 ) : (
-                  <div className="h-full w-full flex items-center justify-center text-slate-200">
+                  <div className="h-full w-full flex items-center justify-center text-brand-sand">
                     <LayoutGrid size={10} />
                   </div>
                 )}
