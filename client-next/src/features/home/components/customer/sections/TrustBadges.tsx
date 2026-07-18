@@ -28,20 +28,18 @@ const BADGES = [
 
 export function TrustBadges() {
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 lg:grid-cols-4 divide-y divide-x-0 lg:divide-y-0 lg:divide-x divide-brand-sand/50 border-y border-brand-sand/50">
       {BADGES.map((badge, index) => (
-        <div
-          key={index}
-          className="flex items-start gap-4 p-5 bg-white rounded-2xl border border-brand-sand hover:border-brand-sand transition-all duration-300"
-        >
-          <div className="shrink-0 h-11 w-11 rounded-xl bg-brand-ivory flex items-center justify-center text-[#8B6F47]">
-            <badge.icon className="h-5 w-5" strokeWidth={1.8} />
-          </div>
+        <div key={index} className="flex items-center gap-4 py-6 px-2 lg:px-6">
+          <badge.icon
+            className="h-5 w-5 text-brand-accent shrink-0"
+            strokeWidth={1.6}
+          />
           <div className="min-w-0">
-            <h3 className="font-medium text-brand-espresso text-sm leading-tight">
+            <h3 className="font-medium text-brand-espresso text-[13px] leading-tight">
               {badge.title}
             </h3>
-            <p className="text-[12px] text-brand-taupe mt-1 leading-relaxed line-clamp-2">
+            <p className="text-[11px] text-brand-taupe mt-1 leading-relaxed hidden sm:block">
               {badge.desc}
             </p>
           </div>

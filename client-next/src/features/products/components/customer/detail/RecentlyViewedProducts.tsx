@@ -3,7 +3,7 @@
 import React from "react";
 import { useRecentlyViewed } from "@/features/products/hooks/useRecentlyViewed";
 import { ProductCard } from "@/features/products/components/customer/cards/ProductCard";
-import { Sparkles } from "lucide-react";
+import { SectionHeading } from "@/features/home/components/customer/shared/SectionHeading";
 
 export function RecentlyViewedProducts({
   currentProductId,
@@ -18,22 +18,19 @@ export function RecentlyViewedProducts({
   if (items.length === 0) return null;
 
   return (
-    <section className="mt-24">
-      <div className="flex items-center gap-3 mb-10">
-        <div className="h-10 w-10 rounded-2xl bg-primary/5 flex items-center justify-center text-primary">
-          <Sparkles size={20} />
-        </div>
-        <div>
-          <h2 className="text-[28px] font-bold text-primary tracking-tight">
-            Sản phẩm vừa xem
-          </h2>
-          <p className="text-[13px] text-brand-taupe font-medium mt-0.5">
-            Dựa trên lịch sử duyệt web của bạn
-          </p>
-        </div>
+    <section className="space-y-10">
+      <div className="space-y-3">
+        <SectionHeading
+          eyebrow="Lịch sử duyệt web"
+          title="Sản phẩm vừa xem"
+          accent="vừa xem"
+        />
+        <p className="text-brand-taupe text-sm max-w-md leading-relaxed">
+          Dựa trên lịch sử duyệt web của bạn
+        </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
         {items.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}

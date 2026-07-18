@@ -20,7 +20,7 @@ export const ProductBreadcrumbs = React.memo(function ProductBreadcrumbs({
   product,
 }: ProductBreadcrumbsProps) {
   return (
-    <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-5">
+    <div className="max-w-[1400px] mx-auto px-6 lg:px-12 py-5">
       <Breadcrumb>
         <BreadcrumbList className="text-sm font-medium">
           <BreadcrumbItem>

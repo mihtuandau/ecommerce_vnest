@@ -92,7 +92,7 @@ export function ProductInfo({
           {product.category?.name || "Bộ sưu tập LUXE"}
         </Link>
 
-        <h1 className="text-[24px] md:text-[30px] font-bold text-primary leading-[1.2] tracking-tight">
+        <h1 className="text-[24px] md:text-[30px] font-bold font-serif text-primary leading-[1.2] tracking-tight">
           {product.name}
         </h1>
 
@@ -126,7 +126,7 @@ export function ProductInfo({
         <div className="flex flex-col gap-3">
           {isFlashSale && (
             <div className="flex items-center gap-2.5">
-              <div className="bg-red-500 text-white px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 animate-pulse">
+              <div className="bg-[#E8320A] text-white px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 animate-pulse">
                 <Zap size={11} fill="currentColor" /> Flash Sale
               </div>
               <div className="bg-brand-bronze/10 text-brand-bronze px-3 py-1 rounded-md text-[11px] font-bold">
@@ -154,7 +154,7 @@ export function ProductInfo({
 
             <div className="flex flex-col gap-1.5 relative z-10">
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
+                <div className="w-2 h-2 rounded-full bg-[#E8320A] animate-ping" />
                 <span className="text-[11px] font-bold text-brand-sand uppercase tracking-[0.15em]">
                   Sắp kết thúc
                 </span>

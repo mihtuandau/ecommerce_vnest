@@ -17,10 +17,12 @@ import {
 } from "@/features/products/services";
 import { ProductActions } from "../../components/customer/detail/ProductActions";
 import { ProductBreadcrumbs } from "../../components/customer/detail/ProductBreadcrumbs";
+import { ProductEngagementPanel } from "../../components/customer/detail/ProductEngagementPanel";
 import { ProductGallery } from "../../components/customer/detail/ProductGallery";
 import { ProductInfo } from "../../components/customer/detail/ProductInfo";
 import { ProductTabs } from "../../components/customer/detail/ProductTabs";
 import { ProductTrustBadges } from "../../components/customer/detail/ProductTrustBadges";
+import { MobileStickyBar } from "../../components/customer/detail/MobileStickyBar";
 import { RecentlyViewedProducts } from "../../components/customer/detail/RecentlyViewedProducts";
 import { RelatedProducts } from "../../components/customer/detail/RelatedProducts";
 
@@ -130,10 +132,10 @@ export function ProductDetailView({ slug }: ProductDetailViewProps) {
     <div className="bg-brand-cream min-h-screen font-sans-brand">
       <ProductBreadcrumbs product={product} />
 
-      <div className="max-w-[1400px] mx-auto px-6 lg:px-12 pt-8 pb-24">
+      <div className="max-w-[1400px] mx-auto px-6 lg:px-12 pt-8 pb-28 lg:pb-24">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
           <div className="lg:col-span-7">
-            <div className="sticky top-32">
+            <div className="lg:sticky lg:top-32">
               <ProductGallery
                 images={allAvailableImages}
                 name={product.name}
@@ -163,6 +165,12 @@ export function ProductDetailView({ slug }: ProductDetailViewProps) {
                 selectedVariant={selectedVariant}
               />
 
+              <ProductEngagementPanel
+                product={product}
+                selectedSize={selectedSize}
+                selectedColor={selectedColor}
+              />
+
               <ProductTrustBadges />
             </div>
           </div>
@@ -183,6 +191,16 @@ export function ProductDetailView({ slug }: ProductDetailViewProps) {
           <RecentlyViewedProducts currentProductId={String(product.id)} />
         </div>
       </div>
+
+      <MobileStickyBar
+        product={product}
+        finalPrice={finalPrice}
+        finalOriginalPrice={finalOriginalPrice}
+        currentStock={currentStock}
+        selectedVariant={selectedVariant}
+        selectedSize={selectedSize}
+        selectedColor={selectedColor}
+      />
     </div>
   );
 }

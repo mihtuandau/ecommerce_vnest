@@ -21,7 +21,11 @@ import { ROUTES } from "@/constants/routes";
 import { cn } from "@/utils/cn";
 import { CART_CONSTANTS, CART_MESSAGES } from "@/features/cart/constants";
 
-export function CartDropdown() {
+interface CartDropdownProps {
+  transparent?: boolean;
+}
+
+export function CartDropdown({ transparent = false }: CartDropdownProps) {
   const { items, updateQuantity, removeItem, totalPrice } = useCart();
   const { toggleSelectAll } = useCartStore();
   const [mounted, setMounted] = React.useState(false);
@@ -58,7 +62,10 @@ export function CartDropdown() {
       <Button
         variant="ghost"
         size="icon"
-        className="h-10 w-10 rounded-full text-brand-taupe"
+        className={cn(
+          "h-10 w-10 rounded-full",
+          transparent ? "text-white hover:bg-white/10" : "text-brand-taupe"
+        )}
       >
         <ShoppingCart className="h-6 w-6" />
       </Button>
@@ -91,7 +98,9 @@ export function CartDropdown() {
             "relative h-10 w-10 rounded-full transition-all duration-300",
             isOpen
               ? "text-brand-accent bg-brand-accent/5"
-              : "text-brand-taupe hover:text-brand-accent hover:bg-brand-accent/5"
+              : transparent
+                ? "text-white hover:text-brand-accent hover:bg-white/10"
+                : "text-brand-taupe hover:text-brand-accent hover:bg-brand-accent/5"
           )}
         >
           <ShoppingCart className="h-6 w-6" />

@@ -16,6 +16,7 @@
   --color-brand-taupe: hsl(var(--brand-taupe));
   --color-brand-cream: hsl(var(--brand-cream));
   --color-brand-ivory: hsl(var(--brand-ivory));
+  --color-brand-linen: hsl(var(--brand-linen));
 
   /* Semantic Aliases */
   --color-brand-espresso: hsl(var(--primary));
@@ -61,6 +62,7 @@
   --brand-taupe: 30 15% 47%; /* #8A7966 - LUXE Taupe (Muted) */
   --brand-cream: 40 30% 96.5%; /* More visible LUXE Linen Background */
   --brand-ivory: 40 30% 94%; /* #F3EFE8 - LUXE Ivory (Light Accent) */
+  --brand-linen: 40 35% 98%; /* #FAF8F4 - near-white warm surface, lighter than brand-cream */
 
   --background: 40 30% 96.5%; /* Same as brand-cream */
   --foreground: 0 0% 10%;
@@ -154,6 +156,28 @@
   h5,
   h6 {
     @apply font-bold font-serif;
+  }
+}
+
+/* ──────────────────────────────────────────────
+   Hero — ambient Ken Burns drift on the framed photo
+   ────────────────────────────────────────────── */
+@keyframes hero-kenburns {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.08);
+  }
+}
+
+.animate-kenburns {
+  animation: hero-kenburns 16s ease-in-out infinite alternate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-kenburns {
+    animation: none;
   }
 }
 

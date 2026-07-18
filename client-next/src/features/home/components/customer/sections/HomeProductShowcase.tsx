@@ -1,6 +1,5 @@
 "use client";
 
-import { Sparkles, Star, TrendingUp } from "lucide-react";
 import { ProductSection } from "@/features/home/components/customer/sections/ProductSection";
 import { ProductSectionSkeleton } from "@/features/home/components/customer/skeletons/HomeSkeletons";
 import type { Product } from "@/types/models";
@@ -30,10 +29,12 @@ export function HomeProductShowcase({
             <ProductSectionSkeleton variant="bestseller" />
           ) : (
             <ProductSection
-              title="Sản phẩm bán chạy"
+              index={3}
+              eyebrow="Bán chạy"
+              title="Sản phẩm bán chạy nhất"
+              accent="bán chạy nhất"
               subtitle="Những thiết kế được yêu thích nhất."
               products={bestSellingProducts}
-              icon={TrendingUp}
               variant="bestseller"
               viewAllLink="/shop?sortBy=sold"
             />
@@ -46,10 +47,12 @@ export function HomeProductShowcase({
           <ProductSectionSkeleton variant="featured" />
         ) : (
           <ProductSection
-            title="Mới về"
+            index={4}
+            eyebrow="Mới về"
+            title="Vừa cập bến cửa hàng"
+            accent="cập bến"
             subtitle="Gợi ý dành riêng cho bạn."
             products={featuredProducts}
-            icon={Sparkles}
             variant="featured"
             viewAllLink="/shop?sortBy=newest"
           />
@@ -61,10 +64,12 @@ export function HomeProductShowcase({
           <ProductSectionSkeleton variant="toprated" />
         ) : (
           <ProductSection
-            title="Đánh giá cao"
+            index={5}
+            eyebrow="Đánh giá cao"
+            title="Được khách hàng tin chọn"
+            accent="tin chọn"
             subtitle="Những sản phẩm chất lượng nhất."
             products={topRatedProducts}
-            icon={Star}
             variant="toprated"
             viewAllLink="/shop?sortBy=rating"
           />

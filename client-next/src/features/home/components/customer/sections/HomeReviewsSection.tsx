@@ -1,6 +1,7 @@
 "use client";
 
 import type { Review } from "@/types/models";
+import { SectionHeading } from "@/features/home/components/customer/shared/SectionHeading";
 
 type HomeReview = Review & {
   content?: string;
@@ -35,99 +36,159 @@ interface HomeReviewsSectionProps {
   reviews?: HomeReview[];
 }
 
-function ReviewStars({ rating = 5 }: { rating?: number }) {
+function ReviewStars({
+  rating = 5,
+  size = "sm",
+}: {
+  rating?: number;
+  size?: "sm" | "lg";
+}) {
   const safeRating = Math.max(0, Math.min(5, Math.round(rating)));
 
   return (
-    <div className="text-brand-accent text-sm tracking-[2px] mb-4">
+    <div
+      className={`text-brand-accent tracking-[2px] mb-4 ${
+        size === "lg" ? "text-lg" : "text-sm"
+      }`}
+    >
       {"★".repeat(safeRating)}
       {"☆".repeat(5 - safeRating)}
     </div>
   );
 }
 
-function ReviewCard({ review }: { review: HomeReview }) {
-  const userName = review.user?.name || review.user?.fullName || "Khách hàng";
-  const initial = userName.charAt(0).toUpperCase();
-
+function Attribution({
+  initial,
+  name,
+  meta,
+}: {
+  initial: string;
+  name: string;
+  meta: string;
+}) {
   return (
-    <div className="bg-white border border-brand-sand rounded-2xl p-8 flex flex-col justify-between hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-      <div>
-        <ReviewStars rating={review.rating} />
-        <p className="text-[13.5px] text-brand-espresso leading-relaxed italic line-clamp-4">
-          &quot;{review.comment || review.content}&quot;
-        </p>
+    <div className="flex items-center gap-3 mt-6 pt-4 border-t border-brand-ivory">
+      <div className="w-10 h-10 rounded-full bg-brand-ivory flex items-center justify-center text-brand-espresso text-[12px] font-semibold shrink-0">
+        {initial}
       </div>
-
-      <div className="flex items-center gap-3 mt-6 pt-4 border-t border-brand-ivory">
-        <div className="w-10 h-10 rounded-full bg-brand-ivory flex items-center justify-center text-[#8B6F47] text-[12px] font-semibold shrink-0">
-          {initial}
-        </div>
-        <div>
-          <h4 className="text-[13px] font-bold text-brand-espresso line-clamp-1">
-            {userName}
-          </h4>
-          <p className="text-[11px] text-brand-taupe line-clamp-1">
-            {review.user?.address || "Đã mua hàng tại LUXE"}
-          </p>
-        </div>
+      <div>
+        <h4 className="text-[13px] font-bold text-brand-espresso line-clamp-1">
+          {name}
+        </h4>
+        <p className="text-[11px] text-brand-taupe line-clamp-1">{meta}</p>
       </div>
     </div>
   );
 }
 
-function FallbackReviewCard({
-  review,
+function FeaturedReview({
+  quote,
+  initial,
+  name,
+  meta,
+  rating,
 }: {
-  review: (typeof FALLBACK_REVIEWS)[number];
+  quote: string;
+  initial: string;
+  name: string;
+  meta: string;
+  rating?: number;
 }) {
   return (
-    <div className="bg-white border border-brand-sand rounded-2xl p-8 flex flex-col justify-between hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+    <div className="bg-white border border-brand-sand rounded-2xl p-8 md:p-10 flex flex-col justify-between h-full">
       <div>
-        <ReviewStars />
-        <p className="text-[13.5px] text-brand-espresso leading-relaxed italic line-clamp-4">
-          &quot;{review.text}&quot;
+        <ReviewStars rating={rating} size="lg" />
+        <p className="font-serif text-[20px] md:text-[24px] text-brand-espresso leading-snug">
+          &quot;{quote}&quot;
         </p>
       </div>
+      <Attribution initial={initial} name={name} meta={meta} />
+    </div>
+  );
+}
 
-      <div className="flex items-center gap-3 mt-6 pt-4 border-t border-brand-ivory">
-        <div className="w-10 h-10 rounded-full bg-brand-ivory flex items-center justify-center text-[#8B6F47] text-[12px] font-semibold shrink-0">
-          {review.initials}
-        </div>
-        <div>
-          <h4 className="text-[13px] font-bold text-brand-espresso line-clamp-1">
-            {review.name}
-          </h4>
-          <p className="text-[11px] text-brand-taupe line-clamp-1">
-            {review.role}
-          </p>
-        </div>
+function CompactReview({
+  quote,
+  initial,
+  name,
+  meta,
+  rating,
+}: {
+  quote: string;
+  initial: string;
+  name: string;
+  meta: string;
+  rating?: number;
+}) {
+  return (
+    <div className="bg-white border border-brand-sand rounded-2xl p-6 flex flex-col justify-between h-full">
+      <div>
+        <ReviewStars rating={rating} />
+        <p className="text-[13.5px] text-brand-espresso leading-relaxed italic line-clamp-4">
+          &quot;{quote}&quot;
+        </p>
       </div>
+      <Attribution initial={initial} name={name} meta={meta} />
     </div>
   );
 }
 
 export function HomeReviewsSection({ reviews = [] }: HomeReviewsSectionProps) {
-  const visibleReviews = reviews.slice(0, 3);
+  const source =
+    reviews.length > 0
+      ? reviews.slice(0, 3).map((review, i) => ({
+          key: review.id || i,
+          quote: review.comment || review.content || "",
+          initial: (review.user?.name || review.user?.fullName || "K")
+            .charAt(0)
+            .toUpperCase(),
+          name: review.user?.name || review.user?.fullName || "Khách hàng",
+          meta: review.user?.address || "Đã mua hàng tại LUXE",
+          rating: review.rating,
+        }))
+      : FALLBACK_REVIEWS.map((r) => ({
+          key: r.initials,
+          quote: r.text,
+          initial: r.initials,
+          name: r.name,
+          meta: r.role,
+          rating: 5,
+        }));
+
+  const [featured, ...rest] = source;
 
   return (
     <section className="w-full mt-12 pb-24">
-      <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
-        <h2 className="text-[28px] md:text-[32px] text-brand-espresso font-serif font-semibold mb-8">
-          Khách hàng{" "}
-          <em className="text-brand-accent" style={{ fontStyle: "italic" }}>
-            nói gì
-          </em>
-        </h2>
+      <div className="max-w-[1440px] mx-auto px-6 lg:px-12 space-y-10">
+        <SectionHeading
+          index={6}
+          eyebrow="Đánh giá"
+          title="Khách hàng nói gì"
+          accent="nói gì"
+        />
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {visibleReviews.length > 0
-            ? visibleReviews.map((review, index) => (
-                <ReviewCard key={review.id || index} review={review} />
-              ))
-            : FALLBACK_REVIEWS.map((review) => (
-                <FallbackReviewCard key={review.initials} review={review} />
-              ))}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {featured && (
+            <FeaturedReview
+              quote={featured.quote}
+              initial={featured.initial}
+              name={featured.name}
+              meta={featured.meta}
+              rating={featured.rating}
+            />
+          )}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 gap-6">
+            {rest.map((review) => (
+              <CompactReview
+                key={review.key}
+                quote={review.quote}
+                initial={review.initial}
+                name={review.name}
+                meta={review.meta}
+                rating={review.rating}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </section>

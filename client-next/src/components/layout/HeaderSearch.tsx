@@ -19,11 +19,13 @@ import { cn } from "@/utils/cn";
 interface HeaderSearchProps {
   onSearch?: () => void;
   isMobile?: boolean;
+  transparent?: boolean;
 }
 
 export const HeaderSearch = React.memo(function HeaderSearch({
   onSearch,
   isMobile = false,
+  transparent = false,
 }: HeaderSearchProps) {
   const router = useRouter();
   const { data: categoriesData } = useCategories();
@@ -129,21 +131,41 @@ export const HeaderSearch = React.memo(function HeaderSearch({
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onFocus={() => searchQuery.trim().length >= 2 && setShowLiveSearch(true)}
-          className="w-full pl-6 pr-32 h-11 rounded-full bg-brand-cream border border-brand-ivory focus-visible:bg-white focus-visible:border-brand-taupe/40 focus-visible:ring-4 focus-visible:ring-brand-bronze/5 text-[13px] transition-all font-normal text-primary placeholder:text-brand-taupe/60 font-sans shadow-none"
+          className={cn(
+            "w-full pl-6 pr-32 h-11 rounded-full text-[13px] transition-all font-normal font-sans shadow-none",
+            transparent
+              ? "bg-white/10 border border-white/25 text-white placeholder:text-white/50 focus-visible:bg-white/15 focus-visible:border-white/50 focus-visible:ring-4 focus-visible:ring-white/10"
+              : "bg-brand-cream border border-brand-ivory focus-visible:bg-white focus-visible:border-brand-taupe/40 focus-visible:ring-4 focus-visible:ring-brand-bronze/5 text-primary placeholder:text-brand-taupe/60"
+          )}
         />
         <button
           type="submit"
-          className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-brand-taupe/80 hover:text-brand-bronze transition-colors z-10 flex items-center justify-center"
+          className={cn(
+            "absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 transition-colors z-10 flex items-center justify-center",
+            transparent
+              ? "text-white/80 hover:text-white"
+              : "text-brand-taupe/80 hover:text-brand-bronze"
+          )}
         >
           <Search className="h-4.5 w-4.5" />
         </button>
 
-        <div className="absolute right-12 top-1/2 -translate-y-1/2 flex items-center gap-2 pr-2 border-r border-brand-ivory z-10">
+        <div
+          className={cn(
+            "absolute right-12 top-1/2 -translate-y-1/2 flex items-center gap-2 pr-2 border-r z-10",
+            transparent ? "border-white/25" : "border-brand-ivory"
+          )}
+        >
           {searchQuery && (
             <button
               type="button"
               onClick={clearSearch}
-              className="p-1 text-brand-taupe/40 hover:text-brand-bronze transition-colors mr-1"
+              className={cn(
+                "p-1 transition-colors mr-1",
+                transparent
+                  ? "text-white/50 hover:text-white"
+                  : "text-brand-taupe/40 hover:text-brand-bronze"
+              )}
             >
               <X className="h-4 w-4" />
             </button>
@@ -155,7 +177,12 @@ export const HeaderSearch = React.memo(function HeaderSearch({
               const event = new CustomEvent("open-ai-chat");
               window.dispatchEvent(event);
             }}
-            className="p-1.5 text-brand-taupe/60 hover:text-brand-bronze hover:bg-brand-bronze/5 rounded-full transition-all group/ai"
+            className={cn(
+              "p-1.5 rounded-full transition-all group/ai",
+              transparent
+                ? "text-white/70 hover:text-white hover:bg-white/10"
+                : "text-brand-taupe/60 hover:text-brand-bronze hover:bg-brand-bronze/5"
+            )}
             title="hỏi trợ lý ai"
           >
             <Sparkles className="h-4 w-4" />
@@ -168,7 +195,9 @@ export const HeaderSearch = React.memo(function HeaderSearch({
               "p-1.5 rounded-full transition-all",
               isListening
                 ? "bg-brand-bronze/10 text-brand-bronze animate-pulse"
-                : "text-brand-taupe/60 hover:text-brand-bronze hover:bg-brand-bronze/5"
+                : transparent
+                  ? "text-white/70 hover:text-white hover:bg-white/10"
+                  : "text-brand-taupe/60 hover:text-brand-bronze hover:bg-brand-bronze/5"
             )}
             title="tìm kiếm bằng giọng nói"
           >

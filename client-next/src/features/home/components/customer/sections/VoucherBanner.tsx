@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { Ticket, ArrowRight, Gift } from "lucide-react";
+import { SectionHeading } from "@/features/home/components/customer/shared/SectionHeading";
 
 export function VoucherBanner() {
   return (
@@ -17,19 +18,22 @@ export function VoucherBanner() {
             <div className="h-20 w-20 rounded-2xl bg-white flex items-center justify-center text-brand-accent">
               <Ticket size={40} strokeWidth={1.5} />
             </div>
-            <div className="space-y-3">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15">
+            <div className="space-y-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 mx-auto md:mx-0">
                 <Gift className="h-3 w-3 text-[#F0D5BB]" />
                 <span className="text-[11px] font-medium text-[#F0D5BB] tracking-wide">
                   Quà tặng độc quyền
                 </span>
               </div>
-              <h2 className="text-2xl md:text-4xl text-brand-cream font-serif font-semibold tracking-tight leading-tight">
-                Kho ưu đãi <br className="hidden md:block" />
-                <em className="text-brand-accent" style={{ fontStyle: "italic" }}>
-                  đang chờ bạn
-                </em>
-              </h2>
+
+              <SectionHeading
+                index={2}
+                eyebrow="Ưu đãi"
+                title="Kho ưu đãi đang chờ bạn"
+                accent="đang chờ bạn"
+                dark
+              />
+
               <p className="text-brand-sand text-sm md:text-base max-w-sm leading-relaxed">
                 Sở hữu ngay những mã giảm giá lên đến 500k và vô vàn quà tặng hấp dẫn
                 khác.

@@ -15,6 +15,7 @@ import { cn } from "@/utils/cn";
 import { Product } from "@/types/models";
 
 import { ReviewList } from "@/features/reviews/components/customer/ReviewList";
+import { InfoCard } from "./InfoCard";
 
 interface ProductTabsProps {
   product: Product;
@@ -139,7 +140,7 @@ export function ProductTabs({ product }: ProductTabsProps) {
             <div className="rounded-2xl border border-brand-sand/30 bg-white/70 p-5 sm:p-6">
               <div className="mb-4 flex items-center gap-2 text-primary">
                 <Sparkles size={16} />
-                <h3 className="text-[14px] font-bold">Điểm nổi bật</h3>
+                <h3 className="text-[14px] font-bold font-serif">Điểm nổi bật</h3>
               </div>
               <div className="grid gap-3">
                 {highlights.map((item) => (
@@ -147,7 +148,7 @@ export function ProductTabs({ product }: ProductTabsProps) {
                     key={item}
                     className="flex items-start gap-3 text-[13.5px] leading-6 text-brand-espresso"
                   >
-                    <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+                    <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#3A7D5A]/10 text-[#3A7D5A]">
                       <Check size={13} strokeWidth={2.4} />
                     </span>
                     <span>{item}</span>
@@ -163,7 +164,7 @@ export function ProductTabs({ product }: ProductTabsProps) {
             <div className="rounded-2xl border border-brand-sand/30 bg-white/75 p-5 sm:p-6">
               <div className="mb-4 flex items-center gap-2 text-primary">
                 <Info size={16} />
-                <h3 className="text-[14px] font-bold">Thông số sản phẩm</h3>
+                <h3 className="text-[14px] font-bold font-serif">Thông số sản phẩm</h3>
               </div>
 
               <div className="divide-y divide-brand-sand/20">
@@ -189,25 +190,15 @@ export function ProductTabs({ product }: ProductTabsProps) {
             </div>
 
             <div className="grid content-start gap-4">
-              {productPolicies.map((policy) => {
-                const Icon = policy.icon;
-                return (
-                  <div
-                    key={policy.title}
-                    className="rounded-2xl border border-brand-sand/30 bg-brand-ivory/45 p-5"
-                  >
-                    <div className="mb-2 flex items-center gap-3 text-primary">
-                      <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white text-brand-bronze shadow-sm">
-                        <Icon size={17} />
-                      </span>
-                      <h4 className="text-[14px] font-bold">{policy.title}</h4>
-                    </div>
-                    <p className="text-[13px] leading-6 text-brand-espresso/70">
-                      {policy.description}
-                    </p>
-                  </div>
-                );
-              })}
+              {productPolicies.map((policy) => (
+                <InfoCard
+                  key={policy.title}
+                  icon={policy.icon}
+                  title={policy.title}
+                  description={policy.description}
+                  variant="card"
+                />
+              ))}
             </div>
           </div>
         )}

@@ -112,7 +112,11 @@ export function Header({
   const [catOpen, setCatOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState<number | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [pastHero, setPastHero] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
+
+  const isHome = pathname === "/";
+  const transparent = isHome && !pastHero;
 
   const lastScrollY = useRef(0);
   const ticking = useRef(false);
@@ -131,6 +135,9 @@ export function Header({
         }
 
         setIsScrolled(currentScrollY > 20);
+        // Stay transparent while still overlapping the full-height hero banner;
+        // only switch to the solid header once scrolled past it.
+        setPastHero(currentScrollY > window.innerHeight - 140);
         lastScrollY.current = currentScrollY;
         ticking.current = false;
       });
@@ -180,19 +187,36 @@ export function Header({
           
           <header
             className={cn(
-              "w-full bg-white transition-all duration-500 ease-in-out font-sans",
-              isScrolled
-                ? "shadow-[0_10px_30px_rgba(61,43,26,0.05)] border-b border-brand-ivory"
-                : "border-b border-brand-ivory/50"
+              "w-full transition-all duration-500 ease-in-out font-sans",
+              transparent
+                ? "bg-transparent border-transparent"
+                : cn(
+                    "bg-white",
+                    isScrolled
+                      ? "shadow-[0_10px_30px_rgba(61,43,26,0.05)] border-b border-brand-ivory"
+                      : "border-b border-brand-ivory/50"
+                  )
             )}
           >
-            
-            <div className="border-b border-brand-sand/40 h-16 flex items-center bg-white">
+
+            <div
+              className={cn(
+                "h-16 flex items-center transition-all duration-500 ease-in-out",
+                transparent
+                  ? "bg-transparent border-b border-transparent"
+                  : "bg-white border-b border-brand-sand/40"
+              )}
+            >
               <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 w-full flex items-center gap-4">
                 <div className="flex shrink-0 items-center gap-1 sm:gap-2 lg:min-w-[160px]">
                   <button
                     onClick={mobileMenu.open}
-                    className="lg:hidden p-2 -ml-2 rounded-full text-brand-taupe hover:bg-brand-ivory transition-colors"
+                    className={cn(
+                      "lg:hidden p-2 -ml-2 rounded-full transition-colors",
+                      transparent
+                        ? "text-white hover:bg-white/10"
+                        : "text-brand-taupe hover:bg-brand-ivory"
+                    )}
                   >
                     <Menu size={20} />
                   </button>
@@ -202,38 +226,59 @@ export function Header({
                       alt="Logo"
                       width={40}
                       height={40}
-                      className="h-10 w-auto object-contain"
+                      className={cn(
+                        "h-10 w-auto object-contain transition-all duration-500",
+                        transparent && "brightness-0 invert"
+                      )}
                     />
                     <Image
                       src="/textlogo.png"
                       alt="Text"
                       width={140}
                       height={28}
-                      className="hidden sm:block h-7 w-auto object-contain"
+                      className={cn(
+                        "hidden sm:block h-7 w-auto object-contain transition-all duration-500",
+                        transparent && "brightness-0 invert"
+                      )}
                     />
                   </Link>
                 </div>
                 <div className="hidden lg:flex flex-1 items-center justify-center px-8">
-                  <HeaderSearch />
+                  <HeaderSearch transparent={transparent} />
                 </div>
                 <div className="flex shrink-0 items-center justify-end gap-1 sm:gap-3 ml-auto">
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="lg:hidden h-9 w-9 rounded-full text-brand-taupe"
+                    className={cn(
+                      "lg:hidden h-9 w-9 rounded-full",
+                      transparent ? "text-white hover:bg-white/10" : "text-brand-taupe"
+                    )}
                     onClick={mobileSearch.open}
                   >
                     <Search size={20} />
                   </Button>
                   {mounted ? (
                     <>
-                      <NotificationBell />
-                      <CartDropdown />
+                      <NotificationBell transparent={transparent} />
+                      <CartDropdown transparent={transparent} />
                       {user ? (
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <button className="flex items-center gap-2 p-1 rounded-full hover:bg-brand-cream/50 transition-all group outline-none">
-                              <div className="relative w-9 h-9 rounded-full border border-brand-sand overflow-hidden ring-0 group-hover:ring-4 ring-brand-bronze/10 transition-all duration-300">
+                            <button
+                              className={cn(
+                                "flex items-center gap-2 p-1 rounded-full transition-all group outline-none",
+                                transparent
+                                  ? "hover:bg-white/10"
+                                  : "hover:bg-brand-cream/50"
+                              )}
+                            >
+                              <div
+                                className={cn(
+                                  "relative w-9 h-9 rounded-full overflow-hidden ring-0 group-hover:ring-4 ring-brand-bronze/10 transition-all duration-300 border",
+                                  transparent ? "border-white/40" : "border-brand-sand"
+                                )}
+                              >
                                 {user.avatar ? (
                                   <Image
                                     src={getImageUrl(user.avatar)}
@@ -395,7 +440,12 @@ export function Header({
                       ) : (
                         <Link
                           href={ROUTES.LOGIN}
-                          className="hidden lg:flex items-center gap-2 bg-primary text-white px-7 py-2.5 rounded-full text-xs font-bold hover:bg-brand-bronze transition-all shadow-sm hover:shadow-md"
+                          className={cn(
+                            "hidden lg:flex items-center gap-2 px-7 py-2.5 rounded-full text-xs font-bold transition-all",
+                            transparent
+                              ? "bg-white/10 text-white border border-white/30 hover:bg-white hover:text-brand-espresso"
+                              : "bg-primary text-white hover:bg-brand-bronze shadow-sm hover:shadow-md"
+                          )}
                         >
                           Đăng nhập
                         </Link>
@@ -421,7 +471,10 @@ export function Header({
             
             <div
               className={cn(
-                "hidden lg:block border-b border-brand-sand/30 bg-white transition-all duration-500 ease-in-out overflow-hidden",
+                "hidden lg:block border-b transition-all duration-500 ease-in-out overflow-hidden",
+                transparent
+                  ? "bg-transparent border-transparent"
+                  : "bg-white border-brand-sand/30",
                 isVisible ? "h-11 opacity-100" : "h-0 opacity-0 pointer-events-none"
               )}
             >
@@ -463,10 +516,17 @@ export function Header({
                               href={link.href}
                               className={cn(
                                 "px-4 py-1.5 rounded-lg text-[13px] font-medium transition-all font-sans nav-item-standard",
-                                isActive
-                                  ? "text-brand-bronze bg-brand-bronze/5"
-                                  : "text-primary hover:bg-brand-cream hover:text-brand-bronze",
-                                (link as any).isHot && "text-orange-600 font-bold"
+                                transparent
+                                  ? isActive
+                                    ? "!text-brand-accent bg-white/10"
+                                    : "!text-white hover:bg-white/10"
+                                  : isActive
+                                    ? "text-brand-bronze bg-brand-bronze/5"
+                                    : "text-primary hover:bg-brand-cream hover:text-brand-bronze",
+                                (link as any).isHot &&
+                                  (transparent
+                                    ? "!text-orange-400 font-bold"
+                                    : "text-orange-600 font-bold")
                               )}
                             >
                               {link.label}
@@ -538,7 +598,11 @@ export function Header({
       </div>
 
       
-      <div className="h-[64px] lg:h-[146px] w-full" />
+      {/* On the homepage the header always overlays the hero (transparent-to-solid
+          is a visual swap only), so no reserved space is needed at any scroll
+          position — sizing this off scroll state caused a layout-shift feedback
+          loop right at the transparent/solid threshold. */}
+      {!isHome && <div className="w-full h-[64px] lg:h-[146px]" />}
 
       
       <div

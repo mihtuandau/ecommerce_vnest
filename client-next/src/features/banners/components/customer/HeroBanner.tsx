@@ -1,151 +1,186 @@
 "use client";
-import { Button } from "@/components/ui/Button";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Banner } from "@/types/models";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { BANNERS_MESSAGES } from "@/features/banners/constants";
+import { cn } from "@/utils/cn";
 
 interface HeroBannerProps {
   banners: Banner[];
 }
 
+const AUTOPLAY_MS = 6000;
+
 export function HeroBanner({ banners }: HeroBannerProps) {
-  // Use the first active banner from data, fallback to placeholder if none
-  const banner = banners?.[0];
+  const slides = useMemo(
+    () => [...(banners || [])].sort((a, b) => a.displayOrder - b.displayOrder),
+    [banners]
+  );
+  const [active, setActive] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const hasMultiple = slides.length > 1;
+
+  // Keep active index valid if the banner list changes underneath us
+  useEffect(() => {
+    if (active >= slides.length) setActive(0);
+  }, [slides.length, active]);
+
+  useEffect(() => {
+    if (!hasMultiple || paused) return;
+    const id = setInterval(() => {
+      setActive((i) => (i + 1) % slides.length);
+    }, AUTOPLAY_MS);
+    return () => clearInterval(id);
+  }, [hasMultiple, paused, slides.length]);
+
+  const banner = slides[active];
 
   return (
-    <section className="relative w-full flex flex-col lg:flex-row overflow-hidden bg-brand-cream">
-      
-      <div className="w-full lg:w-1/2 flex items-center justify-center py-16 px-6 lg:py-24 lg:px-16 xl:px-24">
-        <div className="w-full max-w-lg space-y-8 animate-in fade-in slide-in-from-left-8 duration-1000">
-          
-          <div className="inline-flex items-center gap-2 bg-[#E8E0D0]/50 border border-[#E8E0D0] px-4 py-1.5 rounded-full">
-            <span className="w-1.5 h-1.5 rounded-full bg-brand-accent animate-pulse" />
-            <span className="text-[11px] font-bold text-brand-taupe tracking-[0.2em] uppercase">
-              {banner?.title?.split(" ")[0] || "Bộ sưu tập"} 2025
-            </span>
-          </div>
+    <section
+      className="relative w-full min-h-screen overflow-hidden bg-brand-espresso"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      {slides.length > 0 ? (
+        slides.map((slide, i) => {
+          const img = slide.image || slide.imageUrl;
+          if (!img) return null;
+          return (
+            <Image
+              key={slide.id}
+              src={img as string}
+              alt={slide.title || "LUXE"}
+              fill
+              priority={i === 0}
+              className={cn(
+                "object-cover transition-opacity duration-1000 ease-in-out",
+                i === active ? "opacity-100 animate-kenburns" : "opacity-0"
+              )}
+              sizes="100vw"
+            />
+          );
+        })
+      ) : (
+        <span
+          className="absolute inset-0 flex items-center justify-center font-serif text-white/[0.05] text-[26rem] leading-none select-none"
+          aria-hidden
+        >
+          01
+        </span>
+      )}
 
-          
-          <h1 className="text-4xl md:text-6xl lg:text-[4.5rem] leading-[1.05] text-brand-espresso tracking-tight font-serif font-bold">
-            {banner?.title ? (
-              <>
-                {banner.title.split(" ").slice(0, 2).join(" ")} <br />
-                <em className="text-brand-accent not-italic">
-                  {banner.title.split(" ").slice(2, 4).join(" ")}
-                </em>
-                <br />
-                {banner.title.split(" ").slice(4).join(" ")}
-              </>
-            ) : (
-              <>
-                Phong cách <br />
-                <em className="text-brand-accent not-italic">tỏa sáng</em>
-                <br />
-                từng ngày
-              </>
-            )}
-          </h1>
+      {/* Scrim: darkest at left where text sits, fading toward the photo on the right */}
+      <div className="absolute inset-0 bg-gradient-to-r from-brand-espresso via-brand-espresso/75 to-brand-espresso/10" />
+      <div className="absolute inset-0 bg-gradient-to-t from-brand-espresso/60 via-transparent to-transparent" />
 
-          
-          <p className="text-[15px] text-brand-taupe leading-relaxed max-w-sm">
-            {banner?.description ||
-              "Khám phá hàng ngàn sản phẩm thời trang chính hãng, từ các thương hiệu trong nước đến quốc tế. Phong cách của bạn, sự lựa chọn của bạn."}
-          </p>
-
-          
-          <div className="flex flex-col sm:flex-row items-center gap-4 pt-4">
-            <Link
-              href={banner?.link || "/shop"}
-              className="w-full sm:w-auto inline-flex items-center justify-center bg-brand-espresso hover:bg-brand-accent text-brand-cream px-12 py-4 rounded-full text-[14px] font-bold transition-all duration-300 shadow-xl shadow-brand-espresso/10 active:scale-95"
-            >
-              {BANNERS_MESSAGES.CTA_PRIMARY}
-            </Link>
-            <Link
-              href="/collections"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full text-[14px] font-bold text-brand-espresso border border-brand-sand hover:border-brand-accent hover:bg-white transition-all duration-300"
-            >
-              {BANNERS_MESSAGES.CTA_SECONDARY}{" "}
-              <ArrowRight className="w-4 h-4 text-brand-taupe" />
-            </Link>
-          </div>
-
-          
-          <div className="flex gap-10 pt-10 border-t border-brand-sand/60 mt-10">
-            <div>
-              <p className="text-2xl text-brand-espresso font-sans font-semibold">12K+</p>
-              <p className="text-[10px] text-brand-taupe font-bold tracking-widest uppercase mt-1">
-                Sản phẩm
-              </p>
+      <div className="relative z-10 w-full h-full min-h-screen flex items-center pt-28 lg:pt-32 pb-16">
+        <div className="w-full max-w-[1440px] mx-auto px-6 lg:px-12">
+          <div
+            key={banner?.id ?? "empty"}
+            className="w-full max-w-xl space-y-8"
+          >
+            <div className="flex items-center gap-3 animate-in fade-in slide-in-from-left-4 duration-700 fill-mode-both">
+              <span className="font-sans text-[11px] font-bold tracking-[0.2em] text-brand-accent">
+                N° 0{active + 1}
+              </span>
+              <span className="h-px w-8 bg-white/30" />
+              <span className="text-[11px] font-bold text-white/70 tracking-[0.2em] uppercase">
+                {banner?.title?.split(" ")[0] || "Bộ sưu tập"} 2025
+              </span>
             </div>
-            <div>
-              <p className="text-2xl text-brand-espresso font-sans font-semibold">200+</p>
-              <p className="text-[10px] text-brand-taupe font-bold tracking-widest uppercase mt-1">
-                Thương hiệu
-              </p>
+
+            <h1 className="text-4xl md:text-6xl lg:text-[4.5rem] leading-[1.05] text-white tracking-tight font-serif font-bold drop-shadow-sm animate-in fade-in slide-in-from-left-6 duration-700 delay-150 fill-mode-both">
+              {banner?.title ? (
+                <>
+                  {banner.title.split(" ").slice(0, 2).join(" ")} <br />
+                  <em className="text-brand-accent not-italic">
+                    {banner.title.split(" ").slice(2, 4).join(" ")}
+                  </em>
+                  <br />
+                  {banner.title.split(" ").slice(4).join(" ")}
+                </>
+              ) : (
+                <>
+                  Phong cách <br />
+                  <em className="text-brand-accent not-italic">tỏa sáng</em>
+                  <br />
+                  từng ngày
+                </>
+              )}
+            </h1>
+
+            <p className="text-[15px] text-white/75 leading-relaxed max-w-sm animate-in fade-in slide-in-from-left-6 duration-700 delay-300 fill-mode-both">
+              {banner?.description ||
+                "Khám phá hàng ngàn sản phẩm thời trang chính hãng, từ các thương hiệu trong nước đến quốc tế. Phong cách của bạn, sự lựa chọn của bạn."}
+            </p>
+
+            <div className="flex flex-col sm:flex-row items-center gap-4 pt-4 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-500 fill-mode-both">
+              <Link
+                href={banner?.link || "/shop"}
+                className="w-full sm:w-auto inline-flex items-center justify-center bg-brand-accent hover:bg-white hover:text-brand-espresso text-white px-12 py-4 rounded-full text-[14px] font-bold transition-all duration-300 shadow-xl shadow-black/20 active:scale-95"
+              >
+                {BANNERS_MESSAGES.CTA_PRIMARY}
+              </Link>
+              <Link
+                href="/collections"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full text-[14px] font-bold text-white border border-white/30 hover:border-white hover:bg-white/10 transition-all duration-300"
+              >
+                {BANNERS_MESSAGES.CTA_SECONDARY}{" "}
+                <ArrowRight className="w-4 h-4 text-white/70" />
+              </Link>
             </div>
-            <div>
-              <p className="text-2xl text-brand-espresso font-sans font-semibold">98%</p>
-              <p className="text-[10px] text-brand-taupe font-bold tracking-widest uppercase mt-1">
-                Hài lòng
-              </p>
+
+            <div className="flex gap-10 pt-10 border-t border-white/20 mt-10 animate-in fade-in duration-700 delay-700 fill-mode-both">
+              <div>
+                <p className="text-2xl text-white font-sans font-semibold">
+                  12K+
+                </p>
+                <p className="text-[10px] text-white/60 font-bold tracking-widest uppercase mt-1">
+                  Sản phẩm
+                </p>
+              </div>
+              <div>
+                <p className="text-2xl text-white font-sans font-semibold">
+                  200+
+                </p>
+                <p className="text-[10px] text-white/60 font-bold tracking-widest uppercase mt-1">
+                  Thương hiệu
+                </p>
+              </div>
+              <div>
+                <p className="text-2xl text-white font-sans font-semibold">
+                  98%
+                </p>
+                <p className="text-[10px] text-white/60 font-bold tracking-widest uppercase mt-1">
+                  Hài lòng
+                </p>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      
-      <div className="w-full lg:w-1/2 relative min-h-[600px] lg:min-h-0 bg-[#E8E0D0] overflow-hidden flex items-center justify-center">
-        
-        <div className="absolute w-[400px] h-[400px] lg:w-[550px] lg:h-[550px] rounded-full border border-brand-sand/30 flex items-center justify-center animate-spin-slow">
-          <div className="w-[300px] h-[300px] lg:w-[420px] lg:h-[420px] rounded-full bg-brand-sand/10 flex items-center justify-center">
-            <div className="w-[200px] h-[200px] lg:w-[280px] lg:h-[280px] rounded-full bg-brand-sand/20 flex items-center justify-center">
-              <span className="text-brand-espresso text-center italic text-xl opacity-60 font-serif">
-                Thời trang <br />
-                không chỉ là <br />
-                quần áo
-              </span>
-            </div>
-          </div>
+      {hasMultiple && (
+        <div className="absolute bottom-8 left-6 lg:left-12 z-10 flex items-center gap-2">
+          {slides.map((slide, i) => (
+            <button
+              key={slide.id}
+              type="button"
+              onClick={() => setActive(i)}
+              aria-label={`Xem banner ${i + 1}`}
+              aria-current={i === active}
+              className={cn(
+                "h-[3px] rounded-full transition-all duration-500",
+                i === active
+                  ? "w-8 bg-brand-accent"
+                  : "w-4 bg-white/40 hover:bg-white/70"
+              )}
+            />
+          ))}
         </div>
-
-        
-        <div className="absolute bottom-8 right-8 lg:bottom-16 lg:right-16 z-20 w-64 md:w-72 bg-white/95 backdrop-blur-md p-5 rounded-3xl shadow-[0_32px_80px_rgba(61,43,26,0.15)] border border-white transform -rotate-3 hover:rotate-0 transition-all duration-500 hover:shadow-3xl">
-          <div className="bg-brand-cream h-48 rounded-2xl mb-4 relative overflow-hidden flex items-center justify-center border border-brand-sand/40">
-            {banner && (banner.image || banner.imageUrl) ? (
-              <Image
-                src={(banner.image || banner.imageUrl) as string}
-                alt="Banner Card"
-                fill
-                className="object-cover"
-              />
-            ) : (
-              <Sparkles className="w-10 h-10 text-brand-accent/20" />
-            )}
-          </div>
-          <p className="text-[10px] text-brand-accent font-bold uppercase tracking-[0.2em] mb-1">
-            Mùa hè 2025
-          </p>
-          <p className="text-[14px] font-bold text-brand-espresso mb-3 leading-tight line-clamp-1">
-            {banner?.title || "Premium Collection"}
-          </p>
-          <div className="flex items-center justify-between border-t border-brand-ivory pt-3">
-            <div className="flex flex-col">
-              <span className="text-[10px] text-brand-taupe uppercase tracking-wider font-bold">
-                Giá ưu đãi
-              </span>
-              <span className="text-[16px] font-bold text-brand-espresso font-sans">
-                890.000đ
-              </span>
-            </div>
-            <div className="flex flex-col items-end">
-              <div className="flex text-brand-accent text-[10px] mb-0.5">★★★★★</div>
-              <span className="text-brand-taupe text-[9px] font-bold">428 REVIEWS</span>
-            </div>
-          </div>
-        </div>
-      </div>
+      )}
     </section>
   );
 }

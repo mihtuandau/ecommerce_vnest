@@ -14,7 +14,11 @@ import {
 } from "@/components/ui/DropdownMenu";
 import { cn } from "@/utils/cn";
 
-export function NotificationBell() {
+interface NotificationBellProps {
+  transparent?: boolean;
+}
+
+export function NotificationBell({ transparent = false }: NotificationBellProps) {
   const { data: notificationsData } = useNotifications({
     limit: NOTIFICATIONS_LIMITS.BELL,
   });
@@ -32,7 +36,10 @@ export function NotificationBell() {
         <Button
           variant="ghost"
           size="icon"
-          className="h-10 w-10 rounded-full text-brand-taupe relative"
+          className={cn(
+            "h-10 w-10 rounded-full relative",
+            transparent ? "text-white hover:bg-white/10" : "text-brand-taupe"
+          )}
         >
           <Bell size={24} />
           {unreadCount > 0 && (

@@ -7,6 +7,7 @@ import { Category } from "@/types/models";
 import { LayoutGrid } from "lucide-react";
 import { Skeleton } from "@/components/ui/Skeleton";
 import Image from "next/image";
+import { SectionHeading } from "@/features/home/components/customer/shared/SectionHeading";
 
 export function FeaturedCategories() {
   const { data: categoryData, isLoading } = useCategories();
@@ -31,20 +32,13 @@ export function FeaturedCategories() {
 
   return (
     <div className="space-y-10 overflow-visible py-12">
-      <div className="flex items-end justify-between border-b border-brand-sand/40 pb-4">
-        <h2 className="text-[28px] md:text-[32px] text-brand-espresso font-serif font-semibold">
-          Danh mục{" "}
-          <em className="text-brand-accent" style={{ fontStyle: "italic" }}>
-            nổi bật
-          </em>
-        </h2>
-        <Link
-          href="/shop"
-          className="text-[12px] text-brand-taupe uppercase tracking-[0.1em] hover:text-brand-accent transition-colors pb-1"
-        >
-          Xem tất cả →
-        </Link>
-      </div>
+      <SectionHeading
+        index={1}
+        eyebrow="Danh mục"
+        title="Khám phá theo phong cách"
+        accent="phong cách"
+        viewAllLink="/shop"
+      />
 
       <div className="relative flex overflow-hidden group py-10 -my-10">
         

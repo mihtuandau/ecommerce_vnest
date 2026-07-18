@@ -138,10 +138,7 @@ export const HomeProductCard = React.memo(function HomeProductCard({
 
   // ── BESTSELLER & FEATURED VARIANT (WARM MOCKUP STYLE) ──
   if (variant === "bestseller" || variant === "featured") {
-    const bgColors = ["bg-[#E8E0D0]", "bg-[#E3E6EE]", "bg-[#EDE4DA]", "bg-[#DDE5E0]"];
-    const bgClass =
-      bgColors[parseInt(String(product.id || "0"), 16) % bgColors.length] ||
-      "bg-[#E8E0D0]";
+    const bgClass = "bg-brand-ivory";
 
     return (
       <>

@@ -192,13 +192,13 @@ export function ProductActions({
             <div
               className={cn(
                 "h-1.5 w-1.5 rounded-full",
-                currentStock > 0 ? "bg-emerald-500" : "bg-rose-500"
+                currentStock > 0 ? "bg-[#3A7D5A]" : "bg-[#C44040]"
               )}
             />
             <span
               className={cn(
                 "text-[11.5px] font-bold",
-                currentStock > 0 ? "text-emerald-600" : "text-rose-600"
+                currentStock > 0 ? "text-[#3A7D5A]" : "text-[#C44040]"
               )}
             >
               {currentStock > 0 ? `Sẵn hàng (${currentStock} sản phẩm)` : "Hết hàng"}
