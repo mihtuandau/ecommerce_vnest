@@ -12,6 +12,7 @@ import { ReviewRepository } from './review.repository';
 import { CreateReviewDto, UpdateReviewDto } from './dto/review.dto';
 import { createClient } from 'redis';
 import sanitizeHtml from 'sanitize-html';
+import { UploadService } from '../upload/upload.service';
 
 @Injectable()
 export class ReviewService implements OnModuleInit {
@@ -21,6 +22,7 @@ export class ReviewService implements OnModuleInit {
   constructor(
     private repository: ReviewRepository,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    private uploadService: UploadService,
   ) {}
 
   async onModuleInit() {
@@ -117,14 +119,12 @@ export class ReviewService implements OnModuleInit {
       : null;
 
     const review = await this.repository.create({
-      user: { connect: { id: userId } },
-      product: { connect: { id: productId } },
-      order: { connect: { id: orderId } },
+      userId,
+      productId,
+      orderId,
       rating,
       comment: sanitizedComment,
-      images: {
-        create: validatedImages.map((url) => ({ url })),
-      },
+      images: validatedImages,
     });
 
     await this.updateProductRating(productId);
@@ -286,17 +286,25 @@ export class ReviewService implements OnModuleInit {
     const updated = await this.repository.update(reviewId, {
       ...(dto.rating && { rating: dto.rating }),
       ...(sanitizedComment !== undefined && { comment: sanitizedComment }),
-      ...(dto.images && {
-        images: {
-          deleteMany: {},
-          create: dto.images.map((url) => ({ url })),
-        },
-      }),
+      ...(dto.images && { images: dto.images }),
     });
 
     await this.updateProductRating(review.productId);
 
     await this.clearProductListCaches(review.productId);
+
+    // Dọn ảnh cũ khỏi Cloudinary khi review đổi bộ ảnh, tránh rác storage tích
+    // lũy theo thời gian. Best-effort — không chặn response nếu xóa lỗi.
+    if (dto.images) {
+      const oldUrls: string[] = ((review as any).images || []).map(
+        (img: any) => img.url,
+      );
+      const newUrls = new Set(dto.images);
+      const removedUrls = oldUrls.filter((url) => !newUrls.has(url));
+      await Promise.allSettled(
+        removedUrls.map((url) => this.uploadService.deleteImage(url)),
+      );
+    }
 
     return updated;
   }
@@ -334,17 +342,19 @@ export class ReviewService implements OnModuleInit {
 
     await this.clearProductListCaches(review.productId);
 
+    // Dọn ảnh khỏi Cloudinary khi xóa review, tránh rác storage. Best-effort.
+    const urls: string[] = ((review as any).images || []).map(
+      (img: any) => img.url,
+    );
+    await Promise.allSettled(
+      urls.map((url) => this.uploadService.deleteImage(url)),
+    );
+
     return { message: 'Xóa đánh giá thành công' };
   }
 
   async updateProductRating(productId: number) {
-    const result = await this.repository.getProductRatingStats(productId);
-
-    await this.repository.updateProductRating(
-      productId,
-      result._avg.rating || 0,
-      result._count || 0,
-    );
+    await this.repository.recalculateProductRating(productId);
   }
 
   async getAllReviews(

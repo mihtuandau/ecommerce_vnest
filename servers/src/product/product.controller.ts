@@ -18,7 +18,7 @@ import {
 import { Throttle } from '@nestjs/throttler';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../common/guards/auth.guard';
+import { JwtAuthGuard, OptionalJwtAuthGuard } from '../common/guards/auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
 import { ProductService } from './product.service';
@@ -47,8 +47,19 @@ export class ProductController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string, @Query('allVariants') allVariants?: string) {
-    return this.productService.findOne(id, allVariants === 'true');
+  @UseGuards(OptionalJwtAuthGuard)
+  findOne(
+    @Param('id') id: string,
+    @Query('allVariants') allVariants?: string,
+    @Request() req?: any,
+  ) {
+    // SECURITY: allVariants=true trả về cả sản phẩm/biến thể inactive/đã xoá mềm
+    // (dùng cho trang admin sửa sản phẩm) — chỉ cho phép ADMIN/staff, nếu không
+    // bất kỳ ai cũng có thể xem sản phẩm đã bị ẩn/xoá qua query string này.
+    const role = req?.user?.role;
+    const isStaff = ['ADMIN', 'WAREHOUSE', 'SALES'].includes(role);
+    const wantsFull = allVariants === 'true' && isStaff;
+    return this.productService.findOne(id, wantsFull);
   }
 
   @Get(':id/related')

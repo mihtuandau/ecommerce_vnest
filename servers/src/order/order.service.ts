@@ -3,12 +3,13 @@ import { OrderRepository } from './order.repository';
 import { OrderCache } from './order.cache';
 import { OrderCreation } from './order.creation';
 import { OrderManagement } from './order.management';
+import { OrderFilter } from './order.types';
+import { OrderStatus, PaymentStatus } from '@prisma/client';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { QueryOrderDto } from './dto/query-order.dto';
 import { ApplyDiscountDto } from './dto/apply-discount.dto';
 import * as OrderHelper from './order.helper';
-import { PrismaService } from '../prisma/prisma.service';
 import { GHNService } from '../ghn/ghn.service';
 
 @Injectable()
@@ -20,7 +21,6 @@ export class OrderService {
     private cacheService: OrderCache,
     private orderCreation: OrderCreation,
     private orderManagement: OrderManagement,
-    private prisma: PrismaService,
     private ghnService: GHNService,
   ) {}
 
@@ -48,9 +48,9 @@ export class OrderService {
       if (cached) return cached;
     }
 
-    const where: any = {};
-    if (status) where['status'] = status;
-    if (userId) where['userId'] = userId;
+    const where: OrderFilter = {};
+    if (status) where.status = status;
+    if (userId) where.userId = userId;
 
     const [ordersData, total] = await Promise.all([
       this.repository.findAll(where, skip, limit),
@@ -93,7 +93,7 @@ export class OrderService {
 
     // Tính toán tổng số đơn và chi tiêu nếu là Admin
     if (isStaff) {
-      let statsWhere: any = null;
+      let statsWhere: OrderFilter | null = null;
       if (order.userId) {
         statsWhere = { userId: order.userId };
       } else if (order.guestPhone) {
@@ -104,19 +104,11 @@ export class OrderService {
 
       if (statsWhere) {
         // Chỉ tính những đơn đã giao và ĐÃ THANH TOÁN THÀNH CÔNG
-        statsWhere.status = 'DELIVERED';
-        statsWhere.payment = { status: 'SUCCESS' };
+        statsWhere.status = OrderStatus.DELIVERED;
+        statsWhere.paymentStatus = PaymentStatus.SUCCESS;
 
-        const userStats = await this.prisma.order.aggregate({
-          where: statsWhere,
-          _count: { id: true },
-          _sum: { total: true },
-        });
-
-        serializedOrder.customerStats = {
-          totalOrders: userStats._count.id,
-          totalSpent: userStats._sum.total || 0,
-        };
+        serializedOrder.customerStats =
+          await this.repository.getCustomerStats(statsWhere);
       } else {
         serializedOrder.customerStats = { totalOrders: 0, totalSpent: 0 };
       }

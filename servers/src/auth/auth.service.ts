@@ -3,7 +3,10 @@ import {
   Injectable,
   UnauthorizedException,
   BadRequestException,
+  Inject,
 } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import type { Cache } from 'cache-manager';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
@@ -18,7 +21,43 @@ export class AuthService {
     private jwtService: JwtService,
     private mailService: MailService,
     private prisma: PrismaService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
+
+  // SECURITY: Throttle của route chỉ giới hạn theo IP → có thể bị bypass bằng
+  // nhiều IP khác nhau để dò OTP của 1 email cụ thể. Thêm giới hạn theo TỪNG
+  // email/user, độc lập với IP nguồn.
+  private readonly OTP_MAX_ATTEMPTS = 5;
+  private readonly OTP_ATTEMPT_WINDOW_MS = 10 * 60 * 1000;
+
+  private otpAttemptKey(identifier: string) {
+    return `otp_attempts:${identifier.toLowerCase()}`;
+  }
+
+  private async assertOtpNotLocked(identifier: string) {
+    const attempts =
+      (await this.cacheManager.get<number>(this.otpAttemptKey(identifier))) ||
+      0;
+    if (attempts >= this.OTP_MAX_ATTEMPTS) {
+      throw new BadRequestException(
+        'Bạn đã nhập sai mã xác thực quá nhiều lần. Vui lòng yêu cầu gửi lại mã và thử lại sau ít phút.',
+      );
+    }
+  }
+
+  private async registerFailedOtpAttempt(identifier: string) {
+    const key = this.otpAttemptKey(identifier);
+    const attempts = (await this.cacheManager.get<number>(key)) || 0;
+    await this.cacheManager.set(
+      key,
+      attempts + 1,
+      this.OTP_ATTEMPT_WINDOW_MS,
+    );
+  }
+
+  private async clearOtpAttempts(identifier: string) {
+    await this.cacheManager.del(this.otpAttemptKey(identifier));
+  }
 
   async register(dto: any) {
     const { email, password, name, phone } = dto;
@@ -75,6 +114,8 @@ export class AuthService {
     code: string,
     deviceInfo?: { ip?: string; userAgent?: string },
   ) {
+    await this.assertOtpNotLocked(email);
+
     const user = await this.prisma.user.findUnique({ where: { email } });
     if (!user || !user.verificationCode || !user.verificationExpires) {
       throw new BadRequestException(
@@ -87,7 +128,11 @@ export class AuthService {
     }
 
     const isMatch = await bcrypt.compare(code, user.verificationCode);
-    if (!isMatch) throw new BadRequestException('Mã xác thực không chính xác');
+    if (!isMatch) {
+      await this.registerFailedOtpAttempt(email);
+      throw new BadRequestException('Mã xác thực không chính xác');
+    }
+    await this.clearOtpAttempts(email);
 
     // Activate user if pending
     const activatedUser = await this.prisma.user.update({
@@ -598,6 +643,9 @@ export class AuthService {
   }
 
   async verify2FAActivate(userId: number, code: string) {
+    const otpIdentifier = `user2fa:${userId}`;
+    await this.assertOtpNotLocked(otpIdentifier);
+
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user || !user.verificationCode || !user.verificationExpires) {
       throw new BadRequestException('Mã xác thực không hợp lệ');
@@ -608,7 +656,11 @@ export class AuthService {
     }
 
     const isMatch = await bcrypt.compare(code, user.verificationCode);
-    if (!isMatch) throw new BadRequestException('Mã xác thực không chính xác');
+    if (!isMatch) {
+      await this.registerFailedOtpAttempt(otpIdentifier);
+      throw new BadRequestException('Mã xác thực không chính xác');
+    }
+    await this.clearOtpAttempts(otpIdentifier);
 
     await this.prisma.user.update({
       where: { id: userId },

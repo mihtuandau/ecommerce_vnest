@@ -1,14 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { Review, Prisma } from '@prisma/client';
+import {
+  ReviewEntity,
+  CreateReviewData,
+  UpdateReviewData,
+  ReviewFilter,
+} from './review.types';
 
 @Injectable()
 export class ReviewRepository {
   constructor(private prisma: PrismaService) {}
 
-  async create(data: Prisma.ReviewCreateInput): Promise<Review> {
+  async create(data: CreateReviewData): Promise<ReviewEntity> {
     return this.prisma.review.create({
-      data,
+      data: {
+        user: { connect: { id: data.userId } },
+        product: { connect: { id: data.productId } },
+        order: { connect: { id: data.orderId } },
+        rating: data.rating,
+        comment: data.comment,
+        images: { create: data.images.map((url) => ({ url })) },
+      },
       include: {
         images: true,
         user: {
@@ -25,7 +37,7 @@ export class ReviewRepository {
   async findByUserAndProduct(
     userId: number,
     productId: number,
-  ): Promise<Review | null> {
+  ): Promise<ReviewEntity | null> {
     return this.prisma.review.findFirst({
       where: {
         userId,
@@ -38,7 +50,7 @@ export class ReviewRepository {
     userId: number,
     productId: number,
     orderId: number,
-  ): Promise<Review | null> {
+  ): Promise<ReviewEntity | null> {
     return this.prisma.review.findUnique({
       where: {
         userId_productId_orderId: { userId, productId, orderId },
@@ -46,7 +58,7 @@ export class ReviewRepository {
     });
   }
 
-  async findById(id: number): Promise<Review | null> {
+  async findById(id: number): Promise<ReviewEntity | null> {
     return this.prisma.review.findUnique({
       where: { id },
       include: { images: true },
@@ -151,10 +163,21 @@ export class ReviewRepository {
     return this.prisma.review.count({ where: { productId } });
   }
 
-  async update(id: number, data: Prisma.ReviewUpdateInput) {
+  async update(id: number, data: UpdateReviewData) {
+    const { images, ...rest } = data;
     return this.prisma.review.update({
       where: { id },
-      data,
+      data: {
+        ...rest,
+        ...(images
+          ? {
+              images: {
+                deleteMany: {},
+                create: images.map((url) => ({ url })),
+              },
+            }
+          : {}),
+      },
       include: {
         images: true,
         user: {
@@ -168,37 +191,30 @@ export class ReviewRepository {
     });
   }
 
-  async delete(id: number): Promise<Review> {
+  async delete(id: number): Promise<ReviewEntity> {
     return this.prisma.review.delete({
       where: { id },
     });
   }
 
-  async getProductRatingStats(productId: number) {
-    return this.prisma.review.aggregate({
-      where: { productId },
-      _avg: { rating: true },
-      _count: true,
-    });
+  // Tính lại rating trực tiếp bằng subquery trong 1 câu UPDATE nguyên tử — tránh
+  // lost-update khi nhiều review được tạo/sửa/xóa đồng thời (đọc số liệu ở tầng
+  // app rồi ghi lại có thể bị ghi đè bởi request khác chạy song song).
+  async recalculateProductRating(productId: number) {
+    await this.prisma.$executeRaw`
+      UPDATE "Product"
+      SET "averageRating" = COALESCE(
+            (SELECT AVG(rating) FROM "Review" WHERE "productId" = ${productId}),
+            0
+          ),
+          "reviewCount" = (SELECT COUNT(*) FROM "Review" WHERE "productId" = ${productId})
+      WHERE "id" = ${productId}
+    `;
   }
 
-  async updateProductRating(
-    productId: number,
-    averageRating: number,
-    reviewCount: number,
-  ) {
-    return this.prisma.product.update({
-      where: { id: productId },
-      data: {
-        averageRating,
-        reviewCount,
-      },
-    });
-  }
-
-  async findAll(where: Prisma.ReviewWhereInput, skip: number, take: number) {
+  async findAll(filter: ReviewFilter, skip: number, take: number) {
     return this.prisma.review.findMany({
-      where,
+      where: filter,
       include: {
         images: true,
         user: {
@@ -245,8 +261,8 @@ export class ReviewRepository {
     });
   }
 
-  async count(where: Prisma.ReviewWhereInput): Promise<number> {
-    return this.prisma.review.count({ where });
+  async count(filter: ReviewFilter): Promise<number> {
+    return this.prisma.review.count({ where: filter });
   }
 
   async findCommentsByProduct(productId: number) {

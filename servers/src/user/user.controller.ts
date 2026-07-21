@@ -11,8 +11,10 @@ import {
   Req,
   ParseIntPipe,
   ForbiddenException,
+  BadRequestException,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import * as bcrypt from 'bcrypt';
 import { JwtAuthGuard } from '../common/guards/auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
@@ -64,7 +66,37 @@ export class UserController {
   @Put('profile')
   async updateProfile(@Req() req: any, @Body() updateUserDto: UpdateUserDto) {
     const userId = req.user.userId;
-    const updatedUser = await this.userService.update(userId, updateUserDto);
+
+    // SECURITY: /profile luôn là chỉnh sửa hồ sơ của CHÍNH mình.
+    // Không bao giờ cho phép tự đổi role qua đây (tránh leo thang quyền lên ADMIN).
+    // Việc phân quyền phải đi qua route admin PUT /users/:id.
+    const { role, currentPassword, ...safeUpdate } = updateUserDto;
+
+    // SECURITY: Đổi mật khẩu qua /profile bắt buộc phải xác thực mật khẩu hiện tại.
+    // Nếu không, một JWT bị rò rỉ/đánh cắp (XSS, thiết bị dùng chung...) có thể được
+    // dùng để chiếm vĩnh viễn tài khoản bằng cách đổi mật khẩu mà không cần biết mật khẩu cũ.
+    if (safeUpdate.password) {
+      if (!currentPassword) {
+        throw new BadRequestException(
+          'Vui lòng nhập mật khẩu hiện tại để đổi mật khẩu',
+        );
+      }
+      const currentUser = await this.userService.findByIdWithPassword(userId);
+      if (!currentUser?.password) {
+        throw new ForbiddenException(
+          'Tài khoản này không thể đổi mật khẩu qua hình thức này',
+        );
+      }
+      const isMatch = await bcrypt.compare(
+        currentPassword,
+        currentUser.password,
+      );
+      if (!isMatch) {
+        throw new ForbiddenException('Mật khẩu hiện tại không đúng');
+      }
+    }
+
+    const updatedUser = await this.userService.update(userId, safeUpdate);
     const { password, ...userWithoutPassword } = updatedUser;
     return {
       message: 'Profile updated successfully',

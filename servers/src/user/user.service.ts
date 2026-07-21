@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { UserRepository } from './user.repository';
-import { Prisma, User, UserStatus } from '@prisma/client';
+import { User, UserStatus } from '@prisma/client';
+import { UpdateUserData, UserFilter } from './user.types';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -77,7 +78,7 @@ export class UserService {
       phone?: string;
     },
   ): Promise<User> {
-    const updateData: Prisma.UserUpdateInput = {
+    const updateData: UpdateUserData = {
       verificationCode: data.verificationCode,
       verificationExpires: data.verificationExpires,
       status: UserStatus.PENDING,
@@ -107,7 +108,7 @@ export class UserService {
   async findAll(query: QueryUserDto): Promise<User[]> {
     const { page = 1, limit = 10, role, status } = query;
     const skip = (page - 1) * limit;
-    const where: Prisma.UserWhereInput = {
+    const where: UserFilter = {
       deletedAt: null,
       ...(role ? { role } : {}),
       ...(status ? ({ status } as any) : {}),
@@ -125,6 +126,14 @@ export class UserService {
       } = user;
       return safeUser as any;
     });
+  }
+
+  // Chỉ dùng nội bộ để xác thực mật khẩu hiện tại (đổi mật khẩu qua /profile).
+  // KHÔNG được trả trực tiếp ra response.
+  async findByIdWithPassword(id: number): Promise<User | null> {
+    const user = await this.repository.findById(id);
+    if (!user || user.deletedAt) return null;
+    return user;
   }
 
   async findOne(id: number): Promise<any | null> {
@@ -147,7 +156,7 @@ export class UserService {
   }
 
   async update(id: number, data: UpdateUserDto): Promise<User> {
-    const updateData: Prisma.UserUpdateInput = {};
+    const updateData: UpdateUserData = {};
 
     console.log(`=== Updating User #${id} ===`);
     console.log('Update Data:', JSON.stringify(data, null, 2));
@@ -233,7 +242,7 @@ export class UserService {
   async handleCleanupExpiredUsers() {
     await this.repository.softDeleteMany({
       status: UserStatus.PENDING,
-      verificationExpires: { lt: new Date() },
+      verificationExpiresBefore: new Date(),
       deletedAt: null,
     });
   }

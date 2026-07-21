@@ -38,6 +38,16 @@ export class UpdateUserDto {
   password?: string;
 
   @ApiProperty({
+    example: 'oldpassword123',
+    description:
+      'Mật khẩu hiện tại (bắt buộc khi tự đổi mật khẩu qua PUT /users/profile)',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  currentPassword?: string;
+
+  @ApiProperty({
     example: 'ADMIN',
     description: 'Vai trò mới (ADMIN, WAREHOUSE, SALES, CUSTOMER)',
     required: false,

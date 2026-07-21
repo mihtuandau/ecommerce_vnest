@@ -12,13 +12,13 @@ import { UpdateCartItemDto } from './dto/update-cart-item.dto';
 import { RemoveCartItemDto } from './dto/remove-cart-item.dto';
 import { QueryCartDto } from './dto/query-cart.dto';
 import { Prisma, Cart, CartItem, ProductVariant } from '@prisma/client';
-import { PrismaService } from '../prisma/prisma.service';
+import { DiscountRepository } from '../discount/discount.repository';
 
 @Injectable()
 export class CartService {
   constructor(
     private repository: CartRepository,
-    private prisma: PrismaService,
+    private discountRepository: DiscountRepository,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {
     console.log('[CartService] Initialized');
@@ -33,27 +33,7 @@ export class CartService {
     }
 
     // Fetch active automatic discounts (Flash Sales)
-    const now = new Date();
-    const activeDiscounts = await this.prisma.discount.findMany({
-      where: {
-        isActive: true,
-        startDate: { lte: now },
-        AND: [
-          { OR: [{ endDate: null }, { endDate: { gte: now } }] },
-          { OR: [{ isFlashSale: true }, { code: '' }] },
-        ],
-      },
-      include: {
-        applicableToProducts: {
-          select: {
-            productId: true,
-            percentage: true,
-            fixedAmount: true,
-          },
-        },
-        applicableToCategories: { select: { categoryId: true } },
-      },
-    });
+    const activeDiscounts = await this.discountRepository.findActiveCartDiscounts();
 
     const calculateDiscount = (item: any) => {
       const variant = item.variant;
@@ -122,8 +102,8 @@ export class CartService {
             );
             if (variant && variant.isActive && variant.stock >= item.quantity) {
               await this.repository.createCartItem({
-                cart: { connect: { id: cart.id } },
-                variant: { connect: { id: item.variantId } },
+                cartId: cart.id,
+                variantId: item.variantId,
                 quantity: item.quantity,
               });
             }
@@ -168,8 +148,8 @@ export class CartService {
       );
     } else {
       updatedItem = await this.repository.createCartItem({
-        cart: { connect: { id: cart.id } },
-        variant: { connect: { id: dto.variantId } },
+        cartId: cart.id,
+        variantId: dto.variantId,
         quantity: dto.quantity,
       });
     }

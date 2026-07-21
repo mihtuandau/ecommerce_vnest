@@ -1,14 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { Product, Prisma } from '@prisma/client';
+import {
+  ProductCreateData,
+  ProductUpdateData,
+  ProductFilter,
+} from './product.types';
 
 @Injectable()
 export class ProductRepository {
   constructor(private prisma: PrismaService) {}
 
-  async create(data: Prisma.ProductCreateInput) {
+  async create(data: ProductCreateData) {
     return this.prisma.product.create({
-      data,
+      data: data as any,
       include: {
         category: { select: { id: true, name: true, slug: true } },
         brand: { select: { id: true, name: true } },
@@ -19,13 +23,13 @@ export class ProductRepository {
   }
 
   async findAll(
-    where: Prisma.ProductWhereInput,
+    filter: ProductFilter,
     skip: number,
     take: number,
     orderBy?: any,
   ) {
     return this.prisma.product.findMany({
-      where,
+      where: filter,
       skip,
       take,
       orderBy,
@@ -63,8 +67,8 @@ export class ProductRepository {
     });
   }
 
-  async count(where: Prisma.ProductWhereInput) {
-    return this.prisma.product.count({ where });
+  async count(filter: ProductFilter) {
+    return this.prisma.product.count({ where: filter });
   }
 
   async findByIdOrSlug(idOrSlug: number | string, includeAllVariants = false) {
@@ -132,7 +136,7 @@ export class ProductRepository {
     return this.findByIdOrSlug(id, true);
   }
 
-  async update(id: number, data: Prisma.ProductUpdateInput) {
+  async update(id: number, data: ProductUpdateData) {
     return this.prisma.product.update({
       where: { id },
       data,

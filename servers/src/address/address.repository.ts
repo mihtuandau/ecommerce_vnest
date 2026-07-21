@@ -1,42 +1,52 @@
-﻿import { Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { Address, Prisma } from '@prisma/client';
+import {
+  AddressEntity,
+  CreateAddressData,
+  UpdateAddressData,
+} from './address.types';
 
 @Injectable()
 export class AddressRepository {
   constructor(private prisma: PrismaService) {}
 
-  async findByUserId(userId: number): Promise<Address[]> {
+  async findByUserId(userId: number): Promise<AddressEntity[]> {
     return this.prisma.address.findMany({
       where: { userId },
       orderBy: [{ isDefault: 'desc' }, { createdAt: 'desc' }],
     });
   }
 
-  async findById(id: number): Promise<Address | null> {
+  async findById(id: number): Promise<AddressEntity | null> {
     return this.prisma.address.findUnique({
       where: { id },
     });
   }
 
-  async findDefaultByUserId(userId: number): Promise<Address | null> {
+  async findDefaultByUserId(userId: number): Promise<AddressEntity | null> {
     return this.prisma.address.findFirst({
       where: { userId, isDefault: true },
     });
   }
 
-  async create(data: Prisma.AddressCreateInput): Promise<Address> {
-    return this.prisma.address.create({ data });
+  async create(data: CreateAddressData): Promise<AddressEntity> {
+    const { userId, ...rest } = data;
+    return this.prisma.address.create({
+      data: {
+        ...rest,
+        user: { connect: { id: userId } },
+      },
+    });
   }
 
-  async update(id: number, data: Prisma.AddressUpdateInput): Promise<Address> {
+  async update(id: number, data: UpdateAddressData): Promise<AddressEntity> {
     return this.prisma.address.update({
       where: { id },
       data,
     });
   }
 
-  async delete(id: number): Promise<Address> {
+  async delete(id: number): Promise<AddressEntity> {
     return this.prisma.address.delete({
       where: { id },
     });
@@ -52,7 +62,7 @@ export class AddressRepository {
   async findNextAddress(
     userId: number,
     excludeId: number,
-  ): Promise<Address | null> {
+  ): Promise<AddressEntity | null> {
     return this.prisma.address.findFirst({
       where: {
         userId,

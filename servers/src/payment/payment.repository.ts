@@ -1,14 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { Payment, Prisma } from '@prisma/client';
+import {
+  PaymentEntity,
+  CreatePaymentData,
+  UpdatePaymentData,
+  PaymentFilter,
+} from './payment.types';
 
 @Injectable()
 export class PaymentRepository {
   constructor(private prisma: PrismaService) {}
 
-  async create(data: Prisma.PaymentCreateInput): Promise<Payment> {
+  async create(data: CreatePaymentData): Promise<PaymentEntity> {
+    const { orderId, ...rest } = data;
     return this.prisma.payment.create({
-      data,
+      data: {
+        ...rest,
+        order: { connect: { id: orderId } },
+      },
       include: { order: true },
     });
   }
@@ -41,9 +50,9 @@ export class PaymentRepository {
     });
   }
 
-  async findAll(where: Prisma.PaymentWhereInput, skip: number, take: number) {
+  async findAll(filter: PaymentFilter, skip: number, take: number) {
     return this.prisma.payment.findMany({
-      where,
+      where: filter,
       skip,
       take,
       include: {
@@ -59,8 +68,8 @@ export class PaymentRepository {
     });
   }
 
-  async count(where: Prisma.PaymentWhereInput): Promise<number> {
-    return this.prisma.payment.count({ where });
+  async count(filter: PaymentFilter): Promise<number> {
+    return this.prisma.payment.count({ where: filter });
   }
 
   async updateStatusWithTransaction(
@@ -132,12 +141,34 @@ export class PaymentRepository {
     });
   }
 
-  async update(id: number, data: Prisma.PaymentUpdateInput) {
+  async update(id: number, data: UpdatePaymentData) {
     return this.prisma.payment.update({
       where: { id },
       data,
       include: { order: true },
     });
+  }
+
+  // Cộng dồn refundAmount một cách nguyên tử (tránh race condition khi initiateRefund
+  // được gọi đồng thời nhiều lần cho cùng 1 payment gây cộng dồn sai / vượt quá số tiền gốc).
+  // `where` giới hạn refundAmount hiện tại để updateMany chỉ khớp đúng bản ghi còn hợp lệ.
+  async incrementRefundAmountGuarded(
+    id: number,
+    refundValue: number,
+    maxRefundAmount: number,
+  ) {
+    const result = await this.prisma.payment.updateMany({
+      where: {
+        id,
+        status: { in: ['SUCCESS', 'REFUNDED'] },
+        refundAmount: { lte: maxRefundAmount - refundValue },
+      },
+      data: {
+        status: 'REFUNDED',
+        refundAmount: { increment: refundValue },
+      },
+    });
+    return result.count > 0;
   }
 
   async incrementVariantStock(variantId: number, quantity: number) {

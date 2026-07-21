@@ -102,7 +102,7 @@ export class PaymentService {
       });
     } else {
       payment = await this.repository.create({
-        order: { connect: { id: data.orderId } },
+        orderId: data.orderId,
         method: data.method,
         status: data.status || 'PENDING',
         amount: order.total,
@@ -122,10 +122,28 @@ export class PaymentService {
     };
   }
 
+  // Trạng thái cuối (terminal): không được tự ý chuyển ngược lại các trạng thái
+  // khác qua route cập nhật thủ công (tránh admin/IPN vô tình "hồi sinh" một
+  // payment đã REFUNDED/CANCELLED thành SUCCESS, che giấu việc đã hoàn tiền
+  // hoặc khiến đơn hàng bị xử lý tiếp dù đã bị huỷ/hoàn tiền).
+  private static readonly PAYMENT_TERMINAL_STATUSES: PaymentStatus[] = [
+    'REFUNDED' as PaymentStatus,
+    'CANCELLED' as PaymentStatus,
+  ];
+
   async updateStatus(id: number, data: UpdatePaymentStatusDto) {
     const payment = await this.repository.findById(id);
     if (!payment) {
       throw new BadRequestException('Payment not found');
+    }
+
+    if (
+      PaymentService.PAYMENT_TERMINAL_STATUSES.includes(payment.status) &&
+      payment.status !== data.status
+    ) {
+      throw new BadRequestException(
+        `Không thể chuyển trạng thái payment từ ${payment.status} sang ${data.status}`,
+      );
     }
 
     const updatedPayment = await this.repository.updateStatusWithTransaction(
@@ -157,22 +175,32 @@ export class PaymentService {
 
     const refundValue = amount || payment.amount;
 
+    if (refundValue <= 0) {
+      throw new BadRequestException('Số tiền hoàn phải lớn hơn 0');
+    }
+
     try {
+      // Cộng dồn nguyên tử + chặn hoàn vượt quá số tiền đã thanh toán (tránh race
+      // condition khi initiateRefund bị gọi đồng thời/nhiều lần cho cùng 1 payment).
+      const applied = await this.repository.incrementRefundAmountGuarded(
+        paymentId,
+        refundValue,
+        payment.amount,
+      );
+
+      if (!applied) {
+        throw new BadRequestException(
+          'Không thể hoàn tiền: số tiền hoàn vượt quá số tiền đã thanh toán hoặc payment đã thay đổi trạng thái',
+        );
+      }
+
       if (['VNPAY', 'MOMO', 'PAYOS'].includes(payment.method)) {
-        await this.repository.update(paymentId, {
-          status: 'REFUNDED',
-          refundAmount: (payment.refundAmount || 0) + refundValue,
-        });
         this.logger.warn(
           `⚠️ [MANUAL REFUND REQUIRED] Payment #${paymentId} (${payment.method}) marked as REFUNDED in DB. ` +
             `Amount: ${refundValue.toLocaleString('vi-VN')}đ. ` +
             `Admin PHẢI hoàn tiền thủ công qua cổng ${payment.method} cho khách hàng.`,
         );
       } else if (payment.method === 'CASH' || payment.method === 'CARD') {
-        await this.repository.update(paymentId, {
-          status: 'REFUNDED',
-          refundAmount: (payment.refundAmount || 0) + refundValue,
-        });
         this.logger.log(
           `Refund of ${refundValue} marked for ${payment.method} payment ${paymentId}`,
         );
@@ -180,6 +208,7 @@ export class PaymentService {
 
       await this.cacheService.clearPaymentCaches();
     } catch (error) {
+      if (error instanceof BadRequestException) throw error;
       this.logger.error(
         `Error initiating refund for payment ${paymentId}:`,
         error,

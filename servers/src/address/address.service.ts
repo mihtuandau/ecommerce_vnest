@@ -3,8 +3,9 @@ import {
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
-import { Prisma, AddressType } from '@prisma/client';
+import { AddressType } from '@prisma/client';
 import { AddressRepository } from './address.repository';
+import { UpdateAddressData } from './address.types';
 import { CreateAddressDto } from './dto/create-address.dto';
 import { UpdateAddressDto } from './dto/update-address.dto';
 
@@ -36,7 +37,7 @@ export class AddressService {
     }
 
     return this.repository.create({
-      user: { connect: { id: userId } },
+      userId,
       fullName: data.fullName,
       phone: data.phone,
       street: data.street,
@@ -65,7 +66,7 @@ export class AddressService {
       await this.repository.removeDefaultFromAllAddresses(userId);
     }
 
-    const updateData: Prisma.AddressUpdateInput = {};
+    const updateData: UpdateAddressData = {};
 
     if (data.fullName !== undefined) updateData.fullName = data.fullName;
     if (data.phone !== undefined) updateData.phone = data.phone;

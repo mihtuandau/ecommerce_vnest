@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { Cart, CartItem, Prisma } from '@prisma/client';
+import { CartItemEntity, CreateCartItemData } from './cart.types';
 
 @Injectable()
 export class CartRepository {
@@ -66,7 +66,7 @@ export class CartRepository {
   async findCartItem(
     cartId: number,
     variantId: number,
-  ): Promise<CartItem | null> {
+  ): Promise<CartItemEntity | null> {
     return this.prisma.cartItem.findUnique({
       where: {
         cartId_variantId: { cartId, variantId },
@@ -74,18 +74,27 @@ export class CartRepository {
     });
   }
 
-  async createCartItem(data: Prisma.CartItemCreateInput): Promise<CartItem> {
-    return this.prisma.cartItem.create({ data });
+  async createCartItem(data: CreateCartItemData): Promise<CartItemEntity> {
+    return this.prisma.cartItem.create({
+      data: {
+        cart: { connect: { id: data.cartId } },
+        variant: { connect: { id: data.variantId } },
+        quantity: data.quantity,
+      },
+    });
   }
 
-  async updateCartItem(id: number, quantity: number): Promise<CartItem> {
+  async updateCartItem(id: number, quantity: number): Promise<CartItemEntity> {
     return this.prisma.cartItem.update({
       where: { id },
       data: { quantity },
     });
   }
 
-  async deleteCartItem(cartId: number, variantId: number): Promise<CartItem> {
+  async deleteCartItem(
+    cartId: number,
+    variantId: number,
+  ): Promise<CartItemEntity> {
     return this.prisma.cartItem.delete({
       where: {
         cartId_variantId: { cartId, variantId },

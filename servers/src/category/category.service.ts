@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Category } from '@prisma/client';
 import { CreateCategoryDto } from './dto/create-category.dto';
@@ -84,9 +84,13 @@ export class CategoryService {
     });
 
     const ids: number[] = [parentId];
+    const visited = new Set<number>([parentId]);
     const findChildren = (pid: number) => {
       const children = allCategories.filter((cat) => cat.parentId === pid);
       for (const child of children) {
+        // Guard chống vòng lặp vô hạn nếu dữ liệu đã bị lệch thành chu trình
+        if (visited.has(child.id)) continue;
+        visited.add(child.id);
         ids.push(child.id);
         findChildren(child.id);
       }
@@ -115,7 +119,24 @@ export class CategoryService {
       updateData.slug = this.slugify(data.name);
     }
     if (data.parentId !== undefined) {
-      updateData.parentId = data.parentId ? Number(data.parentId) : null;
+      const newParentId = data.parentId ? Number(data.parentId) : null;
+
+      if (newParentId !== null) {
+        if (newParentId === id) {
+          throw new BadRequestException(
+            'Danh mục không thể là cha của chính nó',
+          );
+        }
+        // Ngăn set cha là hậu duệ của chính nó (tạo vòng lặp vô hạn khi duyệt cây)
+        const descendantIds = await this.getChildIds(id);
+        if (descendantIds.includes(newParentId)) {
+          throw new BadRequestException(
+            'Không thể chọn một danh mục con làm danh mục cha (sẽ tạo vòng lặp)',
+          );
+        }
+      }
+
+      updateData.parentId = newParentId;
     }
     return this.prisma.category.update({ where: { id }, data: updateData });
   }

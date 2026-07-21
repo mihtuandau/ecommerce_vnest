@@ -5,6 +5,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { DiscountRepository } from './discount.repository';
+import { CreateDiscountData, UpdateDiscountData } from './discount.types';
 import { CreateDiscountDto } from './dto/create-discount.dto';
 import { UpdateDiscountDto } from './dto/update-discount.dto';
 import { QueryDiscountDto } from './dto/query-discount.dto';
@@ -47,21 +48,14 @@ export class DiscountService {
     if (existing) throw new BadRequestException('Mã giảm giá đã tồn tại');
 
     const { applicableToProducts, ...rest } = dto;
-    const createData: any = {
+    const createData: CreateDiscountData = {
       ...rest,
       code: dto.code.toUpperCase(),
       startDate: new Date(dto.startDate),
       endDate: dto.endDate ? new Date(dto.endDate) : null,
       isActive: dto.isActive ?? true,
+      applicableToProductIds: applicableToProducts,
     };
-
-    if (applicableToProducts?.length) {
-      createData.applicableToProducts = {
-        create: applicableToProducts.map((productId) => ({ productId })),
-      };
-    } else {
-      delete createData.applicableToProducts;
-    }
 
     // Flash Sale: dùng Serializable transaction để ngăn race condition
     // 2 admin tạo cùng lúc → chỉ 1 cái thành công
@@ -289,22 +283,13 @@ export class DiscountService {
         );
     }
 
-    const { applicableToProducts, ...rest } = dto;
-    const data: any = { ...rest };
+    const { applicableToProducts, startDate, endDate, ...rest } = dto;
+    const data: UpdateDiscountData = { ...rest };
     if (dto.code) data.code = dto.code.toUpperCase();
-    if (dto.startDate) data.startDate = new Date(dto.startDate);
-    if (dto.endDate) data.endDate = new Date(dto.endDate);
-
+    if (startDate) data.startDate = new Date(startDate);
+    if (endDate) data.endDate = new Date(endDate);
     if (applicableToProducts !== undefined) {
-      const productIds = (applicableToProducts || []).filter(
-        (pid) => typeof pid === 'number',
-      );
-      data.applicableToProducts = {
-        deleteMany: {},
-        create: productIds.map((productId) => ({ productId })),
-      };
-    } else {
-      delete data.applicableToProducts;
+      data.applicableToProductIds = applicableToProducts;
     }
 
     return this.repository.update(id, data);

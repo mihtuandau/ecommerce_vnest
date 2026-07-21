@@ -1,20 +1,67 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { Discount, Prisma } from '@prisma/client';
+import {
+  DiscountEntity,
+  CreateDiscountData,
+  UpdateDiscountData,
+  DiscountFilter,
+} from './discount.types';
 
 @Injectable()
 export class DiscountRepository {
   constructor(private prisma: PrismaService) {}
 
-  async create(data: Prisma.DiscountCreateInput): Promise<Discount> {
-    return this.prisma.discount.create({ data });
+  private toCreatePayload(data: CreateDiscountData) {
+    const { applicableToProductIds, ...rest } = data;
+    return {
+      ...rest,
+      ...(applicableToProductIds?.length
+        ? {
+            applicableToProducts: {
+              create: applicableToProductIds.map((productId) => ({
+                productId,
+              })),
+            },
+          }
+        : {}),
+    };
+  }
+
+  async create(data: CreateDiscountData): Promise<DiscountEntity> {
+    return this.prisma.discount.create({ data: this.toCreatePayload(data) });
+  }
+
+  // Đơn giá áp dụng cho item trong giỏ hàng: flash sale hoặc mã tự động (code rỗng)
+  // đang active tại thời điểm hiện tại.
+  findActiveCartDiscounts() {
+    const now = new Date();
+    return this.prisma.discount.findMany({
+      where: {
+        isActive: true,
+        startDate: { lte: now },
+        AND: [
+          { OR: [{ endDate: null }, { endDate: { gte: now } }] },
+          { OR: [{ isFlashSale: true }, { code: '' }] },
+        ],
+      },
+      include: {
+        applicableToProducts: {
+          select: {
+            productId: true,
+            percentage: true,
+            fixedAmount: true,
+          },
+        },
+        applicableToCategories: { select: { categoryId: true } },
+      },
+    });
   }
 
   // Transaction Serializable: đảm bảo chỉ 1 flash sale active tại cùng thời điểm
   // 2 admin tạo cùng lúc → chỉ 1 cái thành công, cái kia bị rollback
   async createFlashSaleTransactional(
-    data: Prisma.DiscountCreateInput,
-  ): Promise<Discount> {
+    data: CreateDiscountData,
+  ): Promise<DiscountEntity> {
     return this.prisma.$transaction(
       async (tx) => {
         const now = new Date();
@@ -32,13 +79,13 @@ export class DiscountRepository {
           throw new Error(`Đã có flash sale đang chạy: "${activeFlash.code}"`);
         }
 
-        return tx.discount.create({ data });
+        return tx.discount.create({ data: this.toCreatePayload(data) });
       },
       { isolationLevel: 'Serializable' },
     );
   }
 
-  async findByCode(code: string): Promise<Discount | null> {
+  async findByCode(code: string): Promise<DiscountEntity | null> {
     return this.prisma.discount.findUnique({
       where: { code: code.toUpperCase() },
     });
@@ -56,9 +103,9 @@ export class DiscountRepository {
     });
   }
 
-  async findAll(where: Prisma.DiscountWhereInput) {
+  async findAll(filter: DiscountFilter) {
     return this.prisma.discount.findMany({
-      where,
+      where: filter,
       include: {
         _count: {
           select: { orders: true },
@@ -71,32 +118,20 @@ export class DiscountRepository {
 
   async update(
     id: number,
-    data: Prisma.DiscountUpdateInput,
-  ): Promise<Discount> {
-    const normalizedData: any = { ...data };
+    data: UpdateDiscountData,
+  ): Promise<DiscountEntity> {
+    const { applicableToProductIds, ...rest } = data;
+    const normalizedData: any = { ...rest };
 
-    if (Array.isArray(normalizedData.applicableToProducts)) {
-      const productIds = normalizedData.applicableToProducts.filter(
-        (id: unknown) => typeof id === 'number' && Number.isFinite(id),
+    if (applicableToProductIds !== undefined) {
+      const productIds = applicableToProductIds.filter(
+        (pid) => typeof pid === 'number' && Number.isFinite(pid),
       );
       normalizedData.applicableToProducts =
         productIds.length > 0
           ? {
               deleteMany: {},
-              create: productIds.map((productId: number) => ({ productId })),
-            }
-          : { deleteMany: {} };
-    }
-
-    if (Array.isArray(normalizedData.applicableToCategories)) {
-      const categoryIds = normalizedData.applicableToCategories.filter(
-        (id: unknown) => typeof id === 'number' && Number.isFinite(id),
-      );
-      normalizedData.applicableToCategories =
-        categoryIds.length > 0
-          ? {
-              deleteMany: {},
-              create: categoryIds.map((categoryId: number) => ({ categoryId })),
+              create: productIds.map((productId) => ({ productId })),
             }
           : { deleteMany: {} };
     }
@@ -107,7 +142,7 @@ export class DiscountRepository {
     });
   }
 
-  async delete(id: number): Promise<Discount> {
+  async delete(id: number): Promise<DiscountEntity> {
     return this.prisma.discount.delete({
       where: { id },
     });
@@ -163,8 +198,8 @@ export class DiscountRepository {
     });
   }
 
-  async countWithFilter(where: Prisma.DiscountWhereInput): Promise<number> {
-    return this.prisma.discount.count({ where });
+  async countWithFilter(filter: DiscountFilter): Promise<number> {
+    return this.prisma.discount.count({ where: filter });
   }
 
   async findActiveFlashSale(excludeId?: number) {

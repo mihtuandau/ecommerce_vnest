@@ -143,8 +143,10 @@ export class OrderCreation {
     }
 
     try {
+      // Đơn POS (mua tại quầy) luôn miễn phí ship — không gọi GHN tính phí,
+      // tránh trường hợp đơn có sẵn địa chỉ hợp lệ vẫn bị tính phí ship thật.
       const shippingFeeResult =
-        systemSettings.shippingProvider === 'GHN'
+        systemSettings.shippingProvider === 'GHN' && !isPOS
           ? await this.calculateGHNFee(dto, finalItems)
           : null;
       if (shippingFeeResult) {
@@ -186,10 +188,14 @@ export class OrderCreation {
       }
     }
 
+    // QUAN TRỌNG: Với Flash Sale (auto-apply), giảm giá ĐÃ được tính vào giá từng
+    // item trong `finalItems` (priceMap). KHÔNG được áp lại % ở tầng đơn hàng, nếu
+    // không sẽ trừ giảm giá 2 lần → tính sai (thu thiếu tiền của khách).
+    // Chỉ luồng voucher thủ công mới áp discount ở tầng đơn (trên giá gốc chưa giảm).
     const totals = OrderHelper.calculateOrderTotal(
       finalItems,
       ghnShippingFee,
-      finalDiscount ? discountData : undefined,
+      !useAutoApply && finalDiscount ? discountData : undefined,
     );
 
     // Áp dụng chính sách miễn phí vận chuyển từ cấu hình hệ thống

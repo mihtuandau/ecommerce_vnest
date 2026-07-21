@@ -1,6 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { Prisma } from '@prisma/client';
+import {
+  OrderCreateData,
+  UpdateOrderData,
+  OrderFilter,
+} from './order.types';
 
 @Injectable()
 export class OrderRepository {
@@ -34,8 +38,23 @@ export class OrderRepository {
     reviews: { select: { productId: true } },
   };
 
-  async create(data: Prisma.OrderCreateInput) {
-    return this.prisma.order.create({ data, include: this.baseInclude });
+  // Tổng số đơn đã giao + đã thanh toán và tổng chi tiêu của 1 khách
+  // (dùng cho khu vực thống kê khách hàng khi staff xem chi tiết đơn).
+  async getCustomerStats(filter: OrderFilter) {
+    const { paymentStatus, ...rest } = filter;
+    const stats = await this.prisma.order.aggregate({
+      where: {
+        ...rest,
+        ...(paymentStatus ? { payment: { status: paymentStatus } } : {}),
+      },
+      _count: { id: true },
+      _sum: { total: true },
+    });
+
+    return {
+      totalOrders: stats._count.id,
+      totalSpent: stats._sum.total || 0,
+    };
   }
   async findByCode(orderCode: string) {
     return this.prisma.order.findUnique({
@@ -55,19 +74,19 @@ export class OrderRepository {
       include: this.baseInclude,
     });
   }
-  async findAll(where: Prisma.OrderWhereInput, skip: number, take: number) {
+  async findAll(filter: OrderFilter, skip: number, take: number) {
     return this.prisma.order.findMany({
-      where,
+      where: filter,
       skip,
       take,
       orderBy: { createdAt: 'desc' },
       include: this.baseInclude,
     });
   }
-  async count(where: Prisma.OrderWhereInput) {
-    return this.prisma.order.count({ where });
+  async count(filter: OrderFilter) {
+    return this.prisma.order.count({ where: filter });
   }
-  async update(id: number, data: Prisma.OrderUpdateInput) {
+  async update(id: number, data: UpdateOrderData) {
     return this.prisma.order.update({
       where: { id },
       data,
@@ -192,7 +211,7 @@ export class OrderRepository {
   }
 
   async createOrderTransactional(
-    orderData: Prisma.OrderCreateInput,
+    orderData: OrderCreateData,
     items: any[],
     discountId?: number,
     discountUsageLimit?: number,
@@ -303,7 +322,7 @@ export class OrderRepository {
       }
 
       const order = await tx.order.create({
-        data: orderData,
+        data: orderData as any,
         include: this.baseInclude,
       });
 
@@ -492,17 +511,15 @@ export class OrderRepository {
             data: { stock: { increment: quantityToRestore } },
           });
 
-          // Restore Flash Sale soldCount
+          // Restore Flash Sale soldCount (GREATEST(0,...) để tránh âm nếu dữ liệu
+          // từng lệch trước đó, đồng nhất với restoreStockForOrder() ở trên)
           if (order.discountId) {
-            await tx.discountProduct.updateMany({
-              where: {
-                discountId: order.discountId,
-                productId: (item as any).variant.productId,
-              },
-              data: { soldCount: { decrement: quantityToRestore } },
-            });
-            // Note: DB constraints or GREATEST(0, ...) could be used if we want to ensure it doesn't go below 0
-            // but Prisma decrement is generally safe here if data is consistent.
+            await tx.$executeRaw`
+              UPDATE "DiscountProduct"
+              SET "soldCount" = GREATEST(0, "soldCount" - ${quantityToRestore})
+              WHERE "discountId" = ${order.discountId}
+                AND "productId" = ${(item as any).variant.productId}
+            `;
           }
         }
       }

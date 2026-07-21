@@ -8,6 +8,6 @@ import { PrismaModule } from '../prisma/prisma.module';
   imports: [PrismaModule],
   controllers: [DiscountController],
   providers: [DiscountService, DiscountRepository],
-  exports: [DiscountService],
+  exports: [DiscountService, DiscountRepository],
 })
 export class DiscountModule {}

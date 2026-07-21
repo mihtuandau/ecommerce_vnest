@@ -1,20 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { User, Address, Prisma, UserStatus } from '@prisma/client';
+import { UserStatus } from '@prisma/client';
+import {
+  UserEntity,
+  CreateUserData,
+  UpdateUserData,
+  UserFilter,
+} from './user.types';
 
 @Injectable()
 export class UserRepository {
   constructor(private prisma: PrismaService) {}
 
-  async create(data: Prisma.UserCreateInput): Promise<User> {
+  async create(data: CreateUserData): Promise<UserEntity> {
     return this.prisma.user.create({ data });
   }
 
-  async findByEmail(email: string): Promise<User | null> {
+  async findByEmail(email: string): Promise<UserEntity | null> {
     return this.prisma.user.findFirst({ where: { email, deletedAt: null } });
   }
 
-  async findById(id: number): Promise<User | null> {
+  async findById(id: number): Promise<UserEntity | null> {
     return this.prisma.user.findFirst({
       where: { id, deletedAt: null },
       include: {
@@ -46,12 +52,12 @@ export class UserRepository {
   }
 
   async findAll(
-    where: Prisma.UserWhereInput,
+    filter: UserFilter,
     skip: number,
     take: number,
-  ): Promise<User[]> {
+  ): Promise<UserEntity[]> {
     return this.prisma.user.findMany({
-      where,
+      where: this.toWhere(filter),
       skip,
       take,
       include: {
@@ -62,11 +68,11 @@ export class UserRepository {
     });
   }
 
-  async update(id: number, data: Prisma.UserUpdateInput): Promise<User> {
+  async update(id: number, data: UpdateUserData): Promise<UserEntity> {
     return this.prisma.user.update({ where: { id }, data });
   }
 
-  async suspendUser(id: number): Promise<User> {
+  async suspendUser(id: number): Promise<UserEntity> {
     return this.prisma.user.update({
       where: { id },
       data: {
@@ -75,7 +81,7 @@ export class UserRepository {
     });
   }
 
-  async softDeleteUser(id: number): Promise<User> {
+  async softDeleteUser(id: number): Promise<UserEntity> {
     return this.prisma.user.update({
       where: { id },
       data: {
@@ -89,64 +95,11 @@ export class UserRepository {
     return this.prisma.order.count({ where: { userId } });
   }
 
-  async findAddressesByUser(userId: number): Promise<Address[]> {
-    return this.prisma.address.findMany({
-      where: { userId },
-      orderBy: [{ isDefault: 'desc' }, { createdAt: 'desc' }],
-    });
-  }
-
-  async findAddressById(id: number): Promise<Address | null> {
-    return this.prisma.address.findUnique({
-      where: { id },
-    });
-  }
-
-  async findDefaultAddress(userId: number): Promise<Address | null> {
-    return this.prisma.address.findFirst({
-      where: { userId, isDefault: true },
-    });
-  }
-
-  async createAddress(data: Prisma.AddressCreateInput): Promise<Address> {
-    return this.prisma.address.create({ data });
-  }
-
-  async updateAddress(
-    id: number,
-    data: Prisma.AddressUpdateInput,
-  ): Promise<Address> {
-    return this.prisma.address.update({ where: { id }, data });
-  }
-
-  async deleteAddress(id: number): Promise<Address> {
-    return this.prisma.address.delete({ where: { id } });
-  }
-
-  async removeDefaultFromAllAddresses(userId: number) {
-    return this.prisma.address.updateMany({
-      where: { userId, isDefault: true },
-      data: { isDefault: false },
-    });
-  }
-
-  async findNextAddress(
-    userId: number,
-    excludeId: number,
-  ): Promise<Address | null> {
-    return this.prisma.address.findFirst({
-      where: {
-        userId,
-        id: { not: excludeId },
-      },
-      orderBy: { createdAt: 'asc' },
-    });
-  }
   async updateResetToken(
     id: number,
     resetPasswordToken: string | null,
     resetPasswordExpires: Date | null,
-  ): Promise<User> {
+  ): Promise<UserEntity> {
     return this.prisma.user.update({
       where: { id },
       data: {
@@ -206,14 +159,21 @@ export class UserRepository {
       return { success: true };
     });
   }
-  async deleteMany(where: Prisma.UserWhereInput) {
-    return this.prisma.user.deleteMany({ where });
-  }
 
-  async softDeleteMany(where: Prisma.UserWhereInput) {
+  async softDeleteMany(filter: UserFilter) {
     return this.prisma.user.updateMany({
-      where,
+      where: this.toWhere(filter),
       data: { deletedAt: new Date() },
     });
+  }
+
+  private toWhere(filter: UserFilter) {
+    const { verificationExpiresBefore, ...rest } = filter;
+    return {
+      ...rest,
+      ...(verificationExpiresBefore
+        ? { verificationExpires: { lt: verificationExpiresBefore } }
+        : {}),
+    };
   }
 }
